@@ -54,13 +54,13 @@
         <Grid Column="1" Row="1" Background="#FFFFFFFF">
           <DockPanel LastChildFill="True" Margin="0,35,101,0">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding RatingBorderThickness, FallbackValue=0,0,1,0}" Visibility="{Binding RatingVisibility, FallbackValue=Visible}">
+              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding RatingBorderThickness, FallbackValue='0,0,1,0'}" Visibility="{Binding RatingVisibility, FallbackValue=Visible}">
                 <TextBlock TextAlignment="Center" Style="{StaticResource font_montserrat_semibold_12}" Foreground="#060208" Text="{Binding Rating}" />
               </Border>
-              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding RunningTimeBorderThickness, FallbackValue=0,0,1,0}" Visibility="{Binding RunningTimeVisibility, FallbackValue=Collapsed}">
+              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding RunningTimeBorderThickness, FallbackValue='0,0,1,0'}" Visibility="{Binding RunningTimeVisibility, FallbackValue=Collapsed}">
                 <TextBlock TextAlignment="Center" Style="{StaticResource font_montserrat_semibold_12}" Foreground="#060208" Text="{Binding RunningTime}" />
               </Border>
-              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding ReleaseYearBorderThickness, FallbackValue=0,0,1,0}" Visibility="{Binding ReleaseYearVisibility, FallbackValue=Collapsed}">
+              <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" BorderBrush="#060208" BorderThickness="{Binding ReleaseYearBorderThickness, FallbackValue='0,0,1,0'}" Visibility="{Binding ReleaseYearVisibility, FallbackValue=Collapsed}">
                 <TextBlock TextAlignment="Center" Style="{StaticResource font_montserrat_semibold_12}" Foreground="#060208" Text="{Binding ReleaseYear}" />
               </Border>
               <Border Height="16" Padding="0,0,12,0" Margin="0,0,12,0" Visibility="{Binding CCSupported, FallbackValue=Collapsed}">

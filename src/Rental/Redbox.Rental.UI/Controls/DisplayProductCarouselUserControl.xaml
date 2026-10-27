@@ -13,7 +13,7 @@
             <Grid Name="ImageBackground" Background="#1E1E1E" />
           </local:AspectRatioLayoutDecorator>
           <local:AspectRatioLayoutDecorator AspectRatio="0.6666666666666667" LockAspectRatio="{Binding Path=LockAspectRatio}">
-            <Image Name="DisplayProductImage" Stretch="Fill" Source="{Binding Path=Image, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/movie-missing-image.png}" Opacity="{Binding Path=DisplayImageOpacity}">
+            <Image Name="DisplayProductImage" Stretch="Fill" Source="{Binding Path=Image, FallbackValue='pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/movie-missing-image.png'}" Opacity="{Binding Path=DisplayImageOpacity}">
               <UIElement.InputBindings>
                 <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemSelectedCommand}" />
               </UIElement.InputBindings>

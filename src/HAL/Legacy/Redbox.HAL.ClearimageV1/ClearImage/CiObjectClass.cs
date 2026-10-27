@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("4BBE294D-3C2A-4698-8B5F-84B1D3A6F621")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiObjectClass : ICiObject, CiObject
 {

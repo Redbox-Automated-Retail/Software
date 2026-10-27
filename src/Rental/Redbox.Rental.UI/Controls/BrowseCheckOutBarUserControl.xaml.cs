@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows.Controls;
@@ -69,12 +69,5 @@ public partial class BrowseCheckOutBarUserControl : UserControl, IWPFActor, ICom
 	{
 		BrowseViewModel?.ProcessOnMyPerksButtonClicked();
 		HandleWPFHit();
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

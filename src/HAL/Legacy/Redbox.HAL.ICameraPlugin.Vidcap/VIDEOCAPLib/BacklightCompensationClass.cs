@@ -6,7 +6,7 @@ namespace VIDEOCAPLib;
 
 [ComImport]
 [Guid("4C187441-1702-418D-BC99-AC2CF75AAF4B")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [DefaultMember("_Value")]
 [TypeLibType(2)]
 [ComVisible(true)]

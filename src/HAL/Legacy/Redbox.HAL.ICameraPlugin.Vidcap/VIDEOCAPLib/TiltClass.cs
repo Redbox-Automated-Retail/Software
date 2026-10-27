@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [DefaultMember("_Value")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("6F3EDFFC-37EE-42F0-A3A6-D9A6B0282849")]
 [ComVisible(true)]
 public class TiltClass : ITilt, Tilt

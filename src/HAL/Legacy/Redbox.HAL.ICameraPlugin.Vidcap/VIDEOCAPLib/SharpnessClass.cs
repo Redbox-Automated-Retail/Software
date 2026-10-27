@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [DefaultMember("_Value")]
 [Guid("BF86A870-2278-4DD6-800E-2F778A51D43C")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class SharpnessClass : ISharpness, Sharpness
 {

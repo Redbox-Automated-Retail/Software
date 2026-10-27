@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows;
@@ -124,12 +124,5 @@ public partial class TitleDetailsDevViewUserControl : RentalUserControl, IWPFAct
 	{
 		Model.CurrentProduct.AddProductWithCustomPriceButtonVisibility = ((!showPrice) ? Visibility.Collapsed : Visibility.Visible);
 		Model.CurrentProduct.DisplayAddProductWithCustomPriceButtonVisibility = (showPrice ? Visibility.Collapsed : Visibility.Visible);
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

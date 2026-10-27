@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [DefaultMember("_Value")]
 [Guid("8B0C6939-4230-466A-96C3-1A7EE8BC0831")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class HueClass : IHue, Hue
 {

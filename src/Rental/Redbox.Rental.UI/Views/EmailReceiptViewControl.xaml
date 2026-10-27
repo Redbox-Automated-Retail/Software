@@ -19,7 +19,7 @@
           <Redbox:RoundedButton Name="NextButton" Width="237" Height="56" Style="{StaticResource white_button_style}" UsedDefaultCornerRadius="True" Margin="0,0,0,44" Command="{Binding ContinueButtonCommand}">
             <TextBlock Name="CapButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=ContinueButtonText, FallbackValue=CONTINUE}" />
           </Redbox:RoundedButton>
-          <TextBlock Name="CommentTextElem" Margin="0,0,0,65" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FFFFFFFF" Text="{Binding CommentText, FallbackValue=To update your email, visit redbox.com/account}" />
+          <TextBlock Name="CommentTextElem" Margin="0,0,0,65" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FFFFFFFF" Text="{Binding CommentText, FallbackValue='To update your email, visit redbox.com/account'}" />
         </StackPanel>
       </Grid>
     </DockPanel>

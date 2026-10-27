@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Net;
@@ -45,12 +45,5 @@ public partial class ConfigurationUserControl : UserControl, IPreferencePageHost
 			message = $"Get Configuration Changes failed. Status code: {aPIResponse?.StatusCode}";
 		}
 		SimpleMessageWindow.Show(ControlUtilities.GetParentWindow(this), "Get Configuration Changes", message);
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

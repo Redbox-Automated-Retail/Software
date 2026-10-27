@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows.Markup;
@@ -13,12 +13,5 @@ public partial class RedboxPlusOfferDetailViewUserControl : TextToSpeechUserCont
 	public RedboxPlusOfferDetailViewUserControl()
 	{
 		InitializeComponent();
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

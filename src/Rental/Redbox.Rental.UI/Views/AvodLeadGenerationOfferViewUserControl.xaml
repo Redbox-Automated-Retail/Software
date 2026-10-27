@@ -7,7 +7,7 @@
   </UIElement.CommandBindings>
   <Grid>
     <Panel.Background>
-      <ImageBrush ImageSource="{Binding Path=GridBackgroundImageSource, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/avod-lead-generation-offer-background-without-box-art.png}" />
+      <ImageBrush ImageSource="{Binding Path=GridBackgroundImageSource, FallbackValue='pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/avod-lead-generation-offer-background-without-box-art.png'}" />
     </Panel.Background>
     <StackPanel Orientation="Vertical" Margin="0,535,0,0">
       <TextBlock HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_16}" LineHeight="24" Foreground="#FFFFFFFF" Text="{Binding Path=EmailText, FallbackValue=Get more info sent to your inbox}" />

@@ -6,7 +6,7 @@
   </UIElement.CommandBindings>
   <Grid Background="#FFFFFFFF">
     <TextBlock Height="60" Margin="0,56,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_40}" LineHeight="56" Foreground="#481B54" Text="{Binding Path=HeaderLabelText}" />
-    <StackPanel Margin="{Binding Path=StackPanelMargin, FallbackValue=0,49,0,0}">
+    <StackPanel Margin="{Binding Path=StackPanelMargin, FallbackValue='0,49,0,0'}">
       <TextBlock Height="18" Margin="122,180,0,0" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_bold_14}" LineHeight="20" Foreground="#481B54" Text="{Binding Path=Header2LabelText}" />
       <Border Width="360" Height="64" Margin="96,5,0,0" HorizontalAlignment="Left" CornerRadius="30" BorderThickness="3" BorderBrush="#782D8D">
         <TextBlock Margin="26,0,0,0" Style="{StaticResource style_keyboard_input_text}" Text="{Binding Path=DisplayText}" />

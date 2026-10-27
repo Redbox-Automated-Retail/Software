@@ -21,7 +21,7 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </Redbox:SimpleList>
-          <TextBlock Name="NextLevelText" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50,10,70,0" Foreground="#782D8D" Style="{StaticResource font_montserrat_medium_16_italic}" TextWrapping="Wrap" Text="{Binding Path=NextLevelRentals, FallbackValue=Youre a Superstar for the rest of this year! To stay a Superstar for another year, make XX rentals/purchases by December 31, 2018}" />
+          <TextBlock Name="NextLevelText" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50,10,70,0" Foreground="#782D8D" Style="{StaticResource font_montserrat_medium_16_italic}" TextWrapping="Wrap" Text="{Binding Path=NextLevelRentals, FallbackValue='Youre a Superstar for the rest of this year! To stay a Superstar for another year, make XX rentals/purchases by December 31, 2018'}" />
           <Redbox:RoundedButton Name="CancelButtonElem" Grid.Row="2" Grid.Column="0" Margin="0,30,0,30" HorizontalAlignment="Center" Height="59" Width="163" CornerRadius="28" Style="{StaticResource style_rb_purple_white_border_button}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
             <TextBlock Name="CancelButtonTextElem" Margin="30,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding CancelButtonText, FallbackValue=Back}" />
           </Redbox:RoundedButton>

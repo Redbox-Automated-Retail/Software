@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("746654CA-9736-47D2-BC77-1A8447AA57D6")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class TVChannelsClass : ITVChannels, TVChannels, IEnumerable
 {

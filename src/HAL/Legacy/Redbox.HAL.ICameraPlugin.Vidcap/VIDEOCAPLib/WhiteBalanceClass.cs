@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [DefaultMember("_Value")]
 [Guid("83463570-4A38-4F8D-87C1-97B7ECA943E0")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [TypeLibType(2)]
 [ComVisible(true)]
 public class WhiteBalanceClass : IWhiteBalance, WhiteBalance

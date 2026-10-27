@@ -36,7 +36,7 @@
                 <Model3DGroup x:Name="Kiosk">
                   <GeometryModel3D>
                     <GeometryModel3D.Geometry>
-                      <MeshGeometry3D Positions="8.2,3.44,0 7.5,3.44,0 7.5,-3.44,0 8.2,-3.44,0" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                      <MeshGeometry3D Positions="8.2,3.44,0 7.5,3.44,0 7.5,-3.44,0 8.2,-3.44,0" TriangleIndices="3 2 1 1 0 3" TextureCoordinates="0,0 1,0 1,1 0,1" />
                     </GeometryModel3D.Geometry>
                     <GeometryModel3D.Material>
                       <DiffuseMaterial>
@@ -48,7 +48,7 @@
                   </GeometryModel3D>
                   <GeometryModel3D>
                     <GeometryModel3D.Geometry>
-                      <MeshGeometry3D Positions="10,3.3,-0.06 8,3.3,-0.06 8,-3.3,-0.06 10,-3.3,-0.06" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                      <MeshGeometry3D Positions="10,3.3,-0.06 8,3.3,-0.06 8,-3.3,-0.06 10,-3.3,-0.06" TriangleIndices="3 2 1 1 0 3" TextureCoordinates="0,0 1,0 1,1 0,1" />
                     </GeometryModel3D.Geometry>
                     <GeometryModel3D.Material>
                       <DiffuseMaterial>
@@ -70,7 +70,7 @@
                   <Model3DGroup>
                     <GeometryModel3D>
                       <GeometryModel3D.Geometry>
-                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,1,-0.05 1,1,-0.05 1,1,0.05 1,-1,0.05 1,-1,-0.05 1,1,-0.05 1,-1,0.05 -1,-1,0.05 -1,-1,-0.05 1,-1,-0.05 -1,1,0.05 -1,-1,0.05 -1,-1,-0.05 -1,1,-0.05" TriangleIndices="012230654476109881110141312121514" TextureCoordinates="0,0 0,1 1,1 1,0" />
+                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,1,-0.05 1,1,-0.05 1,1,0.05 1,-1,0.05 1,-1,-0.05 1,1,-0.05 1,-1,0.05 -1,-1,0.05 -1,-1,-0.05 1,-1,-0.05 -1,1,0.05 -1,-1,0.05 -1,-1,-0.05 -1,1,-0.05" TriangleIndices="0 1 2 2 3 0 6 5 4 4 7 6 10 9 8 8 11 10 14 13 12 12 15 14" TextureCoordinates="0,0 0,1 1,1 1,0" />
                       </GeometryModel3D.Geometry>
                       <GeometryModel3D.Material>
                         <DiffuseMaterial>
@@ -89,7 +89,7 @@
                     </GeometryModel3D>
                     <GeometryModel3D>
                       <GeometryModel3D.Geometry>
-                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,-1,0.05 1,-1,0.05" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,-1,0.05 1,-1,0.05" TriangleIndices="3 2 1 1 0 3" TextureCoordinates="0,0 1,0 1,1 0,1" />
                       </GeometryModel3D.Geometry>
                       <GeometryModel3D.Material>
                         <DiffuseMaterial>
@@ -109,7 +109,7 @@
                   </Model3DGroup>
                   <GeometryModel3D>
                     <GeometryModel3D.Geometry>
-                      <MeshGeometry3D x:Name="Disc" Positions="-1,1,-0.1 -3,1,-0.1 -3,-1,-0.1 -1,-1,-0.1" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                      <MeshGeometry3D x:Name="Disc" Positions="-1,1,-0.1 -3,1,-0.1 -3,-1,-0.1 -1,-1,-0.1" TriangleIndices="3 2 1 1 0 3" TextureCoordinates="0,0 1,0 1,1 0,1" />
                     </GeometryModel3D.Geometry>
                     <GeometryModel3D.Material>
                       <DiffuseMaterial>
@@ -129,7 +129,7 @@
                   </GeometryModel3D>
                   <GeometryModel3D>
                     <GeometryModel3D.Geometry>
-                      <MeshGeometry3D Positions="3,1,-0.05 1,1,-0.05 1,-1,-0.05 3,-1,-0.05" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                      <MeshGeometry3D Positions="3,1,-0.05 1,1,-0.05 1,-1,-0.05 3,-1,-0.05" TriangleIndices="3 2 1 1 0 3" TextureCoordinates="0,0 1,0 1,1 0,1" />
                     </GeometryModel3D.Geometry>
                     <GeometryModel3D.Material>
                       <DiffuseMaterial>

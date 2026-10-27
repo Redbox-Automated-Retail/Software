@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("BDDB0245-0CFD-11D4-B5F8-B89D57000000")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiBarcodeProClass : ICiBarcodePro, CiBarcodePro
 {

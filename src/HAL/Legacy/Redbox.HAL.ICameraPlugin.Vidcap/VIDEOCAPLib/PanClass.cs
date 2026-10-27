@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [DefaultMember("_Value")]
 [Guid("430F108E-5C65-4F3A-8D5B-9D14E286D504")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class PanClass : IPan, Pan
 {

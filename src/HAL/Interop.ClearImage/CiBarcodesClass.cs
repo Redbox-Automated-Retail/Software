@@ -6,7 +6,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("DAB01618-F817-4662-ADBA-46EE1C94921A")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiBarcodesClass : ICiBarcodes, CiBarcodes, IEnumerable
 {

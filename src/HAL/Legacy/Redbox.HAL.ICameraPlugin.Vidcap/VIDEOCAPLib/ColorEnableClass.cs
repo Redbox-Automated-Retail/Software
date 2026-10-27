@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("DA5C8467-D5DD-4BF6-AAFC-852106BBEEAF")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [DefaultMember("_Value")]
 [ComVisible(true)]
 public class ColorEnableClass : IColorEnable, ColorEnable

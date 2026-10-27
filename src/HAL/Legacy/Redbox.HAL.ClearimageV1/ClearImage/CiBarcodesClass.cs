@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("DAB01618-F817-4662-ADBA-46EE1C94921A")]
 [ComVisible(true)]
 public class CiBarcodesClass : ICiBarcodes, CiBarcodes, IEnumerable

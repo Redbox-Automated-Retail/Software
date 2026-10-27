@@ -48,7 +48,7 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-          <Redbox:RoundedButton Name="PurchaseButton" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource button_large_purchase_style}" Command="{x:Static views:FormatSelectionPopupViewUserControlCommands.PurchaseCommand}" Margin="{Binding Path=PurchaseButtonMargin, FallbackValue=12,24,12,0}" Visibility="{Binding Path=PurchaseButtonVisibility, FallbackValue=Collapsed}">
+          <Redbox:RoundedButton Name="PurchaseButton" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource button_large_purchase_style}" Command="{x:Static views:FormatSelectionPopupViewUserControlCommands.PurchaseCommand}" Margin="{Binding Path=PurchaseButtonMargin, FallbackValue='12,24,12,0'}" Visibility="{Binding Path=PurchaseButtonVisibility, FallbackValue=Collapsed}">
             <StackPanel Orientation="Vertical">
               <TextBlock Style="{StaticResource font_montserrat_extrabold_16}" HorizontalAlignment="Center" Text="{Binding PurchaseButtonText}" />
               <TextBlock Style="{StaticResource font_montserrat_medium_20}" HorizontalAlignment="Center" Text="{Binding PurchaseButtonLine2Text}" />

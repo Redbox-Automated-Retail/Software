@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("D836E300-A317-4C7E-BE61-D650CE242589")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [TypeLibType(2)]
 [ComVisible(true)]
 public class CiServerClass : ICiServer, CiServer

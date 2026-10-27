@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("A7E1D34A-24DA-4D97-AF2E-CE7E4481E1E2")]
 [ComVisible(true)]
 public class CiPointClass : ICiPoint, CiPoint

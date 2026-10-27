@@ -27,7 +27,7 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 		m_aEventSinkHelpers = new ArrayList();
 	}
 
-	public void add_Log(_ICiImageEvents_LogEventHandler P_0)
+	private void add_Log_Impl(_ICiImageEvents_LogEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -49,7 +49,7 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 		}
 	}
 
-	public void remove_Log(_ICiImageEvents_LogEventHandler P_0)
+	private void remove_Log_Impl(_ICiImageEvents_LogEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -130,5 +130,17 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 	{
 		Finalize();
 		GC.SuppressFinalize(this);
+	}
+
+	public event _ICiImageEvents_LogEventHandler Log
+	{
+		add
+		{
+			add_Log_Impl(value);
+		}
+		remove
+		{
+			remove_Log_Impl(value);
+		}
 	}
 }

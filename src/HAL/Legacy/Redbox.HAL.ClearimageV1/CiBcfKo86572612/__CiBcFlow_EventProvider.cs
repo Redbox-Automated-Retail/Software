@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -27,7 +27,7 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 		m_aEventSinkHelpers = new ArrayList();
 	}
 
-	public void add_BarcodeFound(__CiBcFlow_BarcodeFoundEventHandler P_0)
+	private void add_BarcodeFound_Impl(__CiBcFlow_BarcodeFoundEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -49,7 +49,7 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 		}
 	}
 
-	public void remove_BarcodeFound(__CiBcFlow_BarcodeFoundEventHandler P_0)
+	private void remove_BarcodeFound_Impl(__CiBcFlow_BarcodeFoundEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -130,5 +130,17 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 	{
 		Finalize();
 		GC.SuppressFinalize(this);
+	}
+
+	public event __CiBcFlow_BarcodeFoundEventHandler BarcodeFound
+	{
+		add
+		{
+			add_BarcodeFound_Impl(value);
+		}
+		remove
+		{
+			remove_BarcodeFound_Impl(value);
+		}
 	}
 }

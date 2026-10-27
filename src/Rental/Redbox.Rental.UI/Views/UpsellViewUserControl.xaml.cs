@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -89,12 +89,5 @@ public partial class UpsellViewUserControl : TextToSpeechUserControl, IWPFActor,
 	private void UpgradeCommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 	{
 		e.CanExecute = Model?.ProcessOnCanExecuteUpgradeButton() ?? false;
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

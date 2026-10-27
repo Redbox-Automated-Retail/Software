@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("CB149079-A739-4178-A4DA-BACA546C3728")]
 [ComVisible(true)]
 public class CiRepairClass : ICiRepair, CiRepair

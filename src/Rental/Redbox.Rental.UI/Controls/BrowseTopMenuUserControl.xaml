@@ -10,7 +10,7 @@
         <TextBlock Name="BackgroundText" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=MenuBackgroundText}" Style="{Binding Path=MenuTextStyle, FallbackValue={StaticResource browse_top_menu_text_collection_style}}" />
       </StackPanel>
     </Border>
-    <Border Height="56" VerticalAlignment="Top" BorderThickness="0,0,2,0" BorderBrush="{StaticResource WarmPurpleBrush}" Margin="{Binding Path=AZMenuBorderMargin, FallbackValue=40,24,161,0}" Visibility="{Binding Path=AZMenuBackgroundVisibility, FallbackValue=Collapsed}">
+    <Border Height="56" VerticalAlignment="Top" BorderThickness="0,0,2,0" BorderBrush="{StaticResource WarmPurpleBrush}" Margin="{Binding Path=AZMenuBorderMargin, FallbackValue='40,24,161,0'}" Visibility="{Binding Path=AZMenuBackgroundVisibility, FallbackValue=Collapsed}">
       <DockPanel LastChildFill="False">
         <TextBlock DockPanel.Dock="Left" Style="{StaticResource font_montserrat_bold_28}" VerticalAlignment="Center" Foreground="#FF000000" Text="{Binding Path=AZMenuText, FallbackValue=Find Movies by Title A-Z}" />
         <TextBlock DockPanel.Dock="Right" Style="{StaticResource font_montserrat_semibold_14_correct}" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,40,0" Foreground="{StaticResource DisableGrayBrush}" Text="{Binding Path=AZFiltersMessageText, FallbackValue=Filters Not Applicable}" />

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -358,12 +358,5 @@ public partial class CustomerOfferUserControl : UserControl, IPreferencePageHost
 	private void PresentExtraPointsPerksEquivalentRadioButton_Checked(object sender, RoutedEventArgs e)
 	{
 		SetOfferValue(KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers.ExtraPointsPerksEquivalent);
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

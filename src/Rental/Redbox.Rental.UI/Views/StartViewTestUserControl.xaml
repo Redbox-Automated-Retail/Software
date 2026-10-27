@@ -80,7 +80,7 @@
             </DockPanel>
           </Grid>
         </Redbox:RoundedButton>
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="{Binding Path=SecondaryButtonsColumn, FallbackValue=2}" Margin="{Binding Path=SecondaryButtonsMargin, FallbackValue=0,0,15,0}">
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="{Binding Path=SecondaryButtonsColumn, FallbackValue=2}" Margin="{Binding Path=SecondaryButtonsMargin, FallbackValue='0,0,15,0'}">
           <Grid>
             <Redbox:RoundedButton Name="handicap_button" Style="{StaticResource rubine_no_border_button_style}" CornerRadius="25" Margin="3,3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Command="{x:Static localbase:Commands.ToggleADAModeCommand}" Focusable="False">
               <UserControl Name="handicap_button_icon_off" Foreground="#FFFFFFFF" Style="{StaticResource handicap_icon}" Margin="-10, 0, 0,0" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">

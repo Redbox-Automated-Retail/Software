@@ -10,7 +10,7 @@
       <Image Name="RentalsOnTheirWayBackgroundImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_header_background.png" Stretch="Fill" />
     </DockPanel>
     <TextBlock Name="TitleText" Style="{StaticResource font_montserrat_bold_40}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=TitleText, FallbackValue=Your discs are on their way}" />
-    <Image Name="AdImage" Grid.Row="2" Source="{Binding AdImage, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_default.jpg}" />
+    <Image Name="AdImage" Grid.Row="2" Source="{Binding AdImage, FallbackValue='pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_default.jpg'}" />
     <Grid Row="2" Height="576" Background="#FF000000" Visibility="{Binding Path=ClosingLocationGridVisibility, FallbackValue=Collapsed}">
       <StackPanel VerticalAlignment="Center" Visibility="Collapsed">
         <TextBlock Style="{StaticResource font_montserrat_bold_48}" LineHeight="56" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationDateText, FallbackValue=This location is&#xA;closing in January}" />

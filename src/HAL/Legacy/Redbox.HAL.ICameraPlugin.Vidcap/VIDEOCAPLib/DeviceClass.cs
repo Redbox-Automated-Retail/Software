@@ -6,7 +6,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("F7DC9E32-6AE4-476A-9DCC-E12FDCC106FC")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class DeviceClass : IDevice, Device
 {

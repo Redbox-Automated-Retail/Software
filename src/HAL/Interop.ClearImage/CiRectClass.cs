@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("4ED88245-0BE1-11D4-B5F6-009FC6000000")]
 [ComVisible(true)]
 public class CiRectClass : ICiRect, CiRect

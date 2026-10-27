@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [TypeLibType(2)]
 [DefaultMember("_Value")]
 [Guid("1ED3F4C4-5D11-404A-AF41-AD6851CBD33F")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class ContrastClass : IContrast, Contrast
 {

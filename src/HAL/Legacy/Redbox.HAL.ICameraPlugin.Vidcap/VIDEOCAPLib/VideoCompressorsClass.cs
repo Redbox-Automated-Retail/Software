@@ -6,7 +6,7 @@ namespace VIDEOCAPLib;
 
 [ComImport]
 [Guid("36EFD2AC-43C5-497A-959D-24E1C1B42D10")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [TypeLibType(2)]
 [ComVisible(true)]
 public class VideoCompressorsClass : IVideoCompressors, VideoCompressors, IEnumerable

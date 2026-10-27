@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("44B6E508-A758-4D4E-B057-8D47366F6C27")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [DefaultMember("_Value")]
 [ComVisible(true)]
 public class RollClass : IRoll, Roll
