@@ -70,6 +70,17 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	public PinPadMessageHandler pinpadHandler { get; set; }
 
+	/// <summary>
+	/// The most recently initialized simulator. DeviceService.WebApi's Startup creates IUC285Proxy from a second
+	/// ServiceProvider (built on a background task), so the terminal the proxy talks to is not the IRBA_API
+	/// singleton the MVC container hands to SimulatorController. The controller drives this instance instead.
+	/// </summary>
+	public static RBA_API_Simulator Active { get; private set; }
+
+	internal ISimulatorDataProvider Data => _data;
+
+	internal ICommandQueue Commands => _commands;
+
 	public bool IsConnected => _connected;
 
 	public bool IsCardInserted => _cardInserted;
@@ -108,6 +119,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 				_initialized = true;
 			}
 		}
+		Active = this;
 		Trace("Initialize");
 		return ERROR_ID.RESULT_SUCCESS;
 	}
