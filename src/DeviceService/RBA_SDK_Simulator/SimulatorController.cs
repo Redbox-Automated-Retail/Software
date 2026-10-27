@@ -35,9 +35,9 @@ public class SimulatorController : ControllerBase
 
 	public SimulatorController(ISimulatorDataProvider data, ICommandQueue commands, IRBA_API terminal)
 	{
-		_data = data;
-		_commands = commands;
-		_terminal = terminal as RBA_API_Simulator;
+		_terminal = RBA_API_Simulator.Active ?? terminal as RBA_API_Simulator;
+		_data = _terminal?.Data ?? data;
+		_commands = _terminal?.Commands ?? commands;
 	}
 
 	[HttpGet]
