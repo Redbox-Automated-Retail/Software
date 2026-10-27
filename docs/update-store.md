@@ -11,7 +11,7 @@ in it has been fully extracted yet.
 ```
 .store/
   .repository/<package>/        one folder per update package
-    <fromSHA1>-<toSHA1>.patch   content (see below)
+    <revision>-<SHA1(path)>.patch   content (see below)
     .revlog/<n>                 JSON revisions (file names, versions, install paths)
   .configfiles/ .data/ .filecache/ .filesets/ .storefiles/
 ```
@@ -24,11 +24,17 @@ Revision JSON:
                  "TargetPath": "C:\\Program Files\\redbox\\REDS\\DeviceService\\bin", "IsSeed": true, "Composite": true } ] }
 ```
 
-Every content file is named `<fromSHA1>-<toSHA1>.patch`, and there are three kinds:
+Every content file is named `<revision hash>-<SHA1 of "TargetPath\TargetName">.patch` (upper-case hex): one
+file per changed file per revision. In this image 1,736 of the 3,274 `.patch` files match a revision still in
+`.revlog`; the rest belong to revisions that were trimmed from the log (almost all in `dvd-data`). There are
+three kinds of content:
 
-- **VCDIFF deltas** (magic `D6 C3 C4`): apply to the file whose SHA1 is `from` to produce `to`.
-- **Complete files** stored under a patch name (they start with `MZ`, or are zip/gzip archives).
+- **VCDIFF deltas** (magic `D6 C3 C4`), applied with `xdelta3 -d -s` to the previous version of the same file.
+- **Seeds**: complete files (they start with `MZ`, or are zip/gzip archives).
 - Other: text files and scripts.
+
+The complete protocol and store format, including how revisions are downloaded, staged and activated, is in
+[systems/update-manager.md](systems/update-manager.md).
 
 The code that writes and applies these is in this repository: `Redbox.UpdateManager.Environment` and
 `Redbox.DeltaCompression`. An xdelta3 command-line build can also apply VCDIFF deltas.
@@ -66,5 +72,5 @@ Macros 1.0.2.15, IPC 1.1.1.2, UpdateManager 3.0.0.36. Two types used in this rep
   2014 setup/data packages use the same store format and are the likely source.
 
 Approach: parse `.revlog` to map hashes to file names and install paths; start from the complete files;
-apply `.patch` deltas in dependency order; verify each result's SHA1 against `to`; index the results by
+apply each file's `.patch` deltas in revision order; verify each result's SHA1 against the change's `VersionHash`; index the results by
 assembly name and version.
