@@ -12,7 +12,6 @@
     <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.HardwareServices.KernelExtension.Properties.Resources.resources" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Redbox.HardwareServices.TestProxy" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -25,5 +24,6 @@
     <ProjectReference Include="..\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
     <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
     <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
+    <ProjectReference Include="..\Redbox.HardwareServices.TestProxy\Redbox.HardwareServices.TestProxy.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Reconstructed API stub: the real assembly is not in the kiosk image. -->
+  <PropertyGroup>
+    <AssemblyName>Redbox.HardwareServices.TestProxy</AssemblyName>
+    <RootNamespace>Redbox.HardwareServices.TestProxy</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <Version>1.88.0.80</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
+  </ItemGroup>
+</Project>

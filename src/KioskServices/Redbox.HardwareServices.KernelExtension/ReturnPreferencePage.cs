@@ -38,9 +38,6 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 
 	public ReturnPreferencePage()
 	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
-		base._002Ector();
 		InitializeComponent();
 		_hardwareService = (TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>();
 		_inventoryService = ServiceLocator.Instance.GetService<IInventoryTestService>();
@@ -59,16 +56,12 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		cmb_returnType.DataSource = Enum.GetValues(typeof(ReturnType));
+		cmb_returnType.DataSource = Enum.GetValues(typeof(Common.ReturnType));
 		cmb_returnType.SelectedItem = _hardwareService.ReturnType;
 	}
 
 	private void OnAddUnknown(object sender, EventArgs e)
 	{
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
 		(dgv_returnQueue.DataSource as BindingList<InventoryData>)?.Add(new InventoryData
 		{
 			Barcode = "UNKNOWN"
@@ -77,9 +70,6 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnAddBarcode(object sender, EventArgs e)
 	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Expected O, but got Unknown
 		if (dgv_returnQueue.DataSource is BindingList<InventoryData> bindingList && !string.IsNullOrWhiteSpace(txt_barcodeInput.Text))
 		{
 			bindingList.Add(new InventoryData
@@ -92,8 +82,7 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnReturnTypeChanged(object sender, EventArgs e)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		_hardwareService.ReturnType = (ReturnType)cmb_returnType.SelectedItem;
+		_hardwareService.ReturnType = (Common.ReturnType)cmb_returnType.SelectedItem;
 	}
 
 	protected override void Dispose(bool disposing)
