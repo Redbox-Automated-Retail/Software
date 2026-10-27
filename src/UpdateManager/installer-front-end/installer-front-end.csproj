@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>installer-front-end</AssemblyName>
+    <RootNamespace>Redbox.UpdateManager.StoreInstallerFrontEnd</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net46</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>ICSharpCode.SharpZipLib;SevenZip;log4net;Redbox.Command.Tokenizer;Redbox.Compression;Redbox.Core;Redbox.DeltaCompression;Redbox.GetOpts;Redbox.IPC.Framework;Redbox.Log.Framework;Redbox.Lua;Redbox.Macros;Redbox.Macros.Functions;Redbox.Tokenizer.Framework;Redbox.UpdateManager.BITS;Redbox.UpdateManager.ComponentModel;Redbox.UpdateManager.Environment;Redbox.UpdateManager.Kernel;Redbox.UpdateManager.Remoting;Redbox.UpdateManager.TaskScheduler;Redbox.UpdateService.Client;Redbox.UpdateService.Model;TaskScheduler</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="CustomMessageBox.resx" LogicalName="Redbox.UpdateManager.StoreInstallerFrontEnd.CustomMessageBox.resources" />
+    <EmbeddedResource Update="EventPanel.resx" LogicalName="Redbox.UpdateManager.StoreInstallerFrontEnd.EventPanel.resources" />
+    <EmbeddedResource Update="Host.resx" LogicalName="Redbox.UpdateManager.StoreInstallerFrontEnd.Host.resources" />
+    <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.UpdateManager.StoreInstallerFrontEnd.Properties.Resources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZip">
+      <HintPath>..\..\..\lib\SevenZip\SevenZip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Quartz" Version="2.3.3" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Command.Tokenizer\Redbox.Command.Tokenizer.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Compression\Redbox.Compression.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\Redbox.DeltaCompression\Redbox.DeltaCompression.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.GetOpts\Redbox.GetOpts.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Log.Framework\Redbox.Log.Framework.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Macros\Redbox.Macros.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Macros.Functions\Redbox.Macros.Functions.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Tokenizer.Framework\Redbox.Tokenizer.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.BITS\Redbox.UpdateManager.BITS.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.Environment\Redbox.UpdateManager.Environment.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.Kernel\Redbox.UpdateManager.Kernel.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.Remoting\Redbox.UpdateManager.Remoting.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.TaskScheduler\Redbox.UpdateManager.TaskScheduler.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateService.Client\Redbox.UpdateService.Client.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateService.Model\Redbox.UpdateService.Model.csproj" />
+    <ProjectReference Include="..\TaskScheduler\TaskScheduler.csproj" />
+  </ItemGroup>
+</Project>

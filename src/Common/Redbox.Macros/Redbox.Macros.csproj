@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.Macros</AssemblyName>
+    <RootNamespace>Redbox.Macros</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx" LogicalName="Redbox.Macros.Strings.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.Core\Redbox.Core.csproj" />
+  </ItemGroup>
+</Project>

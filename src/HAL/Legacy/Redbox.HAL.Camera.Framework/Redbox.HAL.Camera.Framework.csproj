@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.HAL.Camera.Framework</AssemblyName>
+    <RootNamespace>Redbox.HAL.Camera.Framework</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
+  </ItemGroup>
+</Project>

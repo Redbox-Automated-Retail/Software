@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.GenreSelectionPopupViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:views="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static views:GenreSelectionPopupViewUserControlCommands.CancelCommand}" Executed="CancelCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static views:GenreSelectionPopupViewUserControlCommands.ApplyCommand}" Executed="ApplyCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <Grid Background="{StaticResource AlmostBlackBrush}" Opacity="0.8" />
+    <Border Width="780" Height="564" Background="#FFFFFFFF" CornerRadius="28" Padding="76,76,76,24">
+      <StackPanel>
+        <TextBlock Style="{StaticResource font_montserrat_bold_28}" Foreground="{StaticResource CarlosPurple1Brush}" Margin="0,0,0,24" Text="{Binding Path=HeaderText, FallbackValue=Genres}" />
+        <TextBlock Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" Margin="0,0,0,24" Text="{Binding Path=DescriptionText, FallbackValue=Select one}" />
+        <ItemsControl ItemsSource="{Binding Path=GenreButtonModels}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Margin="-8,-8,-8,-8" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <controls:CheckMarkButtonUserControl />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Separator Style="{StaticResource modal_separator_style}" Margin="0,76,0,24" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Redbox:RoundedButton Name="CancelButton" Style="{StaticResource modal_two_buttons_button1_style}" Margin="0,0,12,0" Command="{x:Static views:GenreSelectionPopupViewUserControlCommands.CancelCommand}">
+            <TextBlock Style="{StaticResource button_text_large_style}" Text="{Binding Path=CancelButtonText, FallbackValue=CANCEL}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="ApplyButton" Style="{StaticResource modal_two_buttons_button2_style}" Margin="12,0,0,0" Command="{x:Static views:GenreSelectionPopupViewUserControlCommands.ApplyCommand}">
+            <TextBlock Style="{StaticResource button_text_large_style}" Text="{Binding Path=ApplyButtonText, FallbackValue=APPLY}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Grid>
+</controls:TextToSpeechUserControl>

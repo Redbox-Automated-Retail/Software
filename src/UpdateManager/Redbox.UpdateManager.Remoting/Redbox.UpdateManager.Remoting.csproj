@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.UpdateManager.Remoting</AssemblyName>
+    <RootNamespace>Redbox.UpdateManager.Remoting</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateService.Client\Redbox.UpdateService.Client.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateService.Model\Redbox.UpdateService.Model.csproj" />
+    <ProjectReference Include="..\TaskScheduler\TaskScheduler.csproj" />
+  </ItemGroup>
+</Project>

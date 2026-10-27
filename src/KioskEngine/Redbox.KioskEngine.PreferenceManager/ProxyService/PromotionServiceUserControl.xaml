@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.ProxyService.PromotionServiceUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.ProxyService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid Background="#FFFFFFFF">
+    <StackPanel Orientation="Vertical">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#008B8B" DockPanel.Dock="Top" RefreshButtonVisibilty="Visible" SaveButtonVisibilty="Visible" />
+      <StackPanel Margin="20,5,0,5">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="LiveCallCheckBox" Grid.Row="1" IsChecked="{Binding Path=LiveCall}">
+              <TextBlock Text="Live Call" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="CommunicationsFailureCheckBox" IsChecked="{Binding Path=CommunicationFailure}">
+              <TextBlock Text="Communications Failure" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <TextBlock Text="Promo Code" Grid.Row="2" Grid.Column="0" FontSize="10" VerticalAlignment="Center" Margin="0,20,0,0" />
+          <TextBox Name="PromoCodeTextbox" Grid.Row="2" Grid.Column="2" Width="100" Height="18" VerticalAlignment="Center" Margin="0,23,0,0" HorizontalAlignment="Left" Text="{Binding Path=PromoCode}" />
+          <TextBlock Text="Amount" Grid.Row="3" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="AmountTextbox" Grid.Row="3" Grid.Column="2" Width="100" Height="18" VerticalAlignment="Center" Margin="0,3" HorizontalAlignment="Left" Text="{Binding Path=Amount}" />
+          <TextBlock Text="Promotion Intent" Grid.Row="4" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <ComboBox Name="PromotionIntentCodeComboBox" Grid.Row="4" Grid.Column="1" MaxDropDownHeight="200" Width="250" HorizontalAlignment="Left" Margin="0,3" SelectedItem="{Binding Path=PromotionIntentCode}" />
+          <TextBlock Text="Promotion Response Type" Grid.Row="5" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <ComboBox Name="PromotionValidationResponseComboBox" Grid.Row="5" Grid.Column="1" MaxDropDownHeight="200" Width="250" HorizontalAlignment="Left" Margin="0,3" SelectedItem="{Binding Path=PromotionValidationResponse}" />
+          <Button Name="AddTestPromoCodeButton" Content="Add" Grid.Row="6" Grid.Column="1" Width="100" HorizontalAlignment="Left" Click="AddTestPromoCodeButton_Click" />
+          <DataGrid Name="TestPromoCodesDataGrid" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="200" AutoGenerateColumns="False" SelectionMode="Single" CanUserAddRows="False" Margin="0,20,0,0" ItemsSource="{Binding TestPromoCodes}">
+            <DataGrid.Columns>
+              <DataGridTextColumn x:Name="PromoCodeColumn" Header="Promo Code" Width="120" IsReadOnly="True" Binding="{Binding PromoCode}" />
+              <DataGridTextColumn x:Name="AmountColumn" Header="Amount" Width="100" IsReadOnly="True" Binding="{Binding Amount}" />
+              <DataGridTextColumn x:Name="PromotionIntentColumn" Header="Promotion Intent" Binding="{Binding PromotionIntentCode}" />
+              <DataGridTextColumn x:Name="PromotionValidationResponseColumn" Header="Response Type" Binding="{Binding PromotionValidationResponse}" />
+            </DataGrid.Columns>
+          </DataGrid>
+          <Button Name="DeleteTestPromoCodeButton" Content="Delete" Grid.Row="8" Grid.Column="0" Width="100" HorizontalAlignment="Left" Margin="0,5" Click="DeleteTestPromoCodeButton_Click" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

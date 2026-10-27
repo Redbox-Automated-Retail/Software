@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:BaseUserControl x:Class="Redbox.Rental.UI.Controls.PerksOfferActiveListItem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:controls="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <controls:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <controls:IfElseConverter x:Key="IfElseConverter" />
+      <controls:NullToVisibilityConverter x:Key="TextToVisibility" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <controls:RoundedButton Style="{StaticResource white_warmpurple_border_button_style}" CornerRadius="10" Height="268" Width="270" Command="{Binding DetailsButtonCommand}" CommandParameter="{Binding}">
+      <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="230">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="25" />
+          <RowDefinition Height="170" />
+          <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="0,5,0,2" Style="{StaticResource font_montserrat_semibold_18}" Foreground="{StaticResource RubineRedBrush}" HorizontalAlignment="Right" Text="{Binding StatusText, FallbackValue=IN PROGRESS}" Visibility="{Binding StatusText, Converter={StaticResource TextToVisibility}}" />
+        <StackPanel Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="0,0,0,-5" Style="{StaticResource font_museo_slab_700_48}" Foreground="{StaticResource WarmPurpleBrush}" VerticalAlignment="Bottom" Text="{Binding OfferValueText, FallbackValue=500}" />
+            <TextBlock Margin="5,0,0,0" Style="{StaticResource font_museo_slab_700_30}" Foreground="{StaticResource WarmPurpleBrush}" VerticalAlignment="Bottom" Text="{Binding OfferUnitsText, FallbackValue=pts}" />
+          </StackPanel>
+          <TextBlock Margin="0,5,0,0" Style="{StaticResource font_montserrat_semibold_18}" Foreground="{StaticResource WarmPurpleBrush}" TextWrapping="Wrap" Text="{Binding Name, FallbackValue=Game Dash - Genre}" />
+          <TextBlock Margin="0,0,0,0" Style="{StaticResource font_montserrat_light_18}" Foreground="{StaticResource WarmPurpleBrush}" TextWrapping="Wrap" Text="{Binding TimeToComplete, FallbackValue=7 Days left}" Visibility="{Binding TimeToComplete, Converter={StaticResource TextToVisibility}}" />
+          <TextBlock Margin="0,10,0,10" Style="{StaticResource font_montserrat_semibold_16}" Foreground="{StaticResource WarmPurpleBrush}" TextWrapping="Wrap" Text="{Binding Description, FallbackValue=Rent 6 Xbox or Playstation games in 14 days.}" />
+        </StackPanel>
+        <controls:RoundedButton Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20" Height="30" MinWidth="100" CornerRadius="15" Style="{StaticResource style_white_rubine_gradient_border_button}" BorderThickness="2" IsHitTestVisible="False">
+          <TextBlock Style="{StaticResource font_montserrat_regular_14}" Margin="25,1,25,0" Text="{Binding Path=DetailsButtonText, FallbackValue=Details}" />
+        </controls:RoundedButton>
+        <controls:RoundedButton Grid.Row="2" Height="40" Width="40" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10" BorderThickness="3" DropShadowDepth="1" UsedDefaultCornerRadius="True" IsHitTestVisible="False" Style="{StaticResource style_rb_rubine_white_border_with_outlineshadow_button}" Visibility="{Binding IsAdaMode, Converter={StaticResource BoolToVisibility}}">
+          <Grid>
+            <TextBlock Style="{StaticResource font_montserrat_bold_18}" Foreground="#FFFFFFFF" Text="{Binding AdaButtonNumber}" />
+          </Grid>
+        </controls:RoundedButton>
+      </Grid>
+    </controls:RoundedButton>
+  </Grid>
+</local:BaseUserControl>

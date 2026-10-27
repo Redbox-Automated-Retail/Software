@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>CameraTuner</AssemblyName>
+    <RootNamespace>Redbox.HAL.CameraTuner</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net35</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>Redbox.DirectShow;Redbox.HAL.Common.GUI.Functions</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.DirectShow\Redbox.DirectShow.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Common.GUI.Functions\Redbox.HAL.Common.GUI.Functions.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.DataMatrix.Framework\Redbox.HAL.DataMatrix.Framework.csproj" />
+  </ItemGroup>
+</Project>

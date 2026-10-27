@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.EmailOptInViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.Button1Command}" Executed="Button1_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.Button2Command}" Executed="Button2_Executed" />
+  </UIElement.CommandBindings>
+  <Grid Background="#3A3637">
+    <Image Name="BackgroundImage" Height="618" Width="1024" VerticalAlignment="Top" Stretch="Fill" Source="{Binding Path=Image, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Email_Opt-In_KioskScreen_R4_Full__1_.jpg}" />
+    <DockPanel Margin="0,619,0,0" HorizontalAlignment="Stretch" LastChildFill="True">
+      <Redbox:RoundedButton Name="YesButton" DockPanel.Dock="Right" Style="{StaticResource classic_red_button_style}" Width="170" Height="66" Margin="10,0,10,0" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.Button1Command}" VerticalAlignment="Center" Visibility="{Binding Path=AddGameButtonVisibility}">
+        <TextBlock Name="YesButtonText" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_20}" Text="{Binding Path=YesButtonText, FallbackValue=YES}" />
+      </Redbox:RoundedButton>
+      <Redbox:RoundedButton Name="NoThanksButton" DockPanel.Dock="Right" Style="{StaticResource classic_gray_white_border_button_style}" Width="180" Height="66" Margin="10,0,10,0" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.Button2Command}" Visibility="{Binding Path=AddGameButtonVisibility}">
+        <TextBlock Name="NoThanksButtonText" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_20}" Text="{Binding Path=NoThanksButtonText, FallbackValue=NO THANKS}" />
+      </Redbox:RoundedButton>
+      <TextBlock Name="OptInOfferText" Margin="20,0,10,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_medium_24}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=MessageText, FallbackValue=Would you like to get an email about this?}" />
+    </DockPanel>
+  </Grid>
+</controls:TextToSpeechUserControl>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.EMVInsertAndTapHideMobilePickupUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid Width="2048">
+    <local:RedChevronUserControl x:Name="RedChevron" HorizontalAlignment="Left" VerticalAlignment="Top" ChevronColor="#FFFFFFFF" ChevronOpacity="0.1" />
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="88,0,0,0" Width="511" TextBlock.Foreground="#FFFFFFFF">
+      <TextBlock Name="TitleTextBlock" Style="{StaticResource font_montserrat_bold_40}" LineHeight="56" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding TitleText, FallbackValue=Culture specific insert title goes here at runtime}" />
+      <TextBlock Name="TitleNoteTextBlock" Style="{StaticResource font_montserrat_semibold_20}" LineHeight="28" TextAlignment="Center" TextWrapping="Wrap" Margin="0,22,0,0" Text="{Binding TitleNoteText, FallbackValue=Culture specific insert title note goes here at runtime}" />
+      <StackPanel Name="ImageStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" Height="88" Margin="0,56,0,0" Visibility="{Binding Path=ImageStackPanelVisibility, FallbackValue=Visible}">
+        <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/No-Mobile-Tap_Icon.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="88" Height="88" />
+      </StackPanel>
+      <TextBlock Name="MessageTextBlock" Width="238" Margin="0,12,0,0" Style="{StaticResource font_montserrat_semibold_16}" LineHeight="24" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding MessageText, FallbackValue=culture specific insert message goes here at runtime}" />
+    </StackPanel>
+    <local:EMVInsertAndTapCardUserControl x:Name="Card" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="698,84,0,0" />
+  </Grid>
+</UserControl>

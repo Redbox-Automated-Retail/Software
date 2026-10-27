@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.TitleDetailsDevLabelValueUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid VerticalAlignment="Center" HorizontalAlignment="Center" ShowGridLines="False" Background="#FFD3D3D3" Height="19">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="180" />
+      <ColumnDefinition Width="140" />
+    </Grid.ColumnDefinitions>
+    <TextBlock Grid.Column="0" Margin="10,0,0,0" Style="{StaticResource font_akzidenz_regular_8}" Text="{Binding LabelText, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TitleDetailsDevLabelValueUserControl}}}" />
+    <TextBlock Grid.Column="1" Style="{StaticResource font_akzidenz_regular_8}" Text="{Binding ValueText, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TitleDetailsDevLabelValueUserControl}}}" />
+  </Grid>
+</UserControl>

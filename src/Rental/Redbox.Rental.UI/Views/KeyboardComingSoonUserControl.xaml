@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:KeyboardControl x:Class="Redbox.Rental.UI.Views.KeyboardComingSoonUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls">
+  <Border Name="MainControl" Background="#FFFFFFFF" Height="768" Width="1024">
+    <Redbox:GridExt Margin="80,20,80,10" RowHeights="60,70,40,410,*,120">
+      <Grid Row="0" HorizontalAlignment="Center">
+        <TextBlock Name="MessageTextElem" Margin="25,0" VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource keyboard_prompt_message_style}" Text="{Binding Path=MessageText, FallbackValue=Message}" FontSize="{Binding MessageTextSize, FallbackValue=24}" />
+      </Grid>
+      <Grid Row="1" HorizontalAlignment="Center">
+        <Redbox:BorderButton Name="EmailElem" BorderSize="490,64" HorizontalAlignment="Left" Style="{StaticResource border_button_style}" Click="EmailSelected">
+          <Grid Background="#00FFFFFF">
+            <TextBlock Name="EmailTextElem" Height="32" Width="420" TextWrapping="NoWrap" Style="{StaticResource style_keyboard_input_text}" Text="{Binding Path=KeyboardText}" />
+            <TextBlock Name="EmailPromotTextElem" Height="32" Width="auto" Style="{StaticResource style_keyboard_input_text}" Foreground="{StaticResource PromptGrayBrush}" Text="{Binding Path=EmailPromptText, FallbackValue=email}" Visibility="{Binding ElementName=EmailTextElem, Path=Text, Converter={StaticResource TextVisibilityConverter}}" />
+          </Grid>
+        </Redbox:BorderButton>
+      </Grid>
+      <Grid Row="2">
+        <TextBlock Name="KeyboardErrorElem" Grid.Row="1" Margin="28,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="32" Width="auto" Style="{StaticResource keyboard_error_message_style}" Text="{Binding Path=KeyboardError, FallbackValue=...}" />
+      </Grid>
+      <localControls:KeyboardUserControl x:Name="KeyboardElem" Grid.Row="3" Margin="0,10,0,20" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <TextBlock Name="MarketingTextElem" Grid.Row="4" Margin="0" Style="{StaticResource keyboard_marketing_message_style}" Text="{Binding Path=MarketingText, FallbackValue=Marketing}" />
+      <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Redbox:RoundedButton Name="CancelButtonElem" Grid.Column="1" Width="261" Margin="8,0,8,0" Style="{StaticResource button_light_large_secondary_style}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
+          <TextBlock Name="CancelButtonTextElem" Style="{StaticResource button_text_large_style}" Text="{Binding Path=CancelButtonText, FallbackValue=CANCEL}" />
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Name="ContinueButtonElem" Grid.Column="2" Width="261" Margin="8,0,8,0" Style="{StaticResource button_light_large_primary_style}" IsEnabled="True" Click="ContinueTouched">
+          <TextBlock Name="ContinueButtonTextElem" Style="{StaticResource button_text_large_style}" Text="{Binding Path=ContinueButtonText, FallbackValue=CREATE ACCOUNT}" />
+        </Redbox:RoundedButton>
+      </StackPanel>
+    </Redbox:GridExt>
+  </Border>
+</local:KeyboardControl>

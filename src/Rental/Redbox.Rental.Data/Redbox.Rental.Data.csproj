@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.Rental.Data</AssemblyName>
+    <RootNamespace>Redbox.Rental.Data</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="VistaDB.NET20">
+      <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Kernel\Redbox.KioskEngine.Kernel.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.ProductLookupCatalog\Redbox.ProductLookupCatalog.csproj" />
+    <ProjectReference Include="..\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <ProjectReference Include="..\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
+  </ItemGroup>
+</Project>

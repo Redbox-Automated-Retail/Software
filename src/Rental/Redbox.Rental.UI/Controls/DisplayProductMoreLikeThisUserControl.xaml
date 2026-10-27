@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Controls.DisplayProductMoreLikeThisUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.MoreLikeThisCommand}" Executed="MoreLikeThis_Executed" />
+  </UIElement.CommandBindings>
+  <UIElement.InputBindings>
+    <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.MoreLikeThisCommand}" />
+  </UIElement.InputBindings>
+  <Grid>
+    <Image Name="Image" Stretch="Fill" Source="{Binding Path=Image}" />
+  </Grid>
+</localControls:TextToSpeechUserControl>

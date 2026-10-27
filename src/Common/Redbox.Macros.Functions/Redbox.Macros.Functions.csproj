@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.Macros.Functions</AssemblyName>
+    <RootNamespace>Redbox.Macros.Functions</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.Macros\Redbox.Macros.csproj" />
+  </ItemGroup>
+</Project>

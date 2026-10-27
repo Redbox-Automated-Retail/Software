@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Views.BulletListPopupViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid>
+    <Grid Name="BackgroundGrid" Background="#FF000000" Opacity="0.6" />
+    <Grid Width="700" VerticalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Border Background="#FFFFFFFF" CornerRadius="28">
+        <StackPanel Margin="0,50,0,0">
+          <TextBlock Name="TitleText" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50,0,20,0" Foreground="#782D8D" Style="{StaticResource font_montserrat_semibold_24}" Text="{Binding Path=Title, FallbackValue=Get the Redbox app}" />
+          <Redbox:SimpleList Name="TextListElem" ItemsHeight="55" Margin="50,30,50,0" Style="{StaticResource warm_puple_regular_list_left_style}" ItemsSource="{Binding BulletPoints}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <BulletDecorator>
+                  <BulletDecorator.Bullet>
+                    <Ellipse Fill="{StaticResource WarmPurpleBrush}" StrokeThickness="0" Width="8" Height="8" Margin="0,2,0,0" />
+                  </BulletDecorator.Bullet>
+                  <TextBlock Margin="12,0,0,0" TextWrapping="Wrap" Text="{Binding Mode=OneWay}" />
+                </BulletDecorator>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </Redbox:SimpleList>
+          <Redbox:RoundedButton Name="CancelButtonElem" Grid.Row="2" Grid.Column="0" Margin="0,30,0,30" HorizontalAlignment="Center" Height="59" Width="163" CornerRadius="28" Style="{StaticResource style_rb_purple_white_border_button}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
+            <TextBlock Name="CancelButtonTextElem" Margin="30,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding CancelButtonText, FallbackValue=Got It}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

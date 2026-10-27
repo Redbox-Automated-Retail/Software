@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.HAL.Script.Framework</AssemblyName>
+    <RootNamespace>Redbox.HAL.Script.Framework</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>Newtonsoft.Json;PowerCollections;Redbox.DirectShow</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PowerCollections">
+      <HintPath>..\..\..\lib\PowerCollections\PowerCollections.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.DirectShow\Redbox.DirectShow.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Configuration\Redbox.HAL.Configuration.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Controller.Framework\Redbox.HAL.Controller.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.DataMatrix.Framework\Redbox.HAL.DataMatrix.Framework.csproj" />
+  </ItemGroup>
+</Project>

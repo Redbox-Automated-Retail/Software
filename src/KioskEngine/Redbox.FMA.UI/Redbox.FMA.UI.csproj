@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.FMA.UI</AssemblyName>
+    <RootNamespace>Redbox.FMA</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWPF>True</UseWPF>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.Controls\Redbox.Controls.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
+  </ItemGroup>
+</Project>

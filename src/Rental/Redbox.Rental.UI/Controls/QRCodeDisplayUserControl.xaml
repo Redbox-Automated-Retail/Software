@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.QRCodeDisplayUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid>
+    <StackPanel Orientation="Vertical">
+      <Image Name="QRCodeImage" Width="156" Height="156" Source="{Binding QRCodeImage, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/qr-code-default-redbox.png}" />
+      <TextBlock Name="MessageText" HorizontalAlignment="Center" Style="{Binding MessageStyle, FallbackValue={StaticResource modal_qr_code_display_user_control_message_message_style}}" Text="{Binding MessageText, FallbackValue=Or visit redbox.com}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

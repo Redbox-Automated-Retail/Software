@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.BrowseViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" DataContextChanged="OnDataContextChanged">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.ResetIdleTimerCommand}" Executed="ResetIdleTimerCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Thickness x:Key="DefaultBrowseGroupSelectionMargin" Left="38" Top="88" Right="38" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Background="#FFFFFFFF">
+    <Image Name="BackgroundImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/backgroundTexture.png" HorizontalAlignment="Left" VerticalAlignment="Top" Height="768" Visibility="{Binding Path=BackgroundImageVisibility, FallbackValue=Visible}" />
+    <StackPanel Name="ContainerFoFilterBarAndCheckoutBar" VerticalAlignment="Bottom">
+      <localControls:BrowseFilterBarUserControl DataContext="{Binding Path=BrowseFilterBarModel}" />
+      <localControls:BrowseCheckOutBarUserControl />
+    </StackPanel>
+    <localControls:BrowseUserControl x:Name="BrowseProductControl" Margin="0,80,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="484" Width="1024" ShowPaddles="True" DataContext="{Binding Path=BrowseProductControlModel}" />
+    <localControls:BrowseTopMenuUserControl VerticalAlignment="Top" DataContext="{Binding Path=BrowseTopMenuModel}" />
+    <localControls:BrowseGroupSelectionUserControl Height="37" VerticalAlignment="Top" DataContext="{Binding Path=BrowseGroupSelection}" Margin="{Binding Path=BrowseGroupSelectionMargin, FallbackValue={StaticResource DefaultBrowseGroupSelectionMargin}}" Visibility="{Binding Path=BrowseGroupSelectionVisibility}" />
+    <localControls:BrowseMessagePopupUserControl VerticalAlignment="Bottom" Margin="0,0,0,-14" DataContext="{Binding Path=BrowseMessagePopupModel}" Visibility="{Binding Path=BrowseMessagePopupUserControlVisibility, FallbackValue=Collapsed}" />
+    <localControls:BrowseRedboxPlusTooltipUserControl DataContext="{Binding Path=BrowseRedboxPlusTooltipModel}" Visibility="{Binding Path=BrowseRedboxPlusTooltipUserControlVisibility, FallbackValue=Collapsed}" />
+  </Grid>
+</localControls:TextToSpeechUserControl>

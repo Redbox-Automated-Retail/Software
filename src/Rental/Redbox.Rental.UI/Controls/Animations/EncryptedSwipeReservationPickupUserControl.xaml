@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.EncryptedSwipeReservationPickupUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid Background="#e42045" Width="2048">
+    <local:RedChevronUserControl x:Name="RedChevron" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <local:EncryptedSwipeHandAndCardUserControl x:Name="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,40,0,0" Width="420" />
+    <TextBlock Name="ChipNotEnabledTextBlock" Style="{StaticResource font_montserrat_regular_10}" Foreground="#FFFFFFFF" TextAlignment="Center" Margin="125,392,0,0" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding ChipNotEnabledText, FallbackValue=Chip Not Enabled}">
+      <UIElement.RenderTransform>
+        <RotateTransform Angle="-14.5" />
+      </UIElement.RenderTransform>
+    </TextBlock>
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="491,0,0,0" TextBlock.Foreground="#FFFFFFFF" Width="520">
+      <TextBlock Name="TitleTextBlock" TextWrapping="Wrap" Style="{StaticResource font_museo_slab_700_50}" Text="{Binding TitleText, FallbackValue=Culture specific swipe title goes here at runtime}" />
+      <TextBlock Name="MessageTextBlock" Style="{StaticResource font_museo_slab_700_24}" TextWrapping="Wrap" Width="460" HorizontalAlignment="Left" Margin="0,30,0,0" Text="{Binding MessageText, FallbackValue=culture specific swipe message&#xA; goes here at runtime}" />
+      <StackPanel Name="ImageStackPanel" Orientation="Horizontal" Height="89" Margin="0,20,0,0" Visibility="{Binding Path=ImageStackPanelVisibility, FallbackValue=Visible}">
+        <Grid Width="89" Height="89">
+          <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Tap-Icon-SwipeOnly_79x48.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="79" Height="48" />
+          <Viewbox HorizontalAlignment="Left" VerticalAlignment="Top">
+            <UserControl Name="DoNotSignContactless" Style="{StaticResource do_not_sign_style}" />
+          </Viewbox>
+        </Grid>
+        <Grid Width="89" Height="89" Margin="30,0,0,0">
+          <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Insert-Icon-SwipeOnly_45x37.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="47" Height="37.7" />
+          <Viewbox Width="89" Height="89" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <UserControl Name="DoNotSignChip" Style="{StaticResource do_not_sign_style}" />
+          </Viewbox>
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

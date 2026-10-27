@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.EMVTapRegularCheckoutUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid Background="#e42045" Width="2048">
+    <local:RedChevronUserControl x:Name="RedChevron" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <local:EmvInsertAndTapUserControl x:Name="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,40,0,0" Width="520" />
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="491,0,0,0" TextBlock.Foreground="#FFFFFFFF" Width="520">
+      <TextBlock Name="TitleTextBlock" TextWrapping="Wrap" Style="{StaticResource font_museo_slab_700_50}" TextAlignment="Center" Text="{Binding TitleText, FallbackValue=Culture specific tap title goes here at runtime}" />
+      <StackPanel Orientation="Horizontal" Height="89" Margin="0,20,0,0" HorizontalAlignment="Center">
+        <Image Name="ApplePayImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Apple_Pay_Payment_Mark_80x51.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="79" Height="48" Margin="15,0,15,0" Visibility="{Binding ApplePayImageVisibility, FallbackValue=Visible}" />
+        <Image Name="GooglePayImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Google_Pay_Payment_Mark_80x51.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="79" Height="48" Margin="15,0,15,0" Visibility="{Binding GooglePayImageVisibility, FallbackValue=Visible}" />
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

@@ -1,0 +1,134 @@
+using System;
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
+
+namespace CiBcfDm80000002;
+
+internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
+{
+	private IConnectionPointContainer m_ConnectionPointContainer;
+
+	private ArrayList m_aEventSinkHelpers;
+
+	private IConnectionPoint m_ConnectionPoint;
+
+	private void Init()
+	{
+		IConnectionPoint ppCP = null;
+		Guid riid = new Guid(new byte[16]
+		{
+			96, 239, 101, 45, 204, 29, 236, 76, 174, 85,
+			242, 164, 16, 109, 45, 82
+		});
+		m_ConnectionPointContainer.FindConnectionPoint(ref riid, out ppCP);
+		m_ConnectionPoint = ppCP;
+		m_aEventSinkHelpers = new ArrayList();
+	}
+
+	public void add_BarcodeFound(__CiBcFlow_BarcodeFoundEventHandler P_0)
+	{
+		Monitor.Enter(this);
+		try
+		{
+			if (m_ConnectionPoint == null)
+			{
+				Init();
+			}
+			__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = new __CiBcFlow_SinkHelper();
+			int pdwCookie = 0;
+			m_ConnectionPoint.Advise(_CiBcFlow_SinkHelper, out pdwCookie);
+			_CiBcFlow_SinkHelper.m_dwCookie = pdwCookie;
+			_CiBcFlow_SinkHelper.m_BarcodeFoundDelegate = P_0;
+			m_aEventSinkHelpers.Add(_CiBcFlow_SinkHelper);
+		}
+		finally
+		{
+			Monitor.Exit(this);
+		}
+	}
+
+	public void remove_BarcodeFound(__CiBcFlow_BarcodeFoundEventHandler P_0)
+	{
+		Monitor.Enter(this);
+		try
+		{
+			if (m_aEventSinkHelpers == null)
+			{
+				return;
+			}
+			int count = m_aEventSinkHelpers.Count;
+			int num = 0;
+			if (0 >= count)
+			{
+				return;
+			}
+			do
+			{
+				__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[num];
+				if (_CiBcFlow_SinkHelper.m_BarcodeFoundDelegate != null && ((_CiBcFlow_SinkHelper.m_BarcodeFoundDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
+				{
+					m_aEventSinkHelpers.RemoveAt(num);
+					m_ConnectionPoint.Unadvise(_CiBcFlow_SinkHelper.m_dwCookie);
+					if (count <= 1)
+					{
+						Marshal.ReleaseComObject(m_ConnectionPoint);
+						m_ConnectionPoint = null;
+						m_aEventSinkHelpers = null;
+					}
+					break;
+				}
+				num++;
+			}
+			while (num < count);
+		}
+		finally
+		{
+			Monitor.Exit(this);
+		}
+	}
+
+	public __CiBcFlow_EventProvider(object P_0)
+	{
+		m_ConnectionPointContainer = (IConnectionPointContainer)P_0;
+	}
+
+	public void Finalize()
+	{
+		Monitor.Enter(this);
+		try
+		{
+			if (m_ConnectionPoint == null)
+			{
+				return;
+			}
+			int count = m_aEventSinkHelpers.Count;
+			int num = 0;
+			if (0 < count)
+			{
+				do
+				{
+					__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[num];
+					m_ConnectionPoint.Unadvise(_CiBcFlow_SinkHelper.m_dwCookie);
+					num++;
+				}
+				while (num < count);
+			}
+			Marshal.ReleaseComObject(m_ConnectionPoint);
+		}
+		catch (Exception)
+		{
+		}
+		finally
+		{
+			Monitor.Exit(this);
+		}
+	}
+
+	public void Dispose()
+	{
+		Finalize();
+		GC.SuppressFinalize(this);
+	}
+}

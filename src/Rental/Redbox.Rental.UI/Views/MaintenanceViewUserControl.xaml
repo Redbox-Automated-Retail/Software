@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Views.MaintenanceViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views">
+  <Grid>
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="55" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="130" />
+      </Grid.RowDefinitions>
+      <Panel.Background>
+        <ImageBrush ImageSource="{Binding BackgroundImage}" />
+      </Panel.Background>
+      <UniformGrid Rows="5" Grid.Row="1" Margin="80,40,0,40">
+        <TextBlock Style="{StaticResource font_target_larger}" Foreground="#FFFFFFFF" VerticalAlignment="Center" Text="{Binding Title, FallbackValue=Redbox is sorry}" />
+        <TextBlock Style="{StaticResource font_target_medium_large}" Foreground="#FFFFFFFF" VerticalAlignment="Center" Text="{Binding TextLine1, FallbackValue=This kiosk is not in service at this time.}" />
+        <TextBlock Style="{StaticResource font_target_medium_large}" Foreground="#FFFFFFFF" VerticalAlignment="Center" Text="{Binding TextLine2, FallbackValue=Call 1.866.REDBOX3 or text FIND to 727272}" />
+        <TextBlock Style="{StaticResource font_target_medium_large}" Foreground="#FFFFFFFF" VerticalAlignment="Center" Text="{Binding TextLine3, FallbackValue=for another kiosk location*.}" />
+        <TextBlock Style="{StaticResource font_target_smaller}" Foreground="#FFFFFFFF" VerticalAlignment="Center" Text="{Binding FootNote, FallbackValue=*Message and data rates may apply. Text STOP to quit. HELP for help.}" />
+      </UniformGrid>
+      <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="80,40,0,40">
+        <TextBlock Style="{StaticResource font_target_small}" Foreground="#FFFFFFFF" Text="{Binding StoreNumberText}" />
+        <TextBlock Text="|" Margin="40,0,40,0" Style="{StaticResource font_target_small}" Foreground="#FFFFFFFF" />
+        <TextBlock Style="{StaticResource font_target_small}" Foreground="#FFFFFFFF" Text="{Binding ZipCodeText}" />
+        <TextBlock Text="|" Margin="40,0,40,0" Style="{StaticResource font_target_small}" Foreground="#FFFFFFFF" />
+        <TextBlock Style="{StaticResource font_target_small}" Foreground="#FFFFFFFF" Text="{Binding ErrorCodeText}" />
+      </StackPanel>
+    </Grid>
+  </Grid>
+</UserControl>

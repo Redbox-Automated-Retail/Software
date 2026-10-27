@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.BrowseMessagePopupUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.BrowseMessagePopupInfoCommand}" Executed="BrowseMessagePopupInfoCommand_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.BrowseMessagePopupCloseCommand}" Executed="BrowseMessagePopupCloseCommand_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <Border Width="656" Height="203" BorderThickness="2" CornerRadius="16">
+      <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+          <GradientStop Color="#E42045" Offset="0" />
+          <GradientStop Color="#902A7D" Offset="0.5" />
+          <GradientStop Color="#491E54" Offset="1" />
+        </LinearGradientBrush>
+      </Border.BorderBrush>
+      <Border BorderBrush="#FFFFFFFF" BorderThickness="2" CornerRadius="14">
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="#E42045" Offset="0" />
+            <GradientStop Color="#902A7D" Offset="0.5" />
+            <GradientStop Color="#491E54" Offset="1" />
+          </LinearGradientBrush>
+        </Border.Background>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Row="0" Grid.Column="1" Height="40" HorizontalAlignment="Left" Margin="18,24,0,8" LineHeight="40" Style="{StaticResource font_montserrat_bold_28}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding Path=Text1, FallbackValue=Theres another Kiosk at this store}" />
+          <Redbox:RoundedButton Grid.RowSpan="3" Grid.Column="2" Height="40" Width="40" VerticalAlignment="Top" Margin="20,14,10,0" Style="{StaticResource transparent_button_style}" Command="{x:Static localbase:Commands.BrowseMessagePopupCloseCommand}">
+            <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/close-icon.png" Height="20" Width="20" />
+          </Redbox:RoundedButton>
+          <TextBlock Grid.Row="1" Grid.Column="1" Height="56" HorizontalAlignment="Left" Margin="18,0,0,8" LineHeight="28" Style="{StaticResource font_montserrat_medium_20}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=Text2, FallbackValue=Cant find what youre looking for here? Try the other Kiosk.}" />
+          <Redbox:RoundedButton Grid.Row="2" Grid.Column="1" Height="24" Width="126" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,0,0,0" Style="{StaticResource transparent_button_style}" Command="{x:Static localbase:Commands.BrowseMessagePopupInfoCommand}">
+            <TextBlock LineHeight="24" Style="{StaticResource font_montserrat_extrabold_16}" Foreground="#FFFFFFFF" TextDecorations="Underline" TextWrapping="NoWrap" Text="{Binding Path=InfoButtonText, FallbackValue=LEARN MORE}" />
+          </Redbox:RoundedButton>
+        </Grid>
+      </Border>
+    </Border>
+  </Grid>
+</UserControl>

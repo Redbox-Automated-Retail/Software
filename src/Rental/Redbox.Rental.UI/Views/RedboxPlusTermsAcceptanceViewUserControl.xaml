@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RedboxPlusTermsAcceptanceViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid>
+    <Panel.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#E42045" Offset="0.0" />
+        <GradientStop Color="#902A7D" Offset="0.5" />
+        <GradientStop Color="#491E54" Offset="1.0" />
+      </LinearGradientBrush>
+    </Panel.Background>
+    <StackPanel Orientation="Vertical">
+      <TextBlock Margin="264,52,0,0" Style="{StaticResource font_montserrat_bold_40}" LineHeight="56" Foreground="#FFFFFF" Text="{Binding TitleText, FallbackValue=Just to Confirm...}" />
+      <TextBlock Margin="264,20,0,0" Style="{StaticResource font_montserrat_medium_24}" LineHeight="36" Width="659" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="#FFFFFF" Text="{Binding SubtitleText, FallbackValue=Sign up for Redbox+ using}" />
+      <TextBlock Margin="264,0,0,36" Style="{StaticResource font_montserrat_semibold_24}" LineHeight="36" Width="659" HorizontalAlignment="Left" TextWrapping="Wrap" Foreground="#FFFFFF" Text="{Binding EmailText, FallbackValue=perksuser@email.com}" />
+      <Grid Width="1024" Height="288">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="264" />
+          <ColumnDefinition Width="760" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="76" />
+          <RowDefinition Height="248" />
+        </Grid.RowDefinitions>
+        <Panel.Background>
+          <SolidColorBrush Color="#060208" Opacity="0.30" />
+        </Panel.Background>
+        <TextBlock Grid.Column="1" Grid.Row="0" Width="590" Margin="0,0,0,16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_bold_20}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding TermsHeader, FallbackValue=Also, please agree to our cancellation and tax policy}" />
+        <Rectangle Grid.Column="0" Grid.Row="1" Width="44" Height="44" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,20,0" RadiusX="4" RadiusY="4" Fill="#FFFFFF">
+          <UIElement.InputBindings>
+            <MouseBinding MouseAction="LeftClick" Command="{Binding CheckMarkCommand}" />
+          </UIElement.InputBindings>
+        </Rectangle>
+        <UserControl Name="CheckMark" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,28,0" Style="{StaticResource warm_purple_check_mark_style}" Visibility="{Binding Path=CheckMarkVisibility, FallbackValue=Hidden}">
+          <UIElement.InputBindings>
+            <MouseBinding MouseAction="LeftClick" Command="{Binding CheckMarkCommand}" />
+          </UIElement.InputBindings>
+        </UserControl>
+        <TextBlock Grid.Column="1" Grid.Row="1" Width="617" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_bold_14}" LineHeight="20" Foreground="#FFFFFF" TextWrapping="Wrap" Text="{Binding TermsText, FallbackValue=I understand that I am enrolling in a membership that will auto-renew, and my payment method will be charged now and each year after at the then-current membership price (prices subject to change) until I cancel at www.redbox.com/account (cancellation effective at the end of the billing period). The tax is estimated and the final tax will be calculated and billed to you after you sign up for Redbox+ unless you cancel in accordance with the cancellation policy. I authorize Redbox to charge any payment method they have on file for me should my primary payment method fail. I also agree to Redbox+ Terms &amp; Conditions. See FAQs for more info (including limited refund policy).}" />
+      </Grid>
+      <TextBlock Width="496" Margin="264,24,0,0" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_light_11}" LineHeight="16" Foreground="#FFFFFF" Text="By pressing &quot;Accept &amp; Sign Up&quot; you are agreeing to the Rewards Terms, Redbox Terms of Use, Privacy Policy and also to get Redbox emails and special offers.&#xA;Payment card required to use Redbox Perks Points at the Kiosk." TextAlignment="Center" TextWrapping="Wrap" />
+      <Redbox:RoundedButton Name="AcceptButton" Width="496" Height="56" Margin="264,12,0,0" HorizontalAlignment="Left" Style="{StaticResource white_button_style}" CornerRadius="28" Command="{Binding AcceptButtonCommand}" IsEnabled="{Binding Path=AcceptButtonIsEnabled, FallbackValue=False}">
+        <TextBlock Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding AcceptButtonText, FallbackValue=ACCEPT}" />
+      </Redbox:RoundedButton>
+      <DockPanel />
+    </StackPanel>
+    <Redbox:RoundedButton Name="BackButton" Height="48" Margin="32,0,0,24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Style="{StaticResource light_purple_with_white_border_button_style}" BorderThickness="2" CornerRadius="24" Command="{Binding BackButtonCommand}">
+      <TextBlock Style="{StaticResource font_montserrat_extrabold_16}" Padding="24,0,24,0" Text="BACK" />
+    </Redbox:RoundedButton>
+    <Redbox:RoundedButton Name="TermsAndPrivacyButton" Width="135" Margin="0,0,36,38" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource transparent_button_style}" Command="{Binding TermsAndPrivacyButtonCommand}">
+      <TextBlock Style="{StaticResource font_montserrat_bold_14}" LineHeight="20" TextDecorations="Underline" Foreground="#FFFFFF" Text="Terms &amp; Privacy" TextAlignment="Center" />
+    </Redbox:RoundedButton>
+  </Grid>
+</localControls:TextToSpeechUserControl>

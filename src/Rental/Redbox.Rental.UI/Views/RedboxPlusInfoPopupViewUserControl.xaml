@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RedboxPlusInfoPopupViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:views="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static views:RedboxPlusInfoPopupViewUserControlCommands.CloseCommand}" Executed="CloseCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <Grid Name="BackgroundGrid" Background="#FF000000" Opacity="0.89" />
+    <Border Width="567" Height="500" Background="#FFFFFFFF" CornerRadius="28">
+      <Grid>
+        <StackPanel Margin="76,76,76,76">
+          <TextBlock Name="HeaderText" MaxHeight="80" Margin="0,0,0,24" Style="{StaticResource font_montserrat_bold_28}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="40" TextWrapping="Wrap" Text="{Binding Path=Header, FallbackValue=How to use your Redbox+ FREE 1-night rental}" />
+          <TextBlock Name="NoteText" MaxHeight="28" Margin="0,0,0,25" Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="28" TextWrapping="Wrap" Text="{Binding Path=Note, FallbackValue=(1 per transaction)}" />
+          <TextBlock Name="DescriptionLine1Text" Margin="10,0,0,0" MaxHeight="28" Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="28" TextWrapping="Wrap">
+            <TextBlock.Inlines>
+              <Run Text="1. " FontWeight="Bold" /> <Run Text="{Binding Path=DescriptionLine1, FallbackValue=Add Redbox+ movie}" /></TextBlock.Inlines>
+          </TextBlock>
+          <TextBlock Name="DescriptionLine2Text" Margin="10,0,0,0" MaxHeight="28" Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="28" TextWrapping="Wrap">
+            <TextBlock.Inlines>
+              <Run Text="2. " FontWeight="Bold" /> <Run Text="{Binding Path=DescriptionLine2, FallbackValue=Go to checkout}" /></TextBlock.Inlines>
+          </TextBlock>
+          <TextBlock Name="DescriptionLine3Text" Margin="10,0,0,0" MaxHeight="56" Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="28" TextWrapping="Wrap">
+            <TextBlock.Inlines>
+              <Run Text="3. " FontWeight="Bold" /> <Run Text="{Binding Path=DescriptionLine3, FallbackValue=Tap &quot;USE REDBOX+ OR PROMO&quot;}" /></TextBlock.Inlines>
+          </TextBlock>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Bottom" Margin="76,0,76,0">
+          <Grid Name="AutoSizeGrid_ButtonGridSeparatorLine" Height="1" Background="{StaticResource CarlosPurple1Brush}" VerticalAlignment="Top" ColumnSpan="2" />
+          <Redbox:RoundedButton Name="CloseButton" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,24,0,24" Style="{StaticResource button_light_large_secondary_style}" Command="{x:Static views:RedboxPlusInfoPopupViewUserControlCommands.CloseCommand}">
+            <TextBlock Name="CloseButtonText" Style="{StaticResource button_text_large_style}" Text="{Binding Path=CloseButtonText, FallbackValue=OKAY}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</controls:TextToSpeechUserControl>

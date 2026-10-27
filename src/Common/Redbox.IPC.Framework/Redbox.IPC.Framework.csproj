@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.IPC.Framework</AssemblyName>
+    <RootNamespace>Redbox.IPC.Framework</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.Command.Tokenizer\Redbox.Command.Tokenizer.csproj" />
+    <ProjectReference Include="..\Redbox.Compression\Redbox.Compression.csproj" />
+    <ProjectReference Include="..\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\Redbox.Macros\Redbox.Macros.csproj" />
+    <ProjectReference Include="..\Redbox.Tokenizer.Framework\Redbox.Tokenizer.Framework.csproj" />
+  </ItemGroup>
+</Project>

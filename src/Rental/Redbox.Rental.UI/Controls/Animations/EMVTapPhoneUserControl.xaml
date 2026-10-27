@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.EMVTapPhoneUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid>
+    <Image Name="BottomOfEMVReader" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Insert_Illustration_Bottom_Layer_Purple.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="178" Height="231" />
+    <Image Name="SideOfEMVReader" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Insert_Illustration_Side_Layer_Purple.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="58" Height="197" Margin="130,0,0,0" />
+    <Image Name="TopOfEMVReader" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Insert_Illustration_Top_Layer_Purple.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="145" Height="218" Margin="36,4,0,0" />
+    <Image Name="TapPhone" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Tap_Illustration_Purple.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="175" Height="268" Margin="-162,180,0,0" />
+    <Image Name="TapPhoneCheckmark" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Tap_Illustration_Checkmark_Purple.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="173" Height="266" Margin="-162,180,0,0" />
+  </Grid>
+</UserControl>

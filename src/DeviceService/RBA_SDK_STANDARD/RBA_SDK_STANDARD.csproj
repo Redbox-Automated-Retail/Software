@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RBA_SDK_STANDARD</AssemblyName>
+    <RootNamespace>RBA_SDK</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RBA_SDK_ComponentModel\RBA_SDK_ComponentModel.csproj" />
+  </ItemGroup>
+</Project>

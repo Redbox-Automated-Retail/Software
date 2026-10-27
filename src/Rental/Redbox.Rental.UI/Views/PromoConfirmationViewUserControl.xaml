@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.PromoConfirmationViewUserControl" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid>
+    <Grid Name="BackgroundGrid" Background="#FF000000" Opacity="0.6" />
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Border Grid.Row="1" Width="600" Background="#FFFFFFFF" CornerRadius="28">
+        <StackPanel Margin="0,45,0,0">
+          <TextBlock Name="HeaderText" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50,0,20,0" Foreground="{StaticResource WarmPurpleBrush}" Style="{StaticResource font_montserrat_semibold_24}" Text="{Binding Path=DescriptionText, FallbackValue=1 Free Birthday Rental}" />
+          <TextBlock Name="DescriptionText" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50,20,0,0" Foreground="{StaticResource WarmPurpleBrush}" Style="{StaticResource font_montserrat_semibold_24}" Text="{Binding Path=MaskedPromoCode, FallbackValue=****BDAY}" />
+          <TextBlock Name="LegalText" Margin="50,10,50,0" Style="{StaticResource font_montserrat_regular_12}" Foreground="{StaticResource WarmPurpleBrush}" TextWrapping="Wrap" Text="{Binding LegalText, FallbackValue=Legal text}" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,40">
+            <Redbox:RoundedButton Name="CancelButton" Width="200" Height="59" VerticalAlignment="Bottom" Margin="0,0,18,0" CornerRadius="28" Style="{StaticResource white_rubine_to_warm_purple_border_button_with_dropshadow_style}" Command="{Binding CancelCommand}">
+              <TextBlock Name="CancelButtonText" Foreground="#E42045" Style="{StaticResource font_museo_slab_900_20}" Text="{Binding Path=CancelButtonText, FallbackValue=Cancel}" />
+            </Redbox:RoundedButton>
+            <Redbox:RoundedButton Name="ApplyButton" Width="200" Height="59" VerticalAlignment="Top" Margin="18,0,0,0" CornerRadius="28" Style="{StaticResource style_rb_purple_white_border_button}" Command="{Binding ApplyCommand}" CommandParameter="{Binding PromoCode}">
+              <TextBlock Name="ApplyButtonText" Foreground="#FFFFFFFF" Style="{StaticResource font_museo_slab_900_20}" Text="{Binding Path=ApplyButtonText, FallbackValue=Apply}" />
+            </Redbox:RoundedButton>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

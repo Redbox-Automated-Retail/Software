@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.ControlPanel.UI.Views.ControlPanelViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.ControlPanel.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" IsTabStop="False" Focusable="False">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="rotated_label_style" TargetType="{x:Type Label}" BasedOn="{StaticResource label_style}">
+        <Setter Property="Height" Value="45" />
+        <Setter Property="Width" Value="168" />
+        <Setter Property="RenderTransform">
+          <Setter.Value>
+            <TransformGroup>
+              <ScaleTransform />
+              <SkewTransform />
+              <RotateTransform Angle="-90" />
+            </TransformGroup>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Redbox:GridExt Name="MainElement" Height="768" Width="1024" RowHeights="50,*" Background="#A0A0A0">
+    <Redbox:GridExt Row="0" ColumnWidths="50,890,84" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF8B0000">
+      <Polygon Grid.Column="0" Points="0,0 0,50 50,25 0,0" Stroke="#FFFFFFFF" Stretch="Fill" StrokeThickness="1" Fill="#FFFFFFFF" />
+      <Label Name="title_area" Grid.Column="1" Content="Redbox Desktop" Style="{StaticResource title_label_style}" Margin="40,0,0,0" IsTabStop="False" Focusable="False" />
+      <Button Name="close_button" Grid.Column="2" Content="X" Width="78" Style="{StaticResource x_flat_button_style}" Background="#FF8B0000" IsTabStop="False" Focusable="False" Click="CloseButtonClick" />
+    </Redbox:GridExt>
+    <Redbox:GridExt Row="1" RowHeights="188,188,188,104" Margin="20,20">
+      <Redbox:GridExt Row="0" ColumnWidths="60,*" Margin="0,10">
+        <Canvas Grid.Column="0" Focusable="False" RenderTransformOrigin="0.5,0.5">
+          <Label Name="kiosk_label" Content="Kiosk" Style="{StaticResource rotated_label_style}" IsTabStop="False" Canvas.Top="168" />
+        </Canvas>
+        <Grid Column="1" Margin="10,0">
+          <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Width="620">
+            <Button Name="start_kiosk_button" Content="Start&#xA;Kiosk" Style="{StaticResource wp_rounded_button_style}" TabIndex="0" Click="StartKioskButtonClick" />
+            <Button Name="watch_dog_toggle_button" Content="Turn Off&#xA;Watch Dog" Style="{StaticResource wp_rounded_button_style}" TabIndex="1" Click="WatchDogToggleButtonClick" />
+            <Button Name="start_secure_browser_button" Content="Start&#xA;Secure Browser" Style="{StaticResource wp_rounded_button_style}" TabIndex="2" Click="StartSecureBrowserButtonClick" />
+            <Button Name="start_filed_maintenance_button" Content="Start Field&#xA;Maintenance" Style="{StaticResource wp_rounded_button_style}" TabIndex="3" Click="StartFieldMaintenanceButtonClick" />
+            <Button Name="ms_hal_tester_button" Content="HAL Tester" Style="{StaticResource wp_rounded_button_style}" TabIndex="4" Click="MsHalTesterButtonClick" />
+            <Button Name="toggle_touch_screen_button" Content="Turn Off&#xA;Touchscreen" Style="{StaticResource wp_rounded_button_style}" TabIndex="5" Click="ToggleTouchScreenButtonClick" />
+            <Button Name="kiosk_hidden_screen_button" Content="" Style="{StaticResource wp_rounded_button_style}" Visibility="Hidden" />
+            <Button Name="elo_pcap_control_button" Content="ELO PCap&#xA; Control" Style="{StaticResource wp_rounded_button_style}" TabIndex="6" Click="EloPcapControlButtonClick" />
+          </WrapPanel>
+        </Grid>
+      </Redbox:GridExt>
+      <Redbox:GridExt Row="1" ColumnWidths="60,*" Margin="0,10">
+        <Canvas Grid.Column="0" Focusable="False" RenderTransformOrigin="0.5,0.5">
+          <Label Name="folder_label" Content="File System" Style="{StaticResource rotated_label_style}" IsTabStop="False" Canvas.Top="168" />
+        </Canvas>
+        <Grid Column="1" Margin="10,0">
+          <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Width="620">
+            <Button Name="open_c_drive_button" Content="C:\" Style="{StaticResource wp_rounded_button_style}" TabIndex="7" Click="OpenCdriveButtonClick" />
+            <Button Name="open_hal_service_logs_button" Content="Kiosk Logs&#xA;Folder" Style="{StaticResource wp_rounded_button_style}" TabIndex="8" Click="OpenHalServiceLogsButtonClick" />
+            <Button Name="open_kaseya_config_button" Content="Kaseya Config" Style="{StaticResource wp_rounded_button_style}" TabIndex="9" Click="OpenKaseyaConfigButtonClick" />
+            <Button Name="camera_folder_button" Content="Camera Folder" Style="{StaticResource wp_rounded_button_style}" TabIndex="10" Click="CameraFolderButtonClick" />
+            <Button Name="redbox_folder_button" Content="Redbox Folder" Style="{StaticResource wp_rounded_button_style}" TabIndex="11" Click="RedboxFolderButtonClick" />
+            <Button Name="kiosk_engine_logs_folder_button" Content="Kiosk Engine&#xA;Logs" Style="{StaticResource wp_rounded_button_style}" TabIndex="12" Click="KioskEngineLogsFolderButtonClick" />
+          </WrapPanel>
+        </Grid>
+      </Redbox:GridExt>
+      <Redbox:GridExt Row="2" ColumnWidths="60,*" Margin="0,10">
+        <Canvas Grid.Column="0" Focusable="False" RenderTransformOrigin="0.5,0.5">
+          <Label Name="computer_label" Content="Computer" Style="{StaticResource rotated_label_style}" IsTabStop="False" Canvas.Top="168" />
+        </Canvas>
+        <Grid Column="1" Margin="10,0">
+          <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Width="920">
+            <Button Name="reboot_button" Content="Reboot" Style="{StaticResource wp_rounded_button_style}" TabIndex="14" Click="RebootButtonClick" />
+            <Button Name="network_button" Content="Network&#xA;Settings" Style="{StaticResource wp_rounded_button_style}" TabIndex="15" Click="NetworkButtonClick" />
+            <Button Name="date_time_button" Content="Date/Time" Style="{StaticResource wp_rounded_button_style}" TabIndex="16" Click="DateTimeButtonClick" />
+            <Button Name="computer_management_button" Content="Computer&#xA;Management" Style="{StaticResource wp_rounded_button_style}" TabIndex="17" Click="ComputerManagementButtonClick" />
+            <Button Name="notepad_button" Content="Notepad" Style="{StaticResource wp_rounded_button_style}" TabIndex="18" Click="NotepadButtonClick" />
+            <Button Name="kill_process_button" Content="Kill Process" Style="{StaticResource wp_rounded_button_style}" TabIndex="19" Click="KillProcessButtonClick" />
+            <Button Name="display_button" Content="Display" Style="{StaticResource wp_rounded_button_style}" TabIndex="20" Click="DisplayButtonClick" />
+            <Button Name="device_management_button" Content="Device&#xA;Manager" Style="{StaticResource wp_rounded_button_style}" TabIndex="21" Click="DeviceManagementButtonClick" />
+            <Button Name="event_viewer_button" Content="Event Viewer" Style="{StaticResource wp_rounded_button_style}" TabIndex="22" Click="EventViewerButtonClick" />
+            <Button Name="add_remove_programs_button" Content="Add/Remove&#xA;Programs" Style="{StaticResource wp_rounded_button_style}" TabIndex="23" Click="AddRemoveProgramsButtonClick" />
+            <Button Name="open_command_prompt_button" Content="DOS Prompt" Style="{StaticResource wp_rounded_button_style}" TabIndex="24" Click="OpenCommandPromptButtonClick" />
+            <Button Name="control_panel_button" Content="Control Panel" Style="{StaticResource wp_rounded_button_style}" TabIndex="25" Click="ControlPanelButtonClick" />
+          </WrapPanel>
+        </Grid>
+      </Redbox:GridExt>
+      <Redbox:GridExt Row="3" ColumnWidths="60,*" Margin="0,10">
+        <Canvas Grid.Column="0" Focusable="False" RenderTransformOrigin="0.5,0.5">
+          <Label Name="setup_label" Content="Setup" Width="84" Style="{StaticResource rotated_label_style}" IsTabStop="False" Canvas.Top="84" />
+        </Canvas>
+        <Grid Column="1" Margin="10,0">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Width="920">
+            <Button Name="toggle_maintenance_mode_button" Content="Turn&#xA;Maintenance&#xA;Mode On" Style="{StaticResource sp_rounded_button_style}" TabIndex="26" Click="ToggleMaintenanceModeButtonClick" />
+            <Button Name="configure_kiosk_button" Content="Configure Kiosk" Style="{StaticResource sp_rounded_button_style}" TabIndex="27" Click="ConfigureKioskButtonClick" />
+            <Button Name="toggle_out_of_order_button" Content="Turn On&#xA;Out of Order" Style="{StaticResource sp_rounded_button_style}" TabIndex="28" Click="ToggleOutOfOrderButtonClick" />
+            <Button Name="toggle_hal_service_button" Content="" Style="{StaticResource sp_rounded_button_style}" TabIndex="29" Click="ToggleHalServiceButtonClick" />
+            <Button Name="setup_hidden_screen_button" Content="" Style="{StaticResource sp_rounded_button_style}" Visibility="Hidden" />
+            <Button Name="close_kiosk_button" Content="Close Kiosk" Style="{StaticResource sp_rounded_button_style}" TabIndex="30" Click="CloseKioskButtonClick" />
+          </StackPanel>
+        </Grid>
+      </Redbox:GridExt>
+      <Redbox:GridExt Row="0" RowHeights="164" HorizontalAlignment="Right" VerticalAlignment="Top" Width="220" Height="164" Margin="20,10">
+        <Border Background="#808080" CornerRadius="10">
+          <Redbox:GridExt RowHeights="26,26,26,26" ColumnWidths="98,98" VerticalAlignment="Center">
+            <Label Name="lblKioskIdCap" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Right" Content="Kiosk Id:" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblKioskId" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Left" Content="1593" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblDateCap" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Right" Content="Date:" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblDate" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Left" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblTimeCap" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Right" Content="Time:" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblTime" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Left" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblTimeZoneCap" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Right" Content="Time Zone:" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+            <Label Name="lblTimeZone" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Left" Content="CDT" Style="{StaticResource info_label_style}" IsTabStop="False" Focusable="False" />
+          </Redbox:GridExt>
+        </Border>
+      </Redbox:GridExt>
+      <Redbox:GridExt Name="out_of_order_message" Row="1" RowHeights="78" HorizontalAlignment="Right" VerticalAlignment="Top" Width="220" Margin="20,10">
+        <Border Background="#FFFFFF00" Height="50" CornerRadius="10" BorderBrush="#FF000000" BorderThickness="3">
+          <TextBlock FontSize="18" FontWeight="Bold" Text="KIOSK OUT OF ORDER" Style="{StaticResource out_of_order_style}" />
+        </Border>
+      </Redbox:GridExt>
+    </Redbox:GridExt>
+    <local:CloseKioskViewUserControl x:Name="CloseKiosk" VerticalAlignment="Center" IsTabStop="False" Focusable="False" HorizontalAlignment="Center" Panel.ZIndex="1" Visibility="Hidden" />
+    <local:ConfigureKioskViewUserControl x:Name="ConfigureKiosk" VerticalAlignment="Center" IsTabStop="False" Focusable="False" HorizontalAlignment="Center" Panel.ZIndex="1" Visibility="Hidden" />
+    <local:DisplayViewUserControl x:Name="Display" VerticalAlignment="Center" IsTabStop="False" Focusable="False" HorizontalAlignment="Center" Panel.ZIndex="1" Visibility="Hidden" />
+  </Redbox:GridExt>
+</UserControl>

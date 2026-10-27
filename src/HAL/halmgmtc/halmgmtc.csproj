@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>halmgmtc</AssemblyName>
+    <RootNamespace>SevenZip</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net35</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>ICSharpCode.SharpZipLib;PowerCollections</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Redbox.HAL.Common.GUI.Functions.Properties\Resources.resx" LogicalName="Redbox.HAL.Common.GUI.Functions.Properties.Resources.resources" />
+    <EmbeddedResource Update="Redbox.HAL.Management.Console.Properties\Resources.resx" LogicalName="Redbox.HAL.Management.Console.Properties.Resources.resources" />
+    <EmbeddedResource Update="Redbox.HAL.Management.Console\Form1.resx" LogicalName="Redbox.HAL.Management.Console.Form1.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="PowerCollections">
+      <HintPath>..\..\..\lib\PowerCollections\PowerCollections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

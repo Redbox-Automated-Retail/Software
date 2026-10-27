@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localViews:ViewUserControl x:Class="Redbox.Rental.UI.Views.MemberPerksViewControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:system="clr-namespace:System;assembly=mscorlib" Focusable="False">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Redbox:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <Redbox:ReverseBoolToVisibilityConverter x:Key="ReverseBoolToVisibility" />
+      <Redbox:IfElseConverter x:Key="IfElseConverter" />
+      <system:Int32 x:Key="TopRow">0</system:Int32>
+      <system:Int32 x:Key="BottomRow">2</system:Int32>
+      <Thickness x:Key="RedboxPlusLegalTextMargin">250,0,250,-72</Thickness>
+      <Thickness x:Key="RedboxPlusLegalTextAdaMargin">250,0,250,-147</Thickness>
+      <Thickness x:Key="RedboxPlusTermsButtonMargin">0,0,40,-59</Thickness>
+      <Thickness x:Key="RedboxPlusTermsButtonAdaMargin">0,0,40,-134</Thickness>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Redbox:GridExt Name="MainControl" Background="#FFFFFFFF" Width="1024" Height="768" RowHeights="auto,*,auto">
+    <Grid Row="0" Style="{StaticResource style_header_rubine_background_gradient}" Height="72">
+      <TextBlock Name="Title" Margin="42,16,42,0" HorizontalAlignment="Left" Height="auto" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_bold_36}" Text="{Binding HeaderText, FallbackValue=My Perks}" />
+    </Grid>
+    <Grid Row="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <UniformGrid Name="TabButtons" Grid.Column="0" Columns="{Binding TabButtonsColumns, FallbackValue=2}">
+        <Grid.Row>
+          <MultiBinding Converter="{StaticResource IfElseConverter}">
+            <Binding Path="IsAdaMode" />
+            <Binding Source="{StaticResource BottomRow}" />
+            <Binding Source="{StaticResource TopRow}" />
+          </MultiBinding>
+        </Grid.Row>
+        <Grid Visibility="{Binding RedboxPlusButtonVisibility, FallbackValue=Collapsed}">
+          <Redbox:GroupButton Name="RedboxPlusElem" GroupName="Perks" Style="{StaticResource group_button_style}" Height="75" VerticalAlignment="Top" IsSelected="{Binding RedboxPlusSelected, Mode=TwoWay, FallbackValue=False}" Click="RedboxPlusButton_Pressed">
+            <TextBlock Margin="0,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_bold_30}" Text="{Binding RedboxPlusButtonText, FallbackValue=Redbox+}" />
+          </Redbox:GroupButton>
+          <Polygon Visibility="{Binding RedboxPlusSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+            <FrameworkElement.Style>
+              <MultiBinding Converter="{StaticResource IfElseConverter}">
+                <Binding Path="IsAdaMode" />
+                <Binding Source="{StaticResource white_top_center_triangle}" />
+                <Binding Source="{StaticResource white_bottom_center_triangle}" />
+              </MultiBinding>
+            </FrameworkElement.Style>
+          </Polygon>
+        </Grid>
+        <Grid Visibility="{Binding PerksButtonVisibility}">
+          <Redbox:GroupButton Name="PerksElem" GroupName="Perks" Style="{StaticResource group_button_style}" Height="75" VerticalAlignment="Top" IsSelected="{Binding PerksSelected, Mode=TwoWay, FallbackValue=True}" Click="PerksButton_Pressed">
+            <TextBlock Margin="0,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_bold_30}" Text="{Binding PerksButtonText, FallbackValue=Redbox Perks}" />
+          </Redbox:GroupButton>
+          <Polygon Visibility="{Binding PerksSelected, Converter={StaticResource BoolToVisibility}}">
+            <FrameworkElement.Style>
+              <MultiBinding Converter="{StaticResource IfElseConverter}">
+                <Binding Path="IsAdaMode" />
+                <Binding Source="{StaticResource white_top_center_triangle}" />
+                <Binding Source="{StaticResource white_bottom_center_triangle}" />
+              </MultiBinding>
+            </FrameworkElement.Style>
+          </Polygon>
+        </Grid>
+        <Grid Visibility="{Binding PromoButtonVisibility}">
+          <Redbox:GroupButton Name="PromosElem" GroupName="Perks" Style="{StaticResource group_button_style}" Height="75" VerticalAlignment="Top" IsSelected="{Binding PromosSelected, Mode=TwoWay, FallbackValue=False}" Click="PromosButton_Pressed">
+            <TextBlock Margin="0,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_bold_30}" Text="{Binding PromosButtonText, FallbackValue=Offers &amp; Promos}" />
+          </Redbox:GroupButton>
+          <Polygon Visibility="{Binding PromosSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+            <FrameworkElement.Style>
+              <MultiBinding Converter="{StaticResource IfElseConverter}">
+                <Binding Path="IsAdaMode" />
+                <Binding Source="{StaticResource white_top_center_triangle}" />
+                <Binding Source="{StaticResource white_bottom_center_triangle}" />
+              </MultiBinding>
+            </FrameworkElement.Style>
+          </Polygon>
+        </Grid>
+      </UniformGrid>
+      <Border Name="RedboxPlusContainerElem" Grid.Row="1" Width="874" Height="410" CornerRadius="14" Background="{StaticResource RubineToDarkPurpleGradientBrush2}" BorderThickness="0" Visibility="{Binding ElementName=RedboxPlusElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+        <Grid Width="874" Height="410" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+          </Grid.ColumnDefinitions>
+          <Image Grid.Row="0" Grid.ColumnSpan="2" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/logo-redbox-plus-white.png" Width="179" Height="40" Margin="0,24,0,28" />
+          <Border Grid.Row="1" Grid.Column="0" Width="437" BorderThickness="0,0,1,0" BorderBrush="#FFFFFF">
+            <Grid Row="1" Column="0" Width="437" HorizontalAlignment="Center" VerticalAlignment="Top">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+              </Grid.RowDefinitions>
+              <TextBlock Grid.Row="0" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,0,0,17" Width="233" Height="48" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusFreeMonthlyText, FallbackValue=FREE monthly 1-night rental}" />
+              <TextBlock Grid.Row="1" Style="{StaticResource font_montserrat_bold_16}" Margin="0,0,0,19" Width="211" Height="24" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" Text="{Binding RedboxPlusFreeThisMonthText, FallbackValue=This Month: Ready to use}" />
+              <Redbox:RoundedButton Grid.Row="2" Style="{StaticResource white_button_style}" Margin="0,0,0,16" Width="202" Height="56" CornerRadius="28" Command="{Binding SeeRedboxPlusMoviesButtonCommand}">
+                <TextBlock Style="{StaticResource font_montserrat_extrabold_20}" Foreground="#E42045" Text="{Binding RedboxPlusSeeMoviesText, FallbackValue=SEE MOVIES}" />
+              </Redbox:RoundedButton>
+              <TextBlock Grid.Row="3" Style="{StaticResource font_montserrat_medium_14}" Width="148" Height="38" Foreground="#FFFFFF" LineHeight="19" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusChooseText, FallbackValue=Choose from eligible movies at the Kiosk}" />
+            </Grid>
+          </Border>
+          <Grid Row="1" Column="1" Width="437" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,0" Visibility="{Binding RedboxPlusPlanId1Visibility, FallbackValue=Visible}">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto" />
+              <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,0,0,23" Width="229" Height="24" MaxHeight="48" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusExtendedText, FallbackValue=Extended return time}" />
+            <TextBlock Grid.Row="1" Style="{StaticResource font_montserrat_medium_18}" Width="295" Height="88" Foreground="#FFFFFF" LineHeight="22" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusKeepText, FallbackValue=Keep your disc rentals until midnight local time for no extra charge (thats 3 hours longer!)}" />
+          </Grid>
+          <Grid Row="1" Column="1" Width="437" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="{Binding RedboxPlusPlanId2Visibility, FallbackValue=Collapsed}">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto" />
+              <RowDefinition Height="auto" />
+              <RowDefinition Height="auto" />
+              <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,0,0,17" Height="48" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusExtraNightText, FallbackValue=Extra night coverage}" />
+            <TextBlock Grid.Row="1" Style="{StaticResource font_montserrat_bold_16}" Margin="0,0,0,7" Height="24" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" Text="{Binding RedboxPlusExtraThisMonthText, FallbackValue=This Month: Ready to use}" />
+            <TextBlock Grid.Row="2" Style="{StaticResource font_montserrat_medium_16}" Margin="0,0,0,7" Height="91" Foreground="#FFFFFF" LineHeight="22" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusNeedAnotherText, FallbackValue=Paid for an extra night? Well give you a FREE 1-night rental to use on a future visit}" />
+            <TextBlock Grid.Row="3" Style="{StaticResource font_montserrat_medium_14}" Height="36" Foreground="#FFFFFF" LineHeight="18" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusAwardedText, FallbackValue=(Awarded as 1,500 Redbox Perks points - once a month*)}" />
+          </Grid>
+          <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,22,0,3" Width="757" Foreground="#FFFFFF" TextAlignment="Center" Text="{Binding RedboxPlusExtendedText, FallbackValue=Extended return time}" Visibility="{Binding RedboxPlusPlanId2Visibility, FallbackValue=Collapsed}" />
+          <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource font_montserrat_medium_16}" Width="757" Foreground="#FFFFFF" TextAlignment="Center" Text="{Binding RedboxPlusKeepText, FallbackValue=Keep your disc rentals until midnight local time for no extra charge (thats 3 hours longer!)}" Visibility="{Binding RedboxPlusPlanId2Visibility, FallbackValue=Collapsed}" />
+        </Grid>
+      </Border>
+      <TextBlock Grid.Row="1" Margin="0,0,0,20" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_semibold_16}" Foreground="#481B54" LineHeight="24" TextAlignment="Center" TextWrapping="NoWrap" Text="{Binding RedboxPlusPlanRenewsText, FallbackValue=$9.99 Plan renews XX/XX/XXXX}" Visibility="{Binding ElementName=RedboxPlusElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}" />
+      <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_medium_11}" Foreground="#481B54" LineHeight="16" TextAlignment="Left" TextWrapping="Wrap" Text="{Binding RedboxPlusLegalText, FallbackValue=*Only available on rentals that are kept for 2+ nights. First night must be a paid transaction. Points expire 90 days after issuance.}" Visibility="{Binding ElementName=RedboxPlusElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+        <FrameworkElement.Margin>
+          <MultiBinding Converter="{StaticResource IfElseConverter}">
+            <Binding Path="IsAdaMode" />
+            <Binding Source="{StaticResource RedboxPlusLegalTextAdaMargin}" />
+            <Binding Source="{StaticResource RedboxPlusLegalTextMargin}" />
+          </MultiBinding>
+        </FrameworkElement.Margin>
+      </TextBlock>
+      <Redbox:RoundedButton Grid.Row="1" Style="{StaticResource transparent_button_style}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="{Binding TermsButtonCommand}" Visibility="{Binding ElementName=RedboxPlusElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+        <FrameworkElement.Margin>
+          <MultiBinding Converter="{StaticResource IfElseConverter}">
+            <Binding Path="IsAdaMode" />
+            <Binding Source="{StaticResource RedboxPlusTermsButtonAdaMargin}" />
+            <Binding Source="{StaticResource RedboxPlusTermsButtonMargin}" />
+          </MultiBinding>
+        </FrameworkElement.Margin>
+        <TextBlock Style="{StaticResource font_montserrat_bold_14}" LineHeight="20" TextDecorations="Underline" Foreground="#E42045" Text="{Binding RedboxPlusTermsText, FallbackValue=Terms &amp; Conditions}" />
+      </Redbox:RoundedButton>
+      <Border Name="PerksContainerElem" Grid.Row="1" Margin="0,45,0,45" Height="425" Width="800" CornerRadius="20" Background="{StaticResource RubineToPurpleGradientBrush}" BorderThickness="0" Visibility="{Binding ElementName=PerksElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="3" />
+            <ColumnDefinition Width="400" />
+          </Grid.ColumnDefinitions>
+          <Redbox:GridExt Column="0" Height="360" RowHeights="138,84,138">
+            <TextBlock Grid.Row="0" Margin="0,47,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Style="{StaticResource font_montserrat_48}" Foreground="#FFFFFFFF" Text="{Binding PerksLevel, FallbackValue=Member}" Visibility="{Binding PerksTitleVisibility, FallbackValue=Visible}" />
+            <Grid Row="0" VerticalAlignment="Top" Height="138" Visibility="{Binding PerksImageVisibility, FallbackValue=Visible}">
+              <Image HorizontalAlignment="Center" VerticalAlignment="Top" Height="106" Source="{Binding PerksImagePath, TargetNullValue={x:Null}}" />
+              <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" Visibility="{Binding PerksImageVisibility, FallbackValue=Collapsed}" Text="{Binding PerksLevel, FallbackValue=Member}" />
+            </Grid>
+            <TextBlock Grid.Row="1" Margin="20,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=PerksLevelMessage, FallbackValue=Keep renting and purchasing to level up!}" />
+            <Redbox:RoundedButton Name="MoreInfoButtonElem" Grid.Row="2" Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="56" CornerRadius="28" Style="{StaticResource thin_border_button_style}" IsEnabled="True" Command="{Binding InfoButtonCommand}">
+              <TextBlock Name="MoreInfoButtonTextElem" Margin="24,14,24,14" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding InfoButtonText, FallbackValue=MORE INFO}" />
+            </Redbox:RoundedButton>
+          </Redbox:GridExt>
+          <Border Grid.Column="1" BorderThickness="0" Background="#FFFFFFFF" Width="3" Height="340" VerticalAlignment="Center" />
+          <Redbox:GridExt Column="2" Height="360" RowHeights="106,32,84,76,62">
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_48}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotPoints, FallbackValue=12,350}" />
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotPointsLabel, FallbackValue=Points}" />
+            <TextBlock Grid.Row="2" Margin="20,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=EarnedRewardsMessage, FallbackValue=Youve earned a FREE 1-night DVD rental!}" />
+            <Redbox:RoundedButton Name="HowPointsWorkButtonElem" Grid.Row="3" Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="56" CornerRadius="28" Style="{StaticResource thin_border_button_style}" IsEnabled="True" Command="{Binding HowPointsWorkButtonCommand}">
+              <TextBlock Name="HowPointsWorkButtonTextElem" Margin="24,14,24,14" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding HowPointsWorkButtonText, FallbackValue=HOW POINTS WORK}" />
+            </Redbox:RoundedButton>
+            <TextBlock Grid.Row="4" Margin="20,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotExpire, FallbackValue=Use your points  (X,XXX expire on XX/XX/XX)}" />
+          </Redbox:GridExt>
+        </Grid>
+      </Border>
+      <Border Name="PromosContainerElem" Grid.Row="1" Grid.Column="1" Margin="0" Background="#FFFFFFFF" BorderThickness="0" Visibility="{Binding ElementName=PromosElem, Path=IsSelected, Converter={StaticResource BoolToVisibility}, FallbackValue=Visible}">
+        <Grid>
+          <TextBlock Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource font_montserrat_semibold_26}" Foreground="{StaticResource WarmPurpleBrush}" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding EmptyPromoListMessage, FallbackValue=Looking Pretty Empty In Here}" Visibility="{Binding IsEmptyPromoListMessageVisible, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}" />
+          <Redbox:GridExt Margin="0" RowHeights="50,*" HorizontalAlignment="Center" Visibility="{Binding IsEmptyPromoListMessageVisible, Converter={StaticResource ReverseBoolToVisibility}, FallbackValue=Visible}">
+            <TextBlock Grid.Row="0" Margin="0,15,0,5" Style="{StaticResource font_montserrat_semibold_26}" Foreground="{StaticResource WarmPurpleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding PromoTitle, FallbackValue=Wowzers etc}" Visibility="{Binding ShowPromoListMessage, Converter={StaticResource ReverseBoolToVisibility}, FallbackValue=Collapsed}" />
+            <TextBlock Grid.Row="0" Margin="0,15,0,5" Style="{StaticResource font_montserrat_semibold_26}" Foreground="{StaticResource RubineRedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding PromoListMessage, FallbackValue=Success-****BDAY is in your bag!}" Visibility="{Binding ShowPromoListMessage, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}" />
+            <Redbox:GridExt Row="1" RowHeights="Auto,*">
+              <TextBlock Grid.Row="0" />
+              <localControls:StoredPromoCodeListControl Grid.Row="1" Margin="0,0,0,-50" Height="485" VerticalAlignment="Top" PromoCodeModels="{Binding Path=StoredPromoCodes}" Visibility="{Binding Path=IsPromoCodeListVisible, Converter={StaticResource BoolToVisibility}, FallbackValue=Visible}" IsAdaMode="{Binding IsAdaMode}" CurrentPageNumber="{Binding CurrentPageNumber, Mode=TwoWay}" CurrentPagePromos="{Binding CurrentPagePromos, Mode=OneWayToSource}" NextPageClickedCommand="{Binding NextPagePressedCommand}" PreviousPageClickedCommand="{Binding PreviousPagePressedCommand}" PageNumberClickedCommand="{Binding PageNumberPressedCommand}" CurrentPageCount="{Binding NumberOfPages, Mode=OneWayToSource}" ItemsPerPage="{Binding PromosPerPage, Mode=OneWay}" />
+            </Redbox:GridExt>
+          </Redbox:GridExt>
+        </Grid>
+      </Border>
+    </Grid>
+    <Redbox:RoundedButton Name="CancelButtonElem" Grid.Row="2" Grid.Column="0" Margin="50,32,0,24" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="48" CornerRadius="24" Style="{StaticResource thin_border_button_style}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
+      <TextBlock Name="CancelButtonTextElem" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24,0,24,0" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding CancelButtonText, FallbackValue=BACK}" />
+    </Redbox:RoundedButton>
+  </Redbox:GridExt>
+</localViews:ViewUserControl>

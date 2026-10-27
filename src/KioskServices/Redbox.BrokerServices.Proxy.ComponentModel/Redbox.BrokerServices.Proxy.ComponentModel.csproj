@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.BrokerServices.Proxy.ComponentModel</AssemblyName>
+    <RootNamespace>Redbox.BrokerServices.Proxy.ComponentModel</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.Services.KioskBrokerServices.KioskShared\Redbox.Services.KioskBrokerServices.KioskShared.csproj" />
+  </ItemGroup>
+</Project>

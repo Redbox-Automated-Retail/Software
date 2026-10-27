@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:BaseUserControl x:Class="Redbox.Rental.UI.Controls.StoredPromoCodeListItem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:controls="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" x:Name="ListItem">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <controls:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <controls:IfElseConverter x:Key="IfElseConverter" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <controls:RoundedButton CornerRadius="10" Height="129" Width="270" Command="{Binding AddRemoveButtonCommand, ElementName=ListItem}" CommandParameter="{Binding}" Style="{Binding MainButtonStyle, ElementName=ListItem, FallbackValue={StaticResource style_flat_warmpurple_button}}">
+      <controls:GridExt ColumnWidths="*, Auto" Width="270">
+        <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="5,0,0,0" Height="Auto">
+          <TextBlock Margin="10,10,0,0" Style="{StaticResource font_montserrat_regular_18}" Foreground="#FFFFFFFF" Text="{Binding IsAddedText, ElementName=ListItem, FallbackValue=APPLIED TO CART!}" Visibility="{Binding IsAddedTextVisibility, ElementName=ListItem, FallbackValue=Collapsed}" />
+          <TextBlock Margin="10,10,0,2" Style="{StaticResource font_montserrat_regular_18}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding PromoDescriptionText, ElementName=ListItem, FallbackValue=Rent 1 disc, get a Free 1-night rental}" />
+          <TextBlock Margin="10,10,0,10" Style="{StaticResource font_montserrat_semibold_14}" Foreground="#FFFFFFFF" Text="{Binding PromoExpirationText, ElementName=ListItem, FallbackValue=EXPIRES TODAY}" />
+        </StackPanel>
+        <controls:RoundedButton Grid.Column="1" Height="40" Width="40" VerticalAlignment="Center" Margin="2,0,10,0" BorderThickness="3" DropShadowDepth="1" UsedDefaultCornerRadius="True" IsHitTestVisible="False" Style="{Binding AddRemoveButtonStyle, ElementName=ListItem, FallbackValue={StaticResource style_white_no_border_button}}">
+          <Grid>
+            <controls:GridExt RowHeights="5*,90*,5*" ColumnWidths="5*,90*,5*" Visibility="{Binding Path=AddRemoveButtonXVisibility, ElementName=ListItem, FallbackValue=Collapsed}">
+              <Viewbox Grid.Row="1" Grid.Column="1" Margin="5">
+                <UserControl Style="{StaticResource rounded_x_style}" />
+              </Viewbox>
+            </controls:GridExt>
+            <controls:GridExt RowHeights="14*,72*,14*" ColumnWidths="14*,72*,14*" Visibility="{Binding Path=AddRemoveButtonPlusVisibility, ElementName=ListItem, FallbackValue=Visible}">
+              <Viewbox Grid.Row="1" Grid.Column="1" Margin="2">
+                <UserControl Name="CornerAddButtonPlusSign" Style="{StaticResource rounded_plus_sign_style}" IsHitTestVisible="False" />
+              </Viewbox>
+            </controls:GridExt>
+            <TextBlock Style="{StaticResource font_montserrat_bold_18}" Foreground="#FFFFFFFF" Text="{Binding AdaButtonNumber, ElementName=ListItem}" Visibility="{Binding IsAdaMode, ElementName=ListItem, Converter={StaticResource BoolToVisibility}}" />
+          </Grid>
+        </controls:RoundedButton>
+      </controls:GridExt>
+    </controls:RoundedButton>
+  </Grid>
+</local:BaseUserControl>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="Redbox.KioskEngine.PreferenceManager.SimpleMessageWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager" Height="150" Width="400" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight" MaxHeight="600" MaxWidth="800" MinHeight="150" MinWidth="400" Title="{Binding Path=Title, FallbackValue=Message}">
+  <Grid>
+    <DockPanel LastChildFill="True">
+      <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" Height="44">
+        <Button Name="OkButton" Content="OK" IsDefault="True" IsCancel="True" Height="24" Width="100" Margin="10" Click="OkButton_Click" />
+      </Grid>
+      <TextBlock Name="MessageLabel" TextWrapping="WrapWithOverflow" Margin="10" VerticalAlignment="Center" Text="{Binding Path=Message, FallbackValue=Simle Message}" />
+    </DockPanel>
+  </Grid>
+</Window>

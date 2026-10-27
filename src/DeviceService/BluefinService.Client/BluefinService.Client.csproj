@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>BluefinService.Client</AssemblyName>
+    <RootNamespace>BluefinService.Client</RootNamespace>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeviceService.ComponentModel\DeviceService.ComponentModel.csproj" />
+    <ProjectReference Include="..\HttpHelper\HttpHelper.csproj" />
+  </ItemGroup>
+</Project>

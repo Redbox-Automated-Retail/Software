@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="Redbox.KioskEngine.PreferenceManager.UpdateClientService.AddReservationTitleWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.UpdateClientService" Title="Add Reservation Title" Height="300" Width="550" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+  <Grid>
+    <Grid Margin="10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="150" />
+        <ColumnDefinition Width="350" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+        <RowDefinition Height="28" />
+      </Grid.RowDefinitions>
+      <Label Content="Title" Grid.Row="0" Grid.Column="0" />
+      <ComboBox Name="ProductIdComboBox" SelectedValuePath="ProductId" Grid.Row="0" Grid.Column="1" Height="24" TabIndex="0" ItemsSource="{Binding Path=DisplayReservableTitles, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" SelectedValue="{Binding Path=ReservationRequestTitle.TitleID, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" SelectionChanged="ProductIdComboBox_SelectionChanged" />
+      <Label Content="Type" Grid.Row="1" Grid.Column="0" />
+      <ComboBox Name="TypeComboBox" SelectedValuePath="ReservationTitleType" Grid.Row="1" Grid.Column="1" Height="24" Width="150" HorizontalAlignment="Left" SelectedValue="{Binding Path=ReservationRequestTitle.ReservationType, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" SelectionChanged="TypeComboBox_SelectionChanged" />
+      <Label Content="Price" Grid.Row="2" Grid.Column="0" />
+      <TextBox Name="PriceTextBox" Grid.Row="2" Grid.Column="1" Width="100" HorizontalAlignment="Left" Height="24" Text="{Binding Path=ReservationRequestTitle.Price, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" TextChanged="PriceTextBox_TextChanged" />
+      <Label Content="Discount" Grid.Row="3" Grid.Column="0" />
+      <TextBox Name="DiscountTextBox" Grid.Row="3" Grid.Column="1" Width="100" HorizontalAlignment="Left" Height="24" Text="{Binding Path=ReservationRequestTitle.Discount, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" TextChanged="DiscountTextBox_TextChanged" />
+      <Label Content="Discount Type" Grid.Row="4" Grid.Column="0" />
+      <ComboBox Name="ReservationDiscountTypeComboBox" SelectedValuePath="ReservationDiscountType" Grid.Row="4" Grid.Column="1" Height="24" Width="150" HorizontalAlignment="Left" SelectedValue="{Binding Path=ReservationRequestTitle.DiscountType, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" />
+      <Label Content="Discounted Price" Grid.Row="5" Grid.Column="0" />
+      <Label Name="LabelDiscountedPrice" Grid.Row="5" Width="100" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="151,2,0,2.8" />
+      <Label Content="Loyalty Points" Grid.Row="6" Grid.Column="0" />
+      <TextBox Name="LoyaltyPointsTextBox" Grid.Row="6" Grid.Column="1" Width="100" HorizontalAlignment="Left" Height="24" Text="{Binding Path=ReservationRequestTitle.LoyaltyPoints, RelativeSource={RelativeSource AncestorType={x:Type local:AddReservationTitleWindow}}}" />
+    </Grid>
+    <Grid Name="BottomButtonGrid" Height="50" Background="#FFD3D3D3" VerticalAlignment="Bottom">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <Button Name="OkButton" Content="OK" Height="24" Width="100" Margin="20,0" IsDefault="True" Click="OkButton_Click" />
+        <Button Name="CancelButton" Content="CANCEL" Height="24" Width="100" Margin="20,0" IsCancel="True" Click="CancelButton_Click" />
+      </StackPanel>
+    </Grid>
+  </Grid>
+</Window>

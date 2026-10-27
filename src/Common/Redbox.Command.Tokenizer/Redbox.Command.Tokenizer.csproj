@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.Command.Tokenizer</AssemblyName>
+    <RootNamespace>Redbox.Command.Tokenizer</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.Tokenizer.Framework\Redbox.Tokenizer.Framework.csproj" />
+  </ItemGroup>
+</Project>

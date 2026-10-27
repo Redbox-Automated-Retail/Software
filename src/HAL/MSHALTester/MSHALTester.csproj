@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>MSHALTester</AssemblyName>
+    <RootNamespace>Redbox.HAL.MSHALTester</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net35</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>ICSharpCode.SharpZipLib;Newtonsoft.Json;log4net;Redbox.DirectShow;Redbox.HAL.Client;Redbox.HAL.Component.Model;Redbox.HAL.Core;Redbox.HAL.IPC.Framework;Redbox.HAL.Common.GUI.Functions;Redbox.HAL.Configuration</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.HAL.MSHALTester.Properties.Resources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.DirectShow\Redbox.DirectShow.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Client\Redbox.HAL.Client.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Common.GUI.Functions\Redbox.HAL.Common.GUI.Functions.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Configuration\Redbox.HAL.Configuration.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
+  </ItemGroup>
+</Project>

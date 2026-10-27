@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RedboxPlusOfferDetailViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid Background="{StaticResource AlmostBlackBrush}">
+    <Image Name="dots_dark_background_image" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/dots-dark.png" />
+    <StackPanel Name="MainStackPanel" Orientation="Vertical" Margin="{Binding MainStackPanelMargin, FallbackValue=0,64,0,0}">
+      <Image Name="redbox_plus_logo" Width="90" Height="20" VerticalAlignment="Top" HorizontalAlignment="Center" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/redboxplus-white-red.png" />
+      <TextBlock Name="TitleText" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_40}" Margin="0,8,0,0" Foreground="#FFFFFFFF" Text="{Binding Path=TitleText, FallbackValue=$9.99/Year}" />
+      <TextBlock Name="SubtitleText" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" Margin="0,8,0,0" Foreground="#fdba4d" Text="{Binding Path=SubtitleText, FallbackValue=Thats over $50 in value!*}" />
+      <Grid Name="BenefitGrid" Margin="141,0,141,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Name="Benefit1StackPanel" Grid.Row="0" Grid.Column="0" Orientation="Vertical" Margin="0,20,0,0">
+          <TextBlock Name="Benefit1HeaderText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_bold_20}" Margin="0,8,0,0" LineHeight="28" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit1HeaderText, FallbackValue=Up to 24 FREE 1-night disc rentals**}" />
+          <TextBlock Name="Benefit1DetailText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_medium_14}" LineHeight="20" Margin="0,4,0,0" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit1DetailText, FallbackValue=Choose from eligible movies at the Kiosk &#xA;(no monthly limit!)}" />
+        </StackPanel>
+        <StackPanel Name="Benefit2StackPanel" Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="30,20,0,0">
+          <TextBlock Name="Benefit2HeaderText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_bold_20}" Margin="0,8,0,0" LineHeight="28" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit2HeaderText, FallbackValue=Extended return time}" />
+          <TextBlock Name="Benefit2DetailText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_medium_14}" LineHeight="20" Margin="0,4,0,0" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit2DetailText, FallbackValue=Keep your disc rentals until midnight local time&#xA; for no extra charge (thats 3 hours longer!)}" />
+        </StackPanel>
+        <StackPanel Name="Benefit3StackPanel" Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="0,10,0,0" Visibility="{Binding Benefit3Visibility, FallbackValue=Visible}">
+          <TextBlock Name="Benefit3HeaderText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_bold_20}" Margin="0,8,0,0" LineHeight="28" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit3HeaderText, FallbackValue=Extra night coverage***}" />
+          <TextBlock Name="Benefit3DetailText" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_medium_14}" LineHeight="20" Margin="0,4,0,0" Foreground="#FFFFFFFF" Text="{Binding Path=Benefit3DetailText, FallbackValue=Paid for an extra night? We ll give you a FREE &#xA;1-night rental to use on a future visit (once a month)}" />
+        </StackPanel>
+      </Grid>
+      <StackPanel Name="TopBoxArtDisplayStackPanel" Margin="0,44,0,20" Visibility="{Binding TopBoxArtDisplayVisibility, FallbackValue=Collapsed}">
+        <TextBlock Name="TopBoxArtHeaderText" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_16}" LineHeight="24" Foreground="#FFFFFFFF" Text="{Binding Path=BoxArtHeaderText, FallbackValue=Choose from these Redbox+ Movies &amp; 100s more!}" />
+        <localControls:BoxArtDisplayUserControl Height="156" Margin="0,12,0,0" />
+      </StackPanel>
+      <Redbox:RoundedButton Name="AcceptButton" Style="{StaticResource white_button_style}" Width="406" Height="56" UsedDefaultCornerRadius="True" Margin="0,24,0,0" Command="{Binding AcceptButtonCommand}">
+        <TextBlock Name="AcceptButtonText" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=AcceptButtonText, FallbackValue=ENROLL.}" />
+      </Redbox:RoundedButton>
+      <TextBlock Name="AcceptButtonLegalText" Style="{StaticResource font_montserrat_light_11}" LineHeight="16" HorizontalAlignment="Center" TextAlignment="Center" Foreground="#FFFFFFFF" Margin="202,12,202,0" TextWrapping="WrapWithOverflow" Text="{Binding AcceptButtonLegalText, FallbackValue=A Redbox account is required – you ll need to sign in or create one. &#xA;Cancel anytime at redbox.com/account – no refunds unless canceled within first 30 days with no benefits used.}" />
+      <StackPanel Name="BottoomBoxArtDisplayStackPanel" Margin="0,24,0,0" Visibility="{Binding BottomBoxArtDisplayVisibility, FallbackValue=Visiible}">
+        <TextBlock Name="BottomBoxArtHeaderText" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_16}" LineHeight="24" Margin="0,4,0,0" Foreground="#FFFFFFFF" Text="{Binding Path=BoxArtHeaderText, FallbackValue=Choose from these Redbox+ Movies &amp; 100s more!}" />
+        <localControls:BoxArtDisplayUserControl Height="156" Margin="0,12,0,0" />
+      </StackPanel>
+    </StackPanel>
+    <Grid VerticalAlignment="Bottom" MinHeight="80">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <Redbox:RoundedButton Name="BackButton" Grid.Column="0" Style="{StaticResource black_with_white_border_button_style}" BorderThickness="2" Height="48" Width="99" UsedDefaultCornerRadius="True" VerticalAlignment="Center" Margin="32,0,0,8" Command="{Binding BackButtonCommand}" Visibility="{Binding BackButtonVisibility, FallbackValue=Visible}">
+        <TextBlock Name="BackButtonText" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_16}" Margin="24,0,24,0" Text="{Binding Path=BackButtonText, FallbackValue=BACK}" />
+      </Redbox:RoundedButton>
+      <TextBlock Name="LegalText" Grid.Column="1" Style="{StaticResource font_montserrat_light_11}" LineHeight="16" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFFFFFFF" Margin="32,0,0,8" TextWrapping="WrapWithOverflow" TextAlignment="Left" Text="{Binding LegalText, FallbackValue=*Based on using all 24 FREE 1-night rentals. **Free 1-night rental codes expire at the end of your 1-year membership term (or at the end of each month for $9.99/year members). 1 code per transaction. Payment card required. Charges apply for addl days. Cant be combined with other offers. Subject to addl terms. Void where prohibited. Applies only to select titles. Subject to availability. ***Only applies to paid first night transactions. 1-night rentals awarded as 1,500 Redbox Perks points and expire 90 days after issuance.}" />
+      <Redbox:RoundedButton Name="TermsButton1" Grid.Column="2" Style="{StaticResource transparent_button_style}" Height="40" Width="144" VerticalAlignment="Center" Margin="32,0,40,8" Command="{Binding TermsButtonCommand}">
+        <TextBlock Name="TermsButtonText" TextAlignment="Center" Style="{StaticResource font_montserrat_bold_14}" TextDecorations="Underline" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=TermsButtonText, FallbackValue=FAQs and&#xA; Terms &amp; Conditions}" />
+      </Redbox:RoundedButton>
+    </Grid>
+  </Grid>
+</localControls:TextToSpeechUserControl>

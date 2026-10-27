@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.UpdateManager.Client</AssemblyName>
+    <RootNamespace>Redbox.UpdateManager.Client</RootNamespace>
+    <TargetFramework>net46</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+  </ItemGroup>
+</Project>

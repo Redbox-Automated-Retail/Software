@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.Controls.PreferencePageHeaderUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls" xmlns:main="clr-namespace:Redbox.KioskEngine.PreferenceManager" Loaded="UserControl_Loaded">
+  <UIElement.CommandBindings>
+    <CommandBinding x:Name="PopOutCommand" Command="{x:Static main:PreferenceManagerCommands.PopOutCommand}" Executed="PopOutCommand_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <StackPanel Orientation="Vertical">
+      <Grid Name="HeaderGrid" Height="40" Background="{Binding Path=HeaderBackgroundColor, FallbackValue=#709060, RelativeSource={RelativeSource AncestorType={x:Type local:PreferencePageHeaderUserControl}}}">
+        <Label Name="HeaderLabel" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" Margin="10,0" Content="{Binding Path=HeaderTitle, RelativeSource={RelativeSource AncestorType={x:Type local:PreferencePageHeaderUserControl}}}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button Name="PopOutButton" Width="30" Height="30" Margin="5,0,5,0" Command="{x:Static main:PreferenceManagerCommands.PopOutCommand}" Visibility="{Binding Path=PopOutButtonVisibilty, RelativeSource={RelativeSource AncestorType={x:Type local:PreferencePageHeaderUserControl}}}">
+            <Image Name="BackgroundImage2" Source="pack://Application:,,,/Redbox.KioskEngine.PreferenceManager;component/Assets/Images/PopOut.png" ToolTip="Pop Out" Stretch="Fill" />
+          </Button>
+          <Button Name="SaveButton" Width="30" Height="30" Margin="5,0,5,0" Visibility="{Binding Path=SaveButtonVisibilty, RelativeSource={RelativeSource AncestorType={x:Type local:PreferencePageHeaderUserControl}}}" Click="SaveButton_Click">
+            <Image Source="pack://Application:,,,/Redbox.KioskEngine.PreferenceManager;component/Assets/Images/Save.png" ToolTip="Save Data" Stretch="Fill" />
+          </Button>
+          <Button Name="RefreshButton" Width="30" Height="30" Margin="5,0,5,0" Visibility="{Binding Path=RefreshButtonVisibilty, RelativeSource={RelativeSource AncestorType={x:Type local:PreferencePageHeaderUserControl}}}" Click="RefreshButton_Click">
+            <Image Name="BackgroundImage" Source="pack://Application:,,,/Redbox.KioskEngine.PreferenceManager;component/Assets/Images/refresh.png" ToolTip="Refresh Data" Stretch="Fill" />
+          </Button>
+        </StackPanel>
+      </Grid>
+      <TextBlock Name="StatusText" Foreground="#FFFF0000" TextWrapping="Wrap" />
+    </StackPanel>
+  </Grid>
+</UserControl>

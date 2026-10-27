@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.ProxyService.StoreServicesUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.ProxyService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid Background="#FFFFFFFF">
+    <StackPanel Orientation="Vertical">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#008B8B" DockPanel.Dock="Top" RefreshButtonVisibilty="Visible" SaveButtonVisibilty="Visible" />
+      <StackPanel Margin="20,5,0,5">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3" Grid.ColumnSpan="2">
+            <CheckBox Name="LiveCallCheckBox" Grid.Row="1" IsChecked="{Binding Path=LiveCall}">
+              <TextBlock Text="Live Call (for GetOpsMarket, GetPendingBanners, GetPendingKiosks, GetPendingStates)" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

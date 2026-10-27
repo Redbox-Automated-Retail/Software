@@ -1,0 +1,169 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Reflection;
+using Redbox.HAL.Component.Model;
+using Redbox.HAL.Component.Model.Attributes;
+using Redbox.HAL.Component.Model.Timers;
+using Redbox.IPC.Framework;
+
+namespace Redbox.HAL.IPC.Framework;
+
+[Command("command-repository")]
+[Description("The COMMAND-REPOSITORY command scans the execution directory of the cache service for .NET assembly files (.dll and .exe) that contain types marked with the CommandAttribute class.")]
+public class CommandRepository
+{
+	private static readonly IDictionary<string, Type> m_commands = new Dictionary<string, Type>();
+
+	private static readonly IDictionary<Type, CommandInstance> m_instanceCache = new Dictionary<Type, CommandInstance>();
+
+	internal static ICollection<string> AllCommands => m_commands.Keys;
+
+	public void Default(CommandContext context)
+	{
+		foreach (string item in DiscoverInstalledCommands())
+		{
+			context.Messages.Add("Installed Command '" + item + "'.");
+		}
+	}
+
+	internal static List<string> DiscoverInstalledCommands()
+	{
+		using ExecutionTimer executionTimer = new ExecutionTimer();
+		List<string> list = new List<string>();
+		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		List<string> list2 = new List<string>();
+		list2.AddRange(Directory.GetFiles(directoryName, "*.dll"));
+		foreach (string item in list2)
+		{
+			try
+			{
+				Assembly assembly = Assembly.LoadFrom(item);
+				list.AddRange(FindCommands(assembly.GetTypes()));
+			}
+			catch (BadImageFormatException)
+			{
+			}
+			catch (Exception e)
+			{
+				LogHelper.Instance.Log($"Unable to load assembly '{item}' to scan for commands.", e);
+			}
+		}
+		LogHelper.Instance.Log($"Time to scan for commands: {executionTimer.Elapsed}");
+		return list;
+	}
+
+	internal static CommandInstance GetCommand(string name)
+	{
+		if (string.IsNullOrEmpty(name))
+		{
+			return null;
+		}
+		if (!m_commands.TryGetValue(name.ToUpper(), out var value))
+		{
+			return null;
+		}
+		if (!m_instanceCache.TryGetValue(value, out var value2))
+		{
+			value2 = new CommandInstance
+			{
+				CommandType = value
+			};
+			if (Attribute.GetCustomAttribute(value, typeof(DescriptionAttribute)) is DescriptionAttribute descriptionAttribute)
+			{
+				value2.CommandDescription = descriptionAttribute.Description;
+			}
+			MethodInfo[] methods = value.GetMethods();
+			foreach (MethodInfo methodInfo in methods)
+			{
+				if (!(Attribute.GetCustomAttribute(methodInfo, typeof(CommandFormAttribute)) is CommandFormAttribute commandFormAttribute))
+				{
+					continue;
+				}
+				ParameterInfo[] parameters = methodInfo.GetParameters();
+				if (parameters.Length == 0 || parameters[0].ParameterType != typeof(CommandContext))
+				{
+					continue;
+				}
+				UsageAttribute usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
+				DescriptionAttribute descriptionAttribute2 = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
+				FormMethod formMethod = new FormMethod
+				{
+					Method = methodInfo,
+					Usage = ((usageAttribute != null) ? usageAttribute.Template : string.Empty),
+					Description = ((descriptionAttribute2 != null) ? descriptionAttribute2.Description : string.Empty)
+				};
+				int num = 0;
+				ParameterInfo[] array = parameters;
+				foreach (ParameterInfo parameterInfo in array)
+				{
+					if (parameterInfo.ParameterType == typeof(CommandContext))
+					{
+						continue;
+					}
+					FormMethodParameter formMethodParameter = new FormMethodParameter
+					{
+						Parameter = parameterInfo,
+						Index = num++
+					};
+					CommandKeyValueAttribute commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
+					formMethodParameter.KeyName = parameterInfo.Name.ToUpper();
+					if (commandKeyValueAttribute != null)
+					{
+						formMethodParameter.MetaData = commandKeyValueAttribute;
+						if (commandKeyValueAttribute.KeyName != null)
+						{
+							formMethodParameter.KeyName = commandKeyValueAttribute.KeyName.ToUpper();
+						}
+						formMethod.ParameterCache[formMethodParameter.KeyName] = formMethodParameter;
+					}
+					else
+					{
+						formMethod.ParameterCache[formMethodParameter.KeyName] = formMethodParameter;
+					}
+				}
+				value2.FormMethodCache[commandFormAttribute.Name.ToUpper()] = formMethod;
+			}
+			MethodInfo method = value.GetMethod("Default", new Type[1] { typeof(CommandContext) });
+			if (method != null)
+			{
+				value2.FormMethodCache["Default"] = new FormMethod
+				{
+					Method = method
+				};
+			}
+			m_instanceCache[value] = value2;
+		}
+		return value2;
+	}
+
+	internal static void Register(IEnumerable<Type> types)
+	{
+		FindCommands(types);
+		LogHelper.Instance.Log("Installed commands:");
+		foreach (string allCommand in AllCommands)
+		{
+			LogHelper.Instance.Log(" Command '{0}'.", allCommand);
+		}
+	}
+
+	private static List<string> FindCommands(IEnumerable<Type> types)
+	{
+		List<string> list = new List<string>();
+		foreach (Type type in types)
+		{
+			CommandAttribute[] array = (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false);
+			foreach (CommandAttribute commandAttribute in array)
+			{
+				if (commandAttribute.Name != null)
+				{
+					string text = commandAttribute.Name.ToUpper();
+					list.Add(text);
+					m_commands[text] = type;
+				}
+			}
+		}
+		return list;
+	}
+}

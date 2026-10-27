@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.KioskEngine.Environment</AssemblyName>
+    <RootNamespace>Redbox.KioskEngine.Environment</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Migrations.session.data.0000002.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000002.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000002.sql" />
+    <None Remove="Migrations.session.data.0000004.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000004.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000004.sql" />
+    <None Remove="Migrations.message.data.0000001.sql" />
+    <EmbeddedResource Include="Migrations.message.data.0000001.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.message.data.0000001.sql" />
+    <None Remove="Migrations.session.data.0000001.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000001.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000001.sql" />
+    <None Remove="Migrations.session.data.0000003.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000003.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000003.sql" />
+    <None Remove="Migrations.session.data.0000005.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000005.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000005.sql" />
+    <None Remove="Migrations.session.data.0000006.sql" />
+    <EmbeddedResource Include="Migrations.session.data.0000006.sql" LogicalName="Redbox.KioskEngine.Environment.Migrations.session.data.0000006.sql" />
+    <None Remove="XMLSchema.KioskAnalyticsSchema.xsd" />
+    <EmbeddedResource Include="XMLSchema.KioskAnalyticsSchema.xsd" LogicalName="Redbox.KioskEngine.Environment.XMLSchema.KioskAnalyticsSchema.xsd" />
+    <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.KioskEngine.Environment.Properties.Resources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Speech" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\..\..\lib\Common.Logging\1.2.0.0\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Quartz">
+      <HintPath>..\..\..\lib\Quartz\1.0.2.3\Quartz.dll</HintPath>
+    </Reference>
+    <Reference Include="VistaDB.NET20">
+      <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DeviceService\DeviceService.Client\DeviceService.Client.csproj" />
+    <ProjectReference Include="..\..\DeviceService\DeviceService.ComponentModel\DeviceService.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.Controls\Redbox.Controls.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.IDE\Redbox.KioskEngine.IDE.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Macros\Redbox.Macros.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.ProductLookupCatalog\Redbox.ProductLookupCatalog.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.USB\Redbox.USB.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,237 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Redbox.NetCore.Logging.Abstractions;
+using Redbox.NetCore.Logging.Extensions;
+using Redbox.NetCore.Middleware.Abstractions;
+using Redbox.NetCore.Middleware.Extensions;
+using Redbox.NetCore.Middleware.Metrics;
+
+namespace Redbox.NetCore.Middleware.Http;
+
+public class HttpService : IHttpService
+{
+	private readonly HttpClient _httpClient;
+
+	private readonly ICommonMetrics _metrics;
+
+	private readonly ILogger<HttpService> _logger;
+
+	public int Timeout { get; set; } = 20000;
+
+	public HttpService(ICommonMetricsFactory metricsFactory, ILogger<HttpService> logger, HttpClient httpClient)
+	{
+		_httpClient = httpClient;
+		_metrics = metricsFactory.GetImplementation<HttpMetrics>();
+		_logger = logger;
+	}
+
+	public HttpRequestMessage GenerateRequest(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false)
+	{
+		HttpContent httpContent = null;
+		if (requestObject != null && !isForm)
+		{
+			httpContent = new StringContent(JsonConvert.SerializeObject(requestObject, Formatting.None, new JsonSerializerSettings
+			{
+				NullValueHandling = NullValueHandling.Ignore
+			}), Encoding.UTF8, "application/json");
+		}
+		else if (isForm)
+		{
+			httpContent = requestObject as MultipartFormDataContent;
+		}
+		return GenerateRequest(baseUrl, endpoint, httpContent, method, headers);
+	}
+
+	public HttpRequestMessage GenerateRequest(string baseUrl, string endpoint, HttpContent httpContent, HttpMethod method, List<Header> headers = null)
+	{
+		Uri requestUri;
+		if (string.IsNullOrEmpty(baseUrl))
+		{
+			requestUri = new Uri(endpoint);
+		}
+		else
+		{
+			baseUrl = baseUrl.TrimEnd('/');
+			requestUri = new Uri(baseUrl + "/" + endpoint);
+		}
+		HttpRequestMessage httpRequest = new HttpRequestMessage(method, requestUri);
+		headers?.ForEach(delegate(Header header)
+		{
+			httpRequest.Headers.Add(header.Key, header.Value);
+		});
+		httpRequest.Content = httpContent;
+		return httpRequest;
+	}
+
+	public async Task<HttpResponseMessage> SendRequestAsync(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", bool logResponse = true)
+	{
+		using HttpRequestMessage genRequest = GenerateRequest(baseUrl, endpoint, requestObject, method, headers, isForm);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		cancellationTokenSource.CancelAfter(timeout ?? Timeout);
+		Stopwatch sw = new Stopwatch();
+		sw.Start();
+		HttpResponseMessage result;
+		try
+		{
+			result = await _httpClient.SendAsync(genRequest, cancellationTokenSource.Token);
+			sw.Stop();
+			_ = sw.ElapsedMilliseconds;
+			if (logResponse)
+			{
+				_logger.LogInfoWithSource("response: " + result?.ToSecureString(), "SendRequestAsync", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Http/HttpService.cs");
+			}
+		}
+		catch (Exception e)
+		{
+			sw.Stop();
+			result = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+			{
+				ReasonPhrase = e.GetFullMessage()
+			};
+		}
+		if (_metrics != null)
+		{
+			await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, result?.StatusCode ?? HttpStatusCode.InternalServerError), sw.ElapsedMilliseconds);
+		}
+		return result;
+	}
+
+	public async Task<APIResponse<T>> SendRequestAsync<T>(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	{
+		using HttpRequestMessage genRequest = GenerateRequest(baseUrl, endpoint, requestObject, method, headers, isForm);
+		return await SendRequestAsync<T>(genRequest, timeout, callerMethod, callerLocation, requestObject, logRequest, logResponse);
+	}
+
+	public async Task<APIResponse<T>> SendRequestAsync<T>(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	{
+		using (request)
+		{
+			CancellationTokenSource timeoutTokenSource = new CancellationTokenSource();
+			timeoutTokenSource.CancelAfter(timeout ?? Timeout);
+			APIResponse<T> apiResponse = new APIResponse<T>(request, _logger);
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			try
+			{
+				string text = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
+				string value = text;
+				if (originalRequestObject != null && originalRequestObject is IMessageScrub)
+				{
+					apiResponse.RequestContent = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
+				}
+				else if (!string.IsNullOrEmpty(value))
+				{
+					apiResponse.RequestContent = JsonConvert.SerializeObject(value, Formatting.None);
+				}
+				using HttpResponseMessage result = await _httpClient.SendAsync(request, timeoutTokenSource.Token);
+				sw.Stop();
+				apiResponse.SetAPIResponse(requestTime: (int)sw.ElapsedMilliseconds, responseMessage: result, content: await (result.Content?.ReadAsStringAsync()));
+			}
+			catch (Exception exception)
+			{
+				sw.Stop();
+				apiResponse.SetException(exception, (int)sw.ElapsedMilliseconds);
+			}
+			apiResponse.Log(logRequest, logResponse);
+			if (_metrics != null)
+			{
+				await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, apiResponse.StatusCode), sw.ElapsedMilliseconds);
+			}
+			return apiResponse;
+		}
+	}
+
+	public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	{
+		using (request)
+		{
+			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+			cancellationTokenSource.CancelAfter(timeout ?? Timeout);
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			HttpResponseMessage result;
+			try
+			{
+				result = await _httpClient.SendAsync(request, cancellationTokenSource.Token);
+				sw.Stop();
+				_ = sw.ElapsedMilliseconds;
+				string text = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
+				string text2 = text;
+				if (originalRequestObject != null && originalRequestObject is IMessageScrub)
+				{
+					text2 = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
+				}
+				if (logRequest)
+				{
+					_logger.LogInfoWithSource("request: " + text2, "SendRequestAsync", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Http/HttpService.cs");
+				}
+				if (logResponse)
+				{
+					_logger.LogInfoWithSource("response: " + result?.ToSecureString(), "SendRequestAsync", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Http/HttpService.cs");
+				}
+			}
+			catch (Exception e)
+			{
+				sw.Stop();
+				result = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				{
+					ReasonPhrase = e.GetFullMessage()
+				};
+			}
+			if (_metrics != null)
+			{
+				await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, result?.StatusCode ?? HttpStatusCode.InternalServerError), sw.ElapsedMilliseconds);
+			}
+			return result;
+		}
+	}
+
+	public async Task<APIResponse<byte[]>> DownloadFile(string url, int? timeout, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "")
+	{
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		cancellationTokenSource.CancelAfter(timeout ?? Timeout);
+		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+		APIResponse<byte[]> apiResponse = new APIResponse<byte[]>(request, _logger);
+		Stopwatch sw = new Stopwatch();
+		sw.Start();
+		try
+		{
+			sw.Stop();
+			using HttpResponseMessage result = await _httpClient.GetAsync(url, cancellationTokenSource.Token);
+			if (result.IsSuccessStatusCode)
+			{
+				apiResponse.SetAPIResponse(result, await result.Content.ReadAsByteArrayAsync(), (int)sw.ElapsedMilliseconds);
+			}
+		}
+		catch (Exception exception)
+		{
+			sw.Stop();
+			apiResponse.SetException(exception, (int)sw.ElapsedMilliseconds);
+		}
+		apiResponse.Log(logRequest: true, logResponse: false);
+		if (_metrics != null)
+		{
+			await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, apiResponse.StatusCode), sw.ElapsedMilliseconds);
+		}
+		return apiResponse;
+	}
+
+	private static Dictionary<string, string> GetMetricTags(string service, string method, HttpStatusCode statusCode)
+	{
+		return new Dictionary<string, string>
+		{
+			["service"] = service,
+			["method"] = method,
+			["statuscode"] = statusCode.ToString()
+		};
+	}
+}

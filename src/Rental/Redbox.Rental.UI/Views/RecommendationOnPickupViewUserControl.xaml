@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RecommendationOnPickupViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.PickupCommand}" Executed="PickupCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.PayCommand}" Executed="PayCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.TermsAndPrivacyCommand}" Executed="TermsAndPrivacyCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="AddMoreStyle" TargetType="{x:Type UserControl}">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type UserControl}">
+              <Grid Background="#FFFFFFFF" Height="210" Width="140">
+                <TextBlock Name="AddMoreTextBlock" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" TextAlignment="Center" Foreground="#7c2c8b" Style="{StaticResource font_montserrat_bold_21}" Text="{Binding AddMoreText, FallbackValue=ADD MORE?}" />
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <DockPanel LastChildFill="True">
+      <Grid Name="ShoppingCartGrid" DockPanel.Dock="Top" Height="372">
+        <Panel.Background>
+          <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="#E42045" Offset="0" />
+            <GradientStop Color="#792d8d" Offset="1" />
+          </LinearGradientBrush>
+        </Panel.Background>
+        <TextBlock Name="TitleText" Foreground="#FFFFFFFF" Style="{StaticResource font_museo_slab_900_36}" Margin="42,19" Text="{Binding Path=TitleText, FallbackValue=You have movies ready for pickup:}" />
+        <Redbox:GridExt Name="EmptyCartGrid" Height="255" Width="1004" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2,30" ColumnWidths="20*,20*,20*,20*,20*">
+          <UserControl Name="AddMore1" Style="{StaticResource AddMoreStyle}" Grid.Column="0" />
+          <UserControl Name="AddMore2" Style="{StaticResource AddMoreStyle}" Grid.Column="1" />
+          <UserControl Name="AddMore3" Style="{StaticResource AddMoreStyle}" Grid.Column="2" />
+          <UserControl Name="AddMore4" Style="{StaticResource AddMoreStyle}" Grid.Column="3" />
+          <UserControl Name="AddMore5" Style="{StaticResource AddMoreStyle}" Grid.Column="4" />
+        </Redbox:GridExt>
+        <localControls:BrowseUserControl x:Name="MiniCartControl" Height="255" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,20" ShowPaddles="False" BorderShadowVisibility="Collapsed" DataContext="{Binding Path=ShoppingCartControlModel}" />
+      </Grid>
+      <Grid Name="RecommenedTitlesGrid" DockPanel.Dock="Top" Height="210" Background="#FFFFFFFF">
+        <Image Name="PinkDotsBackgroundImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/backgroundTexture.png" Stretch="None" Opacity="0.45" />
+        <localControls:BrowseUserControl x:Name="BrowseProductControl" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210" Width="1024" ShowPaddles="False" BorderShadowVisibility="Collapsed" DataContext="{Binding Path=BrowseProductControlModel}" />
+      </Grid>
+      <Grid Name="ViewFooter" Background="#f5f3f3">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="40,45" Visibility="{Binding Path=PayButtonVisibility}">
+          <TextBlock Name="ServiceFeeMessage" Width="195" TextWrapping="Wrap" TextAlignment="Center" Style="{StaticResource font_montserrat_bold_12}" Margin="0,10" Foreground="#4a4a4a" Text="{Binding Path=ServiceFeeMessage, FallbackValue=All checkouts may be subject to a service fee of 10¢}" />
+        </StackPanel>
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" Margin="325,5,0,0" Visibility="{Binding Path=PayButtonVisibility}">
+          <localControls:PricingUserControl DataContext="{Binding Path=PricingModel}" />
+        </Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="40,20,34,16" MinWidth="306">
+          <TextBlock Name="ChargedOnceText" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_12}" Foreground="{StaticResource LightBlackBrush}" Margin="10,5,0,0" Text="{Binding ChargedOnceText, FallbackValue=Your card will only be charged once.}" Visibility="{Binding Path=PayButtonVisibility}" />
+          <TextBlock Name="AgreeToTermsText" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_12}" Foreground="{StaticResource LightBlackBrush}" Margin="10,0,0,5" Text="{Binding AgreeToTermsText, FallbackValue=By pressing Pay Now you agree to the Terms}" Visibility="{Binding Path=PayButtonVisibility}" />
+          <Redbox:RoundedButton Name="PickupButton" Style="{StaticResource warmpurple_white_border_button_with_dropshadow_style}" Height="59" Width="200" UsedDefaultCornerRadius="True" Margin="0,6,0,6" Command="{x:Static localbase:Commands.PickupCommand}" Visibility="{Binding Path=PickupButtonVisibility}">
+            <TextBlock Name="PickupButtonText" TextAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding Path=PickupButtonText, FallbackValue=Pick Up}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="PayButton" Style="{StaticResource warmpurple_white_border_button_with_dropshadow_style}" Height="59" Width="297" UsedDefaultCornerRadius="True" Margin="0,6,0,6" Command="{x:Static localbase:Commands.PayCommand}" Visibility="{Binding Path=PayButtonVisibility}">
+            <TextBlock Name="PayButtonText" TextAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding Path=PayButtonText, FallbackValue=Pay Now}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="TermsAndPrivacyButton" Style="{StaticResource TransparentButton}" Height="37" Width="270" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.TermsAndPrivacyCommand}" Margin="0,6,0,0" HorizontalAlignment="Center">
+            <TextBlock Name="TermsAndPrivacyButtonText" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_underline_16}" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=TermsAndPrivacyButtonText, FallbackValue=Terms &amp; Privacy}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </Grid>
+    </DockPanel>
+  </Grid>
+</localControls:TextToSpeechUserControl>

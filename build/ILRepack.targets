@@ -1,0 +1,28 @@
+<Project>
+  <!--
+    Optional re-merge step that reproduces the single-file binaries Redbox shipped (they were built with ILMerge).
+
+    A project opts in with:
+      <ILRepackAssemblies>Redbox.Core;log4net;...</ILRepackAssemblies>   (assembly names, without extension)
+    Merging runs only when building with -p:ILRepack=true. The merged file is written to $(OutDir)merged\.
+    Executables are merged with /internalize (as the originals were); libraries are not, so their merged
+    types stay visible to callers.
+  -->
+  <ItemGroup Condition="'$(ILRepackAssemblies)' != ''">
+    <PackageReference Include="ILRepack" Version="2.0.18" PrivateAssets="all" ExcludeAssets="all" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <Target Name="RedboxILRepack" AfterTargets="Build" Condition="'$(ILRepack)' == 'true' and '$(ILRepackAssemblies)' != ''">
+    <PropertyGroup>
+      <_RepackExe>$(PkgILRepack)\tools\ILRepack.exe</_RepackExe>
+      <_RepackOutDir>$(OutDir)merged\</_RepackOutDir>
+      <_RepackInternalize Condition="'$(OutputType)' != 'Library'">/internalize</_RepackInternalize>
+    </PropertyGroup>
+    <ItemGroup>
+      <_RepackName Include="$(ILRepackAssemblies)" />
+      <_RepackInput Include="@(_RepackName->'$(OutDir)%(Identity).dll')" />
+    </ItemGroup>
+    <MakeDir Directories="$(_RepackOutDir)" />
+    <Exec Command="&quot;$(_RepackExe)&quot; /ndebug /lib:&quot;$(OutDir.TrimEnd('\'))&quot; $(_RepackInternalize) /out:&quot;$(_RepackOutDir)$(TargetFileName)&quot; &quot;$(TargetPath)&quot; @(_RepackInput->'&quot;%(Identity)&quot;', ' ')" />
+  </Target>
+</Project>

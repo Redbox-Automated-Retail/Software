@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>halsvc-win32</AssemblyName>
+    <RootNamespace>Redbox.HAL.Service.Win32</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net35</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Configuration\Redbox.HAL.Configuration.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Controller.Framework\Redbox.HAL.Controller.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.DataMatrix.Framework\Redbox.HAL.DataMatrix.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.DataStorage\Redbox.HAL.DataStorage.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Script.Framework\Redbox.HAL.Script.Framework.csproj" />
+  </ItemGroup>
+</Project>

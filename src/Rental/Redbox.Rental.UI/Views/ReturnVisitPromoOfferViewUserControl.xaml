@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:ViewUserControl x:Class="Redbox.Rental.UI.Views.ReturnVisitPromoOfferViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:ReturnVisitPromoOfferViewUserControlCommands.CloseCommand}" Executed="CloseCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:ReturnVisitPromoOfferViewUserControlCommands.UseNowCommand}" Executed="UseNowCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid Name="MainControl">
+    <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/ReturnVisitPromo_bkg.jpg" />
+    <StackPanel VerticalAlignment="Top">
+      <TextBlock TextAlignment="Center" Margin="0,83,0,0" Style="{StaticResource font_montserrat_regular_40}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding TitleText, FallbackValue=Return complete!&#xA;Youve unlocked a special offer}" />
+      <TextBlock TextAlignment="Center" Margin="0,-20,0,-35" Style="{StaticResource font_montserrat_bold_180}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding AmountText, FallbackValue=$1.00 OFF}" />
+      <TextBlock TextAlignment="Center" Margin="0,0,0,0" Style="{StaticResource font_montserrat_bold_52}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding MessageText, FallbackValue=your next 1-night rental}" />
+      <TextBlock TextAlignment="Center" Margin="0,16,0,0" Style="{StaticResource font_montserrat_light_24}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding EligibleText, FallbackValue=Eligible titles only}" />
+      <TextBlock TextAlignment="Center" Margin="0,26,0,0" Style="{StaticResource font_montserrat_bold_24}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding PromoCodeText, FallbackValue=promo code: REDBOX}" />
+      <TextBlock TextAlignment="Center" Margin="0,4,0,0" Style="{StaticResource font_montserrat_bold_24}" Foreground="#FFFFFFFF" TextWrapping="NoWrap" Text="{Binding ExpirationText, FallbackValue=expires MM/DD}" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,24,0,0">
+        <Redbox:RoundedButton Width="242" Height="56" Style="{StaticResource black_with_white_border_button_style}" BackgroundColor="#1B0323" BackgroundGradientColor="#1B0323" BorderThickness="2" UsedDefaultCornerRadius="True" Margin="20,0,20,0" Command="{x:Static local:ReturnVisitPromoOfferViewUserControlCommands.CloseCommand}">
+          <TextBlock Name="CloseButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=CloseButtonText, FallbackValue=CLOSE}" />
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Width="242" Height="56" Style="{StaticResource white_and_warm_purple_button_style}" UsedDefaultCornerRadius="True" Margin="20,0,20,0" Command="{x:Static local:ReturnVisitPromoOfferViewUserControlCommands.UseNowCommand}">
+          <TextBlock Name="UseNowButtonText" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=UseNowButtonText, FallbackValue=USE NOW}" />
+        </Redbox:RoundedButton>
+      </StackPanel>
+      <TextBlock Margin="60,45,60,0" LineHeight="16" Style="{StaticResource font_montserrat_extralight_11}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding LegalText, FallbackValue=Valid for stated discount off the fee for an eligible 1-night disc or On Demand rental before the expiration date indicated above. 1 use; 1 code per transaction. Your payment card, necessary for rental, is charged the balance of the daily rental fee for a disc and the full daily rental fee for addl discs + tax (except where tax isnt charged) for the 1st rental day. Youre charged the full daily rental fee + tax (if appl.) for addl days you keep each disc. Cant be combined with other offers, applied to prior rentals, or redeemed for cash. May be cancelled/changed at any time. Void where prohibited.}" />
+    </StackPanel>
+  </Grid>
+</local:ViewUserControl>

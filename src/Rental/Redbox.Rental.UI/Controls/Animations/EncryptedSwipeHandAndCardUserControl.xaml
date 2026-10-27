@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.EncryptedSwipeHandAndCardUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid>
+    <Image Name="FrontOfEMVReader" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Swipe_Illustration_Bottom-Layer.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="67" Height="197" Margin="130,120,0,0" />
+    <Image Name="CardAndHand" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Swipe_Illustration_Middle-Layer.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="244" Height="264" Margin="117,0,0,0" />
+    <Image Name="BackOfEMVReader" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/EMV_Swipe_Illustration_Top-Layer.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="189" Height="245" Margin="0,120,0,0" />
+  </Grid>
+</UserControl>
