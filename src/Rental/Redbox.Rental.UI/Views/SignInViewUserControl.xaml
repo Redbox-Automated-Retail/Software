@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.SignInViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:views="clr-namespace:Redbox.Rental.UI.Views">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Redbox:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <Redbox:NullToVisibilityConverter x:Key="NullToVisibility" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Background="#FFFFFFFF">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="103" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Border Grid.Column="0" Grid.Row="0" Margin="32,24,0,24" CornerRadius="20" Background="{StaticResource DarkPurpleToRubineGradientBrush}">
+      <DockPanel Margin="48,44,48,5">
+        <Image DockPanel.Dock="Top" HorizontalAlignment="Left" Source="{Binding HeaderImage, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/perks-white-logo.png}" Style="{Binding HeaderImageStyle, FallbackValue={StaticResource sign_in_up_perks_header_image}}" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical" VerticalAlignment="Bottom" MinHeight="450">
+          <TextBlock Name="header_label" Margin="0,0,0,0" Width="Auto" Height="Auto" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_bold_36}" TextWrapping="Wrap" TextAlignment="Left" Text="{Binding Path=HeaderLabelText, FallbackValue=Get free stuff just for signing up}" />
+          <TextBlock Name="MessageText" Margin="0,24,0,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_medium_20}" TextWrapping="Wrap" Visibility="{Binding MessageTextVisibility, FallbackValue=Collapsed}">
+            <TextBlock.Inlines>
+              <Run Text="{Binding Path=MessageText, FallbackValue=Then youll continue with Redbox+}" />
+              <Run BaselineAlignment="Superscript" FontSize="10" Text="{Binding RegisteredTrademarkSymbol, FallbackValue=®}" />
+            </TextBlock.Inlines>
+          </TextBlock>
+          <BulletDecorator Margin="10,40,0,0" Height="Auto" Visibility="{Binding BulletVisibility, FallbackValue=Visible}">
+            <BulletDecorator.Bullet>
+              <Ellipse Height="6" Width="6" Fill="#FFFFFFFF" />
+            </BulletDecorator.Bullet>
+            <TextBlock Name="bullet_1" Margin="20,0,2,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_semibold_20}" TextWrapping="Wrap" Text="{Binding Path=Bullet1Text, FallbackValue=FREE 1-night DVD rental*}" />
+          </BulletDecorator>
+          <BulletDecorator Margin="10,20,0,0" Height="Auto" Visibility="{Binding BulletVisibility, FallbackValue=Visible}">
+            <BulletDecorator.Bullet>
+              <Ellipse Height="6" Width="6" Fill="#FFFFFFFF" />
+            </BulletDecorator.Bullet>
+            <TextBlock Name="bullet_2" Margin="20,0,0,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_semibold_20}" Text="{Binding Path=Bullet2Text, FallbackValue=Special deals just for you}" />
+          </BulletDecorator>
+          <BulletDecorator Margin="10,20,0,0" Height="Auto" Visibility="{Binding BulletVisibility, FallbackValue=Visible}">
+            <BulletDecorator.Bullet>
+              <Ellipse Height="6" Width="6" Fill="#FFFFFFFF" />
+            </BulletDecorator.Bullet>
+            <TextBlock Name="bullet_3" Margin="20,0,0,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_semibold_20}" Text="{Binding Path=Bullet3Text, FallbackValue=B-day gift}" />
+          </BulletDecorator>
+          <TextBlock Name="bottom_message" Margin="0,45,0,0" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_semibold_14}" HorizontalAlignment="Center" Text="{Binding Path=BottomMessageText, FallbackValue=It’s fast and easy – only 2 steps!}" />
+          <Redbox:RoundedButton Name="SignUpButton" VerticalAlignment="Top" Margin="0,10,0,0" MinHeight="56" Height="Auto" UsedDefaultCornerRadius="True" Style="{StaticResource white_and_warm_purple_button_style}" Command="{Binding SignUpButtonCommand}">
+            <TextBlock Margin="40,0" TextWrapping="Wrap" TextAlignment="Center" Style="{Binding ButtonTextStyle, FallbackValue={StaticResource font_montserrat_extrabold_20}}" Text="{Binding Path=SignUpButtonText, FallbackValue=SIGN UP}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="InfoButton" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0" Height="Auto" UsedDefaultCornerRadius="True" Style="{StaticResource transparent_button_style}" IsEnabled="True" Command="{Binding InfoButtonCommand}">
+            <TextBlock Style="{StaticResource font_montserrat_bold_underline_18}" Margin="0,20" Padding="20,0,20,0" Foreground="#FFFFFFFF" TextWrapping="Wrap" TextAlignment="Center" Text="{Binding Path=InfoButtonText, FallbackValue=HOW POINTS WORK}" Visibility="{Binding InfoButtonVisibility, FallbackValue=Visible}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </DockPanel>
+    </Border>
+    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="56,151,0,0">
+      <TextBlock HorizontalAlignment="Left" Width="auto" Height="auto" Foreground="{StaticResource CarlosPurple1Brush}" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,0,0,0" Text="{Binding AlreadyMemberText, FallbackValue=Already a member?}" />
+      <TextBlock HorizontalAlignment="Left" Width="auto" Height="auto" Foreground="{StaticResource CarlosPurple1Brush}" Style="{StaticResource font_montserrat_bold_36}" Margin="0,10,0,0" Text="{Binding SignInLabelText, FallbackValue=Sign In}" />
+      <Redbox:RoundedButton Name="MobilePerksPassButton" HorizontalAlignment="Left" Margin="0,36,0,0" Width="392" MinHeight="56" Height="auto" UsedDefaultCornerRadius="True" Style="{StaticResource style_warmpurple_button}" Command="{Binding MobileSignInButtonCommand}" Visibility="{Binding MobileSignInEnabled, Converter={StaticResource BoolToVisibility}}">
+        <StackPanel Orientation="Horizontal" Width="389">
+          <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/contactless-icon.png" Width="50" Height="52" HorizontalAlignment="Left" />
+          <TextBlock TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Width="332" Padding="0,0,50,0" Style="{Binding ButtonTextStyle, FallbackValue={StaticResource font_montserrat_extrabold_20}}" Text="{Binding Path=MobileSignInButtonText, FallbackValue=MOBILE PASS}" />
+        </StackPanel>
+      </Redbox:RoundedButton>
+      <TextBlock HorizontalAlignment="Center" Width="auto" Height="auto" Foreground="#FF000000" Style="{StaticResource font_montserrat_medium_14}" Margin="0,10,67,0" TextWrapping="Wrap" TextAlignment="Center" Text="{Binding MobileMessageText, FallbackValue=Hold phone near reader now}" Visibility="{Binding MobileSignInEnabled, Converter={StaticResource BoolToVisibility}}" />
+      <Redbox:RoundedButton Name="PhoneAndPinButton" HorizontalAlignment="Left" Margin="0,24,0,0" Width="392" MinHeight="56" Height="auto" UsedDefaultCornerRadius="True" Style="{StaticResource style_warmpurple_button}" Command="{Binding PhoneAndPinButtonCommand}">
+        <TextBlock Margin="20,0" TextWrapping="Wrap" TextAlignment="Center" Style="{Binding ButtonTextStyle, FallbackValue={StaticResource font_montserrat_extrabold_20}}" Text="{Binding Path=PhoneAndPinButtonText, FallbackValue=PHONE NUMBER &amp; PIN}" />
+      </Redbox:RoundedButton>
+      <Redbox:RoundedButton Name="EmailAndPasswordButton" HorizontalAlignment="Left" Margin="0,28,0,0" Width="392" MinHeight="56" UsedDefaultCornerRadius="True" Style="{StaticResource style_warmpurple_button}" Command="{Binding EmailAndPasswordButtonCommand}">
+        <TextBlock Margin="20,0" Style="{Binding ButtonTextStyle, FallbackValue={StaticResource font_montserrat_extrabold_20}}" Text="{Binding Path=EmailAndPasswordButtonText, FallbackValue=EMAIL &amp; PASSWORD}" />
+      </Redbox:RoundedButton>
+    </StackPanel>
+    <Grid Row="1" ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Grid Name="SeparatorLine" Background="#060208" Height="1" Margin="24,0,24,0" ColumnSpan="3" VerticalAlignment="Top" />
+      <Redbox:RoundedButton Name="CancelButton" VerticalAlignment="Center" HorizontalAlignment="Left" Width="104" Margin="32,0,0,0" Style="{StaticResource button_light_medium_secondary_style}" Command="{Binding CancelButtonCommand}">
+        <TextBlock Style="{StaticResource button_text_medium_style}" Text="{Binding Path=CancelButtonText, FallbackValue=BACK}" />
+      </Redbox:RoundedButton>
+      <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
+        <TextBlock Margin="37,0,49,0" VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource font_montserrat_medium_11}" Foreground="{StaticResource CarlosPurple1Brush}" Text="{Binding PrivacyText, FallbackValue=To review our Terms, Privacy Policy, including our CA Privacy Notice, or to exercise your Do Not Sell Rights, see Terms &amp; Privacy.}" Visibility="{Binding PrivacyText, Converter={StaticResource NullToVisibility}}" />
+        <TextBlock Margin="37,0,49,0" VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource font_montserrat_medium_11}" Foreground="{StaticResource CarlosPurple1Brush}" Text="{Binding LegalText, FallbackValue=*Free 1-night DVD rental Welcome Offer will show up as 1,500 points in your account within 48 hours of creating account. Payment card required. Charges apply for additional days. Cant be combined with other offers. Subject to terms at redbox.com/perks/terms.}" Visibility="{Binding LegalText, Converter={StaticResource NullToVisibility}}" />
+      </StackPanel>
+      <Redbox:RoundedButton Name="TermsButton" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0" MinWidth="118" Height="48" Style="{StaticResource TransparentButton}" Command="{Binding TermsButtonCommand}">
+        <TextBlock Margin="0,0,32,0" Style="{StaticResource font_montserrat_bold_underline_14}" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=TermsButtonText, FallbackValue=Terms &amp; Privacy}" />
+      </Redbox:RoundedButton>
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

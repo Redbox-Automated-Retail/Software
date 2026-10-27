@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.SwipeHandAndCardUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid>
+    <Path Name="RightCardReader" Fill="#E42045" Stroke="#FFFFFFFF" StrokeThickness="5" Width="28" Height="250" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,98">
+      <Path.Data>
+        <PathGeometry>
+          <PathGeometry.Figures>
+            <PathFigure StartPoint="5,17">
+              <PathFigure.Segments>
+                <PathSegmentCollection>
+                  <ArcSegment Size="12,17" Point="12,2" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="18,2" />
+                  <ArcSegment Size="12,17" Point="25,17" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="25,235" />
+                  <ArcSegment Size="12,17" Point="18,246" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="12,246" />
+                  <ArcSegment Size="12,17" Point="5,230" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="5,17" />
+                </PathSegmentCollection>
+              </PathFigure.Segments>
+            </PathFigure>
+          </PathGeometry.Figures>
+        </PathGeometry>
+      </Path.Data>
+    </Path>
+    <Grid Name="CardAndHand">
+      <Path Name="Finger2" Fill="#E42045" Stroke="#FFFFFFFF" StrokeThickness="5" Width="148" Height="250" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,60">
+        <Path.Data>
+          <PathGeometry>
+            <PathGeometry.Figures>
+              <PathFigure StartPoint="108,163">
+                <PathFigure.Segments>
+                  <PathSegmentCollection>
+                    <ArcSegment Size="31,12" Point="95,182" IsLargeArc="True" RotationAngle="58" SweepDirection="Clockwise" />
+                  </PathSegmentCollection>
+                </PathFigure.Segments>
+              </PathFigure>
+            </PathGeometry.Figures>
+          </PathGeometry>
+        </Path.Data>
+      </Path>
+      <Path Name="Finger1" Fill="#E42045" Stroke="#FFFFFFFF" StrokeThickness="5" Width="150" Height="250" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,60">
+        <Path.Data>
+          <PathGeometry>
+            <PathGeometry.Figures>
+              <PathFigure StartPoint="82,122">
+                <PathFigure.Segments>
+                  <PathSegmentCollection>
+                    <LineSegment Point="98,122" />
+                    <ArcSegment Size="125,67" Point="99,182" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="25,67" Point="90,181" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="115,87" Point="82,122" IsLargeArc="False" RotationAngle="180" SweepDirection="Clockwise" />
+                  </PathSegmentCollection>
+                </PathFigure.Segments>
+              </PathFigure>
+            </PathGeometry.Figures>
+          </PathGeometry>
+        </Path.Data>
+      </Path>
+      <Border Name="CreditCard" CornerRadius="8" Background="#FFFFFFFF" Width="115" Height="185" HorizontalAlignment="Left" VerticalAlignment="Top" TextBlock.FontWeight="Medium" TextBlock.FontSize="12">
+        <Grid Width="200" Height="200">
+          <Border BorderThickness="1" BorderBrush="#E82D35" Width="25" Height="40" Margin="85,5" HorizontalAlignment="Left" VerticalAlignment="Top" CornerRadius="2" />
+          <StackPanel Orientation="Horizontal" TextBlock.Foreground="#E82D35" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,82">
+            <UIElement.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform />
+                <SkewTransform />
+                <RotateTransform Angle="270" />
+                <TranslateTransform />
+              </TransformGroup>
+            </UIElement.RenderTransform>
+            <TextBlock>1234</TextBlock>
+            <TextBlock Margin="5,0">5678</TextBlock>
+            <TextBlock Margin="5,0">9012</TextBlock>
+            <TextBlock Margin="5,0">3456</TextBlock>
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Path Name="Hand" StrokeThickness="5" Stroke="#FFFFFFFF" Fill="#E42045" Width="328" Height="350" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,60">
+        <UIElement.OpacityMask>
+          <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+            <GradientStop Color="#FFFFFFFF" Offset="0.6" />
+            <GradientStop Color="#00FFFFFF" Offset="0.8" />
+          </LinearGradientBrush>
+        </UIElement.OpacityMask>
+        <Path.Data>
+          <PathGeometry>
+            <PathGeometry.Figures>
+              <PathFigure StartPoint="230,315">
+                <PathFigure.Segments>
+                  <PathSegmentCollection>
+                    <LineSegment Point="176,238" />
+                    <ArcSegment Size="130,177" Point="114,174" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="230,187" Point="71,83" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <ArcSegment Size="80,87" Point="49,53" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="50,27" Point="64,28" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="70,144" Point="115,65" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="144,130" Point="142,100" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <ArcSegment Size="40,97" Point="162,91" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <ArcSegment Size="280,177" Point="109,41" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <LineSegment Point="100,41" />
+                    <LineSegment Point="100,7" />
+                    <ArcSegment Size="50,17" Point="125,1" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="20,17" Point="135,6" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                    <ArcSegment Size="890,397" Point="205,47" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <ArcSegment Size="890,397" Point="211,57" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                    <LineSegment Point="256,177" />
+                    <ArcSegment Size="890,397" Point="291,227" IsLargeArc="False" RotationAngle="0" SweepDirection="Counterclockwise" />
+                  </PathSegmentCollection>
+                </PathFigure.Segments>
+              </PathFigure>
+            </PathGeometry.Figures>
+          </PathGeometry>
+        </Path.Data>
+      </Path>
+      <Path Name="ThumbNail" Stroke="#FFFFFFFF" StrokeThickness="2" Width="128" Height="150" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,60">
+        <Path.Data>
+          <PathGeometry>
+            <PathGeometry.Figures>
+              <PathFigure StartPoint="66,66">
+                <PathFigure.Segments>
+                  <PathSegmentCollection>
+                    <LineSegment Point="52,50" />
+                    <ArcSegment Size="65,367" Point="73,33" IsLargeArc="False" RotationAngle="320" SweepDirection="Clockwise" />
+                    <LineSegment Point="86,47" />
+                    <ArcSegment Size="65,67" Point="66,66" IsLargeArc="False" RotationAngle="320" SweepDirection="Clockwise" />
+                  </PathSegmentCollection>
+                </PathFigure.Segments>
+              </PathFigure>
+            </PathGeometry.Figures>
+          </PathGeometry>
+        </Path.Data>
+      </Path>
+    </Grid>
+    <Path Name="LeftCardReader" Fill="#E42045" Stroke="#FFFFFFFF" StrokeThickness="5" Width="58" Height="250" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-30,100">
+      <Path.Data>
+        <PathGeometry>
+          <PathGeometry.Figures>
+            <PathFigure StartPoint="5,19">
+              <PathFigure.Segments>
+                <PathSegmentCollection>
+                  <ArcSegment Size="12,13" Point="16,4" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="40,0" />
+                  <ArcSegment Size="12,13" Point="55,14" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="55,235" />
+                  <ArcSegment Size="12,14" Point="40,246" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="16,243" />
+                  <ArcSegment Size="15,13" Point="4,230" IsLargeArc="False" RotationAngle="0" SweepDirection="Clockwise" />
+                  <LineSegment Point="5,15" />
+                </PathSegmentCollection>
+              </PathFigure.Segments>
+            </PathFigure>
+          </PathGeometry.Figures>
+        </PathGeometry>
+      </Path.Data>
+    </Path>
+  </Grid>
+</UserControl>

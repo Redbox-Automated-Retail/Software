@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.KeypadUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Executed="NumberCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static controls:KeypadUserControlCommands.ClearAllCommand}" Executed="ClearAllCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static controls:KeypadUserControlCommands.BackCommand}" Executed="BackCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="keypad_button_style" TargetType="{x:Type Redbox:RoundedButton}" BasedOn="{StaticResource style_keyboard_round_button}">
+        <Setter Property="Height" Value="75" />
+        <Setter Property="Width" Value="75" />
+        <Setter Property="Redbox:RoundedButton.CornerRadius" Value="45" />
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="20*" />
+      <RowDefinition Height="20*" />
+      <RowDefinition Height="20*" />
+      <RowDefinition Height="20*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="33*" />
+      <ColumnDefinition Width="33*" />
+      <ColumnDefinition Width="33*" />
+    </Grid.ColumnDefinitions>
+    <Redbox:RoundedButton Name="OneButton" Grid.Row="0" Grid.Column="0" Style="{StaticResource keypad_button_style}" Tag="1" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="1" />
+    <Redbox:RoundedButton Name="TwoButton" Grid.Row="0" Grid.Column="1" Style="{StaticResource keypad_button_style}" Tag="2" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="2" />
+    <Redbox:RoundedButton Name="ThreeButton" Grid.Row="0" Grid.Column="2" Style="{StaticResource keypad_button_style}" Tag="3" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="3" />
+    <Redbox:RoundedButton Name="FourButton" Grid.Row="1" Grid.Column="0" Style="{StaticResource keypad_button_style}" Tag="4" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="4" />
+    <Redbox:RoundedButton Name="FiveButton" Grid.Row="1" Grid.Column="1" Style="{StaticResource keypad_button_style}" Tag="5" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="5" />
+    <Redbox:RoundedButton Name="SixButton" Grid.Row="1" Grid.Column="2" Style="{StaticResource keypad_button_style}" Tag="6" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="6" />
+    <Redbox:RoundedButton Name="SevenButton" Grid.Row="2" Grid.Column="0" Style="{StaticResource keypad_button_style}" Tag="7" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="7" />
+    <Redbox:RoundedButton Name="EightButton" Grid.Row="2" Grid.Column="1" Style="{StaticResource keypad_button_style}" Tag="8" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="8" />
+    <Redbox:RoundedButton Name="NineButton" Grid.Row="2" Grid.Column="2" Style="{StaticResource keypad_button_style}" Tag="9" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="9" />
+    <Redbox:RoundedButton Name="ClearAllButton" Grid.Row="3" Grid.Column="0" Style="{StaticResource keypad_button_style}" Command="{x:Static controls:KeypadUserControlCommands.ClearAllCommand}">
+      <TextBlock Style="{StaticResource font_montserrat_regular_13}" TextAlignment="Center" Text="{Binding Path=ClearAllButtonText}" />
+    </Redbox:RoundedButton>
+    <Redbox:RoundedButton Name="ZeroButton" Grid.Row="3" Grid.Column="1" Style="{StaticResource keypad_button_style}" Tag="0" Command="{x:Static controls:KeypadUserControlCommands.NumberCommand}" Content="0" />
+    <Redbox:RoundedButton Name="BackButton" Grid.Row="3" Grid.Column="2" Style="{StaticResource keypad_button_style}" Command="{x:Static controls:KeypadUserControlCommands.BackCommand}">
+      <TextBlock Style="{StaticResource font_montserrat_regular_13}" TextAlignment="Center" Text="{Binding Path=BackButtonText}" />
+    </Redbox:RoundedButton>
+  </Grid>
+</UserControl>

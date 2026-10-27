@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.ControlPanel.UI.Views.ConfigureKioskViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.ControlPanel.UI.Views" xmlns:animations1="clr-namespace:Redbox.Rental.UI.Controls.Animations;assembly=Redbox.Rental.UI">
+  <Canvas Background="#00FFFFFF" Height="768" Width="1024">
+    <Rectangle Fill="#FF000000" Stroke="#FF000000" Height="768" Width="1024" Opacity=".5" />
+    <Grid Canvas.Left="140" Canvas.Top="60" VerticalAlignment="Center" HorizontalAlignment="Center" ShowGridLines="False" Background="#FF808080">
+      <Border Background="#FFFFFFFF" CornerRadius="10" BorderBrush="#FFFFFFFF" BorderThickness="2">
+        <Grid Name="MainGrid" Width="768" Height="642" ShowGridLines="False" Background="#FF808080" Margin="2,2,2,2">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="67*" />
+            <RowDefinition Height="15*" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="83" />
+            <ColumnDefinition Width="270" />
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="130*" />
+          </Grid.ColumnDefinitions>
+          <animations1:SpinnerUserControl Name="Spinner" Margin="190,160,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" Panel.ZIndex="1" />
+          <Label Name="title_area" Content=" Select State" Margin="0,0,0,2" Grid.Column="0" Grid.ColumnSpan="5" FontSize="21.28" Background="#FF8B0000" HorizontalContentAlignment="Left" Style="{StaticResource label_style}" />
+          <Button Name="close_button" Content="X" Grid.Column="4" HorizontalAlignment="Right" Margin="0,0,2,2" Background="#FFD3D3D3" Foreground="#FFFFFFFF" FontSize="31.92" Width="84" Height="50" BorderThickness="0" BorderBrush="#FFD3D3D3" Style="{StaticResource rounded_x_button_style}" Click="closeButtonClick" />
+          <TextBlock Name="backGroundTop" Grid.ColumnSpan="5" Grid.Row="1" Background="#FF000000" />
+          <Label Name="Col0Caption" Content="State Id" Margin="3,0,0,0" Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="1" Width="80" Style="{StaticResource info_label_style}" Background="#FF000000" />
+          <Label Name="Col1Caption" Content="Address" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="1" Width="280" Style="{StaticResource info_label_style}" Background="#FF000000" Visibility="Hidden" />
+          <Label Name="Col2Caption" Content="Name" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" Width="180" Style="{StaticResource info_label_style}" Background="#FF000000" HorizontalAlignment="Left" />
+          <Label Name="Col3Caption" Content="State" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="1" Width="70" Style="{StaticResource info_label_style}" Background="#FF000000" HorizontalAlignment="Left" Visibility="Visible" />
+          <Label Name="Col4Caption" Content="Zip" Grid.Column="4" Grid.ColumnSpan="1" Grid.Row="1" Width="Auto" Style="{StaticResource info_label_style}" Background="#FF000000" HorizontalAlignment="Left" Visibility="Visible" />
+          <Label Name="lblNotfound" Content=" No Pending States were found!" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Height="55" Background="#FF808080" FontWeight="Bold" Style="{StaticResource info_label_style}" Foreground="#FF000000" Visibility="Hidden" Panel.ZIndex="1" />
+          <Label Name="lblConfirmState" Content="State: " Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Height="55" Background="#FF808080" Foreground="#FFFFFFFF" FontWeight="Bold" Style="{StaticResource info_label_style}" Visibility="Hidden" Panel.ZIndex="1" />
+          <Label Name="lblConfirmBanner" Content="Banner: " Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Margin="5,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Height="55" Background="#FF808080" Foreground="#FFFFFFFF" FontWeight="Bold" Style="{StaticResource info_label_style}" Visibility="Hidden" Panel.ZIndex="1" />
+          <Label Name="lblConfirmStore" Content="Store: " Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="5,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="Auto" Height="55" Background="#FF808080" Foreground="#FFFFFFFF" FontWeight="Bold" Style="{StaticResource info_label_style}" Visibility="Hidden" Panel.ZIndex="1" />
+          <Border Grid.ColumnSpan="5" Grid.Row="3" Margin="1" Padding="1" BorderThickness="1" BorderBrush="#FF000000" Background="#FF000000" CornerRadius="10">
+            <TextBlock Name="txtBlockFooter" Grid.ColumnSpan="5" Grid.Row="3" Background="#FF000000" Margin="2" Height="110" />
+          </Border>
+          <Button Name="next_button" Width="130" Height="65" Content="Next" Margin="15,0,0,0" Grid.Row="3" Grid.Column="4" Style="{StaticResource glass_rounded_button_style}" />
+          <Button Name="previous_button" Width="130" Height="65" Content="Previous" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Style="{StaticResource glass_rounded_button_style}" Visibility="Visible" />
+          <Button Name="cancel_button" Width="130" Height="65" Margin="15" Content="Cancel" Grid.Row="3" Grid.Column="0" Style="{StaticResource glass_rounded_button_style}" Grid.ColumnSpan="2" Visibility="Visible" HorizontalAlignment="Left" Click="closeButtonClick" />
+          <ScrollViewer Name="scrol1" Visibility="Visible" IsTabStop="True" VerticalScrollBarVisibility="Auto" Grid.Row="2" Grid.ColumnSpan="5" Foreground="#FFFFFFFF" Background="#FFD3D3D3" Width="Auto" Style="{StaticResource FavsScrollViewer}">
+            <ListView Name="listvStates" ItemContainerStyle="{StaticResource alternatingListViewItemStyle}" SelectionMode="Single" Grid.Row="2" Grid.ColumnSpan="5" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding Path=_stateSource}" SelectionChanged="StateBannersSelectedRowHandle">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <WrapPanel>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtbId" Margin="5,0,0,0" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" Style="{StaticResource x_text_block_style}" Width="340" Text="{Binding Id, FallbackValue=1}" />
+                    </Border>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtbName" FontWeight="Bold" VerticalAlignment="Center" Style="{StaticResource x_text_block_style}" TextAlignment="Left" Width="260" Text="{Binding Name, FallbackValue=StateName}" />
+                    </Border>
+                  </WrapPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ListView>
+          </ScrollViewer>
+          <ScrollViewer Name="scrol2" Visibility="Hidden" IsTabStop="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Grid.Row="2" Grid.ColumnSpan="5" Width="Auto" Style="{StaticResource FavsScrollViewer}">
+            <ListView Name="listvStores" ItemContainerStyle="{StaticResource alternatingListViewItemStyle}" SelectionMode="Single" Grid.Row="2" Grid.ColumnSpan="5" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding Path=storeSource}" SelectionChanged="StoresSelectedRowHandle">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <WrapPanel>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtbId" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" Style="{StaticResource x_text_block_style}" Width="83" Text="{Binding Id, FallbackValue=1}" />
+                    </Border>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtbName" VerticalAlignment="Center" Style="{StaticResource x_text_block_style}" TextAlignment="Left" Width="270" Text="{Binding Address, FallbackValue=address}" />
+                    </Border>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtCity" VerticalAlignment="Center" Style="{StaticResource x_text_block_style}" TextAlignment="Left" Width="170" Text="{Binding City, FallbackValue=City}" />
+                    </Border>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtState" VerticalAlignment="Center" Style="{StaticResource x_text_block_style}" TextAlignment="Left" Width="70" Text="{Binding State, FallbackValue=State}" />
+                    </Border>
+                    <Border Height="55" BorderBrush="{x:Null}">
+                      <TextBlock Name="txtZip" VerticalAlignment="Center" Style="{StaticResource x_text_block_style}" TextAlignment="Left" Width="100" Text="{Binding ZipCode, FallbackValue=State}" />
+                    </Border>
+                  </WrapPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ListView>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+    </Grid>
+  </Canvas>
+</UserControl>

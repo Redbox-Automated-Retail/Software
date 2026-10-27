@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RedboxPlusLeadGenerationOfferViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.NoButtonCommand}" Executed="NoButtonCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.EmailButtonCommand}" Executed="EmailButtonCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.QRCodeButtonCommand}" Executed="QRCodeButtonCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid Background="{StaticResource AlmostBlackBrush}">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Height="151" Margin="0,24,0,0">
+      <UIElement.OpacityMask>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,0.85">
+          <GradientStop Color="{StaticResource AlmostBlack}" Offset="0" />
+          <GradientStop Color="Transparent" Offset="1" />
+        </LinearGradientBrush>
+      </UIElement.OpacityMask>
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt1}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt2}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt3}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt4}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt5}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt6}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt7}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt8}" />
+      <Image MaxWidth="101" Margin="3,0,3,0" Source="{Binding BoxArt9}" />
+    </StackPanel>
+    <Grid Background="{StaticResource AlmostBlackBrush}" VerticalAlignment="Top" HorizontalAlignment="Center" Width="320" Height="151" Margin="0,24,0,0">
+      <UIElement.OpacityMask>
+        <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5">
+          <GradientBrush.GradientStops>
+            <GradientStop Color="{StaticResource AlmostBlack}" Offset="0" />
+            <GradientStop Color="Transparent" Offset="1" />
+          </GradientBrush.GradientStops>
+        </RadialGradientBrush>
+      </UIElement.OpacityMask>
+    </Grid>
+    <StackPanel Orientation="Vertical" Margin="0,74,0,0">
+      <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/redboxplus-white-red.png" Width="233" Height="52" />
+      <TextBlock Margin="0,154,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_semibold_36}" LineHeight="48" Foreground="#FFFFFFFF" Text="Get up to 12  1-night disc rentals/year &amp; more*" />
+      <TextBlock Margin="0,16,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_semibold_20}" LineHeight="28" Foreground="#FFFFFFFF" Text="Redbox+ Plans start at $9.99/year" />
+      <TextBlock Margin="0,16,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FDBA4D" Text="That's only 84¢ a month!" />
+      <TextBlock Margin="0,72,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_semibold_20}" LineHeight="28" Foreground="#FFFFFFFF" Text="{Binding Path=EmailText, FallbackValue=Get more info sent to your inbox}" />
+      <TextBlock HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_14}" LineHeight="20" Foreground="#FFFFFFFF" Text="Plus sign up for emails about new releases, special offers and more from Redbox" Visibility="{Binding Path=EmailMessageTextVisibility, FallbackValue=Visible}" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,32">
+        <Redbox:RoundedButton Name="NoButton" Margin="0,0,20,0" Style="{StaticResource black_with_white_border_button_style}" BorderThickness="2" Height="56" UsedDefaultCornerRadius="True" Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.NoButtonCommand}">
+          <TextBlock Name="NoButtonText" Style="{StaticResource font_montserrat_extrabold_20}" Margin="24,0,24,0" Text="{Binding Path=NoButtonText, FallbackValue=NO THANKS}" />
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Name="EmailButton" Margin="20,0,0,0" Style="{StaticResource white_button_style}" Height="56" UsedDefaultCornerRadius="True" Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.EmailButtonCommand}">
+          <TextBlock Name="EmailButtonText" Style="{StaticResource font_montserrat_extrabold_20}" Margin="24,0,24,0" Text="EMAIL ME" />
+        </Redbox:RoundedButton>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding Path=QRCodeStackPanelVisibility, FallbackValue=Visible}">
+        <TextBlock Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FFFFFFFF" Text="Not ready yet?" />
+        <Redbox:RoundedButton Name="QRCodeButton" Margin="8,0,0,0" Style="{StaticResource transparent_button_style}" Command="{x:Static local:RedboxPlusLeadGenerationOfferViewUserControlCommands.QRCodeButtonCommand}">
+          <TextBlock Name="QRCodeButtonText" Style="{StaticResource font_montserrat_extrabold_16}" LineHeight="24" Foreground="{StaticResource RubineRedBrush}" TextDecorations="Underline" Text="SCAN QR CODE" />
+        </Redbox:RoundedButton>
+      </StackPanel>
+    </StackPanel>
+    <TextBlock Margin="0,0,0,32" Width="976" VerticalAlignment="Bottom" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_11}" LineHeight="16" Foreground="#FFFFFFFF" Text="*One free 1-night rental code per month; codes expire at the end of each month. One code per transaction. Payment card required. Charges apply for add'l days. Can't be combined with other offers. Subject to add'l terms. Void where prohibited. Applies only to select titles. Subject to availability. View full terms at www.redbox.com-redbox-plus" TextWrapping="Wrap" />
+  </Grid>
+</localControls:TextToSpeechUserControl>

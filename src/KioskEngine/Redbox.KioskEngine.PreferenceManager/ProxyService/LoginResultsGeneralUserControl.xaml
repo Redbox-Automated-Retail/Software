@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.ProxyService.LoginResultsGeneralUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.ProxyService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid Background="#FFFFFFFF">
+    <StackPanel Orientation="Vertical">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#008B8B" DockPanel.Dock="Top" RefreshButtonVisibilty="Visible" SaveButtonVisibilty="Visible" />
+      <StackPanel Margin="20,5,0,5">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="LiveCallCheckBox" Grid.Row="1" IsChecked="{Binding Path=LiveCall}">
+              <TextBlock Text="Live Call" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <TextBlock Text="Login Response Error" Grid.Row="1" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <ComboBox Name="LoginResponseErrorComboBox" Grid.Row="1" Grid.Column="1" MaxDropDownHeight="200" Width="350" HorizontalAlignment="Left" Margin="0,3" SelectedItem="{Binding Path=LoginResponseError}" />
+          <TextBlock Text="Customer Profile Number" Grid.Row="2" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="CustomerProfileNumberTextbox" Grid.Row="2" Grid.Column="1" Width="100" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,3" Text="{Binding Path=CustomerProfileNumber}" />
+          <TextBlock Text="First Name" Grid.Row="2" Grid.Column="1" FontSize="10" VerticalAlignment="Center" Margin="110,0,0,0" />
+          <TextBox Name="FirstNameTextbox" Grid.Row="2" Grid.Column="1" Width="90" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="160,3,0,3" Text="{Binding Path=FirstName}" />
+          <TextBlock Text="Mobile Phone" Grid.Row="2" Grid.Column="1" FontSize="10" VerticalAlignment="Center" Margin="260,0,0,0" />
+          <TextBox Name="MobilePhoneNumberTextbox" Grid.Row="2" Grid.Column="1" Width="90" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="330,3,0,3" Text="{Binding Path=MobilePhoneNumber}" />
+          <TextBlock Text="Login Email" Grid.Row="4" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="LoginEmailTextbox" Grid.Row="4" Grid.Column="1" Width="350" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,3" Text="{Binding Path=LoginEmail}" />
+          <CheckBox Name="LoyaltySystemOnlineCheckBox" Grid.Row="6" VerticalAlignment="Center" Margin="0,3" IsChecked="{Binding Path=LoyaltySystemOnline}">
+            <TextBlock Text="Loyaly Online" FontSize="10" Margin="0,1" />
+          </CheckBox>
+          <CheckBox Name="LoyaltyIsEnrolledCheckBox" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="0,3" IsChecked="{Binding Path=LoyaltyIsEnrolled}">
+            <TextBlock Text="Enrolled in Loyaly " FontSize="10" Margin="0,1" />
+          </CheckBox>
+          <TextBlock Text="Loyalty Point Balance" Grid.Row="7" Grid.Column="1" FontSize="10" VerticalAlignment="Center" Margin="0,3,0,3" />
+          <TextBox Name="LoyaltyPointBalanceTextbox" Grid.Row="7" Grid.Column="1" Width="70" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="100,3,0,3" Text="{Binding Path=LoyaltyPointBalance}" />
+          <TextBlock Text="Loyalty Tier" FontSize="10" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" Margin="0,3,0,3" />
+          <ComboBox Name="LoyaltyTierComboBox" Grid.Row="8" Grid.Column="1" MaxDropDownHeight="200" Width="150" HorizontalAlignment="Left" Margin="100,3,0,3" SelectedItem="{Binding Path=LoyaltyTier}" />
+          <TextBlock Text="Loyalty Tier Counter" FontSize="10" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" Margin="0,3,0,3" />
+          <TextBox Name="LoyaltyTierCounterTextbox" Grid.Row="9" Grid.Column="1" Width="75" Height="18" VerticalAlignment="Center" Margin="100,3,0,3" HorizontalAlignment="Left" Text="{Binding Path=LoyaltyTierCounter}" />
+          <TextBlock Text="Points Expiring" FontSize="10" Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" />
+          <TextBox Name="PointsExpiringTextbox" Grid.Row="10" Grid.Column="1" Width="75" Height="18" VerticalAlignment="Center" Margin="75,3,0,3" HorizontalAlignment="Left" Text="{Binding Path=PointsExpiring}" />
+          <TextBlock Text="Points Expiration Date" Grid.Row="10" Grid.Column="1" FontSize="10" VerticalAlignment="Center" Margin="180,3,0,3" />
+          <DatePicker Grid.Row="10" Grid.Column="1" Width="110" HorizontalAlignment="Left" Margin="280,3,0,3" SelectedDate="{Binding Path=PointsExpirationDate}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Margin="60,0">
+          <CheckBox Name="PromptForPerksCheckBox" VerticalAlignment="Center" Margin="0,3" IsChecked="{Binding Path=PromptForPerks}">
+            <TextBlock Text="Prompt For Perks" FontSize="10" Margin="0,1" />
+          </CheckBox>
+          <CheckBox Name="PromptForEarlyIdCheckBox" VerticalAlignment="Center" Margin="30,3,0,3" IsChecked="{Binding Path=PromptForEarlyId}">
+            <TextBlock Text="Prompt For Early Id" FontSize="10" Margin="0,1" />
+          </CheckBox>
+          <CheckBox Name="TextClubEnabledCheckBox" VerticalAlignment="Center" Margin="30,3,0,3" IsChecked="{Binding Path=TextClubEnabled}">
+            <TextBlock Text="Text Club Enabled" FontSize="10" Margin="0,1" />
+          </CheckBox>
+        </StackPanel>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <TextBlock Text="Number of sample stored Promos" Grid.Row="1" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="NumberOfStoredPromosTextbox" Grid.Row="1" Grid.Column="1" Width="40" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,3" Text="{Binding Path=NumberOfSampleStoredPromos}" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

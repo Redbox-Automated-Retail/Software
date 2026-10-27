@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.AnimatedDiscReturnViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:AnimatedDiscReturnCommands.GotItButton}" Executed="GotItButtonCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="GotItButton_text_style" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource font_museo_slab_900_25}">
+        <Setter Property="Foreground" Value="{StaticResource RubineRedBrush}" />
+      </Style>
+      <Style x:Key="GotItButton_style" TargetType="{x:Type Redbox:RoundedButton}" BasedOn="{StaticResource white_rubine_to_warm_purple_border_button_style}">
+        <Setter Property="Width" Value="191" />
+        <Setter Property="Height" Value="66" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="#FFD3D3D3" />
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <Grid Name="DarkBackground" Background="#FF000000" Opacity="0.6" />
+    <Grid Margin="128,96,128,96">
+      <Border Background="#FFFFFFFF" CornerRadius="28" BorderBrush="{StaticResource RubineRedBrush}" BorderThickness="5" />
+      <Grid Name="InnerGrid">
+        <Viewport3D Name="AnimatedDiscReturn" ClipToBounds="True" Canvas.Left="0" Canvas.Top="10" Opacity="0">
+          <Viewport3D.Camera>
+            <PerspectiveCamera x:Name="ViewportCamera" Position="1 0 -5" LookDirection="0 0 5" FieldOfView="80" />
+          </Viewport3D.Camera>
+          <Viewport3D.Children>
+            <ModelVisual3D>
+              <ModelVisual3D.Content>
+                <DirectionalLight Color="#FFFFFF" Direction=".25,.25, 1" />
+              </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <ModelVisual3D>
+              <ModelVisual3D.Content>
+                <Model3DGroup x:Name="Kiosk">
+                  <GeometryModel3D>
+                    <GeometryModel3D.Geometry>
+                      <MeshGeometry3D Positions="8.2,3.44,0 7.5,3.44,0 7.5,-3.44,0 8.2,-3.44,0" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                    </GeometryModel3D.Geometry>
+                    <GeometryModel3D.Material>
+                      <DiffuseMaterial>
+                        <DiffuseMaterial.Brush>
+                          <ImageBrush ImageSource="../Assets/Images/kiosk_image_bottom.png" />
+                        </DiffuseMaterial.Brush>
+                      </DiffuseMaterial>
+                    </GeometryModel3D.Material>
+                  </GeometryModel3D>
+                  <GeometryModel3D>
+                    <GeometryModel3D.Geometry>
+                      <MeshGeometry3D Positions="10,3.3,-0.06 8,3.3,-0.06 8,-3.3,-0.06 10,-3.3,-0.06" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                    </GeometryModel3D.Geometry>
+                    <GeometryModel3D.Material>
+                      <DiffuseMaterial>
+                        <DiffuseMaterial.Brush>
+                          <ImageBrush ImageSource="../Assets/Images/kiosk_image_top.png" />
+                        </DiffuseMaterial.Brush>
+                      </DiffuseMaterial>
+                    </GeometryModel3D.Material>
+                  </GeometryModel3D>
+                  <Model3D.Transform>
+                    <TranslateTransform3D x:Name="MoveKiosk" />
+                  </Model3D.Transform>
+                </Model3DGroup>
+              </ModelVisual3D.Content>
+            </ModelVisual3D>
+            <ModelVisual3D>
+              <ModelVisual3D.Content>
+                <Model3DGroup x:Name="Case">
+                  <Model3DGroup>
+                    <GeometryModel3D>
+                      <GeometryModel3D.Geometry>
+                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,1,-0.05 1,1,-0.05 1,1,0.05 1,-1,0.05 1,-1,-0.05 1,1,-0.05 1,-1,0.05 -1,-1,0.05 -1,-1,-0.05 1,-1,-0.05 -1,1,0.05 -1,-1,0.05 -1,-1,-0.05 -1,1,-0.05" TriangleIndices="012230654476109881110141312121514" TextureCoordinates="0,0 0,1 1,1 1,0" />
+                      </GeometryModel3D.Geometry>
+                      <GeometryModel3D.Material>
+                        <DiffuseMaterial>
+                          <DiffuseMaterial.Brush>
+                            <ImageBrush ImageSource="../Assets/Images/case_closed_side-view.png" />
+                          </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                      </GeometryModel3D.Material>
+                      <GeometryModel3D.BackMaterial>
+                        <DiffuseMaterial>
+                          <DiffuseMaterial.Brush>
+                            <ImageBrush ImageSource="../Assets/Images/case_closed_side-view.png" />
+                          </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                      </GeometryModel3D.BackMaterial>
+                    </GeometryModel3D>
+                    <GeometryModel3D>
+                      <GeometryModel3D.Geometry>
+                        <MeshGeometry3D Positions="1,1,0.05 -1,1,0.05 -1,-1,0.05 1,-1,0.05" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                      </GeometryModel3D.Geometry>
+                      <GeometryModel3D.Material>
+                        <DiffuseMaterial>
+                          <DiffuseMaterial.Brush>
+                            <ImageBrush ImageSource="../Assets/Images/case_open_right_half.png" />
+                          </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                      </GeometryModel3D.Material>
+                      <GeometryModel3D.BackMaterial>
+                        <DiffuseMaterial>
+                          <DiffuseMaterial.Brush>
+                            <ImageBrush ImageSource="../Assets/Images/case_closed_front_flipped.png" />
+                          </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                      </GeometryModel3D.BackMaterial>
+                    </GeometryModel3D>
+                  </Model3DGroup>
+                  <GeometryModel3D>
+                    <GeometryModel3D.Geometry>
+                      <MeshGeometry3D x:Name="Disc" Positions="-1,1,-0.1 -3,1,-0.1 -3,-1,-0.1 -1,-1,-0.1" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                    </GeometryModel3D.Geometry>
+                    <GeometryModel3D.Material>
+                      <DiffuseMaterial>
+                        <DiffuseMaterial.Brush>
+                          <ImageBrush ImageSource="../Assets/Images/disc.png" />
+                        </DiffuseMaterial.Brush>
+                      </DiffuseMaterial>
+                    </GeometryModel3D.Material>
+                    <Model3D.Transform>
+                      <Transform3DGroup>
+                        <Transform3DGroup.Children>
+                          <RotateTransform3D x:Name="RotateDisc" CenterX="5.5" />
+                          <TranslateTransform3D x:Name="MoveDisc" OffsetX="0" OffsetY="0" OffsetZ="0" />
+                        </Transform3DGroup.Children>
+                      </Transform3DGroup>
+                    </Model3D.Transform>
+                  </GeometryModel3D>
+                  <GeometryModel3D>
+                    <GeometryModel3D.Geometry>
+                      <MeshGeometry3D Positions="3,1,-0.05 1,1,-0.05 1,-1,-0.05 3,-1,-0.05" TriangleIndices="321103" TextureCoordinates="0,0 1,0 1,1 0,1" />
+                    </GeometryModel3D.Geometry>
+                    <GeometryModel3D.Material>
+                      <DiffuseMaterial>
+                        <DiffuseMaterial.Brush>
+                          <ImageBrush ImageSource="../Assets/Images/case_open_left_half.png" />
+                        </DiffuseMaterial.Brush>
+                      </DiffuseMaterial>
+                    </GeometryModel3D.Material>
+                    <GeometryModel3D.BackMaterial>
+                      <DiffuseMaterial>
+                        <DiffuseMaterial.Brush>
+                          <ImageBrush ImageSource="../Assets/Images/case_closed_back_flipped.png" />
+                        </DiffuseMaterial.Brush>
+                      </DiffuseMaterial>
+                    </GeometryModel3D.BackMaterial>
+                    <Model3D.Transform>
+                      <RotateTransform3D x:Name="RotateCaseLeftHalf" CenterX="1" CenterZ="-.05" />
+                    </Model3D.Transform>
+                  </GeometryModel3D>
+                  <Model3D.Transform>
+                    <Transform3DGroup>
+                      <Transform3DGroup.Children>
+                        <TranslateTransform3D x:Name="MoveCase" />
+                        <RotateTransform3D x:Name="RotateCase">
+                          <RotateTransform3D.Rotation>
+                            <AxisAngleRotation3D Axis="0, 0, 0" />
+                          </RotateTransform3D.Rotation>
+                        </RotateTransform3D>
+                      </Transform3DGroup.Children>
+                    </Transform3DGroup>
+                  </Model3D.Transform>
+                </Model3DGroup>
+              </ModelVisual3D.Content>
+            </ModelVisual3D>
+          </Viewport3D.Children>
+        </Viewport3D>
+        <Grid Name="ButtonGrid" Style="{StaticResource message_popup_dialog_button_grid_style}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Redbox:RoundedButton Name="GotItButton" Style="{StaticResource GotItButton_style}" UsedDefaultCornerRadius="True" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static local:AnimatedDiscReturnCommands.GotItButton}">
+            <TextBlock Name="GotItButtonText" Style="{StaticResource GotItButton_text_style}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=GotItButtonText}" />
+          </Redbox:RoundedButton>
+        </Grid>
+        <StackPanel Name="Introduction" VerticalAlignment="Center">
+          <TextBlock Name="Title" TextAlignment="Center" TextWrapping="Wrap" Style="{StaticResource message_popup_dialog_title_style4}" Text="{Binding Path=Title, FallbackValue=Disc Return Error}" />
+          <TextBlock Name="Message" TextAlignment="Center" TextWrapping="Wrap" Style="{StaticResource message_popup_dialog_mesg_style4}" Text="{Binding Path=Message, FallbackValue=Follow these steps to return your disc}" />
+          <Grid Name="UserControlContainer" />
+        </StackPanel>
+        <TextBlock Name="TutorialPart1" TextAlignment="Center" TextWrapping="Wrap" Opacity="0" Style="{StaticResource message_popup_dialog_mesg_style4}" Margin="62,410,62,136" Text="{Binding Path=TutorialPart1, FallbackValue=Place disc with barcode and title facing you}" />
+        <TextBlock Name="TutorialPart2" TextAlignment="Center" TextWrapping="Wrap" Opacity="0" Style="{StaticResource message_popup_dialog_mesg_style4}" Margin="62,410,62,136" Text="{Binding Path=TutorialPart2, FallbackValue=Barcode should show through the case}" />
+        <TextBlock Name="TutorialPart3" VerticalAlignment="Center" TextWrapping="Wrap" Opacity="0" Style="{StaticResource message_popup_dialog_mesg_style4}" Margin="575,200,0,200" Text="{Binding Path=TutorialPart3, FallbackValue=Arrows point towards the kiosk}" />
+        <FrameworkElement.Triggers>
+          <EventTrigger RoutedEvent="Grid.Loaded">
+            <BeginStoryboard>
+              <Storyboard RepeatBehavior="Forever">
+                <DoubleAnimation Storyboard.TargetName="Introduction" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="1" To="0" BeginTime="0:0:2.0" />
+                <DoubleAnimation Storyboard.TargetName="AnimatedDiscReturn" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1" BeginTime="0:0:2.3" />
+                <DoubleAnimation Storyboard.TargetName="TutorialPart1" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="0" To="1" BeginTime="0:0:2.0" />
+                <DoubleAnimation Storyboard.TargetName="MoveDisc" Storyboard.TargetProperty="OffsetX" Duration="0:0:0.5" BeginTime="0:0:3.5" From="0" To="2.0" />
+                <DoubleAnimation Storyboard.TargetName="MoveDisc" Storyboard.TargetProperty="OffsetZ" Duration="0:0:0.25" BeginTime="0:0:4.0" From="0" To=".1" />
+                <DoubleAnimation Storyboard.TargetName="TutorialPart1" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="1" To="0" BeginTime="0:0:5.0" />
+                <Rotation3DAnimation Storyboard.TargetName="RotateCaseLeftHalf" Storyboard.TargetProperty="Rotation" Duration="0:0:1" BeginTime="0:0:5.0">
+                  <Rotation3DAnimation.From>
+                    <AxisAngleRotation3D Angle="0" Axis="0, 1, 0" />
+                  </Rotation3DAnimation.From>
+                  <Rotation3DAnimation.To>
+                    <AxisAngleRotation3D Angle="180" Axis="0, 1, 0" />
+                  </Rotation3DAnimation.To>
+                </Rotation3DAnimation>
+                <DoubleAnimation Storyboard.TargetName="TutorialPart2" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="0" To="1" BeginTime="0:0:6.0" />
+                <DoubleAnimation Storyboard.TargetName="TutorialPart2" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="1" To="0" BeginTime="0:0:9.0" />
+                <Rotation3DAnimation Storyboard.TargetName="RotateCase" Storyboard.TargetProperty="Rotation" Duration="0:0:1.0" BeginTime="0:0:9.0">
+                  <Rotation3DAnimation.From>
+                    <AxisAngleRotation3D Angle="0" />
+                  </Rotation3DAnimation.From>
+                  <Rotation3DAnimation.To>
+                    <AxisAngleRotation3D Angle="180" />
+                  </Rotation3DAnimation.To>
+                </Rotation3DAnimation>
+                <DoubleAnimation Storyboard.TargetName="TutorialPart3" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="0" To="1" BeginTime="0:0:10.0" />
+                <DoubleAnimation Storyboard.TargetName="MoveKiosk" Storyboard.TargetProperty="OffsetX" From="0" To="-4.8" Duration="0:0:0.5" BeginTime="0:0:10.5" />
+                <DoubleAnimation Storyboard.TargetName="MoveCase" Storyboard.TargetProperty="OffsetX" From="0" To="-5" Duration="0:0:1.5" BeginTime="0:0:13.0" />
+                <DoubleAnimation Storyboard.TargetName="TutorialPart3" Storyboard.TargetProperty="Opacity" Duration="0:0:0.1" From="1" To="0" BeginTime="0:0:13.0" />
+                <DoubleAnimation Storyboard.TargetName="TutorialPart3" Storyboard.TargetProperty="Opacity" Duration="0:0:2.0" From="0" To="0" BeginTime="0:0:13.0" />
+              </Storyboard>
+            </BeginStoryboard>
+          </EventTrigger>
+        </FrameworkElement.Triggers>
+      </Grid>
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

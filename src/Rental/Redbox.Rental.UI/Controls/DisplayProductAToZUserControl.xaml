@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.DisplayProductAToZUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" DataContextChanged="UserControl_DataContextChanged">
+  <UIElement.InputBindings>
+    <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemSelectedCommand}" />
+  </UIElement.InputBindings>
+  <Grid Name="MainGrid" Background="#00FFFFFF">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="5*" />
+      <RowDefinition Height="80*" />
+      <RowDefinition Height="5*" />
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="1">
+      <local:DisplayProductUserControl Grid.Row="1" DockPanel.Dock="Left" />
+      <Grid DockPanel.Dock="Right" Visibility="{Binding Path=RightAddButtonVisibility}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="2.3*" />
+          <RowDefinition Height="5.4*" />
+          <RowDefinition Height="2.3*" />
+        </Grid.RowDefinitions>
+        <Viewbox Grid.Row="1">
+          <Redbox:RoundedButton Name="AddButton" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" Width="50" Height="50" CornerRadius="25" DockPanel.Dock="Right" Style="{Binding Path=AddButtonStyle, FallbackValue={StaticResource classic_rubine_button_style}}" Visibility="{Binding Path=RightAddButtonVisibility}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="15*" />
+                <RowDefinition Height="70*" />
+                <RowDefinition Height="15*" />
+              </Grid.RowDefinitions>
+              <Viewbox Grid.RowSpan="3">
+                <UserControl Style="{StaticResource plus_sign_style}" Margin="7" Visibility="{Binding Path=AddButtonPlusSignVisibility}" />
+              </Viewbox>
+              <Viewbox Grid.Row="1">
+                <TextBlock Name="AddButtonText" HorizontalAlignment="Center" Style="{StaticResource font_target_large}" Foreground="#FFFFFFFF" Text="{Binding Path=CornerAddButtonText, FallbackValue=10}" Visibility="{Binding Path=AddButtonTextVisibility}" />
+              </Viewbox>
+            </Grid>
+          </Redbox:RoundedButton>
+        </Viewbox>
+      </Grid>
+      <StackPanel Grid.Row="1" Grid.Column="1" Width="185" Margin="9,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+        <TextBlock Name="ProductName" TextTrimming="CharacterEllipsis" Style="{Binding Path=TitleStyle, FallbackValue={StaticResource font_montserrat_regular_16}}" Text="{Binding Path=Name, FallbackValue=Product Name}" />
+        <TextBlock Margin="0,2,0,6" Style="{StaticResource font_montserrat_regular_12}" Text="Out of Stock" Visibility="{Binding Path=OutOfStockTextAZVisibility, FallbackValue=Collapsed}" />
+        <TextBlock Style="{StaticResource font_montserrat_extrabold_14}" Foreground="{StaticResource RubineRedBrush}" TextDecorations="Underline" Text="SEE WATCH OPTIONS" Visibility="{Binding Path=WatchOptionsAZVisibility, FallbackValue=Collapsed}" />
+        <BulletDecorator Visibility="{Binding Path=DualInStockAZVisibility, FallbackValue=Collapsed}">
+          <BulletDecorator.Bullet>
+            <Image Width="24" Height="24" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Checkmark.png" />
+          </BulletDecorator.Bullet>
+          <TextBlock Style="{StaticResource font_montserrat_extrabold_14}" Foreground="{StaticResource RubineRedBrush}" TextDecorations="Underline" VerticalAlignment="Center" Text="{Binding Path=DualInStockTextAZKioskText, FallbackValue=IN STOCK AT KIOSK A}" />
+        </BulletDecorator>
+      </StackPanel>
+    </DockPanel>
+    <Line Name="SeparatorLine" Grid.Row="2" Grid.ColumnSpan="3" X1="0" X2="4000" Y1="0" Y2="0" VerticalAlignment="Bottom" Style="{Binding Path=SeparatorLineStyle, FallbackValue={StaticResource separator_line_for_product}}" Visibility="{Binding Path=SeparatorLineVisibility, FallbackValue=Visible}" />
+  </Grid>
+</UserControl>

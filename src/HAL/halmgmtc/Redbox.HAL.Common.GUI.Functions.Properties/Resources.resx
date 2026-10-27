@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="sortAscending2" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj0yLjAuMC4wLCBD
+dWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0
+ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAA7QAAAAKJUE5HDQoaCgAA
+AA1JSERSAAAAHQAAABcIAgAAAHhq0z4AAAAEZ0FNQQAAsY8L/GEFAAAACXBIWXMAAA7CAAAOwgEV
+KEqAAAAAj0lEQVRIS+3O0Q6EIAxEUf//pxHpxVSmJavJmhg9T5ShE5byHy/pXTpmEQRs5DsVL872
+DgfVOjfMYgz809laxyxu77VDtrlVNswiCPyCP3t2XzGLNJij9evtmEUQsOEQOASX/6ubVjcgc2a9
+4UJlXTtuj9LebMFYY8Us0h9xys3fBFn7xwHBGVd2fvGs3lJWQHTOhtfEYOoAAAAASUVORK5CYIIL</value></data><data name="sortDescending2" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj0yLjAuMC4wLCBD
+dWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0
+ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAA8AAAAAKJUE5HDQoaCgAA
+AA1JSERSAAAAHQAAABcIAgAAAHhq0z4AAAAEZ0FNQQAAsY8L/GEFAAAACXBIWXMAAA7CAAAOwgEV
+KEqAAAAAkklEQVRIS+3OQRKEIAxEUe9/aYzmU0Y7hBpq3Pk2Etp0sbV3fL0u6d065iV57+OQmqR8
+u/h3sWmRYxYrvWfhhdu7Ya8fdO1oEmRBdhV+jefI7w2zGAY1Wr/ejlkkARsBQUCw/N7RppcaZlH1
+Vmsds6g2OWW81DCLPCgWnJcaZpEEbAQEAcGv752i9e+9U+/0trYDVqbOhkWz7fcAAAAASUVORK5C
+YIIL</value></data><data name="undo" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj0yLjAuMC4wLCBD
+dWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0
+ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAowEAAAKJUE5HDQoaCgAA
+AA1JSERSAAAAEAAAABAIBgAAAB/z/2EAAAAEZ0FNQQAAsY8L/GEFAAAAIGNIUk0AAHomAACAhAAA
++gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJcEhZcwAACyIAAAsiAQnhT6IAAAAYdEVYdFNv
+ZnR3YXJlAFBhaW50Lk5FVCB2My4yMreRF30AAAD1SURBVDhPpZHPCgFRFMbneZRivAFeQCFJLIiy
+MQsPICWFMktvIStPoKwUGxubobG0Y3v4rs7tnvlTI4vf1Dnn+75zumMR0V9ENkF68KRsf6dBHdQA
+9YHAbKJ2Ny9BbfagdOtABecotNrAIWzuuHdqLXyqT29UHntUGnkqpDC8qCBogdiozcuvueicyMqs
+FHwFh/AlOgADiNofc3PuKwGMmCuhEWJeIQLYXJ1chZmxG2sdYOX3ai4CTH4OgCEKzBkzQLxBUjiA
+t4OQKA5shRmPF/qNScB2u3sW24EQxQFzrhc2A1FEEbeZCTWCpCrbWDOIbCaHrDcYwcstlb5bSgAA
+AABJRU5ErkJgggs=</value></data></root>

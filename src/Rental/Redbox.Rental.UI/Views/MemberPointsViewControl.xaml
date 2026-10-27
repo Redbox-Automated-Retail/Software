@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localViews:ViewUserControl x:Class="Redbox.Rental.UI.Views.MemberPointsViewControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" Focusable="False">
+  <Redbox:GridExt Name="MainControl" Background="#FFFFFFFF" Width="1024" Height="768" RowHeights="75,*">
+    <Grid Row="0" Style="{StaticResource style_header_rubine_background_gradient}">
+      <TextBlock Name="LabelTop" Margin="50,14" Text="My points" Height="auto" Foreground="#FFFFFFFF" Style="{StaticResource font_museo_slab_900_36}" />
+    </Grid>
+    <Border Grid.Row="1" Padding="50,50,50,10">
+      <Redbox:GridExt RowHeights="60,60,300,50,80,*">
+        <TextBlock Grid.Row="0" Style="{StaticResource rb_purple_bold_center_center_style}" FontSize="48" Text="{Binding PointsTitle, FallbackValue=Your picks are on point}" />
+        <TextBlock Grid.Row="1" Style="{StaticResource rb_purple_regular_center_center_style}" FontSize="22" Text="{Binding PointsMessage, FallbackValue=You have 19,000 Perk points. Use your points to redeem:}" />
+        <StackPanel Name="CartStackPanelElem" Grid.Row="2" Margin="40" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Grid.Row="2" Margin="20,0" VerticalAlignment="Bottom" Style="{StaticResource rb_purple_regular_center_center_style}" FontSize="16" Text="{Binding PointsCartMessage, FallbackValue=cart infomation}" />
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Redbox:RoundedButton Name="CancelButtonElem" Margin="0,0,20,0" Height="78" UsedDefaultCornerRadius="True" Style="{StaticResource style_white_rubine_border_button}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
+            <TextBlock Name="CancelButtonTextElem" Margin="60,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding CancelButtonText, FallbackValue=Cancel}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="ContinueButtonElem" Margin="20,0,0,0" Height="78" UsedDefaultCornerRadius="True" Style="{StaticResource style_rb_purple_white_border_button}" Command="{Binding ContinueButtonCommand}">
+            <TextBlock Name="ContinueButtonTextElem" Margin="60,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_25}" Text="{Binding ContinueButtonText, FallbackValue=Redeem}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+        <TextBlock Name="MarketingButtonTextElem" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource light_black_text_center_style}" Text="{Binding PointsMarketing, FallbackValue=Marketing}" />
+      </Redbox:GridExt>
+    </Border>
+  </Redbox:GridExt>
+</localViews:ViewUserControl>

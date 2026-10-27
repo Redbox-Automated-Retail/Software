@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.RedChevronUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations" DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="red_chevron" TargetType="{x:Type UserControl}">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type UserControl}">
+              <Polygon Name="Chevron1" Fill="{Binding ChevronColor}" Opacity="{Binding ChevronOpacity}">
+                <Polygon.Points>
+                  <Point X="-268" Y="-268" />
+                  <Point X="-193" Y="-268" />
+                  <Point X="75" Y="0" />
+                  <Point X="-193" Y="268" />
+                  <Point X="-268" Y="268" />
+                  <Point X="0" Y="0" />
+                </Polygon.Points>
+              </Polygon>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Width="2024">
+    <Grid Name="ChevronContainer">
+      <UserControl Style="{StaticResource red_chevron}" Margin="-150,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="0,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="150,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="300,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="450,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="600,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="750,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="900,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="1050,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+      <UserControl Style="{StaticResource red_chevron}" Margin="1200,268,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Views.WelcomeViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:views="clr-namespace:Redbox.Rental.UI.Views">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.HelpCommand}" Executed="HelpCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.ToggleLanguageModeCommand}" Executed="ToggleLanguageModeCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.ToggleADAModeCommand}" Executed="ToggleADAModeCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.GeneralClickCommand}" Executed="GeneralClickCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <FrameworkElement.Triggers>
+      <EventTrigger RoutedEvent="Grid.Loaded">
+        <BeginStoryboard>
+          <Storyboard Name="sb" Duration="0:0:8" Completed="OnAnimationFinish">
+            <ThicknessAnimation Storyboard.TargetName="grid1" Storyboard.TargetProperty="Margin" BeginTime="00:00:00" From="0,0,0,0" To="-1024,0,0,0" Duration="0:0:4" />
+            <ThicknessAnimation Storyboard.TargetName="grid2" Storyboard.TargetProperty="Margin" BeginTime="00:00:00" From="1024,0,0,0" To="0,0,0,0" Duration="0:0:4" />
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger>
+    </FrameworkElement.Triggers>
+    <Grid Name="grid1" Height="768" Width="1024">
+      <localControls:JoinedUserControl1 />
+    </Grid>
+    <Grid Name="grid2" Margin="1024,0,0,0" Height="768" Width="1024">
+      <localControls:JoinedUserControl2 />
+    </Grid>
+  </Grid>
+</UserControl>

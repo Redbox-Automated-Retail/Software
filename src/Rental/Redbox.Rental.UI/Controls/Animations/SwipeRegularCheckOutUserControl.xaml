@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.Animations.SwipeRegularCheckOutUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls.Animations">
+  <Grid Background="#e42045" Width="2048">
+    <local:RedChevronUserControl x:Name="RedChevron" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <local:SwipeHandAndCardUserControl x:Name="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="675,20" />
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="75" TextBlock.Foreground="#FFFFFFFF" Width="550">
+      <TextBlock Name="TitleTextBlock" TextWrapping="Wrap" Style="{StaticResource font_target_medium_2}" Text="{Binding TitleText, FallbackValue=Culture specific swipe title goes here at runtime}" />
+      <TextBlock Name="MessageTextBlock" Style="{StaticResource font_target_small}" Text="{Binding MessageText, FallbackValue=specific swipe message&#xA; goes here at runtime}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

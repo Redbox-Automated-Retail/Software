@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Views.MarketingScreenSaverUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid VerticalAlignment="Top" Background="#FFFFFFFF" Height="{Binding GridHeight, FallbackValue=768}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="576" />
+      <RowDefinition Height="192" />
+    </Grid.RowDefinitions>
+    <controls:CrossfadeImageRotatorUserControl Grid.Row="0" ImageModels="{Binding ImageModels}" IsAnimationOn="{Binding IsAnimationOn}" />
+    <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,63">
+      <redbox:RoundedButton Style="{StaticResource button_light_extra_extra_large_primary_style}" Command="{Binding BrowseCommand}">
+        <StackPanel Orientation="Horizontal">
+          <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Hand white.png" Width="43" Height="63" Margin="52,0,10,0" />
+          <TextBlock Style="{StaticResource button_text_extra_extra_large_style}" VerticalAlignment="Center" Padding="10,0,52,0" Text="{Binding StartButtonText, FallbackValue=PRESS TO START}" />
+        </StackPanel>
+      </redbox:RoundedButton>
+    </StackPanel>
+  </Grid>
+</UserControl>

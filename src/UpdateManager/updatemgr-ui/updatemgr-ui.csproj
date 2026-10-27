@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>updatemgr-ui</AssemblyName>
+    <RootNamespace>Redbox.UpdateManager.UI</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net46</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>ICSharpCode.SharpZipLib;SevenZip;log4net;Redbox.Command.Tokenizer;Redbox.Compression;Redbox.Core;Redbox.IPC.Framework;Redbox.Log.Framework;Redbox.Macros;Redbox.Macros.Functions;Redbox.Tokenizer.Framework;Redbox.UpdateManager.ComponentModel;Redbox.UpdateManager.ServiceProxies;Redbox.UpdateService.Model</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="MainForm.resx" LogicalName="Redbox.UpdateManager.UI.MainForm.resources" />
+    <EmbeddedResource Update="NewScriptEvent.resx" LogicalName="Redbox.UpdateManager.UI.NewScriptEvent.resources" />
+    <EmbeddedResource Update="NewServerpollEvent.resx" LogicalName="Redbox.UpdateManager.UI.NewServerpollEvent.resources" />
+    <EmbeddedResource Update="NewShellEvent.resx" LogicalName="Redbox.UpdateManager.UI.NewShellEvent.resources" />
+    <EmbeddedResource Update="TransferDetails.resx" LogicalName="Redbox.UpdateManager.UI.TransferDetails.resources" />
+    <EmbeddedResource Update="TransferManager.resx" LogicalName="Redbox.UpdateManager.UI.TransferManager.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZip">
+      <HintPath>..\..\..\lib\SevenZip\SevenZip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Command.Tokenizer\Redbox.Command.Tokenizer.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Compression\Redbox.Compression.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Log.Framework\Redbox.Log.Framework.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Macros\Redbox.Macros.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Macros.Functions\Redbox.Macros.Functions.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Tokenizer.Framework\Redbox.Tokenizer.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ServiceProxies\Redbox.UpdateManager.ServiceProxies.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateService.Model\Redbox.UpdateService.Model.csproj" />
+  </ItemGroup>
+</Project>

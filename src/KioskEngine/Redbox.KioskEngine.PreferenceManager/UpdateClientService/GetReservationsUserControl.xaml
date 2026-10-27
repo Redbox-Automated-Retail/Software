@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.UpdateClientService.GetReservationsUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.UpdateClientService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid>
+    <DockPanel LastChildFill="True">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#709060" DockPanel.Dock="Top" />
+      <ScrollViewer>
+        <StackPanel Orientation="Vertical">
+          <Label Content="Reservations: (select to view details)" />
+          <DataGrid Name="ReservationsDataGrid" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding}" SelectionChanged="ReservationsDataGrid_SelectionChanged">
+            <DataGrid.Columns>
+              <DataGridTemplateColumn>
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <Button Name="CancelReservationButton" Content="Cancel Reservation" Click="CancelReservationButton_Click" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Reference #" Binding="{Binding Path=ReferenceNumber}" />
+              <DataGridTextColumn Header="Id" Width="250" Binding="{Binding Path=Id}" />
+              <DataGridTextColumn Header="HashedCardId" Width="200" Binding="{Binding Path=HashedCardId}" />
+              <DataGridTextColumn Header="ReservationVersion" Binding="{Binding Path=ReservationDetails.ReservationVersion}" />
+            </DataGrid.Columns>
+          </DataGrid>
+          <StackPanel Name="ReservationDetailsStackPanel" Margin="25,5,0,0" Visibility="Collapsed">
+            <Grid Background="#709060" Height="25">
+              <Label Content="Reservation Titles:" />
+            </Grid>
+            <DataGrid Name="ReservationDetailDataGrid" AutoGenerateColumns="True" IsReadOnly="True" ItemsSource="{Binding Path=ReservedTitles}" />
+            <Grid Background="#709060" Margin="0,5,0,0">
+              <Label Content="Reservation Details:" />
+            </Grid>
+            <Grid Name="ReservationDetailsGrid">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="150" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+                <RowDefinition Height="26" />
+              </Grid.RowDefinitions>
+              <Label Content="Customer Number" Grid.Column="0" Grid.Row="0" />
+              <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=CustomerNumber}" />
+              <Label Content="Email Address" Grid.Column="0" Grid.Row="1" />
+              <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=EmailAddress}" />
+              <Label Content="Zip Code" Grid.Column="0" Grid.Row="2" />
+              <Label Grid.Column="1" Grid.Row="2" Content="{Binding Path=ZipCode}" />
+              <Label Content="Tax Rate (%)" Grid.Column="0" Grid.Row="3" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="3" Content="{Binding Path=TaxRate}" />
+              <Label Content="Tax" Grid.Column="0" Grid.Row="4" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="4" Content="{Binding Path=Tax}" />
+              <Label Content="SubTotal" Grid.Column="0" Grid.Row="5" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="5" Content="{Binding Path=SubTotal}" />
+              <Label Content="Discounted SubTotal" Grid.Column="0" Grid.Row="6" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="6" Content="{Binding Path=DiscountedSubTotal}" />
+              <Label Content="Default Service Fee" Grid.Column="0" Grid.Row="7" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="7" Content="{Binding Path=DefaultServiceFee}" />
+              <Label Content="Actual Service Fee" Grid.Column="0" Grid.Row="8" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="8" Content="{Binding Path=ActualServiceFee}" />
+              <Label Content="Grand Total" Grid.Column="0" Grid.Row="9" />
+              <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="9" Content="{Binding Path=GrandTotal}" />
+              <Label Content="Multi Night Price" Grid.Column="3" Grid.Row="0" />
+              <CheckBox Grid.Column="4" Grid.Row="0" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=IsMultiNightPrice}" />
+              <Label Content="Loyalty Redemption" Grid.Column="3" Grid.Row="1" />
+              <CheckBox Grid.Column="4" Grid.Row="1" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=IsLoyaltyRedemption}" />
+              <Label Content="Applied Title Marketing" Grid.Column="3" Grid.Row="2" />
+              <CheckBox Grid.Column="4" Grid.Row="2" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=AppliedTitleMarketing}" />
+              <Label Content="Authorize At Pickup" Grid.Column="3" Grid.Row="3" />
+              <CheckBox Grid.Column="4" Grid.Row="3" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=AuthorizeAtPickup}" />
+              <Label Content="Multi Disc Vend" Grid.Column="3" Grid.Row="4" />
+              <CheckBox Grid.Column="4" Grid.Row="4" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=IsMultiDiscVend}" />
+              <Label Content="Gift Card" Grid.Column="3" Grid.Row="5" />
+              <CheckBox Grid.Column="4" Grid.Row="5" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=IsGiftCard}" />
+              <Label Content="Applied Hive Online Promo" Grid.Column="3" Grid.Row="6" />
+              <CheckBox Grid.Column="4" Grid.Row="6" IsEnabled="False" VerticalAlignment="Center" IsChecked="{Binding Path=AppliedHiveOnlinePromo}" />
+              <Label Content="Transaction Date" Grid.Column="3" Grid.Row="7" />
+              <Label Grid.Column="4" Grid.Row="7" Content="{Binding Path=TransactionDate}" />
+            </Grid>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+              <Grid Name="HistoryTitlesGrid" Width="150">
+                <StackPanel Orientation="Vertical">
+                  <Grid Background="#709060">
+                    <Label Content="History Titles:" />
+                  </Grid>
+                  <ListView Name="HistoryTitleIdsListView" Width="150" HorizontalAlignment="Left" MaxHeight="200" ItemsSource="{Binding Path=HistoryTitleIds}" />
+                </StackPanel>
+              </Grid>
+              <Grid Name="CreditCardIdsGrid" Width="150" Margin="10,0,0,0">
+                <StackPanel Orientation="Vertical">
+                  <Grid Background="#709060">
+                    <Label Content="Credit Card Ids:" />
+                  </Grid>
+                  <ListView Name="CreditCardIdsListView" Width="150" HorizontalAlignment="Left" MaxHeight="200" ItemsSource="{Binding Path=CreditCardIds}" />
+                </StackPanel>
+              </Grid>
+              <Grid Name="GiftCardIdsGrid" Width="150" Margin="10,0,0,0">
+                <StackPanel Orientation="Vertical">
+                  <Grid Background="#709060">
+                    <Label Content="Gift Card Ids:" />
+                  </Grid>
+                  <ListView Name="GiftCardIdsListView" Width="150" HorizontalAlignment="Left" MaxHeight="200" ItemsSource="{Binding Path=GiftCardIds}" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</UserControl>

@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="String_SkippingAttribute" xml:space="preserve"><value>Skipping {0} &lt;attribute&gt; for {1}</value></data>
+  <data name="String_OneOrMoreTokens" xml:space="preserve"><value>One or more tokens and replacement values should be specified.</value></data>
+  <data name="String_AddingTask" xml:space="preserve"><value>Adding task '{0}' from {1}:{2}</value></data>
+  <data name="String_BuildBanner" xml:space="preserve"><value>{0} {1} (Build {2}; {3}; {4})</value></data>
+  <data name="NA1193" xml:space="preserve"><value>An empty string is not a valid value for attribute '{0}' of &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1192" xml:space="preserve"><value>'{0}' encoding is not supported on the current platform.</value></data>
+  <data name="NA1191" xml:space="preserve"><value>'{0}' is not a valid encoding.</value></data>
+  <data name="NA1190" xml:space="preserve"><value>DataType child element '{0}' in class '{1}' must define a set method.</value></data>
+  <data name="NA1182" xml:space="preserve"><value>Identifier cannot end with a dash or a dot: {0}</value></data>
+  <data name="NA1183" xml:space="preserve"><value>Datatype references cannot contain an id attribute.</value></data>
+  <data name="NA1180" xml:space="preserve"><value>Task not allowed in targets.  Must be at project level.</value></data>
+  <data name="NA1186" xml:space="preserve"><value>&lt;{0} ... /&gt; does not support multiple '{1}' child elements.</value></data>
+  <data name="NA1187" xml:space="preserve"><value>&lt;{0} ... /&gt; could not be initialized as its backed by type '{1}' which does not derive from Element.</value></data>
+  <data name="NA1184" xml:space="preserve"><value>{0} reference '{1}' not defined.</value></data>
+  <data name="NA1185" xml:space="preserve"><value>Attempting to use a &lt;{0}&gt; reference where a &lt;{1}&gt; is required.</value></data>
+  <data name="NA1188" xml:space="preserve"><value>Property '{0}' for class '{1}' is backed by '{2}' which does not derive from '{3}'.</value></data>
+  <data name="NA1189" xml:space="preserve"><value>Property {0} cannot return null (if there is no set method) for class {1}.</value></data>
+  <data name="NA1138" xml:space="preserve"><value>Failed to move {0} to {1}.</value></data>
+  <data name="NA1131" xml:space="preserve"><value>Path "{0}" does not exist. Can't scan for extensions.</value></data>
+  <data name="NA1130" xml:space="preserve"><value>Failure scanning "{0}" for extensions.</value></data>
+  <data name="NA1133" xml:space="preserve"><value>Source file '{0}' does not exist.</value></data>
+  <data name="NA1132" xml:space="preserve"><value>Assembly "{0}" does not exist. Can't scan for extensions.</value></data>
+  <data name="NA1135" xml:space="preserve"><value>File '{0}' NOT added to message body. {1}</value></data>
+  <data name="NA1134" xml:space="preserve"><value>Source directory '{0}' does not exist.</value></data>
+  <data name="NA1137" xml:space="preserve"><value>Directory '{0}' could not be created.</value></data>
+  <data name="NA1136" xml:space="preserve"><value>File '{0}' NOT attached to message. {1}</value></data>
+  <data name="NA1128" xml:space="preserve"><value>Could not include build file '{0}'.</value></data>
+  <data name="NA1129" xml:space="preserve"><value>The content of file '{0}' could not be loaded.</value></data>
+  <data name="NA1120" xml:space="preserve"><value>The '{0}' task cannot be executed, as it relies on an active framework.</value></data>
+  <data name="NA1121" xml:space="preserve"><value>'{0}' failed to start.</value></data>
+  <data name="NA1122" xml:space="preserve"><value>The SDK for the '{0}' framework is not available or not configured.</value></data>
+  <data name="NA1124" xml:space="preserve"><value>The framework directory for the '{0}' framework is not available or not configured.</value></data>
+  <data name="NA1125" xml:space="preserve"><value>Unable to download '{0}' to '{1}'.</value></data>
+  <data name="NA1126" xml:space="preserve"><value>PropertyTrue test failed for '{0}'.</value></data>
+  <data name="NA1127" xml:space="preserve"><value>Build file '{0}' does not exist.</value></data>
+  <data name="NA1119" xml:space="preserve"><value>External Program Failed: {0} (return code was {1})</value></data>
+  <data name="NA1118" xml:space="preserve"><value>External Program {0} did not finish within {1} milliseconds.</value></data>
+  <data name="NA1113" xml:space="preserve"><value>Cannot delete directory '{0}'.</value></data>
+  <data name="NA1112" xml:space="preserve"><value>Could not find file '{0}' to copy.</value></data>
+  <data name="NA1111" xml:space="preserve"><value>Cannot copy '{0}' to '{1}'.</value></data>
+  <data name="NA1110" xml:space="preserve"><value>Failed to create directory '{0}'.</value></data>
+  <data name="NA1117" xml:space="preserve"><value>'{0}' is not a valid value for attribute 'program' of &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1116" xml:space="preserve"><value>Failed to write message to file '{0}'.</value></data>
+  <data name="NA1114" xml:space="preserve"><value>Cannot delete file '{0}'.</value></data>
+  <data name="NA1108" xml:space="preserve"><value>Either the 'tofile' or 'todir' attribute should be set.</value></data>
+  <data name="NA1109" xml:space="preserve"><value>The 'todir' should be set when using the &lt;fileset&gt; element</value></data>
+  <data name="NA1102" xml:space="preserve"><value>Cannot set attributes for file '{0}'.</value></data>
+  <data name="NA1103" xml:space="preserve"><value>Unable to determine whether directory '{0}' is available.</value></data>
+  <data name="NA1100" xml:space="preserve"><value>Package "{0}" does not exist.</value></data>
+  <data name="NA1101" xml:space="preserve"><value>Cannot set attributes for directory '{0}'.</value></data>
+  <data name="NA1106" xml:space="preserve"><value>'flatten' attribute requires that 'todir' has been set.</value></data>
+  <data name="NA1107" xml:space="preserve"><value>The 'file' attribute and the &lt;fileset&gt; element</value></data>
+  <data name="NA1104" xml:space="preserve"><value>Unable to determine whether file '{0}' is available.</value></data>
+  <data name="NA1105" xml:space="preserve"><value>The 'tofile' and 'todir' attribute cannot both be set.</value></data>
+  <data name="NA1179" xml:space="preserve"><value>Recursive includes are not allowed.</value></data>
+  <data name="NA1178" xml:space="preserve"><value>The default targetframework '{0}' is not valid. Defaulting to the runtime framework ({1}).</value></data>
+  <data name="NA1175" xml:space="preserve"><value>Duplicate command-line argument '-{0}'.</value></data>
+  <data name="NA1174" xml:space="preserve"><value>Duplicate property named '{0}' for command-line argument '{1}'.</value></data>
+  <data name="NA1177" xml:space="preserve"><value>Commandline argument '-{0}' is obsolete. {1}</value></data>
+  <data name="NA1171" xml:space="preserve"><value>Command-line argument '-{0}' is collection-based,</value></data>
+  <data name="NA1170" xml:space="preserve"><value>Invalid value '{0}' for command-line argument '-{1}'.</value></data>
+  <data name="NA1173" xml:space="preserve"><value>The signature of the Add method for the collection-based command-line argument '-{0}' is not supported.</value></data>
+  <data name="NA1172" xml:space="preserve"><value>Duplicate value '{0}' for command-line argument '-{1}'.</value></data>
+  <data name="NA1168" xml:space="preserve"><value>Failed to create extension object "{0}" from "{1}" Assembly.CreateInstance() returned null.</value></data>
+  <data name="NA1169" xml:space="preserve"><value>Collection-based command-line argument '-{0}' has no strongly-typed Add method.</value></data>
+  <data name="NA1164" xml:space="preserve"><value>The fileset specified is empty after scanning '{0}' for: {1}</value></data>
+  <data name="NA1165" xml:space="preserve"><value>'{0}' list could not be opened.</value></data>
+  <data name="NA1166" xml:space="preserve"><value>Assembly "{0}" does not exist. Can't create extension object.</value></data>
+  <data name="NA1167" xml:space="preserve"><value>Can't create extension object "{0}" from "{1}".</value></data>
+  <data name="NA1161" xml:space="preserve"><value>Failed to select nodes with XPath expression '{0}'.</value></data>
+  <data name="NA1162" xml:space="preserve"><value>Failed to save the XML document to '{0}'.</value></data>
+  <data name="NA1159" xml:space="preserve"><value>Could not poke at XML file '{0}'.</value></data>
+  <data name="NA1158" xml:space="preserve"><value>Failed to load the XML document '{0}'.</value></data>
+  <data name="NA1157" xml:space="preserve"><value>Nodeindex '{0}' is out of range.</value></data>
+  <data name="NA1156" xml:space="preserve"><value>No matching nodes found for XPath expression '{0}'.</value></data>
+  <data name="NA1155" xml:space="preserve"><value>Failed to select node with XPath expression '{0}'.</value></data>
+  <data name="NA1154" xml:space="preserve"><value>XML file '{0}' does not exist.</value></data>
+  <data name="NA1153" xml:space="preserve"><value>Could not peek at XML file '{0}'.</value></data>
+  <data name="NA1152" xml:space="preserve"><value>Cannot touch file '{0}'.</value></data>
+  <data name="NA1151" xml:space="preserve"><value>Could not perform XSLT transformation of '{0}' using stylesheet '{1}'.</value></data>
+  <data name="NA1150" xml:space="preserve"><value>Unable to find source XML file '{0}'.</value></data>
+  <data name="NA1148" xml:space="preserve"><value>The "out" attribute is not allowed when "infiles" is used.</value></data>
+  <data name="NA1149" xml:space="preserve"><value>Stylesheet '{0}' does not exist.</value></data>
+  <data name="NA1146" xml:space="preserve"><value>Failed setting environment variable "{0}" to "{1}".</value></data>
+  <data name="NA1147" xml:space="preserve"><value>No source files indicated; use "in" or "infiles".</value></data>
+  <data name="NA1144" xml:space="preserve"><value>No match found for expression '{0}' in '{1}'.</value></data>
+  <data name="NA1145" xml:space="preserve"><value>Invalid value "{0}" for "pattern" attribute.</value></data>
+  <data name="NA1143" xml:space="preserve"><value>Target framework could not be changed. "{0}" is not a valid framework identifier. {1}</value></data>
+  <data name="NA1140" xml:space="preserve"><value>BuildElementArrayAttribute and BuildElementCollectionAttribute should have an element type assigned that derives from Element for {0}.{1}.</value></data>
+  <data name="NA1141" xml:space="preserve"><value>The 'buildfile' attribute and the &lt;buildfiles&gt; element cannot be combined.</value></data>
+  <data name="NA1092" xml:space="preserve"><value>Cannot resolve '{0}' to a string value.</value></data>
+  <data name="NA1093" xml:space="preserve"><value>BuildElementArrayAttribute cannot be applied to read-only property with uninitialized collection-based value '{0}' element for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1090" xml:space="preserve"><value>Cannot resolve '{0}' to integer between '{1}' and '{2}'.</value></data>
+  <data name="NA1091" xml:space="preserve"><value>Cannot resolve '{0}' to integer value.</value></data>
+  <data name="NA1096" xml:space="preserve"><value>"{0}" is not a valid framework identifier.</value></data>
+  <data name="NA1097" xml:space="preserve"><value>Target "{0}" does not exist.</value></data>
+  <data name="NA1094" xml:space="preserve"><value>Child element type {0} cannot be added to collection {1} for underlying property {2} for &lt;{3} ... /&gt;.</value></data>
+  <data name="NA1095" xml:space="preserve"><value>Environment variable "{0}" does not exist.</value></data>
+  <data name="NA1098" xml:space="preserve"><value>Property '{0}' has not been set.</value></data>
+  <data name="NA1099" xml:space="preserve"><value>Task '{0}' is not available.</value></data>
+  <data name="NA1083" xml:space="preserve"><value>Unknown task &lt;{0}&gt;.</value></data>
+  <data name="NA1082" xml:space="preserve"><value>Unknown filter &lt;{0}&gt;.</value></data>
+  <data name="NA1081" xml:space="preserve"><value>Unknown element &lt;{0}&gt;.</value></data>
+  <data name="NA1087" xml:space="preserve"><value>Function {0} is deprecated.  {1}</value></data>
+  <data name="NA1086" xml:space="preserve"><value>Task &lt;{0}&gt; is deprecated.  {1}</value></data>
+  <data name="NA1085" xml:space="preserve"><value>Type &lt;{0}&gt; is deprecated.  {1}</value></data>
+  <data name="NA1089" xml:space="preserve"><value>Cannot resolve '{0}' to DateTime value.</value></data>
+  <data name="NA1088" xml:space="preserve"><value>Cannot resolve '{0}' to boolean value.</value></data>
+  <data name="NA1038" xml:space="preserve"><value>Operator '==' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1039" xml:space="preserve"><value>Operator '/' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1030" xml:space="preserve"><value>Use BuildElementArrayAttributes to have array like elements!  There must be at most one '{0}' element for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1031" xml:space="preserve"><value>BuildElementArrayAttribute and BuildElementCollection attributes must be applied to array or collection-based types '{0}' element for &lt;{1} .../&gt;.</value></data>
+  <data name="NA1032" xml:space="preserve"><value>&lt;{0}&gt; does not support the nested build element "{1}".</value></data>
+  <data name="NA1033" xml:space="preserve"><value>'{0}' is a required attribute of &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1034" xml:space="preserve"><value>Element &lt;{0}... /&gt; for &lt;{1}... /&gt; is deprecated. {2}</value></data>
+  <data name="NA1035" xml:space="preserve"><value>Element Required! There must be a least one '{0}' element for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1036" xml:space="preserve"><value>Operator '*' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1037" xml:space="preserve"><value>Operator '&gt;' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1018" xml:space="preserve"><value>BuildElementArrayAttribute cannot be applied to read-only property with  uninitialized collection-based value '{0}' element for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1019" xml:space="preserve"><value>BuildElementArrayAttribute cannot be applied to write-only collection-based properties. '{0}' element for &gt;{1} .../&lt;.</value></data>
+  <data name="NA1012" xml:space="preserve"><value>Child element type {0} is not assignable to the type of the underlying array ({1} for property {2} for &lt;{3} ... /&gt;.</value></data>
+  <data name="NA1013" xml:space="preserve"><value>'{0}' is a required element of &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1010" xml:space="preserve"><value>'id' is a required attribute for a &lt;{0}&gt; datatype declaration.</value></data>
+  <data name="NA1016" xml:space="preserve"><value>BuildElementArrayAttribute cannot be applied to read-only array-based properties. '{0}' element for &lt;{1} .../&gt;.</value></data>
+  <data name="NA1014" xml:space="preserve"><value>Attribute '{0}' for &lt;{1} ... /&gt; is deprecated.  {2}</value></data>
+  <data name="NA1015" xml:space="preserve"><value>'{0}' is a required framework configuration setting for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1029" xml:space="preserve"><value>BuildElementCollectionAttribute cannot be applied to read-only property with uninitialized collection-based value '{0}' element for &lt;{1} ... /&gt;.</value></data>
+  <data name="NA1021" xml:space="preserve"><value>There must be a least one '{0}' element for &lt;{1} .../&gt;.</value></data>
+  <data name="NA1020" xml:space="preserve"><value>Child element type {0} cannot be added to collection {1} for underlying property {2} for &lt;{3} ... /&gt;.</value></data>
+  <data name="NA1023" xml:space="preserve"><value>'{0}' is not a valid value for attribute '{1}' of &lt;{2} ... /&gt;. Valid values are: {3}.</value></data>
+  <data name="NA1022" xml:space="preserve"><value>'{0}' is not a valid value for attribute '{1}' of &lt;{2} ... /&gt;.</value></data>
+  <data name="NA1025" xml:space="preserve"><value>BuildElementArrayAttribute and BuildElementCollectionAttribute  should have an element type assigned that derives from Element for &lt;{0} .../&gt;.</value></data>
+  <data name="NA1027" xml:space="preserve"><value>Unexpected attribute "{0}" on element &lt;{1}&gt;.</value></data>
+  <data name="NA1026" xml:space="preserve"><value>No name was assigned to the base element '{0}' for collection element {1} for &lt;{2} .../&gt;.</value></data>
+  <data name="NA1078" xml:space="preserve"><value>'{0}' is a required framework configuration setting for the '{1}' build element that should be set in the NAnt configuration file.</value></data>
+  <data name="NA1079" xml:space="preserve"><value>Filter &lt;{0}&gt; is deprecated.  {1}</value></data>
+  <data name="NA1074" xml:space="preserve"><value>Configuration value {0} for task {1} was not considered valid by {2}.</value></data>
+  <data name="NA1075" xml:space="preserve"><value>'{0}' is a required framework configuration setting for the '{1}' build element that should be set in the NAnt configuration file.</value></data>
+  <data name="NA1077" xml:space="preserve"><value>{0} Generated Exception</value></data>
+  <data name="NA1070" xml:space="preserve"><value>Cannot resolve expanded value '{0}' of 'if' attribute to a Boolean value.</value></data>
+  <data name="NA1071" xml:space="preserve"><value>Invalid element &lt;{0}&gt;. Unknown task or datatype.</value></data>
+  <data name="NA1073" xml:space="preserve"><value>Duplicate target named '{0}'!</value></data>
+  <data name="NA1009" xml:space="preserve"><value>'refid' attribute is invalid for a &lt;{0}&gt; datatype declaration.</value></data>
+  <data name="NA1008" xml:space="preserve"><value>'id' is an invalid attribute for a &lt;{0}&gt; tag. Datatypes</value></data>
+  <data name="NA1003" xml:space="preserve"><value>Error creating logger of type '{0}'.</value></data>
+  <data name="NA1002" xml:space="preserve"><value>Error creating listener of type '{0}'.</value></data>
+  <data name="NA1001" xml:space="preserve"><value>More than one '{0}' file found in '{1}' and no default.build exists.</value></data>
+  <data name="NA1007" xml:space="preserve"><value>Could not find a '{0}' file in directory tree.</value></data>
+  <data name="NA1006" xml:space="preserve"><value>Could not load type {0}.</value></data>
+  <data name="NA1005" xml:space="preserve"><value>Error creating output log file '{0}'.</value></data>
+  <data name="NA1004" xml:space="preserve"><value>Could not find a '{0}' file in '{1}'</value></data>
+  <data name="NA1059" xml:space="preserve"><value>Root element in '{0}' must be named '{1}'.</value></data>
+  <data name="NA1054" xml:space="preserve"><value>The 'System.dll' assembly does not exist in framework assembly directory '{0}'.</value></data>
+  <data name="NA1055" xml:space="preserve"><value>There is no version of Visual Studio .NET that corresponds with {0}.</value></data>
+  <data name="NA1052" xml:space="preserve"><value>Unknown function '{0}'.</value></data>
+  <data name="NA1053" xml:space="preserve"><value>Property '{0}' has not been set.</value></data>
+  <data name="NA1050" xml:space="preserve"><value>Operator '&gt;=' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1051" xml:space="preserve"><value>Operator '&lt;' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1069" xml:space="preserve"><value>Cannot resolve expanded value '{0}' of 'unless' attribute to a Boolean value.</value></data>
+  <data name="NA1068" xml:space="preserve"><value>Read-only property "{0}" cannot be overwritten.</value></data>
+  <data name="NA1065" xml:space="preserve"><value>Property '{0}' already exists.</value></data>
+  <data name="NA1064" xml:space="preserve"><value>Property name '{0}' is invalid.</value></data>
+  <data name="NA1067" xml:space="preserve"><value>Property '{0}' does not exist.</value></data>
+  <data name="NA1066" xml:space="preserve"><value>Property value must be a string, was '{0}'.</value></data>
+  <data name="NA1061" xml:space="preserve"><value>Invalid path '{0}'. The '{1}' scheme is not supported for paths.</value></data>
+  <data name="NA1060" xml:space="preserve"><value>NAnt currently does not support this platform ({0}, ID = {1}).</value></data>
+  <data name="NA1063" xml:space="preserve"><value>The current runtime framework '{0}' is not correctly configured in the NAnt configuration file.</value></data>
+  <data name="NA1062" xml:space="preserve"><value>The NAnt configuration file does not contain a framework definition for the current runtime framework (family '{0}' clrversion '{1}').</value></data>
+  <data name="NA1049" xml:space="preserve"><value>Operator '&lt;=' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1048" xml:space="preserve"><value>Operator '-' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1047" xml:space="preserve"><value>Operator '%' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1045" xml:space="preserve"><value>Cannot convert {0} to '{1}' (value was null).</value></data>
+  <data name="NA1044" xml:space="preserve"><value>No overload for '{0}' takes '{1}' arguments.</value></data>
+  <data name="NA1043" xml:space="preserve"><value>Attempt to divide by zero.</value></data>
+  <data name="NA1042" xml:space="preserve"><value>Operator '!=' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1041" xml:space="preserve"><value>Operator '+' cannot be applied to arguments of type '{0}' and '{1}'.</value></data>
+  <data name="NA1040" xml:space="preserve"><value>Unary minus not supported for arguments of type '{0}'.</value></data>
+  <data name="String_BuildFailed" xml:space="preserve"><value>BUILD FAILED - {0} non-fatal error(s), {1} warning(s)</value></data>
+  <data name="String_IncludingFile" xml:space="preserve"><value>Including file {0}.</value></data>
+  <data name="String_UseBaseFilter" xml:space="preserve"><value>A base filter must be used.</value></data>
+  <data name="String_CannotReadPastStream" xml:space="preserve"><value>Cannot read past end of stream.</value></data>
+  <data name="String_CreatingDataTypeBaseBuilder" xml:space="preserve"><value>Creating DataTypeBaseBuilder for {0}</value></data>
+  <data name="String_DuplicateInclude" xml:space="preserve"><value>Duplicate include of file '{0}'.</value></data>
+  <data name="String_PeekNotSupported" xml:space="preserve"><value>Peek currently is not supported.</value></data>
+  <data name="String_AbstractType" xml:space="preserve"><value>Abstract type: {0} for {2}.{1}</value></data>
+  <data name="String_ValidValues" xml:space="preserve"><value>Valid values are: {0}.</value></data>
+  <data name="String_SchemaGenerated" xml:space="preserve"><value>NAnt schema generated at {0}</value></data>
+  <data name="String_Starting_Program" xml:space="preserve"><value>Starting '{1} ({2})' in '{0}'</value></data>
+  <data name="String_TotalTime" xml:space="preserve"><value>Total time: {0} seconds.</value></data>
+  <data name="String_SettingValue" xml:space="preserve"><value>Setting value: {2}.{0} = {1}</value></data>
+  <data name="String_ValidatingElement" xml:space="preserve"><value>Validating &lt;{1} {2}='...'&gt; with {0}</value></data>
+  <data name="String_BuildSucceeded" xml:space="preserve"><value>BUILD SUCCEEDED - {0} non-fatal error(s), {1} warning(s)</value></data>
+  <data name="String_AddingTarget" xml:space="preserve"><value>Adding Target '{0}'</value></data>
+  <data name="String_CreatingTaskBuilder" xml:space="preserve"><value>Creating TaskBuilder for {0}</value></data>
+  <data name="String_EndOfOutput" xml:space="preserve"><value>End of output has been reached.</value></data>
+  <data name="String_AddingDataType" xml:space="preserve"><value>Adding data type '{0}' from {1}:{2}</value></data>
+  <data name="String_TaskExecute" xml:space="preserve"><value>Task.Execute() for '{0}'</value></data>
+  <data name="String_FoundAttribute" xml:space="preserve"><value>Found {0} &lt;attribute&gt; for {1}</value></data>
+  </root>

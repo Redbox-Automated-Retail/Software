@@ -1,0 +1,204 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace ClearImage;
+
+[ComImport]
+[TypeLibType(4160)]
+[Guid("4ED88240-0BE1-11D4-B5F6-009FC6000000")]
+[ComVisible(true)]
+public interface ICiBarcode
+{
+	[DispId(1)]
+	CiRect Rect
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(1)]
+		[return: MarshalAs(UnmanagedType.Interface)]
+		get;
+	}
+
+	[DispId(2)]
+	EBarcodeType Type
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(2)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(2)]
+		[TypeLibFunc(1024)]
+		[param: In]
+		set;
+	}
+
+	[DispId(3)]
+	EBarcodeRotation Rotation
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(3)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(3)]
+		[param: In]
+		set;
+	}
+
+	[DispId(4)]
+	int Length
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(4)]
+		get;
+	}
+
+	[DispId(5)]
+	string Text
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(5)]
+		[return: MarshalAs(UnmanagedType.BStr)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(5)]
+		[param: In]
+		[param: MarshalAs(UnmanagedType.BStr)]
+		set;
+	}
+
+	[DispId(6)]
+	object Data
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(6)]
+		[return: MarshalAs(UnmanagedType.Struct)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(6)]
+		[TypeLibFunc(1024)]
+		[param: In]
+		[param: MarshalAs(UnmanagedType.Struct)]
+		set;
+	}
+
+	[DispId(8)]
+	FBarcodeErrors ErrorFlags
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(8)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(8)]
+		[param: In]
+		set;
+	}
+
+	[DispId(9)]
+	int Confidence
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(9)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(9)]
+		[param: In]
+		set;
+	}
+
+	[DispId(12)]
+	double ModuleSize
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(12)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(12)]
+		[TypeLibFunc(1024)]
+		[param: In]
+		set;
+	}
+
+	[DispId(15)]
+	EBoolean IsBinary
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(15)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(15)]
+		[TypeLibFunc(1024)]
+		[param: In]
+		set;
+	}
+
+	[DispId(16)]
+	EBoolean IsChecksumVerified
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(16)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(16)]
+		[param: In]
+		set;
+	}
+
+	[DispId(17)]
+	double Quality
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(17)]
+		[TypeLibFunc(1088)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(17)]
+		[TypeLibFunc(1088)]
+		[param: In]
+		set;
+	}
+
+	// C# has no syntax for parameterized property 'Info'.
+	// Its 'property:' attributes below are ignored by the compiler (CS0657).
+	[property: DispId(18)]
+	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+	[TypeLibFunc(1088)]
+	[DispId(18)]
+	[return: MarshalAs(UnmanagedType.BStr)]
+	string get_Info([In][MarshalAs(UnmanagedType.BStr)] string Type);
+
+	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+	[TypeLibFunc(1088)]
+	[DispId(18)]
+	void set_Info([In][MarshalAs(UnmanagedType.BStr)] string Type, [In][MarshalAs(UnmanagedType.BStr)] string pVal);
+
+	[DispId(19)]
+	double Skew
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(19)]
+		[TypeLibFunc(1088)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(19)]
+		[TypeLibFunc(1088)]
+		[param: In]
+		set;
+	}
+
+	[DispId(20)]
+	EBarcodeEncoding Encoding
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[DispId(20)]
+		get;
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[TypeLibFunc(1024)]
+		[DispId(20)]
+		[param: In]
+		set;
+	}
+}

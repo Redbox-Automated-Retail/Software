@@ -1,0 +1,334 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using Redbox.Core;
+using Redbox.KioskEngine.ComponentModel;
+using Redbox.KioskEngine.ComponentModel.KioskServices;
+using Redbox.KioskEngine.Environment;
+using Redbox.KioskServices.Proxy.ComponentModel;
+using Redbox.Rental.Model;
+using Redbox.Rental.Model.KioskClientService;
+
+namespace Redbox.KioskServices.Proxy;
+
+public class PromotionServices : IPromotionServices
+{
+	private int m_working;
+
+	public static IPromotionServices Instance => (IPromotionServices)(object)Singleton<PromotionServices>.Instance;
+
+	public bool LiveCall
+	{
+		get
+		{
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Promotion Services", "LiveCall", defaultValue: true);
+		}
+		set
+		{
+			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Promotion Services", "LiveCall", value);
+		}
+	}
+
+	public string[] PromoCodes
+	{
+		get
+		{
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Promotion Services", "PromoCodes", new string[0]);
+		}
+		set
+		{
+			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Promotion Services", "PromoCodes", value);
+		}
+	}
+
+	public bool SimulateServerBusyError
+	{
+		get
+		{
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Promotion Services", "SimulateServerBusyFailure", defaultValue: false);
+		}
+		set
+		{
+			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Promotion Services", "SimulateServerBusyFailure", value);
+		}
+	}
+
+	public bool SimulateCommunicationsFailure
+	{
+		get
+		{
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Promotion Services", "SimulateCommunicationFailure", defaultValue: false);
+		}
+		set
+		{
+			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Promotion Services", "SimulateCommunicationFailure", value);
+		}
+	}
+
+	public bool CanSwitch()
+	{
+		return m_working == 0;
+	}
+
+	public void Reset()
+	{
+	}
+
+	public void ValidatePromotionCode(string storeNumber, string promotionCode, RemoteServiceCallback completeCallback)
+	{
+		if (LiveCall)
+		{
+			PerformLiveCall(storeNumber, promotionCode, completeCallback);
+		}
+		else
+		{
+			SimulatedCall(storeNumber, promotionCode, completeCallback);
+		}
+	}
+
+	private PromotionServices()
+	{
+	}
+
+	private void PerformLiveCall(string storeNumber, string promotionCode, RemoteServiceCallback completeCallback)
+	{
+		ThreadPool.QueueUserWorkItem(async delegate
+		{
+			RemoteServiceResult result = new RemoteServiceResult();
+			result.Properties["is_online"] = true;
+			result.Properties["store"] = storeNumber;
+			result.Properties["code"] = promotionCode;
+			using ExecutionTimer executionTimer = new ExecutionTimer();
+			try
+			{
+				Interlocked.Increment(ref m_working);
+				IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+				bool sendPromoCodeValidationToKioskClientService = service.SendPromoCodeValidationToKioskClientService;
+				string arg = (sendPromoCodeValidationToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
+				{
+					LogHelper.Instance.Log($"Live call to remote IPromotionServices.ValidatePromotionCode, URL: {arg}");
+					if (!int.TryParse(storeNumber, out var kioskId))
+					{
+						LogHelper.Instance.Log($"The passed storeNumber '{storeNumber}' cannot be converted into an Int32.", LogEntryType.Error);
+						result.Success = false;
+						result.Properties["response"] = PromotionValidationResponse.Error.ToString();
+					}
+					else
+					{
+						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+						Guid messageId = Guid.NewGuid();
+						IDictionary<string, object> dictionary = ((!sendPromoCodeValidationToKioskClientService) ? KioskServicesProxy.Instance.ExecuteMessage(new
+						{
+							KioskId = kioskId,
+							Code = promotionCode,
+							MessageId = messageId,
+							MessageType = "DiscountCodeValidation",
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"]
+						}) : (await ServiceLocator.Instance.GetService<IKioskClientService>().Promotion.ValidatePromotionCode(messageId, promotionCode, kioskId)));
+						HealthServicesProxy.Instance.UpdateOnlineStatus(dictionary);
+						result.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
+						result.Properties["response"] = PromotionValidationResponse.Valid.ToString();
+						result.Properties["amount"] = (dictionary.ContainsKey("Amount") ? dictionary["Amount"] : ((object)1));
+						result.Properties["promotion_intent"] = (dictionary.ContainsKey("PromotionIntentCode") ? dictionary["PromotionIntentCode"] : PromotionIntentCode.FixedValue.ToString());
+						result.Properties["rent_qty"] = (dictionary.ContainsKey("RentQty") ? dictionary["RentQty"] : ((object)0));
+						result.Properties["rent_format"] = (dictionary.ContainsKey("RentFormat") ? dictionary["RentFormat"] : null);
+						result.Properties["get_qty"] = (dictionary.ContainsKey("GetQty") ? dictionary["GetQty"] : ((object)0));
+						result.Properties["get_format"] = (dictionary.ContainsKey("GetFormat") ? dictionary["GetFormat"] : null);
+						Dictionary<string, object> dictionary2 = (dictionary.ContainsKey("CampaignTitles") ? (dictionary["CampaignTitles"] as Dictionary<string, object>) : null);
+						if (dictionary2 != null)
+						{
+							ArrayList value = dictionary2["Titles"] as ArrayList;
+							Dictionary<string, object> value2 = new Dictionary<string, object>
+							{
+								["include"] = (bool)dictionary2["Include"],
+								["titles"] = value
+							};
+							result.Properties["campaign_titles"] = value2;
+						}
+						if (dictionary.ContainsKey("ServerName"))
+						{
+							result.Properties["server_name"] = dictionary["ServerName"];
+						}
+						result.Properties["product_type_id"] = (dictionary.ContainsKey("ProductTypeId") ? dictionary["ProductTypeId"] : null);
+						result.Properties["format_ids"] = (dictionary.ContainsKey("FormatIds") ? (dictionary["FormatIds"] as ArrayList) : null);
+						result.Properties["action_code"] = (dictionary.ContainsKey("ActionType") ? dictionary["ActionType"] : PromotionActionCode.Rental.ToString());
+						result.Properties["allow_full_discount"] = (dictionary.ContainsKey("AllowFullDiscount") ? dictionary["AllowFullDiscount"] : ((object)true));
+						result.Properties["default_promo"] = (dictionary.ContainsKey("DefaultPromo") ? dictionary["DefaultPromo"] : null);
+						if (!result.Success)
+						{
+							ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
+							if (arrayList != null && arrayList.Count > 0)
+							{
+								if (arrayList[0] is Dictionary<string, object> dictionary3)
+								{
+									object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(PromotionValidationResponse?), (string)dictionary3["Code"]);
+									result.Properties["response"] = ((fieldsForResponseCode != null) ? fieldsForResponseCode.ToString() : PromotionValidationResponse.Error.ToString());
+								}
+							}
+							else
+							{
+								result.Properties["response"] = PromotionValidationResponse.Error.ToString();
+							}
+						}
+					}
+				}
+				else
+				{
+					LogHelper.Instance.Log("In stand alone mode, not issuing realtime call to ValidatePromotionCode.", LogEntryType.Info);
+					result.Properties["response"] = PromotionValidationResponse.Error.ToString();
+					result.Properties["is_online"] = false;
+				}
+			}
+			catch (Exception e)
+			{
+				LogHelper.Instance.Log("An unhandled exception was raised in PromotionServicesProxy.ValidatePromotionCode.", e);
+				result.Properties["response"] = PromotionValidationResponse.Error.ToString();
+			}
+			finally
+			{
+				try
+				{
+					result.ExecutionTime = executionTimer.Elapsed;
+					result.Properties["stand_alone"] = ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone;
+					LogHelper.Instance.Log("IRemoteServiceResult: {0}", result?.ToObfuscatedString());
+					ServiceLocator.Instance.GetService<ICallbackService>()?.EnqueueCallback(new RemoteServiceCallbackEntry
+					{
+						Callback = completeCallback,
+						Result = result,
+						Message = "Invoking completeCallback from PromotionServicesProxy.ValidatePromotionCode."
+					});
+				}
+				finally
+				{
+					Interlocked.Decrement(ref m_working);
+				}
+			}
+		});
+	}
+
+	private void SimulatedCall(string storeNumber, string promotionCode, RemoteServiceCallback completeCallback)
+	{
+		ThreadPool.QueueUserWorkItem(delegate
+		{
+			LogHelper.Instance.Log("Simulating call to IPromotionServices.ValidatePromotionCode.");
+			RemoteServiceResult remoteServiceResult = new RemoteServiceResult();
+			using ExecutionTimer executionTimer = new ExecutionTimer();
+			try
+			{
+				Interlocked.Increment(ref m_working);
+				remoteServiceResult.Properties["store"] = storeNumber;
+				remoteServiceResult.Properties["code"] = promotionCode;
+				int num = new Random().Next(1, 5);
+				new AutoResetEvent(initialState: false).WaitOne(num * 1000);
+				PromotionValidationResponse response;
+				PromotionIntentCode intent;
+				decimal amount;
+				if (SimulateServerBusyError)
+				{
+					remoteServiceResult.Success = false;
+					RemoteServiceProviderInstruction remoteServiceProviderInstruction = new RemoteServiceProviderInstruction
+					{
+						Type = InstructionType.WaitAbsolute
+					};
+					remoteServiceProviderInstruction.Parameters["wait_time"] = new TimeSpan(0, 0, 15, 0);
+					remoteServiceResult.InnerInstructions.Add(remoteServiceProviderInstruction);
+					remoteServiceResult.Properties["response"] = "Server Busy";
+				}
+				else if (SimulateCommunicationsFailure)
+				{
+					remoteServiceResult.Success = false;
+					RemoteServiceProviderInstruction item = new RemoteServiceProviderInstruction
+					{
+						Type = InstructionType.WaitForSuccessfulPing
+					};
+					remoteServiceResult.InnerInstructions.Add(item);
+					remoteServiceResult.Properties["response"] = "Communications Failure";
+				}
+				else if (DoesCodeMatch(promotionCode, out response, out intent, out amount))
+				{
+					remoteServiceResult.Success = response == PromotionValidationResponse.Valid;
+					remoteServiceResult.Properties["amount"] = amount;
+					remoteServiceResult.Properties["promotion_intent"] = intent.ToString();
+					remoteServiceResult.Properties["response"] = response.ToString();
+					remoteServiceResult.Properties["rent_qty"] = 0;
+					remoteServiceResult.Properties["rent_format"] = null;
+					remoteServiceResult.Properties["get_qty"] = 0;
+					remoteServiceResult.Properties["get_format"] = null;
+					remoteServiceResult.Properties["campaign_titles"] = null;
+					remoteServiceResult.Properties["product_type_id"] = null;
+					remoteServiceResult.Properties["format_ids"] = null;
+					remoteServiceResult.Properties["action_code"] = PromotionActionCode.Rental.ToString();
+					remoteServiceResult.Properties["allow_full_discount"] = true;
+					remoteServiceResult.Properties["default_promo"] = null;
+				}
+				else
+				{
+					remoteServiceResult.Success = false;
+					remoteServiceResult.Properties["amount"] = 0;
+					remoteServiceResult.Properties["promotion_intent"] = PromotionIntentCode.FixedValue.ToString();
+					remoteServiceResult.Properties["response"] = PromotionValidationResponse.CodeNotValid.ToString();
+					remoteServiceResult.Properties["rent_qty"] = 0;
+					remoteServiceResult.Properties["rent_format"] = null;
+					remoteServiceResult.Properties["get_qty"] = 0;
+					remoteServiceResult.Properties["get_format"] = null;
+					remoteServiceResult.Properties["campaign_titles"] = null;
+					remoteServiceResult.Properties["product_type_id"] = null;
+					remoteServiceResult.Properties["format_ids"] = null;
+					remoteServiceResult.Properties["action_code"] = PromotionActionCode.Rental.ToString();
+					remoteServiceResult.Properties["allow_full_discount"] = true;
+					remoteServiceResult.Properties["default_promo"] = null;
+				}
+			}
+			catch (Exception e)
+			{
+				LogHelper.Instance.Log("An unhandled exception was raised in PromotionServicesProxy.ValidatePromotionCode.", e);
+				remoteServiceResult.Properties["response"] = PromotionValidationResponse.Error.ToString();
+			}
+			finally
+			{
+				try
+				{
+					remoteServiceResult.ExecutionTime = executionTimer.Elapsed;
+					LogHelper.Instance.Log("IRemoteServiceResult: {0}", remoteServiceResult?.ToObfuscatedString());
+					ServiceLocator.Instance.GetService<ICallbackService>()?.EnqueueCallback(new RemoteServiceCallbackEntry
+					{
+						Callback = completeCallback,
+						Result = remoteServiceResult,
+						Message = "Invoking completeCallback from PromotionServicesProxy.ValidatePromotionCode."
+					});
+				}
+				finally
+				{
+					Interlocked.Decrement(ref m_working);
+				}
+			}
+		});
+	}
+
+	private bool DoesCodeMatch(string promotionCode, out PromotionValidationResponse response, out PromotionIntentCode intent, out decimal amount)
+	{
+		amount = 0m;
+		response = PromotionValidationResponse.CodeNotValid;
+		intent = PromotionIntentCode.FixedValue;
+		if (PromoCodes == null)
+		{
+			return false;
+		}
+		string[] promoCodes = PromoCodes;
+		for (int i = 0; i < promoCodes.Length; i++)
+		{
+			string[] array = promoCodes[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+			if (array.Length >= 4 && string.Compare(array[0], promotionCode, ignoreCase: true) == 0)
+			{
+				decimal.TryParse(array[1], out amount);
+				intent = Enum<PromotionIntentCode>.ParseIgnoringCase(array[2], PromotionIntentCode.FixedValue);
+				response = Enum<PromotionValidationResponse>.ParseIgnoringCase(array[3], PromotionValidationResponse.Valid);
+				return true;
+			}
+		}
+		return false;
+	}
+}

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:ViewUserControl x:Class="Redbox.Rental.UI.Views.PerksSignUpAlreadyMemberViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <Redbox:GridExt Name="MainControl" RowHeights="124,*,190" Height="768" Width="1024" Background="{StaticResource RubineRedRadialGradientBrush}">
+    <Grid Row="1">
+      <StackPanel Margin="40,0">
+        <TextBlock Name="TitleTextElem" HorizontalAlignment="Center" Margin="64,36" Style="{StaticResource font_museo_slab_900_48}" Foreground="#FFFFFFFF" TextWrapping="Wrap" TextAlignment="Center" Text="{Binding TitleText, FallbackValue=Youre already a Redbox Perks member!}" />
+        <TextBlock Name="MessageTextElem" HorizontalAlignment="Center" Margin="0,20,0,0" Style="{StaticResource font_montserrat_medium_24}" TextAlignment="Center" TextWrapping="Wrap" Foreground="#FFFFFFFF" Text="{Binding MessageText, FallbackValue=Dont forget to sign in during each visit to see your promos and use your points for FREE rentals.}" />
+      </StackPanel>
+    </Grid>
+    <Grid Row="2">
+      <Redbox:RoundedButton Name="NextButton" MinWidth="232" Height="56" Style="{StaticResource warmpurple_white_border_button_with_dropshadow_style}" UsedDefaultCornerRadius="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="40,0" Command="{Binding ContinueButtonCommand}">
+        <TextBlock Name="CapButtonText" Margin="45,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_28}" Text="{Binding Path=ContinueButtonText, FallbackValue=Continue}" />
+      </Redbox:RoundedButton>
+    </Grid>
+  </Redbox:GridExt>
+</local:ViewUserControl>

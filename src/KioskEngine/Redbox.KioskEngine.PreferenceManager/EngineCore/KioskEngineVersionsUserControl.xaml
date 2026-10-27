@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.EngineCore.KioskEngineVersionsUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.EngineCore" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid>
+    <DockPanel LastChildFill="True">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#FF708090" DockPanel.Dock="Top" />
+      <ScrollViewer>
+        <StackPanel Orientation="Vertical">
+          <Label Content="Assembly Versions:" />
+          <DataGrid Name="AssemblyVersionGrid" AutoGenerateColumns="True" ItemsSource="{Binding Path=Assemblies}" />
+          <Label Content="Bundle Versions:" />
+          <DataGrid Name="BundleVersionGrid" AutoGenerateColumns="True" ItemsSource="{Binding Path=Bundles}" />
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</UserControl>

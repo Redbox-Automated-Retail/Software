@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.TransactionService.GCAuthorizeResultUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.TransactionService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid Background="#FFFFFFFF">
+    <StackPanel Orientation="Vertical">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#7092BE" RefreshButtonVisibilty="Visible" SaveButtonVisibilty="Visible" />
+      <StackPanel Margin="20,5,0,5">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="LiveCallCheckBox" Grid.Row="1" IsChecked="{Binding LiveCall}">
+              <TextBlock Text="Live Call" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="SimulateCommunicationsFailureCheckBox" Grid.Row="1" IsChecked="{Binding SimulateCommunicationFailure}">
+              <TextBlock Text="Simulate Communications Failure" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <TextBlock Text="Authorize Response" Grid.Row="2" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <ComboBox Name="AuthorizeResponseErrorComboBox" Grid.Row="2" Grid.Column="1" MaxDropDownHeight="200" Width="350" HorizontalAlignment="Left" Margin="0,3" SelectedItem="{Binding Path=AuthorizeResponseError}" />
+          <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="ExistsCheckBox" Grid.Row="1" IsChecked="{Binding Exists}">
+              <TextBlock Text="Exists" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <TextBlock Text="Gift Card Status" Grid.Row="4" Grid.Column="0" FontSize="10" VerticalAlignment="Center" />
+          <ComboBox Name="GiftCardStatusComboBox" Grid.Row="4" Grid.Column="1" MaxDropDownHeight="200" Width="350" HorizontalAlignment="Left" Margin="0,3" SelectedItem="{Binding Path=GiftCardStatusItem}" />
+          <TextBlock Text="Balance" Grid.Row="5" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="BalanceTextbox" Grid.Row="5" Grid.Column="1" Width="50" Height="18" VerticalAlignment="Center" Margin="0,3" HorizontalAlignment="Left" Text="{Binding Path=Balance}" />
+          <TextBlock Text="Max Discs" Grid.Row="6" FontSize="10" VerticalAlignment="Center" />
+          <TextBox Name="MaxDiscsTextbox" Grid.Row="6" Grid.Column="1" Width="50" Height="18" VerticalAlignment="Center" Margin="0,3" HorizontalAlignment="Left" Text="{Binding Path=MaxDiscs}" />
+          <TextBlock Text="Note: Customer Profile, Account #, and reference # fields will be popluated from the regular Authorize Results settings page." Grid.Row="8" Grid.Column="1" FontSize="12" VerticalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.JoinedUserControl1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid>
+    <UIElement.InputBindings>
+      <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.GeneralClickCommand}" />
+    </UIElement.InputBindings>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="574" />
+      <RowDefinition Height="194" />
+    </Grid.RowDefinitions>
+    <Image Name="PinkDotsBackgroundImage" Grid.Row="0" Grid.RowSpan="2" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/backgroundTexture.png" />
+    <Grid Row="0">
+      <Label>
+        <Control.Background>
+          <RadialGradientBrush Center="0.5,0.52">
+            <GradientBrush.GradientStops>
+              <GradientStop Color="#e42045" Offset="0.0" />
+              <GradientStop Color="#722d7a" Offset="4.0" />
+            </GradientBrush.GradientStops>
+          </RadialGradientBrush>
+        </Control.Background>
+      </Label>
+      <StackPanel Margin="0,52,0,0">
+        <TextBlock Style="{StaticResource font_museo_slab_900_64}" Foreground="#FFFFFFFF" Text="Use your Redbox Perks" HorizontalAlignment="Center" />
+        <TextBlock Style="{StaticResource font_museo_slab_900_64}" Foreground="#FFFFFFFF" Text="points to get free stuff" HorizontalAlignment="Center" />
+      </StackPanel>
+    </Grid>
+    <DockPanel Grid.Row="1">
+      <Image Name="hand" DockPanel.Dock="Left" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/hand.png" Margin="55,22,0,16" />
+      <TextBlock DockPanel.Dock="Left" Text="Touch anywhere to start" Style="{StaticResource font_museo_slab_900_30}" Foreground="#782d8d" Margin="34,80,0,78" />
+      <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,87,30,41">
+        <Grid Name="handicap_button_on" Margin="12, 0, 0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="{Binding Path=AdaTurnedOnLabelVisibility}">
+          <UIElement.InputBindings>
+            <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.ToggleADAModeCommand}" />
+          </UIElement.InputBindings>
+          <Ellipse HorizontalAlignment="Left" VerticalAlignment="Top" Width="62" Height="62" Fill="#E42045" />
+          <Ellipse HorizontalAlignment="Left" Margin="3,3,1,1" VerticalAlignment="Top" Width="58" Height="58" Fill="#E42045" />
+          <UserControl Name="handicap_button_icon_on" Foreground="#FFFFFFFF" Style="{StaticResource handicap_icon}" Margin="-2, 4, 0,0" Width="67" Height="67" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5">
+            <UIElement.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
+                <SkewTransform />
+                <RotateTransform />
+                <TranslateTransform />
+              </TransformGroup>
+            </UIElement.RenderTransform>
+          </UserControl>
+        </Grid>
+        <Redbox:RoundedButton Name="espanol_button" Style="{StaticResource rubine_no_border_button_style}" CornerRadius="31" Margin="12,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="148" Height="62" Command="{x:Static localbase:Commands.ToggleLanguageModeCommand}" Focusable="False">
+          <TextBlock VerticalAlignment="Center" Style="{StaticResource font_bryant_bold_18}" Text="ESPAÑOL" />
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Name="help_button" Style="{StaticResource rubine_no_border_button_style}" CornerRadius="31" Margin="12,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="62" Height="62" Command="{x:Static localbase:Commands.HelpCommand}" Focusable="False">
+          <TextBlock Style="{StaticResource font_bryant_bold_28}">?</TextBlock>
+        </Redbox:RoundedButton>
+      </StackPanel>
+    </DockPanel>
+  </Grid>
+</UserControl>

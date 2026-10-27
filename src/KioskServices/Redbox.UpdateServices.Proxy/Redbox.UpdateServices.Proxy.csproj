@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.UpdateServices.Proxy</AssemblyName>
+    <RootNamespace>Redbox.UpdateServices.Proxy</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\UpdateManager\Redbox.UpdateManager.Client\Redbox.UpdateManager.Client.csproj" />
+    <ProjectReference Include="..\..\UpdateManager\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateServices.Proxy.ComponentModel\Redbox.UpdateServices.Proxy.ComponentModel.csproj" />
+  </ItemGroup>
+</Project>

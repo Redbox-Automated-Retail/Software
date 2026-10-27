@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:BaseUserControl x:Class="Redbox.Rental.UI.Controls.StoredPromoCodeListControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:controls="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" xmlns:localModels="clr-namespace:Redbox.Rental.UI.Models" xmlns:designModel="clr-namespace:Redbox.Rental.UI.Models.DesignTime" x:Name="StoredPromoList">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <controls:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <local:PerksOfferListDataTemplateSelector x:Key="PerksOfferListTemplateSelector" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="60" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="{Binding AdaArrowColumnWidth, ElementName=StoredPromoList, FallbackValue=0}" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="{Binding AdaArrowColumnWidth, ElementName=StoredPromoList, FallbackValue=0}" />
+    </Grid.ColumnDefinitions>
+    <ItemsControl Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" ItemTemplateSelector="{StaticResource PerksOfferListTemplateSelector}" ItemsSource="{Binding CurrentPagePromos, ElementName=StoredPromoList}">
+      <FrameworkElement.Resources>
+        <ResourceDictionary>
+          <DataTemplate x:Key="StoredPromoCodeDataTemplate">
+            <local:StoredPromoCodeListItem Margin="10,5,10,5" PromoCodeText="{Binding Path=MaskedPromoCode}" PromoDescriptionText="{Binding Path=PromoCodeDescription}" PromoExpirationText="{Binding Path=PromoCodeExpirationText}" IsAddedText="{Binding Path=AddedToBagText}" IsAdded="{Binding Path=IsAdded, FallbackValue=False}" AddRemoveButtonCommand="{Binding Path=AddRemoveButtonCommand}" AdaButtonNumber="{Binding Path=AdaButtonNumber}" IsAdaMode="{Binding Path=IsAdaMode}" />
+          </DataTemplate>
+          <DataTemplate x:Key="CompletedOfferDataTemplate">
+            <local:PerksOfferCompletedListItem Margin="10,5,10,5" DataContext="{Binding}" />
+          </DataTemplate>
+          <DataTemplate x:Key="ActiveOfferDataTemplate">
+            <local:PerksOfferActiveListItem Margin="10,5,10,5" DataContext="{Binding}" />
+          </DataTemplate>
+        </ResourceDictionary>
+      </FrameworkElement.Resources>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Vertical" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
+    <local:PagingButtonsControl x:Name="PageControl" Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" NumberOfPages="{Binding NumberOfPages, ElementName=StoredPromoList}" CurrentPageNumber="{Binding CurrentPageNumber, ElementName=StoredPromoList, Mode=TwoWay}" Visibility="{Binding PageControlVisibility, ElementName=StoredPromoList}" />
+    <Button Name="LeftArrowButton" Grid.Row="0" Grid.Column="0" Width="34" Margin="0,0,30,0" Style="{StaticResource TransparentButton}" Command="{Binding AdaLeftArrowPressedCommand, ElementName=StoredPromoList}" Visibility="{Binding ShowAdaLeftArrow, ElementName=StoredPromoList, Converter={StaticResource BoolToVisibility}}">
+      <local:ChevronUserControl ChevronColor="{StaticResource WarmPurpleBrush}" ChevronDirection="Left" Visibility="Visible" IsHitTestVisible="False" />
+    </Button>
+    <Button Name="RightArrowButton" Grid.Row="0" Grid.Column="2" Width="34" Margin="30,0,0,0" Style="{StaticResource TransparentButton}" Command="{Binding AdaRightArrowPressedCommand, ElementName=StoredPromoList}" Visibility="{Binding ShowAdaRightArrow, ElementName=StoredPromoList, Converter={StaticResource BoolToVisibility}}">
+      <local:ChevronUserControl ChevronColor="{StaticResource WarmPurpleBrush}" ChevronDirection="Right" Visibility="Visible" IsHitTestVisible="False" />
+    </Button>
+    <ItemsControl Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding AdaButtonData, ElementName=StoredPromoList}" Visibility="{Binding IsAdaMode, ElementName=StoredPromoList, Converter={StaticResource BoolToVisibility}}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <controls:RoundedButton Height="45" Width="45" VerticalAlignment="Center" Margin="15,15,15,0" UsedDefaultCornerRadius="True" Style="{StaticResource style_rb_rubine_white_border_with_dropshadow_button}" Command="{Binding ButtonCommand}" CommandParameter="{Binding Item}">
+            <Grid>
+              <TextBlock Style="{StaticResource font_montserrat_bold_18}" Foreground="#FFFFFFFF" Text="{Binding AdaButtonNumber}" />
+            </Grid>
+          </controls:RoundedButton>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Grid>
+</local:BaseUserControl>

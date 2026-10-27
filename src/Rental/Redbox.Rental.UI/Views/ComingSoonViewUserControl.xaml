@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Views.ComingSoonViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid>
+    <Image Name="backgroundImage" Stretch="Fill" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Cart_bg.png" />
+    <TextBlock Name="TextBlockComingSoon" Margin="0, 100,0,0" HorizontalAlignment="Center" Style="{StaticResource font_target_largest}">Coming Soon!</TextBlock>
+    <StackPanel Name="ComingSoonPanel" Margin="0,248,0,200" Orientation="Horizontal" HorizontalAlignment="Center" />
+    <TextBlock Name="TextBlockRentalsComingSoon" Margin="0, 646,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Style="{StaticResource font_target_large}">Your rentals are on their way!</TextBlock>
+  </Grid>
+</UserControl>

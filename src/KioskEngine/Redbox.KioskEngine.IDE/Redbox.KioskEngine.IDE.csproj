@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.KioskEngine.IDE</AssemblyName>
+    <RootNamespace>Redbox.KioskEngine.IDE</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="JavaScript.syn" />
+    <EmbeddedResource Include="JavaScript.syn" LogicalName="Redbox.KioskEngine.IDE.JavaScript.syn" />
+    <None Remove="SQLServer2K_SQL.syn" />
+    <EmbeddedResource Include="SQLServer2K_SQL.syn" LogicalName="Redbox.KioskEngine.IDE.SQLServer2K_SQL.syn" />
+    <None Remove="XML.syn" />
+    <EmbeddedResource Include="XML.syn" LogicalName="Redbox.KioskEngine.IDE.XML.syn" />
+    <None Remove="HALScript.syn" />
+    <EmbeddedResource Include="HALScript.syn" LogicalName="Redbox.KioskEngine.IDE.HALScript.syn" />
+    <None Remove="Lua.syn" />
+    <EmbeddedResource Include="Lua.syn" LogicalName="Redbox.KioskEngine.IDE.Lua.syn" />
+    <EmbeddedResource Update="BundleFilterToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.BundleFilterToolWindow.resources" />
+    <EmbeddedResource Update="CallStackToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.CallStackToolWindow.resources" />
+    <EmbeddedResource Update="DebuggerForm.resx" LogicalName="Redbox.KioskEngine.IDE.DebuggerForm.resources" />
+    <EmbeddedResource Update="ErrorListToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ErrorListToolWindow.resources" />
+    <EmbeddedResource Update="IdeMainForm.resx" LogicalName="Redbox.KioskEngine.IDE.IdeMainForm.resources" />
+    <EmbeddedResource Update="ImmediateToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ImmediateToolWindow.resources" />
+    <EmbeddedResource Update="OutputToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.OutputToolWindow.resources" />
+    <EmbeddedResource Update="PictureBox.resx" LogicalName="Redbox.KioskEngine.IDE.PictureBox.resources" />
+    <EmbeddedResource Update="PreferencesManager.resx" LogicalName="Redbox.KioskEngine.IDE.PreferencesManager.resources" />
+    <EmbeddedResource Update="ProjectExplorerToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ProjectExplorerToolWindow.resources" />
+    <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.KioskEngine.IDE.Properties.Resources.resources" />
+    <EmbeddedResource Update="PropertiesToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.PropertiesToolWindow.resources" />
+    <EmbeddedResource Update="SecureBrowser.resx" LogicalName="Redbox.KioskEngine.IDE.SecureBrowser.resources" />
+    <EmbeddedResource Update="SymbolsToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.SymbolsToolWindow.resources" />
+    <EmbeddedResource Update="TextEditor.resx" LogicalName="Redbox.KioskEngine.IDE.TextEditor.resources" />
+    <EmbeddedResource Update="TimersToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.TimersToolWindow.resources" />
+    <EmbeddedResource Update="ViewStackToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ViewStackToolWindow.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Puzzle.SyntaxBox.NET3.5">
+      <HintPath>..\..\..\lib\Puzzle.SyntaxBox\Puzzle.SyntaxBox.NET3.5.dll</HintPath>
+    </Reference>
+    <Reference Include="Skybound.VisualTips">
+      <HintPath>..\..\..\lib\Skybound.VisualTips\Skybound.VisualTips.dll</HintPath>
+    </Reference>
+    <Reference Include="SmartPropertyGrid">
+      <HintPath>..\..\..\lib\SmartPropertyGrid\SmartPropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\..\lib\WeifenLuo\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
+  </ItemGroup>
+</Project>

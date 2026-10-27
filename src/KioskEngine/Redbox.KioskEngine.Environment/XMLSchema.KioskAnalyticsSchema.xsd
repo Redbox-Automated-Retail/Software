@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="KioskAnalytics" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="session">
+		<xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="sessionId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="sessionType" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="sessionStart" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="shoppingCart" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="cartItems" minOccurs="1" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="cartItem" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="add_sequence" type="xs:string" />
+												<xs:attribute name="removed" type="xs:string" />
+												<xs:attribute name="productFamily" type="xs:string" />
+												<xs:attribute name="action" type="xs:string" />
+												<xs:attribute name="price" type="xs:string" />
+												<xs:attribute name="taxRate" type="xs:string" />
+												<xs:attribute name="quantity" type="xs:string" />
+												<xs:attribute name="productID" type="xs:string" />
+												<xs:attribute name="barcode" type="xs:string" />
+												<xs:attribute name="productType" type="xs:string" />
+												<xs:attribute name="status" type="xs:string" />
+												<xs:attribute name="sourceType" type="xs:string" />
+                        <xs:attribute name="extraNight" type="xs:string" />
+                        <xs:attribute name="productPricingId" type="xs:string" />
+                        <xs:attribute name="initialDays" type="xs:string" />
+                        <xs:attribute name="defaultInitialNightPrice" type="xs:string" />
+                        <xs:attribute name="defaultExtraNightPrice" type="xs:string" />
+                      </xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="subTotal" type="xs:string" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="taxAmount" type="xs:string" minOccurs="0" maxOccurs="1"/>
+							<xs:element name="grandTotal" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="promoCodes" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="promoCode" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="code" type="xs:string" />
+									<xs:attribute name="valid" type="xs:string" />
+									<xs:attribute name="value" type="xs:string" />
+									<xs:attribute name="serverFailureReason" type="xs:string" />
+									<xs:attribute name="online" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="authorizations" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="cardSwipe" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="result" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="authorize" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="approved" type="xs:string" />
+									<xs:attribute name="firstName" type="xs:string" />
+									<xs:attribute name="lastName" type="xs:string" />
+									<xs:attribute name="online" type="xs:string" />
+									<xs:attribute name="email" type="xs:string" />
+									<xs:attribute name="timestamp" type="xs:string" />
+									<xs:attribute name="response" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="gc_authorize" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="approved" type="xs:string" />
+									<xs:attribute name="firstName" type="xs:string" />
+									<xs:attribute name="lastName" type="xs:string" />
+									<xs:attribute name="online" type="xs:string" />
+									<xs:attribute name="email" type="xs:string" />
+									<xs:attribute name="timestamp" type="xs:string" />
+									<xs:attribute name="response" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="pickupValidation" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="pickupValid" type="xs:string" />
+									<xs:attribute name="online" type="xs:string" />
+									<xs:attribute name="timestamp" type="xs:string" />
+									<xs:attribute name="response" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="resvAuthorize" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="approved" type="xs:string" />
+									<xs:attribute name="online" type="xs:string" />
+									<xs:attribute name="timestamp" type="xs:string" />
+									<xs:attribute name="response" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="preauth" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="online" type="xs:string" />
+									<xs:attribute name="timestamp" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="views" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="view" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="viewEvents" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="viewEvent" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:attribute name="subItemType" type="xs:string" />
+															<xs:attribute name="subItemValue" type="xs:string" />
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:all>
+									<xs:attribute name="viewName" type="xs:string" />
+									<xs:attribute name="viewSequence" type="xs:string" />
+									<xs:attribute name="viewVersion" type="xs:string" />
+									<xs:attribute name="viewCulture" type="xs:string" />
+									<xs:attribute name="viewStart" type="xs:string" />
+									<xs:attribute name="viewEnd" type="xs:string" />
+									<xs:attribute name="viewDuration" type="xs:string" />
+									<xs:attribute name="activeFlag" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="application" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="appVersion" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="kioskID" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="culture" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="market" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="banner" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="return" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="startTime" type="xs:string" minOccurs="0" />
+							<xs:element name="titleBarcode" type="xs:string" minOccurs="0" />
+							<xs:element name="slot" type="xs:string" minOccurs="0" />
+							<xs:element name="deck" type="xs:string" minOccurs="0" />
+							<xs:element name="titleId" type="xs:string" minOccurs="0" />
+							<xs:element name="returnType" type="xs:string" minOccurs="0" />
+							<xs:element name="endTime" type="xs:string" minOccurs="0" />
+							<xs:element name="duration" type="xs:string" minOccurs="0" />
+							<xs:element name="success" type="xs:string" minOccurs="0" />
+							<xs:element name="failureReason" type="xs:string" minOccurs="0" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="hasCheckout" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="vendingMovie" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="programName" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="onlinePickup"  minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="cartItem" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="barcode" type="xs:string" />
+									<xs:attribute name="status" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="recommendationsFlow" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="recommendedTitles" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="recommendedTitlesShown" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="abandon" type="xs:string" minOccurs="0" maxOccurs="1" />
+        <xs:element name="loggedInCustomerProfileNumber" type="xs:string" minOccurs="0" maxOccurs="1" />
+        <xs:element name="customerProfileNumber" type="xs:string" minOccurs="0" maxOccurs="1" />
+        <xs:element name="transactionID" type="xs:string" minOccurs="0" maxOccurs="1" />
+        <xs:element name="accountNumber" type="xs:string" minOccurs="0" maxOccurs="1" />
+        <xs:element name="sessionEnd" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="sessionDuration" type="xs:string" minOccurs="1" maxOccurs="1" />
+        <xs:element name="abTesting" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="configuredABTests" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="test" minOccurs="0" maxOccurs="unbounded">
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="outofstock" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="product" minOccurs="0" maxOccurs="unbounded">
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.TransactionService.CustomerOfferUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.TransactionService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <local:RadioOffersToEnumConverter x:Key="radioOffersToEnumConverter" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Background="#FFFFFFFF">
+    <StackPanel Orientation="Vertical">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#7092BE" RefreshButtonVisibilty="Visible" SaveButtonVisibilty="Visible" />
+      <StackPanel Margin="20,5,0,5">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="24" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="LiveCallCheckBox" IsChecked="{Binding LiveCall}">
+              <TextBlock Text="Live Call" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="0,3">
+            <CheckBox Name="SuccessCheckBox" IsChecked="{Binding Success}">
+              <TextBlock Text="Simulate Success" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <RadioButton Name="NoOfferRadioButton" Content="No Offer" Grid.Row="3" Checked="NoOfferRadioButton_Checked" />
+          <RadioButton Name="PresentInCartOffersRadioButton" Content="Present In Cart Offers" Grid.Row="4" Checked="PresentInCartOffersRadioButton_Checked" />
+          <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Left" Margin="50,3">
+            <CheckBox Name="IncludeMovieInCartOfferCheckBox" IsChecked="{Binding IncludeMovieInCartOffer}">
+              <TextBlock Text="Include Movie In Cart Offer" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="6" HorizontalAlignment="Left" Margin="50,3">
+            <CheckBox Name="IncludeFreeGameInCartOfferCheckBox" IsChecked="{Binding IncludeFreeGameInCartOffer}">
+              <TextBlock Text="Include Free Game In Cart Offer" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="7" HorizontalAlignment="Left" Margin="50,3">
+            <CheckBox Name="IncludeAmountOffPurchaseInCartOfferCheckBox" IsChecked="{Binding IncludeAmountOffPurchaseInCartOffer}">
+              <TextBlock Text="Include Amount Off Purchase In Cart Offer" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="8" HorizontalAlignment="Left" Margin="50,3">
+            <CheckBox Name="IncludeMultiNightPricingInCartOfferCheckBox" IsChecked="{Binding IncludeMultiNightPriceInCartOffer}">
+              <TextBlock Text="Include Multi Night Pricing In Cart Offer" FontSize="10" Margin="0,1" />
+            </CheckBox>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Row="9" HorizontalAlignment="Left" Margin="70,3">
+            <TextBlock Text="Product IDs:" FontSize="10" Margin="0,1,5,0" />
+            <TextBox Name="MultiNightPricingInCartOfferCheckBox" Width="300" Text="{Binding MultiNightPriceProductIds}" />
+          </StackPanel>
+          <TextBlock Text="(Comma delimited list)" Grid.Row="10" Margin="130,0,0,5" />
+          <RadioButton Name="PresentFracFreeMovieFirstVisitRadioButton" Content="Present FRAC Free Movie 1st Visit" Grid.Row="11" Checked="PresentFracFreeMovieFirstVisitRadioButton_Checked" />
+          <RadioButton Name="PresentFracFreeMovieSecondVisitRadioButton" Content="Present FRAC Free Movie 2nd Visit" Grid.Row="12" Checked="PresentFracFreeMovieSecondVisitRadioButton_Checked" />
+          <RadioButton Name="PresentFracDiscountedDiscFirstVisitRadioButton" Content="Present FRAC Discounted Disc 1st Visit" Grid.Row="13" Checked="PresentFracDiscountedDiscFirstVisitRadioButton_Checked" />
+          <RadioButton Name="PresentFracDiscountedDiscSecondVisitRadioButton" Content="Present FRAC Discounted Disc 2nd Visit" Grid.Row="14" Checked="PresentFracDiscountedDiscSecondVisitRadioButton_Checked" />
+          <RadioButton Name="PresentFreeItemPerksEquivalentRadioButton" Content="Present Free Item Perks Equivalent" Grid.Row="15" Checked="PresentFreeItemPerksEquivalentRadioButton_Checked" />
+          <RadioButton Name="PresentAmountOffPerksEquivalentRadioButton" Content="Present Amount Off Perks Equivalent" Grid.Row="16" Checked="PresentAmountOffPerksEquivalentRadioButton_Checked" />
+          <RadioButton Name="PresentExtraPointsPerksEquivalentRadioButton" Content="Present Extra Points Perks Equivalent" Grid.Row="17" Checked="PresentExtraPointsPerksEquivalentRadioButton_Checked" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

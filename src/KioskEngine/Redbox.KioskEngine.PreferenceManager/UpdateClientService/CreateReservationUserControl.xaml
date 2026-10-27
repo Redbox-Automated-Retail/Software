@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.KioskEngine.PreferenceManager.UpdateClientService.CreateReservationUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.KioskEngine.PreferenceManager.UpdateClientService" xmlns:controls="clr-namespace:Redbox.KioskEngine.PreferenceManager.Controls">
+  <Grid Background="#FFFFFFFF">
+    <DockPanel LastChildFill="True">
+      <controls:PreferencePageHeaderUserControl x:Name="PreferencePageHeaderUserControl" HeaderBackgroundColor="#709060" DockPanel.Dock="Top" RefreshButtonVisibilty="Collapsed" />
+      <ScrollViewer>
+        <StackPanel Orientation="Vertical">
+          <StackPanel Name="PropertyStackPanel" Margin="5" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+              <Label Content="Reference #" Margin="0" VerticalAlignment="Center" />
+              <TextBox Name="ReferenceNumberTextBox" Height="24" Width="80" Text="{Binding Path=ReferenceNumber}" />
+              <Label Content="EMV Credit Card: First 6" VerticalAlignment="Center" Margin="20,0,0,0" />
+              <TextBox Name="First6TextBox" Height="24" Width="100" />
+              <Label Content="Card Last 4" VerticalAlignment="Center" Margin="10,0,0,0" />
+              <TextBox Name="Last4TextBox" Height="24" Width="70" Margin="5,0" Text="{Binding Path=ReservationCardHash.Last4}" />
+            </StackPanel>
+            <Label Content="Defaults to Shift~ values" FontSize="9" Margin="305,-6,0,0" />
+          </StackPanel>
+          <Grid Background="#709060" Height="35">
+            <Label Content="Reservation Titles:" VerticalAlignment="Center" />
+            <Button Name="AddTitleButton" Content="Add Title" Width="120" HorizontalAlignment="Right" Margin="10,5,10,5" Click="AddTitleButton_Click" />
+          </Grid>
+          <DataGrid Name="ReservationDetailDataGrid" AutoGenerateColumns="True" IsReadOnly="True" ItemsSource="{Binding Path=Titles}" />
+          <Grid Name="PropertyGrid" Margin="10">
+            <StackPanel Orientation="Vertical">
+              <Grid Background="#709060" Margin="0,5,0,0">
+                <Label Content="Reservation Details:" />
+              </Grid>
+              <Grid Name="ReservationDetailsGrid">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="150" />
+                  <ColumnDefinition Width="130" />
+                  <ColumnDefinition Width="20" />
+                  <ColumnDefinition Width="160" />
+                  <ColumnDefinition Width="140" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                  <RowDefinition Height="28" />
+                </Grid.RowDefinitions>
+                <Label Content="Customer Number" Grid.Column="0" Grid.Row="0" />
+                <TextBox Grid.Column="1" Grid.Row="0" Height="24" Text="{Binding Path=CustomerNumber}" />
+                <Label Content="Email Address" Grid.Column="0" Grid.Row="1" />
+                <TextBox Grid.Column="1" Grid.Row="1" Height="24" Text="{Binding Path=Email}" />
+                <Label Content="Zip Code" Grid.Column="0" Grid.Row="2" />
+                <TextBox Grid.Column="1" Grid.Row="2" Height="24" Text="{Binding Path=Zip}" />
+                <Label Content="Tax Rate (%)" Grid.Column="0" Grid.Row="3" />
+                <TextBox Name="TaxRateTextBox" Grid.Column="1" Grid.Row="3" Height="24" TextChanged="TaxRateTextBox_TextChanged" />
+                <Label Content="Tax" Grid.Column="0" Grid.Row="4" />
+                <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="4" Content="{Binding Path=Tax}" />
+                <Label Content="SubTotal" Grid.Column="0" Grid.Row="5" />
+                <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="5" Content="{Binding Path=SubTotal}" />
+                <Label Content="Discounted  SubTotal" Grid.Column="0" Grid.Row="6" />
+                <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="6" Content="{Binding Path=DiscountedSubTotal}" />
+                <Label Content="Default Service Fee" Grid.Column="0" Grid.Row="7" />
+                <TextBox Grid.Column="1" Grid.Row="7" Height="24" Text="{Binding Path=DefaultServiceFeeAmount}" />
+                <Label Content="Actual  Service Fee" Grid.Column="0" Grid.Row="8" />
+                <TextBox Name="ActualServiceFeeAmountTextBox" Grid.Column="1" Grid.Row="8" Height="24" TextChanged="ActualServiceFeeAmountTextBox_TextChanged" />
+                <Label Content="Service Fee Tax Rate (%)" Grid.Column="0" Grid.Row="9" />
+                <Label Name="LabelServiceFeeTaxRate" ContentStringFormat="f2" Grid.Column="1" Grid.Row="9" />
+                <Label Content="Grand Total" Grid.Column="0" Grid.Row="10" />
+                <Label ContentStringFormat="f2" Grid.Column="1" Grid.Row="10" Content="{Binding Path=GrandTotal}" />
+                <Label Content="Multi Night Price" Grid.Column="3" Grid.Row="0" />
+                <CheckBox Grid.Column="4" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=IsMnp}" />
+                <Label Content="Loyalty Redemption" Grid.Column="3" Grid.Row="1" />
+                <CheckBox Grid.Column="4" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=LoyaltyRedemption}" />
+                <Label Content="Applied Title Marketing" Grid.Column="3" Grid.Row="2" />
+                <CheckBox Grid.Column="4" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=AppliedTitleMarketing}" />
+                <Label Content="Authorize At Pickup" Grid.Column="3" Grid.Row="3" />
+                <CheckBox Grid.Column="4" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=AuthorizeAtPickup}" />
+                <Label Content="Multi Disc Vend" Grid.Column="3" Grid.Row="4" />
+                <CheckBox Grid.Column="4" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=IsMdv}" />
+                <Label Content="Gift Card" Grid.Column="3" Grid.Row="5" />
+                <CheckBox Grid.Column="4" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=IsGc}" />
+                <Label Content="Applied Hive Online Promo" Grid.Column="3" Grid.Row="6" />
+                <CheckBox Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Path=AppliedHiveOnlinePromotion}" />
+                <Label Content="Transaction Date" Grid.Column="3" Grid.Row="7" />
+                <TextBox Grid.Column="4" Grid.Row="7" Height="24" Text="{Binding Path=ReserveDate}" />
+                <Label Content="History Titles (CSV ints)" Grid.Column="3" Grid.Row="8" />
+                <TextBox Name="HistoryTitlesTextBox" Grid.Column="4" Grid.Row="8" Height="24" />
+              </Grid>
+            </StackPanel>
+          </Grid>
+          <Grid Name="ActionButtonGrid" Height="36" Background="#FFD3D3D3" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <Button Name="CreateReservationButton" Content="Create Reservation" Width="150" Height="30" HorizontalAlignment="Center" Click="CreateReservationButton_Click" />
+          </Grid>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</UserControl>

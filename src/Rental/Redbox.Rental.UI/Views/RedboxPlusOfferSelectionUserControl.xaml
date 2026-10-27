@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.RedboxPlusOfferSelectionUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls">
+  <Grid Background="{StaticResource AlmostBlackBrush}">
+    <StackPanel Name="titles_boxart_container" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Height="151" Margin="0,24,0,0">
+      <UIElement.OpacityMask>
+        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,0.85">
+          <GradientStop Color="{StaticResource AlmostBlack}" Offset="0" />
+          <GradientStop Color="Transparent" Offset="1" />
+        </LinearGradientBrush>
+      </UIElement.OpacityMask>
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt1}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt2}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt3}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt4}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt5}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt6}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt7}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt8}" />
+      <Image MaxWidth="101" Margin="3,0" Source="{Binding BoxArt9}" />
+    </StackPanel>
+    <Grid Width="320" Height="151" Margin="352,24,352,0" VerticalAlignment="Top" Background="{StaticResource AlmostBlackBrush}">
+      <UIElement.OpacityMask>
+        <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5">
+          <GradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{StaticResource AlmostBlack}" />
+            <GradientStop Offset="1" Color="Transparent" />
+          </GradientBrush.GradientStops>
+        </RadialGradientBrush>
+      </UIElement.OpacityMask>
+    </Grid>
+    <Image Name="redbox_plus_logo" Margin="396,74,0,0" Width="233" Height="52" VerticalAlignment="Top" HorizontalAlignment="Left" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/redboxplus-white-red.png" />
+    <Grid Name="separator_line" Width="1" Background="#FFFFFFFF" Margin="0,204,0,255" />
+    <Grid Name="offer_details_grid" Margin="90,204,90,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <StackPanel Name="tier1_offer_stack_panel" Grid.Column="0" Margin="0,0,50,0">
+        <TextBlock Name="Tier1TitleText" Style="{StaticResource font_montserrat_bold_36}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,0" Text="{Binding Tier1TitleText, FallbackValue=$9.99/Year}" />
+        <TextBlock Name="Tier1SubtitleText" Style="{StaticResource font_montserrat_medium_16}" Foreground="#fdba4d" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding Tier1SubtitleText, FallbackValue=Thats only 84 cents a month!}" />
+        <Redbox:RoundedButton Name="Tier1AcceptButton" Style="{StaticResource white_button_style}" Width="292" Height="56" UsedDefaultCornerRadius="True" Margin="0,24,0,0" Command="{Binding Tier1AcceptButtonCommand}">
+          <TextBlock Name="Tier1AcceptButtonText" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=Tier1AcceptButtonText, FallbackValue=VIEW DETAILS.}" />
+        </Redbox:RoundedButton>
+        <StackPanel Orientation="Horizontal" Margin="50,24,0,0">
+          <TextBlock Name="BulletPoint1Text" Style="{StaticResource font_montserrat_medium_16}" Text="•" Foreground="#FFFFFFFF" Margin="0,0,15,0" />
+          <TextBlock Name="Tier1Bullet1Text" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,0" Text="{Binding Tier1Bullet1Text, FallbackValue=Up to 12 FREE 1-night rentals**&#xA;(once a month)}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="50,24,0,0">
+          <TextBlock Name="BulletPoint2Text" Style="{StaticResource font_montserrat_medium_16}" Text="•" Foreground="#FFFFFFFF" Margin="0,0,15,0" />
+          <TextBlock Name="Tier1Bullet2Text" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,0" Text="{Binding Tier1Bullet2Text, FallbackValue=Extended Return Time}" />
+        </StackPanel>
+      </StackPanel>
+      <StackPanel Name="tier2_offer_stack_panel" Grid.Column="1" Margin="50,0,0,0">
+        <TextBlock Name="Tier2TitleText" Style="{StaticResource font_montserrat_bold_36}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,0" Text="{Binding Tier2TitleText, FallbackValue=$19.99/Year}" />
+        <TextBlock Name="Tier2SubtitleText" Style="{StaticResource font_montserrat_medium_16}" Foreground="#fdba4d" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding Tier2SubtitleText, FallbackValue=Thats over $50 in value}" />
+        <Redbox:RoundedButton Name="Tier2AcceptButton" Style="{StaticResource white_button_style}" Width="292" Height="56" UsedDefaultCornerRadius="True" Margin="0,24,0,0" Command="{Binding Tier2AcceptButtonCommand}">
+          <TextBlock Name="Tier2AcceptButtonText" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding Path=Tier2AcceptButtonText, FallbackValue=VIEW DETAILS.}" />
+        </Redbox:RoundedButton>
+        <StackPanel Orientation="Horizontal" Margin="50,24,0,0">
+          <TextBlock Name="Tier2BulletPoint1Text" Style="{StaticResource font_montserrat_medium_16}" Text="•" Foreground="#FFFFFFFF" Margin="0,0,15,0" />
+          <TextBlock Name="Tier2Bullet1Text" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Text="{Binding Tier2Bullet1Text, FallbackValue=Up to 24 FREE 1-night rentals**&#xA;(no monthly limit!)}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="50,24,0,0">
+          <TextBlock Name="Tier2BulletPoint2Text" Style="{StaticResource font_montserrat_medium_16}" Text="•" Foreground="#FFFFFFFF" Margin="0,0,15,0" />
+          <TextBlock Name="Tier2Bullet2Text" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Text="{Binding Tier2Bullet2Text, FallbackValue=Extended Return Time}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="50,24,0,0">
+          <TextBlock Name="Tier2BulletPoint3Text" Style="{StaticResource font_montserrat_medium_16}" Text="•" Foreground="#FFFFFFFF" Margin="0,0,15,0" />
+          <TextBlock Name="Tier2Bullet3Text" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,0" Text="{Binding Tier2Bullet3Text, FallbackValue=Extra Night Coverage}" />
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,560,0,0">
+      <TextBlock Name="NotReadyYetText" Style="{StaticResource font_montserrat_medium_14}" LineHeight="20" Foreground="#FFFFFFFF" TextAlignment="Center" Text="{Binding NotReadyYetText, FallbackValue=Not Ready Yet?&#xA;Visit redbox.com/redbox-plus or}" />
+      <Redbox:RoundedButton Name="ScanQRCodeButton" Grid.Column="2" Style="{StaticResource transparent_button_style}" Height="24" Width="144" VerticalAlignment="Center" Margin="32,4,40,28" Command="{Binding ScanQRCodeButtonCommand}">
+        <TextBlock Name="ScanQRCodeButtonText" TextAlignment="Center" Style="{StaticResource font_montserrat_bold_16}" TextDecorations="Underline" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=ScanQRCodeButtonText, FallbackValue=SCAN QR CODE.}" />
+      </Redbox:RoundedButton>
+    </StackPanel>
+    <Grid VerticalAlignment="Bottom">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="163" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <Redbox:RoundedButton Name="BackButton" Grid.Column="0" Style="{StaticResource black_with_white_border_button_style}" BorderThickness="2" Height="48" UsedDefaultCornerRadius="True" VerticalAlignment="Center" Margin="32,0,32,24" Command="{Binding BackButtonCommand}">
+        <TextBlock Name="BackButtonText" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_16}" Margin="24,0,24,0" Text="{Binding Path=BackButtonText, FallbackValue=BACK}" />
+      </Redbox:RoundedButton>
+      <TextBlock Name="LegalText" Grid.Column="1" Style="{StaticResource font_montserrat_light_11}" LineHeight="16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Foreground="#FFFFFFFF" Margin="0,0,0,24" TextWrapping="WrapWithOverflow" TextAlignment="Left" Text="{Binding LegalText, FallbackValue=*Free 1-night rental codes expire at the end of your 1-year membership term (or at the end of each month for $9.99/year members). 1 code per transaction. Payment card required. Charges apply for addl days. Cant be combined with other offers. Subject to addl terms. Void where prohibited. Applies only to select titles. Subject to availability.}" />
+      <Redbox:RoundedButton Name="TermsButton1" Grid.Column="2" Style="{StaticResource transparent_button_style}" Height="40" Width="144" VerticalAlignment="Center" Margin="32,0,40,28" Command="{Binding TermsButtonCommand}">
+        <TextBlock Name="TermsButtonText" TextAlignment="Center" Style="{StaticResource font_montserrat_bold_14}" TextDecorations="Underline" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=TermsButtonText, FallbackValue=FAQs and&#xA; Terms &amp; Conditions}" />
+      </Redbox:RoundedButton>
+    </Grid>
+  </Grid>
+</localControls:TextToSpeechUserControl>

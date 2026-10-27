@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.StartViewScreenSaverUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:RedboxControls="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:UI="clr-namespace:Redbox.Rental.UI" xmlns:Controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:views="clr-namespace:Redbox.Rental.UI.Views">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static UI:Commands.BannerClickCommand}" Executed="BannerClickCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.RentOrBuyMoviesCommand}" Executed="RentOrBuyMoviesCommandBinding_Executed" CanExecute="RentOrBuyMoviesCommandBinding_CanExecute" />
+    <CommandBinding Command="{x:Static UI:Commands.BuyMoviesCommand}" Executed="BuyMoviesCommandBinding_Executed" CanExecute="BuyMoviesCommandBinding_CanExecute" />
+    <CommandBinding Command="{x:Static UI:Commands.PickupProductCommand}" Executed="PickupProductCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.ReturnProductCommand}" Executed="ReturnProductCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.ToggleADAModeCommand}" Executed="ToggleADAModeCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.SignInCommand}" Executed="SignInCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.ToggleLanguageModeCommand}" Executed="ToggleLanguageModeCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.HelpCommand}" Executed="HelpCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static UI:Commands.ExitBurnInViewCommand}" Executed="ExitBurnInViewCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <RedboxControls:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <RedboxControls:ReverseBoolToVisibilityConverter x:Key="NotBoolToVisibility" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Background="{Binding Path=MainGridBackground, FallbackValue=White}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="110" />
+      <RowDefinition Height="64" />
+      <RowDefinition Height="426" />
+      <RowDefinition Height="168" />
+    </Grid.RowDefinitions>
+    <Grid Row="0" Background="#FF000000">
+      <StackPanel Orientation="Horizontal" Visibility="{Binding IsBurnInView, Converter={StaticResource NotBoolToVisibility}, FallbackValue=Visible}">
+        <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/logoWhite2_icon.png" Width="218" Height="49" Margin="34,0,34,0" />
+        <Image Width="728" Height="90" Stretch="Fill" Source="{Binding Path=BannerImage}" Visibility="{Binding Path=BannerVisibility, FallbackValue=Collapsed}">
+          <UIElement.InputBindings>
+            <MouseBinding Gesture="LeftClick" Command="{x:Static UI:Commands.BannerClickCommand}" />
+          </UIElement.InputBindings>
+        </Image>
+      </StackPanel>
+    </Grid>
+    <Grid Row="2">
+      <Controls:RedboxProductCarouselUserControl DataContext="{Binding Path=CarouselTestModel}" Visibility="{Binding Path=CarouselVisibility, FallbackValue=Visible}" />
+    </Grid>
+    <Grid Row="3">
+      <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,12" Visibility="{Binding IsBurnInView, Converter={StaticResource NotBoolToVisibility}, FallbackValue=Visible}">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+          <RedboxControls:RoundedButton Name="all_movies_button" Margin="12,0,12,0" Command="{x:Static UI:Commands.RentOrBuyMoviesCommand}" Style="{Binding Path=ExtraLargePrimaryButtonStyle, FallbackValue={StaticResource button_light_extra_large_primary_style}}" Visibility="{Binding IsReturnOnlyMode, Converter={StaticResource NotBoolToVisibility}, FallbackValue=Visible}">
+            <StackPanel Orientation="Horizontal">
+              <Image Width="36" Height="30" Margin="32,0,8,0" Source="{Binding Path=AllMoviesButtonImageSource, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Movie Icon white.png}" />
+              <TextBlock VerticalAlignment="Center" Padding="4,0,32,0" Style="{Binding Path=ExtraLargeButtonTextStyle, FallbackValue={StaticResource button_text_large_style}}" Text="{Binding Path=AllMoviesButtonTextLine1, FallbackValue=RENT MOVIES}" />
+            </StackPanel>
+          </RedboxControls:RoundedButton>
+          <RedboxControls:RoundedButton Name="buy_movies_button" Margin="12,0,12,0" Command="{x:Static UI:Commands.BuyMoviesCommand}" Style="{Binding Path=ExtraLargePrimaryButtonStyle, FallbackValue={StaticResource button_light_extra_large_primary_style}}" IsEnabled="{Binding BuyMoviesEnabled}" Visibility="{Binding Path=BuyMoviesOrGamesButtonVisibility, FallbackValue=Visible}">
+            <TextBlock Style="{Binding Path=ExtraLargeButtonTextStyle, FallbackValue={StaticResource button_text_large_style}}" Text="{Binding Path=BuyMoviesOrGamesButtonTextLine1, FallbackValue=BUY MOVIES}" />
+          </RedboxControls:RoundedButton>
+          <RedboxControls:RoundedButton Name="online_pickup_button" Margin="12,0,12,0" Command="{x:Static UI:Commands.PickupProductCommand}" Style="{Binding Path=ExtraLargeSecondaryButtonStyle, FallbackValue={StaticResource button_light_extra_large_secondary_style}}" Visibility="{Binding IsReturnOnlyMode, Converter={StaticResource NotBoolToVisibility}, FallbackValue=Visible}">
+            <TextBlock Style="{Binding Path=ExtraLargeButtonTextStyle, FallbackValue={StaticResource button_text_large_style}}" Text="{Binding Path=PickUpButtonText, FallbackValue=PICKUP}" />
+          </RedboxControls:RoundedButton>
+          <RedboxControls:RoundedButton Name="return_button" Margin="12,0,12,0" Command="{x:Static UI:Commands.ReturnProductCommand}" Style="{Binding Path=ExtraLargeSecondaryButtonStyle, FallbackValue={StaticResource button_light_extra_large_secondary_style}}">
+            <TextBlock Style="{Binding Path=ExtraLargeButtonTextStyle, FallbackValue={StaticResource button_text_large_style}}" Text="{Binding Path=ReturnButtonText, FallbackValue=RETURN}" />
+          </RedboxControls:RoundedButton>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+          <StackPanel Orientation="Horizontal" Visibility="{Binding IsReturnOnlyMode, Converter={StaticResource NotBoolToVisibility}, FallbackValue=Visible}">
+            <RedboxControls:RoundedButton Name="ada_button" Margin="10,0,10,0" Command="{x:Static UI:Commands.ToggleADAModeCommand}" Style="{Binding Path=AdaButtonStyle, FallbackValue={StaticResource button_light_medium_secondary_style}}">
+              <Image Width="16" Height="18" Margin="16,0,16,0" Source="{Binding Path=AdaButtonImageSource, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Handicapped Icon purple.png}" />
+            </RedboxControls:RoundedButton>
+            <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/purple-white-checkmark-lg.png" Width="22" Height="22" Margin="-24,-28,0,0" Visibility="{Binding Path=AdaButtonCheckmarkVisibility, FallbackValue=Collapsed}" />
+          </StackPanel>
+          <RedboxControls:RoundedButton Name="sign_in_button" Margin="10,0,10,0" Command="{x:Static UI:Commands.SignInCommand}" Style="{Binding Path=MediumSecondaryButtonStyle, FallbackValue={StaticResource button_light_medium_secondary_style}}" IsEnabled="{Binding Path=SignInButtonEnabled, FallbackValue=True}" Visibility="{Binding SignInVisibility}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Style="{StaticResource button_text_medium_style}" Padding="24,0,0,0" Text="{Binding Path=ToggleSignInButtonText, FallbackValue=SIGN IN}" />
+              <TextBlock Style="{StaticResource button_text_medium_style}" Padding="0,0,0,0" Text="{Binding Path=SignInUpButtonSeparator, FallbackValue= | }" />
+              <TextBlock Style="{StaticResource button_text_medium_style}" Padding="0,0,24,0" Text="{Binding Path=SignUpButtonText, FallbackValue=SIGN UP}" />
+            </StackPanel>
+          </RedboxControls:RoundedButton>
+          <RedboxControls:RoundedButton Name="espanol_button" Margin="10,0,10,0" Command="{x:Static UI:Commands.ToggleLanguageModeCommand}" Style="{Binding Path=MediumSecondaryButtonStyle, FallbackValue={StaticResource button_light_medium_secondary_style}}">
+            <TextBlock Style="{StaticResource button_text_medium_style}" Text="{Binding Path=ToggleLanguageButtonText, FallbackValue=ESPAÑOL}" />
+          </RedboxControls:RoundedButton>
+          <RedboxControls:RoundedButton Name="help_button" Margin="10,0,10,0" Command="{x:Static UI:Commands.HelpCommand}" Style="{Binding Path=MediumSecondaryButtonStyle, FallbackValue={StaticResource button_light_medium_secondary_style}}">
+            <TextBlock Style="{StaticResource button_text_medium_style}" Padding="20,0,20,0" Text="?" />
+          </RedboxControls:RoundedButton>
+        </StackPanel>
+      </StackPanel>
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,58" Visibility="{Binding IsBurnInView, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+        <RedboxControls:RoundedButton Name="press_to_start_button" Command="{x:Static UI:Commands.ExitBurnInViewCommand}" Style="{Binding Path=ExtraLargePrimaryButtonStyle, FallbackValue={StaticResource button_light_extra_large_primary_style}}">
+          <StackPanel Orientation="Horizontal">
+            <Image Width="38" Height="56" Margin="32,0,8,0" Source="{Binding Path=PressToStartButtonImageSource, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Hand white.png}" />
+            <TextBlock VerticalAlignment="Center" Padding="4,0,32,0" Text="PRESS TO START" Style="{Binding Path=ExtraLargeButtonTextStyle, FallbackValue={StaticResource button_text_large_style}}" />
+          </StackPanel>
+        </RedboxControls:RoundedButton>
+      </StackPanel>
+    </Grid>
+  </Grid>
+</Controls:TextToSpeechUserControl>

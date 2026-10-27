@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:BaseUserControl x:Class="Redbox.Rental.UI.Controls.HelpDocViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:views="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Redbox:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+      <Style x:Key="DocumentViewerStyle" TargetType="{x:Type DocumentViewer}" BasedOn="{x:Null}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+        <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DocumentViewer}">
+              <Border BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" Focusable="False">
+                <Grid Background="{TemplateBinding Control.Background}" KeyboardNavigation.TabNavigation="Local">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <ScrollViewer Name="PART_ContentHost" CanContentScroll="True" Grid.Column="0" Focusable="{TemplateBinding UIElement.Focusable}" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" IsTabStop="True" Grid.Row="1" TabIndex="1" />
+                  <DockPanel Grid.Row="1">
+                    <FrameworkElement DockPanel.Dock="Right" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
+                  </DockPanel>
+                  <ContentControl Name="PART_FindToolBarHost" Visibility="Collapsed" Grid.Column="0" Focusable="{TemplateBinding UIElement.Focusable}" Grid.Row="2" TabIndex="2" />
+                </Grid>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static views:HelpViewCommands.PageLeft}" Executed="PageLeftCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static views:HelpViewCommands.PageRight}" Executed="PageRightCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <TextBlock Name="page_counter" Margin="470,72,0,0" Width="600" Height="40" Foreground="#2C2E32" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_regular_13}" Text="{Binding Path=PageCounterText, FallbackValue=Page}" />
+    <Redbox:RoundedButton Name="left_arrow" Style="{StaticResource transparent_button_style}" Margin="0,197,0,0" Height="292" Width="53" VerticalAlignment="Top" HorizontalAlignment="Left" Command="{x:Static views:HelpViewCommands.PageLeft}">
+      <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/left-navigation-arrow.png" Stretch="Fill" />
+    </Redbox:RoundedButton>
+    <Redbox:RoundedButton Name="right_arrow" Style="{StaticResource transparent_button_style}" Margin="971,197,0,0" Height="292" Width="53" VerticalAlignment="Top" HorizontalAlignment="Left" Command="{x:Static views:HelpViewCommands.PageRight}">
+      <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/right-navigation-arrow.png" Stretch="Fill" />
+    </Redbox:RoundedButton>
+    <Rectangle Name="DocumentPageVisual" Margin="85,93,0,0" Width="886" Height="455" VerticalAlignment="Top" HorizontalAlignment="Left" />
+  </Grid>
+</controls:BaseUserControl>

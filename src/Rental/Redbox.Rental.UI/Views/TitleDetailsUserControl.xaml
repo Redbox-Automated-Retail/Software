@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localControls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.TitleDetailsUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static localbase:Commands.GoBackCommand}" Executed="OnGoBack_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.BuyCommand}" Executed="Buy_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.PrimaryCommand}" Executed="RentProduct_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.ResetIdleTimerCommand}" Executed="ResetIdleTimerCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.MoreInfoCommand}" Executed="MoreInfo_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.SeeFullDetailsCommand}" Executed="SeeFullDetails_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.RedboxPlusInfoCommand}" Executed="RedboxPlusInfo_Executed" />
+    <CommandBinding Command="{x:Static localbase:Commands.DualInStockLearnMoreCommand}" Executed="DualInStockLearnMore_Executed" />
+  </UIElement.CommandBindings>
+  <Grid Background="#FFFFFFFF">
+    <Image Name="BackgroundImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/backgroundTexture.png" HorizontalAlignment="Left" VerticalAlignment="Top" Height="768" Visibility="{Binding Path=BackgroundImageVisibility, FallbackValue=Collapsed}" />
+    <localControls:BrowseUserControl x:Name="BrowseProductControl" Height="768" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" ShowPaddles="True" Background="#00FFFFFF" DataContext="{Binding Path=BrowseProductControlModel}" />
+  </Grid>
+</localControls:TextToSpeechUserControl>

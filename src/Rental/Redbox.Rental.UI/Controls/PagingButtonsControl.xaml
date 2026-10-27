@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.PagingButtonsControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" x:Name="ThisControl" DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:PagingButtonsControlCommands.LeftArrowPressedCommand}" Executed="LeftArrowCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:PagingButtonsControlCommands.RightArrowPressedCommand}" Executed="RightArrowCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:PagingButtonsControlCommands.NumberPressedCommand}" Executed="NumberCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <DockPanel HorizontalAlignment="Center" Height="{Binding ButtonSize}">
+      <Button Name="LeftArrowButton" DockPanel.Dock="Left" Margin="0,0,10,0" Style="{StaticResource TransparentButton}" Command="{x:Static local:PagingButtonsControlCommands.LeftArrowPressedCommand}" Width="{Binding ButtonSize}" Visibility="{Binding LeftArrowVisibility}">
+        <local:ChevronUserControl ChevronColor="{StaticResource WarmPurpleBrush}" ChevronDirection="Left" Visibility="Visible" IsHitTestVisible="False" />
+      </Button>
+      <ItemsControl ItemsSource="{Binding ButtonInfoList}">
+        <FrameworkElement.Resources>
+          <ResourceDictionary>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type local:PageButtonInfo}}" DataType="{x:Type local:PageButtonInfo}">
+              <Redbox:RoundedButton Margin="10,0,10,0" BorderThickness="2" DropShadowDepth="1" UsedDefaultCornerRadius="True" Command="{x:Static local:PagingButtonsControlCommands.NumberPressedCommand}" Style="{StaticResource white_warmpurple_border_radio_button_style}" Width="{Binding ButtonSize, ElementName=ThisControl}" Tag="{Binding PageNumber}" IsEnabled="{Binding IsNotCurrentPage}">
+                <Grid>
+                  <Redbox:GridExt RowHeights="15*,70*,15*">
+                    <Viewbox Grid.Row="1">
+                      <TextBlock IsHitTestVisible="False" HorizontalAlignment="Center" Style="{StaticResource font_target_large}" Text="{Binding Path=ButtonText, FallbackValue=1}" />
+                    </Viewbox>
+                  </Redbox:GridExt>
+                </Grid>
+              </Redbox:RoundedButton>
+            </DataTemplate>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type local:EllipsesInfo}}" DataType="{x:Type local:EllipsesInfo}">
+              <TextBlock Margin="5,0,5,0" Style="{StaticResource font_target_large}" Foreground="{StaticResource WarmPurpleBrush}" Text="{Binding ButtonText}" />
+            </DataTemplate>
+          </ResourceDictionary>
+        </FrameworkElement.Resources>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <Button Name="RightArrowButton" DockPanel.Dock="Right" Margin="10,0,0,0" Style="{StaticResource TransparentButton}" Command="{x:Static local:PagingButtonsControlCommands.RightArrowPressedCommand}" Width="{Binding ButtonSize}" Visibility="{Binding RightArrowVisibility}">
+        <local:ChevronUserControl ChevronColor="{StaticResource WarmPurpleBrush}" ChevronDirection="Right" Visibility="Visible" IsHitTestVisible="False" />
+      </Button>
+    </DockPanel>
+  </Grid>
+</UserControl>

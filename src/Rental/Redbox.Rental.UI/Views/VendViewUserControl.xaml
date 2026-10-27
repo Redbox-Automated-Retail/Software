@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.VendViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:Controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:animations="clr-namespace:Redbox.Rental.UI.Controls.Animations" DataContextChanged="VendDiscControl_DataContextChanged" xmlns:views="clr-namespace:Redbox.Rental.UI.Views">
+  <Redbox:GridExt RowHeights="652,116" ColumnWidths="*">
+    <Panel.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#E42045" Offset="0.0" />
+        <GradientStop Color="#902A7D" Offset="0.5" />
+        <GradientStop Color="#491E54" Offset="1.0" />
+      </LinearGradientBrush>
+    </Panel.Background>
+    <Grid Name="AnimationContainer" Row="0" Margin="0,116,0,0">
+      <animations:VendDiscAnimationUserControl x:Name="VendDiscControl" />
+    </Grid>
+    <Grid Name="VendBannerGrid" Row="1" Background="#FF000000" Visibility="Collapsed">
+      <Image Name="AdImageElem" Width="728" Height="90" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/it_pays_to_play.png" />
+    </Grid>
+  </Redbox:GridExt>
+</Controls:TextToSpeechUserControl>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.ComingSoonVendUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid>
+    <StackPanel Width="165">
+      <Border Width="165" Height="247" VerticalAlignment="Top" HorizontalAlignment="Center" BorderThickness="2" BorderBrush="#A5A5A5">
+        <Image Name="TitleImage" Stretch="Fill" Source="{Binding Path=Image}" />
+      </Border>
+      <TextBlock Name="TitleNameTextBlock" MaxHeight="48" Margin="4,4,4,0" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Style="{StaticResource font_montserrat_bold_13}" Text="{Binding Path=TitleName}" />
+      <TextBlock Name="TitleReleaseDateTextBlock" MaxHeight="20" Margin="4,0,4,0" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Style="{StaticResource font_smaller_italic}" Text="{Binding Path=ReleaseDate}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

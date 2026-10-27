@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.DisplayProductUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" xmlns:localModels="clr-namespace:Redbox.Rental.UI.Models" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" DataContextChanged="UserControl_DataContextChanged" SizeChanged="UserControl_SizeChanged">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <SolidColorBrush x:Key="ImageBorderSolidColorBrush" Color="{Binding Path=ImageBorderColor}" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Grid Name="MainGrid" Background="{Binding Path=BackgroundBrush, FallbackValue=Transparent}">
+    <local:AspectRatioLayoutDecorator x:Name="MainAspectRatioLayoutDecorator" AspectRatio="0.6666666666666667" LockAspectRatio="{Binding Path=LockAspectRatio}">
+      <Border Name="ImageBorder" BorderBrush="{StaticResource ImageBorderSolidColorBrush}" CornerRadius="{Binding Path=ImageBorderCornerRadius}" BorderThickness="{Binding Path=ImageBorderThickness}">
+        <Grid>
+          <Redbox:Flag Name="Flag" Width="200" Height="60" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-30,-30,0,0" Visibility="{Binding Path=DisplayFlagVisibility}" Style="{Binding Path=FlagStyle, FallbackValue={StaticResource red_flag_style}}">
+            <Viewbox Visibility="{Binding Path=DisplayFlagVisibility}">
+              <TextBlock Name="FlagText" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_bold_13}" Margin="9,3,9,3" Text="{Binding Path=FlagText}" />
+            </Viewbox>
+          </Redbox:Flag>
+          <local:AspectRatioLayoutDecorator AspectRatio="0.6666666666666667" LockAspectRatio="{Binding Path=LockAspectRatio}" Visibility="{Binding Path=ImageBackgroundVisibility, FallbackValue=Collapsed}">
+            <Grid Name="ImageBackground" Background="#1E1E1E" />
+          </local:AspectRatioLayoutDecorator>
+          <local:AspectRatioLayoutDecorator AspectRatio="0.6666666666666667" LockAspectRatio="{Binding Path=LockAspectRatio}">
+            <Image Name="DisplayProductImage" Stretch="Fill" Source="{Binding Path=Image}" Opacity="{Binding Path=DisplayImageOpacity}">
+              <UIElement.InputBindings>
+                <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemSelectedCommand}" />
+              </UIElement.InputBindings>
+            </Image>
+          </local:AspectRatioLayoutDecorator>
+          <Redbox:GridExt Name="BannerGrid" RowHeights="*,0.14*,0.14*,0.14*">
+            <Redbox:GridExt Name="Banner" RowHeights="*,1.2*,*" Row="3" RowSpan="2" Visibility="{Binding Path=BannerVisibility}" Background="{Binding Path=BannerBackgroundBrush}">
+              <Viewbox Name="BannerTextViewBox" Grid.Row="1">
+                <TextBlock Name="BannerText" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_bold_13}" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=BannerText}" />
+              </Viewbox>
+            </Redbox:GridExt>
+            <Border Name="WatchOptions" Grid.Row="2" Grid.RowSpan="2" Padding="0,2,0,2" Background="#FF000000" Opacity="0.75" CornerRadius="6" Visibility="{Binding Path=WatchOptionsVisibility, FallbackValue=Collapsed}">
+              <UIElement.InputBindings>
+                <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemSelectedCommand}" />
+              </UIElement.InputBindings>
+              <Viewbox Name="WatchOptionsTextViewBox">
+                <TextBlock Name="WatchOptionsText" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_extrabold_14_correct}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Text="SEE WATCH&#xA;OPTIONS" />
+              </Viewbox>
+            </Border>
+            <Border Name="DualInStock" Grid.Row="2" Grid.RowSpan="2" Padding="0,2,0,2" Background="#FF000000" Opacity="0.75" CornerRadius="6" Visibility="{Binding Path=DualInStockVisibility, FallbackValue=Collapsed}">
+              <UIElement.InputBindings>
+                <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemSelectedCommand}" />
+              </UIElement.InputBindings>
+              <Viewbox Name="DualInStockTextViewBox">
+                <TextBlock Name="DualInStockText" Foreground="#FFFFFFFF" Style="{StaticResource font_montserrat_bold_12}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center">
+                  <TextBlock.Inlines>
+                    <Run Foreground="#63FFA1" Text="In stock " />
+                    <Run Text="here at&#xA;" />
+                    <Run FontWeight="ExtraBold" TextDecorations="Underline" Text="{Binding Path=DualInStockTextKioskText, FallbackValue=KIOSK A}" />
+                  </TextBlock.Inlines>
+                </TextBlock>
+              </Viewbox>
+            </Border>
+            <Redbox:GridExt Name="ComingSoonButtonGrid" RowHeights="1*,89*,10*" ColumnWidths="2*,96*,2*" Row="2" RowSpan="2">
+              <Redbox:RoundedButton Name="ComingSoonButton" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" CommandParameter="ComingSoon" Grid.Row="1" Grid.Column="1" UsedDefaultCornerRadius="True" Style="{Binding Path=ComingSoonButtonStyle, FallbackValue={StaticResource rubine_white_border_button_style}}" Visibility="{Binding Path=ComingSoonButtonVisibility}">
+                <Grid>
+                  <DockPanel LastChildFill="True">
+                    <Viewbox DockPanel.Dock="Right">
+                      <Redbox:GridExt ColumnWidths="10*,90*">
+                        <UserControl Style="{StaticResource green_check_mark_style}" Grid.Column="1" Visibility="{Binding Path=ComingSoonButtonCheckMarkVisibility}" />
+                      </Redbox:GridExt>
+                    </Viewbox>
+                    <Redbox:GridExt RowHeights="25*,50*,25*">
+                      <Viewbox Grid.Row="1">
+                        <TextBlock Name="ComingSoonButtonText" Style="{StaticResource font_montserrat_regular_29}" Text="{Binding Path=ComingSoonButtonText, FallbackValue=EMAIL ME}" />
+                      </Viewbox>
+                    </Redbox:GridExt>
+                  </DockPanel>
+                </Grid>
+              </Redbox:RoundedButton>
+            </Redbox:GridExt>
+          </Redbox:GridExt>
+          <Redbox:RoundedButton Name="AddButton" Style="{StaticResource warm_purple_no_border_button_style}" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="160" Height="48" CornerRadius="24" Margin="0,0,55,-25" Focusable="False" IsEnabled="True" Opacity="{Binding Path=AddButtonOpacity}" Visibility="{Binding Path=AddButtonVisibility, FallbackValue=Visible}">
+            <Redbox:GridExt RowHeights="20*,60*,20*" Margin="12,0">
+              <Viewbox Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                  <UserControl Style="{StaticResource plus_sign_style}" />
+                  <TextBlock Name="AddButtonText" VerticalAlignment="Center" Margin="5" Style="{StaticResource font_montserrat_extrabold_18}" Text="{Binding Path=AddButtonLabelText, FallbackValue=GET IT NOW!}" />
+                </StackPanel>
+              </Viewbox>
+            </Redbox:GridExt>
+          </Redbox:RoundedButton>
+        </Grid>
+      </Border>
+    </local:AspectRatioLayoutDecorator>
+  </Grid>
+</UserControl>

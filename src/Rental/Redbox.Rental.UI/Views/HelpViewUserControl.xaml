@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.HelpViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:designModel="clr-namespace:Redbox.Rental.UI.Models.DesignTime" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Redbox:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:HelpViewCommands.GoBack}" Executed="GoBackCommandBinding_Executed" />
+    <CommandBinding x:Name="ShowDocumentCommand" Command="{x:Static local:HelpViewCommands.ShowDocument}" Executed="ShowDocumentCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:HelpViewCommands.RedboxLogoCommand}" Executed="RedboxLogoCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <Grid Name="upperpart_gray_background" Height="568" Width="1024" VerticalAlignment="Top" Background="#EAEAEA" />
+    <controls:HelpDocViewUserControl OnHelpPaddleButtonPressed="HandleHelpPaddleButtonPresed" XpsDocument="{Binding XpsDocument}" CurrentPageNumber="{Binding CurrentHelpDocumentPage, Mode=TwoWay}" TotalPageCount="{Binding HelpDocumentPageCount, Mode=OneWayToSource}" CurrentPageText="{Binding CurrentPageText, Mode=OneWayToSource}" PageCounterText="{Binding PageCounterText}" />
+    <TextBlock Name="title_label" Margin="25,14,0,0" Width="512" Height="42" Foreground="#2C2E32" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource font_target_medium}" Text="{Binding Path=TitleText, FallbackValue=Title}" />
+    <TextBlock Name="contact_redbox_label" Margin="110,29,0,0" Width="600" Height="40" Foreground="#2C2E32" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_regular_17}" Text="{Binding Path=ContactText, FallbackValue=Contact Redbox customer service at 1.866.REDBOX3 (1.866.733.2693)}" Visibility="{Binding ShowContactText, Converter={StaticResource BoolToVisibility}, FallbackValue=Visible}" />
+    <TextBlock Name="store_number_label" Margin="864,29,0,0" Width="90" Height="40" Foreground="#FF000000" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_regular_18}" Text="{Binding Path=StoreNumberLabel, FallbackValue=Kiosk ID:}" />
+    <TextBlock Name="store_number_text" Margin="945,29,0,0" Width="110" Height="40" Foreground="#FF000000" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource font_montserrat_regular_18}" Text="{Binding Path=StoreNumberText, FallbackValue=Store#}" />
+    <Grid Name="draw_line" Margin="19,69,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="985" Height="3" Background="#2C2E32" />
+    <Grid Name="action_zone_background" Margin="0,560,0,0" Width="1024" Height="208" VerticalAlignment="Top" HorizontalAlignment="Left" Background="#060208">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" />
+        <ColumnDefinition Width="4*" />
+      </Grid.ColumnDefinitions>
+      <Image Name="redbox_logo" Grid.Column="0" Margin="32,32,0,0" Width="133" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/logoWhite2_icon.png">
+        <UIElement.InputBindings>
+          <MouseBinding Gesture="LeftClick" Command="{x:Static local:HelpViewCommands.RedboxLogoCommand}" />
+        </UIElement.InputBindings>
+      </Image>
+      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+        <ItemsControl Name="buttons_items_control" ItemsSource="{Binding ButtonList}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Redbox:RoundedButton Style="{StaticResource help_view_document_button_style}" Command="{x:Static local:HelpViewCommands.ShowDocument}" Visibility="Visible" Tag="{Binding DocumentToShow}" IsEnabled="{Binding IsEnabled}">
+                <TextBlock Style="{StaticResource help_view_document_button_text_style}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="NoWrap" Text="{Binding ButtonText}" />
+              </Redbox:RoundedButton>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+      <Redbox:RoundedButton Name="back_button" Grid.Column="0" Style="{StaticResource black_with_white_border_button_style}" BorderThickness="2" Margin="32,0,0,24" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="48" CornerRadius="24" Command="{x:Static local:HelpViewCommands.GoBack}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+          <TextBlock Name="ButtonGoBack_Text" Style="{StaticResource font_montserrat_bold_16}" Padding="24,0,24,0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding BackButtonText, FallbackValue=BACK}" />
+        </StackPanel>
+      </Redbox:RoundedButton>
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.Rental.Services</AssemblyName>
+    <RootNamespace>Redbox.Rental.Services</RootNamespace>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWPF>True</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DeviceService\DeviceService.ComponentModel\DeviceService.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.BrokerServices.Proxy.ComponentModel\Redbox.BrokerServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.Controls\Redbox.Controls.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.FraudServices.Proxy.ComponentModel\Redbox.FraudServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.KioskDataServices.Proxy.ComponentModel\Redbox.KioskDataServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <ProjectReference Include="..\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
+    <ProjectReference Include="..\..\KioskEngine\Redbox.Services.KioskBrokerServices.KioskShared\Redbox.Services.KioskBrokerServices.KioskShared.csproj" />
+  </ItemGroup>
+</Project>

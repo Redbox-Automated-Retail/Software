@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.PleaseWaitMessageViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" xmlns:local="clr-namespace:Redbox.Rental.UI.Views">
+  <Grid Background="#B5121B">
+    <TextBlock Name="MessageText" Foreground="#FFFFFFFF" Margin="60,133" Style="{StaticResource font_museo_slab_900_64}" Text="{Binding TitleMessage, FallbackValue=Please Wait...}" />
+  </Grid>
+</controls:TextToSpeechUserControl>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.HAL.ICameraPlugin.Vidcap</AssemblyName>
+    <RootNamespace>Redbox.HAL.ICameraPlugin.Vidcap</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Vidcapform.resx" LogicalName="Redbox.HAL.ICameraPlugin.Vidcap.Vidcapform.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="stdole" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:RentalUserControl x:Class="Redbox.Rental.UI.Controls.JoinedUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <Grid Background="#FFFFFFFF">
+    <Redbox:GridExt RowHeights="*,*">
+      <Image Grid.Row="0" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_header_background.png" Stretch="Fill" />
+      <Grid Row="1">
+        <Redbox:RoundedButton Name="ContinueButtonElem" Margin="0,20,0,80" Height="56" UsedDefaultCornerRadius="True" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource warm_purple_no_border_button_style}" IsEnabled="True" Command="{Binding ContinueButtonCommand}">
+          <TextBlock Name="ContinueButtonTextElem" Margin="24,0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding ContinueButtonText, FallbackValue=OKAY}" />
+        </Redbox:RoundedButton>
+      </Grid>
+    </Redbox:GridExt>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="375" Margin="0,0,0,200">
+      <Ellipse Height="375" Width="375" VerticalAlignment="Bottom" Fill="#FFFFFFFF" Stroke="#792D8D" StrokeThickness="3" />
+    </Grid>
+  </Grid>
+</local:RentalUserControl>

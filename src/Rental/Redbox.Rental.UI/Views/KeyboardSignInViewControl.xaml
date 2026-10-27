@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localViews:KeyboardControl x:Class="Redbox.Rental.UI.Views.KeyboardSignInViewControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls">
+  <FrameworkElement.Resources>
+    <ResourceDictionary>
+      <Style x:Key="TransparentButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}" />
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </ResourceDictionary>
+  </FrameworkElement.Resources>
+  <Border Name="MainControl" Background="#FFFFFFFF" Height="768" Width="1024">
+    <Redbox:GridExt Margin="60,20,60,10" RowHeights="40,70,10,70,*,405,100">
+      <Grid Row="0" HorizontalAlignment="Center">
+        <TextBlock Name="MessageTextElem" Margin="50,0" VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource keyboard_prompt_message_style}" Text="{Binding Path=MessageText, FallbackValue=Message}" />
+      </Grid>
+      <Grid Row="1" HorizontalAlignment="Center">
+        <Redbox:BorderButton Name="EmailElem" GroupName="SignInControl" IsSelected="True" Width="490" Height="64" HorizontalAlignment="Left" Style="{StaticResource border_button_style}" Click="EmailSelected">
+          <Grid Background="#00FFFFFF">
+            <TextBlock Name="EmailTextElem" Height="32" Width="420" TextWrapping="NoWrap" Style="{StaticResource style_keyboard_input_text}" Text="{Binding Path=KeyboardText}" />
+            <TextBlock Name="EmailPromotTextElem" Height="32" Width="auto" Style="{StaticResource style_keyboard_input_text}" Foreground="{StaticResource PromptGrayBrush}" Text="{Binding Path=EmailPromptText, FallbackValue=email}" Visibility="{Binding ElementName=EmailTextElem, Path=Text, Converter={StaticResource TextVisibilityConverter}}" />
+          </Grid>
+        </Redbox:BorderButton>
+      </Grid>
+      <Grid Row="3" HorizontalAlignment="Center">
+        <Redbox:BorderButton Name="CodeElem" GroupName="SignInControl" IsSelected="False" Width="490" Height="64" HorizontalAlignment="Left" Style="{StaticResource border_button_style}" Click="CodeSelected">
+          <Grid Background="#00FFFFFF">
+            <TextBlock Name="CodeTextElem" Height="32" Width="420" TextWrapping="NoWrap" Style="{StaticResource style_keyboard_input_text}" Text="{Binding Path=KeyboardStars}" />
+            <TextBlock Name="CodePromotTextElem" Height="32" Width="auto" Style="{StaticResource style_keyboard_input_text}" Foreground="{StaticResource PromptGrayBrush}" Text="{Binding Path=CodePromptText, FallbackValue=password}" Visibility="{Binding ElementName=CodeTextElem, Path=Text, Converter={StaticResource TextVisibilityConverter}}" />
+          </Grid>
+        </Redbox:BorderButton>
+      </Grid>
+      <TextBlock Name="ErrorTextElem" Grid.Row="4" Height="auto" Width="800" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource keyboard_error_message_style}" Text="{Binding Path=KeyboardError, FallbackValue=...}" />
+      <Grid Name="ContainerElem" Row="5" Margin="25,0,0,0">
+        <UIElement.Clip>
+          <RectangleGeometry Rect="0,0,860,390" />
+        </UIElement.Clip>
+        <localControls:KeyboardUserControl x:Name="KeyboardElem" Width="858" Height="385" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible" />
+      </Grid>
+      <StackPanel Grid.Row="6" Width="858" Orientation="Horizontal" HorizontalAlignment="Center">
+        <Redbox:RoundedButton Name="ForgotPasswordButtonElem" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource button_link_style}" IsEnabled="True" Click="ForgotPasswordClicked">
+          <TextBlock Name="ForgotPasswordButtonTextElem" Style="{StaticResource button_text_link_style}" Text="{Binding ForgotPasswordButtonText, FallbackValue=FORGOT PASSWORD}" />
+        </Redbox:RoundedButton>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="56,0,0,0">
+          <Redbox:RoundedButton Name="EmailButtonElem" Grid.Column="1" Margin="-36,0,8,0" Style="{StaticResource button_light_medium_secondary_style}" IsEnabled="True" Click="EmailSelected">
+            <TextBlock Name="EmailButtonTextElem" Style="{StaticResource button_text_medium_style}" Text="{Binding EmailButtonText, FallbackValue=EMAIL}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="CodeButtonElem" Grid.Column="1" Margin="8,0,8,0" Style="{StaticResource button_light_medium_secondary_style}" IsEnabled="True" Click="CodeSelected">
+            <TextBlock Name="CodeButtonTextElem" Style="{StaticResource button_text_medium_style}" Text="{Binding PasswordButtonText, FallbackValue=PASSWORD}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="CancelButtonElem" Grid.Column="1" Margin="8,0,8,0" Style="{StaticResource button_light_large_secondary_style}" IsEnabled="True" Command="{Binding CancelButtonCommand}">
+            <TextBlock Name="CancelButtonTextElem" Style="{StaticResource button_text_large_style}" Text="{Binding CancelButtonText, FallbackValue=CANCEL}" />
+          </Redbox:RoundedButton>
+          <Redbox:RoundedButton Name="ContinueButtonElem" Grid.Column="2" Margin="8,0,8,0" Style="{StaticResource button_light_large_primary_style}" IsEnabled="{Binding ContinueButtonEnabled, FallbackValue=False}" Click="ContinueTouched">
+            <TextBlock Name="ContinueButtonTextElem" Style="{StaticResource button_text_large_style}" Text="{Binding ContinueButtonText, FallbackValue=SIGN IN}" />
+          </Redbox:RoundedButton>
+        </StackPanel>
+      </StackPanel>
+    </Redbox:GridExt>
+  </Border>
+</localViews:KeyboardControl>

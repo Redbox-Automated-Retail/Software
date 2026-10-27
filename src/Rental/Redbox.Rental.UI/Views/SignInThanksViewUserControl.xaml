@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<localViews:ViewUserControl x:Class="Redbox.Rental.UI.Views.SignInThanksViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:localViews="clr-namespace:Redbox.Rental.UI.Views" xmlns:localControls="clr-namespace:Redbox.Rental.UI.Controls" Focusable="False">
+  <Border Name="MainControl" Width="1024" Height="768">
+    <Border.Background>
+      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#E42045" Offset="0.0" />
+        <GradientStop Color="#902A7D" Offset="0.5" />
+        <GradientStop Color="#491E54" Offset="1.0" />
+      </LinearGradientBrush>
+    </Border.Background>
+    <Redbox:GridExt RowHeights="Auto, *">
+      <TextBlock Foreground="#FFFFFFFF" Margin="0,125,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_bold_40}" Text="{Binding MessageText, FallbackValue=Hi {Taylor}}" />
+      <TextBlock Foreground="#FFFFFFFF" Margin="0,185,0,0" HorizontalAlignment="Center" Style="{StaticResource font_montserrat_medium_36}" Text="{Binding ThanksText, FallbackValue=Thanks for signing in}" />
+      <Image Grid.Row="1" Height="160" Width="160" Margin="0,60" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/done-icon.png" HorizontalAlignment="Center" VerticalAlignment="Top" Stretch="Fill" />
+    </Redbox:GridExt>
+  </Border>
+</localViews:ViewUserControl>

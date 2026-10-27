@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.IdleTimeoutMessageViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls" DataContextChanged="TextToSpeechUserControl_DataContextChanged">
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static local:Commands.Yes}" Executed="YesCommandBinding_Executed" />
+    <CommandBinding Command="{x:Static local:Commands.No}" Executed="NoCommandBinding_Executed" />
+  </UIElement.CommandBindings>
+  <Grid>
+    <Grid Background="#FF000000" Opacity="0.6" />
+    <Grid Width="744" Height="284">
+      <Border Background="#FFFFFFFF" CornerRadius="28">
+        <TextBlock Name="MessageText" Margin="76,71,76,0" Foreground="{StaticResource CarlosPurple1Brush}" Style="{StaticResource font_montserrat_bold_28}" Text="{Binding Path=MessageText, FallbackValue=Are you still here?}" />
+      </Border>
+      <Separator Style="{StaticResource modal_separator_style}" Margin="76,76,76,0" />
+      <Redbox:RoundedButton Name="NoButton" Margin="72,0,0,24" Style="{StaticResource modal_two_buttons_button1_style}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Command="{x:Static local:Commands.No}">
+        <TextBlock Name="ButtonNo_Text" Style="{StaticResource button_text_large_style}" Text="{Binding Path=ButtonNoText, FallbackValue=QUIT}" />
+      </Redbox:RoundedButton>
+      <Redbox:RoundedButton Name="YesButton" Margin="0,0,72,24" Style="{StaticResource modal_two_buttons_button2_style}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="{x:Static local:Commands.Yes}">
+        <TextBlock Name="ButtonYes_Text" Style="{StaticResource button_text_large_style}" Text="{Binding Path=ButtonYesText, FallbackValue=IM HERE}" />
+      </Redbox:RoundedButton>
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

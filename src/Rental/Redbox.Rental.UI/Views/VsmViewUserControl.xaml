@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TextToSpeechUserControl x:Class="Redbox.Rental.UI.Views.VsmViewUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Redbox.Rental.UI.Views" xmlns:controls="clr-namespace:Redbox.Rental.UI.Controls">
+  <Grid Background="#FF000000">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="{Binding HeaderHeight, FallbackValue=136}" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="0" LastChildFill="True">
+      <Grid Name="WhiteLineSpacer" DockPanel.Dock="Bottom" Background="#FFFFFFFF" Height="8" />
+      <Image Name="RentalsOnTheirWayBackgroundImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_header_background.png" Stretch="Fill" />
+    </DockPanel>
+    <TextBlock Name="TitleText" Style="{StaticResource font_montserrat_bold_40}" Foreground="#FFFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=TitleText, FallbackValue=Your discs are on their way}" />
+    <Image Name="AdImage" Grid.Row="2" Source="{Binding AdImage, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/vsm_default.jpg}" />
+    <Grid Row="2" Height="576" Background="#FF000000" Visibility="{Binding Path=ClosingLocationGridVisibility, FallbackValue=Collapsed}">
+      <StackPanel VerticalAlignment="Center" Visibility="Collapsed">
+        <TextBlock Style="{StaticResource font_montserrat_bold_48}" LineHeight="56" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationDateText, FallbackValue=This location is&#xA;closing in January}" />
+        <TextBlock Margin="0,56,0,0" Style="{StaticResource font_montserrat_medium_28}" LineHeight="40" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationText, FallbackValue=Visit redbox.com to stream movies On Demand&#xA;and watch Free Movies &amp; Live TV!}" />
+        <TextBlock Margin="0,24,0,0" Style="{StaticResource font_montserrat_medium_20}" LineHeight="28" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationBannerText, FallbackValue=Walgreens}" Visibility="{Binding Path=ClosingLocationBannerVisibility, FallbackValue=Collapsed}" />
+        <TextBlock Margin="0,4,0,0" Style="{StaticResource font_montserrat_medium_20}" LineHeight="28" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationAddressText, FallbackValue=1234 Very long street address}" Visibility="{Binding Path=ClosingLocationAddressVisibility, FallbackValue=Collapsed}" />
+        <TextBlock Style="{StaticResource font_montserrat_medium_20}" LineHeight="28" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding Path=ClosingLocationCityText, FallbackValue=Pretty Long City Name}" Visibility="{Binding Path=ClosingLocationCityVisibility, FallbackValue=Collapsed}" />
+        <TextBlock Margin="0,56,0,0" Style="{StaticResource font_montserrat_semibold_24}" LineHeight="36" Foreground="#FFFFFF" TextAlignment="Center" Text="Find other locations at redbox.com" TextWrapping="Wrap" Visibility="{Binding Path=ClosingLocationNoteVisibility, FallbackValue=Collapsed}" />
+      </StackPanel>
+      <Image Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/kiosk-closing-vsm.png" />
+    </Grid>
+  </Grid>
+</controls:TextToSpeechUserControl>

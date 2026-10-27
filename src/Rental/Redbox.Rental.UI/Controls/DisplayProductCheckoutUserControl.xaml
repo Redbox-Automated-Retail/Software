@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.DisplayProductCheckoutUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="10*" />
+      <ColumnDefinition Width="75*" />
+      <ColumnDefinition Width="15*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <local:DisplayProductUserControl Grid.Column="0" Grid.RowSpan="2" Height="78" VerticalAlignment="Center" />
+    <Line Name="SeparatorLine" Grid.Row="1" Grid.ColumnSpan="3" X2="1000" Fill="#979797" Margin="0,0,0,0" Stroke="#979797" StrokeThickness="2" Opacity="0.22" VerticalAlignment="Bottom" />
+    <StackPanel Name="ProductDescriptionTextPanel" Grid.Row="0" Grid.Column="1" Margin="3,10,0,0" VerticalAlignment="Center">
+      <TextBlock TextWrapping="Wrap">
+        <Span Style="{StaticResource span_font_montserrat_bold_13}" Foreground="{StaticResource CarlosPurple1Brush}">
+          <Run Name="ProductTitleText" Text="{Binding Path=ProductTitleText, FallbackValue=Star Wars The Force Awakens}" />
+        </Span> <Span Style="{StaticResource span_font_montserrat_regular_13}" Foreground="{StaticResource CarlosPurple1Brush}"><Run Name="ProductTypeAndActionText" Text="{Binding Path=ProductTypeText, FallbackValue=- DVD}" /></Span> <Span Style="{StaticResource span_font_montserrat_regular_13}" Foreground="{StaticResource CarlosPurple1Brush}"><Run Name="MDVNumberOfDiscsText" Text="{Binding Path=MDVNumberOfDiscsText, FallbackValue=- (2 Discs)}" /></Span></TextBlock>
+      <TextBlock Name="ProductDescriptionLine2Text" Style="{StaticResource font_montserrat_regular_13}" Foreground="{StaticResource CarlosPurple1Brush}" Text="{Binding Path=ProductDescriptionLine2Text, FallbackValue=1-night rental | Extra night $1.50 | Earning 3000+ pts}" />
+      <TextBlock Name="ProductDescriptionLine3Text" Style="{StaticResource font_montserrat_regular_13}" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=ProductDescriptionLine3Text, FallbackValue=PROMO APPLIED: $1 OFF Blu-ray}" Visibility="{Binding Path=ProductDescriptionLine3TextVisibility}" />
+      <StackPanel Name="MDVDiscCountStackPanel" Orientation="Horizontal" Margin="0,3,0,0" Visibility="{Binding Path=MDVFieldVisibility}">
+        <Viewbox Height="18">
+          <UserControl Name="TwoDiscsIcon2" Style="{StaticResource two_discs_icon}" Visibility="{Binding Path=MDVFieldVisibility}" />
+        </Viewbox>
+        <TextBlock Name="MDVDiscVendText" Style="{StaticResource font_montserrat_regular_13}" VerticalAlignment="Center" Margin="2,0,0,0" Text="{Binding Path=MDVDiscVendText, FallbackValue=2 DISC VEND}" Visibility="{Binding Path=MDVFieldVisibility}" />
+      </StackPanel>
+    </StackPanel>
+    <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+      <local:DisplayProductCheckoutSpecialOfferActionUserControl Margin="2,10,0,5" DataContext="{Binding Path=OfferActionModel}" Visibility="{Binding Path=DataContext.OfferActionVisibility, FallbackValue=Visible, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+      <DockPanel LastChildFill="True">
+        <Redbox:RoundedButton Name="RemoveButton" Height="30" Width="120" Margin="-10,0,0,12" Style="{StaticResource transparent_button_style}" VerticalAlignment="Center" HorizontalAlignment="Left" Command="{x:Static localbase:Commands.BrowseItemCancelCommand}" Visibility="{Binding Path=TopCancelButtonVisibility, FallbackValue=Visible}">
+          <StackPanel Orientation="Horizontal">
+            <Image Name="RemoveButtonImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/remove-x.png" Width="12" Height="12" Margin="0,0,7,0" />
+            <TextBlock Name="RemoveButtonText" Style="{StaticResource font_montserrat_extrabold_16}" TextDecorations="Underline" Foreground="#e42045" LineHeight="20" Text="{Binding Path=RemoveButtonText, FallbackValue=REMOVE}" />
+          </StackPanel>
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Name="DetailsButton" Height="30" Width="120" Margin="5,0,0,12" Style="{StaticResource transparent_button_style}" VerticalAlignment="Center" HorizontalAlignment="Left" Command="{x:Static localbase:Commands.ViewOfferDetailsCommand}" Visibility="{Binding Path=DetailsButtonVisibility, FallbackValue=Collapsed}">
+          <TextBlock Name="DetailsButtonText" Style="{StaticResource font_montserrat_extrabold_16}" TextDecorations="Underline" Foreground="#e42045" LineHeight="20" Text="{Binding Path=DetailsButtonText, FallbackValue=DETAILS}" />
+        </Redbox:RoundedButton>
+        <Redbox:RoundedButton Name="RedboxPlusInfoButton" Height="30" Margin="0,0,0,12" Style="{StaticResource transparent_button_style}" VerticalAlignment="Center" HorizontalAlignment="Right" Command="{Binding RedboxPlusInfoCommand}" Visibility="{Binding Path=RedboxPlusMovieInfoVisibility, FallbackValue=Visible}">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Name="RedboxPlussMovie" Style="{StaticResource font_montserrat_bold_16}" Foreground="{StaticResource CarlosPurple1Brush}" Margin="7,0,0,0" VerticalAlignment="Center" Text="{Binding Path=RedboxPlusMovieInfoButtonText, FallbackValue=Redbox+ movie}" />
+            <Image Name="InfoImage" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/information.png" Width="28" Height="28" Margin="7,0,7,0" />
+          </StackPanel>
+        </Redbox:RoundedButton>
+      </DockPanel>
+    </StackPanel>
+    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+      <TextBlock Name="ProductCartPriceText" Grid.Column="2" Style="{StaticResource font_montserrat_bold_16}" VerticalAlignment="Center" Foreground="{StaticResource CarlosPurple1Brush}" Margin="5,0,5,0" Text="{Binding Path=ProductCartPriceText, FallbackValue=$2.00}" />
+    </StackPanel>
+    <Redbox:RoundedButton Name="BottomCancelButton" Style="{StaticResource classic_gray_button_style}" Command="{x:Static localbase:Commands.BrowseItemCancelCommand}" BorderColor="White" BorderGradientColor="White" BorderThickness="2" HorizontalAlignment="Right" VerticalAlignment="Top" UsedDefaultCornerRadius="True" Width="43" Height="43" Margin="0,-75,-15,0" Visibility="{Binding Path=BottomCancelButtonVisibility, FallbackValue=Collapsed}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="20*" />
+          <RowDefinition Height="60*" />
+          <RowDefinition Height="20*" />
+        </Grid.RowDefinitions>
+        <Viewbox Grid.Row="1">
+          <TextBlock Style="{StaticResource font_montserrat_bold_24}">X</TextBlock>
+        </Viewbox>
+      </Grid>
+    </Redbox:RoundedButton>
+  </Grid>
+</UserControl>

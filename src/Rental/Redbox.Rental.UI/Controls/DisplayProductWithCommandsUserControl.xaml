@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Redbox.Rental.UI.Controls.DisplayProductWithCommandsUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:Redbox="clr-namespace:Redbox.Controls;assembly=Redbox.Controls" xmlns:local="clr-namespace:Redbox.Rental.UI.Controls" xmlns:localbase="clr-namespace:Redbox.Rental.UI" DataContextChanged="UserControl_DataContextChanged">
+  <Redbox:GridExt Name="MainGrid" RowHeights="76*,21*,3*" ColumnWidths="73*,18*,7*,2*">
+    <local:DisplayProductUserControl x:Name="DisplayProductUserControl" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+    <Redbox:GridExt Name="CornerAddButtonShadowGrid" ColumnSpan="2" RowSpan="2" RowHeights="63*,37*" ColumnWidths="47*,53*">
+      <Grid Name="CornerShadow" Row="1" Column="1" Visibility="{Binding Path=DisplayCornerAddButtonVisibility}">
+        <UIElement.InputBindings>
+          <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" />
+        </UIElement.InputBindings>
+        <Panel.Background>
+          <LinearGradientBrush StartPoint="0.5,0.5" EndPoint="1,1">
+            <GradientStop Color="#00000000" Offset="0" />
+            <GradientStop Color="#AF101010" Offset="0.75" />
+            <GradientStop Color="#BF101010" Offset="1" />
+          </LinearGradientBrush>
+        </Panel.Background>
+      </Grid>
+    </Redbox:GridExt>
+    <Viewbox Name="ADAMiniCartAddButtonViewbox" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="{Binding Path=ADAMiniCartAddButtonVisibility}">
+      <Grid>
+        <Redbox:RoundedButton Name="ADAMiniCartAddButton" Style="{StaticResource rubine_white_border_button_style}" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" BorderThickness="12" Width="280" Height="280" CornerRadius="140" />
+        <Redbox:GridExt RowHeights="15*,70*,15*">
+          <Viewbox Grid.Row="1">
+            <TextBlock Name="ADAMiniCartAddButtonText" IsHitTestVisible="False" Style="{StaticResource font_target_large}" Foreground="#FFFFFFFF" Text="{Binding Path=ADAMiniCartAddButtonText, FallbackValue=10}" />
+          </Viewbox>
+        </Redbox:GridExt>
+      </Grid>
+    </Viewbox>
+    <Redbox:GridExt Name="MiniCartCancelButtonGrid" ColumnSpan="3" RowHeights="4*,40*,56*" ColumnWidths="59*,41*">
+      <Redbox:RoundedButton Name="MiniCartCancelButton" Grid.Column="1" Grid.Row="1" BorderThickness="2.5" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.BrowseItemCancelCommand}" Style="{StaticResource light_gray_red_border_button_style}" Visibility="{Binding Path=MiniCartCancelButtonVisibility}">
+        <Redbox:GridExt RowHeights="5*,90*,5*" ColumnWidths="5*,90*,5*">
+          <Viewbox Grid.Row="1" Grid.Column="1">
+            <UserControl Style="{StaticResource delete_x_style}" />
+          </Viewbox>
+        </Redbox:GridExt>
+      </Redbox:RoundedButton>
+    </Redbox:GridExt>
+    <Redbox:RoundedButton Name="CancelButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" BorderThickness="2" DropShadowDepth="1" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.BrowseItemCancelCommand}" Style="{StaticResource light_gray_white_border_button_with_dropshadow_style}" Visibility="{Binding Path=CancelButtonVisibility}">
+      <Redbox:GridExt RowHeights="5*,90*,5*" ColumnWidths="5*,90*,5*">
+        <Viewbox Grid.Row="1" Grid.Column="1">
+          <UserControl Style="{StaticResource delete_x_style}" />
+        </Viewbox>
+      </Redbox:GridExt>
+    </Redbox:RoundedButton>
+    <Redbox:RoundedButton Name="CornerAddButton" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" BorderThickness="2" DropShadowDepth="1" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.BrowseItemAddCommand}" Style="{Binding Path=AddButtonStyle, FallbackValue={StaticResource rubine_no_border_button_style}}" Visibility="{Binding Path=DisplayCornerAddButtonVisibility}">
+      <Grid>
+        <Redbox:GridExt RowHeights="15*,70*,15*">
+          <Viewbox Grid.Row="1">
+            <TextBlock Name="CornerAddButtonText" IsHitTestVisible="False" HorizontalAlignment="Center" Style="{StaticResource font_target_large}" Foreground="#FFFFFFFF" Text="{Binding Path=CornerAddButtonText, FallbackValue=10}" Visibility="{Binding Path=AddButtonTextVisibility}" />
+          </Viewbox>
+        </Redbox:GridExt>
+        <Redbox:GridExt RowHeights="14*,72*,14*" ColumnWidths="14*,72*,14*" Visibility="{Binding Path=DisplayCornerAddButtonVisibility}">
+          <Viewbox Grid.Row="1" Grid.Column="1">
+            <UserControl Name="CornerAddButtonPlusSign" Style="{StaticResource plus_sign_style}" IsHitTestVisible="False" Visibility="{Binding Path=AddButtonPlusSignVisibility}" />
+          </Viewbox>
+        </Redbox:GridExt>
+      </Grid>
+    </Redbox:RoundedButton>
+    <Grid Name="CornerContainerElem" Row="0" Column="0" RowSpan="2" ColumnSpan="3" Visibility="{Binding CornerContainerVisibility, FallbackValue=Collapsed}">
+      <Redbox:RoundedButton Name="CornerIncludeButtonElem" Style="{StaticResource white_border_rubine_include_button_style}" Visibility="{Binding CornerIncludeButtonVisibility, FallbackValue=Collapsed}">
+        <Redbox:GridExt RowHeights="18*,6*" ColumnWidths="18*,6*">
+          <Viewbox Grid.Row="1" Grid.Column="1">
+            <UserControl Style="{StaticResource plus_sign_style}" Margin="6,7,7,7" />
+          </Viewbox>
+        </Redbox:GridExt>
+      </Redbox:RoundedButton>
+      <Redbox:RoundedButton Name="CornerExcludeButtonElem" Style="{StaticResource white_border_gray_exclude_button_style}" Visibility="{Binding CornerExcludeButtonVisibility, FallbackValue=Collapsed}">
+        <Redbox:GridExt RowHeights="18*,6*" ColumnWidths="18*,6*">
+          <Viewbox Grid.Row="1" Grid.Column="1">
+            <UserControl Style="{StaticResource delete_x_style}" Margin="0,1,1,1" />
+          </Viewbox>
+        </Redbox:GridExt>
+      </Redbox:RoundedButton>
+    </Grid>
+  </Redbox:GridExt>
+</UserControl>
