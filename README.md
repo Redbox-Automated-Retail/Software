@@ -38,7 +38,10 @@ compiled against are not available; see "Known gaps" in
 Redbox.sln              all projects, grouped by product area
 Directory.Build.props   shared compiler settings
 lib/                    third-party binaries that have no NuGet package (see lib/README.md)
-docs/                   assembly inventory and decompilation notes
+docs/                   assembly inventory, decompilation notes, update-store survey
+build/                  ILRepack re-merge targets
+tools/                  scripts that generated src/ and fixed decompiler output
+tests/                  smoke test for the reconstructed RBA SDK simulator
 src/
   Common/               shared Redbox.* libraries (Core, IPC, Lua, Macros, ...)
   HAL/                  hardware abstraction layer service (halservice) and its tools
@@ -46,7 +49,7 @@ src/
   KioskEngine/          kiosk engine host, IDE, control panel, FMA and shared UI
   KioskServices/        engine kernel extensions and service proxies
   Rental/               rental application (model, services, WPF UI)
-  DeviceService/        card-reader device service (.NET Core 2.2) and RBA SDK
+  DeviceService/        card-reader device service (.NET Core 2.2), RBA SDK and a reconstructed RBA SDK simulator
   KioskClient/          KioskClientService.API (.NET Core 2.2)
   UpdateClient/         UpdateClientService.API (.NET Core 2.2) and Redbox.NetCore.*
   UpdateManager/        legacy update manager daemon/UI/console and their libraries
@@ -62,3 +65,20 @@ project.
 See [docs/decompilation.md](docs/decompilation.md) for details: tool versions, how
 ILMerged executables were split back into their libraries, which code is kept inline,
 and the list of known gaps.
+
+## Reconstructed code (not decompiled)
+
+A few pieces were written by hand because the original binary was never shipped. Each is clearly marked
+in its source:
+
+- [`RBA_SDK_Simulator`](src/DeviceService/RBA_SDK_Simulator/README.md): an iUC285 card-reader simulator that
+  DeviceService loads when `AppSettings:UseSimulator` is true, so the device service runs without hardware.
+  It has its own REST API for swiping, inserting and tapping test cards. `tests/RBA_SDK_Simulator.SmokeTest`
+  runs the real `IUC285Proxy` against it.
+- `Redbox.HardwareServices.TestProxy`: an API stub only.
+- `RebootStatusRequest` in Status.Client.
+
+## Version history
+
+The kiosk image contains the update manager's full update history. [docs/update-store.md](docs/update-store.md)
+describes its format and what it could recover: source history, and the older libraries the excluded projects need.

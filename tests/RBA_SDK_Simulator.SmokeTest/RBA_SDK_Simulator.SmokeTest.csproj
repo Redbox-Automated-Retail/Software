@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Not part of the decompiled sources: a smoke test for the reconstructed RBA_SDK_Simulator. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DeviceService\DeviceService.Domain\DeviceService.Domain.csproj" />
+    <ProjectReference Include="..\..\src\DeviceService\RBA_SDK_Simulator\RBA_SDK_Simulator.csproj" />
+  </ItemGroup>
+</Project>

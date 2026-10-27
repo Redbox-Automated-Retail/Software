@@ -91,6 +91,9 @@ All changes after the first commit are listed in `git log`. In summary:
   - `Redbox.HardwareServices.KernelExtension` was re-decompiled with the TestProxy stub available so that
     ILSpy could resolve its types.
 - **Project references**: `System.Xaml` added where WPF types are used without it being an original reference.
+- **RBA_SDK_Simulator** (new project, `src/DeviceService/RBA_SDK_Simulator`): written from scratch to the
+  contract `DeviceService.WebApi/Startup.cs` loads by reflection, because the original DLL was never shipped.
+  See its README.
 
 ## Known gaps
 
