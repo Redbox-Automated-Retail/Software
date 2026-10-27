@@ -7,7 +7,6 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateRazorAssemblyInfo>false</GenerateRazorAssemblyInfo>
-    <ILRepackAssemblies>Redbox.NetCore.Logging</ILRepackAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatch" Version="3.5.0.17" />
