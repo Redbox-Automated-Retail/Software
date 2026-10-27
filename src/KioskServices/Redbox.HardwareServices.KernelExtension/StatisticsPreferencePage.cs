@@ -48,10 +48,6 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
 		m_routerResetEnabled.Checked = ((TestHardwareService)service).IsRouterResetEnabled;
 		m_routerResetSuccessful.Checked = ((TestHardwareService)service).RouterResetSuccessful;
@@ -67,37 +63,31 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnRouterResetChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).IsRouterResetEnabled = m_routerResetEnabled.Checked;
 	}
 
 	private void OnRouterResetSuccessfulChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).RouterResetSuccessful = m_routerResetSuccessful.Checked;
 	}
 
 	private void OnTouchScreenResetSuccessfulChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).TouchScreenResetSuccessful = m_touchScreenResetSuccessful.Checked;
 	}
 
 	private void OnArcusResetSuccessfulChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetSuccessful = m_arcusResetSuccessful.Checked;
 	}
 
 	private void OnArcusResetOnVendChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetOnVend = m_arcusResetOnVend.Checked;
 	}
 
 	private void OnArcusResetOnReturnChanged(object sender, EventArgs e)
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetOnReturn = m_ArcusResetOnReturn.Checked;
 	}
 

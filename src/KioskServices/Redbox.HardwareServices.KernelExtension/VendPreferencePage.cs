@@ -28,9 +28,6 @@ public class VendPreferencePage : UserControl, IPreferencePageHost
 
 	public VendPreferencePage()
 	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
-		base._002Ector();
 		InitializeComponent();
 		_hardwareService = (TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>();
 		_inventoryService = ServiceLocator.Instance.GetService<IInventoryTestService>();
@@ -43,19 +40,17 @@ public class VendPreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		_initializing = true;
-		cmb_vendResult.DataSource = Enum.GetValues(typeof(PreposResultType));
+		cmb_vendResult.DataSource = Enum.GetValues(typeof(Common.PreposResultType));
 		cmb_vendResult.SelectedItem = _hardwareService.VendResult;
 		_initializing = false;
 	}
 
 	private void cmb_vendResult_SelectedValueChanged(object sender, EventArgs e)
 	{
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		if (!_initializing)
 		{
-			_hardwareService.VendResult = (PreposResultType)cmb_vendResult.SelectedItem;
+			_hardwareService.VendResult = (Common.PreposResultType)cmb_vendResult.SelectedItem;
 		}
 	}
 
