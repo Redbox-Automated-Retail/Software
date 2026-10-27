@@ -63,9 +63,51 @@ These older binaries merged in **older, incompatible** versions of Redbox librar
 
 ## Rebuilding the original binaries' shape
 
-The projects build normal (un-merged) assemblies. Some deployments expect single-file
-executables; see the ILRepack note in the README.
+The projects build normal (un-merged) assemblies. Projects whose original binary was ILMerged list the
+merged assemblies in `<ILRepackAssemblies>`; building with `-p:ILRepack=true` re-merges them with ILRepack
+into `bin/<config>/<tfm>/merged/` (see `build/ILRepack.targets`).
+
+## Hand fixes after the baseline commit
+
+All changes after the first commit are listed in `git log`. In summary:
+
+- **Decompiler output that does not compile** (mechanical, scripts in `tools/fixes/`): tlbimp COM interop
+  attributes and event providers, BAML-decompiled XAML markup extensions, XAML-compiler-generated members
+  left in WPF code-behind, a mangled `_logger?.LogInformation(...)` call, property patterns on events,
+  an ambiguous `ISet<>`.
+- **BAML `Int32Collection`s**: ILSpy wrote `TriangleIndices` without separators (`"321103"`,
+  `"012230654476…"`). They were re-split into the only valid quad index lists (`"3 2 1 1 0 3"`, and
+  `0 1 2 2 3 0 6 5 4 4 7 6 10 9 8 8 11 10 14 13 12 12 15 14` for the 16-vertex mesh in
+  `AnimatedDiscReturnViewUserControl.xaml`).
+- **XAML file names**: two Rental.UI controls were renamed back to their original BAML paths
+  (`Controls/WelcomeUserControl1/2.xaml`, classes `JoinedUserControl1/2`).
+- **Missing referenced types**, taken from older versions in the kiosk's update store
+  (`REDS/Update Manager/.store`) where possible:
+  - `IPromotionServices` (from `Redbox.KioskEngine.ComponentModel` 1.71) and `RebootStatus`
+    (from `DeviceService.ComponentModel` 1.10.6), placed in a `MissingReferences/` folder of the project
+    that needs them.
+  - Reconstructed by hand (no original found): `RebootStatusRequest` (Status.Client) and the
+    `Redbox.HardwareServices.TestProxy` stub project. These are marked `RECONSTRUCTED` in the source.
+  - `Redbox.HardwareServices.KernelExtension` was re-decompiled with the TestProxy stub available so that
+    ILSpy could resolve its types.
+- **Project references**: `System.Xaml` added where WPF types are used without it being an original reference.
 
 ## Known gaps
 
-See the "Known gaps" section at the end of the README (kept up to date with the fixes).
+Not built (kept as source, excluded from `Redbox.sln`):
+
+- `src/HAL/Legacy/*` — 2014 camera plugins built against HAL 1.3.0.119, which is not available.
+  See `src/HAL/Legacy/README.md`.
+- `Redbox.KioskServices.Kernel`, `.KernelExtension`, `.Proxy` (1.81.0.27) — built against
+  `Redbox.KioskEngine.ComponentModel` 1.81, whose `IConfiguration` has members the shipped 1.88 removed
+  (`SendKioskPropertiesToKioskDataService`, ...). Nothing in the 1.88 engine references these assemblies.
+  The 1.81 engine libraries are reachable only through the delta patches in the update store.
+
+Other notes:
+
+- Recovered-library assembly names (`Redbox.DirectShow`, `Redbox.UpdateManager.*`, `TaskScheduler`,
+  `Interop.ClearImage`, ...) are guesses based on namespaces; their version is 1.0.0.0.
+- `Redbox.UpdateService.Client` in `REDS/Update Manager/bin` is an ILMerged build of
+  `Redbox.UpdateService.Client` + `Redbox.UpdateService.Model`; it is not reproduced separately.
+- `DeviceService.ComponentModel` ships as 1.10.13.0 (DeviceService) and 1.0.0.0 (Kiosk Engine) with
+  identical types; only 1.10.13.0 is built.

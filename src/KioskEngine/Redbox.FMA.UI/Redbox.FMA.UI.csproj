@@ -24,4 +24,9 @@
     <ProjectReference Include="..\..\Rental\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
     <ProjectReference Include="..\..\Rental\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Library assembly: App.xaml was compiled as an ordinary page, not as the application definition. -->
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
 </Project>

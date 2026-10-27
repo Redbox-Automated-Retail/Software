@@ -24,6 +24,14 @@ Requirements:
 msbuild Redbox.sln -restore -m -p:Configuration=Release
 ```
 
+Many of the shipped executables were single files produced by ILMerge. The projects here build
+ordinary, separate assemblies; add `-p:ILRepack=true` to also produce merged copies (in a `merged\`
+folder next to each affected output) using the assembly lists recorded in each project.
+
+A few projects are kept as source only and are not in `Redbox.sln`, because the libraries they were
+compiled against are not available; see "Known gaps" in
+[docs/decompilation.md](docs/decompilation.md).
+
 ## Layout
 
 ```
