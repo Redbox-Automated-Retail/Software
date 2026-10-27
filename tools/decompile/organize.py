@@ -134,6 +134,8 @@ CORE_PKGS = {
 }
 
 HAL_AREAS = ('HAL', 'HAL/Legacy')
+# .NET Core / .NET Standard binaries were never ILMerged: a namespace shared with another assembly is their own code
+NOT_MERGED_AREAS = ('UpdateClient', 'KioskClient', 'DeviceService')
 
 # ---------------------------------------------------------------- helpers
 def raw_ns_dirs(p):
@@ -177,7 +179,7 @@ def classify(p, ns, newtonsoft_merged):
     if AREA.get(p) in HAL_AREAS and (ns == 'Redbox.IPC.Framework' or ns.startswith('Redbox.IPC.Framework.')):
         return ('own',) if p == 'Redbox.HAL.IPC.Framework' else ('dep', 'Redbox.HAL.IPC.Framework')
     o = name_owner(ns)
-    if o and o != p:
+    if o and o != p and AREA.get(p) not in NOT_MERGED_AREAS:
         mine = set(os.listdir(os.path.join(RAW, p, ns))) if os.path.isdir(os.path.join(RAW, p, ns)) else set()
         theirs = set(os.listdir(os.path.join(RAW, o, ns))) if os.path.isdir(os.path.join(RAW, o, ns)) else set()
         if mine and not (mine & theirs):
