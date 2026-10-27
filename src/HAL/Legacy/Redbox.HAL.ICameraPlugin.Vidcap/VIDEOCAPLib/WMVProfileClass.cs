@@ -6,7 +6,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [Guid("5D8DD388-710B-4370-8935-A337B34F3106")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class WMVProfileClass : IWMVProfile, WMVProfile
 {

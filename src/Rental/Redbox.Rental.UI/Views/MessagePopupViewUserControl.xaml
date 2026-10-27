@@ -28,7 +28,7 @@
   </FrameworkElement.Resources>
   <Grid>
     <Grid Name="DarkBackground" Background="#FF000000" Opacity="{Binding Path=BackgroundOpacity, FallbackValue=0.6}" />
-    <Grid Name="FixedSizeGrid" Margin="{Binding Path=MainGridMargin, FallbackValue=128,96,128,96}" Visibility="{Binding Path=FixedSizeGridVisibility, FallbackValue=Visible}">
+    <Grid Name="FixedSizeGrid" Margin="{Binding Path=MainGridMargin, FallbackValue='128,96,128,96'}" Visibility="{Binding Path=FixedSizeGridVisibility, FallbackValue=Visible}">
       <Border Background="#FFFFFFFF" CornerRadius="28" BorderThickness="5" BorderBrush="{Binding Path=BorderBrushColor, FallbackValue=#E42045}" />
       <Grid Name="InnerGrid" Style="{Binding Path=InnerGridStyle}">
         <StackPanel Orientation="Vertical">
@@ -87,7 +87,7 @@
               <TextBlock Name="AutoSizeGrid_Button2_Text" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{Binding Path=Button2TextStyle, FallbackValue={StaticResource button2_text_style}}" Text="{Binding Path=Button2Text}" />
             </Redbox:RoundedButton>
             <Grid ColumnSpan="2" HorizontalAlignment="Center" Visibility="{Binding Path=CountdownTimerGridVisibility, FallbackValue=Collapsed}">
-              <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_bold_24}" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=CountdownTimerText, FallbackValue=}" />
+              <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_bold_24}" Foreground="{StaticResource RubineRedBrush}" Text="{Binding Path=CountdownTimerText, FallbackValue=''}" />
             </Grid>
           </Grid>
         </StackPanel>

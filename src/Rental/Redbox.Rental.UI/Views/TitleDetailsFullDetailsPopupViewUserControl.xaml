@@ -10,10 +10,10 @@
         <DockPanel Width="864" Height="584" VerticalAlignment="Top" LastChildFill="False">
           <StackPanel DockPanel.Dock="Top" Margin="0,24,0,0">
             <TextBlock Name="HeaderText" MaxHeight="88" Margin="0,0,0,8" Style="{StaticResource font_montserrat_semibold_32}" Foreground="#060208" LineHeight="40" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=Header, FallbackValue=Power Rangers}" />
-            <TextBlock Name="DescriptionText" MaxHeight="216" Margin="0,0,0,16" Style="{StaticResource font_montserrat_medium_16}" Foreground="#060208" LineHeight="24" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=Description, FallbackValue=Five ordinary teens must become something extraordinary when they learn that their small town of Angel Grove - and the world - is on the verge of being obliterated by an alien threat. Chosen by destiny, our heroes quickly discover they are the only ones who can save the planet. But to do so, they will have to overcome their real-life issues and before it&amp;rsquo;s too late, band together as the Power Rangers. Their furious and sometimes silly enemies always go after these guys trying to stop them from helping the world, but the Power Rangers never give up, until the earth is clean from jokers.}" />
+            <TextBlock Name="DescriptionText" MaxHeight="216" Margin="0,0,0,16" Style="{StaticResource font_montserrat_medium_16}" Foreground="#060208" LineHeight="24" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=Description, FallbackValue='Five ordinary teens must become something extraordinary when they learn that their small town of Angel Grove - and the world - is on the verge of being obliterated by an alien threat. Chosen by destiny, our heroes quickly discover they are the only ones who can save the planet. But to do so, they will have to overcome their real-life issues and before it&amp;rsquo;s too late, band together as the Power Rangers. Their furious and sometimes silly enemies always go after these guys trying to stop them from helping the world, but the Power Rangers never give up, until the earth is clean from jokers.'}" />
             <TextBlock Name="StarringText" MaxHeight="32" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_14}" Foreground="#060208" LineHeight="20" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Visibility="{Binding Path=StarringVisibility, FallbackValue=Visible}">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=StarringLabel, FallbackValue=Starring:}" /> <Run Text="{Binding Path=Starring, FallbackValue=Dacre Montgomery, Naomi Scott, R.J. Cyler, Ludi Lin}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=StarringLabel, FallbackValue=Starring:}" /> <Run Text="{Binding Path=Starring, FallbackValue='Dacre Montgomery, Naomi Scott, R.J. Cyler, Ludi Lin'}" /></TextBlock.Inlines>
             </TextBlock>
             <TextBlock Name="DirectorsText" MaxHeight="32" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_14}" Foreground="#060208" LineHeight="20" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Visibility="{Binding Path=DirectorsVisibility, FallbackValue=Visible}">
               <TextBlock.Inlines>
@@ -21,7 +21,7 @@
             </TextBlock>
             <TextBlock Name="RatingText" MaxHeight="32" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_14}" Foreground="#060208" LineHeight="20" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Visibility="{Binding Path=RatingVisibility, FallbackValue=Visible}">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=RatingLabel, FallbackValue=Rating:}" /> <Run Text="{Binding Path=Rating, FallbackValue=PG-13 by the Motion Pictures of America of America for mild thematic elements, violence, violence, violence, sexual situations.}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=RatingLabel, FallbackValue=Rating:}" /> <Run Text="{Binding Path=Rating, FallbackValue='PG-13 by the Motion Pictures of America of America for mild thematic elements, violence, violence, violence, sexual situations.'}" /></TextBlock.Inlines>
             </TextBlock>
           </StackPanel>
           <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,8">
@@ -29,22 +29,22 @@
             <Border Height="2" Margin="0,0,0,12" Background="#792D8D" />
             <TextBlock Name="OneNightPricesText" Height="16" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_12}" Foreground="#060208" LineHeight="16" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=OneNightPriceLabel, FallbackValue=1-Night Rental:}" /> <Run Text="{Binding Path=OneNightPrices, FallbackValue=$1.50 for DVD, $1.75 for Blu-ray, $2.50 for 4K UHD}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=OneNightPriceLabel, FallbackValue=1-Night Rental:}" /> <Run Text="{Binding Path=OneNightPrices, FallbackValue='$1.50 for DVD, $1.75 for Blu-ray, $2.50 for 4K UHD'}" /></TextBlock.Inlines>
             </TextBlock>
             <TextBlock Name="OneNightReturnTimesText" Height="16" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_12}" Foreground="#060208" LineHeight="16" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=OneNightReturnTimeLabel, FallbackValue=Return:}" /> <Run Text="{Binding Path=OneNightReturnTimes, FallbackValue=9pm Wednesday, 07/26/17}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=OneNightReturnTimeLabel, FallbackValue=Return:}" /> <Run Text="{Binding Path=OneNightReturnTimes, FallbackValue='9pm Wednesday, 07/26/17'}" /></TextBlock.Inlines>
             </TextBlock>
             <TextBlock Name="MultiNightPricesText" Height="16" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_12}" Foreground="#060208" LineHeight="16" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Visibility="{Binding Path=MultiNightPricesVisibility, FallbackValue=Collapsed}">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=MultiNightPriceLabel, FallbackValue=Multi-Night Rental:}" /> <Run Text="{Binding Path=MultiNightPrices, FallbackValue=$3.00 for DVD for 2 nights, $3.50 for Blu-ray for 2 nights, $2.50 for 4K UHD}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=MultiNightPriceLabel, FallbackValue=Multi-Night Rental:}" /> <Run Text="{Binding Path=MultiNightPrices, FallbackValue='$3.00 for DVD for 2 nights, $3.50 for Blu-ray for 2 nights, $2.50 for 4K UHD'}" /></TextBlock.Inlines>
             </TextBlock>
             <TextBlock Name="MultiNightReturnTimesText" Height="16" Margin="0,0,0,8" Style="{StaticResource font_montserrat_regular_12}" Foreground="#060208" LineHeight="16" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Visibility="{Binding Path=MultiNightReturnTimesVisibility, FallbackValue=Collapsed}">
               <TextBlock.Inlines>
-                <Run FontWeight="Bold" Text="{Binding Path=MultiNightReturnTimeLabel, FallbackValue=Return:}" /> <Run Text="{Binding Path=MultiNightReturnTimes, FallbackValue=9pm Friday, 07/28/17 for DVD, 9pm Friday, 07/28/17 for Blu-ray}" /></TextBlock.Inlines>
+                <Run FontWeight="Bold" Text="{Binding Path=MultiNightReturnTimeLabel, FallbackValue=Return:}" /> <Run Text="{Binding Path=MultiNightReturnTimes, FallbackValue='9pm Friday, 07/28/17 for DVD, 9pm Friday, 07/28/17 for Blu-ray'}" /></TextBlock.Inlines>
             </TextBlock>
             <TextBlock Name="ServiceFeeMessageText" MaxHeight="32" Margin="0,8,0,8" Style="{StaticResource font_montserrat_medium_12}" Foreground="#060208" LineHeight="16" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=ServiceFeeMessage, FallbackValue=All checkouts may be subject to a service fee of 10¢.}" Visibility="{Binding Path=ServiceFeeMessageVisibility, FallbackValue=Collapsed}" />
-            <TextBlock Name="DealMessageText" MaxHeight="32" Margin="0,8,0,8" Style="{StaticResource font_montserrat_medium_12}" Foreground="#060208" LineHeight="16" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=DealMessage, FallbackValue=Extra nights for Hot Deals are $1.50 DVD, $2.00 Blu-ray. Our Hot Deal can change at any time. It only shows up for specific titles, locations and dates – so you&amp;rsquo;re in luck.}" Visibility="{Binding Path=DealMessageVisibility, FallbackValue=Collapsed}" />
+            <TextBlock Name="DealMessageText" MaxHeight="32" Margin="0,8,0,8" Style="{StaticResource font_montserrat_medium_12}" Foreground="#060208" LineHeight="16" TextWrapping="Wrap" TextTrimming="WordEllipsis" Text="{Binding Path=DealMessage, FallbackValue='Extra nights for Hot Deals are $1.50 DVD, $2.00 Blu-ray. Our Hot Deal can change at any time. It only shows up for specific titles, locations and dates – so you&amp;rsquo;re in luck.'}" Visibility="{Binding Path=DealMessageVisibility, FallbackValue=Collapsed}" />
           </StackPanel>
         </DockPanel>
         <Border Width="944" Height="104" CornerRadius="0,0,28,28" VerticalAlignment="Bottom" Background="#D8D8D8">

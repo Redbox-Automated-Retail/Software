@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows;
@@ -113,12 +113,5 @@ public partial class DisplayProductUserControl : UserControl, IComponentConnecto
 		double num = (0.0 - Flag.Height) / 2.0;
 		Flag.Margin = new Thickness(num * 2.0 / 3.0, num, 0.0, 0.0);
 		AddButton.IsEnabled = true;
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

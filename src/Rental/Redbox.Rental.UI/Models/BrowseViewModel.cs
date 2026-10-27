@@ -606,7 +606,7 @@ public class BrowseViewModel : DependencyObject
 
 	private static void OnBrowseProductControlModelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		if (d is BrowseViewModel { OnBrowseProductControlModelChanged: not null } browseViewModel)
+		if (d is BrowseViewModel browseViewModel && browseViewModel.OnBrowseProductControlModelChanged != null)
 		{
 			browseViewModel.OnBrowseProductControlModelChanged(browseViewModel);
 		}

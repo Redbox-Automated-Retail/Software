@@ -149,7 +149,7 @@ public class CarouselTestModel : DependencyObject
 
 	private static void OnIsAnimationOnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		if (d is CarouselTestModel { OnIsAnimationOnChanged: not null } carouselTestModel)
+		if (d is CarouselTestModel carouselTestModel && carouselTestModel.OnIsAnimationOnChanged != null)
 		{
 			carouselTestModel.OnIsAnimationOnChanged(carouselTestModel);
 		}

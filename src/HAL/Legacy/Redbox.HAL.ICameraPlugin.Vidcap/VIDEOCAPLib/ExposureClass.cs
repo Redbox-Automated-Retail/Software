@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [Guid("42AA7A99-4EC8-44D2-9B0E-0A41594EC5A3")]
 [DefaultMember("_Value")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [TypeLibType(2)]
 [ComVisible(true)]
 public class ExposureClass : IExposure, Exposure

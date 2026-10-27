@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Threading;
@@ -145,12 +145,5 @@ public partial class StoreUserControl : UserControl, IPreferencePageHost, ICompo
 		int result = 0;
 		int.TryParse(storeNumberString, out result);
 		return result;
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

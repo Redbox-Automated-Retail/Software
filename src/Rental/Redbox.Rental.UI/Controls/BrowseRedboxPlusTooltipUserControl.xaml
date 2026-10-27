@@ -7,7 +7,7 @@
     <MouseBinding Gesture="LeftClick" Command="{x:Static localbase:Commands.BrowseRedboxPlusTooltipCommand}" />
   </UIElement.InputBindings>
   <Grid>
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{Binding Path=BrowseRedboxPlusTooltipUserControlMargin, FallbackValue=28,0,0,138}">
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{Binding Path=BrowseRedboxPlusTooltipUserControlMargin, FallbackValue='28,0,0,138'}">
       <Border Width="324" Height="157" Background="#481B54" BorderBrush="#FFFFFFFF" BorderThickness="2" CornerRadius="10">
         <Grid>
           <Grid.RowDefinitions>

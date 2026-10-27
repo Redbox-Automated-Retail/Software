@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [ComSourceInterfaces("ClearImage._ICiImageEvents\0")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("F2BCF18A-0B27-11D4-B5F5-9CC767000000")]
 [ComVisible(true)]
 public class CiImageClass : ICiImage, CiImage, _ICiImageEvents_Event

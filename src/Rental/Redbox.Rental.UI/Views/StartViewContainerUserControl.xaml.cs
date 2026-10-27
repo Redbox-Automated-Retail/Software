@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -108,12 +108,5 @@ public partial class StartViewContainerUserControl : TextToSpeechUserControl, IW
 	public override ISpeechControl GetSpeechControl()
 	{
 		return StartViewModel?.ProcessGetSpeechControl();
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

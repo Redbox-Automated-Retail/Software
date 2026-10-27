@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("A70FCE9D-3CAF-4BB1-81D1-122378FB2BAC")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class VideoInputsClass : IVideoInputs, VideoInputs, IEnumerable
 {

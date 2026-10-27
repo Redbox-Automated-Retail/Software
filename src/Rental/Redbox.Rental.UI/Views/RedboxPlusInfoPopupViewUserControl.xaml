@@ -20,7 +20,7 @@
           </TextBlock>
           <TextBlock Name="DescriptionLine3Text" Margin="10,0,0,0" MaxHeight="56" Style="{StaticResource font_montserrat_medium_20}" Foreground="{StaticResource CarlosPurple1Brush}" LineHeight="28" TextWrapping="Wrap">
             <TextBlock.Inlines>
-              <Run Text="3. " FontWeight="Bold" /> <Run Text="{Binding Path=DescriptionLine3, FallbackValue=Tap &quot;USE REDBOX+ OR PROMO&quot;}" /></TextBlock.Inlines>
+              <Run Text="3. " FontWeight="Bold" /> <Run Text="{Binding Path=DescriptionLine3, FallbackValue='Tap &quot;USE REDBOX+ OR PROMO&quot;'}" /></TextBlock.Inlines>
           </TextBlock>
         </StackPanel>
         <StackPanel VerticalAlignment="Bottom" Margin="76,0,76,0">

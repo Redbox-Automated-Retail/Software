@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("286F56E6-7A78-4541-9D66-92DD901C7DE1")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiToolsClass : ICiTools, CiTools
 {

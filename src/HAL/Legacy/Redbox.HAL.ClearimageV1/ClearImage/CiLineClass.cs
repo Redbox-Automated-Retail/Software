@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("A7A8BF7F-8CB8-49DC-8A76-D0A1A145189C")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiLineClass : ICiLine, CiLine
 {

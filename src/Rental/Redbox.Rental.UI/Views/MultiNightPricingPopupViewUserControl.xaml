@@ -30,7 +30,7 @@
             <TextBlock Name="BuyButtonText2" Style="{StaticResource button_text_large_style}" Width="168" TextAlignment="Right" Text="{Binding Path=BuyButtonText2, FallbackValue=$3.99}" />
           </StackPanel>
         </Redbox:RoundedButton>
-        <TextBlock Name="DisclaimerText" Margin="0,52,0,24" Foreground="{StaticResource CarlosPurple1Brush}" TextWrapping="Wrap" Style="{StaticResource font_montserrat_regular_13}" LineHeight="20" Text="{Binding Path=DisclaimerText, FallbackValue=Our multi-night deal cant be combined with other offers. Your awesome rental rate is good during the multi-night period. If you keep your rental longer, thats totally fine - extra nights are $1.50.}" />
+        <TextBlock Name="DisclaimerText" Margin="0,52,0,24" Foreground="{StaticResource CarlosPurple1Brush}" TextWrapping="Wrap" Style="{StaticResource font_montserrat_regular_13}" LineHeight="20" Text="{Binding Path=DisclaimerText, FallbackValue='Our multi-night deal cant be combined with other offers. Your awesome rental rate is good during the multi-night period. If you keep your rental longer, thats totally fine - extra nights are $1.50.'}" />
         <Separator Style="{StaticResource modal_separator_style}" Margin="0,0,0,24" />
         <Redbox:RoundedButton Name="CancelButton" HorizontalAlignment="Center" Style="{StaticResource modal_one_button_button1_style}" Command="{x:Static views:MultiNightPricingPopupViewUserControlCommands.CancelCommand}">
           <TextBlock Name="CancelButtonText" Style="{StaticResource button_text_large_style}" Text="{Binding Path=CancelButtonText, FallbackValue=CANCEL}" />

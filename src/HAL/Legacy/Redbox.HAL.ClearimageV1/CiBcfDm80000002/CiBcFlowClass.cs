@@ -5,7 +5,7 @@ using ClearImage;
 namespace CiBcfDm80000002;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [TypeLibType(2)]
 [Guid("87062E11-3926-437F-88AE-A9F4B566D93E")]
 [ComSourceInterfaces("CiBcfDm80000002.__CiBcFlow\0")]

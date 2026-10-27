@@ -4,18 +4,18 @@
     <CommandBinding Command="{x:Static local:CheckMarkButtonUserControl.Command}" Executed="CommandBinding_Executed" />
   </UIElement.CommandBindings>
   <StackPanel Orientation="Horizontal">
-    <Redbox:RoundedButton MinWidth="78" Command="{x:Static local:CheckMarkButtonUserControl.Command}" Style="{Binding Path=Style, FallbackValue={StaticResource button_selectable_unselected_style}}" Margin="{Binding Path=Margin, FallbackValue=8,0,8,0}">
+    <Redbox:RoundedButton MinWidth="78" Command="{x:Static local:CheckMarkButtonUserControl.Command}" Style="{Binding Path=Style, FallbackValue={StaticResource button_selectable_unselected_style}}" Margin="{Binding Path=Margin, FallbackValue='8,0,8,0'}">
       <StackPanel Orientation="Horizontal">
         <Image Style="{StaticResource button_image_selectable_down_arrow_style}" Visibility="{Binding Path=DownArrowImageVisibility, FallbackValue=Collapsed}" />
         <StackPanel Orientation="Vertical">
           <StackPanel Orientation="Horizontal">
-            <TextBlock Style="{StaticResource button_text_selectable_style}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding Path=TextMaxWidth, FallbackValue=220}" Padding="{Binding Path=TextPadding, FallbackValue=24,0,24,0}" Text="{Binding Path=Text, FallbackValue=TEXT}" />
+            <TextBlock Style="{StaticResource button_text_selectable_style}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding Path=TextMaxWidth, FallbackValue=220}" Padding="{Binding Path=TextPadding, FallbackValue='24,0,24,0'}" Text="{Binding Path=Text, FallbackValue=TEXT}" />
             <Image Style="{StaticResource button_image_selectable_arrow_style}" Visibility="{Binding Path=ArrowImageVisibility, FallbackValue=Collapsed}" />
           </StackPanel>
-          <TextBlock Style="{StaticResource button_text_selectable_small_style}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding Path=TextMaxWidth, FallbackValue=220}" Padding="{Binding Path=TextPadding, FallbackValue=24,0,24,0}" Text="{Binding Path=SmallText, FallbackValue=SMALLTEXT}" Visibility="{Binding Path=SmallTextVisibility, FallbackValue=Collapsed}" />
+          <TextBlock Style="{StaticResource button_text_selectable_small_style}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding Path=TextMaxWidth, FallbackValue=220}" Padding="{Binding Path=TextPadding, FallbackValue='24,0,24,0'}" Text="{Binding Path=SmallText, FallbackValue=SMALLTEXT}" Visibility="{Binding Path=SmallTextVisibility, FallbackValue=Collapsed}" />
         </StackPanel>
       </StackPanel>
     </Redbox:RoundedButton>
-    <Image Style="{StaticResource button_image_selectable_check_mark_style}" Margin="{Binding Path=CheckMarkImageMargin, FallbackValue=-35,-35,0,0}" Visibility="{Binding Path=CheckMarkImageVisibility, FallbackValue=Hidden}" />
+    <Image Style="{StaticResource button_image_selectable_check_mark_style}" Margin="{Binding Path=CheckMarkImageMargin, FallbackValue='-35,-35,0,0'}" Visibility="{Binding Path=CheckMarkImageVisibility, FallbackValue=Hidden}" />
   </StackPanel>
 </UserControl>

@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [Guid("71BC0F7C-D304-4DC8-88D2-56209DBD153C")]
 [DefaultMember("_Value")]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class IrisClass : IIris, Iris
 {

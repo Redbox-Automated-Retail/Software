@@ -7,7 +7,7 @@ namespace VIDEOCAPLib;
 [ComImport]
 [TypeLibType(2)]
 [Guid("251E3BA8-6D98-49E5-B5B5-B69A176602B9")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class AudioDevicesClass : IAudioDevices, AudioDevices, IEnumerable
 {

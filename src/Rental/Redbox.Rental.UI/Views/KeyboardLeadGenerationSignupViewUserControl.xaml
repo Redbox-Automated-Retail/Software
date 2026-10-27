@@ -14,7 +14,7 @@
         </Redbox:BorderButton>
       </Grid>
       <Grid Row="2" HorizontalAlignment="Center" Margin="0,0,0,-22">
-        <TextBlock Name="PrivacyMessageElem" Grid.Row="1" VerticalAlignment="Center" Height="27" Style="{StaticResource font_montserrat_medium_14}" Foreground="{StaticResource CarlosPurple1Brush}" Text="{Binding Path=MessageText, FallbackValue=Dont worry, well never share your info -- its safe with us}" Visibility="{Binding ElementName=KeyboardErrorElem, Path=Text, Converter={StaticResource TextVisibilityConverter}}" />
+        <TextBlock Name="PrivacyMessageElem" Grid.Row="1" VerticalAlignment="Center" Height="27" Style="{StaticResource font_montserrat_medium_14}" Foreground="{StaticResource CarlosPurple1Brush}" Text="{Binding Path=MessageText, FallbackValue='Dont worry, well never share your info -- its safe with us'}" Visibility="{Binding ElementName=KeyboardErrorElem, Path=Text, Converter={StaticResource TextVisibilityConverter}}" />
         <TextBlock Name="KeyboardErrorElem" Grid.Row="1" VerticalAlignment="Center" Height="27" Style="{StaticResource keyboard_error_message_style}" Text="{Binding Path=KeyboardError}" />
       </Grid>
       <localControls:KeyboardUserControl x:Name="KeyboardElem" Grid.Row="3" />

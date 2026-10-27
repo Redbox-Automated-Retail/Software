@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("F2BCF18A-0B27-11D4-B5F5-9CC767000000")]
 [ComSourceInterfaces("ClearImage._ICiImageEvents\0")]
 [ComVisible(true)]

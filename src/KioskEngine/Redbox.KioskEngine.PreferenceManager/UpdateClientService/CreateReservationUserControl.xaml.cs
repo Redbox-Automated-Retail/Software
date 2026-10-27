@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -153,21 +153,21 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 				{
 					text2 = "Errors: " + string.Join(", ", aPIResponse.Errors?.Select((Redbox.Rental.Services.App.Error x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
 				}
-				text = ((aPIResponse != null && aPIResponse.IsSuccessStatusCode) ? string.Empty : $"Creation failed. {Environment.NewLine}Status code: {(int)aPIResponse.StatusCode} {aPIResponse.StatusCode} {text2}");
+				text = ((aPIResponse != null && aPIResponse.IsSuccessStatusCode) ? string.Empty : $"Creation failed. {System.Environment.NewLine}Status code: {(int)aPIResponse.StatusCode} {aPIResponse.StatusCode} {text2}");
 				try
 				{
 					aPIResponse.Response = JsonConvert.DeserializeObject<Redbox.KioskEngine.PreferenceManager.KioskEngineApiClient.Reservation.CreateReservationResponse>(aPIResponse.ResponseContent);
 				}
 				catch
 				{
-					text = text + Environment.NewLine + "Unable to deserialize reponse content CreateReservationResponse.";
+					text = text + System.Environment.NewLine + "Unable to deserialize reponse content CreateReservationResponse.";
 				}
 				if (aPIResponse?.Response?.Errors != null)
 				{
 					text2 = null;
 					if (aPIResponse.Response.Errors.Count > 0)
 					{
-						text2 = Environment.NewLine + string.Join(", ", aPIResponse.Response.Errors?.Select((ResponseError x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
+						text2 = System.Environment.NewLine + string.Join(", ", aPIResponse.Response.Errors?.Select((ResponseError x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
 					}
 					text += text2;
 				}
@@ -276,12 +276,5 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 			_reservationRequest.ActualServiceFeeAmount = result;
 			ComputeTotals();
 		}
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

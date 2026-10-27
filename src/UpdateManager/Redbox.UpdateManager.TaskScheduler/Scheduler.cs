@@ -238,9 +238,9 @@ public class Scheduler : ITaskScheduler
 			IScheduler scheduler = m_schedulerFactory.GetScheduler();
 			if (scheduler.IsStarted)
 			{
-				ISet<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("updatemanager"));
+				Quartz.Collection.ISet<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals("updatemanager"));
 				scheduler.DeleteJobs((IList<JobKey>)((IEnumerable<JobKey>)jobKeys).ToList());
-				ISet<TriggerKey> triggerKeys = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("updatemanager"));
+				Quartz.Collection.ISet<TriggerKey> triggerKeys = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("updatemanager"));
 				scheduler.UnscheduleJobs((IList<TriggerKey>)((IEnumerable<TriggerKey>)triggerKeys).ToList());
 			}
 		}

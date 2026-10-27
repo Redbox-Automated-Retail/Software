@@ -6,7 +6,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("FB2E2C05-DB40-4A6F-8E52-0243621D7734")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComConversionLoss]
 [ComVisible(true)]
 public class CiPdfClass : ICiPdf, CiPdf

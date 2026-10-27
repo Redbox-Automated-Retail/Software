@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -27,7 +27,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		m_aEventSinkHelpers = new ArrayList();
 	}
 
-	public void add_Click(_DVideoCapEvents_ClickEventHandler P_0)
+	private void add_Click_Impl(_DVideoCapEvents_ClickEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -49,7 +49,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void remove_Click(_DVideoCapEvents_ClickEventHandler P_0)
+	private void remove_Click_Impl(_DVideoCapEvents_ClickEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -89,7 +89,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void add_MouseMove(_DVideoCapEvents_MouseMoveEventHandler P_0)
+	private void add_MouseMove_Impl(_DVideoCapEvents_MouseMoveEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -111,7 +111,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void remove_MouseMove(_DVideoCapEvents_MouseMoveEventHandler P_0)
+	private void remove_MouseMove_Impl(_DVideoCapEvents_MouseMoveEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -151,7 +151,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void add_DblClick(_DVideoCapEvents_DblClickEventHandler P_0)
+	private void add_DblClick_Impl(_DVideoCapEvents_DblClickEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -173,7 +173,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void remove_DblClick(_DVideoCapEvents_DblClickEventHandler P_0)
+	private void remove_DblClick_Impl(_DVideoCapEvents_DblClickEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -213,7 +213,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void add_Capturing(_DVideoCapEvents_CapturingEventHandler P_0)
+	private void add_Capturing_Impl(_DVideoCapEvents_CapturingEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -235,7 +235,7 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 		}
 	}
 
-	public void remove_Capturing(_DVideoCapEvents_CapturingEventHandler P_0)
+	private void remove_Capturing_Impl(_DVideoCapEvents_CapturingEventHandler P_0)
 	{
 		Monitor.Enter(this);
 		try
@@ -316,5 +316,53 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 	{
 		Finalize();
 		GC.SuppressFinalize(this);
+	}
+
+	public event _DVideoCapEvents_ClickEventHandler Click
+	{
+		add
+		{
+			add_Click_Impl(value);
+		}
+		remove
+		{
+			remove_Click_Impl(value);
+		}
+	}
+
+	public event _DVideoCapEvents_MouseMoveEventHandler MouseMove
+	{
+		add
+		{
+			add_MouseMove_Impl(value);
+		}
+		remove
+		{
+			remove_MouseMove_Impl(value);
+		}
+	}
+
+	public event _DVideoCapEvents_DblClickEventHandler DblClick
+	{
+		add
+		{
+			add_DblClick_Impl(value);
+		}
+		remove
+		{
+			remove_DblClick_Impl(value);
+		}
+	}
+
+	public event _DVideoCapEvents_CapturingEventHandler Capturing
+	{
+		add
+		{
+			add_Capturing_Impl(value);
+		}
+		remove
+		{
+			remove_Capturing_Impl(value);
+		}
 	}
 }

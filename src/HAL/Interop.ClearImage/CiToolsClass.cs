@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("286F56E6-7A78-4541-9D66-92DD901C7DE1")]
 [ComVisible(true)]
 public class CiToolsClass : ICiTools, CiTools

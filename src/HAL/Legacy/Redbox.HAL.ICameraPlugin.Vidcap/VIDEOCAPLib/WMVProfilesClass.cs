@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace VIDEOCAPLib;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("C074F5D8-D530-45CF-A1DE-B492D499967C")]
 [TypeLibType(2)]
 [ComVisible(true)]

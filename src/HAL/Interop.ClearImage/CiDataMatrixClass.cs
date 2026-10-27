@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("90E9D617-A4B1-4DDE-B842-60BECC114254")]
 [ComVisible(true)]
 public class CiDataMatrixClass : ICiDataMatrix, CiDataMatrix

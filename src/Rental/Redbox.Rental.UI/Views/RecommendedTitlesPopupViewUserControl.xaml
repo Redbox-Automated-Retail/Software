@@ -30,7 +30,7 @@
           </StackPanel>
         </Grid>
       </Border>
-      <Border Width="895" Height="493" Background="#FFFFFFFF" CornerRadius="{Binding Path=RecommendationsBorderCornerRadius, FallbackValue=16,16,16,16}">
+      <Border Width="895" Height="493" Background="#FFFFFFFF" CornerRadius="{Binding Path=RecommendationsBorderCornerRadius, FallbackValue='16,16,16,16'}">
         <Grid>
           <TextBlock Name="HeaderText" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="69,32,0,0" Foreground="{StaticResource CarlosPurple1Brush}" Style="{StaticResource font_montserrat_bold_24}" LineHeight="36" Text="{Binding Path=HeaderText, FallbackValue=My Recommendations}" />
           <controls:BrowseUserControl x:Name="BrowseProductControl" Width="895" Height="242" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,78,0,0" ShowPaddles="True" DataContext="{Binding Path=BrowseProductControlModel}" />

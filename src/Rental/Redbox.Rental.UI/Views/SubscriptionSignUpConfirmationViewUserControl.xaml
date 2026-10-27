@@ -11,7 +11,7 @@
     <StackPanel Name="RedboxPlusNewCpStackPanel" Orientation="Vertical" Visibility="{Binding RedboxPlusExistingCustomerTextVisibility, FallbackValue=Visible}">
       <Image Width="161" Height="161" Margin="0,116,0,96" Source="pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/check-icon.png" />
       <TextBlock Width="780" Margin="0,0,0,24" Style="{StaticResource font_montserrat_bold_40}" LineHeight="56" Foreground="#FFFFFF" TextAlignment="Center" Text="{Binding TitleText1, FallbackValue=Your Redbox+ Plan Starts Now}" />
-      <TextBlock Width="811" Margin="0,0,0,112" Style="{StaticResource font_montserrat_medium_20}" LineHeight="28" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding MessageText1, FallbackValue=On your next visit, sign in to use a FREE 1-night rental!}" />
+      <TextBlock Width="811" Margin="0,0,0,112" Style="{StaticResource font_montserrat_medium_20}" LineHeight="28" Foreground="#FFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding MessageText1, FallbackValue='On your next visit, sign in to use a FREE 1-night rental!'}" />
       <Redbox:RoundedButton Name="RedboxPlusExistiingCustomerGotItButton" Width="121" Height="56" Style="{StaticResource white_button_style}" CornerRadius="28" Command="{Binding GotItButtonCommand}">
         <TextBlock Style="{StaticResource font_montserrat_extrabold_20}" Foreground="#E42045" Text="{Binding ContinueButtonText, FallbackValue=GOT IT}" />
       </Redbox:RoundedButton>
@@ -22,7 +22,7 @@
       <TextBlock Margin="0,0,0,4" Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FFFFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding MessageText1, FallbackValue=Complete Your Enrollment:}" />
       <TextBlock Margin="0,0,0,4" Style="{StaticResource font_montserrat_bold_20}" LineHeight="28" Foreground="#FFFFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding MessageText2, FallbackValue=Set a PIN on the next screen}" />
       <TextBlock Margin="0,0,0,24" Style="{StaticResource font_montserrat_medium_16}" LineHeight="24" Foreground="#FFFFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding SubMessageText, FallbackValue=(Plus look for an email to create a password &#xA;so you can reserve Redbox+ movies online) }" />
-      <TextBlock Margin="0,0,0,56" Style="{StaticResource font_montserrat_bold_16}" LineHeight="28" Foreground="#FFFFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding SubMessageText2, FallbackValue=Next visit, sign in to use a FREE 1-night rental!}" />
+      <TextBlock Margin="0,0,0,56" Style="{StaticResource font_montserrat_bold_16}" LineHeight="28" Foreground="#FFFFFFFF" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding SubMessageText2, FallbackValue='Next visit, sign in to use a FREE 1-night rental!'}" />
       <Redbox:RoundedButton Name="RedboxPlusNewCustomerGotItButton" Width="121" Height="56" Style="{StaticResource white_button_style}" CornerRadius="28" Command="{Binding GotItButtonCommand}">
         <TextBlock Style="{StaticResource font_montserrat_extrabold_20}" Foreground="#E42045" Text="{Binding ContinueButtonText, FallbackValue=GOT IT}" />
       </Redbox:RoundedButton>

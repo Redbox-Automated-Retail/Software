@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -250,12 +250,5 @@ public partial class UserAuthenticationUserControl : UserControl, IPreferencePag
 		{
 			MessageBox.Show("Select a user from the list to delete.");
 		}
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

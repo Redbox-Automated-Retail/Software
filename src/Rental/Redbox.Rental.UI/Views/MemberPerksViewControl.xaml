@@ -121,7 +121,7 @@
             <TextBlock Grid.Row="0" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,0,0,17" Height="48" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusExtraNightText, FallbackValue=Extra night coverage}" />
             <TextBlock Grid.Row="1" Style="{StaticResource font_montserrat_bold_16}" Margin="0,0,0,7" Height="24" Foreground="#FFFFFF" LineHeight="24" TextAlignment="Center" Text="{Binding RedboxPlusExtraThisMonthText, FallbackValue=This Month: Ready to use}" />
             <TextBlock Grid.Row="2" Style="{StaticResource font_montserrat_medium_16}" Margin="0,0,0,7" Height="91" Foreground="#FFFFFF" LineHeight="22" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusNeedAnotherText, FallbackValue=Paid for an extra night? Well give you a FREE 1-night rental to use on a future visit}" />
-            <TextBlock Grid.Row="3" Style="{StaticResource font_montserrat_medium_14}" Height="36" Foreground="#FFFFFF" LineHeight="18" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusAwardedText, FallbackValue=(Awarded as 1,500 Redbox Perks points - once a month*)}" />
+            <TextBlock Grid.Row="3" Style="{StaticResource font_montserrat_medium_14}" Height="36" Foreground="#FFFFFF" LineHeight="18" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding RedboxPlusAwardedText, FallbackValue='(Awarded as 1,500 Redbox Perks points - once a month*)'}" />
           </Grid>
           <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource font_montserrat_semibold_20}" Margin="0,22,0,3" Width="757" Foreground="#FFFFFF" TextAlignment="Center" Text="{Binding RedboxPlusExtendedText, FallbackValue=Extended return time}" Visibility="{Binding RedboxPlusPlanId2Visibility, FallbackValue=Collapsed}" />
           <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource font_montserrat_medium_16}" Width="757" Foreground="#FFFFFF" TextAlignment="Center" Text="{Binding RedboxPlusKeepText, FallbackValue=Keep your disc rentals until midnight local time for no extra charge (thats 3 hours longer!)}" Visibility="{Binding RedboxPlusPlanId2Visibility, FallbackValue=Collapsed}" />
@@ -167,13 +167,13 @@
           </Redbox:GridExt>
           <Border Grid.Column="1" BorderThickness="0" Background="#FFFFFFFF" Width="3" Height="340" VerticalAlignment="Center" />
           <Redbox:GridExt Column="2" Height="360" RowHeights="106,32,84,76,62">
-            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_48}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotPoints, FallbackValue=12,350}" />
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_48}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotPoints, FallbackValue='12,350'}" />
             <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotPointsLabel, FallbackValue=Points}" />
             <TextBlock Grid.Row="2" Margin="20,20,20,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Center" Style="{StaticResource font_montserrat_regular_22}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=EarnedRewardsMessage, FallbackValue=Youve earned a FREE 1-night DVD rental!}" />
             <Redbox:RoundedButton Name="HowPointsWorkButtonElem" Grid.Row="3" Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="56" CornerRadius="28" Style="{StaticResource thin_border_button_style}" IsEnabled="True" Command="{Binding HowPointsWorkButtonCommand}">
               <TextBlock Name="HowPointsWorkButtonTextElem" Margin="24,14,24,14" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource font_montserrat_extrabold_20}" Text="{Binding HowPointsWorkButtonText, FallbackValue=HOW POINTS WORK}" />
             </Redbox:RoundedButton>
-            <TextBlock Grid.Row="4" Margin="20,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotExpire, FallbackValue=Use your points  (X,XXX expire on XX/XX/XX)}" />
+            <TextBlock Grid.Row="4" Margin="20,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource font_montserrat_medium_16}" Foreground="#FFFFFFFF" TextWrapping="Wrap" Text="{Binding Path=SnapshotExpire, FallbackValue='Use your points  (X,XXX expire on XX/XX/XX)'}" />
           </Redbox:GridExt>
         </Grid>
       </Border>

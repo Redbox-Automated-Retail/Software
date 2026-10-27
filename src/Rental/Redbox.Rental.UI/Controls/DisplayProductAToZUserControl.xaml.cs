@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows;
@@ -24,12 +24,5 @@ public partial class DisplayProductAToZUserControl : UserControl, IComponentConn
 		_displayProductModel = base.DataContext as DisplayProductModel;
 		_displayGroupModel = base.DataContext as DisplayGroupModel;
 		MainGrid.Visibility = ((_displayProductModel == null && _displayGroupModel == null) ? Visibility.Collapsed : Visibility.Visible);
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

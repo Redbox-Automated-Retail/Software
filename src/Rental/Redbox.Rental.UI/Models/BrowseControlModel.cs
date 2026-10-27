@@ -228,7 +228,7 @@ public class BrowseControlModel : DependencyObject
 
 	private static void OnSelectedDisplayProductUserControlSizeAndPositionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		if (d is BrowseControlModel { OnSelectedDisplayProductUserControlSizeAndPositionChanged: not null } browseControlModel)
+		if (d is BrowseControlModel browseControlModel && browseControlModel.OnSelectedDisplayProductUserControlSizeAndPositionChanged != null)
 		{
 			browseControlModel.OnSelectedDisplayProductUserControlSizeAndPositionChanged(browseControlModel);
 		}

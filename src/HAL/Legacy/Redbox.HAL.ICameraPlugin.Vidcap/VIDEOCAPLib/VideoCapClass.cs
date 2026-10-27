@@ -8,7 +8,7 @@ namespace VIDEOCAPLib;
 [ComSourceInterfaces("VIDEOCAPLib._DVideoCapEvents\0")]
 [Guid("AA408ECC-E50B-401F-8036-021E81B9E5A1")]
 [TypeLibType(38)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class VideoCapClass : _DVideoCap, VideoCap, _DVideoCapEvents_Event
 {

@@ -7,7 +7,7 @@
     <Border Grid.Row="1" Padding="50,50,50,10">
       <Redbox:GridExt RowHeights="60,60,300,50,80,*">
         <TextBlock Grid.Row="0" Style="{StaticResource rb_purple_bold_center_center_style}" FontSize="48" Text="{Binding PointsTitle, FallbackValue=Your picks are on point}" />
-        <TextBlock Grid.Row="1" Style="{StaticResource rb_purple_regular_center_center_style}" FontSize="22" Text="{Binding PointsMessage, FallbackValue=You have 19,000 Perk points. Use your points to redeem:}" />
+        <TextBlock Grid.Row="1" Style="{StaticResource rb_purple_regular_center_center_style}" FontSize="22" Text="{Binding PointsMessage, FallbackValue='You have 19,000 Perk points. Use your points to redeem:'}" />
         <StackPanel Name="CartStackPanelElem" Grid.Row="2" Margin="40" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <TextBlock Grid.Row="2" Margin="20,0" VerticalAlignment="Bottom" Style="{StaticResource rb_purple_regular_center_center_style}" FontSize="16" Text="{Binding PointsCartMessage, FallbackValue=cart infomation}" />
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">

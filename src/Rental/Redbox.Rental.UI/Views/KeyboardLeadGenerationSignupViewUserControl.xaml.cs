@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows;
@@ -27,12 +27,5 @@ public partial class KeyboardLeadGenerationSignupViewUserControl : KeyboardContr
 	private void EmailSelected(object sender, RoutedEventArgs e)
 	{
 		KeyTouched();
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

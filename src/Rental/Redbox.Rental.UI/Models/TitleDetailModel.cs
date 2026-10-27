@@ -126,7 +126,7 @@ public class TitleDetailModel : DependencyObject
 
 	private static void OnBrowseProductControlModelPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		if (d is TitleDetailModel { OnTitleDetailModelChanged: not null } titleDetailModel)
+		if (d is TitleDetailModel titleDetailModel && titleDetailModel.OnTitleDetailModelChanged != null)
 		{
 			titleDetailModel.OnTitleDetailModelChanged(titleDetailModel);
 		}

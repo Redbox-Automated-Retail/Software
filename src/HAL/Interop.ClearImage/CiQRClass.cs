@@ -5,7 +5,7 @@ namespace ClearImage;
 
 [ComImport]
 [Guid("90E9D617-A4B1-4DDE-B842-60BECC114255")]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [ComVisible(true)]
 public class CiQRClass : ICiQR, CiQR
 {

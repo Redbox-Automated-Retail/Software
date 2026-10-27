@@ -5,7 +5,7 @@
     <CommandBinding Command="{x:Static localbase:Commands.Button2Command}" Executed="Button2_Executed" />
   </UIElement.CommandBindings>
   <Grid Background="#3A3637">
-    <Image Name="BackgroundImage" Height="618" Width="1024" VerticalAlignment="Top" Stretch="Fill" Source="{Binding Path=Image, FallbackValue=pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Email_Opt-In_KioskScreen_R4_Full__1_.jpg}" />
+    <Image Name="BackgroundImage" Height="618" Width="1024" VerticalAlignment="Top" Stretch="Fill" Source="{Binding Path=Image, FallbackValue='pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/Email_Opt-In_KioskScreen_R4_Full__1_.jpg'}" />
     <DockPanel Margin="0,619,0,0" HorizontalAlignment="Stretch" LastChildFill="True">
       <Redbox:RoundedButton Name="YesButton" DockPanel.Dock="Right" Style="{StaticResource classic_red_button_style}" Width="170" Height="66" Margin="10,0,10,0" UsedDefaultCornerRadius="True" Command="{x:Static localbase:Commands.Button1Command}" VerticalAlignment="Center" Visibility="{Binding Path=AddGameButtonVisibility}">
         <TextBlock Name="YesButtonText" VerticalAlignment="Center" Style="{StaticResource font_museo_slab_900_20}" Text="{Binding Path=YesButtonText, FallbackValue=YES}" />

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace ClearImage;
 
 [ComImport]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("3022D35D-0127-4C24-B1F0-1C66A831807E")]
 [ComVisible(true)]
 public class CiAdvColorClass : ICiAdvColor, CiAdvColor

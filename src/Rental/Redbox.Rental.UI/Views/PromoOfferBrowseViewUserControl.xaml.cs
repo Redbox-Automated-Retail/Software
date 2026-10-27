@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Windows.Markup;
@@ -20,12 +20,5 @@ public partial class PromoOfferBrowseViewUserControl : TextToSpeechUserControl, 
 	public override ISpeechControl GetSpeechControl()
 	{
 		return (base.DataContext as PromoOfferBrowseViewModel)?.ProcessGetSpeechControl();
-	}
-
-	[DebuggerNonUserCode]
-	[GeneratedCode("PresentationBuildTasks", "4.0.0.0")]
-	internal Delegate _CreateDelegate(Type delegateType, string handler)
-	{
-		return Delegate.CreateDelegate(delegateType, this, handler);
 	}
 }

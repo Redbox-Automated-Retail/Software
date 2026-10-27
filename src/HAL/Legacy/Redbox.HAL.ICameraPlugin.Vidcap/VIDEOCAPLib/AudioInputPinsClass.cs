@@ -6,7 +6,7 @@ namespace VIDEOCAPLib;
 
 [ComImport]
 [TypeLibType(2)]
-[ClassInterface(0)]
+[ClassInterface((ClassInterfaceType)0)]
 [Guid("8DEDCF72-22B3-4761-8460-C57867FC3A17")]
 [ComVisible(true)]
 public class AudioInputPinsClass : IAudioInputPins, AudioInputPins, IEnumerable

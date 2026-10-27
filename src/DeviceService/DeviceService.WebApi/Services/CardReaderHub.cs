@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -664,7 +664,7 @@ public class CardReaderHub : Hub
 		if (baseEvent != null)
 		{
 			string logText = null;
-			LoggerExtensions.LogInformation(message: eventContext + " " + ((!(baseEvent is EMVCardReadResponseEvent responseEvent)) ? ((!(baseEvent is EncryptedCardReadResponseEvent responseEvent2)) ? ((!(baseEvent is UnencryptedCardReadResponseEvent responseEvent3)) ? JsonConvert.SerializeObject(baseEvent) : ObfuscateUnencryptedCardReadResponseEvent(responseEvent3, logText)) : ObfuscateEncryptedCardReadResponseEvent(responseEvent2, logText)) : ObfuscateEMVCardReadResponseEvent(responseEvent, logText)), logger: _logger?, args: Array.Empty<object>());
+			_logger?.LogInformation(eventContext + " " + ((!(baseEvent is EMVCardReadResponseEvent responseEvent)) ? ((!(baseEvent is EncryptedCardReadResponseEvent responseEvent2)) ? ((!(baseEvent is UnencryptedCardReadResponseEvent responseEvent3)) ? JsonConvert.SerializeObject(baseEvent) : ObfuscateUnencryptedCardReadResponseEvent(responseEvent3, logText)) : ObfuscateEncryptedCardReadResponseEvent(responseEvent2, logText)) : ObfuscateEMVCardReadResponseEvent(responseEvent, logText)), Array.Empty<object>());
 		}
 	}
 
