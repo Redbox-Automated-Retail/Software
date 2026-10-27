@@ -39,13 +39,14 @@ Redbox.sln              all projects, grouped by product area
 Directory.Build.props   shared compiler settings
 lib/                    third-party binaries that have no NuGet package (see lib/README.md)
 docs/                   assembly inventory, decompilation notes, update-store survey
+  systems/              how each system works: protocols, data formats, configuration
 build/                  ILRepack re-merge targets
 tools/                  scripts that generated src/ and fixed decompiler output
 tests/                  smoke test for the reconstructed RBA SDK simulator
 src/
   Common/               shared Redbox.* libraries (Core, IPC, Lua, Macros, ...)
   HAL/                  hardware abstraction layer service (halservice) and its tools
-    Legacy/             old 2014 camera plugins still shipped in halservice/bin
+    Legacy/             old 2014 camera plugins left in halservice's staging folders
   KioskEngine/          kiosk engine host, IDE, control panel, FMA and shared UI
   KioskServices/        engine kernel extensions and service proxies
   Rental/               rental application (model, services, WPF UI)
@@ -59,6 +60,13 @@ src/
 Each project folder is named after the assembly it builds. See
 [docs/assemblies.md](docs/assemblies.md) for the mapping from every shipped binary to its
 project.
+
+## How the systems work
+
+[docs/systems/](docs/systems/README.md) documents each system in depth: what it does, how it starts, its
+protocols and data formats (for example the update service protocol and the HAL command protocol), its
+configuration, and where in `src/` each part is implemented. Start with the overview in
+[docs/systems/README.md](docs/systems/README.md).
 
 ## How the sources were produced
 
