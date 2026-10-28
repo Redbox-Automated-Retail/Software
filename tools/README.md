@@ -38,5 +38,7 @@ Rebuilds and sizes old versions from archived update-store snapshots; see
 | `rebuild_store.py` | Merges the revlogs of several store snapshots (zips or `.repository` folders), rebuilds every file version (seeds + xdelta3 deltas) into a SHA-1-verified blob store, writes `index/<package>.json`. |
 | `ApiSurface/` | Dumps assembly name, version, references, types and members of managed binaries as JSON lines. |
 | `history.py` | Compares each rebuilt version with the previous one and writes `timeline.json`, `timeline.md` and `summary.tsv`. |
+| `decompile_history.py` | Decompiles every release of a package group and commits it, dated, to a `history/<group>` branch (see [docs/engines.md](../docs/engines.md)). |
+| `export_release.py` | Copies the original assemblies of one `history/*` release (from its `RELEASE.md`) out of the blob store, SHA-1-checked, as a reference folder for old projects. |
 
 The work directory (blobs, indexes) stays outside git; it holds Redbox binaries.

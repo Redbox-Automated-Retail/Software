@@ -57,7 +57,7 @@ def blob(work, sha):
 
 
 def release_name(labels, versions):
-    names = [LABEL_PREFIX.sub("", l) for l in labels]
+    names = [LABEL_PREFIX.sub("", l.strip()) for l in labels]
     return " / ".join(dict.fromkeys(names)) if names else None
 
 
@@ -99,6 +99,8 @@ def releases(w, group):
         last_ok = {}   # path -> sha of the last version with content
         committed = {}
         labels = []
+        last = None
+        pkg_events = []
         for r in idx["revisions"]:
             for c in r["changes"]:
                 key = c["path"] + "\\" + c["name"]
@@ -108,16 +110,31 @@ def releases(w, group):
             if r["label"]:
                 labels.append(r["label"])
             fresh = [k for k, v in last_ok.items() if committed.get(k) != v and w.is_code(k.rsplit("\\", 1)[1], v)]
+            tree = {k: (last_ok.get(k), v) for k, v in state.items()}
             if not fresh:
+                # A label on a revision that adds no code names the code already committed (the release was
+                # built up over unlabelled revisions and then labelled): move it to the previous release.
+                if labels and last:
+                    last.update(rev=r["index"], hash=r["hash"], tree=tree)
+                    last["labels"] += labels
+                    labels = []
                 continue
             dates = sorted(c["patch_date"] for c in r["changes"] if c["status"] == "ok" and c["patch_date"])
             date = dates[0] if dates else idx["sources"][r["seen_in"][0]]["date"] + "T12:00:00"
-            tree = {k: (last_ok.get(k), v) for k, v in state.items()}
-            events.append({"date": date, "order": order, "package": pkg, "rev": r["index"], "hash": r["hash"],
-                           "labels": labels, "tree": tree})
+            last = {"date": date, "order": order, "package": pkg, "rev": r["index"], "hash": r["hash"],
+                    "labels": labels, "tree": tree}
+            pkg_events.append(last)
             committed = dict(last_ok)
             labels = []
-    events.sort(key=lambda e: (e["date"], e["order"]))
+        # Revision order is the truth within a package; dates only place releases among the group's packages.
+        # A patch file's date can be much later than the release (content kept only in a later snapshot), so
+        # first pull each date back to its successor's, then push early fallback dates up to their predecessor's.
+        for a, b in zip(reversed(pkg_events[:-1]), reversed(pkg_events[1:])):
+            a["date"] = min(a["date"], b["date"])
+        for a, b in zip(pkg_events, pkg_events[1:]):
+            b["date"] = max(a["date"], b["date"])
+        events += pkg_events
+    events.sort(key=lambda e: (e["date"], e["order"]))  # stable: keeps each package's revision order
     # Combined groups: each release carries the latest tree of every package in the group.
     out, trees, revs = [], {}, {}
     for e in events:
@@ -227,6 +244,9 @@ def run_organize(w, group, files, src_out):
     os.makedirs(src_out, exist_ok=True)
     r = subprocess.run([sys.executable, "-I", os.path.join(TOOLS, "decompile", "organize.py")], env=env,
                        capture_output=True, text=True, encoding="utf-8", errors="replace")
+    for dp, _, fn in os.walk(src_out):  # the decompile cache's completion markers are not source
+        if ".done" in fn:
+            os.remove(os.path.join(dp, ".done"))
     return r.returncode == 0, (r.stderr or r.stdout)[-3000:]
 
 
