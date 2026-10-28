@@ -12,6 +12,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
   </ItemGroup>
 </Project>

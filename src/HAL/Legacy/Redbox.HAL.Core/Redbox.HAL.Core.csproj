@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.HAL.Core</AssemblyName>
+    <RootNamespace>Redbox.HAL.Core</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ILRepackAssemblies>ICSharpCode.SharpZipLib;PowerCollections;SevenZip</ILRepackAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="PowerCollections">
+      <HintPath>..\..\..\..\lib\PowerCollections\PowerCollections.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZip">
+      <HintPath>..\..\..\..\lib\SevenZip\SevenZip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

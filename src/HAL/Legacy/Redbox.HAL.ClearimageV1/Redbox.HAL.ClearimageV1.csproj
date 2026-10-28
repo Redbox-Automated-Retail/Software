@@ -7,6 +7,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
   </ItemGroup>
 </Project>

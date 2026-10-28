@@ -11,7 +11,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
-    <ProjectReference Include="..\..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
   </ItemGroup>
 </Project>

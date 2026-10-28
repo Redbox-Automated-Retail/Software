@@ -13,9 +13,13 @@
   <ItemGroup>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="stdole" />
+    <!-- The OLE Automation primary interop assembly installed with the .NET Framework. -->
+    <Reference Include="stdole">
+      <HintPath>$(MSBuildProgramFiles32)\Microsoft.NET\Primary Interop Assemblies\stdole.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
   </ItemGroup>
 </Project>

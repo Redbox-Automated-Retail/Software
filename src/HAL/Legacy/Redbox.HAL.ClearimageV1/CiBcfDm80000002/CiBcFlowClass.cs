@@ -12,6 +12,18 @@ namespace CiBcfDm80000002;
 [ComVisible(true)]
 public class CiBcFlowClass : _CiBcFlow, CiBcFlow, __CiBcFlow_Event
 {
+	// Vtable gap slot of _CiBcFlow (see _CiBcFlow.cs); never called.
+	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+	public virtual extern void _VtblGap8();
+
+	// Vtable gap slot of _CiBcFlow (see _CiBcFlow.cs); never called.
+	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+	public virtual extern void _VtblGap27();
+
+	// Vtable gap slot of _CiBcFlow (see _CiBcFlow.cs); never called.
+	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+	public virtual extern void _VtblGap30();
+
 	[DispId(1073938432)]
 	public virtual extern CiBarcodes Barcodes
 	{

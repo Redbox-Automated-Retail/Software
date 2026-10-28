@@ -83,9 +83,8 @@ All changes after the first commit are listed in `git log`. In summary:
   (`Controls/WelcomeUserControl1/2.xaml`, classes `JoinedUserControl1/2`).
 - **Missing referenced types**, taken from older versions in the kiosk's update store
   (`REDS/Update Manager/.store`) where possible:
-  - `IPromotionServices` (from `Redbox.KioskEngine.ComponentModel` 1.71) and `RebootStatus`
-    (from `DeviceService.ComponentModel` 1.10.6), placed in a `MissingReferences/` folder of the project
-    that needs them.
+  - `RebootStatus` (from `DeviceService.ComponentModel` 1.10.6), placed in a `MissingReferences/` folder
+    of the project that needs it.
   - Reconstructed by hand (no original found): `RebootStatusRequest` (Status.Client) and the
     `Redbox.HardwareServices.TestProxy` stub project. These are marked `RECONSTRUCTED` in the source.
   - `Redbox.HardwareServices.KernelExtension` was re-decompiled with the TestProxy stub available so that
@@ -97,14 +96,25 @@ All changes after the first commit are listed in `git log`. In summary:
 
 ## Known gaps
 
-Not built (kept as source, excluded from `Redbox.sln`):
+Not part of `Redbox.sln` (they need libraries other than the 1.88 ones in `src/`), but buildable:
 
-- `src/HAL/Legacy/*` — 2014 camera plugins built against HAL 1.3.0.119, which is not available.
-  See `src/HAL/Legacy/README.md`.
-- `Redbox.KioskServices.Kernel`, `.KernelExtension`, `.Proxy` (1.81.0.27) — built against
-  `Redbox.KioskEngine.ComponentModel` 1.81, whose `IConfiguration` has members the shipped 1.88 removed
-  (`SendKioskPropertiesToKioskDataService`, ...). Nothing in the 1.88 engine references these assemblies.
-  The 1.81 engine libraries are reachable only through the delta patches in the update store.
+- `src/HAL/Legacy/*`: the 2014 camera plugins (1.3.0.119), built with their own solution
+  `src/HAL/Legacy/HAL.Legacy.sln` against HAL Core / IPC Framework **1.3.0.84** from the update-store history
+  (1.3.0.119 itself is not recoverable). See `src/HAL/Legacy/README.md` for the changes.
+- `Redbox.KioskServices.Kernel`, `.KernelExtension`, `.Proxy` (1.81.0.27): built against the original engine
+  **1.81.0.27** (VegaSR2) assemblies, which `Redbox.KioskEngine.ComponentModel`'s `IConfiguration` and several
+  moved types require (`SendKioskPropertiesToKioskDataService`, ...; the shipped 1.88 removed them). Nothing in
+  the 1.88 engine references these assemblies. The references come from a folder passed as
+  `RedboxEngine181Refs` (`src/KioskServices/Engine181.targets`), exported from the rebuilt update store:
+
+  ```
+  python -I tools/history/rebuild_store.py ...                # once, see docs/version-history.md
+  python -I tools/history/export_release.py --work <work> --commit <history/engine VegaSR2 commit> --out <refs>
+  msbuild src/KioskServices/Redbox.KioskServices.KernelExtension/Redbox.KioskServices.KernelExtension.csproj -restore -p:RedboxEngine181Refs=<refs>
+  ```
+
+  With the real 1.81 `Redbox.KioskEngine.ComponentModel`, the `IPromotionServices` stand-in that
+  `Redbox.KioskServices.Proxy` used to carry is gone, and one `ref` argument ILSpy had guessed is an `out`.
 
 Other notes:
 

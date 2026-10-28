@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Redbox.KioskServices.Kernel / .KernelExtension / .Proxy ship as 1.81.0.27 (VegaSR2) and do not compile against
+    the 1.88 engine libraries in src/. They are built against the original 1.81.0.27 assemblies instead, exported
+    from a rebuilt update store by tools/history/export_release.py (no binaries are committed), and passed in as
+    the RedboxEngine181Refs property. The exact commands are in docs/decompilation.md ("Known gaps").
+  -->
+  <ItemGroup>
+    <Reference Include="@(Engine181Reference)">
+      <HintPath>$(RedboxEngine181Refs)\%(Identity).dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="CheckEngine181Refs" BeforeTargets="ResolveAssemblyReferences"
+          Condition="!Exists('$(RedboxEngine181Refs)\Redbox.KioskEngine.ComponentModel.dll')">
+    <Error Text="Set RedboxEngine181Refs to a folder with the engine 1.81.0.27 assemblies (tools/history/export_release.py); see src/KioskServices/Engine181.targets." />
+  </Target>
+</Project>

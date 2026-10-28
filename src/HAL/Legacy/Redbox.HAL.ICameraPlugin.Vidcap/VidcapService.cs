@@ -6,7 +6,7 @@ using Redbox.HAL.Core;
 
 namespace Redbox.HAL.ICameraPlugin.Vidcap;
 
-internal class VidcapService : ICameraPlugin
+internal class VidcapService : global::Redbox.HAL.Core.ICameraPlugin
 {
 	private Vidcapform m_vidcapForm;
 

@@ -4,8 +4,8 @@ namespace Redbox.HAL.ICameraPlugin.Vidcap;
 
 public class Provider
 {
-	public static ICameraPlugin GetCameraPlugin()
+	public static global::Redbox.HAL.Core.ICameraPlugin GetCameraPlugin()
 	{
-		return (ICameraPlugin)(object)VidcapService.Instance;
+		return (global::Redbox.HAL.Core.ICameraPlugin)(object)VidcapService.Instance;
 	}
 }
