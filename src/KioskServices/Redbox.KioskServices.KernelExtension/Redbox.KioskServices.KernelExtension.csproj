@@ -14,14 +14,17 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Redbox.BrokerServices.Proxy.ComponentModel\Redbox.BrokerServices.Proxy.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
     <ProjectReference Include="..\Redbox.KioskServices.Kernel\Redbox.KioskServices.Kernel.csproj" />
     <ProjectReference Include="..\Redbox.KioskServices.Proxy\Redbox.KioskServices.Proxy.csproj" />
-    <ProjectReference Include="..\Redbox.KioskServices.Proxy.ComponentModel\Redbox.KioskServices.Proxy.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Engine181Reference Include="Redbox.BrokerServices.Proxy.ComponentModel" />
+    <Engine181Reference Include="Redbox.Core" />
+    <Engine181Reference Include="Redbox.KioskEngine.ComponentModel" />
+    <Engine181Reference Include="Redbox.KioskEngine.Environment" />
+    <Engine181Reference Include="Redbox.KioskServices.Proxy.ComponentModel" />
+    <Engine181Reference Include="Redbox.REDS.Framework" />
+    <Engine181Reference Include="Redbox.Rental.Model" />
+  </ItemGroup>
+  <Import Project="..\Engine181.targets" />
 </Project>

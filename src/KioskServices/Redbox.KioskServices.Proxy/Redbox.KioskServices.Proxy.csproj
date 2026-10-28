@@ -16,13 +16,14 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DeviceService\DeviceService.ComponentModel\DeviceService.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
-    <ProjectReference Include="..\Redbox.KioskServices.ComponentModel\Redbox.KioskServices.ComponentModel.csproj" />
-    <ProjectReference Include="..\Redbox.KioskServices.Proxy.ComponentModel\Redbox.KioskServices.Proxy.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <Engine181Reference Include="DeviceService.ComponentModel" />
+    <Engine181Reference Include="Redbox.Core" />
+    <Engine181Reference Include="Redbox.KioskEngine.ComponentModel" />
+    <Engine181Reference Include="Redbox.KioskEngine.Environment" />
+    <Engine181Reference Include="Redbox.KioskServices.ComponentModel" />
+    <Engine181Reference Include="Redbox.KioskServices.Proxy.ComponentModel" />
+    <Engine181Reference Include="Redbox.REDS.Framework" />
+    <Engine181Reference Include="Redbox.Rental.Model" />
   </ItemGroup>
+  <Import Project="..\Engine181.targets" />
 </Project>

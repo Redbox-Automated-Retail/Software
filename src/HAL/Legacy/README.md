@@ -1,4 +1,4 @@
-# Legacy HAL camera plugins (not built)
+# Legacy HAL camera plugins (own solution)
 
 These four assemblies (version 1.3.0.119, built 2014) are still present in the update manager's staging
 folders (`halservice/bin/.staged_` and `halservice/bin/camera.plugins/.staged_`), but not in the live `bin`
@@ -11,11 +11,33 @@ folders, and nothing in the current HAL (1.13) references them.
 | `Redbox.HAL.DirectShow.Plugin` | `halservice/bin/camera.plugins/.staged_/Redbox.HAL.DirectShow.Plugin.dll` |
 | `Redbox.HAL.ICameraPlugin.Vidcap` | `halservice/bin/camera.plugins/.staged_/Redbox.HAL.ICameraPlugin.Vidcap.dll` |
 
-They were compiled against `Redbox.HAL.Core` / `Redbox.HAL.IPC.Framework` **1.3.0.119**, whose API is
-very different from 1.13 (`DeviceDescriptor`, `DeviceHelper`, `XmlConfiguration`, `ICameraPlugin` in
-`Redbox.HAL.Core`, `AbstractPipeClientSession`, `IClearImageReader`, ...). Those 1.3 libraries are not in
-the kiosk image or its update store (whose oldest HAL is 1.12.1.71), so these projects are kept as
-decompiled source only and are **not part of `Redbox.sln`**.
+They were compiled against `Redbox.HAL.Core` / `Redbox.HAL.IPC.Framework` **1.3.0.119**, whose API is very
+different from 1.13 (`DeviceDescriptor`, `XmlConfiguration`, `ICameraPlugin` in `Redbox.HAL.Core`,
+`AbstractPipeClientSession`, ...). 1.3.0.119 itself is not recoverable: the update-store history
+([docs/version-history.md](../../../docs/version-history.md)) lists it only as placeholders. The nearest
+recoverable version is **1.3.0.84** (HAL "Caddyshack 1.0", 2014), so this folder has:
 
-They can be made to build by decompiling HAL 1.3.0.119 (for example from an older setup/data package)
-into projects here and pointing these projects at them.
+| Project | Version | Source |
+|---|---|---|
+| `Redbox.HAL.Core` | 1.3.0.84 | branch `history/hal`, release Caddyshack 1.0 |
+| `Redbox.HAL.IPC.Framework` | 1.3.0.84 | branch `history/hal`, release Caddyshack 1.0 |
+
+Build them with their own solution (they reuse the assembly names of the 1.13 HAL, so they are **not part of
+`Redbox.sln`**):
+
+```
+msbuild src/HAL/Legacy/HAL.Legacy.sln -restore -p:Configuration=Release
+```
+
+Changes from the decompiled source, all to make it compile:
+
+- `Redbox.HAL.Core` 1.3.0.84: `ICameraPlugin.SupportsReset` added. 1.3.0.119 added it (the plugins implement
+  and call it) and 1.4.0.246 still has it; the rest of the 1.3.0.84 interface matches what the plugins use.
+  `SevenZipHelper` (merged into the original with the LZMA SDK) restored from the raw decompile.
+- `Redbox.HAL.Camera.Framework`: casts to the base class (`((XmlConfiguration)this).`,
+  `((AbstractPipeClientSession)x).`) removed and the finalizer's explicit `Finalize()` call dropped. ILSpy
+  wrote these because it decompiled the plugin without its 1.3.0.119 references.
+- `Redbox.HAL.ClearimageV1`: the COM classes implement the one-slot vtable gaps (`_VtblGap8`, ...) of their
+  ClearImage interfaces as `extern` methods.
+- `Redbox.HAL.ICameraPlugin.Vidcap`: `ICameraPlugin` written as `global::Redbox.HAL.Core.ICameraPlugin` (it
+  clashes with the plugin's own namespace); `stdole` taken from the .NET Framework primary interop assemblies.

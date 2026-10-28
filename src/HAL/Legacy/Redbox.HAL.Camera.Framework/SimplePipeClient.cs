@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Redbox.HAL.IPC.Framework;
 
@@ -11,9 +11,9 @@ internal class SimplePipeClient : AbstractPipeClientSession
 		SimplePipeClient simplePipeClient = new SimplePipeClient("CAMERATUNER", "NONE");
 		try
 		{
-			((AbstractPipeClientSession)simplePipeClient).Connect();
-			((AbstractPipeClientSession)simplePipeClient).Write("SNAP");
-			List<string> list = ((AbstractPipeClientSession)simplePipeClient).ConsumeMessages();
+			simplePipeClient.Connect();
+			simplePipeClient.Write("SNAP");
+			List<string> list = simplePipeClient.ConsumeMessages();
 			if (list.Count == 0)
 			{
 				return "NONE";
@@ -29,26 +29,19 @@ internal class SimplePipeClient : AbstractPipeClientSession
 
 	public List<string> ExecuteCommand(string command)
 	{
-		((AbstractPipeClientSession)this).Write(command);
-		return ((AbstractPipeClientSession)this).ConsumeMessages();
+		Write(command);
+		return ConsumeMessages();
 	}
 
 	~SimplePipeClient()
 	{
-		try
-		{
-			((AbstractPipeClientSession)this).DisposeInner(false);
-		}
-		finally
-		{
-			((object)this).Finalize();
-		}
+		DisposeInner(false);
 	}
 
 	protected override List<string> ProcessRawMessage()
 	{
 		List<string> list = new List<string>();
-		list.Add(((AbstractPipeClientSession)this).ReadBuilder.ToString());
+		list.Add(ReadBuilder.ToString());
 		return list;
 	}
 

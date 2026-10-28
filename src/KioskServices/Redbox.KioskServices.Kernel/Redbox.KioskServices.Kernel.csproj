@@ -8,11 +8,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
-    <ProjectReference Include="..\Redbox.KioskServices.Proxy.ComponentModel\Redbox.KioskServices.Proxy.ComponentModel.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <Engine181Reference Include="Redbox.Core" />
+    <Engine181Reference Include="Redbox.KioskEngine.ComponentModel" />
+    <Engine181Reference Include="Redbox.KioskServices.Proxy.ComponentModel" />
+    <Engine181Reference Include="Redbox.Lua" />
+    <Engine181Reference Include="Redbox.REDS.Framework" />
+    <Engine181Reference Include="Redbox.Rental.Model" />
   </ItemGroup>
+  <Import Project="..\Engine181.targets" />
 </Project>

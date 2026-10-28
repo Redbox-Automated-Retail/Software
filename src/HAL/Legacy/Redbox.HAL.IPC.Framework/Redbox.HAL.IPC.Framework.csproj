@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.HAL.IPC.Framework</AssemblyName>
+    <RootNamespace>Redbox.HAL.IPC.Framework</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.HAL.Core\Redbox.HAL.Core.csproj" />
+  </ItemGroup>
+</Project>

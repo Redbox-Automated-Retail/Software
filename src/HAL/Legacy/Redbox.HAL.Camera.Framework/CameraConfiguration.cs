@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -69,18 +69,18 @@ public sealed class CameraConfiguration : XmlConfiguration
 	{
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Invalid comparison between Unknown and I4
-		Mode = ((XmlConfiguration)this).GetNodeValue<CameraMode>((XmlNode)document.DocumentElement, "Camera/Mode", CameraMode.Normal);
-		int nodeValue = ((XmlConfiguration)this).GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Width", 640);
-		int nodeValue2 = ((XmlConfiguration)this).GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Height", 480);
+		Mode = GetNodeValue<CameraMode>((XmlNode)document.DocumentElement, "Camera/Mode", CameraMode.Normal);
+		int nodeValue = GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Width", 640);
+		int nodeValue2 = GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Height", 480);
 		VideoFormat = new Size(nodeValue, nodeValue2);
-		DeleteBitmapOnSuccessfulRead = ((XmlConfiguration)this).GetNodeValue<bool>((XmlNode)document.DocumentElement, "Camera/DeleteBitmapOnSuccessfulRead", true);
-		CameraDriver = ((XmlConfiguration)this).GetNodeValue<string>((XmlNode)document.DocumentElement, "Camera/CameraDriver", "Vidcap");
+		DeleteBitmapOnSuccessfulRead = GetNodeValue<bool>((XmlNode)document.DocumentElement, "Camera/DeleteBitmapOnSuccessfulRead", true);
+		CameraDriver = GetNodeValue<string>((XmlNode)document.DocumentElement, "Camera/CameraDriver", "Vidcap");
 		if ((int)RuntimeService.Instance.GetPlatform() == 3 && CameraDriver == "Vidcap")
 		{
 			LogHelper.Instance.Log("Platform is Windows7; hijack control to {0}.", new object[1] { "DirectShowFrame" });
 			CameraDriver = "DirectShowFrame";
 		}
-		CycleCameraOnUse = ((XmlConfiguration)this).GetNodeValue<bool>((XmlNode)document.DocumentElement, "Camera/CycleCameraOnUse", false);
+		CycleCameraOnUse = GetNodeValue<bool>((XmlNode)document.DocumentElement, "Camera/CycleCameraOnUse", false);
 		if (CycleCameraOnUse)
 		{
 			LogHelper.Instance.Log("WARNING: CycleCameraOnUse is set to TRUE.");
@@ -117,7 +117,7 @@ public sealed class CameraConfiguration : XmlConfiguration
 		}
 		else
 		{
-			((XmlConfiguration)this).SetSingleNodeValue((XmlNode)document.DocumentElement, "Camera/CameraDriver", (object)CameraDriver);
+			SetSingleNodeValue((XmlNode)document.DocumentElement, "Camera/CameraDriver", (object)CameraDriver);
 		}
 		XmlNode xmlNode6 = document.DocumentElement.SelectSingleNode("Camera/CycleCameraOnUse");
 		if (xmlNode6 != null)
@@ -126,7 +126,7 @@ public sealed class CameraConfiguration : XmlConfiguration
 		}
 		else
 		{
-			((XmlConfiguration)this).SetSingleNodeValue((XmlNode)document.DocumentElement, "Camera/CycleCameraOnUse", (object)CycleCameraOnUse);
+			SetSingleNodeValue((XmlNode)document.DocumentElement, "Camera/CycleCameraOnUse", (object)CycleCameraOnUse);
 		}
 	}
 
