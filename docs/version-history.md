@@ -1,9 +1,11 @@
 # Version history of the kiosk software (2014–2024)
 
 This is a timeline of every release that can be rebuilt from the archived update-store snapshots, with how
-much each one changed. It is used to choose which old versions are worth decompiling. The current source in
-`src/` is the **newest** release of every package, so the newest row of each table is already in the
-repository.
+much each one changed. The current source in `src/` is the **newest** release of every package. Every older
+release that brought code was decompiled with the same ILSpy settings and committed, dated, to local
+`history/<group>` branches (`tools/history/decompile_history.py`); the engine's releases are described one by
+one in [engines.md](engines.md), the snapshots themselves in [snapshots.md](snapshots.md), and features that
+came and went in [unreleased-features.md](unreleased-features.md).
 
 ## Sources and method
 
@@ -85,7 +87,7 @@ The engine package holds `kioskengine.exe`, the WPF rental UI and all their libr
 | – | YesSR3 | 2020-08 | 1.57.3.9 | +10 types | minor | |
 | E9 | LincolnSR3 | 2022-02 | 1.71.0.21 | +523/−107 types, +10.2k members, 3 new assemblies | **substantial** | Integration with **UpdateClientService**; **Starz**, **Redbox+ (RedboxPlus)**, reservations, planogram; new `Redbox.KioskEngine.API` (local HTTP API), `Redbox.KioskEngine.PreferenceManager`, `Redbox.FMA.UI`. |
 | – | McLaren … Ultima | 2022-03 – 2023-03 | 1.72 – 1.80 | each < 150 members | minor | Bug fixes; welcome-screen assets (1.75) and campaign (1.79) models. |
-| E10 | Vega / VegaSR2 | 2023-03/04 | 1.81.0.22 / 1.81.0.27 | +45/−58 types | **substantial (gap)** | KioskServices proxy API trimmed. **1.81.0.27 is the engine the excluded `Redbox.KioskServices.Kernel/.KernelExtension/.Proxy` were built against** (see [decompilation.md](decompilation.md) "Known gaps"). |
+| E10 | Vega / VegaSR2 | 2023-03/04 | 1.81.0.22 / 1.81.0.27 | +45/−58 types | **substantial (gap)** | KioskServices proxy API trimmed. **1.81.0.27 is the engine `Redbox.KioskServices.Kernel/.KernelExtension/.Proxy` are built against** (see [decompilation.md](decompilation.md) "Known gaps"). |
 | E11 | Willys | 2023-04 | 1.82.0.20 | +121/−29 types, +1.5k members | borderline | Store services, authentication, health, shopping-cart and fraud endpoints in the engine API; PreferenceManager +35 types; old BrokerServices kernel extension removed. |
 | – | Xterra, Yugo, YugoSR/SR2, Z | 2023-06 – 2023-10 | 1.83 – 1.85 | each < 500 members | minor | Configuration, kiosk/“dual” client models (1.84), profile data API (1.85), email opt-in removed (1.85). |
 | E12 | Aquaman2023 | 2023-11 | 1.86.0.57 | +13/−78 types, −2.4k members | **substantial (removal)** | **Fraud services and Starz removed** (`Redbox.FraudServices.Proxy` emptied, fraud API controllers and Starz services gone). |
@@ -99,7 +101,7 @@ The three packages are released together with the same HAL version.
 | # | Release | Date | HAL | Size | Class | Reason |
 |---|---|---|---|---|---|---|
 | H1 | Caddyshack | 2014-02 | 1.3.0.84 | first (16 assemblies) | **substantial** | Oldest HAL, MSHALTester, HalUtilities; legacy DirectShow/ClearImage camera plugins. |
-| H2 | (unlabelled) | 2015-12 | camera plugins 1.3.0.119 | +25/−9 members | **gap** | `Redbox.HAL.Camera.Framework`, `.DirectShow.Plugin`, `.ICameraPlugin.Vidcap`, `.ClearimageV1` **1.3.0.119** — the versions `src/HAL/Legacy` was built against (the rest of HAL stays 1.3.0.84 in this release). |
+| H2 | (unlabelled) | 2015-12 | camera plugins 1.3.0.119 | +25/−9 members | **gap** | `Redbox.HAL.Camera.Framework`, `.DirectShow.Plugin`, `.ICameraPlugin.Vidcap`, `.ClearimageV1` **1.3.0.119**, the versions in `src/HAL/Legacy`. HAL Core / IPC 1.3.0.119 are placeholders only, so `src/HAL/Legacy` builds them against 1.3.0.84 from H1. |
 | H3 | X-Men | 2015-12 | 1.4.0.246 | +314/−242 types | **substantial** | New `Redbox.HAL.Configuration`, script natives, DataMatrix framework rewrite (ClearImage moved out). |
 | H3a | Batman | 2016-04 | 1.8.0.22 | +83 to +413 types per assembly; MSHALTester +413 types | **substantial** | Large controller, script and MSHALTester growth; halmgmtc +145 types. |
 | H4 | Hawkeye | 2016-10 | 1.9.0.49 | +663/−505 types; MSHALTester +500 types | **substantial** | New `Redbox.HAL.Component.Model`, new IPC framework (0.85), core descriptors; compression code moved out of Core. |
