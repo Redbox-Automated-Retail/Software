@@ -3,8 +3,8 @@
 The kiosk's update manager (`updatemgrd`) keeps every update it has received in
 `REDS/Update Manager/.store/` in the kiosk image. It is the source for recovering **older versions** of the
 Redbox assemblies. Older versions have already filled two gaps in this repository, and they could provide
-source history and the libraries that some excluded projects need. This is a survey for that work; nothing
-in it has been fully extracted yet.
+source history and the libraries that some excluded projects need. The archived snapshots in `U:\data` and
+this store have since been rebuilt in full; the result is in [version-history.md](version-history.md).
 
 ## Layout
 

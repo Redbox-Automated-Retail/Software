@@ -27,3 +27,16 @@ they are idempotent.
 | `fix_com_event_providers.py` | tlbimp `*_EventProvider` classes: `add_X`/`remove_X` methods wrapped in a real `event` |
 | `fix_xaml_markup.py` | BAML-decompiled markup extensions with unquoted `FallbackValue`s containing `,` `=` or quotes |
 | `remove_wpf_generated_members.py` | `[GeneratedCode("PresentationBuildTasks")]` members left in WPF code-behind |
+
+## history/
+
+Rebuilds and sizes old versions from archived update-store snapshots; see
+[docs/version-history.md](../docs/version-history.md).
+
+| Tool | Does |
+|---|---|
+| `rebuild_store.py` | Merges the revlogs of several store snapshots (zips or `.repository` folders), rebuilds every file version (seeds + xdelta3 deltas) into a SHA-1-verified blob store, writes `index/<package>.json`. |
+| `ApiSurface/` | Dumps assembly name, version, references, types and members of managed binaries as JSON lines. |
+| `history.py` | Compares each rebuilt version with the previous one and writes `timeline.json`, `timeline.md` and `summary.tsv`. |
+
+The work directory (blobs, indexes) stays outside git; it holds Redbox binaries.
