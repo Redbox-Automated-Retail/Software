@@ -12,18 +12,24 @@ import xml.etree.ElementTree as ET
 S = os.environ.get('REDBOX_DECOMP_WORK') or os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(S, 'raw')
 REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-SRC = os.path.join(REPO, 'src')
+SRC = os.environ.get('REDBOX_SRC_OUT') or os.path.join(REPO, 'src')
 
-FIRSTPARTY = open(os.path.join(S, 'firstparty.txt')).read().split()
+# REDBOX_FIRSTPARTY_FROM_RAW=1 (used by tools/history): the projects are whatever raw/ holds, so a library that
+# is not shipped standalone in an old release is kept where it was merged instead of being stripped
+if os.environ.get('REDBOX_FIRSTPARTY_FROM_RAW'):
+    FIRSTPARTY = sorted(os.listdir(RAW))
+else:
+    FIRSTPARTY = open(os.path.join(S, 'firstparty.txt')).read().split()
 
-AREA = {}
+AREA = collections.defaultdict(lambda: 'Other')
 def area(a, names):
     for n in names.split():
         AREA[n] = a
 area('Common', 'Redbox.Core Redbox.Command.Tokenizer Redbox.Compression Redbox.GetOpts Redbox.IPC.Framework Redbox.JSONPrettyPrinter Redbox.Log.Framework Redbox.Lua Redbox.Macros Redbox.Macros.Functions Redbox.ProductLookupCatalog Redbox.REDS.Framework Redbox.Tokenizer.Framework Redbox.USB')
 area('HAL', 'Redbox.HAL.Client Redbox.HAL.Component.Model Redbox.HAL.Configuration Redbox.HAL.Controller.Framework Redbox.HAL.Core Redbox.HAL.DataMatrix.Framework Redbox.HAL.DataStorage Redbox.HAL.DirectShow.Frame.Plugin Redbox.HAL.IPC.Framework Redbox.HAL.Script.Framework Redbox.HAL.Service.Framework halsvc-win32 halmgmtc HalUtilities MSHALTester CameraTuner HAL.PackageInstaller Redbox.DirectShow Redbox.HAL.Common.GUI.Functions Interop.ClearImage')
 area('HAL/Legacy', 'Redbox.HAL.Camera.Framework Redbox.HAL.ClearimageV1 Redbox.HAL.DirectShow.Plugin Redbox.HAL.ICameraPlugin.Vidcap')
-area('KioskEngine', 'kioskengine Redbox.KioskEngine.API Redbox.KioskEngine.ComponentModel Redbox.KioskEngine.Drawing Redbox.KioskEngine.Environment Redbox.KioskEngine.IDE Redbox.KioskEngine.Kernel Redbox.KioskEngine.PreferenceManager Redbox.ControlPanel.UI Redbox.Controls Redbox.FMA.UI redscc Redbox.Services.KioskBrokerServices.KioskShared')
+area('KioskEngine', 'Redbox.DVD.BrokerServices Redbox.DVD.HardwareServices Redbox.DVD.KioskServices Redbox.DVD.TicketServices Redbox.DVD.UpdateServices')  # 2014-2016 only
+area('KioskEngine', 'kioskengineRedbox.KioskEngine.API Redbox.KioskEngine.ComponentModel Redbox.KioskEngine.Drawing Redbox.KioskEngine.Environment Redbox.KioskEngine.IDE Redbox.KioskEngine.Kernel Redbox.KioskEngine.PreferenceManager Redbox.ControlPanel.UI Redbox.Controls Redbox.FMA.UI redscc Redbox.Services.KioskBrokerServices.KioskShared')
 area('KioskServices', 'Redbox.BrokerServices.Kernel Redbox.BrokerServices.KernelExtension Redbox.BrokerServices.Proxy Redbox.BrokerServices.Proxy.ComponentModel Redbox.FraudServices.Proxy Redbox.FraudServices.Proxy.ComponentModel Redbox.HardwareServices.Kernel Redbox.HardwareServices.KernelExtension Redbox.HardwareServices.Proxy Redbox.HardwareServices.Proxy.ComponentModel Redbox.KioskDataServices.Proxy Redbox.KioskDataServices.Proxy.ComponentModel Redbox.KioskServices.ComponentModel Redbox.KioskServices.Kernel Redbox.KioskServices.KernelExtension Redbox.KioskServices.Proxy Redbox.KioskServices.Proxy.ComponentModel Redbox.UpdateServices.Kernel Redbox.UpdateServices.KernelExtension Redbox.UpdateServices.Proxy Redbox.UpdateServices.Proxy.ComponentModel')
 area('Rental', 'Redbox.Rental.Data Redbox.Rental.Kernel Redbox.Rental.Model Redbox.Rental.Services Redbox.Rental.UI')
 area('DeviceService', 'DeviceService.Client DeviceService.Client.Core DeviceService.ComponentModel DeviceService.Domain DeviceService.WebApi RBA_SDK_ComponentModel RBA_SDK_STANDARD RBAInstaller BluefinService.Client HttpHelper Status.Client')
