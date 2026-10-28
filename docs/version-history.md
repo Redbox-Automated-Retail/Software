@@ -67,7 +67,7 @@ The engine package holds `kioskengine.exe`, the WPF rental UI and all their libr
 | # | Release | Date | Engine | Size | Class | Reason |
 |---|---|---|---|---|---|---|
 | E0 | Braveheart | 2014-02-03 | 1.3.7.10 | first (kioskengine 1,600 types) | **substantial** | Oldest engine found; an earlier build of the same code as Dracula, including `Redbox.DVD.TicketServices` 1.3.7.10. |
-| E1 | Dracula | 2014-02 | 1.3.9.4 | first (kioskengine 1,600 types) | **substantial** | Oldest engine: WinForms/Lua engine with `Redbox.DVD.{Broker,Hardware,Kiosk,Update,Ticket}Services` and `redscc`. Contains **`Redbox.DVD.TicketServices`** (event tickets, never in a later release). |
+| E1 | Dracula | 2014-02-28 | 1.3.9.4 | +3 members | **substantial** | First engine in the original 13 snapshots: WinForms/Lua engine with `Redbox.DVD.{Broker,Hardware,Kiosk,Update,Ticket}Services` and `redscc`. Contains **`Redbox.DVD.TicketServices`** (event tickets, never in a later release). |
 | – | (unlabelled) | 2015 | 1.4–1.8 | HAL.Client 1.4, KioskShared 1.4 | minor | Library refreshes. |
 | E2 | The-Martian | 2015-12 | 1.9.0.9 | 4 new assemblies | **substantial** | `Redbox.Rental.{Services,Kernel,Data,Model}` split out of the engine: the start of the .NET rental application. |
 | – | Batman | 2016-04 | 1.13.0.19 | +15 types in Rental.Services | minor | HAL.Client 1.7. |
