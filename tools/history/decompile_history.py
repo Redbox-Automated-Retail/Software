@@ -89,6 +89,48 @@ class Work:
         n = name.lower()
         return n.endswith(SCRIPT_EXT) or n.endswith(".bundle") and not n.startswith("content-")
 
+    def deletions(self):
+        """[(date, path suffix)] for every kernel.filedelete("${VAR}\\...") in any package's Lua scripts.
+
+        The store never lists a file as removed; packages delete obsolete files from their activation scripts
+        instead (the engine's afteractivate.lua removes the 2014 ticket services, for example)."""
+        if not hasattr(self, "_deletions"):
+            self._deletions = []
+            for idx in self.index.values():
+                for r in idx["revisions"]:
+                    for c in r["changes"]:
+                        if c["status"] != "ok" or not c["name"].lower().endswith(".lua"):
+                            continue
+                        with open(blob(self.work, c["version"]), "rb") as f:
+                            text = f.read().decode("utf-8", "replace")
+                        for p in re.findall(r'kernel\.filedelete\(\s*"([^"]+)"', text):
+                            p = p.replace("\\\\", "\\").lower()
+                            if p.startswith("${") and "}\\" in p:
+                                self._deletions.append((rev_date(idx, r), "\\" + p.split("}\\", 1)[1]))
+        return self._deletions
+
+
+def rev_date(idx, r):
+    """When a revision reached the kiosks: its earliest content file, else noon of the first snapshot listing it."""
+    dates = sorted(c["patch_date"] for c in r["changes"] if c["status"] == "ok" and c["patch_date"])
+    return dates[0] if dates else idx["sources"][r["seen_in"][0]]["date"] + "T12:00:00"
+
+
+def drop_deleted(w, tree, set_dates, date):
+    """The tree without files that a script in effect by `date` deleted after they were last listed."""
+    gone = {}
+    for d, suffix in w.deletions():
+        if d <= date:
+            gone[suffix] = max(d, gone.get(suffix, ""))
+    out = {}
+    for key, v in tree.items():
+        low = key.lower()
+        hit = [d for s, d in gone.items() if low.endswith(s)]
+        if hit and set_dates[key] < max(hit):
+            continue
+        out[key] = v
+    return out
+
 
 def releases(w, group):
     """Ordered releases of a group: list of dicts with date, name, labels, revisions, tree."""
@@ -101,10 +143,12 @@ def releases(w, group):
         labels = []
         last = None
         pkg_events = []
+        set_dates = {}  # path -> date of the revision that last listed it
         for r in idx["revisions"]:
             for c in r["changes"]:
                 key = c["path"] + "\\" + c["name"]
                 state[key] = c["version"]
+                set_dates[key] = rev_date(idx, r)
                 if c["status"] == "ok":
                     last_ok[key] = c["version"]
             if r["label"]:
@@ -115,14 +159,12 @@ def releases(w, group):
                 # A label on a revision that adds no code names the code already committed (the release was
                 # built up over unlabelled revisions and then labelled): move it to the previous release.
                 if labels and last:
-                    last.update(rev=r["index"], hash=r["hash"], tree=tree)
+                    last.update(rev=r["index"], hash=r["hash"], tree=tree, set=dict(set_dates))
                     last["labels"] += labels
                     labels = []
                 continue
-            dates = sorted(c["patch_date"] for c in r["changes"] if c["status"] == "ok" and c["patch_date"])
-            date = dates[0] if dates else idx["sources"][r["seen_in"][0]]["date"] + "T12:00:00"
-            last = {"date": date, "order": order, "package": pkg, "rev": r["index"], "hash": r["hash"],
-                    "labels": labels, "tree": tree}
+            last = {"date": rev_date(idx, r), "order": order, "package": pkg, "rev": r["index"], "hash": r["hash"],
+                    "labels": labels, "tree": tree, "set": dict(set_dates)}
             pkg_events.append(last)
             committed = dict(last_ok)
             labels = []
@@ -138,7 +180,7 @@ def releases(w, group):
     # Combined groups: each release carries the latest tree of every package in the group.
     out, trees, revs = [], {}, {}
     for e in events:
-        trees[e["package"]] = e["tree"]
+        trees[e["package"]] = drop_deleted(w, e["tree"], e["set"], e["date"])
         revs[e["package"]] = (e["rev"], e["hash"])
         out.append({"date": e["date"], "package": e["package"], "labels": e["labels"],
                     "revisions": dict(revs), "trees": {p: dict(t) for p, t in trees.items()}})
