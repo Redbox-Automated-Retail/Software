@@ -60,8 +60,9 @@ The RIX *compiler* (`DefinitionList.SaveToResources`, `FileEntryDefinition.SaveT
 a source XML. It adds `resource-name="NNNN"` to every embedded `<file>` and writes the files with
 `ResourceUpdateSession`. Only the host side ships here.
 
-Inspecting a RIX exe: dump the resources with any PE resource reader, then LZMA-decode `PREREQ/SCRIPT`. 7-Zip's
-PE handler does **not** show these custom resource types; it opens the embedded .NET Framework setup instead.
+Inspecting a RIX exe: `python tools/installer/dump_rix.py <setup.exe> <out> --named` writes every resource, the
+decoded `script.xml`, and each embedded file under its real name. 7-Zip's PE handler does **not** show these
+custom resource types; it opens the embedded .NET Framework setup instead.
 
 ### 2.2 Host start-up (`Redbox.Installer.Host/Program.cs`, `InstallerApplication.cs`)
 
@@ -482,5 +483,40 @@ All ten `src/Installer` projects are in `Redbox.sln`. Differences from the origi
 - `installer-steps.lua` is called "store installer", but the front end's `post-install.lua` resumes from
   `C:\.post-install`. Nothing deletes that file, so a second install on the same PC skips every step unless
   someone removes it by hand.
-- The installer was never run for this document (only unpacked and read). Behaviour is from the code and the
-  scripts.
+- Behaviour is from the code and the scripts, plus one run in Windows Sandbox (§11). It was never run on a
+  real kiosk or a Windows 10 IoT/Enterprise image.
+
+---
+
+## 11. Observed in Windows Sandbox (Windows 11 Pro, 2026-10-28)
+
+The installer was run in Windows Sandbox with the May 2024 seed (`data-572024.zip`). The Update Service was the
+self-hosted replacement in the Backend repository, reached through hosts entries and its CA. The harness is in
+that repository: `provisioning/installer/tests/original-logon.ps1` and `rix-unpacked.ps1`.
+
+- **The RIX host does not start without .NET 3.5.** Sandbox cannot enable .NET 3.5. With the `v3.5` folder
+  faked and a `supportedRuntime v4.0` config, the host runs on .NET 4 but stops with
+  `[I001] Unable to initialize setup; the script was not found or unparsable`. This message only appears on an
+  attached console; with `--silent` and no console it just exits with 1. The JScript/VSA page engine is
+  compiled against .NET 2's `Microsoft.Vsa`, while .NET 4's `Microsoft.JScript` uses `IJSVsa*` types (see
+  "Building", §9). Note also that `--log` needs the `--log:<file>` form (`Redbox.GetOpts`).
+- **With the host's part done by script** (copy the files, unzip `data.zip`, run orders 96-100 from `script.xml`),
+  the original `installer-front-end.exe` ran all 21 steps of `installer-steps.lua` to "Installation complete;
+  rebooting...":
+  - `installer start` succeeded;
+  - Activate Image staged and activated all 12 repositories, including `kop-v2-engine`'s `beforeactivate.lua`
+    and `afteractivate.lua`;
+  - the afteractivate script's `filedelete` calls for files that do not exist log `DirectoryNotFoundException`
+    but carry on;
+  - `RBAInstaller.exe` ran for 6 minutes without a reader and returned 0;
+  - `updatemgrd --register` and the three `sc create` calls succeeded.
+- **The kiosk it leaves behind is incomplete on current Windows:**
+  - Step 7: `HAL.PackageInstaller.exe` is a .NET 2.0 program, so without .NET 3.5 it does not run, and no
+    `halsvc$default` is created. The script does not check its return code.
+  - Step 10: `kernel.shelllauncherfeatureinstalled()` returned true (the licensing value
+    `EmbeddedFeature-ShellLauncher-Enabled` is 1 even on Windows 11 Pro). `kernel.replaceshellwith` then threw
+    in `Process.Start`, because `wmic.exe` is no longer part of Windows 11. The step ignores the return value,
+    so it "succeeds" and the shell stays `explorer.exe`.
+  - Services are created but not started. They start at the reboot, which was blocked here.
+- `Store\ID` is `unconfigured`, and `BrokerServicesURL` / `KioskServicesURL` are Redbox's production values (step 5
+  overwrites whatever was there before).
