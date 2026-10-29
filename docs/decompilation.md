@@ -94,6 +94,14 @@ All changes after the first commit are listed in `git log`. In summary:
   contract `DeviceService.WebApi/Startup.cs` loads by reflection, because the original DLL was never shipped.
   See its README.
 
+## Store installer (`src/Installer`)
+
+Decompiled later from `Windows10-Store-Installer-3.1.0.48-setup.exe` with the same `ilspycmd`, after its PE
+resources were dumped (see [systems/store-installer.md](systems/store-installer.md) §2.1). `host` follows the
+"kept inline" rule above. The other projects were laid out like the rest of the tree. Retargeting and the build
+fixes are in their own commit; see store-installer.md "Building". Hard-coded account passwords in `KioskAdmin`
+were replaced with `<redacted>` before the first commit.
+
 ## Known gaps
 
 Not part of `Redbox.sln` (they need libraries other than the 1.88 ones in `src/`), but buildable:
