@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.NAnt.Core</AssemblyName>
+    <RootNamespace>Redbox.NAnt.Core</RootNamespace>
+    <TargetFramework>net40</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NAnt.Core" Version="0.92.0" />
+  </ItemGroup>
+</Project>
