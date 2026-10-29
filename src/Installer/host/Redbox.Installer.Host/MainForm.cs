@@ -219,7 +219,7 @@ public class MainForm : Form, IWizardView, IShellConfiguration
 		base.ResumeLayout(false);
 	}
 
-	virtual void IWizardView.Close()
+	void IWizardView.Close()
 	{
 		Close();
 	}

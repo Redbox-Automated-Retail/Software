@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using Microsoft.JScript.Vsa;
-using Microsoft.Vsa;
 
 namespace Redbox.ScriptingHost.Framework;
 
-public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
+public class VsaScriptingHost : KernelObject, IJSVsaSite, IDisposable
 {
 	private IDictionary<string, object> m_evaluationResults;
 
@@ -77,7 +76,7 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 		{
 			Engine.Reset();
 		}
-		IVsaCodeItem vsaCodeItem = CreateCodeItem(IdHelper.GeneratePseudoUniqueId(8, "_ABCDEFGHIJKLMNOPQRSTUV"));
+		IJSVsaCodeItem vsaCodeItem = CreateCodeItem(IdHelper.GeneratePseudoUniqueId(8, "_ABCDEFGHIJKLMNOPQRSTUV"));
 		if (vsaCodeItem != null)
 		{
 			vsaCodeItem.SourceText = sourceText;
@@ -110,7 +109,7 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 			Engine.Items.Remove(itemName);
 		}
 		InstanceCache[itemName] = instance;
-		IVsaGlobalItem vsaGlobalItem = (IVsaGlobalItem)Engine.Items.CreateItem(itemName, VsaItemType.AppGlobal, VsaItemFlag.None);
+		IJSVsaGlobalItem vsaGlobalItem = (IJSVsaGlobalItem)Engine.Items.CreateItem(itemName, JSVsaItemType.AppGlobal, JSVsaItemFlag.None);
 		if (useTypeInformation)
 		{
 			vsaGlobalItem.TypeString = instance.GetType().FullName;
@@ -134,9 +133,9 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 		return InstanceCache.ContainsKey(itemName) ? InstanceCache[itemName] : null;
 	}
 
-	public IVsaItem GetEngineItem(string itemName)
+	public IJSVsaItem GetEngineItem(string itemName)
 	{
-		foreach (IVsaItem item in Engine.Items)
+		foreach (IJSVsaItem item in Engine.Items)
 		{
 			if (string.Compare(item.Name, itemName, ignoreCase: true) == 0)
 			{
@@ -151,18 +150,18 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 		return GetEngineItem(itemName) != null;
 	}
 
-	public IVsaReferenceItem CreateReferenceItem(string itemName, string assemblyName)
+	public IJSVsaReferenceItem CreateReferenceItem(string itemName, string assemblyName)
 	{
-		IVsaReferenceItem vsaReferenceItem = (IVsaReferenceItem)Engine.Items.CreateItem(itemName, VsaItemType.Reference, VsaItemFlag.None);
+		IJSVsaReferenceItem vsaReferenceItem = (IJSVsaReferenceItem)Engine.Items.CreateItem(itemName, JSVsaItemType.Reference, JSVsaItemFlag.None);
 		vsaReferenceItem.AssemblyName = assemblyName;
 		return vsaReferenceItem;
 	}
 
-	public IVsaCodeItem CreateCodeItem(string itemName)
+	public IJSVsaCodeItem CreateCodeItem(string itemName)
 	{
 		try
 		{
-			return (IVsaCodeItem)Engine.Items.CreateItem(itemName, VsaItemType.Code, VsaItemFlag.None);
+			return (IJSVsaCodeItem)Engine.Items.CreateItem(itemName, JSVsaItemType.Code, JSVsaItemFlag.None);
 		}
 		catch
 		{
@@ -170,9 +169,9 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 		}
 	}
 
-	public ReadOnlyCollection<IVsaReferenceItem> CreateAssemblyReferences(params string[] assemblyNames)
+	public ReadOnlyCollection<IJSVsaReferenceItem> CreateAssemblyReferences(params string[] assemblyNames)
 	{
-		List<IVsaReferenceItem> list = new List<IVsaReferenceItem>();
+		List<IJSVsaReferenceItem> list = new List<IJSVsaReferenceItem>();
 		foreach (string text in assemblyNames)
 		{
 			list.Add(CreateReferenceItem(text, text));
@@ -185,7 +184,7 @@ public class VsaScriptingHost : KernelObject, IVsaSite, IDisposable
 		pe = (debugInfo = null);
 	}
 
-	public bool OnCompilerError(IVsaError error)
+	public bool OnCompilerError(IJSVsaError error)
 	{
 		if (CompileError != null)
 		{
