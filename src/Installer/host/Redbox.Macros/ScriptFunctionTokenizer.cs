@@ -2,7 +2,7 @@ using Redbox.Tokenizer.Framework;
 
 namespace Redbox.Macros;
 
-public class ScriptFunctionTokenizer : SimpleTokenizer<FunctionTokenizerState>
+internal class ScriptFunctionTokenizer : SimpleTokenizer<FunctionTokenizerState>
 {
 	private bool m_inQuotedValue;
 

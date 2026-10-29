@@ -28,12 +28,12 @@ public class DynamicPropertyGrid : VisualHint.SmartPropertyGrid.PropertyGrid
 		toolStripTextBox.TextChanged += value2;
 	}
 
-	protected internal override void OnDisplayModeChanged(EventArgs e)
+	protected override void OnDisplayModeChanged(EventArgs e)
 	{
 		FilterProperties(base.Toolbar.Items[4].Text);
 	}
 
-	protected internal override void OnPropertyButtonClicked(PropertyButtonClickedEventArgs e)
+	protected override void OnPropertyButtonClicked(PropertyButtonClickedEventArgs e)
 	{
 		if (e.PropertyEnum.Property.Tag is IPropertyGridItem propertyGridItem)
 		{
@@ -73,7 +73,7 @@ public class DynamicPropertyGrid : VisualHint.SmartPropertyGrid.PropertyGrid
 		base.OnValueValidation(e);
 	}
 
-	protected internal override void OnHyperLinkPropertyClicked(PropertyHyperLinkClickedEventArgs e)
+	protected override void OnHyperLinkPropertyClicked(PropertyHyperLinkClickedEventArgs e)
 	{
 		if (e.PropertyEnum.Property.Tag is IPropertyGridItem propertyGridItem)
 		{
