@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Added on the modernize branch (not decompiled): converts the kiosk's VistaDB files to SQLite. See Program.cs. -->
+  <PropertyGroup>
+    <AssemblyName>vistadb-to-sqlite</AssemblyName>
+    <RootNamespace>Redbox.Tools.VistaDbToSqlite</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="VistaDB.NET20">
+      <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Data.Sqlite\Redbox.Data.Sqlite.csproj" />
+  </ItemGroup>
+</Project>

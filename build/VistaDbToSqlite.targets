@@ -1,0 +1,25 @@
+<Project>
+  <!--
+    For .NET 10 components that still find VistaDB files on a kiosk (the engine, later HAL): builds
+    src/Tools/vistadb-to-sqlite (.NET Framework 4.8, x86) into a "vistadb-to-sqlite" folder next to the component's
+    output and publish output, where Redbox.Data.Sqlite.LegacyDatabase looks for it. A separate folder, so its .NET
+    Framework dependencies do not mix with the component's .NET 10 assemblies.
+    Import it from a project and set <ShipVistaDbToSqlite>true</ShipVistaDbToSqlite> for the targets that need it. Only per-target-framework
+    builds run it (a multi-targeting project's outer build has no TargetFramework and no OutDir).
+  -->
+  <PropertyGroup>
+    <!-- The calling project's own target framework / runtime must not flow into the tool's (net48) build or restore. -->
+    <_VistaDbToSqliteRemove>TargetFramework;TargetFrameworks;RuntimeIdentifier;SelfContained</_VistaDbToSqliteRemove>
+    <_VistaDbToSqliteProject>$(MSBuildThisFileDirectory)..\src\Tools\vistadb-to-sqlite\vistadb-to-sqlite.csproj</_VistaDbToSqliteProject>
+  </PropertyGroup>
+
+  <Target Name="BuildVistaDbToSqlite" AfterTargets="Build" Condition="'$(ShipVistaDbToSqlite)' == 'true' and '$(TargetFramework)' != '' and '$(OutDir)' != ''">
+    <MSBuild Projects="$(_VistaDbToSqliteProject)" Targets="Restore" Properties="Configuration=$(Configuration)" RemoveProperties="$(_VistaDbToSqliteRemove)" />
+    <MSBuild Projects="$(_VistaDbToSqliteProject)" Targets="Build" Properties="Configuration=$(Configuration);OutDir=$([MSBuild]::EnsureTrailingSlash('$(OutDir)'))vistadb-to-sqlite\" RemoveProperties="$(_VistaDbToSqliteRemove)" />
+  </Target>
+
+  <Target Name="PublishVistaDbToSqlite" AfterTargets="Publish" Condition="'$(ShipVistaDbToSqlite)' == 'true' and '$(TargetFramework)' != '' and '$(PublishDir)' != ''">
+    <MSBuild Projects="$(_VistaDbToSqliteProject)" Targets="Restore" Properties="Configuration=$(Configuration)" RemoveProperties="$(_VistaDbToSqliteRemove)" />
+    <MSBuild Projects="$(_VistaDbToSqliteProject)" Targets="Build" Properties="Configuration=$(Configuration);OutDir=$([MSBuild]::EnsureTrailingSlash('$(PublishDir)'))vistadb-to-sqlite\" RemoveProperties="$(_VistaDbToSqliteRemove)" />
+  </Target>
+</Project>
