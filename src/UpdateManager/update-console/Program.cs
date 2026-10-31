@@ -41,6 +41,9 @@ public class Program
 
 	public static int Main(string[] args)
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		ErrorList errorList = new ErrorList();
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.Start();

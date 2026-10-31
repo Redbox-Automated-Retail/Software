@@ -17,7 +17,12 @@ public static class EncryptionHelper
 		{
 			return null;
 		}
+#if NETFRAMEWORK
 		byte[] bytes = Encoding.Default.GetBytes(data);
+#else
+		// Encoding.Default is UTF-8 on .NET 10; the ciphertexts were made with the ANSI code page.
+		byte[] bytes = Redbox.Core.NetFrameworkCompatibility.AnsiCodePage.GetBytes(data);
+#endif
 		using TripleDESCryptoServiceProvider tripleDESCryptoServiceProvider = new TripleDESCryptoServiceProvider();
 		using ICryptoTransform transform = tripleDESCryptoServiceProvider.CreateEncryptor(m_keyValue, m_initialVector);
 		using MemoryStream memoryStream = new MemoryStream();

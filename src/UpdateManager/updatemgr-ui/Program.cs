@@ -15,6 +15,9 @@ public class Program : IDisposable
 	[STAThread]
 	public static void Main()
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		using Program program = new Program();
 		program.Run();
 	}

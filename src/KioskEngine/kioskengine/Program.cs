@@ -54,6 +54,9 @@ public class Program : IDisposable
 	[STAThread]
 	public static void Main()
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		Application.ThreadException += Application_ThreadException;
 		using (_program = new Program())

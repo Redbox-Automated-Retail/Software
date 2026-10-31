@@ -121,7 +121,12 @@ public class HostForm : Form
 	private string EncodePassword(string originalPassword)
 	{
 		MD5CryptoServiceProvider mD5CryptoServiceProvider = new MD5CryptoServiceProvider();
+#if NETFRAMEWORK
 		byte[] bytes = Encoding.Default.GetBytes(originalPassword);
+#else
+		// Encoding.Default is UTF-8 on .NET 10; the stored hash was made with the ANSI code page.
+		byte[] bytes = NetFrameworkCompatibility.AnsiCodePage.GetBytes(originalPassword);
+#endif
 		return BitConverter.ToString(mD5CryptoServiceProvider.ComputeHash(bytes));
 	}
 

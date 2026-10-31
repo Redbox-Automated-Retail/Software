@@ -21,6 +21,9 @@ public class Program
 
 	public static void Main(string[] args)
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		// OS default (TLS 1.2/1.3) instead of pinning TLS 1.2.
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 		try
