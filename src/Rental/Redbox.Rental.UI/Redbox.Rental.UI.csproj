@@ -3,7 +3,7 @@
     <AssemblyName>Redbox.Rental.UI</AssemblyName>
     <RootNamespace>Redbox.Rental.UI</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWPF>True</UseWPF>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

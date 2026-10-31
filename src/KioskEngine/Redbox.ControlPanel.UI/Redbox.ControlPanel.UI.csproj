@@ -3,7 +3,7 @@
     <AssemblyName>Redbox.ControlPanel.UI</AssemblyName>
     <RootNamespace>Redbox.ControlPanel.UI</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWPF>True</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
