@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.DirectShow</AssemblyName>
     <RootNamespace>Redbox.DirectShow</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.DataStorage</AssemblyName>
     <RootNamespace>Redbox.HAL.DataStorage</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.ClearimageV1</AssemblyName>
     <RootNamespace>Redbox.HAL.ClearimageV1</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

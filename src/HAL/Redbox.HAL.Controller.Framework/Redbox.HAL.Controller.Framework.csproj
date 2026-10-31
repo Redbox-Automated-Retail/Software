@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.Controller.Framework</AssemblyName>
     <RootNamespace>Redbox.HAL.Controller.Framework</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

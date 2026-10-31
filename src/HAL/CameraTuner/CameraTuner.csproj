@@ -3,7 +3,7 @@
     <AssemblyName>CameraTuner</AssemblyName>
     <RootNamespace>Redbox.HAL.CameraTuner</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

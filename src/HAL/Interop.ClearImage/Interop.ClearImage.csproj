@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Interop.ClearImage</AssemblyName>
     <RootNamespace>ClearImage</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>

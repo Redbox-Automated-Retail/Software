@@ -3,7 +3,7 @@
     <AssemblyName>HAL.PackageInstaller</AssemblyName>
     <RootNamespace>Redbox.HAL.PackageInstaller</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
