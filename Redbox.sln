@@ -279,6 +279,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{07C2787E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistadb-to-sqlite", "src\Tools\vistadb-to-sqlite\vistadb-to-sqlite.csproj", "{D8817D8E-7107-4881-9116-E5ADC76AA7F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Data.SqliteParity", "tests\Redbox.Data.SqliteParity\Redbox.Data.SqliteParity.csproj", "{459B64EB-8EBA-4B70-91DB-4FD0568320B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1765,6 +1767,18 @@ Global
 		{D8817D8E-7107-4881-9116-E5ADC76AA7F5}.Release|x64.Build.0 = Release|Any CPU
 		{D8817D8E-7107-4881-9116-E5ADC76AA7F5}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8817D8E-7107-4881-9116-E5ADC76AA7F5}.Release|x86.Build.0 = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|x64.Build.0 = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Debug|x86.Build.0 = Debug|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x64.ActiveCfg = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x64.Build.0 = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x86.ActiveCfg = Release|Any CPU
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1904,5 +1918,6 @@ Global
 		{CE6A655B-6139-4193-BEE4-7D8D44807CD8} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{05299CDB-5DE9-432B-B6B9-34071D3512D5} = {881589EE-639B-0A35-DBCE-5D94E4FC90C0}
 		{D8817D8E-7107-4881-9116-E5ADC76AA7F5} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{459B64EB-8EBA-4B70-91DB-4FD0568320B1} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

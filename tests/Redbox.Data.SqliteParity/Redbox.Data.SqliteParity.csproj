@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Runs the same data operations through the VistaDB implementations (net48) and
+    the SQLite ones (net10.0-windows) of the engine data stores, message queue, HAL tables and Rental profile data, on
+    fresh databases and on copies of real kiosk files; compare-sqlite-parity.ps1 compares the two outputs.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseWPF>True</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- Redbox.Rental.Services / Redbox.Rental.UI are WinExe projects referenced as libraries. -->
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\src\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\..\src\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
+    <ProjectReference Include="..\..\src\HAL\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+    <ProjectReference Include="..\..\src\HAL\Redbox.HAL.DataStorage\Redbox.HAL.DataStorage.csproj" />
+    <ProjectReference Include="..\..\src\Rental\Redbox.Rental.Data\Redbox.Rental.Data.csproj" />
+    <ProjectReference Include="..\..\src\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="System.Reflection.DispatchProxy" Version="4.8.2" />
+    <Reference Include="VistaDB.NET20">
+      <HintPath>..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <ProjectReference Include="..\..\src\Common\Redbox.Data.Sqlite\Redbox.Data.Sqlite.csproj" />
+  </ItemGroup>
+</Project>
