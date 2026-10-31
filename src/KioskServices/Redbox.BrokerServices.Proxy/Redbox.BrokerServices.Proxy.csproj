@@ -22,5 +22,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Runtime.Remoting" />
+    <!-- The GTCP client (Gtcp\) replaces GenuineChannels on .NET 10 only; see BrokerServicesProxy.Gtcp.cs. -->
+    <Compile Remove="Gtcp\**" />
   </ItemGroup>
 </Project>

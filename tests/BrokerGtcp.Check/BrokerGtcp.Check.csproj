@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Checks the .NET 10 GTCP client of Redbox.BrokerServices.Proxy (Gtcp\):
+      - offline: framing, envelope and NRBF reader/writer against messages captured between the real .NET Framework
+        kiosk (GenuineChannels 2.5.9.5) and the broker (Captures\*.bin);
+      - live (skipped with the offline switch, see Program.cs): register with a running broker (rb-remoting), answer Ping / Reserve3 / CancelReservation
+        triggered through its control API, survive a dropped socket and an outage.
+    Prints PASS/FAIL lines; the exit code is the number of failures.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>BrokerGtcp.Check</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KioskServices\Redbox.BrokerServices.Proxy\Redbox.BrokerServices.Proxy.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Captures\*.bin" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
