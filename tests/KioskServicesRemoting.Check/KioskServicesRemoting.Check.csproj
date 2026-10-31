@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Sends KioskServices messages to a running MessageService.rem twice: as a .NET
+    Remoting call over HTTP with the binary formatter (Redbox.Remoting.Nrbf.RemotingHttpClient, the .NET 10 replacement
+    for KioskServicesProxy's HttpChannel) and as the REST form post, and checks that both answers are the same.
+    Usage: KioskServicesRemoting.Check.exe [url]   (default http://127.0.0.1/KioskServices/MessageService.rem)
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Common\Redbox.Remoting.Nrbf\Redbox.Remoting.Nrbf.csproj" />
+  </ItemGroup>
+</Project>

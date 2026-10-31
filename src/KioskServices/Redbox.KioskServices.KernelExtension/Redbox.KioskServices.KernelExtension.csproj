@@ -2,17 +2,12 @@
   <PropertyGroup>
     <AssemblyName>Redbox.KioskServices.KernelExtension</AssemblyName>
     <RootNamespace>Redbox.KioskServices.KernelExtension</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <UseWindowsForms>True</UseWindowsForms>
+    <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.KioskServices.Kernel\Redbox.KioskServices.Kernel.csproj" />
     <ProjectReference Include="..\Redbox.KioskServices.Proxy\Redbox.KioskServices.Proxy.csproj" />
@@ -25,6 +20,11 @@
     <Engine181Reference Include="Redbox.KioskServices.Proxy.ComponentModel" />
     <Engine181Reference Include="Redbox.REDS.Framework" />
     <Engine181Reference Include="Redbox.Rental.Model" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="..\Engine181.targets" />
 </Project>

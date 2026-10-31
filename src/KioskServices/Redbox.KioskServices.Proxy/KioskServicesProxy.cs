@@ -5,8 +5,13 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+#if NETFRAMEWORK
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
+#else
+using System.Threading.Tasks;
+using Redbox.Remoting.Nrbf;
+#endif
 using System.Text;
 using System.Web;
 using Redbox.Core;
@@ -25,7 +30,9 @@ public class KioskServicesProxy
 	// kiosk profile (rb-reprovision) sets. Redbox's default was https://bl2.accessredbox.net/KioskServices/MessageService.rem.
 	internal const string DefaultKioskServicesUrl = "https://kioskservices.kiosk-backend.invalid/KioskServices/MessageService.rem";
 
+#if NETFRAMEWORK
 	private HttpChannel m_channel;
+#endif
 
 	public static KioskServicesProxy Instance => Singleton<KioskServicesProxy>.Instance;
 
@@ -146,7 +153,7 @@ public class KioskServicesProxy
 			LogHelper.Instance.Log("KioskServicesProxy call execution time: {0}", executionTimer.Elapsed);
 			if (!string.IsNullOrEmpty(text3))
 			{
-				CommunicationActivity?.BeginInvoke(true, EventArgs.Empty, null, null);
+				RaiseCommunicationActivity(true);
 				return text3.ToDictionary();
 			}
 			return new Dictionary<string, object> { ["Success"] = false };
@@ -161,7 +168,7 @@ public class KioskServicesProxy
 			};
 			if (ex is WebException { Response: null })
 			{
-				CommunicationActivity?.BeginInvoke(false, EventArgs.Empty, null, null);
+				RaiseCommunicationActivity(false);
 			}
 			return result;
 		}
@@ -199,8 +206,26 @@ public class KioskServicesProxy
 		return dictionary;
 	}
 
+	// Raised asynchronously, as the original BeginInvoke did (delegate BeginInvoke does not exist on .NET).
+	private void RaiseCommunicationActivity(bool success)
+	{
+#if NETFRAMEWORK
+		CommunicationActivity?.BeginInvoke(success, EventArgs.Empty, null, null);
+#else
+		EventHandler handler = CommunicationActivity;
+		if (handler != null)
+		{
+			Task.Run(() => handler(success, EventArgs.Empty));
+		}
+#endif
+	}
+
 	internal void RegisterChannel()
 	{
+#if !NETFRAMEWORK
+		// .NET has no .NET Remoting channels; Remoting-mode calls go through RemotingHttpClient in PerformRemoteMessage.
+	}
+#else
 		if (m_channel != null)
 		{
 			UnregisterChannel();
@@ -218,6 +243,7 @@ public class KioskServicesProxy
 			ChannelServices.RegisterChannel(m_channel, ensureSecurity: false);
 		}
 	}
+#endif
 
 	private KioskServicesProxy()
 	{
@@ -245,6 +271,11 @@ public class KioskServicesProxy
 			using StreamReader streamReader = new StreamReader(webResponse.GetResponseStream());
 			return HttpUtility.UrlDecode(streamReader.ReadToEnd());
 		}
+#if !NETFRAMEWORK
+		// The same binary .NET Remoting call over HTTP that HttpChannel made, without .NET Remoting (Redbox.Remoting.Nrbf).
+		LogHelper.Instance.Log("...Making remote call using .NET Remoting over HTTP (binary formatter).");
+		return (string)RemotingHttpClient.Invoke(Url, typeof(IMessageService).AssemblyQualifiedName, "Process", new object[] { jsonRequest }, TimeSpan.FromMilliseconds(Timeout));
+#else
 		IMessageService messageService = (IMessageService)Activator.GetObject(typeof(IMessageService), Url);
 		if (messageService == null)
 		{
@@ -253,14 +284,19 @@ public class KioskServicesProxy
 		}
 		LogHelper.Instance.Log("...Making remote call using .NET Remoting channel.");
 		return messageService.Process(jsonRequest);
+#endif
 	}
 
 	private void UnregisterChannel()
 	{
+#if !NETFRAMEWORK
+	}
+#else
 		if (m_channel != null || Protocol == KioskServicesProtocol.Remoting)
 		{
 			ChannelServices.UnregisterChannel(m_channel);
 			m_channel = null;
 		}
 	}
+#endif
 }

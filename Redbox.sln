@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -276,6 +276,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistadb-to-sqlite", "src\Tools\vistadb-to-sqlite\vistadb-to-sqlite.csproj", "{D8817D8E-7107-4881-9116-E5ADC76AA7F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Data.SqliteParity", "tests\Redbox.Data.SqliteParity\Redbox.Data.SqliteParity.csproj", "{459B64EB-8EBA-4B70-91DB-4FD0568320B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Remoting.Nrbf", "src\Common\Redbox.Remoting.Nrbf\Redbox.Remoting.Nrbf.csproj", "{16B5C089-4554-4875-B028-47BFA30175BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KioskServicesRemoting.Check", "tests\KioskServicesRemoting.Check\KioskServicesRemoting.Check.csproj", "{BB524BF6-4052-4C14-92BA-11224E9C3E9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1775,6 +1779,30 @@ Global
 		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x64.Build.0 = Release|Any CPU
 		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x86.ActiveCfg = Release|Any CPU
 		{459B64EB-8EBA-4B70-91DB-4FD0568320B1}.Release|x86.Build.0 = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|x64.Build.0 = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|x64.Build.0 = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{16B5C089-4554-4875-B028-47BFA30175BF}.Release|x86.Build.0 = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|x64.Build.0 = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x64.ActiveCfg = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x64.Build.0 = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1915,5 +1943,7 @@ Global
 		{05299CDB-5DE9-432B-B6B9-34071D3512D5} = {BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}
 		{D8817D8E-7107-4881-9116-E5ADC76AA7F5} = {DCB6FCB8-FF92-AC57-0842-1F72A354D6B1}
 		{459B64EB-8EBA-4B70-91DB-4FD0568320B1} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{16B5C089-4554-4875-B028-47BFA30175BF} = {BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}
+		{BB524BF6-4052-4C14-92BA-11224E9C3E9F} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
