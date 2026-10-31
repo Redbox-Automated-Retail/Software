@@ -87,8 +87,10 @@ foreach ($p in $comp.projects) {
     New-Item -ItemType Directory -Force $dest | Out-Null
     Write-Host "== $($p.path) -> $(if ($p.to) { $p.to } else { '.' })"
     if ($p.publish) {
-        # As shipped: framework-dependent, win7-x86, with the apphost .exe.
-        & $msbuild $proj -t:Publish @common "-p:RuntimeIdentifier=win7-x86" "-p:SelfContained=false" "-p:PublishDir=$dest\"
+        # As shipped: framework-dependent, win7-x86, with the apphost .exe. No web.config: the kiosk keeps its own
+        # (the SDK's would drop hostingModel="InProcess").
+        & $msbuild $proj -t:Publish @common "-p:RuntimeIdentifier=win7-x86" "-p:SelfContained=false" "-p:PublishDir=$dest\" `
+            "-p:IsTransformWebConfigDisabled=true"
     } else {
         $extra = if ($p.merged) { @("-p:ILRepack=true") } else { @() }
         & $msbuild $proj @common @extra "-p:OutDir=$dest\"
