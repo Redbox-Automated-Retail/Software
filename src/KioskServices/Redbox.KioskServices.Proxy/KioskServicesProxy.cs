@@ -21,7 +21,9 @@ public class KioskServicesProxy
 {
 	internal const int DefaultKioskServicesTimeout = 30000;
 
-	internal const string DefaultKioskServicesUrl = "https://bl2.accessredbox.net/KioskServices/MessageService.rem";
+	// Placeholder (RFC 2606 .invalid, never resolves): the real URL comes from the registry value, which the backend's
+	// kiosk profile (rb-reprovision) sets. Redbox's default was https://bl2.accessredbox.net/KioskServices/MessageService.rem.
+	internal const string DefaultKioskServicesUrl = "https://kioskservices.kiosk-backend.invalid/KioskServices/MessageService.rem";
 
 	private HttpChannel m_channel;
 
@@ -57,7 +59,7 @@ public class KioskServicesProxy
 	{
 		get
 		{
-			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Store Services", "KioskServicesURL", "https://bl2.accessredbox.net/KioskServices/MessageService.rem");
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Store Services", "KioskServicesURL", DefaultKioskServicesUrl);
 		}
 		set
 		{

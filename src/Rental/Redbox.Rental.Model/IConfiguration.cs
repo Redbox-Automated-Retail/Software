@@ -81,6 +81,8 @@ public interface IConfiguration
 
 	string KioskDataServicesUrl { get; }
 
+	string PublicWebsiteUrl { get; }
+
 	string KioskDataServicesKey { get; }
 
 	bool SendJsonKioskAnalyticsToKioskDataService { get; }

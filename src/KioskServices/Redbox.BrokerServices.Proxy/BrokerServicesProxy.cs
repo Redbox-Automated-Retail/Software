@@ -18,7 +18,9 @@ public class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 {
 	private const int DefaultBrokerServicesTimeout = 30000;
 
-	private const string DefaultBrokerServicesUrl = "gtcp://blt.accessredbox.net:7890/RegistrationBroker/Default.rem";
+	// Placeholder (RFC 2606 .invalid, never resolves): the real URL comes from the registry value, which the backend's
+	// kiosk profile (rb-reprovision) sets. Redbox's default was gtcp://blt.accessredbox.net:7890/RegistrationBroker/Default.rem.
+	private const string DefaultBrokerServicesUrl = "gtcp://broker.kiosk-backend.invalid:7890/RegistrationBroker/Default.rem";
 
 	private int? m_kioskId;
 
@@ -57,7 +59,7 @@ public class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 	{
 		get
 		{
-			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Reservation Services", "BrokerServicesURL", "gtcp://blt.accessredbox.net:7890/RegistrationBroker/Default.rem");
+			return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Reservation Services", "BrokerServicesURL", DefaultBrokerServicesUrl);
 		}
 		set
 		{
