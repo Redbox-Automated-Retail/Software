@@ -13,9 +13,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Newtonsoft.Json.Converters;
 using Redbox.NetCore.Logging.Extensions;
 using Redbox.NetCore.Middleware.Extensions;
@@ -61,13 +62,16 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
-		MvcJsonMvcBuilderExtensions.AddJsonOptions(services.AddMvc(delegate(MvcOptions options)
+		// MVC 2.2 used Newtonsoft.Json and conventional routing (UseMvc); both are kept so the API's JSON and routes
+		// stay as they were.
+		services.AddMvc(delegate(MvcOptions options)
 		{
+			options.EnableEndpointRouting = false;
 			options.AddLoggingFilter();
-		}), (Action<MvcJsonOptions>)delegate(MvcJsonOptions options)
+		}).AddNewtonsoftJson(delegate(MvcNewtonsoftJsonOptions options)
 		{
 			options.SerializerSettings.Converters.Add(new StringEnumConverter());
-		}).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+		});
 		services.AddRouting(delegate(RouteOptions options)
 		{
 			options.LowercaseUrls = true;
@@ -141,7 +145,7 @@ public class Startup
 		RegisterICommand(services);
 	}
 
-	public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger, IOptionsSnapshot<AppSettings> settings, IOptionsSnapshotKioskConfiguration kioskConfiguration)
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger, IOptionsSnapshot<AppSettings> settings, IOptionsSnapshotKioskConfiguration kioskConfiguration)
 	{
 		if (env.IsDevelopment())
 		{
@@ -178,7 +182,7 @@ public class Startup
 		services.AddScoped(typeof(List<ICommandIoTController>), typeof(List<ICommandIoTController>));
 	}
 
-	private void ScheduleServices(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger, IOptionsSnapshot<AppSettings> settings)
+	private void ScheduleServices(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger, IOptionsSnapshot<AppSettings> settings)
 	{
 		app.ApplicationServices.UseScheduler(delegate(IScheduler scheduler)
 		{

@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
 {
 	public static void AddKioskMetrics(this IServiceCollection services, IMetricsRoot metricsRoot)
 	{
-		services.AddMetrics();
+		AppMetricsServiceCollectionExtensions.AddMetrics(services);
 		services.AddSingleton((IMetrics)metricsRoot);
 		services.AddSingleton<IApplicationMetrics, ApplicationMetrics>();
 		services.AddTransient<ClientMetricsHandler>();

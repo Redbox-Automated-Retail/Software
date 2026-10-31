@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Redbox.NetCore.Logging.Extensions;
@@ -11,6 +12,8 @@ namespace UpdateClientService.API.Services.Files;
 
 public class FileService : IFileService
 {
+	private static readonly HttpClient S3UploadClient = new HttpClient();
+
 	private readonly ILogger<FileService> _logger;
 
 	public FileService(ILogger<FileService> logger)
@@ -62,22 +65,13 @@ public class FileService : IFileService
 	public async Task UploadFileToS3(string presignedS3, string filePath)
 	{
 		_logger.LogInfoWithSource("Uploading file: $" + filePath + " to given s3 presigned Url", "UploadFileToS3", "/sln/src/UpdateClientService.API/Services/Files/FileService.cs");
-		using (new HttpWebResponse())
+		// A plain PUT of the file with its Content-Length, as the presigned URL expects (and as HttpWebRequest sent it).
+		using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+		using (StreamContent content = new StreamContent(fileStream))
+		using (HttpResponseMessage response = await S3UploadClient.PutAsync(presignedS3, content))
 		{
-			HttpWebRequest httpRequest = WebRequest.Create(presignedS3) as HttpWebRequest;
-			httpRequest.Method = "PUT";
-			using (Stream dataStream = httpRequest.GetRequestStream())
-			{
-				byte[] buffer = new byte[8000];
-				using FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-				int count;
-				while ((count = await fileStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-				{
-					await dataStream.WriteAsync(buffer, 0, count);
-				}
-			}
-			httpRequest.GetResponse();
-			_logger.LogInfoWithSource("Successfully uploaded " + filePath + " to the s3", "UploadFileToS3", "/sln/src/UpdateClientService.API/Services/Files/FileService.cs");
+			response.EnsureSuccessStatusCode();
 		}
+		_logger.LogInfoWithSource("Successfully uploaded " + filePath + " to the s3", "UploadFileToS3", "/sln/src/UpdateClientService.API/Services/Files/FileService.cs");
 	}
 }
