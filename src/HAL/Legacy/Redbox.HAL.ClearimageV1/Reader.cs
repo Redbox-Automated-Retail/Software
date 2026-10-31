@@ -13,10 +13,6 @@ public class Reader : IClearImageReader, IBarcodeReader
 
 	public IScanResult Scan(string file, int expectedCodes)
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Expected O, but got Unknown
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Expected O, but got Unknown
 		ClearImageScanResult val = new ClearImageScanResult();
 		if (!IsLicensed)
 		{

@@ -67,8 +67,6 @@ public sealed class CameraConfiguration : XmlConfiguration
 
 	protected override void LoadProperties(XmlDocument document, ErrorList errors)
 	{
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Invalid comparison between Unknown and I4
 		Mode = GetNodeValue<CameraMode>((XmlNode)document.DocumentElement, "Camera/Mode", CameraMode.Normal);
 		int nodeValue = GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Width", 640);
 		int nodeValue2 = GetNodeValue<int>((XmlNode)document.DocumentElement, "Camera/VideoFormat/Height", 480);

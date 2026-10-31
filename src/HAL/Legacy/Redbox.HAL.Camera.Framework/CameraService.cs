@@ -13,8 +13,6 @@ public sealed class CameraService : IDisposable
 	{
 		get
 		{
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0018: Invalid comparison between I4 and Unknown
 			if (Plugin.SupportsReset)
 			{
 				return 3 == (int)RuntimeService.Instance.GetPlatform();
@@ -121,10 +119,6 @@ public sealed class CameraService : IDisposable
 
 	public bool RestartCamera(bool cycleDriver)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Invalid comparison between I4 and Unknown
 		if (!Plugin.SupportsReset)
 		{
 			return false;

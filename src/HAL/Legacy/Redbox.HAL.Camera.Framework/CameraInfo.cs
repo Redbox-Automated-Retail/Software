@@ -15,14 +15,11 @@ public sealed class CameraInfo
 		[CompilerGenerated]
 		get
 		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			return _003CStatus_003Ek__BackingField;
 		}
 		[CompilerGenerated]
 		private set
 		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			_003CStatus_003Ek__BackingField = value;
 		}
 	}
@@ -55,14 +52,6 @@ public sealed class CameraInfo
 
 	public bool FindActiveCamera()
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		DeviceDescriptor val = CameraDescriptors.FromKnownCamera(KnownCameras.FourthGen);
 		DeviceStatus val2 = Helper.FindDeviceStatus(DeviceClassGuids.Image, val);
 		if ((int)val2 != 0)
@@ -96,7 +85,6 @@ public sealed class CameraInfo
 
 	public bool SetCameraState(DeviceState state)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		return SetCameraStateInner(state);
 	}
 
@@ -118,7 +106,6 @@ public sealed class CameraInfo
 
 	private bool SetCameraStateInner(DeviceState state)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		return Helper.ChangeByHWID(Descriptor, DeviceClassGuids.Image, state);
 	}
 }

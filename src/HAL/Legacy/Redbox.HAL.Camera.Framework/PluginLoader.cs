@@ -69,8 +69,6 @@ internal sealed class PluginLoader
 
 	private bool LocatePluginInner(CameraPluginDescriptor descriptor, out ICameraPlugin plugin)
 	{
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Expected O, but got Unknown
 		plugin = null;
 		string assemblyFile = Path.Combine(PluginsDirectory, descriptor.AssemblyName);
 		Assembly assembly = Assembly.LoadFrom(assemblyFile);

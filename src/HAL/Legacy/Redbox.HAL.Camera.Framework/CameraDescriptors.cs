@@ -21,14 +21,6 @@ public static class CameraDescriptors
 
 	static CameraDescriptors()
 	{
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Expected O, but got Unknown
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Expected O, but got Unknown
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Expected O, but got Unknown
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Expected O, but got Unknown
 		DriverInfos = new DriverDescriptor[5]
 		{
 			null,
