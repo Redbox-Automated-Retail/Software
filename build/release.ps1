@@ -34,6 +34,9 @@ param(
     [string] $Configuration = "Release",
     [string] $RestoreSources,          # NuGet sources instead of nuget.org (e.g. a local folder feed); ";"-separated
     [string] $Map = (Join-Path $PSScriptRoot "components.json"),
+    # Extra MSBuild properties, Name=Value. kop-v2-engine needs RedboxEngine181Refs=<folder> (the engine 1.81.0.27
+    # assemblies that Redbox.KioskServices.* build against; src/KioskServices/Engine181.targets).
+    [string[]] $Property = @(),
     [switch] $AllowDirty
 )
 $ErrorActionPreference = "Stop"
@@ -81,6 +84,7 @@ $common = @("-nologo", "-v:minimal", "-restore", "-p:Configuration=$Configuratio
             "-p:RedboxReleaseVersion=$Version", "-p:RedboxReleaseStamp=$(@($comp.stamp) -join '|')",
             "-p:RedboxReleaseCommit=$($commit.Substring(0, 12))")
 if ($RestoreSources) { $common += "-p:RestoreSources=$($RestoreSources.Replace(';', '%3B'))" }
+foreach ($prop in $Property) { $common += "-p:$prop" }
 foreach ($p in $comp.projects) {
     $proj = Join-Path $root $p.path
     $dest = if ($p.to) { Join-Path $stage $p.to } else { $stage }
