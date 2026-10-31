@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Redbox.NetCore.Middleware.Abstractions;
 using Redbox.NetCore.Middleware.Extensions;
@@ -16,13 +17,13 @@ public class ExceptionMiddleware : IMiddleware
 {
 	private Stream _responseStream;
 
-	private readonly IHostingEnvironment _env;
+	private readonly IWebHostEnvironment _env;
 
 	private readonly ILogger<ExceptionMiddleware> _logger;
 
 	private readonly IGrafanaMetrics _metrics;
 
-	public ExceptionMiddleware(IHostingEnvironment env, ILogger<ExceptionMiddleware> logger, IGrafanaMetrics metrics)
+	public ExceptionMiddleware(IWebHostEnvironment env, ILogger<ExceptionMiddleware> logger, IGrafanaMetrics metrics)
 	{
 		_env = env;
 		_logger = logger;

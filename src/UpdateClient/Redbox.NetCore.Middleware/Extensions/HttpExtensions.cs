@@ -232,7 +232,7 @@ public static class HttpExtensions
 				stream.Seek(0L, SeekOrigin.Begin);
 			}
 		}
-		catch (Exception ex) when (ex is BadHttpRequestException || ex is ObjectDisposedException)
+		catch (Exception ex) when (ex is Microsoft.AspNetCore.Http.BadHttpRequestException || ex is ObjectDisposedException)
 		{
 			result = "";
 		}

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -13,11 +14,14 @@ public static class SerilogExtensions
 {
 	public static IWebHostBuilder UseSerilogLogging(this IWebHostBuilder builder)
 	{
-		SerilogWebHostBuilderExtensions.UseSerilog(builder, (Action<WebHostBuilderContext, LoggerConfiguration>)delegate(WebHostBuilderContext ctx, LoggerConfiguration logger)
+		builder.ConfigureServices(delegate(WebHostBuilderContext ctx, IServiceCollection services)
 		{
-			ctx.Configuration.CheckForMinimumRequiredSerilogConfiguration();
-			logger.ReadFrom.Configuration(ctx.Configuration);
-		}, false, false);
+			services.AddSerilog(delegate(LoggerConfiguration logger)
+			{
+				ctx.Configuration.CheckForMinimumRequiredSerilogConfiguration();
+				logger.ReadFrom.Configuration(ctx.Configuration);
+			}, preserveStaticLogger: false, writeToProviders: false);
+		});
 		return builder;
 	}
 

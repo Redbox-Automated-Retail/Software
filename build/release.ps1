@@ -91,10 +91,12 @@ foreach ($p in $comp.projects) {
     New-Item -ItemType Directory -Force $dest | Out-Null
     Write-Host "== $($p.path) -> $(if ($p.to) { $p.to } else { '.' })"
     if ($p.publish) {
-        # As shipped: framework-dependent, win7-x86, with the apphost .exe. No web.config: the kiosk keeps its own
-        # (the SDK's would drop hostingModel="InProcess").
-        & $msbuild $proj -t:Publish @common "-p:RuntimeIdentifier=win7-x86" "-p:SelfContained=false" "-p:PublishDir=$dest\" `
-            "-p:IsTransformWebConfigDisabled=true"
+        # .NET Core 2.x projects as shipped: framework-dependent, win7-x86, with the apphost .exe. Projects on
+        # .NET 5+ use their own RuntimeIdentifier/SelfContained (self-contained win-x86 on the modernize branch).
+        # No web.config: the kiosk keeps its own (the SDK's would drop hostingModel="InProcess").
+        $runtime = @()
+        if ((Get-Content $proj -Raw) -match '<TargetFramework>netcoreapp') { $runtime = "-p:RuntimeIdentifier=win7-x86", "-p:SelfContained=false" }
+        & $msbuild $proj -t:Publish @common @runtime "-p:PublishDir=$dest\" "-p:IsTransformWebConfigDisabled=true"
     } else {
         $extra = @()   # not "$extra = if ...": PowerShell unwraps a one-item array, and @extra would splat its characters
         if ($p.merged) { $extra += "-p:ILRepack=true" }
