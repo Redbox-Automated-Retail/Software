@@ -479,7 +479,7 @@ public class TitleProduct : KioskProduct, ITitleProduct, IKioskProduct
 				.Replace("#", "number")
 				.Replace("@", "at")
 				.Replace("=", "equals");
-			return "https://www.redbox.com/movies/" + text;
+			return (ServiceLocator.Instance.GetService<IConfiguration>()?.PublicWebsiteUrl ?? "https://www.kiosk-backend.invalid") + "/movies/" + text;
 		}
 	}
 

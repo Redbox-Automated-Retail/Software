@@ -71,12 +71,12 @@ internal sealed class Settings : ApplicationSettingsBase
 
 	[ApplicationScopedSetting]
 	[DebuggerNonUserCode]
-	[DefaultSettingValue("http://bundle-dev-02:8002")]
+	[DefaultSettingValue("http://updatesvc.kiosk-backend.invalid:8002")]
 	public string WcfUpdateServiceUrl => (string)this["WcfUpdateServiceUrl"];
 
 	[ApplicationScopedSetting]
 	[DebuggerNonUserCode]
-	[DefaultSettingValue("rcp://qa-updatesvc01:7002")]
+	[DefaultSettingValue("srcp://updatesvc.kiosk-backend.invalid:7002")]
 	public string UpdateServiceUrl => (string)this["UpdateServiceUrl"];
 
 	[ApplicationScopedSetting]

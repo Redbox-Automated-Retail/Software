@@ -272,6 +272,9 @@ public class Configuration : IConfiguration
 
 	public string KioskDataServicesUrl { get; private set; }
 
+	// Base of the customer-facing website the title QR codes point to (Redbox used https://www.redbox.com).
+	public string PublicWebsiteUrl { get; private set; }
+
 	public string KioskDataServicesKey { get; private set; }
 
 	public bool SendJsonKioskAnalyticsToKioskDataService { get; private set; }
@@ -427,6 +430,7 @@ public class Configuration : IConfiguration
 		StartViewDarkModeStartTime = ConfigGetValue(service, "system", "General", "StartViewDarkModeStartTime", "19:0:0");
 		StartViewDarkModeEndTime = ConfigGetValue(service, "system", "General", "StartViewDarkModeEndTime", "7:0:0");
 		KioskDataServicesUrl = ConfigGetValue<string>(service, "system", "General", "KioskDataServicesUrl", null);
+		PublicWebsiteUrl = ConfigGetValue(service, "system", "General", "PublicWebsiteUrl", "https://www.kiosk-backend.invalid").TrimEnd('/');
 		KioskDataServicesKey = ConfigGetValue<string>(service, "system", "General", "KioskDataServicesKey", null);
 		SendJsonKioskAnalyticsToKioskDataService = ConfigGetValue(service, "system", "General", "SendJsonKioskAnalyticsToKioskDataService", defaultValue: true);
 		ForcedAirExchangerConfigured = ConfigGetValue(service, "system", "General", "ForcedAirExchangerConfigured", defaultValue: true);

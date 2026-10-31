@@ -15,7 +15,7 @@ internal sealed class Settings : ApplicationSettingsBase
 
 	[ApplicationScopedSetting]
 	[DebuggerNonUserCode]
-	[DefaultSettingValue("rcp://devtools01:7002")]
+	[DefaultSettingValue("srcp://updatesvc.kiosk-backend.invalid:7002")]
 	public string UpdateServiceUrl => (string)this["UpdateServiceUrl"];
 
 	[ApplicationScopedSetting]

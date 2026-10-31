@@ -580,7 +580,7 @@ public class HealthServicesProxy : IHealthServices
 	{
 		if (!string.IsNullOrEmpty(Recipients))
 		{
-			MailMessage message2 = new MailMessage("deddie@redbox.com", Recipients, subject, message);
+			MailMessage message2 = new MailMessage("kiosk-alerts@kiosk-backend.invalid", Recipients, subject, message);
 			new SmtpClient(SmtpServer).Send(message2);
 		}
 		else
