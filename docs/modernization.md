@@ -293,6 +293,55 @@ as an intermediate state. The options for each blocker, with the recommended one
   `<redacted>`); they become parameters.
 - `installer-front-end`: 4.8 x86, and `UpdateServiceUrl` from configuration.
 
+## VistaDB → SQLite
+
+The .NET 10 builds use SQLite (`Microsoft.Data.Sqlite`) wherever the .NET Framework builds use VistaDB 3.5; the
+net48 builds keep VistaDB unchanged.
+
+| VistaDB file (kiosk) | Used by | SQLite file | Kind |
+|---|---|---|---|
+| `Kiosk Engine\bin\message.data` | engine message queue | `message.sqlite` | written by the component: converted once |
+| `Kiosk Engine\data\<store>.data` (`Local.data`, `cache.data`, ...) | engine data stores (Lua, `LocalData`) | `<store>.sqlite` | written: converted once |
+| `Kiosk Engine\data\profile.data` | Rental `ProfileData`, engine `DataCacheService` | `profile.sqlite` | delivered by the update store: converted again whenever it changes |
+| `halservice\bin\data\HALData.vdb3`, `HALCounters.vdb3` | HAL tables (`Redbox.HAL.DataStorage`) | `HALData.sqlite`, `HALCounters.sqlite` | written: converted once |
+
+`inventory.data` is a product lookup archive, not VistaDB, and is read as before. `session.data` is only deleted at
+start-up.
+
+**Format.** Same tables, columns and rows:
+- Text columns are `COLLATE NOCASE` when the VistaDB database was case-insensitive (all except `profile.data`).
+- Dates are text, `yyyy-MM-dd HH:mm:ss[.fffffff]`, so SQL comparisons on them still work.
+- Decimals are exact text; binary data is BLOB.
+- Primary keys are kept. An integer identity key becomes `INTEGER PRIMARY KEY AUTOINCREMENT` and continues from VistaDB's seed.
+- Other indexes are named `<table>_<index>`, because SQLite index names are per database.
+
+**Migration.** `src/Tools/vistadb-to-sqlite` (.NET Framework 4.8 x86, which is part of Windows 10/11; VistaDB only
+runs there) converts one file: `vistadb-to-sqlite <source> <destination.sqlite> [--overwrite]`. The .NET 10 components
+call it themselves through `Redbox.Data.Sqlite.LegacyDatabase` when they find a VistaDB file:
+- **Written files** are converted once. The VistaDB file is then renamed to `<name>.vistadb-backup`, and SQLite is the database from then on.
+- **`profile.data`** stays where the update store puts it. A stamp table in `profile.sqlite` records the source's name, size and time, so a new profile is converted again.
+- **Fresh installs** have no old files, and the SQLite files are created as needed.
+
+The engine ships the tool in a `vistadb-to-sqlite` folder (`build/VistaDbToSqlite.targets`); HAL will do the same
+when it moves to .NET 10. The `REDBOX_VISTADB_TO_SQLITE` environment variable can point elsewhere. A failed
+conversion throws instead of starting an empty database. A 4.8 build re-deployed after a .NET 10 build would not see
+the data written since (the VistaDB files are backups by then).
+
+**Verified.** `tests/Redbox.Data.SqliteParity` (`compare-sqlite-parity.ps1 -Samples <copies of kiosk files>`) runs
+the same operations through both builds and compares 119 results:
+- the engine data stores, including key order and case-insensitive keys;
+- the message queue;
+- every HAL table;
+- with the kiosk image's files: `Local`/`cache` contents, the queue, HAL inventory, counters and options, and Rental's
+  profile load (234 markets, 11,655 titles, 76,172 stores, 10,674 extracted images) and `DataCacheService`.
+
+Result: identical. Converting the image's 330 MB `profile.data` takes 17 s. Not yet run on a kiosk or in the Sandbox
+(the .NET 10 engine has not been run there yet).
+
+Kept from the decompiled code as it was: `KioskFunctionCheckTable`'s `UPDATE` has no commas between its `SET` items
+and fails on both databases. Not carried over: VistaDB `GetAll`/`GetKeys` looped forever on a row with an empty key or
+value; SQLite skips such rows.
+
 ## Endpoints and secrets
 
 Today's hard-coded or shipped defaults and what they become:
