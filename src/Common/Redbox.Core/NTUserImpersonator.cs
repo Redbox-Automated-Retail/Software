@@ -11,7 +11,16 @@ public class NTUserImpersonator : IDisposable
 
 	private const int LOGON32_PROVIDER_DEFAULT = 0;
 
+#if NETFRAMEWORK
 	private WindowsImpersonationContext impersonationContext;
+#else
+	// .NET (Core) has no WindowsImpersonationContext; the thread token is set and reverted directly, which is what
+	// WindowsIdentity.Impersonate() / Undo() did.
+	private bool impersonating;
+
+	[DllImport("advapi32.dll", SetLastError = true)]
+	private static extern bool ImpersonateLoggedOnUser(IntPtr hToken);
+#endif
 
 	public NTUserImpersonator(string userName, string domainName, string password)
 	{
@@ -48,9 +57,17 @@ public class NTUserImpersonator : IDisposable
 				{
 					if (DuplicateToken(phToken, 2, ref hNewToken) != 0)
 					{
+#if NETFRAMEWORK
 						windowsIdentity = new WindowsIdentity(hNewToken);
 						impersonationContext = windowsIdentity.Impersonate();
 						return;
+#else
+						if (ImpersonateLoggedOnUser(hNewToken))
+						{
+							impersonating = true;
+							return;
+						}
+#endif
 					}
 					throw new Win32Exception(Marshal.GetLastWin32Error());
 				}
@@ -73,9 +90,17 @@ public class NTUserImpersonator : IDisposable
 
 	private void UndoImpersonation()
 	{
+#if NETFRAMEWORK
 		if (impersonationContext != null)
 		{
 			impersonationContext.Undo();
 		}
+#else
+		if (impersonating)
+		{
+			RevertToSelf();
+			impersonating = false;
+		}
+#endif
 	}
 }

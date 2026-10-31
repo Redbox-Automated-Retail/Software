@@ -2,7 +2,8 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Core</AssemblyName>
     <RootNamespace>Redbox.Core</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <!-- net48 for the Update Manager and other .NET Framework hosts, net10.0-windows for the .NET 10 engine. -->
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -10,7 +11,7 @@
   <ItemGroup>
     <EmbeddedResource Update="ErrorForm.resx" LogicalName="Redbox.Core.ErrorForm.resources" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
@@ -18,5 +19,15 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Compile Remove="Compat\**" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- ErrorForm.resx has images; .NET (Core) embeds them pre-serialized. -->
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- System.Web.Script.Serialization from Microsoft's reference source (Compat\ScriptSerialization\README.md). -->
+    <!-- Installs assemblies with System.Configuration.Install, which .NET 10 does not have; only the 4.8 Update Manager uses it. -->
+    <Compile Remove="AssemblyInstallerHelper.cs" />
   </ItemGroup>
 </Project>

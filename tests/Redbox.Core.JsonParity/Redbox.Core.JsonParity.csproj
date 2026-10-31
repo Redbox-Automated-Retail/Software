@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Prints Redbox.Core's JSON (ToJson / ToObject / ToDictionary) for a fixed set of
+    cases. Built for net48 (the real System.Web.Extensions JavaScriptSerializer) and net10.0-windows (the
+    referencesource copy in Redbox.Core); compare-json-parity.ps1 checks that both print the same.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <PlatformTarget>x86</PlatformTarget>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Common\Redbox.Core\Redbox.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+</Project>
