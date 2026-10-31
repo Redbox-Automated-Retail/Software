@@ -359,7 +359,7 @@ only in Windows Sandbox.
 1. **Target .NET 10 instead of .NET 8** (8 is out of support on 2026-11-10). *Decided: .NET 10.*
 2. **Engine:** *Decided: .NET 10*, with the broker and KioskServices reimplemented (see §7). VistaDB:
    *decided: SQLite*.
-3. **Unset endpoint defaults:** empty values (recommended), or reserved `*.invalid` placeholder hosts.
+3. **Unset endpoint defaults:** *decided: reserved placeholder hosts* (`*.kiosk-backend.invalid`).
 4. **Shell on Windows Pro:** add the `Winlogon\Shell` fallback (recommended), or keep requiring an edition with
    Shell Launcher.
 5. **Self-contained x86 deployment** for the .NET 10 services (recommended), or require a .NET 10 x86 runtime
@@ -375,6 +375,26 @@ only in Windows Sandbox.
 | Engine, KioskServices, Rental, KioskShell: net472 → net48 | done, builds | `Engine, KioskServices, Rental, KioskShell: target .NET Framework 4.8` |
 | HAL: net35/net40 → net48 (+ `App.config`s), TLS default | done; runs in Windows Sandbox without .NET 3.5 | `HAL: target .NET Framework 4.8 ...`, `HAL IPC: use the OS TLS defaults ...` |
 | No `wmic`: Shell Launcher (`kernel.replaceshellwith`) and the engine's touch-screen toggle via `System.Management` | done, builds; WMI calls not run (this PC has no Shell Launcher) | `Windows 11: call WMI directly instead of wmic.exe` |
+
+| Update Client → .NET 10, self-contained win-x86 | done; Sandbox: IoT certificate, MQTT/TLS connect, command handled | `Update Client: .NET 10 ...` |
+| Kiosk Client → .NET 10, self-contained win-x86 | done; Sandbox: proxy/data/ad calls against the backend | `Kiosk Client: .NET 10 ...` |
+| Device Service → .NET 10, self-contained win-x86 (+ simulator, smoke test, `tests/DeviceService.LegacyClientCheck`) | done; the 4.8 engine client library passes all checks against it | `Device Service: .NET 10 ...` |
+| Endpoint defaults → `*.kiosk-backend.invalid` placeholders; `General/PublicWebsiteUrl` for the title QR codes | done, builds | `Endpoints: placeholder defaults ...` |
+| KioskServices REST body length (non-ASCII) | done, builds against the 1.81 references; the Backend case harness targets the 1.80 API and cannot load this build | `KioskServices REST: ...` |
+| Update Manager + shared libraries → net48; TLS OS defaults | done; Backend update-manager harness passes | `Update Manager and shared libraries ...`, `TLS: OS defaults ...` |
+
+Notes from the .NET 10 services:
+
+- **`System.Version` over JSON.** On .NET 5+ `Version` has a `TypeConverter`, so Newtonsoft reads and writes it as a
+  string. The engine's SignalR 1.1 client (and 2.2) use the object form. Without a converter every Device Service
+  hub command from the engine was silently dropped. `DeviceService.ComponentModel.LegacyVersionJsonConverter`
+  restores the 2.2 form. Any other .NET 10 API that carries `Version` needs the same converter (none found in the
+  Kiosk Client or Update Client).
+- **Development environment.** With `ASPNETCORE_ENVIRONMENT=Development` the generic host validates DI scopes, and
+  the Kiosk Client's existing registrations (a singleton that uses a scoped service) fail at start-up. 2.2 did the
+  same in Development; kiosks run as Production.
+- **Releases.** `build/release.ps1` publishes .NET 5+ projects self-contained (the project's own
+  `RuntimeIdentifier`), so a release zip is ~110 MB per service, but kiosks need no .NET runtime installed.
 
 HAL in Windows Sandbox (Backend `tests/clients/sandbox`, emulator, backend under WSLC, 2026-10-31): the 4.8 build
 (this branch's `halsvc-win32`, `HAL.PackageInstaller`, `halmgmtc` over the image's HAL install) started as
