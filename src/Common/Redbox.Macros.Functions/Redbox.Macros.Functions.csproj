@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Macros.Functions</AssemblyName>
     <RootNamespace>Redbox.Macros.Functions</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

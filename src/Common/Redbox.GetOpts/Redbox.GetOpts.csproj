@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.GetOpts</AssemblyName>
     <RootNamespace>Redbox.GetOpts</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

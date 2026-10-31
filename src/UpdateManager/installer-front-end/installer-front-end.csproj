@@ -3,7 +3,7 @@
     <AssemblyName>installer-front-end</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.StoreInstallerFrontEnd</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.UpdateService.Model</AssemblyName>
     <RootNamespace>Redbox.UpdateService.Model</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

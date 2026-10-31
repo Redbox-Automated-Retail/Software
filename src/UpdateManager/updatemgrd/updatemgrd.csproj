@@ -3,7 +3,7 @@
     <AssemblyName>updatemgrd</AssemblyName>
     <RootNamespace>Redbox.UpdateManager</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

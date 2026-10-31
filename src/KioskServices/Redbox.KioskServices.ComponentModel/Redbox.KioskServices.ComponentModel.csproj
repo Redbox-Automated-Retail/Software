@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.KioskServices.ComponentModel</AssemblyName>
     <RootNamespace>Redbox.KioskServices.ComponentModel</RootNamespace>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

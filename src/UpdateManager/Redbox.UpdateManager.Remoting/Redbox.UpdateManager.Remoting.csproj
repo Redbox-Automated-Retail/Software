@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.UpdateManager.Remoting</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.Remoting</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
