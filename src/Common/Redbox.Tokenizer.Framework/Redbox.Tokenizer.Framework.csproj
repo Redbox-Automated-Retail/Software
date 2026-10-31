@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Tokenizer.Framework</AssemblyName>
     <RootNamespace>Redbox.Tokenizer.Framework</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

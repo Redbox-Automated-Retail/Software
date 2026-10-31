@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.REDS.Framework</AssemblyName>
     <RootNamespace>Redbox.REDS.Framework</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

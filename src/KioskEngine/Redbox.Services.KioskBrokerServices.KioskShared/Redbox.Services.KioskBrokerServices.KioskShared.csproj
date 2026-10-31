@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Services.KioskBrokerServices.KioskShared</AssemblyName>
     <RootNamespace>Redbox.Services.KioskBrokerServices.KioskShared</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

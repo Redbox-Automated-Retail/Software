@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Compression</AssemblyName>
     <RootNamespace>Redbox.Compression</RootNamespace>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
