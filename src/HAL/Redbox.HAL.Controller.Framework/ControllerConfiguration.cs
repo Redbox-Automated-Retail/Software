@@ -8,6 +8,7 @@ using Redbox.HAL.Component.Model.Attributes;
 using Redbox.HAL.Component.Model.Extensions;
 using Redbox.HAL.Configuration;
 using Redbox.HAL.Core;
+using Range = Redbox.HAL.Component.Model.Range;
 
 namespace Redbox.HAL.Controller.Framework;
 
@@ -1049,6 +1050,13 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 			return;
 		}
 		Manager.Initialize(xmlNode8);
+		if (Manager.DeckCount == 0)
+		{
+			// Added on the modernize branch: an empty Decks node used to end in an ArgumentOutOfRangeException from Manager.First.
+			LogHelper.Instance.Log("The decks node in the configuration file has no decks.");
+			errors.Add(Error.NewError("P006", "No configured decks.", "The decks node in the configuration file has no decks."));
+			return;
+		}
 		int registrySlotCount = RegistrySlotCount;
 		IDeck first = Manager.First;
 		if (registrySlotCount != first.NumberOfSlots)

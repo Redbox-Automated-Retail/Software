@@ -73,9 +73,17 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			return;
 		}
+		int errorCount = errors.ErrorCount;
 		foreach (string key in Configurations.Keys)
 		{
 			Configurations[key].LoadProperties(xmlDocument, errors);
+		}
+		if (errors.ErrorCount > errorCount)
+		{
+			// Added on the modernize branch: the services that observe the configuration expect a complete one (an empty
+			// Decks node crashed the inventory service here). The HAL service stops on these errors anyway.
+			LogHelper.Instance.Log("[Configuration Service] The configuration has errors; it is not broadcast.");
+			return;
 		}
 		LogHelper.Instance.Log("[Configuration Service] Broadcast configuration load.");
 		foreach (string key2 in Configurations.Keys)

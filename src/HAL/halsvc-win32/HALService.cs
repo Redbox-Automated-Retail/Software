@@ -162,12 +162,36 @@ public class HALService : ServiceBase, ILogger
 
 	internal void StopService()
 	{
-		ServiceLocator.Instance.GetService<IExecutionService>().Shutdown();
-		ServiceLocator.Instance.GetService<IControllerService>().Shutdown();
-		ServiceLocator.Instance.GetService<IScannerDeviceService>().Shutdown();
+		// Added on the modernize branch: each part is stopped even when another one fails. After start-up errors (the
+		// service stops itself) some were never initialized, and the first exception used to leave the service running.
+		ShutdownPart("execution engine", delegate
+		{
+			ServiceLocator.Instance.GetService<IExecutionService>().Shutdown();
+		});
+		ShutdownPart("controller", delegate
+		{
+			ServiceLocator.Instance.GetService<IControllerService>().Shutdown();
+		});
+		ShutdownPart("scanner", delegate
+		{
+			ServiceLocator.Instance.GetService<IScannerDeviceService>().Shutdown();
+		});
 		Log("Stop Hardware Abstraction Layer (HAL) Service.", LogEntryType.Info);
 		WriteEventLogEntry("Stop Hardware Abstraction Layer (HAL) Service.", EventLogEntryType.Information);
-		Proxy.Dispose();
+		// Null when start-up failed before the listener was created.
+		Proxy?.Dispose();
+	}
+
+	private void ShutdownPart(string name, Action shutdown)
+	{
+		try
+		{
+			shutdown();
+		}
+		catch (Exception e)
+		{
+			Log($"Unable to shut down the {name}.", e);
+		}
 	}
 
 	internal void StartService()
