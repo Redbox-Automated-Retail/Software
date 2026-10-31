@@ -16,7 +16,11 @@ internal class DataStoreProvider : IDataStoreService
 		{
 			return new ProductLookupDataStoreProvider();
 		}
+#if NETFRAMEWORK
 		return new VistaDbDataStoreProvider();
+#else
+		return new SqliteDataStoreProvider();
+#endif
 	}
 
 	public void RegisterDataStoreProvider(string dataStore, string provider)

@@ -17,6 +17,8 @@
     <SelfContained>true</SelfContained>
     <!-- Redbox.ControlPanel.UI and Redbox.Rental.UI are WinExe projects that the engine loads as libraries. -->
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+    <!-- The data stores are SQLite on .NET 10; existing VistaDB files are converted by this tool (build\VistaDbToSqlite.targets). -->
+    <ShipVistaDbToSqlite>true</ShipVistaDbToSqlite>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="HostForm.resx" LogicalName="Redbox.KioskEngine.Bootstrap.HostForm.resources" />
@@ -64,4 +66,5 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
+  <Import Project="..\..\..\build\VistaDbToSqlite.targets" />
 </Project>
