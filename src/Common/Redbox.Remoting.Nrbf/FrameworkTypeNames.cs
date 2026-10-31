@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+namespace Redbox.Remoting.Nrbf;
 
 /// <summary>
 /// Type and assembly names as .NET Framework's BinaryFormatter writes them. The broker deserializes by name, so types

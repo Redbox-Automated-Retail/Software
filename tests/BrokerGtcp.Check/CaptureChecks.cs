@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Redbox.BrokerServices.Proxy.Gtcp;
-using Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+using Redbox.Remoting.Nrbf;
 using Redbox.Services.KioskBrokerServices.KioskShared.DomainObjects;
 using Redbox.Services.KioskBrokerServices.KioskShared.Enums;
 using Redbox.Services.KioskBrokerServices.KioskShared.ServiceInterfaces;

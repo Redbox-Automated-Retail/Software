@@ -9,7 +9,7 @@ using System.Reflection;
 // reproduces BinaryFormatter's output on purpose (the broker is a BinaryFormatter), so it needs the same metadata.
 #pragma warning disable SYSLIB0050
 
-namespace Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+namespace Redbox.Remoting.Nrbf;
 
 /// <summary>
 /// A class instance described member by member, for objects that have no .NET type here (the remoting ObjRef graph,

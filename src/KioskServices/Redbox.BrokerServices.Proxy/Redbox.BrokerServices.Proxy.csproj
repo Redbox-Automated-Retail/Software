@@ -25,4 +25,7 @@
     <!-- The GTCP client (Gtcp\) replaces GenuineChannels on .NET 10 only; see BrokerServicesProxy.Gtcp.cs. -->
     <Compile Remove="Gtcp\**" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <ProjectReference Include="..\..\Common\Redbox.Remoting.Nrbf\Redbox.Remoting.Nrbf.csproj" />
+  </ItemGroup>
 </Project>

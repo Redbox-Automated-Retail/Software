@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Written for the modernize branch (not decompiled). MS-NRBF (BinaryFormatter format) reader and writer for .NET
+    Remoting method calls and returns, for the .NET 10 clients that replace .NET Remoting: the reservation broker's GTCP
+    transport (Redbox.BrokerServices.Proxy) and KioskServices' HTTP channel (Redbox.KioskServices.Proxy).
+  -->
+  <PropertyGroup>
+    <AssemblyName>Redbox.Remoting.Nrbf</AssemblyName>
+    <RootNamespace>Redbox.Remoting.Nrbf</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+</Project>

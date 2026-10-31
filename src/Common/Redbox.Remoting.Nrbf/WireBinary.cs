@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
-namespace Redbox.BrokerServices.Proxy.Gtcp;
+namespace Redbox.Remoting.Nrbf;
 
 /// <summary>
 /// The two primitive encodings shared by every GTCP layer: little-endian integers and the length-prefixed UTF-8 string

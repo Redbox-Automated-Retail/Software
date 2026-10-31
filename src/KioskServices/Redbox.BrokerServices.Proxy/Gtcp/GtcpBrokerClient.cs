@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+using Redbox.Remoting.Nrbf;
 using Redbox.Services.KioskBrokerServices.KioskShared.ServiceInterfaces;
 
 namespace Redbox.BrokerServices.Proxy.Gtcp;

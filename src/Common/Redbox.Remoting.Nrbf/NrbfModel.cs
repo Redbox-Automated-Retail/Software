@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+namespace Redbox.Remoting.Nrbf;
 
 // MS-NRBF ([MS-NRBF] 2.1-2.7) enumerations and the object model the reader produces. Section numbers refer to the
 // MS-NRBF specification; gtcp-protocol.md section 5 shows the records the broker actually exchanges.

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
+using Redbox.Remoting.Nrbf;
+
 namespace Redbox.BrokerServices.Proxy.Gtcp;
 
 /// <summary>

@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+namespace Redbox.Remoting.Nrbf;
 
 /// <summary>
 /// Turns the reader's untyped graph into instances of known .NET types, driven by the declared target type (a method

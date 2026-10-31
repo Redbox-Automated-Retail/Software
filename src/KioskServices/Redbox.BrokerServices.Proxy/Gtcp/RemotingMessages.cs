@@ -1,5 +1,5 @@
 using System;
-using Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+using Redbox.Remoting.Nrbf;
 
 namespace Redbox.BrokerServices.Proxy.Gtcp;
 

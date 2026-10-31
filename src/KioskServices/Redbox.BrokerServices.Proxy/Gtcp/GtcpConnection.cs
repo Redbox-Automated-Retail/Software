@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Redbox.Remoting.Nrbf;
+
 namespace Redbox.BrokerServices.Proxy.Gtcp;
 
 /// <summary>

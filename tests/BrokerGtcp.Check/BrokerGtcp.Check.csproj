@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\KioskServices\Redbox.BrokerServices.Proxy\Redbox.BrokerServices.Proxy.csproj" />
+    <ProjectReference Include="..\..\src\Common\Redbox.Remoting.Nrbf\Redbox.Remoting.Nrbf.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Captures\*.bin" CopyToOutputDirectory="PreserveNewest" />

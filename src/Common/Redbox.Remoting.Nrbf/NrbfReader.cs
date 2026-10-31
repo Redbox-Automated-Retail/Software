@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace Redbox.BrokerServices.Proxy.Gtcp.Nrbf;
+namespace Redbox.Remoting.Nrbf;
 
 /// <summary>
 /// Reads an MS-NRBF stream as written by BinaryFormatter for .NET Remoting messages (gtcp-protocol.md section 5).
