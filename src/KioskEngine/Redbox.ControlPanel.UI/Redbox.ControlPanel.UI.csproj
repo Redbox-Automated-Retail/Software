@@ -3,7 +3,8 @@
     <AssemblyName>Redbox.ControlPanel.UI</AssemblyName>
     <RootNamespace>Redbox.ControlPanel.UI</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
     <UseWPF>True</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
@@ -29,6 +30,16 @@
     <Resource Include="assets\fonts\verdana.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Redbox.Controls\Redbox.Controls.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\KioskServices\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.IDE\Redbox.KioskEngine.IDE.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
+    <ProjectReference Include="..\..\Rental\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="PresentationCore" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -38,14 +49,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Redbox.Controls\Redbox.Controls.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\..\KioskServices\Redbox.HardwareServices.Proxy.ComponentModel\Redbox.HardwareServices.Proxy.ComponentModel.csproj" />
-    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
-    <ProjectReference Include="..\Redbox.KioskEngine.IDE\Redbox.KioskEngine.IDE.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
-    <ProjectReference Include="..\..\Rental\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.DirectoryServices" Version="10.0.14" />
+    <PackageReference Include="System.Management" Version="10.0.14" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
   </ItemGroup>
 </Project>

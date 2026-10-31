@@ -18,7 +18,8 @@
     attribute is missing and CA1416 would flag every Windows API call.
   -->
   <PropertyGroup Condition="$(TargetFramework.EndsWith('-windows'))">
-    <NoWarn>$(NoWarn);CA1416</NoWarn>
+    <!-- WFO1000 (.NET 9+): WinForms designer-serialization attributes on public properties; not applicable to decompiled forms. -->
+    <NoWarn>$(NoWarn);CA1416;WFO1000</NoWarn>
   </PropertyGroup>
   <!-- Opt-in: set RB_ARTIFACTS (or pass -p:ArtifactsPath=...) to put bin/obj outside the source tree. -->
   <PropertyGroup Condition="'$(ArtifactsPath)' == '' and '$(RB_ARTIFACTS)' != ''">

@@ -2,13 +2,19 @@
   <PropertyGroup>
     <AssemblyName>Redbox.KioskEngine.Drawing</AssemblyName>
     <RootNamespace>Redbox.KioskEngine.Drawing</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWPF>True</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Xaml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -16,9 +22,5 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
   </ItemGroup>
 </Project>

@@ -2,19 +2,13 @@
   <PropertyGroup>
     <AssemblyName>Redbox.FMA.UI</AssemblyName>
     <RootNamespace>Redbox.FMA</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
     <UseWPF>True</UseWPF>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="ReachFramework" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.Controls\Redbox.Controls.csproj" />
     <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
@@ -28,5 +22,12 @@
     <!-- Library assembly: App.xaml was compiled as an ordinary page, not as the application definition. -->
     <ApplicationDefinition Remove="App.xaml" />
     <Page Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 </Project>

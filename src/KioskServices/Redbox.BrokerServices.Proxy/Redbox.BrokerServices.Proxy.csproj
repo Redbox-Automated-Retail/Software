@@ -2,15 +2,12 @@
   <PropertyGroup>
     <AssemblyName>Redbox.BrokerServices.Proxy</AssemblyName>
     <RootNamespace>Redbox.BrokerServices.Proxy</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="GenuineChannels">
       <HintPath>..\..\..\lib\GenuineChannels\GenuineChannels.dll</HintPath>
     </Reference>
@@ -22,5 +19,8 @@
     <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
     <ProjectReference Include="..\..\Rental\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
     <ProjectReference Include="..\..\KioskEngine\Redbox.Services.KioskBrokerServices.KioskShared\Redbox.Services.KioskBrokerServices.KioskShared.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
 </Project>

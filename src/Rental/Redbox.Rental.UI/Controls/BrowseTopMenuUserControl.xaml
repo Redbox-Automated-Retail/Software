@@ -20,7 +20,6 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions />
     </Grid>
     <Grid Name="FixedButtonContainer" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="24,24,24,0" />
     <DockPanel VerticalAlignment="Top" Margin="59,24,59,0">

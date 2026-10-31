@@ -5,6 +5,10 @@ using DeviceService.ComponentModel;
 using DeviceService.ComponentModel.Commands;
 using DeviceService.ComponentModel.Responses;
 using Microsoft.AspNetCore.SignalR.Client;
+#if !NETFRAMEWORK
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+#endif
 
 namespace DeviceService.Client;
 
@@ -103,7 +107,15 @@ public class SignalRClient
 	public async Task Connect(string url, int? connectionTimeout)
 	{
 		_url = url;
+#if NETFRAMEWORK
 		_hubConnection = new HubConnectionBuilder().WithUrl(_url).Build();
+#else
+		// Same hub JSON as the SignalR 1.1 client: Newtonsoft.Json, with System.Version as an object.
+		_hubConnection = new HubConnectionBuilder().WithUrl(_url).AddNewtonsoftJsonProtocol(delegate(NewtonsoftJsonHubProtocolOptions options)
+		{
+			options.PayloadSerializerSettings.Converters.Add(new LegacyVersionJsonConverter());
+		}).Build();
+#endif
 		if (_hubConnection != null)
 		{
 			AddMessageHandlers(_hubConnection);

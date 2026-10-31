@@ -7,6 +7,7 @@ using DeviceService.ComponentModel;
 using Redbox.Core;
 using Redbox.HardwareServices.Proxy.ComponentModel;
 using Redbox.KioskEngine.ComponentModel;
+using ITimer = Redbox.KioskEngine.ComponentModel.ITimer;
 using Redbox.KioskEngine.ComponentModel.TrackData;
 using Redbox.KioskEngine.Environment;
 using Redbox.REDS.Framework;

@@ -2,15 +2,12 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Rental.Kernel</AssemblyName>
     <RootNamespace>Redbox.Rental.Kernel</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\KioskEngine\Redbox.ControlPanel.UI\Redbox.ControlPanel.UI.csproj" />
     <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
@@ -21,5 +18,9 @@
     <ProjectReference Include="..\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
     <ProjectReference Include="..\Redbox.Rental.Services\Redbox.Rental.Services.csproj" />
     <ProjectReference Include="..\Redbox.Rental.UI\Redbox.Rental.UI.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
 </Project>

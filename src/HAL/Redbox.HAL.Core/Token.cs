@@ -1,5 +1,6 @@
 using System;
 using Redbox.HAL.Component.Model;
+using Range = Redbox.HAL.Component.Model.Range;
 
 namespace Redbox.HAL.Core;
 
