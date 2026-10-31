@@ -92,7 +92,8 @@ foreach ($p in $comp.projects) {
         & $msbuild $proj -t:Publish @common "-p:RuntimeIdentifier=win7-x86" "-p:SelfContained=false" "-p:PublishDir=$dest\" `
             "-p:IsTransformWebConfigDisabled=true"
     } else {
-        $extra = if ($p.merged) { @("-p:ILRepack=true") } else { @() }
+        $extra = @()   # not "$extra = if ...": PowerShell unwraps a one-item array, and @extra would splat its characters
+        if ($p.merged) { $extra += "-p:ILRepack=true" }
         & $msbuild $proj @common @extra "-p:OutDir=$dest\"
     }
     if ($LASTEXITCODE) { throw "build of $($p.path) failed" }
