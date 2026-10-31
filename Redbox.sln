@@ -271,6 +271,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Data.Sqlite", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vistadb-to-sqlite", "src\Tools\vistadb-to-sqlite\vistadb-to-sqlite.csproj", "{9AC63420-5849-4A99-A310-F2330259CBC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Data.SqliteParity", "tests\Redbox.Data.SqliteParity\Redbox.Data.SqliteParity.csproj", "{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1733,6 +1735,18 @@ Global
 		{9AC63420-5849-4A99-A310-F2330259CBC7}.Release|x64.Build.0 = Release|Any CPU
 		{9AC63420-5849-4A99-A310-F2330259CBC7}.Release|x86.ActiveCfg = Release|Any CPU
 		{9AC63420-5849-4A99-A310-F2330259CBC7}.Release|x86.Build.0 = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|x64.Build.0 = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Debug|x86.Build.0 = Debug|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|x64.Build.0 = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1870,5 +1884,6 @@ Global
 		{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{323F5E64-1D76-429C-A47C-E3C92D5D00AA} = {BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}
 		{9AC63420-5849-4A99-A310-F2330259CBC7} = {DCB6FCB8-FF92-AC57-0842-1F72A354D6B1}
+		{AB1F6244-F5E5-42CF-AC75-FD0902FCF51B} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
