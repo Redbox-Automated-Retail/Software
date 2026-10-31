@@ -13,6 +13,13 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
+  <!--
+    Windows-only targets: these projects do not generate AssemblyInfo, so the SDK's SupportedOSPlatform("windows")
+    attribute is missing and CA1416 would flag every Windows API call.
+  -->
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-windows'))">
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
   <!-- Opt-in: set RB_ARTIFACTS (or pass -p:ArtifactsPath=...) to put bin/obj outside the source tree. -->
   <PropertyGroup Condition="'$(ArtifactsPath)' == '' and '$(RB_ARTIFACTS)' != ''">
     <ArtifactsPath>$(RB_ARTIFACTS)</ArtifactsPath>
