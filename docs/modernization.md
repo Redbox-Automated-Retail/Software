@@ -10,6 +10,29 @@
 It is never merged into `main`. Every step keeps `Redbox.sln` building and is one commit (or a short series of
 commits) per coherent change, so `git log main..modernize` reads as a list of the changes.
 
+## Linux as a goal (decided 2026-10-31)
+
+This is a port, not a rewrite: the robot scripts, timings, payment flows and protocols are kept. Linux support is
+built in along the way:
+
+- Code that is Windows-only (registry, Windows services, BITS, COM, DirectShow, WMI, Shell Launcher, Task
+  Scheduler) goes behind interfaces as each component is ported, with the Windows implementation unchanged.
+- Non-UI components target `net10.0` with a Windows-specific implementation assembly where needed, so they also
+  build and run on Linux.
+
+| Component | Linux path |
+|---|---|
+| Kiosk Client | `net10.0`; already almost platform-neutral |
+| Update Client | `net10.0` core; the Windows service host, BITS and PowerShell jobs behind interfaces (systemd, HTTP download, `pwsh`/shell) |
+| HAL core (serial, scripts, jobs, storage) | `net10.0` + SQLite; serial port names come from configuration |
+| HAL camera / barcode | `ICameraPlugin` already exists. DirectShow + ClearImage stay for Windows, and V4L2 + ZXing/libdmtx are added for Linux. |
+| Device Service | depends on a Linux build of the Ingenico RBA SDK (to be checked); the simulator runs anywhere |
+| Update Manager | `net10.0` core. The Lua `kernel.*` functions that touch Windows (registry, services, shell) get Linux equivalents or report "not supported". |
+| Engine host + Rental / Control Panel / FMA UI | WinForms + WPF are Windows-only, so these move to **Avalonia**. This is the only real rewrite, and it comes last. Until then the engine runs on `net10.0-windows`. |
+| Kiosk shell | KioskShell on Windows; a Wayland kiosk compositor (e.g. `cage`) plus a systemd unit on Linux |
+
+The Windows 10/11 fixes below still matter: kiosks run Windows until the UI exists on Linux.
+
 ## Ground rules
 
 - **Wire compatibility comes first.** The following stay byte-for-byte compatible with the existing backend
