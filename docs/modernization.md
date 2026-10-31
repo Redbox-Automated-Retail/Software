@@ -192,7 +192,74 @@ Later (.NET 10, after spikes, each a go/no-go):
 4. Kestrel replacing Web API self-host on `:9002`, with route parity checked by a test that lists routes.
 5. `JavaScriptSerializer` replacement with golden tests.
 
-If 1 or 2 fails, the engine stays on 4.8. That is a supported, in-box runtime on Windows 10/11.
+**Decided (2026-10-31): the engine goes to .NET 10, and VistaDB is replaced by SQLite.** The 4.8 step above stays
+as an intermediate state. The options for each blocker, with the recommended one first:
+
+- **Legacy broker (GenuineChannels `gtcp://`).** The surface is small:
+  - the kiosk calls `IKioskRegister.Register(int, IKioskOperations self, string)`, passing itself as an `ObjRef`,
+    and `IsRegistered`;
+  - the broker calls back over the same persistent connection: `Reserve3(ReservationCart3)`, `Ping` and
+    `CancelReservation(long)`, plus the stubs `Reserve`/`Reserve2`;
+  - the payloads are `[Serializable]` POCOs from `KioskShared` and `List<T>`.
+
+  Options:
+  1. *(recommended)* A clean .NET 10 client for exactly this surface:
+     - GTCP framing written from GenuineChannels' MIT-licensed source (2.5.9.9+, the same 2.5.9.x line as the
+       kiosk's 2.5.9.5);
+     - an MS-NRBF reader (`System.Formats.Nrbf`, in-box since .NET 9) and a small writer for the method-call and
+       return records;
+     - the `ObjRef` for the callback object;
+     - GenuineChannels' ping and reconnect behavior.
+
+     It is tested against `rb-remoting`, which runs the kiosk's real GenuineChannels.dll, with traffic captured
+     from the 4.8 engine as golden files.
+  2. Port GenuineChannels itself. It is built on `System.Runtime.Remoting` (sinks, `RealProxy`, contexts),
+     which .NET 10 doesn't have, so this would mean writing a Remoting runtime first. Much larger, for no gain
+     on a 5-method interface.
+  3. A small 4.8 "broker bridge" process that hosts today's proxy and talks to the engine over localhost. It is
+     quick, but keeps a .NET Framework process on the kiosk. It is kept only as a fallback.
+  4. The HTTP broker path (`UseAWSBrokerService`, through the Update Client). The backend doesn't implement it
+     today, so this needs backend work, and it doesn't serve the 1.88 default.
+- **KioskServices (Remoting `HttpChannel`).**
+  1. *(recommended)* Make REST the .NET 10 engine's default, since the backend serves it. Keep `Remoting` mode
+     with the same NRBF code as the broker: one `Process(string) -> string` call over HTTP. Both modes are
+     checked with the 33-case `KioskServicesHarness`.
+  2. REST only, dropping the `Remoting` setting.
+- **VistaDB → SQLite** (`Microsoft.Data.Sqlite`). It is used by:
+  - engine `DataStoreProvider`/`DataCacheService`/`QueueServiceVistaDBData`/`SchemaMigrator`;
+  - Rental `LocalData`/`ProfileData`;
+  - HAL `Redbox.HAL.DataStorage`, which holds the inventory, counters and stats tables.
+
+  The work:
+  1. Map each table and the SQL dialect used (`VistaDBStringHelper`) to SQLite.
+  2. One-time migration of existing `.vdb3` files on first start. The options for reading the old files:
+     1. *(recommended)* a small `net48` `vistadb-export` tool, run once by the update package, that dumps each
+        table with the shipped VistaDB.NET20;
+     2. loading VistaDB.NET20 into .NET 10 just for the import, if it turns out to load;
+     3. reading the file format directly (no documentation).
+  3. The old files are kept as backups.
+
+  HAL moves to SQLite in the same way when it goes to .NET 10.
+- **Web API self-host on `:9002`.** ASP.NET Core inside the engine process (`FrameworkReference
+  Microsoft.AspNetCore.App`), with the same routes, the Newtonsoft formatter and Swashbuckle. A route-list test
+  compares the two builds.
+- **`JavaScriptSerializer`.** Port Microsoft's MIT-licensed reference source of
+  `System.Web.Script.Serialization` into `Redbox.Core`. It behaves the same by construction, and a golden test
+  compares it with the 4.8 output.
+- **BinaryFormatter.** The HAL script framework (`ExecutionContext`, `ExecutionEngine`) persists script state
+  with it, and the Task Scheduler wrappers use it too. Read the existing data with `System.Formats.Nrbf`, and
+  write new data in a documented format (JSON) with a version marker.
+- **Quartz 1.0.2.3.** Only `SchedulerService` uses it. Port to Quartz.NET 3.x with the same cron expressions and
+  job semantics, or use a small built-in scheduler if it uses only simple triggers.
+- **IDE controls.**
+  - WeifenLuo 2.5 → DockPanelSuite 3.1 (supports .NET Core).
+  - Try loading Puzzle.SyntaxBox, SmartPropertyGrid and VisualTips on .NET 10 (WinForms 2.0-era DLLs often
+    load). Replace any that don't: AvalonEdit or Scintilla.NET for the editor, the built-in `PropertyGrid`.
+- **Smaller items:**
+  - `System.Speech`, `System.DirectoryServices` and `System.Management`: NuGet packages.
+  - `InputSimulator`: `SendInput` P/Invoke.
+  - Windows Firewall COM interop: unchanged.
+  - Lua: the x86 `lua51.dll`, unchanged.
 
 ### 8. Installer pieces
 
@@ -266,14 +333,15 @@ only in Windows Sandbox.
 
 ## Decisions for the user
 
-1. **Target .NET 10 instead of .NET 8** (8 is out of support on 2026-11-10). *Recommended: .NET 10.*
-2. **Engine:** 4.8 now and .NET 10 after the spikes (recommended), or go straight for .NET 10.
+1. **Target .NET 10 instead of .NET 8** (8 is out of support on 2026-11-10). *Decided: .NET 10.*
+2. **Engine:** *Decided: .NET 10*, with the broker and KioskServices reimplemented (see §7). VistaDB:
+   *decided: SQLite*.
 3. **Unset endpoint defaults:** empty values (recommended), or reserved `*.invalid` placeholder hosts.
 4. **Shell on Windows Pro:** add the `Winlogon\Shell` fallback (recommended), or keep requiring an edition with
    Shell Launcher.
 5. **Self-contained x86 deployment** for the .NET 10 services (recommended), or require a .NET 10 x86 runtime
    on the kiosk.
-6. **VistaDB:** if it doesn't load on .NET 10, migrate to SQLite or keep the engine/HAL on 4.8.
+6. **Broker:** clean .NET 10 GTCP/NRBF client (recommended) vs. a 4.8 bridge process.
 
 ## Progress
 
