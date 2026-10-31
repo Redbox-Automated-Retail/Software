@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.ProductLookupCatalog</AssemblyName>
     <RootNamespace>Redbox.ProductLookupCatalog</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>

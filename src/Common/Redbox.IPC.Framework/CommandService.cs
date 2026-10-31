@@ -8,6 +8,7 @@ using Redbox.Command.Tokenizer;
 using Redbox.Core;
 using Redbox.Macros;
 using Redbox.Tokenizer.Framework;
+using KeyValuePair = Redbox.Tokenizer.Framework.KeyValuePair;
 
 namespace Redbox.IPC.Framework;
 

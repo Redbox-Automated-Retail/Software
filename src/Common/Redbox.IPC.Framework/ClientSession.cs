@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading;
 using Redbox.Core;
 using Redbox.IPC.Framework.NamedPipes;
+#if NETFRAMEWORK
 using Redbox.IPC.Framework.Remoting;
+#endif
 using Redbox.IPC.Framework.Sockets;
 
 namespace Redbox.IPC.Framework;
@@ -57,7 +59,11 @@ public abstract class ClientSession : IDisposable
 		case ChannelType.Socket:
 			return GetTcpClientSession(protocol, timeout);
 		case ChannelType.Remoting:
+#if NETFRAMEWORK
 			return new RemotingClientSession(protocol, timeout ?? 5000);
+#else
+			throw new NotSupportedException(".NET Remoting channels exist only on .NET Framework.");
+#endif
 		default:
 			LogHelper.Instance.Log($"Unrecognized channel type {protocol.Channel}; please fix your protocol string.", LogEntryType.Error);
 			return null;
