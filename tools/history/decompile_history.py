@@ -12,7 +12,12 @@ branch `history/<group>` with one commit per release, oldest first, dated with t
 
 A release is a revision that brought at least one new first-party assembly, script or bundle. Files whose
 version at that revision has no content in any snapshot are taken at their last recoverable version and
-marked "stale" in RELEASE.md.
+marked "stale" in RELEASE.md. Each assembly is decompiled against the release's own assemblies plus what every
+other package had shipped by then, and the tools/fixes scripts are applied to the result, as on main.
+
+Commit subjects are "<Code Name> (<version of the package's main assembly>)" or "<version> (no code name)";
+the store labels are kept in the body. Each release also gets a local annotated tag <group>/<Code-Name>
+(<group>/<version> for versions that never had a code name). Nothing is pushed.
 
 Usage:
   python -I decompile_history.py --work <dir> [--group engine ...] [--jobs 8] [--decompile-only] [--list]
@@ -56,9 +61,45 @@ def blob(work, sha):
     return os.path.join(work, "blobs", sha[:2], sha)
 
 
-def release_name(labels, versions):
-    names = [LABEL_PREFIX.sub("", l.strip()) for l in labels]
+# Primary assembly per package: its version names a release in commit subjects and tags.
+PRIMARY = {
+    "kop-v2-engine": ("kioskengine", "Kiosk Engine"),
+    "kop-hal-install": ("halsvc-win32", "HAL"),
+    "kop-ms-hal-tester": ("MSHALTester", "MS HAL Tester"),
+    "kop-tools": ("HalUtilities", "HAL Utilities"),
+    "device-service": ("DeviceService.WebApi", "Device Service"),
+    "kioskclient": ("KioskClientService.API", "Kiosk Client Service"),
+    "updateclient": ("UpdateClientService.API", "Update Client Service"),
+    "kop-update-manager": ("updatemgrd", "Update Manager"),
+    "kop-rental-bundles": (None, "Rental bundles"),
+}
+# Labels that are not code names (a build number, a version, "NEW").
+NOT_A_NAME = re.compile(r"^(\d[\d.]*|new)$", re.I)
+NAME_FIX = {"AI": "Alien", "Caddyshack 1.0": "Caddyshack", "The-Martian": "The Martian"}
+
+
+def pretty_name(label):
+    """Readable code name for a store label: venomSR2 -> Venom SR2, AquamanSR2023 -> Aquaman 2023 SR,
+    KISS1.1 -> KISS 1.1; None for labels that are not names."""
+    n = LABEL_PREFIX.sub("", label.strip())
+    if NOT_A_NAME.match(n):
+        return None
+    n = NAME_FIX.get(n, n)
+    n = re.sub(r"SR(20\d\d)$", r"\1SR", n)
+    n = n.replace("VanHalen", "Van Halen")
+    n = re.sub(r"(?<=[A-Za-z])(20\d\d)", r" \1", n)
+    n = re.sub(r"(?<=[a-z0-9])SR(\d*)$", r" SR\1", n)
+    n = re.sub(r"(?<=[A-Za-z])(\d+\.\d+)$", r" \1", n)
+    return n[0].upper() + n[1:]
+
+
+def release_name(labels, versions=None):
+    names = [n for n in (pretty_name(l) for l in labels) if n]
     return " / ".join(dict.fromkeys(names)) if names else None
+
+
+def vkey(version):
+    return tuple(int(x) if x.isdigit() else 0 for x in (version or "0").split("."))
 
 
 class Work:
@@ -74,6 +115,18 @@ class Work:
         for fn in os.listdir(os.path.join(work, "index")):
             d = json.load(open(os.path.join(work, "index", fn), encoding="utf-8"))
             self.index[d["package"]] = d
+
+    def version(self, sha):
+        s = self.surfaces.get(sha)
+        return s["version"] if s else None
+
+    def pool(self):
+        """[(date, file name, sha)] of every rebuilt managed file in every package, by date."""
+        if not hasattr(self, "_pool"):
+            self._pool = sorted((rev_date(idx, r), c["name"], c["version"]) for idx in self.index.values()
+                                for r in idx["revisions"] for c in r["changes"]
+                                if c["status"] == "ok" and c["version"] in self.surfaces)
+        return self._pool
 
     def assembly(self, sha):
         s = self.surfaces.get(sha)
@@ -144,9 +197,13 @@ def releases(w, group):
         last = None
         pkg_events = []
         set_dates = {}  # path -> date of the revision that last listed it
+        # Paths are case-insensitive: the store moved from "redbox\REDS" to "Redbox\REDS" around 2016, and the
+        # old spelling must not survive as a second copy of every file.
+        canon = {}      # lower-case path -> spelling of its latest listing
         for r in idx["revisions"]:
             for c in r["changes"]:
-                key = c["path"] + "\\" + c["name"]
+                key = (c["path"] + "\\" + c["name"]).lower()
+                canon[key] = c["path"] + "\\" + c["name"]
                 state[key] = c["version"]
                 set_dates[key] = rev_date(idx, r)
                 if c["status"] == "ok":
@@ -154,17 +211,18 @@ def releases(w, group):
             if r["label"]:
                 labels.append(r["label"])
             fresh = [k for k, v in last_ok.items() if committed.get(k) != v and w.is_code(k.rsplit("\\", 1)[1], v)]
-            tree = {k: (last_ok.get(k), v) for k, v in state.items()}
+            tree = {canon[k]: (last_ok.get(k), v) for k, v in state.items()}
+            sets = {canon[k]: d for k, d in set_dates.items()}
             if not fresh:
                 # A label on a revision that adds no code names the code already committed (the release was
                 # built up over unlabelled revisions and then labelled): move it to the previous release.
                 if labels and last:
-                    last.update(rev=r["index"], hash=r["hash"], tree=tree, set=dict(set_dates))
+                    last.update(rev=r["index"], hash=r["hash"], tree=tree, set=sets)
                     last["labels"] += labels
                     labels = []
                 continue
             last = {"date": rev_date(idx, r), "order": order, "package": pkg, "rev": r["index"], "hash": r["hash"],
-                    "labels": labels, "tree": tree, "set": dict(set_dates)}
+                    "labels": labels, "tree": tree, "set": sets}
             pkg_events.append(last)
             committed = dict(last_ok)
             labels = []
@@ -202,8 +260,8 @@ def code_files(w, rel):
             if not w.is_code(name, ok):
                 continue
             ident = w.assembly(ok) if w.is_firstparty(ok) else name.lower()
-            # The same file under two install paths (Redbox vs redbox): keep the newer version.
-            if ident in files and files[ident][0] == ok:
+            # The same assembly in two folders (bin and the 2014 kext copies): keep the higher version.
+            if ident in files and vkey(w.version(files[ident][0])) >= vkey(w.version(ok)):
                 continue
             files[ident] = (ok, listed, pkg, key)
     return files
@@ -234,14 +292,31 @@ def build_allrefs(w):
     return d
 
 
-def refs_dir(w, group, n, rel):
-    d = os.path.join(w.work, "refs", group, str(n))
-    if not os.path.isdir(d):
-        os.makedirs(d)
-        for tree in rel["trees"].values():
-            for key, (ok, _) in tree.items():
-                if ok and ok in w.surfaces:
-                    link(blob(w.work, ok), os.path.join(d, key.rsplit("\\", 1)[1]))
+def refs_dir(w, rel):
+    """Reference folder for decompiling a release: its own assemblies (highest version of each name), and for
+    everything else the newest version any package had shipped by the release date (HAL client, Device
+    Service client, shared libraries, third-party DLLs)."""
+    key = hashlib.sha1(json.dumps(rel["revisions"], sort_keys=True).encode()).hexdigest()[:12]
+    d = os.path.join(w.work, "refs", key)
+    if os.path.isdir(d):
+        return d
+    pick = {}
+    for date, name, sha in w.pool():
+        if date > rel["date"]:
+            break
+        pick[name.lower()] = (name, sha)
+    own = {}
+    for tree in rel["trees"].values():
+        for k, (ok, _) in tree.items():
+            if ok and ok in w.surfaces:
+                name = k.rsplit("\\", 1)[1]
+                if name.lower() not in own or vkey(w.version(ok)) > vkey(w.version(own[name.lower()][1])):
+                    own[name.lower()] = (name, ok)
+    pick.update(own)
+    os.makedirs(d + ".tmp", exist_ok=True)
+    for name, sha in pick.values():
+        link(blob(w.work, sha), os.path.join(d + ".tmp", name))
+    os.rename(d + ".tmp", d)
     return d
 
 
@@ -289,6 +364,10 @@ def run_organize(w, group, files, src_out):
     for dp, _, fn in os.walk(src_out):  # the decompile cache's completion markers are not source
         if ".done" in fn:
             os.remove(os.path.join(dp, ".done"))
+    # The same mechanical fixes for decompiler artifacts that src/ on main had (tools/fixes); they are
+    # idempotent and apply to every release alike, so diffs between releases stay clean.
+    for fix in ("fix_com_event_providers.py", "fix_xaml_markup.py", "remove_wpf_generated_members.py"):
+        subprocess.run([sys.executable, "-I", os.path.join(TOOLS, "fixes", fix), src_out], capture_output=True)
     return r.returncode == 0, (r.stderr or r.stdout)[-3000:]
 
 
@@ -368,14 +447,20 @@ def commit_group(w, group, rels, log):
                     if t2 != t:
                         open(p, "w", encoding="utf-8").write(t2)
                         notes.append(f"Redacted a credential-like value in `{os.path.relpath(p, wt)}`.")
-        name = release_name(rel["labels"], files)
+        name = release_name(rel["labels"])
         versions = sorted((w.assembly(v[0]), w.surfaces[v[0]]["version"]) for v in files.values() if w.is_firstparty(v[0]))
-        main_ver = next((v for a, v in versions if a in ("kioskengine", "Redbox.HAL.Core", "MSHALTester",
-                                                           "DeviceService.WebApi", "KioskClientService.API",
-                                                           "UpdateClientService.API", "updatemgrd")), None)
-        title = name or (f"{main_ver} (unlabelled)" if main_ver else f"{rel['package']} r{rel['revisions'][rel['package']][0]} (unlabelled)")
-        lines = [f"# {title}", "", f"- Date (first download in the snapshots): {rel['date'][:10]}",
-                 f"- Labels: {', '.join(rel['labels']) or 'none'}", "- Package revisions:"]
+        primary, product = PRIMARY[rel["package"]]
+        main_ver = next((v for a, v in versions if a == primary), None)
+        ref = main_ver or rel["date"][:10]
+        if name:
+            title = f"{name} ({ref})"
+        elif main_ver:
+            title = f"{main_ver} (no code name)"
+        else:
+            title = f"{product} revision {rel['revisions'][rel['package']][0]} (no code name)"
+        lines = [f"# {title}", "", f"- Product: {product}" + (f" {main_ver}" if main_ver else ""),
+                 f"- Date (first download in the snapshots): {rel['date'][:10]}",
+                 f"- Store labels: {', '.join(l.strip() for l in rel['labels']) or 'none'}", "- Package revisions:"]
         for pkg, (ri, rh) in rel["revisions"].items():
             lines.append(f"  - `{pkg}` revision {ri} (`{rh}`)")
         lines += ["", "| File | Assembly | Version | SHA-1 | Status |", "|---|---|---|---|---|"]
@@ -389,12 +474,56 @@ def commit_group(w, group, rels, log):
         with open(os.path.join(wt, "RELEASE.md"), "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
         git(wt, "add", "-A")
-        msg = (f"{title}\n\nChanged: " + ", ".join(f"{i} {v}" for i, v in changed) + "\n\nAll assemblies:\n"
-               + "\n".join(f"{a} {v}" for a, v in versions) + f"\n\nRelease-Key: {key}\n")
+        msg = (f"{title}\n\nStore labels: {', '.join(l.strip() for l in rel['labels']) or 'none'}\n"
+               f"Package revisions: " + ", ".join(f"{p} {ri}" for p, (ri, _) in rel["revisions"].items())
+               + "\n\nChanged: " + ", ".join(f"{i} {v}" for i, v in changed) + "\n\nAll assemblies:\n"
+               + "\n".join(f"{a} {v}" for a, v in versions)
+               + f"\n\nRelease-Product: {product}\nRelease-Name: {name or '-'}\nRelease-Version: {main_ver or '-'}"
+               f"\nRelease-Key: {key}\n")
         date = rel["date"][:19]
         env = dict(os.environ, GIT_AUTHOR_DATE=date, GIT_COMMITTER_DATE=date)
         git(wt, "commit", "-q", "--allow-empty", "-m", msg, env=env)
         log(f"{group} #{n} {rel['date'][:10]} {title}: committed")
+
+
+def tag_slug(name):
+    s = re.sub(r"\s*/\s*", "+", name)
+    return re.sub(r"[^A-Za-z0-9.+-]+", "-", s).strip("-")
+
+
+def tag_group(group, log):
+    """One annotated tag per release on history/<group>, named <group>/<Code-Name> (or <group>/<version> when
+    a version never got a code name). A release built up over several commits is tagged at its last one;
+    commits without a code name are tagged only when no named release has their version."""
+    branch = "history/" + group
+    fmt = "%H%x01%ad%x01%(trailers:key=Release-Name,valueonly)%x01%(trailers:key=Release-Version,valueonly)" \
+          "%x01%(trailers:key=Release-Product,valueonly)%x02"
+    rows = []
+    for rec in git(REPO, "log", "--reverse", "--date=short", f"--format={fmt}", branch).split("\x02"):
+        if rec.strip():
+            h, date, name, ver, product = (x.strip() for x in rec.strip().split("\x01"))
+            rows.append((h, date, "" if name == "-" else name, "" if ver == "-" else ver, product))
+    named_versions = {v for _, _, n, v, _ in rows if n and v}
+    last = {}  # tag label -> last commit carrying it (HAL, MS HAL Tester and Utilities share code names)
+    for h, date, name, ver, product in rows:
+        if name:
+            last[name] = (h, date, name, ver, product, name)
+        elif ver and ver not in named_versions:
+            last[ver] = (h, date, name, ver, product, ver)
+    picks = list(last.values())
+    for t in git(REPO, "tag", "--list", group + "/*").split():
+        git(REPO, "tag", "-d", t)
+    used = set()
+    for h, date, name, ver, product, label in picks:
+        tag = f"{group}/{tag_slug(label)}"
+        if tag in used:
+            tag += "-" + (ver or date)
+        used.add(tag)
+        what = f"{product} {ver}".strip() if ver else product
+        msg = f"{name or ver}\n\n{what}, {date}" + ("" if name else " (no code name)") + "\n"
+        env = dict(os.environ, GIT_COMMITTER_DATE=date + "T12:00:00")
+        git(REPO, "tag", "-a", tag, h, "-m", msg, env=env)
+    log(f"{group}: {len(picks)} tags")
 
 
 def main():
@@ -428,7 +557,7 @@ def main():
         for n, rel in enumerate(rels):
             for ident, (sha, _, _, key) in code_files(w, rel).items():
                 if w.is_firstparty(sha) and sha not in jobs:
-                    jobs[sha] = (key.rsplit("\\", 1)[1], refs_dir(w, g, n, rel))
+                    jobs[sha] = (key.rsplit("\\", 1)[1], refs_dir(w, rel))
     todo = {s: j for s, j in jobs.items() if not os.path.exists(os.path.join(a.work, "decomp", s, ".done"))}
     log(f"decompile: {len(jobs)} assemblies, {len(todo)} to do")
     failed = []
@@ -446,6 +575,7 @@ def main():
         return
     for g, rels in plan.items():
         commit_group(w, g, rels, log)
+        tag_group(g, log)
 
 
 if __name__ == "__main__":

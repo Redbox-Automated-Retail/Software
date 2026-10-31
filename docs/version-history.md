@@ -197,3 +197,25 @@ python -I tools/history/history.py --work <work> --apisurface <work>/apisurface/
 ```
 
 `<work>/summary.tsv` has one line per release; `<work>/timeline.md` lists every changed file.
+
+## Viewing old screens
+
+The `history/*` branches have no project files. To open a release's views in Visual Studio's XAML designer, copy
+its project out with a csproj that builds it against that release's own assemblies:
+
+```
+python -I tools/history/view_project.py --work <work> --commit engine/Z --out E:/temp/views-z
+```
+
+`--commit` takes a release tag or commit; `--project` picks another project (default
+`src/Rental/Redbox.Rental.UI`, present from Hawkeye SR, 1.18, 2016). Open the generated
+`<out>/src/Rental/Redbox.Rental.UI/Redbox.Rental.UI.csproj`, build it once (the designer needs the compiled
+project) and open any `.xaml`. Only the copied project is compiled; the libraries it uses are the original
+binaries, so features removed since (Starz, welcome screen, ...) are complete. The script also repairs three
+decompiler artifacts in the copy: event null checks written as property patterns (CS0154), mesh triangle indices
+without separators (MC2000; taken from the same mesh in `src/`, or dropped), and the malformed pack URI in
+`App.xaml` that keeps the style dictionary from loading. Screens in `Views/` get a design size (`--screen`, default
+1024x768), since otherwise the designer shrinks them to their content.
+
+Verified: the rental UI of Hawkeye SR (1.18.0.18), KISS 1.1 (1.44.1.3), Lincoln SR3 and Z (1.85.0.27) builds
+with MSBuild, and Z's views render with their styles when instantiated outside the designer.

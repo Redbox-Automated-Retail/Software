@@ -3,7 +3,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://Application:,,,Redbox.FMA.UI;component/Assets/StyleDictionary.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Redbox.FMA.UI;component/Assets/StyleDictionary.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

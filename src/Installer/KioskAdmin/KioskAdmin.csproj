@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>KioskAdmin</AssemblyName>
+    <RootNamespace>KioskAdmin</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net45</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="TaskScheduler" Version="2.12.2" />
+  </ItemGroup>
+</Project>

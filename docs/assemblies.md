@@ -133,6 +133,27 @@ Paths are relative to the root of the kiosk image. Where a binary exists both in
 | `Redbox.Rental.Services` | 1.88.0.80 | net472 | `REDS/Kiosk Engine/bin/Redbox.Rental.Services.dll` |  |
 | `Redbox.Rental.UI` | 1.88.0.80 | net472 | `REDS/Kiosk Engine/bin/Redbox.Rental.UI.exe` |  |
 
+## src/Installer
+
+Not in the kiosk image: from `Windows10-Store-Installer-3.1.0.48-setup.exe` (see
+[systems/store-installer.md](systems/store-installer.md)). "Shipped as" is the path inside the setup exe.
+
+| Project | Version | Target | Shipped as | Notes |
+|---|---|---|---|---|
+| `host` | 2.0.0.69 | net461 | the setup exe itself (`host.exe`) | original .NET 2.0/3.5; older merged copies of Redbox libraries and the TaskScheduler wrapper kept inline; third-party merged code referenced instead |
+| `KioskAdmin` | 1.0.2.4 | net45 | `KioskAdmin.zip/KioskAdmin.exe` | original .NET 2.0; passwords redacted; `TaskService.dll` (third-party) replaced by NuGet `TaskScheduler` |
+| `Redbox.NAnt.Core` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.NAnt.CleanLogFiles.Tasks` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.NAnt.MessageQueuing.Tasks` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.NAnt.StuDiscs.Tasks` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.Nant.Tasks` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.NAnt.TimeKeeper.Tasks` | 1.7.5.397 | net40 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.TimeKeeper` | 1.7.5.397 | net35 | `CustomNAntTasks.zip` | original .NET 1.1 |
+| `Redbox.TimeKeeperGateway` | 1.7.5.397 | net35 | `CustomNAntTasks.zip` | original .NET 1.1 |
+
+The setup exe's other Redbox binaries are already in `src/`: `installer-front-end.exe` (3.0.1.9) and
+`KioskShell.exe` (3.1.0.22) are byte-identical to the image's copies.
+
 ## src/Tools
 
 | Project | Version | Target | Shipped as | Notes |
