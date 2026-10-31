@@ -36,9 +36,6 @@
     <Reference Include="Quartz">
       <HintPath>..\..\..\lib\Quartz\1.0.2.3\Quartz.dll</HintPath>
     </Reference>
-    <Reference Include="VistaDB.NET20">
-      <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" Condition="'$(TargetFramework)' == 'net48'" />
@@ -78,5 +75,16 @@
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="10.0.14" />
     <PackageReference Include="System.Management" Version="10.0.14" />
     <PackageReference Include="System.Speech" Version="10.0.14" />
+  </ItemGroup>
+  <!-- Data storage: VistaDB on .NET Framework, SQLite on .NET 10 (Sqlite\, docs/modernization.md "VistaDB -> SQLite"). -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="VistaDB.NET20">
+      <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
+    </Reference>
+    <Compile Remove="Sqlite\**" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <Compile Remove="VistaDbDataStoreProvider.cs;QueueServiceVistaDBData.cs;DataStoreCache.cs;DataCacheService.cs;SchemaMigrator.cs" />
+    <ProjectReference Include="..\..\Common\Redbox.Data.Sqlite\Redbox.Data.Sqlite.csproj" />
   </ItemGroup>
 </Project>

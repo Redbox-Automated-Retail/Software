@@ -23,6 +23,8 @@
       compatibility package brings it back for reading those resources. To be dropped when SyntaxBox is replaced.
     -->
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+    <!-- The data stores are SQLite on .NET 10; existing VistaDB files are converted by this tool (build\VistaDbToSqlite.targets). -->
+    <ShipVistaDbToSqlite>true</ShipVistaDbToSqlite>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.14" />
@@ -73,4 +75,5 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
+  <Import Project="..\..\..\build\VistaDbToSqlite.targets" />
 </Project>

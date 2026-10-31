@@ -622,7 +622,12 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		errorList.AddRange(RenderingService.Instance.Initialize());
 		errorList.AddRange(KernelService.Instance.Initialize());
 		errorList.AddRange(EnvironmentManager.Instance.Initialize());
+#if NETFRAMEWORK
 		errorList.AddRange(QueueService.Instance.Initialize(Path.Combine(RunningPath, "message.data"), new QueueServiceVistaDBData()));
+#else
+		// SQLite (message.sqlite), converted from message.data the first time.
+		errorList.AddRange(QueueService.Instance.Initialize(Path.Combine(RunningPath, "message.data"), new QueueServiceSqliteData()));
+#endif
 		AddService(typeof(IKioskClientService), KioskClientService.Instance);
 		ProductGroupService instance2 = new ProductGroupService(LogHelper.Instance, KioskClientService.Instance);
 		AddService(typeof(IProductGroupService), instance2);
