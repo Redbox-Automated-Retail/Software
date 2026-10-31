@@ -8,6 +8,11 @@ using Redbox.KioskEngine.ComponentModel;
 using Redbox.Rental.Model;
 using Redbox.Rental.Model.KioskProduct;
 using Redbox.Rental.Model.Profile;
+#if NETFRAMEWORK
+using ProfileDatabaseProvider = Redbox.Rental.Data.VistaDBDatabaseProvider;
+#else
+using ProfileDatabaseProvider = Redbox.Rental.Data.SqliteDatabaseProvider;
+#endif
 
 namespace Redbox.Rental.Data;
 
@@ -76,7 +81,7 @@ public class ProfileData : IProfileData
 	{
 		ProfileDataInstance profileDataInstance = new ProfileDataInstance();
 		profileDataInstance.ImagesPath = _imagesPath;
-		using (VistaDBDatabaseProvider vistaDBDatabaseProvider = new VistaDBDatabaseProvider("profile.data", _profileActivePath))
+		using (ProfileDatabaseProvider vistaDBDatabaseProvider = new ProfileDatabaseProvider("profile.data", _profileActivePath))
 		{
 			if (vistaDBDatabaseProvider.Open())
 			{
@@ -99,7 +104,7 @@ public class ProfileData : IProfileData
 		return profileDataInstance;
 	}
 
-	private void LoadMarkets(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadMarkets(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "Market"));
 		ConvertToList(sqlData, "LoadMarkets", delegate(string key, string value)
@@ -114,7 +119,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadTitles(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadTitles(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductCatalog"));
 		ConvertToList(sqlData, "LoadTitles", delegate(string key, string value)
@@ -169,7 +174,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadProductFamily(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadProductFamily(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductFamily"));
 		ConvertToList(sqlData, "LoadProductFamily", delegate(string key, string value)
@@ -192,7 +197,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadProductGroup(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadProductGroup(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductGroup"));
 		ConvertToList(sqlData, "LoadProductGroup", delegate(string key, string value)
@@ -242,7 +247,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadProductType(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadProductType(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductType"));
 		ConvertToList(sqlData, "LoadProductType", delegate(string key, string value)
@@ -258,7 +263,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadStore(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadStore(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		long num = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
 		DataTable data = ((num <= 0) ? db.GetSqlData(string.Format(_keyValueSql, "Store")) : db.GetSqlData(string.Format(_keyValueSqlKey, "Store", num)));
@@ -303,7 +308,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadSubPlatform(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadSubPlatform(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "SubPlatform"));
 		ConvertToList(sqlData, "LoadSubPlatform", delegate(string key, string value)
@@ -318,7 +323,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void LoadVersion(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void LoadVersion(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "Version"));
 		instance.ProfileDataVersion = new ProfileDataVersion();
@@ -336,7 +341,7 @@ public class ProfileData : IProfileData
 		});
 	}
 
-	private void ExtractImages(VistaDBDatabaseProvider db, ProfileDataInstance instance)
+	private void ExtractImages(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		LogHelper.Instance.Log("ProfileData.ExtractImages - Loading");
 		if (!Directory.Exists(_imagesPath))
