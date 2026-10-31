@@ -4,7 +4,9 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Redbox.Core;
 using Redbox.IPC.Framework.NamedPipes;
+#if NETFRAMEWORK
 using Redbox.IPC.Framework.Remoting;
+#endif
 using Redbox.IPC.Framework.Sockets;
 
 namespace Redbox.IPC.Framework;
@@ -97,7 +99,11 @@ public abstract class IPCServiceHost
 			m_serviceHost = new TcpServiceHost(backlogSize);
 			break;
 		case ChannelType.Remoting:
+#if NETFRAMEWORK
 			m_serviceHost = new RemotingServiceHost(maxThreads);
+#else
+			throw new NotSupportedException(".NET Remoting channels exist only on .NET Framework.");
+#endif
 			break;
 		default:
 			LogHelper.Instance.Log($"Unsupported channel type '{protocol.Channel}' specified; try using sockets or pipes in your protocol uri.", LogEntryType.Error);

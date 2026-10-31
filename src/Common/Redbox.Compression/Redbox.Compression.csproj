@@ -2,13 +2,10 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Compression</AssemblyName>
     <RootNamespace>Redbox.Compression</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Web.Extensions" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -16,5 +13,12 @@
     <Reference Include="SevenZip">
       <HintPath>..\..\..\lib\SevenZip\SevenZip.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- System.Web.Script.Serialization (JavaScriptSerializer) comes from Redbox.Core on .NET 10. -->
+    <ProjectReference Include="..\Redbox.Core\Redbox.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
 </Project>

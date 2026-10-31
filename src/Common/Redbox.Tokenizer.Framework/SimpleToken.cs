@@ -1,5 +1,6 @@
 using System;
 using Redbox.Core;
+using Range = Redbox.Core.Range;
 
 namespace Redbox.Tokenizer.Framework;
 

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.JSONPrettyPrinter</AssemblyName>
     <RootNamespace>Redbox.JSONPrettyPrinter</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -10,5 +10,8 @@
     <Reference Include="Jayrock.Json">
       <HintPath>..\..\..\lib\Jayrock\Jayrock.Json.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
   </ItemGroup>
 </Project>

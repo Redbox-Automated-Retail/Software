@@ -2,17 +2,11 @@
   <PropertyGroup>
     <AssemblyName>Redbox.REDS.Framework</AssemblyName>
     <RootNamespace>Redbox.REDS.Framework</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -23,5 +17,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.Core\Redbox.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>

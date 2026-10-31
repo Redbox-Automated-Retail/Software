@@ -55,7 +55,7 @@ public static class DelegateFactory
 		{
 			Name = "Redbox.Lua.GeneratedCode"
 		};
-		m_newAssembly = Thread.GetDomain().DefineDynamicAssembly(m_assemblyName, AssemblyBuilderAccess.Run);
+		m_newAssembly = AssemblyBuilder.DefineDynamicAssembly(m_assemblyName, AssemblyBuilderAccess.Run);
 		m_newModule = m_newAssembly.DefineDynamicModule("Redbox.Lua.GeneratedCode.Module");
 	}
 
