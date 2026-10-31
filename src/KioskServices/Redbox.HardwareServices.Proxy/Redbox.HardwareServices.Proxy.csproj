@@ -2,14 +2,11 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HardwareServices.Proxy</AssemblyName>
     <RootNamespace>Redbox.HardwareServices.Proxy</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.Core" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
     <ProjectReference Include="..\..\HAL\Redbox.HAL.Client\Redbox.HAL.Client.csproj" />
@@ -17,5 +14,8 @@
     <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
     <ProjectReference Include="..\..\KioskEngine\Redbox.KioskEngine.Environment\Redbox.KioskEngine.Environment.csproj" />
     <ProjectReference Include="..\..\Rental\Redbox.Rental.Model\Redbox.Rental.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Core" />
   </ItemGroup>
 </Project>

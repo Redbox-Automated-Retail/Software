@@ -13,6 +13,7 @@ using DeviceService.ComponentModel.Commands;
 using DeviceService.ComponentModel.Requests;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
+using ITimer = Redbox.KioskEngine.ComponentModel.ITimer;
 using Redbox.KioskEngine.ComponentModel.TrackData;
 using Redbox.KioskEngine.Environment;
 using Redbox.KioskEngine.Environment.CardDataReader;

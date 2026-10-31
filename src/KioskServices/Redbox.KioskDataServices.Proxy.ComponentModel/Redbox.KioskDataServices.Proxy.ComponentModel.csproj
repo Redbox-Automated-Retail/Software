@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.KioskDataServices.Proxy.ComponentModel</AssemblyName>
     <RootNamespace>Redbox.KioskDataServices.Proxy.ComponentModel</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

@@ -2,7 +2,9 @@
   <PropertyGroup>
     <AssemblyName>Redbox.KioskEngine.IDE</AssemblyName>
     <RootNamespace>Redbox.KioskEngine.IDE</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWPF>True</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -38,16 +40,6 @@
     <EmbeddedResource Update="ViewStackToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ViewStackToolWindow.resources" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Puzzle.SyntaxBox.NET3.5">
       <HintPath>..\..\..\lib\Puzzle.SyntaxBox\Puzzle.SyntaxBox.NET3.5.dll</HintPath>
     </Reference>
@@ -66,5 +58,15 @@
     <ProjectReference Include="..\Redbox.KioskEngine.ComponentModel\Redbox.KioskEngine.ComponentModel.csproj" />
     <ProjectReference Include="..\..\Common\Redbox.Lua\Redbox.Lua.csproj" />
     <ProjectReference Include="..\..\Common\Redbox.REDS.Framework\Redbox.REDS.Framework.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
 </Project>

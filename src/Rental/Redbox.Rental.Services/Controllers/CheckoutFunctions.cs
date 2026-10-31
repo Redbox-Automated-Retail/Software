@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DeviceService.ComponentModel;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
+using ITimer = Redbox.KioskEngine.ComponentModel.ITimer;
 using Redbox.KioskEngine.ComponentModel.KioskServices;
 using Redbox.KioskEngine.ComponentModel.TrackData;
 using Redbox.KioskEngine.Environment;

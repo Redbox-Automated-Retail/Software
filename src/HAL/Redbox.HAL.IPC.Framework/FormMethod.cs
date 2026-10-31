@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Redbox.HAL.Component.Model;
 using Redbox.HAL.Core;
+using KeyValuePair = Redbox.HAL.Core.KeyValuePair;
 
 namespace Redbox.HAL.IPC.Framework;
 

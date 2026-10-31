@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
+using ITimer = Redbox.KioskEngine.ComponentModel.ITimer;
 
 namespace Redbox.KioskEngine.Environment;
 
