@@ -3,7 +3,7 @@
     <AssemblyName>MSHALTester</AssemblyName>
     <RootNamespace>Redbox.HAL.MSHALTester</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.ICameraPlugin.Vidcap</AssemblyName>
     <RootNamespace>Redbox.HAL.ICameraPlugin.Vidcap</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.DirectShow.Plugin</AssemblyName>
     <RootNamespace>Redbox.HAL.DirectShow.Plugin</RootNamespace>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

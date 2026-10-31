@@ -3,7 +3,7 @@
     <AssemblyName>halsvc-win32</AssemblyName>
     <RootNamespace>Redbox.HAL.Service.Win32</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>app.ico</ApplicationIcon>
