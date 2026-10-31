@@ -4,9 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using KioskClientService.API.Services.Configuration;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
 
@@ -45,16 +46,8 @@ public class Program
 			Log.Information($"Service version: {Assembly.GetExecutingAssembly().GetName().Version}");
 			// Which build runs: release builds stamp "<version>+<commit>" (build/Release.targets).
 			Log.Information("Service build: " + Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
-			if (!flag)
-			{
-				Log.Information("Program.Main - Starting as a console application");
-				CreateWebHostBuilder(args).Build().Run();
-			}
-			else
-			{
-				Log.Information("Program.Main - Starting as a Windows Service");
-				CreateWebHostBuilder(args).Build().RunAsDeviceServiceService();
-			}
+			Log.Information(flag ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
+			CreateHostBuilder(args, flag).Build().Run();
 		}
 		catch (Exception exception)
 		{
@@ -67,18 +60,26 @@ public class Program
 		}
 	}
 
-	public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+	public static IHostBuilder CreateHostBuilder(string[] args, bool runAsService)
 	{
 		Uri serviceUri = GetServiceUri(Configuration);
 		Log.Information($"CreateWebHostBuilder: url={serviceUri.AbsoluteUri}  port={serviceUri.Port}");
-		return WebHost.CreateDefaultBuilder(args).UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)).UseUrls(serviceUri.AbsoluteUri)
-			.UseSetting("Port", serviceUri.Port.ToString())
+		return Host.CreateDefaultBuilder(args)
+			.UseWindowsService()
+			.UseContentRoot(Path.GetDirectoryName(Environment.ProcessPath))
 			.UseSerilog()
-			.ConfigureAppConfiguration(delegate(WebHostBuilderContext builder, IConfigurationBuilder conf)
+			.ConfigureAppConfiguration((context, conf) => GetConfiguration(conf, context.HostingEnvironment.EnvironmentName))
+			.ConfigureServices(services =>
 			{
-				GetConfiguration(conf, builder);
+				if (runAsService)
+				{
+					services.AddHostedService<ApplicationWebHostService>();
+				}
 			})
-			.UseStartup<Startup>();
+			.ConfigureWebHostDefaults(webHost => webHost
+				.UseUrls(serviceUri.AbsoluteUri)
+				.UseSetting("Port", serviceUri.Port.ToString())
+				.UseStartup<Startup>());
 	}
 
 	private static Uri GetServiceUri(IConfiguration config)
@@ -86,9 +87,9 @@ public class Program
 		return new Uri(config.GetValue("AppSettings:ServiceUrl", string.Empty));
 	}
 
-	private static IConfigurationBuilder GetConfiguration(IConfigurationBuilder builder, WebHostBuilderContext webHostBuilderContext = null)
+	private static IConfigurationBuilder GetConfiguration(IConfigurationBuilder builder, string environmentName = null)
 	{
 		return builder.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).AddJsonFile(KioskConfigurationConstants.ConfigurationFilePath, optional: true, reloadOnChange: true)
-			.AddJsonFile("appsettings." + (webHostBuilderContext?.HostingEnvironment?.EnvironmentName ?? "Production") + ".json", optional: true, reloadOnChange: true);
+			.AddJsonFile("appsettings." + (environmentName ?? "Production") + ".json", optional: true, reloadOnChange: true);
 	}
 }
