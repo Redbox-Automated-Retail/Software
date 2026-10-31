@@ -95,7 +95,7 @@ public abstract class ServerSession : ISession, IMessageSink
 			ReadTimeout = 30000,
 			WriteTimeout = 30000
 		};
-		sslStream.AuthenticateAsServer(ServiceHost.Certificate, clientCertificateRequired: false, SslProtocols.Tls, checkCertificateRevocation: true);
+		sslStream.AuthenticateAsServer(ServiceHost.Certificate, clientCertificateRequired: false, SslProtocols.None, checkCertificateRevocation: true);
 		Stream = sslStream;
 	}
 
