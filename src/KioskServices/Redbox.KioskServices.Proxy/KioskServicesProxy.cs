@@ -230,15 +230,17 @@ public class KioskServicesProxy
 		if (Protocol == KioskServicesProtocol.REST)
 		{
 			string arg = HttpUtility.UrlEncode(jsonRequest);
-			string text = $"payload={arg}";
+			// Content-Length is the UTF-8 byte count (it was the string length, which cut off any non-ASCII body).
+			byte[] body = Encoding.UTF8.GetBytes($"payload={arg}");
 			WebRequest webRequest = WebRequest.Create(Url);
 			webRequest.Method = "POST";
 			webRequest.ContentType = "application/x-www-form-urlencoded";
-			webRequest.ContentLength = text.Length;
+			webRequest.ContentLength = body.Length;
 			LogHelper.Instance.Log("...Making remote call using HTTPS POST.");
-			Stream requestStream = webRequest.GetRequestStream();
-			requestStream.Write(Encoding.UTF8.GetBytes(text), 0, text.Length);
-			requestStream.Close();
+			using (Stream requestStream = webRequest.GetRequestStream())
+			{
+				requestStream.Write(body, 0, body.Length);
+			}
 			using WebResponse webResponse = webRequest.GetResponse();
 			using StreamReader streamReader = new StreamReader(webResponse.GetResponseStream());
 			return HttpUtility.UrlDecode(streamReader.ReadToEnd());
