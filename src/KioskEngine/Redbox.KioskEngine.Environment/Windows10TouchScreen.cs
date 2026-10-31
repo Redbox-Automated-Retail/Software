@@ -1,14 +1,14 @@
 using System;
-using System.Diagnostics;
+using System.Management;
 using Redbox.Core;
 
 namespace Redbox.KioskEngine.Environment;
 
 internal static class Windows10TouchScreen
 {
-	private const string EXE = "wmic.exe";
-
-	private const string ARGS_MASK = "path Win32_PnPEntity where \"Name='HID-Compliant touch screen'\" call {0}";
+	// The original ran "wmic path Win32_PnPEntity where ... call Enable|Disable"; wmic.exe is gone from Windows 11,
+	// so the same WMI query and method are used directly.
+	private const string TouchScreenQuery = "SELECT * FROM Win32_PnPEntity WHERE Name='HID-Compliant touch screen'";
 
 	private const string ENABLE = "Enable";
 
@@ -16,42 +16,39 @@ internal static class Windows10TouchScreen
 
 	public static void Enable()
 	{
-		FireProcess("Enable");
+		InvokeOnTouchScreens(ENABLE);
 	}
 
 	public static void Disable()
 	{
-		FireProcess("Disable");
+		InvokeOnTouchScreens(DISABLE);
 	}
 
-	private static void FireProcess(string wmiMethod)
+	private static void InvokeOnTouchScreens(string wmiMethod)
 	{
-		Process process = null;
 		try
 		{
 			LogHelper.Instance.Log("Windows10TouchScreen - Attempting to " + wmiMethod + " HID-compliant touch screen");
-			string arguments = $"path Win32_PnPEntity where \"Name='HID-Compliant touch screen'\" call {wmiMethod}";
-			process = new Process
+			using ManagementObjectSearcher searcher = new ManagementObjectSearcher(TouchScreenQuery);
+			using ManagementObjectCollection devices = searcher.Get();
+			int count = 0;
+			foreach (ManagementObject device in devices)
 			{
-				StartInfo = new ProcessStartInfo("wmic.exe", arguments)
+				using (device)
 				{
-					CreateNoWindow = true,
-					WindowStyle = ProcessWindowStyle.Hidden,
-					UseShellExecute = false,
-					RedirectStandardOutput = true
+					object result = device.InvokeMethod(wmiMethod, null);
+					LogHelper.Instance.Log($"Windows10TouchScreen - {wmiMethod} on {device["DeviceID"]} returned {result}");
+					count++;
 				}
-			};
-			process.Start();
-			process.WaitForExit();
-			LogHelper.Instance.Log($"Windows10TouchScreen - operation result: {process.ExitCode}, output: {process.StandardOutput.ReadToEnd()}");
+			}
+			if (count == 0)
+			{
+				LogHelper.Instance.Log("Windows10TouchScreen - no HID-compliant touch screen found");
+			}
 		}
 		catch (Exception e)
 		{
 			LogHelper.Instance.LogException("Exception trying to toggle HID touch screen device!", e);
-		}
-		finally
-		{
-			process.Close();
 		}
 	}
 }
