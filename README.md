@@ -28,6 +28,16 @@ Many of the shipped executables were single files produced by ILMerge. The proje
 ordinary, separate assemblies; add `-p:ILRepack=true` to also produce merged copies (in a `merged\`
 folder next to each affected output) using the assembly lists recorded in each project.
 
+To build a deployable component (Kiosk Client, Update Client, Device Service, Update Manager, Kiosk Engine, HAL,
+tools) as a release for the self-hosted backend, with a version stamped on its main assemblies:
+
+```powershell
+.\build\release.ps1 -Component kioskclient -Version 1.0.208.0      # out\release\kioskclient-1.0.208.0.zip
+```
+
+`build/components.json` maps components to projects and kiosk folders; `.github/workflows/release.yml` runs it for
+tags `<component>/v<a.b.c.d>`. Publishing, rollout and rollback are in the backend's `docs/releases.md`.
+
 A few projects are kept as source only and are not in `Redbox.sln`, because the libraries they were
 compiled against are not available; see "Known gaps" in
 [docs/decompilation.md](docs/decompilation.md).

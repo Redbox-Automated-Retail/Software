@@ -402,3 +402,6 @@ FodyWeavers.xsd
 # Never ignore committed third-party binaries
 !lib/**/*.dll
 !lib/**/*.exe
+
+# build/release.ps1 output
+/out/
