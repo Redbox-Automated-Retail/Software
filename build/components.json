@@ -1,0 +1,118 @@
+{
+  "_comment": "Deployable units for build/release.ps1: which projects build into which folder of which update repository. TargetRoot is the folder on the kiosk; 'to' is the subfolder under it. 'publish' projects are published framework-dependent for win7-x86, as Redbox shipped them; 'merged' takes the ILRepack copy, like the shipped single-file executables. 'stamp' = projects that get the release version. The backend publishes only files its repository already has (see the backend's docs/releases.md), so extra build output is harmless; 'newFiles' lists files a release may add.",
+  "components": {
+    "kioskclient": {
+      "kind": "repository", "repository": "kioskclient",
+      "targetRoot": "C:\\Program Files\\Redbox\\REDS\\Kiosk Client",
+      "stamp": ["KioskClientService.API"],
+      "projects": [
+        {"path": "src/KioskClient/KioskClientService.API/KioskClientService.API.csproj", "to": "bin", "publish": true}
+      ]
+    },
+    "updateclient": {
+      "kind": "repository", "repository": "updateclient",
+      "targetRoot": "C:\\Program Files\\Redbox\\REDS\\Update Client",
+      "stamp": ["UpdateClientService.API"],
+      "projects": [
+        {"path": "src/UpdateClient/UpdateClientService.API/UpdateClientService.API.csproj", "to": "bin", "publish": true}
+      ]
+    },
+    "device-service": {
+      "kind": "repository", "repository": "device-service",
+      "targetRoot": "C:\\Program Files\\Redbox\\REDS\\DeviceService",
+      "stamp": ["DeviceService.WebApi"],
+      "projects": [
+        {"path": "src/DeviceService/DeviceService.WebApi/DeviceService.WebApi.csproj", "to": "bin", "publish": true},
+        {"path": "src/DeviceService/RBAInstaller/RBAInstaller.csproj", "to": "bin", "publish": true}
+      ]
+    },
+    "kop-update-manager": {
+      "kind": "repository", "repository": "kop-update-manager",
+      "targetRoot": "C:\\Program Files\\Redbox\\REDS\\Update Manager",
+      "stamp": ["updatemgrd", "update-console", "updatemgr-ui"],
+      "projects": [
+        {"path": "src/UpdateManager/updatemgrd/updatemgrd.csproj", "to": "bin", "merged": true},
+        {"path": "src/UpdateManager/update-console/update-console.csproj", "to": "bin", "merged": true},
+        {"path": "src/UpdateManager/updatemgr-ui/updatemgr-ui.csproj", "to": "bin", "merged": true},
+        {"path": "src/UpdateManager/Redbox.UpdateService.Client/Redbox.UpdateService.Client.csproj", "to": "bin"}
+      ]
+    },
+    "kop-v2-engine": {
+      "kind": "repository", "repository": "kop-v2-engine",
+      "targetRoot": "C:\\Program Files\\Redbox\\REDS\\Kiosk Engine",
+      "stamp": ["kioskengine"],
+      "projects": [
+        {"path": "src/KioskEngine/kioskengine/kioskengine.csproj", "to": "bin"},
+        {"path": "src/KioskEngine/Redbox.ControlPanel.UI/Redbox.ControlPanel.UI.csproj", "to": "bin"},
+        {"path": "src/KioskEngine/Redbox.FMA.UI/Redbox.FMA.UI.csproj", "to": "bin"},
+        {"path": "src/KioskEngine/Redbox.KioskEngine.IDE/Redbox.KioskEngine.IDE.csproj", "to": "bin"},
+        {"path": "src/KioskEngine/Redbox.KioskEngine.API/Redbox.KioskEngine.API.csproj", "to": "bin"},
+        {"path": "src/KioskEngine/redscc/redscc.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.BrokerServices.KernelExtension/Redbox.BrokerServices.KernelExtension.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.BrokerServices.Proxy/Redbox.BrokerServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.FraudServices.Proxy/Redbox.FraudServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.HardwareServices.KernelExtension/Redbox.HardwareServices.KernelExtension.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.HardwareServices.Proxy/Redbox.HardwareServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.KioskDataServices.Proxy/Redbox.KioskDataServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.KioskServices.KernelExtension/Redbox.KioskServices.KernelExtension.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.KioskServices.Proxy/Redbox.KioskServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.UpdateServices.KernelExtension/Redbox.UpdateServices.KernelExtension.csproj", "to": "bin"},
+        {"path": "src/KioskServices/Redbox.UpdateServices.Proxy/Redbox.UpdateServices.Proxy.csproj", "to": "bin"},
+        {"path": "src/Rental/Redbox.Rental.UI/Redbox.Rental.UI.csproj", "to": "bin"},
+        {"path": "src/Rental/Redbox.Rental.Services/Redbox.Rental.Services.csproj", "to": "bin"},
+        {"path": "src/Rental/Redbox.Rental.Kernel/Redbox.Rental.Kernel.csproj", "to": "bin"},
+        {"path": "src/Rental/Redbox.Rental.Data/Redbox.Rental.Data.csproj", "to": "bin"},
+        {"path": "src/DeviceService/DeviceService.Client/DeviceService.Client.csproj", "to": "bin"}
+      ]
+    },
+    "kop-hal-install": {
+      "kind": "repository", "repository": "kop-hal-install",
+      "targetRoot": "C:\\Program Files\\Redbox\\halservice",
+      "stamp": ["halsvc-win32"],
+      "projects": [
+        {"path": "src/HAL/halsvc-win32/halsvc-win32.csproj", "to": "bin"},
+        {"path": "src/HAL/HAL.PackageInstaller/HAL.PackageInstaller.csproj", "to": "bin"},
+        {"path": "src/HAL/halmgmtc/halmgmtc.csproj", "to": "bin"},
+        {"path": "src/HAL/CameraTuner/CameraTuner.csproj", "to": "bin"},
+        {"path": "src/HAL/Redbox.HAL.DirectShow.Frame.Plugin/Redbox.HAL.DirectShow.Frame.Plugin.csproj", "to": "bin\\camera.plugins"},
+        {"path": "src/HAL/Legacy/Redbox.HAL.DirectShow.Plugin/Redbox.HAL.DirectShow.Plugin.csproj", "to": "bin\\camera.plugins"},
+        {"path": "src/HAL/Legacy/Redbox.HAL.ICameraPlugin.Vidcap/Redbox.HAL.ICameraPlugin.Vidcap.csproj", "to": "bin\\camera.plugins"}
+      ]
+    },
+    "kop-ms-hal-tester": {
+      "kind": "repository", "repository": "kop-ms-hal-tester",
+      "targetRoot": "C:\\Program Files\\Redbox\\MS HAL Tester",
+      "stamp": ["MSHALTester"],
+      "projects": [
+        {"path": "src/HAL/MSHALTester/MSHALTester.csproj", "to": "bin"}
+      ]
+    },
+    "kop-tools": {
+      "kind": "repository", "repository": "kop-tools",
+      "targetRoot": "C:\\Program Files\\Redbox",
+      "stamp": ["kioskutil", "inventoryimport", "HalUtilities"],
+      "projects": [
+        {"path": "src/Tools/kioskutil/kioskutil.csproj", "to": "REDS\\bin"},
+        {"path": "src/Tools/inventoryimport/inventoryimport.csproj", "to": "REDS\\bin", "merged": true},
+        {"path": "src/HAL/HalUtilities/HalUtilities.csproj", "to": "HAL-Tools"}
+      ]
+    },
+    "kioskclient-fileset": {
+      "_comment": "The Kiosk Client as an Update Client file set instead of the updatemgrd repository (pick one per kiosk fleet). Only the files listed in 'include' go into the file set.",
+      "kind": "fileset", "fileSet": {"Id": 12, "Name": "Kiosk Client"},
+      "destination": "C:\\Program Files\\Redbox\\REDS\\Kiosk Client\\bin",
+      "stamp": ["KioskClientService.API"],
+      "include": ["KioskClientService.API.dll", "KioskClientService.API.exe", "KioskClientService.API.deps.json",
+                  "KioskClientService.API.runtimeconfig.json"],
+      "projects": [
+        {"path": "src/KioskClient/KioskClientService.API/KioskClientService.API.csproj", "to": "", "publish": true}
+      ]
+    }
+  },
+  "notBuiltHere": {
+    "kop-rental-bundles": "Engine bundles (.bundle: Lua and views); their sources are not in this repository. Publish an unpacked folder with the backend's admin publish.",
+    "kop-shared-bundles": "As kop-rental-bundles.",
+    "kop-scripts": "updatemgrd's Lua scripts; not in this repository (they ship in the update store only).",
+    "dvd-data": "Content, not code."
+  }
+}

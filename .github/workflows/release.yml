@@ -1,0 +1,72 @@
+# Build a kiosk component from a tag and publish it to the self-hosted backend as an *unreleased* revision.
+#
+#   git tag kioskclient/v1.0.208.0 && git push origin kioskclient/v1.0.208.0
+#
+# The build job runs build/release.ps1 on a Windows runner and keeps the release zip as an artifact. The publish
+# job uploads it to the backend's CI API (/api/ci/releases on the admin dashboard, Backend repo
+# docs/releases.md); it only runs when the repository variable RB_PUBLISH is "true", because the dashboard is
+# not on the internet by default: run it on a self-hosted runner that can reach the dashboard (variable
+# RB_PUBLISH_RUNNER, e.g. "self-hosted"), or expose the dashboard deliberately.
+#   secrets:   RB_API_TOKEN  (admin api-token create ci --scope publish)
+#              RB_CA_PEM     (the backend CA, certs/ca.crt from rb.ps1 export-ca)
+#   variables: RB_ADMIN_URL  (e.g. https://backend.example:8443), RB_PUBLISH, RB_PUBLISH_RUNNER
+# Rolling the revision out to kiosks is a separate, deliberate step (admin rollout / rb-release.py rollout).
+name: release
+
+on:
+  push:
+    tags: ["*/v*"]
+  workflow_dispatch:
+    inputs:
+      component: { description: "build/components.json key", required: true }
+      version: { description: "a.b.c.d", required: true }
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    outputs:
+      zip: ${{ steps.build.outputs.zip }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: build
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:GITHUB_REF_TYPE -eq "tag") {
+            $zip = .\build\release.ps1 -Tag $env:GITHUB_REF_NAME -Out out\release | Select-Object -Last 1
+          } else {
+            $zip = .\build\release.ps1 -Component "${{ inputs.component }}" -Version "${{ inputs.version }}" -Out out\release | Select-Object -Last 1
+          }
+          "zip=$(Split-Path -Leaf $zip)" | Out-File -Append -Encoding utf8 $env:GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: out/release/*.zip
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: vars.RB_PUBLISH == 'true'
+    runs-on: ${{ vars.RB_PUBLISH_RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+      - shell: bash
+        env:
+          RB_API_TOKEN: ${{ secrets.RB_API_TOKEN }}
+          RB_CA_PEM: ${{ secrets.RB_CA_PEM }}
+          RB_ADMIN_URL: ${{ vars.RB_ADMIN_URL }}
+          ZIP: ${{ needs.build.outputs.zip }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$RB_CA_PEM" > ca.pem
+          curl --fail-with-body -sS --cacert ca.pem -H "Authorization: Bearer $RB_API_TOKEN" \
+               -F "file=@$ZIP;type=application/zip" "$RB_ADMIN_URL/api/ci/releases" | tee publish.json
+          echo
+          echo "Published unreleased. Roll it out with: rb-release.py rollout <repo> <version> --store <test kiosk>"
