@@ -43,6 +43,8 @@ public class Program
 			Log.Information("------------------------------------ Starting web host -------------------------------------");
 			Log.Information("ASPNETCORE_ENVIRONMENT: " + Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 			Log.Information($"Service version: {Assembly.GetExecutingAssembly().GetName().Version}");
+			// Which build runs: release builds stamp "<version>+<commit>" (build/Release.targets).
+			Log.Information("Service build: " + Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
 			if (!flag)
 			{
 				Log.Information("Program.Main - Starting as a console application");
