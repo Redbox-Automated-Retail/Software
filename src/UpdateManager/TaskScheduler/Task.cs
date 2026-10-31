@@ -324,6 +324,11 @@ public class Task : IDisposable
 
 	public object Tag
 	{
+#if !NETFRAMEWORK
+		// Work-item data was stored with BinaryFormatter, which .NET 10 no longer has; nothing in the kiosk uses Tag.
+		get => throw new NotSupportedException("Task.Tag (BinaryFormatter work-item data) is not available on .NET 10.");
+		set => throw new NotSupportedException("Task.Tag (BinaryFormatter work-item data) is not available on .NET 10.");
+#else
 		get
 		{
 			iTask.GetWorkItemData(out var DataLen, out var Data);
@@ -344,6 +349,7 @@ public class Task : IDisposable
 			binaryFormatter.Serialize(memoryStream, value);
 			iTask.SetWorkItemData((ushort)memoryStream.Length, memoryStream.GetBuffer());
 		}
+#endif
 	}
 
 	internal Task(ITask iTask, string taskName)

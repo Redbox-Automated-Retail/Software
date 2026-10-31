@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+#if NETFRAMEWORK
 using System.Configuration.Install;
+#endif
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -109,6 +111,26 @@ public class Program
 
 	private static bool ExecuteInstaller(bool install, IConsole console)
 	{
+#if !NETFRAMEWORK
+		try
+		{
+			if (install)
+			{
+				UpdateManagerServiceRegistration.Install(Options.Instance.ForceStart);
+			}
+			else
+			{
+				UpdateManagerServiceRegistration.Uninstall();
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			console.WriteLine(ex);
+			LogHelper.Instance.Log("Unhandled exception occurred in Program.ExecuteInstaller", ex);
+			return false;
+		}
+#else
 		try
 		{
 			using AssemblyInstaller assemblyInstaller = new AssemblyInstaller(typeof(Program).Assembly, new string[0]);
@@ -140,5 +162,6 @@ public class Program
 			LogHelper.Instance.Log("Unhandled exception occurred in Program.ExecuteInstaller", ex);
 			return false;
 		}
+#endif
 	}
 }

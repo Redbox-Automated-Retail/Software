@@ -3,7 +3,7 @@
     <AssemblyName>updatemgr-ui</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.UI</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -19,19 +19,6 @@
     <EmbeddedResource Update="TransferManager.resx" LogicalName="Redbox.UpdateManager.UI.TransferManager.resources" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -40,7 +27,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="2.0.8" Condition="'$(TargetFramework)' == 'net48'" />
+    <PackageReference Include="log4net" Version="2.0.17" Condition="'$(TargetFramework)' != 'net48'" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Redbox.Command.Tokenizer\Redbox.Command.Tokenizer.csproj" />
@@ -54,5 +42,21 @@
     <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
     <ProjectReference Include="..\Redbox.UpdateManager.ServiceProxies\Redbox.UpdateManager.ServiceProxies.csproj" />
     <ProjectReference Include="..\Redbox.UpdateService.Model\Redbox.UpdateService.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
   </ItemGroup>
 </Project>

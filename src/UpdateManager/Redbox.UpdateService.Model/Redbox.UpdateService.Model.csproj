@@ -2,14 +2,14 @@
   <PropertyGroup>
     <AssemblyName>Redbox.UpdateService.Model</AssemblyName>
     <RootNamespace>Redbox.UpdateService.Model</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Core" />
   </ItemGroup>
 </Project>

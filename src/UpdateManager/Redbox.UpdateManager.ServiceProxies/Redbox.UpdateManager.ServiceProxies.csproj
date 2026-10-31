@@ -2,12 +2,17 @@
   <PropertyGroup>
     <AssemblyName>Redbox.UpdateManager.ServiceProxies</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.ServiceProxies</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
+    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -20,9 +25,9 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />
-    <ProjectReference Include="..\..\Common\Redbox.IPC.Framework\Redbox.IPC.Framework.csproj" />
-    <ProjectReference Include="..\Redbox.UpdateManager.ComponentModel\Redbox.UpdateManager.ComponentModel.csproj" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
+    <PackageReference Include="System.Management" Version="10.0.14" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
   </ItemGroup>
 </Project>
