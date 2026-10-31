@@ -1,0 +1,3 @@
+namespace Redbox.Core;
+
+internal delegate bool Redbox_002EMacros1309_002EControlCallback(Redbox_002EMacros1309_002ECtrlTypes ctrlType);
