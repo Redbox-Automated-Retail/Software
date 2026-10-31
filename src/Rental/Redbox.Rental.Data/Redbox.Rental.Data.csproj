@@ -7,7 +7,9 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
+  <!-- profile.data: VistaDB on .NET Framework, SQLite on .NET 10 (SqliteDatabaseProvider). -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Compile Remove="SqliteDatabaseProvider.cs" />
     <Reference Include="VistaDB.NET20">
       <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
     </Reference>
@@ -24,5 +26,9 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <Compile Remove="VistaDBDatabaseProvider.cs" />
+    <ProjectReference Include="..\..\Common\Redbox.Data.Sqlite\Redbox.Data.Sqlite.csproj" />
   </ItemGroup>
 </Project>
