@@ -1,48 +1,52 @@
+using System.Threading;
+using System.Threading.Tasks;
 using DeviceService.ComponentModel.Analytics;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DeviceService.WebApi;
 
-public class DeviceServiceWebHostService : WebHostService
+// On ASP.NET Core 2.2 this was a WebHostService subclass (the Windows service wrapper). On the generic host the
+// same four notifications come from IHostApplicationLifetime; Program registers this only when running as a service.
+public class DeviceServiceWebHostService : IHostedService
 {
-	private ILogger _logger;
+	private readonly ILogger _logger;
 
-	private IAnalyticsService _analytics;
+	private readonly IAnalyticsService _analytics;
 
-	public DeviceServiceWebHostService(IWebHost host, ILogger<DeviceServiceWebHostService> logger, IAnalyticsService analytics)
-		: base(host)
+	private readonly IHostApplicationLifetime _lifetime;
+
+	public DeviceServiceWebHostService(IHostApplicationLifetime lifetime, ILogger<DeviceServiceWebHostService> logger, IAnalyticsService analytics)
 	{
+		_lifetime = lifetime;
 		_logger = logger;
 		_analytics = analytics;
 	}
 
-	protected override void OnStarting(string[] args)
+	public Task StartAsync(CancellationToken cancellationToken)
 	{
 		_logger?.LogInformation("WebHost: OnStarting");
 		_analytics?.ServiceStarting();
-		base.OnStarting(args);
+		_lifetime.ApplicationStarted.Register(delegate
+		{
+			_logger?.LogInformation("WebHost: OnStarted");
+			_analytics?.ServiceStarted();
+		});
+		_lifetime.ApplicationStopping.Register(delegate
+		{
+			_logger?.LogInformation("WebHost: OnStopping");
+			_analytics?.ServiceStopping();
+		});
+		_lifetime.ApplicationStopped.Register(delegate
+		{
+			_logger?.LogInformation("WebHost: OnStopped");
+			_analytics?.ServiceStopped();
+		});
+		return Task.CompletedTask;
 	}
 
-	protected override void OnStarted()
+	public Task StopAsync(CancellationToken cancellationToken)
 	{
-		_logger?.LogInformation("WebHost: OnStarted");
-		_analytics?.ServiceStarted();
-		base.OnStarted();
-	}
-
-	protected override void OnStopping()
-	{
-		_logger?.LogInformation("WebHost: OnStopping");
-		_analytics?.ServiceStopping();
-		base.OnStopping();
-	}
-
-	protected override void OnStopped()
-	{
-		_logger?.LogInformation("WebHost: OnStopped");
-		_analytics?.ServiceStopped();
-		base.OnStopped();
+		return Task.CompletedTask;
 	}
 }

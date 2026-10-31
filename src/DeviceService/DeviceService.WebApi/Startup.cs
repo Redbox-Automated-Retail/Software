@@ -19,12 +19,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RBA_SDK;
 using RBA_SDK_ComponentModel;
 using Serilog;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -41,10 +43,18 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
-		services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+		// MVC 2.x used Newtonsoft.Json and conventional routing (UseMvc); both are kept so the API's JSON and routes
+		// stay as they were.
+		services.AddMvc(delegate(MvcOptions options)
+		{
+			options.EnableEndpointRouting = false;
+		}).AddNewtonsoftJson(delegate(MvcNewtonsoftJsonOptions options)
+		{
+			options.SerializerSettings.Converters.Add(new LegacyVersionJsonConverter());
+		});
 		services.AddSwaggerGen(delegate(SwaggerGenOptions c)
 		{
-			c.SwaggerDoc("v1", new Info
+			c.SwaggerDoc("v1", new OpenApiInfo
 			{
 				Title = "My API",
 				Version = "v1"
@@ -98,7 +108,12 @@ public class Startup
 		});
 		services.AddSingleton((IServiceProvider serviceProvider) => singletonIUC285Proxy as IFileUpdater);
 		services.AddSingleton(Log.Logger);
-		services.AddSignalR();
+		// The engine's SignalR 1.1 client speaks the hub's JSON protocol as Newtonsoft.Json wrote it on 2.2,
+		// including System.Version as an object.
+		services.AddSignalR().AddNewtonsoftJsonProtocol(delegate(NewtonsoftJsonHubProtocolOptions options)
+		{
+			options.PayloadSerializerSettings.Converters.Add(new LegacyVersionJsonConverter());
+		});
 		services.AddSingleton<IBluefinServiceClient, BluefinServiceClient>();
 		services.AddSingleton<IKioskDataServiceClient, KioskDataServiceClient>();
 		services.AddSingleton<IDeviceServiceClientCore, DeviceServiceClient>();
@@ -110,7 +125,7 @@ public class Startup
 		{
 			if (singletonApplicationControl == null)
 			{
-				singletonApplicationControl = new ApplicationControl(provider2.GetRequiredService<IApplicationLifetime>(), provider2.GetRequiredService<ILogger<ApplicationControl>>(), provider2.GetRequiredService<IIUC285Notifier>());
+				singletonApplicationControl = new ApplicationControl(provider2.GetRequiredService<IHostApplicationLifetime>(), provider2.GetRequiredService<ILogger<ApplicationControl>>(), provider2.GetRequiredService<IIUC285Notifier>());
 			}
 			return singletonApplicationControl;
 		});
@@ -123,7 +138,7 @@ public class Startup
 		}).Start();
 	}
 
-	public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
 	{
 		if (env.IsDevelopment())
 		{
@@ -140,9 +155,10 @@ public class Startup
 			c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 		});
 		app.UseMvc();
-		app.UseSignalR(delegate(HubRouteBuilder route)
+		app.UseRouting();
+		app.UseEndpoints(delegate(IEndpointRouteBuilder endpoints)
 		{
-			route.MapHub<CardReaderHub>("/CardReaderEvents");
+			endpoints.MapHub<CardReaderHub>("/CardReaderEvents");
 		});
 	}
 }

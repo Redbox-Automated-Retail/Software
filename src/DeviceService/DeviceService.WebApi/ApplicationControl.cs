@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using DeviceService.ComponentModel;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace DeviceService.WebApi;
 
 public class ApplicationControl : IApplicationControl
 {
-	private IApplicationLifetime _applicationLifetime;
+	private IHostApplicationLifetime _applicationLifetime;
 
 	private ILogger<ApplicationControl> _logger;
 
@@ -22,7 +23,7 @@ public class ApplicationControl : IApplicationControl
 
 	public static bool IsService { get; set; }
 
-	public ApplicationControl(IApplicationLifetime applicationLifetime, ILogger<ApplicationControl> logger, IIUC285Notifier iuc285Notifier)
+	public ApplicationControl(IHostApplicationLifetime applicationLifetime, ILogger<ApplicationControl> logger, IIUC285Notifier iuc285Notifier)
 	{
 		_applicationLifetime = applicationLifetime;
 		_logger = logger;

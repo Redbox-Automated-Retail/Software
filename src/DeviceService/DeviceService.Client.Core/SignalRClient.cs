@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using DeviceService.ComponentModel;
 using DeviceService.ComponentModel.Commands;
 using DeviceService.ComponentModel.Responses;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeviceService.Client.Core;
 
@@ -34,7 +36,10 @@ public class SignalRClient
 	public async void Connect(string url)
 	{
 		_url = url;
-		_hubConnection = new HubConnectionBuilder().WithUrl(_url).Build();
+		_hubConnection = new HubConnectionBuilder().WithUrl(_url).AddNewtonsoftJsonProtocol(delegate(NewtonsoftJsonHubProtocolOptions options)
+		{
+			options.PayloadSerializerSettings.Converters.Add(new LegacyVersionJsonConverter());
+		}).Build();
 		if (_hubConnection != null)
 		{
 			AddMessageHandlers(_hubConnection);
