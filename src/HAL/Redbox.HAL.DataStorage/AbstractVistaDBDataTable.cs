@@ -185,6 +185,13 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 		return string.Empty;
 	}
 
+	// How the tables write a DateTime into their SQL: DateTime.ToString(), which VistaDB parses (the SQLite build of this
+	// class writes sortable text instead).
+	protected static string FormatDateTime(DateTime value)
+	{
+		return value.ToString();
+	}
+
 	protected VistaDBConnection Connect()
 	{
 		VistaDBConnection vistaDBConnection = new VistaDBConnection(ConnectionString);

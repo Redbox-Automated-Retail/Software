@@ -45,7 +45,7 @@ internal sealed class KioskFunctionCheckTable : AbstractVistaDBDataTable<IKioskF
 		stringBuilder.AppendFormat(" CameraDriverTestResult = '{0}'", obj.CameraDriverTestResult);
 		stringBuilder.AppendFormat(" TouchScreenDriverTestResult = '{0}'", obj.TouchscreenDriverTestResult);
 		stringBuilder.AppendFormat(" InitTestResult = '{0}'", obj.InitTestResult);
-		stringBuilder.AppendFormat(" where SampleDate = '{0}' and UserToken = '{1}'", obj.Timestamp.ToString(), obj.UserIdentifier);
+		stringBuilder.AppendFormat(" where SampleDate = '{0}' and UserToken = '{1}'", FormatDateTime(obj.Timestamp), obj.UserIdentifier);
 		return stringBuilder.ToString();
 	}
 
@@ -56,7 +56,7 @@ internal sealed class KioskFunctionCheckTable : AbstractVistaDBDataTable<IKioskF
 		stringBuilder.Append(" ( SampleDate, UserToken, VerticalTestResult, VendDoorTestResult,");
 		stringBuilder.Append(" TrackTestResult, SnapDecodeTestResult, CameraDriverTestResult,");
 		stringBuilder.Append(" TouchScreenDriverTestResult, InitTestResult )");
-		stringBuilder.AppendFormat(" VALUES ( '{0}', '{1}', '{2}', '{3}',", data.Timestamp.ToString(), data.UserIdentifier, data.VerticalSlotTestResult, data.VendDoorTestResult);
+		stringBuilder.AppendFormat(" VALUES ( '{0}', '{1}', '{2}', '{3}',", FormatDateTime(data.Timestamp), data.UserIdentifier, data.VerticalSlotTestResult, data.VendDoorTestResult);
 		stringBuilder.AppendFormat(" '{0}', '{1}', '{2}',", data.TrackTestResult, data.SnapDecodeTestResult, data.CameraDriverTestResult);
 		stringBuilder.AppendFormat(" '{0}', '{1}' )", data.TouchscreenDriverTestResult, data.InitTestResult);
 		return stringBuilder.ToString();
@@ -64,7 +64,7 @@ internal sealed class KioskFunctionCheckTable : AbstractVistaDBDataTable<IKioskF
 
 	protected override string DeleteStatement(IKioskFunctionCheckData obj)
 	{
-		return $"delete from {base.Name} where UserToken = '{obj.UserIdentifier}' and SampleDate = '{obj.Timestamp}'";
+		return $"delete from {base.Name} where UserToken = '{obj.UserIdentifier}' and SampleDate = '{FormatDateTime(obj.Timestamp)}'";
 	}
 
 	protected override string CreateStatement()
@@ -87,7 +87,7 @@ internal sealed class KioskFunctionCheckTable : AbstractVistaDBDataTable<IKioskF
 	protected override string CleanStatement()
 	{
 		DateTime dateTime = DateTime.Now.Subtract(TimeSpan.FromDays(14.0));
-		return $"DELETE FROM [{base.Name}] where SampleDate < '{dateTime}'";
+		return $"DELETE FROM [{base.Name}] where SampleDate < '{FormatDateTime(dateTime)}'";
 	}
 
 	internal KioskFunctionCheckTable(IDataTableDescriptor d)
