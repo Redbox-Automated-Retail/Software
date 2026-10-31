@@ -4,6 +4,7 @@ using System.Text;
 using Redbox.HAL.Component.Model;
 using Redbox.HAL.Component.Model.Extensions;
 using Redbox.HAL.Core;
+using KeyValuePair = Redbox.HAL.Core.KeyValuePair;
 
 namespace Redbox.HAL.Script.Framework;
 

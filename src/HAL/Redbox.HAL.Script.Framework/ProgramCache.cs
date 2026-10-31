@@ -219,8 +219,11 @@ internal sealed class ProgramCache : IDisposable
 
 	private ExecutionResult CompileProgramInner(Stream stream, string programName)
 	{
-		ExecutionResult executionResult = new Compiler(stream, programName).Compile(out var compiledProgram);
-		CompiledPrograms.Add(programName, new CompiledProgram(executionResult, compiledProgram));
+		using MemoryStream source = new MemoryStream();
+		stream.CopyTo(source);
+		source.Position = 0L;
+		ExecutionResult executionResult = new Compiler(source, programName).Compile(out var compiledProgram);
+		CompiledPrograms.Add(programName, new CompiledProgram(executionResult, compiledProgram, source.ToArray()));
 		return executionResult;
 	}
 

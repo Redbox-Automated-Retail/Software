@@ -4,6 +4,7 @@ using Redbox.HAL.Component.Model;
 using Redbox.HAL.Component.Model.Timers;
 using Redbox.HAL.Controller.Framework;
 using Redbox.HAL.Core;
+using Range = Redbox.HAL.Component.Model.Range;
 
 namespace Redbox.HAL.Script.Framework;
 

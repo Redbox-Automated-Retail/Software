@@ -2,14 +2,14 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.Script.Framework</AssemblyName>
     <RootNamespace>Redbox.HAL.Script.Framework</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>Newtonsoft.Json;PowerCollections;Redbox.DirectShow</ILRepackAssemblies>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -24,7 +24,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" Condition="'$(TargetFramework)' == 'net48'" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" Condition="'$(TargetFramework)' != 'net48'" />
+    <!-- Reads the job contexts the .NET Framework HAL saved with the BinaryFormatter (ExecutionContextStore). -->
+    <PackageReference Include="System.Formats.Nrbf" Version="10.0.14" Condition="'$(TargetFramework)' != 'net48'" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.DirectShow\Redbox.DirectShow.csproj" />

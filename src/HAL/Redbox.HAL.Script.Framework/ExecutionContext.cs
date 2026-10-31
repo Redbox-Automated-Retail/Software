@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+#if NETFRAMEWORK
 using System.Runtime.Serialization.Formatters.Binary;
+#endif
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
@@ -23,6 +25,9 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 	internal readonly ApplicationLog AppLog;
 
 	internal readonly IDictionary<string, ProgramInstruction> ProgramCache = new Dictionary<string, ProgramInstruction>();
+
+	// The script source of each program in ProgramCache, so a saved job can compile it again (ExecutionContextStore).
+	internal readonly IDictionary<string, byte[]> ProgramSources = new Dictionary<string, byte[]>();
 
 	internal readonly Deque<ScriptMessage> Messages = new Deque<ScriptMessage>();
 
@@ -549,15 +554,22 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		if (flag)
 		{
 			string[] array2 = info.GetString("Programs").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+#if NETFRAMEWORK
 			BinaryFormatter binaryFormatter = new BinaryFormatter();
+#endif
 			string[] array3 = array2;
 			foreach (string text5 in array3)
 			{
-				string path = Path.Combine(ContextDirectory, text5);
 				try
 				{
+#if NETFRAMEWORK
+					string path = Path.Combine(ContextDirectory, text5);
 					using FileStream serializationStream = File.OpenRead(path);
 					ProgramCache[text5] = (ProgramInstruction)binaryFormatter.Deserialize(serializationStream);
+#else
+					ProgramCache[text5] = ExecutionContextStore.LoadProgram(ContextDirectory, text5, out byte[] source);
+					ProgramSources[text5] = source;
+#endif
 				}
 				catch (Exception e2)
 				{
@@ -602,6 +614,13 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		IsHydrating = false;
 	}
 
+#if !NETFRAMEWORK
+	internal static ExecutionContext Hydrate(SerializationInfo info)
+	{
+		return new ExecutionContext(info, new StreamingContext(StreamingContextStates.Persistence));
+	}
+
+#endif
 	internal void Reset()
 	{
 		Suspend();
@@ -769,11 +788,12 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		}
 	}
 
-	internal void CopyProgramAndReferences(string programName, ProgramInstruction programInstruction)
+	internal void CopyProgramAndReferences(string programName, ProgramInstruction programInstruction, byte[] source)
 	{
 		ProgramName = programName;
 		IsCooperative = programInstruction.IsCooperative;
 		ProgramCache[ProgramName] = (ProgramInstruction)programInstruction.Clone();
+		ProgramSources[ProgramName] = source;
 		CopyReferences(ProgramCache[ProgramName]);
 	}
 
@@ -1014,15 +1034,21 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 				stringBuilder4.Append(value);
 			}
 			info.AddValue("CallFrames", stringBuilder4.ToString());
+#if NETFRAMEWORK
 			BinaryFormatter binaryFormatter = new BinaryFormatter();
+#endif
 			StringBuilder stringBuilder5 = new StringBuilder();
 			foreach (string key in ProgramCache.Keys)
 			{
 				try
 				{
 					stringBuilder5.Append(key + ";");
+#if NETFRAMEWORK
 					using FileStream serializationStream = File.OpenWrite(Path.Combine(ContextDirectory, key));
 					binaryFormatter.Serialize(serializationStream, ProgramCache[key]);
+#else
+					ExecutionContextStore.SaveProgram(ContextDirectory, key, ProgramSources.TryGetValue(key, out byte[] source) ? source : null);
+#endif
 				}
 				catch (Exception e)
 				{
@@ -1133,8 +1159,12 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 			{
 				Directory.CreateDirectory(ContextDirectory);
 			}
+#if NETFRAMEWORK
 			using FileStream serializationStream = File.OpenWrite(Path.Combine(ContextDirectory, "ctx.data"));
 			new BinaryFormatter().Serialize(serializationStream, this);
+#else
+			ExecutionContextStore.Save(this, ContextDirectory);
+#endif
 		}
 		catch (Exception e)
 		{

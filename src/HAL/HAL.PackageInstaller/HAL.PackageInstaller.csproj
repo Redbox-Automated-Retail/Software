@@ -3,12 +3,16 @@
     <AssemblyName>HAL.PackageInstaller</AssemblyName>
     <RootNamespace>Redbox.HAL.PackageInstaller</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.ServiceProcess" />
   </ItemGroup>
   <ItemGroup>
@@ -18,5 +22,8 @@
     <ProjectReference Include="..\Redbox.HAL.DataMatrix.Framework\Redbox.HAL.DataMatrix.Framework.csproj" />
     <ProjectReference Include="..\Redbox.HAL.DataStorage\Redbox.HAL.DataStorage.csproj" />
     <ProjectReference Include="..\Redbox.HAL.Script.Framework\Redbox.HAL.Script.Framework.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
   </ItemGroup>
 </Project>

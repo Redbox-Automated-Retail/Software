@@ -342,7 +342,12 @@ public class DirectShowFrameControl_v2 : IVideoSource, ISampleGrabberCB
 	{
 		if (IsRunning)
 		{
+#if NETFRAMEWORK
 			thread.Abort();
+#else
+			// .NET has no Thread.Abort. The worker checks the stop event every 100 ms, so it ends on its own.
+			StopEvent.Set();
+#endif
 			WaitForStop();
 		}
 	}

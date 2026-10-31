@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Redbox.HAL.Component.Model;
 using Redbox.HAL.Component.Model.Extensions;
 using Redbox.HAL.Core;
+using Range = Redbox.HAL.Component.Model.Range;
+using KeyValuePair = Redbox.HAL.Core.KeyValuePair;
 
 namespace Redbox.HAL.Script.Framework;
 

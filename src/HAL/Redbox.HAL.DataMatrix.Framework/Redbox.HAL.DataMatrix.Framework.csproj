@@ -2,15 +2,18 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.DataMatrix.Framework</AssemblyName>
     <RootNamespace>Redbox.HAL.DataMatrix.Framework</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>Interop.ClearImage</ILRepackAssemblies>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Drawing.Common" Version="10.0.14" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interop.ClearImage\Interop.ClearImage.csproj" />

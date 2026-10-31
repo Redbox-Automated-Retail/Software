@@ -120,7 +120,12 @@ internal sealed class PackageInstaller : IDisposable
 		Array.ForEach(DefaultDatabases, delegate(string fileName)
 		{
 			string text = RuntimeService.RuntimePath($"data\\{fileName}");
+#if NETFRAMEWORK
 			if (File.Exists(text))
+#else
+			// The .NET HAL keeps its tables in <name>.sqlite (converted from the VistaDB file on its first start).
+			if (File.Exists(text) || File.Exists(Path.ChangeExtension(text, ".sqlite")))
+#endif
 			{
 				Writer.WriteLine("The database {0} already exists - take no further action.", fileName);
 				return;
@@ -204,6 +209,22 @@ internal sealed class PackageInstaller : IDisposable
 		InstallErrors.Add(Error.NewError("I004", "Service install failed.", $"The service install returned error code {exitCode}"));
 	}
 
+#if !NETFRAMEWORK
+	// The runtime's native DLLs (coreclr.dll, e_sqlite3.dll, ...) are not assemblies.
+	private static bool IsAssembly(string path)
+	{
+		try
+		{
+			AssemblyName.GetAssemblyName(path);
+			return true;
+		}
+		catch (BadImageFormatException)
+		{
+			return false;
+		}
+	}
+
+#endif
 	private void RegisterHandlers()
 	{
 		Writer.WriteLine("Register package handlers");
@@ -218,6 +239,14 @@ internal sealed class PackageInstaller : IDisposable
 				Writer.WriteLine(" Exclude {0} ( '{1}' ) from handler search", file, text);
 				continue;
 			}
+#if !NETFRAMEWORK
+			// A self-contained .NET installer has the whole runtime next to it, and an .exe's code is in <name>.dll; .NET
+			// Framework scanned neither (only libraries are .dll there).
+			if (file.StartsWith("System.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("Microsoft.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("api-ms-", StringComparison.OrdinalIgnoreCase) || File.Exists(Path.ChangeExtension(text, ".runtimeconfig.json")) || !IsAssembly(text))
+			{
+				continue;
+			}
+#endif
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(text);
@@ -343,6 +372,10 @@ internal sealed class PackageInstaller : IDisposable
 				}
 			}
 			string assemblyFile = Path.Combine(installer.RuntimeService.AssemblyDirectory, "halsvc-win32.exe");
+#if !NETFRAMEWORK
+			// A .NET service's .exe is a native launcher; its assembly (and version) is halsvc-win32.dll.
+			assemblyFile = Path.ChangeExtension(assemblyFile, ".dll");
+#endif
 			try
 			{
 				using RegistryKey registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\HAL");

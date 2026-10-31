@@ -281,6 +281,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Remoting.Nrbf", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KioskServicesRemoting.Check", "tests\KioskServicesRemoting.Check\KioskServicesRemoting.Check.csproj", "{BB524BF6-4052-4C14-92BA-11224E9C3E9F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HalContextStore.Check", "tests\HalContextStore.Check\HalContextStore.Check.csproj", "{FFBB2957-A772-444F-BBA5-09CA7152D92A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1803,6 +1805,18 @@ Global
 		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x64.Build.0 = Release|Any CPU
 		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB524BF6-4052-4C14-92BA-11224E9C3E9F}.Release|x86.Build.0 = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Debug|x86.Build.0 = Debug|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|x64.Build.0 = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|x86.ActiveCfg = Release|Any CPU
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1945,5 +1959,6 @@ Global
 		{459B64EB-8EBA-4B70-91DB-4FD0568320B1} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{16B5C089-4554-4875-B028-47BFA30175BF} = {BFF2DF6E-AA54-47C7-211F-79ACCBB4577C}
 		{BB524BF6-4052-4C14-92BA-11224E9C3E9F} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{FFBB2957-A772-444F-BBA5-09CA7152D92A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

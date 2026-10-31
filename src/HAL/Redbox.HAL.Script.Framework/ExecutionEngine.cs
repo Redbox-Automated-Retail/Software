@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if NETFRAMEWORK
 using System.Runtime.Serialization.Formatters.Binary;
+#endif
 using System.Threading;
 using System.Timers;
 using Microsoft.Win32;
@@ -282,7 +284,7 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 			ImmediateModeContext.Result.Errors.Add(Error.NewError("E001", string.Format("The program '{0}' was not found in the program cache.", "$$$immediate$$$"), "Recompile the program which will place it in the program cache."));
 			return ImmediateModeContext;
 		}
-		ImmediateModeContext.CopyProgramAndReferences("$$$immediate$$$", program.ParseTree);
+		ImmediateModeContext.CopyProgramAndReferences("$$$immediate$$$", program.ParseTree, program.Source);
 		ImmediateModeContext.Priority = ProgramPriority.Immediate;
 		ImmediateModeContext.Pend();
 		return ImmediateModeContext;
@@ -392,7 +394,7 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 					return executionContext;
 				}
 			}
-			executionContext.CopyProgramAndReferences(text, program.ParseTree);
+			executionContext.CopyProgramAndReferences(text, program.ParseTree, program.Source);
 			using (new WithWriteLock(ContextLock))
 			{
 				Contexts.Add(executionContext);
@@ -573,6 +575,10 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 
 	private void LoadJobs()
 	{
+#if !NETFRAMEWORK
+		// A job saved by the .NET Framework HAL has no script source of its own; it gets the current one.
+		ExecutionContextStore.CurrentProgramSource = (string name) => ProgramCache.GetProgram(name)?.Source;
+#endif
 		string path = Path.Combine(DataDirectory, "contexts");
 		try
 		{
@@ -588,14 +594,18 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 		}
 		Array.ForEach(Directory.GetDirectories(path), delegate(string contextPath)
 		{
-			string path2 = Path.Combine(contextPath, "ctx.data");
 			ExecutionContext executionContext = null;
 			try
 			{
+#if NETFRAMEWORK
+				string path2 = Path.Combine(contextPath, "ctx.data");
 				using (FileStream serializationStream = File.OpenRead(path2))
 				{
 					executionContext = (ExecutionContext)new BinaryFormatter().Deserialize(serializationStream);
 				}
+#else
+				executionContext = ExecutionContextStore.Load(contextPath);
+#endif
 				if (executionContext != null)
 				{
 					if (executionContext.Status.Value == ExecutionContextStatus.Suspended && Array.IndexOf(NonRestartableJobs, executionContext.ProgramName) > -1)
@@ -607,9 +617,10 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 					Contexts.Add(executionContext);
 				}
 			}
-			catch
+			catch (Exception e3)
 			{
 				LogHelper.Instance.Log("[ExecutionEngine] Unable to load context {0}; deleting.", contextPath);
+				LogHelper.Instance.Log("[ExecutionEngine] Why the context could not be loaded:", e3);
 				try
 				{
 					Directory.Delete(contextPath, recursive: true);

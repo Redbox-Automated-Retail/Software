@@ -16,3 +16,5 @@ using System.Security.Permissions;
 [assembly: AssemblyFileVersion("1.13.0.27")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.13.0.27")]
+// Added on the modernize branch: tests/HalContextStore.Check reads and writes job contexts.
+[assembly: InternalsVisibleTo("HalContextStore.Check")]

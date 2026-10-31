@@ -6,6 +6,9 @@ internal sealed class CompiledProgram
 
 	internal readonly ExecutionResult CompilerResult;
 
+	// The script the program was compiled from; a saved job keeps it (ExecutionContextStore).
+	internal readonly byte[] Source;
+
 	internal bool VisibleToUser;
 
 	public override string ToString()
@@ -17,10 +20,11 @@ internal sealed class CompiledProgram
 		return $"Errors: {CompilerResult.Errors.ErrorCount}, Warnings: {CompilerResult.Errors.WarningCount}";
 	}
 
-	internal CompiledProgram(ExecutionResult compileResult, ProgramInstruction tree)
+	internal CompiledProgram(ExecutionResult compileResult, ProgramInstruction tree, byte[] source)
 	{
 		ParseTree = tree;
 		CompilerResult = compileResult;
+		Source = source;
 		VisibleToUser = true;
 	}
 }

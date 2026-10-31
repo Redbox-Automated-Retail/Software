@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Checks how the .NET 10 HAL keeps its jobs (Redbox.HAL.Script.Framework
+    ExecutionContextStore) against job contexts the .NET Framework HAL saved: every ctx.data in a copy of a contexts
+    folder is imported, saved as ctx.json and loaded again, and the entries are compared with what the BinaryFormatter
+    file holds (decoded here on its own) and between the two loads.
+    Usage: HalContextStore.Check.exe <halservice\bin\data\contexts folder>   (the folder is copied; it is not changed)
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);SYSLIB0050;SYSLIB0051</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Formats.Nrbf" Version="10.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HAL\Redbox.HAL.Script.Framework\Redbox.HAL.Script.Framework.csproj" />
+  </ItemGroup>
+</Project>

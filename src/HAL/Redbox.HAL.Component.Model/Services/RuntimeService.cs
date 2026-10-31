@@ -263,6 +263,14 @@ public sealed class RuntimeService : IRuntimeService
 				Platform = Platform.Windows7;
 			}
 			break;
+		default:
+			// Windows 7 stands for "7 or later". .NET Framework reports Windows 10/11 as 6.2 to a process without a
+			// compatibility manifest; .NET 5+ reports the real version (10.0), which HAL.PackageInstaller would refuse.
+			if (oSVersion.Version.Major >= 10)
+			{
+				Platform = Platform.Windows7;
+			}
+			break;
 		}
 		return Platform;
 	}

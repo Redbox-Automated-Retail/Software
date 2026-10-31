@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using Redbox.HAL.Component.Model;
 using Redbox.HAL.Component.Model.Extensions;
+using Range = Redbox.HAL.Component.Model.Range;
 
 namespace Redbox.HAL.Controller.Framework;
 

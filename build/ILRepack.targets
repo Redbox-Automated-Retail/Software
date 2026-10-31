@@ -4,7 +4,7 @@
 
     A project opts in with:
       <ILRepackAssemblies>Redbox.Core;log4net;...</ILRepackAssemblies>   (assembly names, without extension)
-    Merging runs only when building with -p:ILRepack=true. The merged file is written to $(OutDir)merged\.
+    Merging runs only when building with -p:ILRepack=true, and only for .NET Framework builds (what Redbox shipped). The merged file is written to $(OutDir)merged\.
     Executables are merged with /internalize (as the originals were); libraries are not, so their merged
     types stay visible to callers.
   -->
@@ -12,7 +12,7 @@
     <PackageReference Include="ILRepack" Version="2.0.18" PrivateAssets="all" ExcludeAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
 
-  <Target Name="RedboxILRepack" AfterTargets="Build" Condition="'$(ILRepack)' == 'true' and '$(ILRepackAssemblies)' != ''">
+  <Target Name="RedboxILRepack" AfterTargets="Build" Condition="'$(ILRepack)' == 'true' and '$(ILRepackAssemblies)' != '' and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <PropertyGroup>
       <_RepackExe>$(PkgILRepack)\tools\ILRepack.exe</_RepackExe>
       <_RepackOutDir>$(OutDir)merged\</_RepackOutDir>

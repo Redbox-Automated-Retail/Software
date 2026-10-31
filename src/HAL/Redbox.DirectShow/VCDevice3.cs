@@ -308,7 +308,12 @@ public class VCDevice3 : IVideoSource
 	{
 		if (IsRunning)
 		{
+#if NETFRAMEWORK
 			thread.Abort();
+#else
+			// .NET has no Thread.Abort. The worker checks the stop event every 100 ms, so it ends on its own.
+			stopEvent.Set();
+#endif
 			WaitForStop();
 		}
 	}

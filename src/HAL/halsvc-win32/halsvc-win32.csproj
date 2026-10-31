@@ -3,21 +3,32 @@
     <AssemblyName>halsvc-win32</AssemblyName>
     <RootNamespace>Redbox.HAL.Service.Win32</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- Shipped self-contained, like the .NET 10 engine: the kiosk needs no .NET runtime installed. -->
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <!-- HALData/HALCounters are SQLite on .NET 10; existing VistaDB files are converted by this tool (build\VistaDbToSqlite.targets). -->
+    <ShipVistaDbToSqlite>true</ShipVistaDbToSqlite>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
+    <!-- NetFrameworkCompatibility.ImportExeConfig: halsvc-win32.exe.config stays the file kiosks and packages edit. -->
+    <Compile Include="..\..\Common\Redbox.Core\NetFrameworkCompatibility.cs" Link="Compat\NetFrameworkCompatibility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
@@ -29,4 +40,5 @@
     <ProjectReference Include="..\Redbox.HAL.IPC.Framework\Redbox.HAL.IPC.Framework.csproj" />
     <ProjectReference Include="..\Redbox.HAL.Script.Framework\Redbox.HAL.Script.Framework.csproj" />
   </ItemGroup>
+  <Import Project="..\..\..\build\VistaDbToSqlite.targets" />
 </Project>

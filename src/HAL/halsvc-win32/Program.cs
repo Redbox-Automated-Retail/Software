@@ -24,6 +24,9 @@ public static class Program
 
 	public static void Main()
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		Thread.CurrentThread.Name = "HAL Service";
 		ServiceBase.Run(new ServiceBase[1]

@@ -37,6 +37,14 @@ public class CommandRepository
 		list2.AddRange(Directory.GetFiles(directoryName, "*.dll"));
 		foreach (string item in list2)
 		{
+#if !NETFRAMEWORK
+			// A self-contained .NET service has the whole runtime next to it, and an .exe's code is in <name>.dll; .NET
+			// Framework scanned neither (only libraries are .dll there).
+			if (IsRuntimeAssembly(Path.GetFileName(item)) || File.Exists(Path.ChangeExtension(item, ".runtimeconfig.json")))
+			{
+				continue;
+			}
+#endif
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(item);
@@ -148,6 +156,14 @@ public class CommandRepository
 		}
 	}
 
+#if !NETFRAMEWORK
+	private static bool IsRuntimeAssembly(string fileName)
+	{
+		string[] prefixes = new string[6] { "System.", "Microsoft.", "mscorlib.", "netstandard.", "WindowsBase.", "api-ms-" };
+		return Array.Exists(prefixes, (string prefix) => fileName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+	}
+
+#endif
 	private static List<string> FindCommands(IEnumerable<Type> types)
 	{
 		List<string> list = new List<string>();
