@@ -60,6 +60,24 @@ def fix_mesh(text, known):
     return MESH.sub(lambda m: sub(m) if len(m.group(3)) > 1 else m.group(0), text)
 
 
+ROOT_TAG = re.compile(r"<(?!\?|!)[\w:.]+(\s[^>]*)?>")
+D_NS = 'xmlns:d="http://schemas.microsoft.com/expression/blend/2008"'
+MC_NS = 'xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"'
+
+
+def design_size(text, width, height):
+    """Give a screen a design-time size; without one the designer shrinks it to its content."""
+    m = ROOT_TAG.search(text)
+    tag = m.group(0) if m else ""
+    if not tag or re.search(r'\s(Width|Height|d:DesignWidth|d:DesignHeight)="', tag):
+        return text
+    add = [x for x in (D_NS, MC_NS) if x.split("=")[0] not in tag]
+    if "mc:Ignorable" not in tag:
+        add.append('mc:Ignorable="d"')
+    add += [f'd:DesignWidth="{width}"', f'd:DesignHeight="{height}"']
+    return text[:m.end() - 1] + " " + " ".join(add) + text[m.end() - 1:]
+
+
 def tree_files(root):
     for d, _, files in os.walk(root):
         for f in files:
@@ -78,7 +96,9 @@ def main():
     ap.add_argument("--commit", required=True, help="release commit or tag on a history/* branch, e.g. engine/Z")
     ap.add_argument("--out", required=True, help="new folder to write the project into")
     ap.add_argument("--project", default="src/Rental/Redbox.Rental.UI", help="project folder in the release")
+    ap.add_argument("--screen", default="1024x768", help="design size given to the views in Views/ (WxH)")
     a = ap.parse_args()
+    width, height = a.screen.lower().split("x")
     if os.path.exists(a.out) and os.listdir(a.out):
         sys.exit(f"{a.out} is not empty")
 
@@ -107,6 +127,8 @@ def main():
                 if known is None and "TriangleIndices" in text:
                     known = mesh_indices()
                 fixed = PACK_URI.sub("pack://application:,,,/", text)
+                if f.startswith("Views" + os.sep):
+                    fixed = design_size(fixed, width, height)
                 fixed = fix_mesh(fixed, known) if known is not None else fixed
             if fixed != text:
                 open(path, "w", encoding="utf-8").write(fixed)

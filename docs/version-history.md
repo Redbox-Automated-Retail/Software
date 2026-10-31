@@ -214,7 +214,8 @@ project) and open any `.xaml`. Only the copied project is compiled; the librarie
 binaries, so features removed since (Starz, welcome screen, ...) are complete. The script also repairs three
 decompiler artifacts in the copy: event null checks written as property patterns (CS0154), mesh triangle indices
 without separators (MC2000; taken from the same mesh in `src/`, or dropped), and the malformed pack URI in
-`App.xaml` that keeps the style dictionary from loading.
+`App.xaml` that keeps the style dictionary from loading. Screens in `Views/` get a design size (`--screen`, default
+1024x768), since otherwise the designer shrinks them to their content.
 
 Verified: the rental UI of Hawkeye SR (1.18.0.18), KISS 1.1 (1.44.1.3), Lincoln SR3 and Z (1.85.0.27) builds
 with MSBuild, and Z's views render with their styles when instantiated outside the designer.
