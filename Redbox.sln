@@ -267,6 +267,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceService.LegacyClientC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.Core.JsonParity", "tests\Redbox.Core.JsonParity\Redbox.Core.JsonParity.csproj", "{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redbox.KioskEngine.API.Parity", "tests\Redbox.KioskEngine.API.Parity\Redbox.KioskEngine.API.Parity.csproj", "{F31B61B4-9F5F-4426-9B31-505EE769B652}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1705,6 +1707,18 @@ Global
 		{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28}.Release|x64.Build.0 = Release|Any CPU
 		{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28}.Release|x86.ActiveCfg = Release|Any CPU
 		{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28}.Release|x86.Build.0 = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|x64.Build.0 = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Debug|x86.Build.0 = Debug|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|x64.ActiveCfg = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|x64.Build.0 = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|x86.ActiveCfg = Release|Any CPU
+		{F31B61B4-9F5F-4426-9B31-505EE769B652}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1840,5 +1854,6 @@ Global
 		{2840CBB7-4A6A-4A6C-82BF-D276CA8F54C7} = {64ADF1EA-8F9A-62A9-054F-4E0E68D024D7}
 		{AEC9ECC7-FF40-4674-9693-DD77668F5487} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{FBCEF741-DB16-41F9-B9B0-3BBAB5315D28} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{F31B61B4-9F5F-4426-9B31-505EE769B652} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

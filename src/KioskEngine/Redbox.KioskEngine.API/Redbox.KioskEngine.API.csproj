@@ -7,13 +7,21 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi.SelfHost" Version="5.2.7" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" Condition="'$(TargetFramework)' == 'net48'" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" Condition="'$(TargetFramework)' != 'net48'" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Swashbuckle.Core" Version="5.6.0" />
+    <Compile Remove="Compat\**" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- ASP.NET Core instead of Web API's WCF self-host; Web API's JSON formatter from WebApi.Client (Compat\WebApiCompat.cs). -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.14" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Redbox.Core\Redbox.Core.csproj" />

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Starts the engine's API (Redbox.KioskEngine.API.APIService) on a local port
+    and prints status, content type and body of a set of requests. net48 = Web API self-host, net10.0-windows =
+    ASP.NET Core with Compat\WebApiCompat.cs; compare-api-parity.ps1 compares the two.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <PlatformTarget>x86</PlatformTarget>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KioskEngine\Redbox.KioskEngine.API\Redbox.KioskEngine.API.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.1" />
+    <Reference Include="System.Net.Http" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+  </ItemGroup>
+</Project>
