@@ -110,8 +110,8 @@ public class Program : IDisposable
 		LogHelper.Instance.Loggers.Add(m_loggerControlPanelAction);
 		LogHelper.Instance.Loggers.Add(m_loggerFieldMaintenanceAction);
 		LogHelper.Instance.Loggers.Add(m_loggerTestSvcs);
-		LogHelper.Instance.Log("Setting System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12");
-		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+		LogHelper.Instance.Log("Setting System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.SystemDefault (TLS 1.2/1.3)");
+		ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 		try
 		{
 			ErrorList errorList = EngineApplication.Instance.Initialize();

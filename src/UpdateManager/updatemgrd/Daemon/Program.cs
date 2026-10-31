@@ -19,7 +19,8 @@ public class Program
 
 	public static void Main(string[] args)
 	{
-		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+		// OS default (TLS 1.2/1.3) instead of pinning TLS 1.2.
+		ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 		try
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
