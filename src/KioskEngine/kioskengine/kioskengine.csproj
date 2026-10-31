@@ -3,7 +3,7 @@
     <AssemblyName>kioskengine</AssemblyName>
     <RootNamespace>Redbox.KioskEngine.Bootstrap</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

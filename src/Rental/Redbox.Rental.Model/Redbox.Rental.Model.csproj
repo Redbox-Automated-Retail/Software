@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>Redbox.Rental.Model</AssemblyName>
     <RootNamespace>Redbox.Rental.Model</RootNamespace>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWPF>True</UseWPF>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
