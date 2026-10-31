@@ -7,10 +7,16 @@
     <UseWPF>True</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <PlatformTarget>x86</PlatformTarget>
-    <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- Shipped self-contained, like the .NET 10 services: the kiosk needs no .NET runtime installed. -->
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <!-- Redbox.ControlPanel.UI and Redbox.Rental.UI are WinExe projects that the engine loads as libraries. -->
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="HostForm.resx" LogicalName="Redbox.KioskEngine.Bootstrap.HostForm.resources" />
