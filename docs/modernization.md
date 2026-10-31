@@ -437,8 +437,9 @@ only in Windows Sandbox.
 | Engine, kernel extensions, Rental, HAL client: also net10.0-windows (self-contained win-x86) | builds; not run yet (the Sandbox was taken by another test) | `Engine: also build for net10.0-windows ...`, `Engine (.NET 10): self-contained win-x86` |
 | Engine API `:9002` on ASP.NET Core (Web API compatibility layer) | done; `tests/Redbox.KioskEngine.API.Parity`: 14 requests identical to Web API | `Engine API (:9002) on .NET 10 ...` |
 | Update Manager: also net10.0-windows | done; Backend update-manager harness passes on the .NET 10 build | `Update Manager: also build for net10.0-windows` |
-| Legacy broker over GTCP without GenuineChannels | protocol specified and proven with a Python probe; C# client in progress | — |
-| VistaDB → SQLite (engine, Rental, HAL storage, migration tool) | in progress on branch `modernize-sqlite` | — |
+| Legacy broker over GTCP without GenuineChannels | done; `tests/BrokerGtcp.Check`: 89 offline + 21 live checks against rb-remoting | `Broker on .NET 10: GTCP client ...` |
+| VistaDB → SQLite (engine, Rental, HAL storage, migration tool) | done; `tests/Redbox.Data.SqliteParity`: 119 results identical | see "VistaDB → SQLite" |
+| **.NET 10 engine end to end** | **runs in Windows Sandbox**: start view, HAL start-up jobs (HAL 4.8), `:9002`, VistaDB files converted on first start, registered with the reservation broker over GTCP, with the .NET 10 Kiosk Client, Update Client and Device Service | `.NET 10 runtime: ...`, `Engine (.NET 10): load the UI assemblies ...` |
 
 Notes from the .NET 10 engine work:
 
@@ -450,8 +451,16 @@ Notes from the .NET 10 engine work:
   `System.Collections.Generic.KeyValuePair` collide with Redbox types of the same name; `using` aliases resolve them.
 - **`kioskengine.dll.config`.** On .NET 10 `ConfigurationManager` reads `<app>.dll.config`, so a release of the
   .NET 10 engine has to put the kiosk's `kioskengine.exe.config` there too.
-- **Compiles is not runs.** References to .NET Framework-only DLLs (VistaDB 3.5, Quartz 1.0, the IDE's WinForms
-  controls) compile for .NET 10; whether they load is checked by running the engine.
+- **Compiles is not runs.** What the first Sandbox runs of the .NET 10 engine found, all fixed:
+  - code page 1252 needs `CodePagesEncodingProvider` (VistaDB; registered by `Redbox.Core`);
+  - `<app>.dll.config` instead of `<app>.exe.config`, and no undeclared sections (`NetFrameworkCompatibility.ImportExeConfig`);
+  - `Encoding.Default` is UTF-8 (hash/encryption code uses the ANSI code page explicitly);
+  - an `.exe` project's code is in `<name>.dll` (theme and IPC command scans);
+  - `Assembly.LoadFile` makes a second copy of an already-loaded assembly (`AssemblyLoading.LoadFile`);
+  - the IDE's Puzzle.SyntaxBox resources need BinaryFormatter (unsupported compatibility package, until it is
+    replaced).
+
+  Quartz 1.0 and VistaDB 3.5 load and work on .NET 10 as they are.
 
 Notes from the .NET 10 services:
 
