@@ -383,6 +383,27 @@ only in Windows Sandbox.
 | KioskServices REST body length (non-ASCII) | done, builds against the 1.81 references; the Backend case harness targets the 1.80 API and cannot load this build | `KioskServices REST: ...` |
 | Update Manager + shared libraries → net48; TLS OS defaults | done; Backend update-manager harness passes | `Update Manager and shared libraries ...`, `TLS: OS defaults ...` |
 
+| `Redbox.Core`: net48 + net10.0-windows; `JavaScriptSerializer` from Microsoft's reference source | done; `tests/Redbox.Core.JsonParity`: 20 cases identical | `Redbox.Core: build for net48 and net10.0-windows ...` |
+| Shared libraries (`src/Common`): net48 + net10.0-windows | done; Update Manager harness still passes on net48 | `Shared libraries: build for net48 and net10.0-windows` |
+| Engine, kernel extensions, Rental, HAL client: also net10.0-windows (self-contained win-x86) | builds; not run yet (the Sandbox was taken by another test) | `Engine: also build for net10.0-windows ...`, `Engine (.NET 10): self-contained win-x86` |
+| Engine API `:9002` on ASP.NET Core (Web API compatibility layer) | done; `tests/Redbox.KioskEngine.API.Parity`: 14 requests identical to Web API | `Engine API (:9002) on .NET 10 ...` |
+| Update Manager: also net10.0-windows | done; Backend update-manager harness passes on the .NET 10 build | `Update Manager: also build for net10.0-windows` |
+| Legacy broker over GTCP without GenuineChannels | protocol specified and proven with a Python probe; C# client in progress | — |
+| VistaDB → SQLite (engine, Rental, HAL storage, migration tool) | in progress on branch `modernize-sqlite` | — |
+
+Notes from the .NET 10 engine work:
+
+- **Multi-targeting.** Every project the engine uses builds for `net48;net10.0-windows`, so the 4.8 engine stays
+  shippable while the .NET 10 one is brought up. Things .NET 10 lacks are behind `#if NETFRAMEWORK` with a .NET 10
+  path next to them (LINQ to SQL overload, `System.Configuration.Install`, AppDomains, Evidence, `BinaryFormatter`,
+  .NET Remoting).
+- **Name clashes with newer .NET.** `System.Range`, `System.Threading.ITimer` and a non-generic
+  `System.Collections.Generic.KeyValuePair` collide with Redbox types of the same name; `using` aliases resolve them.
+- **`kioskengine.dll.config`.** On .NET 10 `ConfigurationManager` reads `<app>.dll.config`, so a release of the
+  .NET 10 engine has to put the kiosk's `kioskengine.exe.config` there too.
+- **Compiles is not runs.** References to .NET Framework-only DLLs (VistaDB 3.5, Quartz 1.0, the IDE's WinForms
+  controls) compile for .NET 10; whether they load is checked by running the engine.
+
 Notes from the .NET 10 services:
 
 - **`System.Version` over JSON.** On .NET 5+ `Version` has a `TypeConverter`, so Newtonsoft reads and writes it as a
