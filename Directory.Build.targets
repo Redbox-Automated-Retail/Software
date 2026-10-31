@@ -1,3 +1,4 @@
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)build\ILRepack.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)build\Release.targets" />
 </Project>

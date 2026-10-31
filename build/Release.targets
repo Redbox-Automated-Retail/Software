@@ -1,0 +1,67 @@
+<Project>
+  <!--
+    Release builds (build/release.ps1): stamp a version on a component's main assemblies so kiosks, logs and the
+    backend can tell our builds apart.
+
+      -p:RedboxReleaseVersion=1.0.208.0       numeric a.b.c.d: AssemblyFileVersion
+      -p:RedboxReleaseStamp=Proj1|Proj2        only these projects are stamped (project names; "|" because
+                                               MSBuild splits -p: values at "," and ";")
+      -p:RedboxReleaseCommit=<git sha>         AssemblyInformationalVersion = <version>+<sha>
+
+    AssemblyVersion is left alone: assemblies built earlier (and Redbox's own) keep binding to the stamped ones.
+    Other projects are not stamped, so a deterministic rebuild of an unchanged library gives the same bytes and
+    the backend leaves it out of the new revision. The project's Properties\AssemblyInfo.cs is not edited; a
+    stamped copy in obj\ is compiled instead.
+  -->
+  <PropertyGroup Condition="'$(RedboxReleaseVersion)' != '' and $([System.String]::Copy('|$(RedboxReleaseStamp)|').Contains('|$(MSBuildProjectName)|'))">
+    <_RedboxStamp>true</_RedboxStamp>
+    <_RedboxInformationalVersion>$(RedboxReleaseVersion)</_RedboxInformationalVersion>
+    <_RedboxInformationalVersion Condition="'$(RedboxReleaseCommit)' != ''">$(RedboxReleaseVersion)+$(RedboxReleaseCommit)</_RedboxInformationalVersion>
+    <!-- Projects whose AssemblyInfo the SDK generates. -->
+    <FileVersion>$(RedboxReleaseVersion)</FileVersion>
+    <InformationalVersion>$(_RedboxInformationalVersion)</InformationalVersion>
+  </PropertyGroup>
+
+  <UsingTask TaskName="RedboxStampAssemblyInfo" TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Source ParameterType="System.String" Required="true" />
+      <Output ParameterType="System.String" Required="true" />
+      <FileVersion ParameterType="System.String" Required="true" />
+      <InformationalVersion ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var text = File.ReadAllText(Source);
+        foreach (var pair in new[] { new[] { "AssemblyFileVersion", FileVersion },
+                                     new[] { "AssemblyInformationalVersion", InformationalVersion } })
+        {
+            var re = new Regex(@"\[assembly:\s*" + pair[0] + @"\(\s*""[^""]*""\s*\)\]");
+            var attribute = "[assembly: " + pair[0] + "(\"" + pair[1] + "\")]";
+            text = re.IsMatch(text) ? re.Replace(text, attribute)
+                                    : text.TrimEnd() + Environment.NewLine + attribute + Environment.NewLine;
+        }
+        if (!Regex.IsMatch(text, @"^\s*using\s+System\.Reflection\s*;", RegexOptions.Multiline))
+            text = "using System.Reflection;" + Environment.NewLine + text;
+        Directory.CreateDirectory(Path.GetDirectoryName(Output));
+        if (!File.Exists(Output) || File.ReadAllText(Output) != text)
+            File.WriteAllText(Output, text);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="RedboxStampVersion" BeforeTargets="CoreCompile" Condition="'$(_RedboxStamp)' == 'true' and '$(GenerateAssemblyInfo)' == 'false'">
+    <ItemGroup>
+      <_RedboxAssemblyInfo Include="@(Compile)" Condition="'%(Filename)%(Extension)' == 'AssemblyInfo.cs'" />
+    </ItemGroup>
+    <Error Condition="'@(_RedboxAssemblyInfo)' == ''" Text="$(MSBuildProjectName): RedboxReleaseStamp names it but it has no AssemblyInfo.cs" />
+    <RedboxStampAssemblyInfo Source="%(_RedboxAssemblyInfo.FullPath)" Output="$(IntermediateOutputPath)RedboxRelease.AssemblyInfo.cs"
+                             FileVersion="$(RedboxReleaseVersion)" InformationalVersion="$(_RedboxInformationalVersion)" />
+    <ItemGroup>
+      <Compile Remove="@(_RedboxAssemblyInfo)" />
+      <Compile Include="$(IntermediateOutputPath)RedboxRelease.AssemblyInfo.cs" />
+    </ItemGroup>
+  </Target>
+</Project>
