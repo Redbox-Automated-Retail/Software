@@ -56,12 +56,19 @@ public class ThemeService : IThemeService
 	public void RegisterThemedControls(string assemblyName)
 	{
 		string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
+#if !NETFRAMEWORK
+		// On .NET an .exe project's code is in <name>.dll; the .exe beside it is the native launcher.
+		if (text.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && File.Exists(Path.ChangeExtension(text, ".dll")))
+		{
+			text = Path.ChangeExtension(text, ".dll");
+		}
+#endif
 		LogHelper.Instance.Log($"Registering themed controls in assembly {text}", LogEntryType.Info);
 		if (!File.Exists(text))
 		{
 			return;
 		}
-		foreach (Type item in (from t in Assembly.LoadFile(text).GetTypes()
+		foreach (Type item in (from t in Redbox.Core.AssemblyLoading.LoadFile(text).GetTypes()
 			where t.IsDefined(typeof(ThemedControlAttribute))
 			select t).ToList())
 		{

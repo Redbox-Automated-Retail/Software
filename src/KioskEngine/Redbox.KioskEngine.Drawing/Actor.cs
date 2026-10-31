@@ -826,7 +826,7 @@ public class Actor : IActor, IDisposable
 				string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), WPFControlAssemblyName);
 				if (File.Exists(text))
 				{
-					Assembly assembly = Assembly.LoadFile(text);
+					Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(text);
 					if (assembly != null)
 					{
 						Type type = assembly.GetType(WPFControlName);

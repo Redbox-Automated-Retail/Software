@@ -87,7 +87,7 @@ public class DataFileStoreService : IDataFileStoreService
 			string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
 			if (File.Exists(text))
 			{
-				Assembly assembly = Assembly.LoadFile(text);
+				Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(text);
 				if (assembly != null)
 				{
 					type = assembly.GetType(typeName);

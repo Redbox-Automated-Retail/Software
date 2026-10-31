@@ -76,6 +76,14 @@ public class CommandRepository
 				}
 			}
 		}
+#if !NETFRAMEWORK
+		// On .NET an .exe project's code is in <name>.dll; the .exe beside it is the native launcher.
+		list2 = list2.Select(delegate(string path)
+		{
+			string dll = Path.ChangeExtension(path, ".dll");
+			return path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && File.Exists(dll) ? dll : path;
+		}).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+#endif
 		foreach (string item in list2)
 		{
 			if (!File.Exists(item))
