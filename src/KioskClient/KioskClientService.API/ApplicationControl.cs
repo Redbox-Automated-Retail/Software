@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using KioskClientService.API.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace KioskClientService.API;
 
 public class ApplicationControl : IApplicationControl
 {
-	private IApplicationLifetime _applicationLifetime;
+	private IHostApplicationLifetime _applicationLifetime;
 
 	private ILogger<ApplicationControl> _logger;
 
@@ -22,7 +23,7 @@ public class ApplicationControl : IApplicationControl
 
 	public static bool IsService { get; set; }
 
-	public ApplicationControl(string serviceName, IApplicationLifetime applicationLifetime, ILogger<ApplicationControl> logger)
+	public ApplicationControl(string serviceName, IHostApplicationLifetime applicationLifetime, ILogger<ApplicationControl> logger)
 	{
 		_applicationLifetime = applicationLifetime;
 		_logger = logger;

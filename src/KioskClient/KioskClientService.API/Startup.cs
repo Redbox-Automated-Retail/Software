@@ -56,10 +56,11 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -76,10 +77,13 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection services)
 	{
-		MvcJsonMvcBuilderExtensions.AddJsonOptions(services.AddMvc(delegate(MvcOptions options)
+		// MVC 2.2 used Newtonsoft.Json and conventional routing (UseMvc); both are kept so the API's JSON and routes
+		// stay as they were.
+		services.AddMvc(delegate(MvcOptions options)
 		{
+			options.EnableEndpointRouting = false;
 			options.AddLoggingActionFilter();
-		}).SetCompatibilityVersion(CompatibilityVersion.Version_2_2), (Action<MvcJsonOptions>)delegate(MvcJsonOptions options)
+		}).AddNewtonsoftJson(delegate(MvcNewtonsoftJsonOptions options)
 		{
 			options.SerializerSettings.Converters.Add(new StringEnumConverter());
 			options.SerializerSettings.Converters.Add(new ControlListConverter());
@@ -113,7 +117,7 @@ public class Startup
 		});
 		services.AddSwaggerGen(delegate(SwaggerGenOptions c)
 		{
-			c.SwaggerDoc("v1", new Info
+			c.SwaggerDoc("v1", new OpenApiInfo
 			{
 				Title = "Kiosk Client API",
 				Version = "v1"
@@ -181,7 +185,7 @@ public class Startup
 		services.AddDataTableService();
 	}
 
-	public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger, IApplicationSettings applicationSettings, IOptionsSnapshotKioskConfiguration kioskConfigiuration)
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger, IApplicationSettings applicationSettings, IOptionsSnapshotKioskConfiguration kioskConfigiuration)
 	{
 		if (env.IsDevelopment())
 		{

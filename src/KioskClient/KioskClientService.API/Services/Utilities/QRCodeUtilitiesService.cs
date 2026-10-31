@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -48,13 +46,12 @@ public class QRCodeUtilitiesService : IQRCodeUtilitiesService
 				if (!string.IsNullOrEmpty(valueToEncode))
 				{
 					QRCodeData data = new QRCodeGenerator()?.CreateQrCode(valueToEncode, QRCodeGenerator.ECCLevel.Q);
-					Bitmap bitmap = new QRCode(data)?.GetGraphic(20);
-					if (bitmap != null)
+					// A PNG at 20 pixels per module with the quiet zone, as QRCode.GetGraphic(20) drew it, but encoded by
+					// QRCoder itself instead of System.Drawing (GDI+), so it works on Linux too.
+					byte[] png = new PngByteQRCode(data).GetGraphic(20);
+					if (png != null)
 					{
-						using MemoryStream memoryStream = new MemoryStream();
-						bitmap.Save(memoryStream, ImageFormat.Png);
-						memoryStream.Position = 0L;
-						result.QRCodeBitmapBase64String = WebUtility.UrlEncode(Convert.ToBase64String(memoryStream.ToArray()));
+						result.QRCodeBitmapBase64String = WebUtility.UrlEncode(Convert.ToBase64String(png));
 					}
 					if (result.QRCodeBitmapBase64String == null || result.QRCodeBitmapBase64String.Length == 0)
 					{

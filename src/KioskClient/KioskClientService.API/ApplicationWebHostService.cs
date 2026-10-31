@@ -1,18 +1,22 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using KioskClientService.API.Models;
 using KioskClientService.API.Services.Analytics;
 using KioskClientService.API.Services.Analytics.KioskDataService;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace KioskClientService.API;
 
-public class ApplicationWebHostService : WebHostService
+// On ASP.NET Core 2.2 this was a WebHostService subclass (the Windows service wrapper). On the generic host the
+// same four notifications come from IHostApplicationLifetime; Program registers this only when running as a service.
+public class ApplicationWebHostService : IHostedService
 {
-	private readonly IWebHost _host;
+	private readonly IServiceProvider _services;
+
+	private readonly IHostApplicationLifetime _lifetime;
 
 	private readonly ILogger<ApplicationWebHostService> _logger;
 
@@ -20,42 +24,51 @@ public class ApplicationWebHostService : WebHostService
 
 	private DateTime _onStartingTime;
 
-	public ApplicationWebHostService(IWebHost host, ILogger<ApplicationWebHostService> logger)
-		: base(host)
+	public ApplicationWebHostService(IServiceProvider services, IHostApplicationLifetime lifetime, ILogger<ApplicationWebHostService> logger)
 	{
-		_host = host;
+		_services = services;
+		_lifetime = lifetime;
 		_logger = logger;
 	}
 
-	protected override void OnStarting(string[] args)
+	public Task StartAsync(CancellationToken cancellationToken)
+	{
+		OnStarting();
+		_lifetime.ApplicationStarted.Register(OnStarted);
+		_lifetime.ApplicationStopping.Register(OnStopping);
+		_lifetime.ApplicationStopped.Register(OnStopped);
+		return Task.CompletedTask;
+	}
+
+	public Task StopAsync(CancellationToken cancellationToken)
+	{
+		return Task.CompletedTask;
+	}
+
+	private void OnStarting()
 	{
 		_logger?.LogInfoWithSource("service starting", "OnStarting");
 		_onStartingTime = DateTime.Now;
-		base.OnStarting(args);
 	}
 
-	protected override void OnStarted()
+	private void OnStarted()
 	{
 		_logger?.LogInfoWithSource("service started", "OnStarted");
 		try
 		{
-			_analytics = _host.Services.GetService<IAnalyticsService>();
+			_analytics = _services.GetService<IAnalyticsService>();
 			_analytics?.PurgeOldAnalytics(TimeSpan.FromDays(30.0));
 			_analytics?.ServiceEvent(KioskClientEvent.ServiceStarting, _onStartingTime);
 			_analytics?.ServiceEvent(KioskClientEvent.ServiceStarted);
-			Task.Run(async delegate
-			{
-				await SendSavedServiceEvents();
-			});
+			Task.Run(SendSavedServiceEvents);
 		}
-		catch (Exception arg)
+		catch (Exception exception)
 		{
-			_logger.LogErrorWithSource($"an unhandled exception occurred. {arg}", "OnStarted");
+			_logger.LogErrorWithSource($"an unhandled exception occurred. {exception}", "OnStarted");
 		}
-		base.OnStarted();
 	}
 
-	protected override void OnStopping()
+	private void OnStopping()
 	{
 		_logger?.LogInfoWithSource("service stopping", "OnStopping");
 		try
@@ -65,14 +78,13 @@ public class ApplicationWebHostService : WebHostService
 				EventType = KioskClientEvent.ServiceStopping
 			});
 		}
-		catch (Exception arg)
+		catch (Exception exception)
 		{
-			_logger.LogErrorWithSource($"an unhandled exception occurred. {arg}", "OnStopping");
+			_logger.LogErrorWithSource($"an unhandled exception occurred. {exception}", "OnStopping");
 		}
-		base.OnStopping();
 	}
 
-	protected override void OnStopped()
+	private void OnStopped()
 	{
 		_logger?.LogInfoWithSource("service stopped", "OnStopped");
 		try
@@ -82,24 +94,23 @@ public class ApplicationWebHostService : WebHostService
 				EventType = KioskClientEvent.ServiceStopped
 			});
 		}
-		catch (Exception arg)
+		catch (Exception exception)
 		{
-			_logger.LogErrorWithSource($"an unhandled exception occurred. {arg}", "OnStopped");
+			_logger.LogErrorWithSource($"an unhandled exception occurred. {exception}", "OnStopped");
 		}
-		base.OnStopped();
 	}
 
 	private async Task SendSavedServiceEvents()
 	{
-		ServiceEvent serviceEvent = _analytics.LoadServiceEvent(KioskClientEvent.ServiceStopping);
-		if (serviceEvent != null)
+		ServiceEvent stopping = _analytics.LoadServiceEvent(KioskClientEvent.ServiceStopping);
+		if (stopping != null)
 		{
-			await _analytics.ServiceEvent(serviceEvent.EventType, serviceEvent.EventTime);
+			await _analytics.ServiceEvent(stopping.EventType, stopping.EventTime);
 		}
-		ServiceEvent serviceEvent2 = _analytics.LoadServiceEvent(KioskClientEvent.ServiceStopped);
-		if (serviceEvent2 != null)
+		ServiceEvent stopped = _analytics.LoadServiceEvent(KioskClientEvent.ServiceStopped);
+		if (stopped != null)
 		{
-			await _analytics.ServiceEvent(serviceEvent2.EventType, serviceEvent2.EventTime);
+			await _analytics.ServiceEvent(stopped.EventType, stopped.EventTime);
 		}
 		_analytics.PurgeServiceEvents();
 	}
