@@ -371,3 +371,32 @@ only in Windows Sandbox.
 | Step | State | Commit(s) |
 |---|---|---|
 | Survey and plan | done | this file |
+| Build output outside the tree (`RB_ARTIFACTS` / `-p:ArtifactsPath`) | done | `Build: optional artifacts output ...` |
+| Engine, KioskServices, Rental, KioskShell: net472 → net48 | done, builds | `Engine, KioskServices, Rental, KioskShell: target .NET Framework 4.8` |
+| HAL: net35/net40 → net48 (+ `App.config`s), TLS default | done; runs in Windows Sandbox without .NET 3.5 | `HAL: target .NET Framework 4.8 ...`, `HAL IPC: use the OS TLS defaults ...` |
+| No `wmic`: Shell Launcher (`kernel.replaceshellwith`) and the engine's touch-screen toggle via `System.Management` | done, builds; WMI calls not run (this PC has no Shell Launcher) | `Windows 11: call WMI directly instead of wmic.exe` |
+
+HAL in Windows Sandbox (Backend `tests/clients/sandbox`, emulator, backend under WSLC, 2026-10-31): the 4.8 build
+(this branch's `halsvc-win32`, `HAL.PackageInstaller`, `halmgmtc` over the image's HAL install) started as
+`halsvc$default` on .NET 4.0.30319.42000 with only the v4 runtime allowed, and listened on 7001. The engine
+then started and reached its start view. HAL's errors were the same as with the original binaries on the same
+setup:
+
+- `RebootTime` secret option missing;
+- `ARCUSNOTRESPONSIVE` from the emulator in `init` and `hardware-healer`.
+
+The one extra line, "Unable to load assembly Interop.ClearImage.dll to scan for commands", comes from the
+separate `Interop.ClearImage.dll`. Redbox's build merged it into `Redbox.HAL.DataMatrix.Framework`.
+`build/release.ps1` still puts the separate DLL into the `kop-hal-install` zip, on `main` too. Follow-up: leave
+merged-away assemblies out of release zips.
+
+Notes from the HAL step:
+
+- The `.exe.config` files on kiosks (`halsvc-win32`, `halmgmtc`, `MSHALTester`) contain only
+  `<supportedRuntime version="v2.0.50727"/>`, so a 4.8 build does not start until its config is replaced. The
+  projects now ship those configs (the original contents with `v4.0`/4.8 as the runtime), so a release that
+  includes `bin\*.exe.config` fixes this. A release that keeps the kiosk's old configs would leave HAL down.
+- `HAL.PackageInstaller` refuses to run unless `GetPlatform()` says `Windows7`, which means OS version 6.x
+  except 6.0. Without a Windows 10 compatibility manifest, Windows 10/11 report 6.2, so it passes. Adding such
+  a manifest to the HAL exes would break this check.
+- Still open for HAL: fail clearly on a 0-deck `hal.xml` (it dies in `DecksManager.First` today).
