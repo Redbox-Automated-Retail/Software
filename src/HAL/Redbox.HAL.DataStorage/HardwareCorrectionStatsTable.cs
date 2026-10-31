@@ -40,18 +40,18 @@ internal sealed class HardwareCorrectionStatsTable : AbstractVistaDBDataTable<IH
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendFormat("UPDATE {0} SET", base.Name);
 		stringBuilder.AppendFormat(" Success = '{0}'", obj.CorrectionOk ? 1 : 0);
-		stringBuilder.AppendFormat(" where Job = '{0}' and CorrectionTime = '{1}' and Type = '{2}'", obj.ProgramName, obj.CorrectionTime.ToString(), (int)obj.Statistic);
+		stringBuilder.AppendFormat(" where Job = '{0}' and CorrectionTime = '{1}' and Type = '{2}'", obj.ProgramName, FormatDateTime(obj.CorrectionTime), (int)obj.Statistic);
 		return stringBuilder.ToString();
 	}
 
 	protected override string InsertStatement(IHardwareCorrectionStatistic p)
 	{
-		return $"INSERT INTO [{base.Name}] (Type, Job, CorrectionTime, Success) VALUES ('{(int)p.Statistic}', '{p.ProgramName}', '{p.CorrectionTime}', '{(p.CorrectionOk ? 1 : 0)}')";
+		return $"INSERT INTO [{base.Name}] (Type, Job, CorrectionTime, Success) VALUES ('{(int)p.Statistic}', '{p.ProgramName}', '{FormatDateTime(p.CorrectionTime)}', '{(p.CorrectionOk ? 1 : 0)}')";
 	}
 
 	protected override string DeleteStatement(IHardwareCorrectionStatistic obj)
 	{
-		return $"delete from {base.Name} where Type = '{(int)obj.Statistic}' and CorrectionTime = '{obj.CorrectionTime}' and Job = '{obj.ProgramName}'";
+		return $"delete from {base.Name} where Type = '{(int)obj.Statistic}' and CorrectionTime = '{FormatDateTime(obj.CorrectionTime)}' and Job = '{obj.ProgramName}'";
 	}
 
 	internal HardwareCorrectionStatsTable(IDataTableDescriptor d)

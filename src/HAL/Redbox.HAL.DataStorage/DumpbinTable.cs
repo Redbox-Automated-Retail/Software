@@ -28,17 +28,17 @@ internal sealed class DumpbinTable : AbstractVistaDBDataTable<IDumpBinInventoryI
 
 	protected override string UpdateStatement(IDumpBinInventoryItem obj)
 	{
-		return $"UPDATE {base.Name} SET PutTime = '{obj.PutTime.ToString()}' where Barcode = '{obj.ID}'";
+		return $"UPDATE {base.Name} SET PutTime = '{FormatDateTime(obj.PutTime)}' where Barcode = '{obj.ID}'";
 	}
 
 	protected override string InsertStatement(IDumpBinInventoryItem item)
 	{
-		return $"INSERT INTO [{base.Name}] (Barcode, PutTime) VALUES ('{item.ID}', '{item.PutTime.ToString()}')";
+		return $"INSERT INTO [{base.Name}] (Barcode, PutTime) VALUES ('{item.ID}', '{FormatDateTime(item.PutTime)}')";
 	}
 
 	protected override string DeleteStatement(IDumpBinInventoryItem obj)
 	{
-		return $"delete from {base.Name} where Barcode = '{obj.ID}' and PutTime = '{obj.PutTime}'";
+		return $"delete from {base.Name} where Barcode = '{obj.ID}' and PutTime = '{FormatDateTime(obj.PutTime)}'";
 	}
 
 	internal DumpbinTable(IDataTableDescriptor desc)

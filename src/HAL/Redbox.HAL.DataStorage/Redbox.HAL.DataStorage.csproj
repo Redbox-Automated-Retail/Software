@@ -2,21 +2,25 @@
   <PropertyGroup>
     <AssemblyName>Redbox.HAL.DataStorage</AssemblyName>
     <RootNamespace>Redbox.HAL.DataStorage</RootNamespace>
-    <TargetFramework>net48</TargetFramework>
+    <!-- net48 for today's HAL (VistaDB); net10.0-windows (SQLite) for the .NET 10 HAL. -->
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="VistaDB.NET20">
       <HintPath>..\..\..\lib\VistaDB\VistaDB.NET20.dll</HintPath>
     </Reference>
+    <Compile Remove="AbstractVistaDBDataTable.Sqlite.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Redbox.HAL.Component.Model\Redbox.HAL.Component.Model.csproj" />
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <Compile Remove="AbstractVistaDBDataTable.cs" />
+    <ProjectReference Include="..\..\Common\Redbox.Data.Sqlite\Redbox.Data.Sqlite.csproj" />
   </ItemGroup>
 </Project>

@@ -74,7 +74,7 @@ internal sealed class InventoryTable : AbstractVistaDBDataTable<ILocation>
 	{
 		if (location.ReturnDate.HasValue)
 		{
-			return $"'{location.ReturnDate.Value}'";
+			return $"'{FormatDateTime(location.ReturnDate.Value)}'";
 		}
 		return "NULL";
 	}
