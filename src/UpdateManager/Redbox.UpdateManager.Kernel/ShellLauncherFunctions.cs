@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Redbox.Core;
@@ -12,11 +12,12 @@ public static class ShellLauncherFunctions
 {
 	private static readonly uint S_OK = 0u;
 
-	private static readonly string DefaultShellCommandLine = "/namespace:\\\\root\\StandardCimv2\\Embedded CLASS WESL_UserSetting CALL SetDefaultShell Shell=\"{0}\" DefaultAction=0";
+	private const string ShellLauncherNamespace = "\\\\.\\root\\StandardCimv2\\Embedded";
 
-	private static readonly string AdminShellCommandLine = "/namespace:\\\\root\\StandardCimv2\\Embedded CLASS WESL_UserSetting CALL SetCustomShell Sid=\"S-1-5-32-544\" Shell=\"{0}\" DefaultAction=0";
+	private const string AdministratorsSid = "S-1-5-32-544";
 
-	private static readonly string ShellEnabledCommandLine = "/namespace:\\\\root\\StandardCimv2\\Embedded CLASS WESL_UserSetting CALL SetEnabled Enabled=true";
+	// Shell Launcher's DefaultAction 0: restart the shell when it exits.
+	private const int RestartShell = 0;
 
 	[DllImport("slc.dll", CharSet = CharSet.Unicode)]
 	private static extern uint SLGetWindowsInformationDWORD([MarshalAs(UnmanagedType.LPWStr)] string valueName, out int value);
@@ -45,53 +46,50 @@ public static class ShellLauncherFunctions
 	[KernelFunction(Name = "kernel.replaceshellwith")]
 	internal static bool ReplaceShellWith(string shellExecutable)
 	{
+		// The original ran three "wmic ... CLASS WESL_UserSetting CALL ..." commands; wmic.exe is gone from
+		// Windows 11, so the same static methods are called through WMI directly, in the same order.
 		try
 		{
-			string arg = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(shellExecutable);
-			string arguments = string.Format(DefaultShellCommandLine, arg);
-			Process process = new Process();
-			process.StartInfo = new ProcessStartInfo("wmic.exe", arguments)
-			{
-				CreateNoWindow = true,
-				WindowStyle = ProcessWindowStyle.Hidden,
-				Verb = "runas"
-			};
-			process.Start();
-			process.WaitForExit(120000);
-			if (process.ExitCode == 0)
-			{
-				arguments = string.Format(AdminShellCommandLine, arg);
-				Process process2 = new Process();
-				process2.StartInfo = new ProcessStartInfo("wmic.exe", arguments)
+			string shell = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(shellExecutable);
+			using ManagementClass userSetting = new ManagementClass(ShellLauncherNamespace, "WESL_UserSetting", null);
+			return InvokeShellLauncher(userSetting, "SetDefaultShell", input =>
 				{
-					CreateNoWindow = true,
-					WindowStyle = ProcessWindowStyle.Hidden,
-					Verb = "runas"
-				};
-				process2.Start();
-				process2.WaitForExit(120000);
-				if (process2.ExitCode == 0)
+					input["Shell"] = shell;
+					input["DefaultAction"] = RestartShell;
+				})
+				&& InvokeShellLauncher(userSetting, "SetCustomShell", input =>
 				{
-					Process process3 = new Process();
-					process3.StartInfo = new ProcessStartInfo("wmic.exe", ShellEnabledCommandLine)
-					{
-						CreateNoWindow = true,
-						WindowStyle = ProcessWindowStyle.Hidden,
-						Verb = "runas"
-					};
-					process3.Start();
-					process3.WaitForExit(120000);
-					if (process3.ExitCode == 0)
-					{
-						return true;
-					}
-				}
-			}
+					input["Sid"] = AdministratorsSid;
+					input["Shell"] = shell;
+					input["DefaultAction"] = RestartShell;
+				})
+				&& InvokeShellLauncher(userSetting, "SetEnabled", input => input["Enabled"] = true);
 		}
 		catch (Exception e)
 		{
 			LogHelper.Instance.Log("An unhandled exception was rasied in ShellLauncherFunctions.ReplaceShellWith.", e);
 		}
 		return false;
+	}
+
+	private static bool InvokeShellLauncher(ManagementClass userSetting, string method, Action<ManagementBaseObject> setParameters)
+	{
+		using ManagementBaseObject input = userSetting.GetMethodParameters(method);
+		setParameters(input);
+		using ManagementBaseObject output = userSetting.InvokeMethod(method, input, null);
+		// The WESL_UserSetting methods report failure by throwing; ReturnValue, when present, is an HRESULT.
+		uint result = S_OK;
+		if (output != null)
+		{
+			foreach (PropertyData property in output.Properties)
+			{
+				if (property.Name == "ReturnValue" && property.Value != null)
+				{
+					result = Convert.ToUInt32(property.Value);
+				}
+			}
+		}
+		LogHelper.Instance.Log($"ShellLauncherFunctions: WESL_UserSetting.{method} returned {result}.");
+		return result == S_OK;
 	}
 }
