@@ -3,7 +3,7 @@
     <AssemblyName>DeviceService.Client</AssemblyName>
     <RootNamespace>DeviceService.Client</RootNamespace>
     <OutputType>Library</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateRazorAssemblyInfo>false</GenerateRazorAssemblyInfo>

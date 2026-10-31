@@ -3,9 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DeviceService.Domain;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace DeviceService.WebApi;
@@ -31,16 +32,8 @@ public class Program
 			Log.Information("------------------------------------ Starting web host -------------------------------------");
 			Log.Information("ASPNETCORE_ENVIRONMENT: " + Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 			Log.Information($"DeviceService version: {DeviceService.Domain.DeviceService.AssemblyVersion}");
-			if (!flag)
-			{
-				Log.Information("Program.Main - Starting as a console application");
-				CreateWebHostBuilder(args, configuration).Build().Run();
-			}
-			else
-			{
-				Log.Information("Program.Main - Starting as a Windows Service");
-				CreateWebHostBuilder(args, configuration).Build().RunAsDeviceServiceService();
-			}
+			Log.Information(flag ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
+			CreateHostBuilder(args, configuration, flag).Build().Run();
 		}
 		catch (Exception exception)
 		{
@@ -53,18 +46,26 @@ public class Program
 		}
 	}
 
-	public static IWebHostBuilder CreateWebHostBuilder(string[] args, IConfiguration config)
+	public static IHostBuilder CreateHostBuilder(string[] args, IConfiguration config, bool runAsService)
 	{
 		Uri deviceServiceUri = GetDeviceServiceUri(config);
 		Log.Information($"CreateWebHostBuilder: url={deviceServiceUri.AbsoluteUri}  port={deviceServiceUri.Port}");
-		return WebHost.CreateDefaultBuilder(args).UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)).UseUrls(deviceServiceUri.AbsoluteUri)
-			.UseSetting("Port", deviceServiceUri.Port.ToString())
-			.ConfigureAppConfiguration(delegate(WebHostBuilderContext builder, IConfigurationBuilder conf)
-			{
-				GetConfiguration(conf);
-			})
+		return Host.CreateDefaultBuilder(args)
+			.UseWindowsService()
+			.UseContentRoot(Path.GetDirectoryName(Environment.ProcessPath))
+			.ConfigureAppConfiguration((context, conf) => GetConfiguration(conf))
 			.UseSerilog()
-			.UseStartup<Startup>();
+			.ConfigureServices(services =>
+			{
+				if (runAsService)
+				{
+					services.AddHostedService<DeviceServiceWebHostService>();
+				}
+			})
+			.ConfigureWebHostDefaults(webHost => webHost
+				.UseUrls(deviceServiceUri.AbsoluteUri)
+				.UseSetting("Port", deviceServiceUri.Port.ToString())
+				.UseStartup<Startup>());
 	}
 
 	public static Uri GetDeviceServiceUri(IConfiguration config)

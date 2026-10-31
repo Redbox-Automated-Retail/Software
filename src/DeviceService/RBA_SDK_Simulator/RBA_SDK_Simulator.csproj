@@ -6,14 +6,13 @@
   <PropertyGroup>
     <AssemblyName>RBA_SDK_Simulator</AssemblyName>
     <RootNamespace>RBA_SDK_Simulator</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <Version>1.0.0.0</Version>
     <Product>RBA_SDK_Simulator (reconstructed)</Product>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RBA_SDK_ComponentModel\RBA_SDK_ComponentModel.csproj" />

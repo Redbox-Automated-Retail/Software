@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Drives a running Device Service through the engine's own client library
+    (DeviceService.Client, SignalR 1.1 on .NET Framework 4.8), to check that a newer Device Service still speaks the
+    hub protocol the 4.8 engine expects.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DeviceService\DeviceService.Client\DeviceService.Client.csproj" />
+  </ItemGroup>
+</Project>
