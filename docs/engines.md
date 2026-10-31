@@ -16,8 +16,12 @@ Each commit has a `RELEASE.md` listing every engine file of that release with it
 
 ## Reading the list
 
-- **Release names** are the store's revision labels (`kop-v2-engine-<name>`). Unlabelled revisions that brought
-  new code are releases too and are named by their `kioskengine` version.
+- **Release names** are the store's revision labels (`kop-v2-engine-<name>`), written readably: `venomSR2`
+  becomes `Venom SR2 (1.30.0.26)`, `KISS1.1` becomes `KISS 1.1 (1.44.1.3)`; the commit body keeps the original
+  label. Unlabelled revisions that brought new code are releases too: `1.7.0.9 (no code name)`.
+- **Tags**: each named release has a local annotated tag `engine/<Code-Name>` (`engine/Venom-SR2`) on its last
+  commit; a version that never got a code name is tagged `engine/<version>`. The other branches follow the same
+  pattern (`hal/Caddyshack`, `update-client/1.2.29.0`).
 - **Dates** are when the kiosk downloaded the release, taken from the snapshot zips, so they are "on the kiosk
   by" dates. Where a release survives only in a later snapshot, it gets its successor's date.
 - **Order** is the store's revision order, and the `kioskengine` version never goes down along it. Unlabelled
@@ -120,93 +124,91 @@ folders (namespaces) added or removed.
 
 | # | Date | Release | kioskengine | Assemblies | Lines +/− | What changed (assemblies, feature folders) |
 |---|---|---|---|---|---|---|
-| 0 | 2014-02-03 | *unlabelled* | – | 7 | +0 / −0 | new: `Redbox.Core`, `Redbox.HAL.Client`, `Redbox.Lua`, `Redbox.REDS.Framework`, `Redbox.Services.KioskBrokerServices.KioskShared`, `Redbox.UpdateManager.Client`, `redscc` |
-| 1 | 2014-02-03 | **Braveheart** | 1.3.7.10 | 14 | +197207 / −3 | new: `Redbox.DVD.BrokerServices`, `Redbox.DVD.HardwareServices`, `Redbox.DVD.KioskServices`, `Redbox.DVD.TicketServices`, `Redbox.DVD.UpdateServices`, `Redbox.KioskEngine.ComponentModel`, `kioskengine` |
-| 2 | 2014-02-28 | **Dracula** | 1.3.9.4 | 14 | +92 / −65 |  |
-| 3 | 2015-12-18 | *unlabelled* | 1.3.9.4 | 14 | +2657 / −1797 | + `Redbox.HAL.Client/Configuration` |
-| 4 | 2015-12-18 | *unlabelled* | 1.3.9.4 | 14 | +12 / −9 |  |
-| 5 | 2015-12-18 | *unlabelled* | 1.3.9.4 | 14 | +14 / −10 |  |
-| 6 | 2015-12-18 | *unlabelled* | 1.7.0.9 | 14 | +1683 / −1897 |  |
-| 7 | 2015-12-18 | *unlabelled* | 1.7.0.9 | 17 | +15506 / −10569 | new: `Redbox.Rental.Data`, `Redbox.Rental.Kernel`, `Redbox.Rental.Model`, `Redbox.Rental.Services`; removed: `Redbox.DVD.TicketServices` |
-| 8 | 2015-12-18 | *unlabelled* | 1.7.0.9 | 17 | +1 / −1 |  |
-| 9 | 2015-12-18 | *unlabelled* | 1.7.0.9 | 17 | +1 / −1 |  |
-| 10 | 2015-12-18 | **The-Martian** | 1.9.0.9 | 17 | +3555 / −2709 |  |
-| 11 | 2016-04-01 | *unlabelled* | 1.9.0.9 | 17 | +3010 / −1143 | + `Redbox.HAL.Client/Component` |
-| 12 | 2016-04-01 | **Batman** | 1.13.0.19 | 17 | +2751 / −369 | + `Redbox.Rental.Services/Controllers`, `Redbox.Rental.Services/Views` |
-| 13 | 2016-10-28 | *unlabelled* | 1.13.0.19 | 17 | +227 / −273 |  |
-| 14 | 2016-10-28 | *unlabelled* | 1.13.0.19 | 17 | +270 / −224 |  |
-| 15 | 2016-10-28 | *unlabelled* | 1.13.0.19 | 17 | +224 / −270 |  |
-| 16 | 2016-10-28 | *unlabelled* | 1.13.0.19 | 17 | +13 / −9 |  |
-| 17 | 2016-10-28 | *unlabelled* | 1.13.0.19 | 17 | +2025 / −1185 |  |
-| 18 | 2016-10-28 | **HawkeyeSR** | 1.18.0.18 | 18 | +71679 / −1311 | new: `Redbox.Rental.UI`; − `Redbox.Rental.Services/Views` |
-| 19 | 2017-07-26 | *unlabelled* | 1.18.0.18 | 18 | +45 / −17 |  |
-| 20 | 2017-07-26 | *unlabelled* | 1.18.0.18 | 18 | +10 / −10 |  |
-| 21 | 2017-07-26 | **Penguin** | 1.25.0.4 | 18 | +12379 / −6021 | + `Redbox.KioskEngine.ComponentModel/KioskServices`, `Redbox.Rental.Model/Marketing`, `Redbox.Rental.Services/Configuration`, `Redbox.Rental.Services/Marketing`, `Redbox.Rental.UI/Models` |
-| 22 | 2017-10-13 | *unlabelled* | 1.25.0.4 | 18 | +13 / −13 |  |
-| 23 | 2017-10-13 | *unlabelled* | 1.25.0.4 | 33 | +804 / −25278 | new: `Redbox.Command.Tokenizer`, `Redbox.Compression`, `Redbox.GetOpts`, `Redbox.IPC.Framework`, `Redbox.JSONPrettyPrinter`, `Redbox.KioskServices.ComponentModel`, `Redbox.Log.Framework`, `Redbox.Macros`, `Redbox.Macros.Functions`, `Redbox.ProductLookupCatalog`, `Redbox.Tokenizer.Framework`, `Redbox.USB`, `Redbox.UpdateManager.ComponentModel`, `Redbox.UpdateService.Client`, `Redbox.UpdateService.Model`; + `Redbox.DVD.KioskServices/Kernel`, `Redbox.DVD.KioskServices/KernelExtension`, `Redbox.DVD.KioskServices/Proxy`, `Redbox.DVD.UpdateServices/ComponentModel`, `Redbox.DVD.UpdateServices/Redbox.IPC.Framework.Messaging`, `redscc/Redbox.GetOpts`; − `Redbox.DVD.KioskServices/ComponentModel`, `Redbox.DVD.KioskServices/Redbox.JSONPrettyPrinter`, `Redbox.DVD.KioskServices/Redbox.KioskServices.ComponentModel`, `Redbox.DVD.KioskServices/Redbox.KioskServices.Kernel`, `Redbox.DVD.KioskServices/Redbox.KioskServices.KernelExtension`, `Redbox.DVD.UpdateServices/Messaging`, `Redbox.DVD.UpdateServices/NamedPipes`, `Redbox.DVD.UpdateServices/Redbox.Command.Tokenizer` … |
-| 24 | 2017-10-13 | *unlabelled* | 1.25.0.4 | 33 | +10 / −10 |  |
-| 25 | 2017-10-13 | *unlabelled* | 1.25.0.4 | 33 | +11 / −11 |  |
-| 26 | 2017-10-13 | *unlabelled* | 1.25.0.4 | 33 | +10 / −13 |  |
-| 27 | 2017-10-13 | **SupermanSR** | 1.27.0.85 | 53 | +25917 / −150755 | new: `Redbox.BrokerServices.Kernel`, `Redbox.BrokerServices.KernelExtension`, `Redbox.BrokerServices.Proxy`, `Redbox.BrokerServices.Proxy.ComponentModel`, `Redbox.HardwareServices.Kernel`, `Redbox.HardwareServices.KernelExtension`, `Redbox.HardwareServices.Proxy`, `Redbox.HardwareServices.Proxy.ComponentModel`, `Redbox.KioskEngine.Drawing`, `Redbox.KioskEngine.Environment`, `Redbox.KioskEngine.IDE`, `Redbox.KioskEngine.Kernel`, `Redbox.KioskServices.Kernel`, `Redbox.KioskServices.KernelExtension`, `Redbox.KioskServices.Proxy`, `Redbox.KioskServices.Proxy.ComponentModel`, `Redbox.UpdateServices.Kernel`, `Redbox.UpdateServices.KernelExtension`, `Redbox.UpdateServices.Proxy`, `Redbox.UpdateServices.Proxy.ComponentModel`; + `Redbox.KioskEngine.ComponentModel/TextToSpeech`, `Redbox.Rental.Model/Browse`, `Redbox.Rental.Model/KioskEvents`, `Redbox.Rental.Model/KioskHealth`, `Redbox.Rental.Model/Pricing`, `Redbox.Rental.Model/ShoppingCart`, `Redbox.Rental.Services/KioskEvents`, `Redbox.Rental.Services/KioskHealth` …; − `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Kernel`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.KernelExtension`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Proxy`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Proxy.ComponentModel`, `Redbox.DVD.HardwareServices/Kernel`, `Redbox.DVD.HardwareServices/KernelExtension`, `Redbox.DVD.HardwareServices/Proxy`, `Redbox.DVD.KioskServices/Kernel` … |
-| 28 | 2018-02-15 | *unlabelled* | 1.27.0.85 | 53 | +31 / −31 |  |
-| 29 | 2018-02-15 | **venomSR2** | 1.30.0.26 | 55 | +36013 / −3162 | new: `Redbox.ControlPanel.UI`, `Redbox.Controls`; + `Redbox.KioskServices.Proxy/Request`, `Redbox.KioskServices.Proxy/Requests`, `Redbox.Rental.Model/Loyalty`, `Redbox.Rental.Model/Personalization`, `Redbox.Rental.Model/Promotion`, `Redbox.Rental.Services/Loyalty`, `Redbox.Rental.Services/Personalization`, `Redbox.Rental.Services/ProductPricing.Model` … |
-| 30 | 2018-04-27 | *unlabelled* | 1.30.0.26 | 55 | +33 / −33 |  |
-| 31 | 2018-04-27 | *unlabelled* | 1.30.0.26 | 55 | +83 / −34 |  |
-| 32 | 2018-04-27 | *unlabelled* | 1.30.0.26 | 55 | +34 / −83 |  |
-| 33 | 2018-04-27 | **YodaSR3** | 1.32.1.79 | 55 | +12827 / −4788 |  |
-| 34 | 2018-05-21 | *unlabelled* | 1.32.1.79 | 55 | +86 / −37 |  |
-| 35 | 2018-05-21 | **ZeldaSR3** | 1.34.0.17 | 55 | +3662 / −1890 |  |
-| 36 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 55 | +8203 / −5046 | − `Redbox.HAL.Client/Configuration` |
-| 37 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 56 | +83 / −30 | new: `Redbox.KioskDataServices.Proxy.ComponentModel` |
-| 38 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 57 | +187 / −1 | new: `Redbox.KioskDataServices.Proxy` |
-| 39 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 57 | +69 / −33 |  |
-| 40 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 57 | +30 / −30 |  |
-| 41 | 2019-04-05 | *unlabelled* | 1.34.0.17 | 59 | +2123 / −30 | new: `DeviceService.Client`, `DeviceService.ComponentModel` |
-| 42 | 2019-04-05 | **KISS1.1** | 1.44.1.3 | 61 | +37592 / −8019 | new: `Redbox.FraudServices.Proxy`, `Redbox.FraudServices.Proxy.ComponentModel`; + `Redbox.KioskEngine.ComponentModel/FraudServices`, `Redbox.KioskEngine.Environment/FraudServices`, `Redbox.Rental.Model/Analytics`, `Redbox.Rental.Model/Local`, `Redbox.Rental.Model/Reservation`, `Redbox.Rental.Services/Analytics` |
-| 43 | 2019-09-16 | *unlabelled* | 1.44.1.3 | 61 | +65 / −48 |  |
-| 44 | 2019-09-16 | *unlabelled* | 1.44.1.3 | 61 | +60 / −40 |  |
-| 45 | 2019-09-16 | *unlabelled* | 1.44.1.3 | 61 | +1932 / −110 | + `DeviceService.ComponentModel/Analytics`, `DeviceService.ComponentModel/Bluefin`, `DeviceService.ComponentModel/FileUpdate`, `DeviceService.ComponentModel/KDS` |
-| 46 | 2019-09-16 | **OasisSR3** | 1.48.0.85 | 61 | +20339 / −5439 | + `Redbox.KioskEngine.ComponentModel/TrackData`, `Redbox.KioskEngine.Environment/CardDataReader`, `Redbox.KioskEngine.Environment/KioskServices` |
-| 47 | 2019-11-05 | *unlabelled* | 1.48.0.85 | 61 | +161 / −79 |  |
-| 48 | 2019-11-05 | **PrimusSR4** | 1.49.0.110 | 61 | +7846 / −3846 | + `Redbox.Rental.Model/EmailOptInCampaign`, `Redbox.Rental.Services/EmailOptinCampaign` |
-| 49 | 2020-02-26 | *unlabelled* | 1.49.0.110 | 61 | +59 / −46 |  |
-| 50 | 2020-02-26 | *unlabelled* | 1.49.0.110 | 61 | +43 / −56 |  |
-| 51 | 2020-02-26 | *unlabelled* | 1.49.0.110 | 61 | +56 / −43 |  |
-| 52 | 2020-02-26 | **SublimeSR** | 1.52.1.2 | 61 | +14913 / −8644 | + `Redbox.KioskEngine.ComponentModel/HardwareServices`, `Redbox.Rental.Model/Ads`, `Redbox.Rental.Model/KioskClientService`, `Redbox.Rental.Model/Transaction`, `Redbox.Rental.Services/Ads`, `Redbox.Rental.Services/KioskClientService`; − `Redbox.KioskEngine.Kernel/Redbox.Rental.Kernel` |
-| 53 | 2020-05-21 | *unlabelled* | 1.52.1.2 | 61 | +83 / −58 |  |
-| 54 | 2020-05-21 | *unlabelled* | 1.52.1.2 | 61 | +38 / −38 |  |
-| 55 | 2020-05-21 | *unlabelled* | 1.52.1.2 | 61 | +38 / −38 |  |
-| 56 | 2020-05-21 | **VanHalenSR2** | 1.55.0.46 | 61 | +5080 / −844 | + `Redbox.Rental.Services/App` |
-| 57 | 2020-08-04 | *unlabelled* | 1.55.0.46 | 61 | +48 / −45 |  |
-| 58 | 2020-08-04 | **YesSR3** | 1.57.3.9 | 61 | +2074 / −895 |  |
-| 59 | 2022-02-18 | *unlabelled* | 1.57.3.9 | 61 | +109 / −47 |  |
-| 60 | 2022-02-18 | **LincolnSR3** | 1.71.0.21 | 64 | +47280 / −13702 | new: `Redbox.FMA.UI`, `Redbox.KioskEngine.API`, `Redbox.KioskEngine.PreferenceManager`; + `Redbox.KioskEngine.ComponentModel/ApiService`, `Redbox.KioskServices.Proxy.ComponentModel/Loyalty`, `Redbox.Rental.Model/EngineApplication`, `Redbox.Rental.Model/Planogram`, `Redbox.Rental.Model/UpdateClientService`, `Redbox.Rental.Services/RedboxPlus`, `Redbox.Rental.Services/Reservations`, `Redbox.Rental.Services/Starz` …; − `Redbox.KioskServices.Proxy/Requests` |
-| 61 | 2022-03-28 | **McLaren** | 1.72.0.5 | 64 | +225 / −199 |  |
-| 62 | 2022-03-28 | **Nova** | 1.73.0.11 | 64 | +742 / −436 |  |
-| 63 | 2022-04-10 | **NovaSR** | 1.73.0.19 | 64 | +193 / −141 |  |
-| 64 | 2022-04-26 | **NovaSR2** | 1.73.0.27 | 64 | +267 / −224 |  |
-| 65 | 2022-05-09 | **NovaSR3** | 1.73.0.28 | 64 | +115 / −115 |  |
-| 66 | 2022-05-23 | **NovaSR4** | 1.73.0.29 | 64 | +115 / −110 |  |
-| 67 | 2022-05-30 | **Omni** | 1.74.0.24 | 64 | +1042 / −675 |  |
-| 68 | 2022-06-13 | **OmniSR** | 1.74.0.27 | 64 | +115 / −124 |  |
-| 69 | 2022-06-26 | **Pinto** | 1.75.0.14 | 64 | +1015 / −903 |  |
-| 70 | 2022-07-13 | **Quattro** | 1.76.0.2 | 64 | +221 / −137 |  |
-| 71 | 2022-07-25 | **QuattroSR** | 1.76.0.5 | 64 | +158 / −143 |  |
-| 72 | 2022-09-27 | **Ranchero** | 1.77.0.12 | 64 | +762 / −745 |  |
-| 73 | 2022-10-18 | **RancheroSR** | 1.77.0.13 | 64 | +188 / −173 |  |
-| 74 | 2022-11-15 | **Studebaker** | 1.78.0.6 | 64 | +1513 / −818 |  |
-| 75 | 2023-01-29 | **Tesla** | 1.79.0.21 | 64 | +909 / −666 |  |
-| 76 | 2023-03-05 | **Ultima** | 1.80.0.12 | 64 | +868 / −1309 |  |
-| 77 | 2023-03-26 | **Vega** | 1.81.0.22 | 64 | +3312 / −7831 | + `Redbox.KioskEngine.PreferenceManager/TransactionService` |
-| 78 | 2023-03-29 | **VegaSR** | 1.81.0.23 | 64 | +113 / −109 |  |
-| 79 | 2023-04-18 | **VegaSR2** | 1.81.0.27 | 64 | +115 / −110 |  |
-| 80 | 2023-04-25 | **Willys** | 1.82.0.20 | 64 | +8570 / −3016 | + `Redbox.KioskEngine.PreferenceManager/KioskDataService`, `Redbox.Rental.Model/Authentication`, `Redbox.Rental.Model/Health`, `Redbox.Rental.Services/Authentication`, `Redbox.Rental.Services/Health`, `Redbox.Rental.Services/StoreServices` |
-| 81 | 2023-06-06 | **Xterra** | 1.83.0.17 | 64 | +1610 / −1088 |  |
-| 82 | 2023-08-01 | **Yugo** | 1.84.0.25 | 64 | +2673 / −738 |  |
-| 83 | 2023-08-20 | **YugoSR** | 1.84.1.2 | 64 | +3115 / −2704 |  |
-| 84 | 2023-08-20 | **YugoSR2** | 1.84.1.14 | 64 | +232 / −100 |  |
-| 85 | 2023-10-01 | **Z** | 1.85.0.27 | 64 | +794 / −2633 | − `Redbox.Rental.Model/Marketing`, `Redbox.Rental.Services/EmailOptinCampaign` |
-| 86 | 2023-11-14 | **Aquaman2023** | 1.86.0.57 | 64 | +2386 / −10420 | − `Redbox.Rental.Services/Starz` |
-| 87 | 2023-11-26 | **AquamanSR2023** | 1.86.0.76 | 64 | +100 / −99 |  |
-| 88 | 2023-11-29 | **Bullwinkle** | 1.87.0.77 | 64 | +1487 / −672 |  |
-| 89 | 2024-05-07 | **Calvin** | 1.88.0.80 | 64 | +155 / −174 |  |
+| 0 | 2014-02-03 | *no code name* | – | 7 | +0 / −0 | new: `Redbox.Core`, `Redbox.HAL.Client`, `Redbox.Lua`, `Redbox.REDS.Framework`, `Redbox.Services.KioskBrokerServices.KioskShared`, `Redbox.UpdateManager.Client`, `redscc` |
+| 1 | 2014-02-03 | **Braveheart** | 1.3.7.10 | 14 | +197208 / −4 | new: `Redbox.DVD.BrokerServices`, `Redbox.DVD.HardwareServices`, `Redbox.DVD.KioskServices`, `Redbox.DVD.TicketServices`, `Redbox.DVD.UpdateServices`, `Redbox.KioskEngine.ComponentModel`, `kioskengine` |
+| 2 | 2014-02-28 | **Dracula** | 1.3.9.4 | 14 | +93 / −66 |  |
+| 3 | 2015-12-18 | *no code name* | 1.3.9.4 | 14 | +2657 / −1797 | + `Redbox.HAL.Client/Configuration` |
+| 4 | 2015-12-18 | *no code name* | 1.3.9.4 | 14 | +12 / −9 |  |
+| 5 | 2015-12-18 | *no code name* | 1.3.9.4 | 14 | +14 / −10 |  |
+| 6 | 2015-12-18 | *no code name* | 1.7.0.9 | 14 | +1684 / −1898 |  |
+| 7 | 2015-12-18 | *no code name* | 1.7.0.9 | 17 | +15506 / −10569 | new: `Redbox.Rental.Data`, `Redbox.Rental.Kernel`, `Redbox.Rental.Model`, `Redbox.Rental.Services`; removed: `Redbox.DVD.TicketServices` |
+| 8 | 2015-12-18 | **The Martian** | 1.9.0.9 | 17 | +3556 / −2710 |  |
+| 9 | 2016-04-01 | *no code name* | 1.9.0.9 | 17 | +3010 / −1143 | + `Redbox.HAL.Client/Component` |
+| 10 | 2016-04-01 | **Batman** | 1.13.0.19 | 17 | +2305 / −251 | + `Redbox.Rental.Services/Controllers`, `Redbox.Rental.Services/Views` |
+| 11 | 2016-10-28 | *no code name* | 1.13.0.19 | 17 | +228 / −274 |  |
+| 12 | 2016-10-28 | *no code name* | 1.13.0.19 | 17 | +271 / −225 |  |
+| 13 | 2016-10-28 | *no code name* | 1.13.0.19 | 17 | +225 / −271 |  |
+| 14 | 2016-10-28 | *no code name* | 1.13.0.19 | 17 | +14 / −10 |  |
+| 15 | 2016-10-28 | *no code name* | 1.13.0.19 | 17 | +2026 / −1186 |  |
+| 16 | 2016-10-28 | **Hawkeye SR** | 1.18.0.18 | 18 | +71664 / −1303 | new: `Redbox.Rental.UI`; − `Redbox.Rental.Services/Views` |
+| 17 | 2017-07-26 | *no code name* | 1.18.0.18 | 18 | +45 / −17 |  |
+| 18 | 2017-07-26 | *no code name* | 1.18.0.18 | 18 | +16 / −16 |  |
+| 19 | 2017-07-26 | **Penguin** | 1.25.0.4 | 18 | +11543 / −5934 | + `Redbox.KioskEngine.ComponentModel/KioskServices`, `Redbox.Rental.Model/Marketing`, `Redbox.Rental.Services/Configuration`, `Redbox.Rental.Services/Marketing`, `Redbox.Rental.UI/Models` |
+| 20 | 2017-10-13 | *no code name* | 1.25.0.4 | 18 | +13 / −13 |  |
+| 21 | 2017-10-13 | *no code name* | 1.25.0.4 | 33 | +804 / −25278 | new: `Redbox.Command.Tokenizer`, `Redbox.Compression`, `Redbox.GetOpts`, `Redbox.IPC.Framework`, `Redbox.JSONPrettyPrinter`, `Redbox.KioskServices.ComponentModel`, `Redbox.Log.Framework`, `Redbox.Macros`, `Redbox.Macros.Functions`, `Redbox.ProductLookupCatalog`, `Redbox.Tokenizer.Framework`, `Redbox.USB`, `Redbox.UpdateManager.ComponentModel`, `Redbox.UpdateService.Client`, `Redbox.UpdateService.Model`; + `Redbox.DVD.KioskServices/Kernel`, `Redbox.DVD.KioskServices/KernelExtension`, `Redbox.DVD.KioskServices/Proxy`, `Redbox.DVD.UpdateServices/ComponentModel`, `Redbox.DVD.UpdateServices/Redbox.IPC.Framework.Messaging`, `redscc/Redbox.GetOpts`; − `Redbox.DVD.KioskServices/ComponentModel`, `Redbox.DVD.KioskServices/Redbox.JSONPrettyPrinter`, `Redbox.DVD.KioskServices/Redbox.KioskServices.ComponentModel`, `Redbox.DVD.KioskServices/Redbox.KioskServices.Kernel`, `Redbox.DVD.KioskServices/Redbox.KioskServices.KernelExtension`, `Redbox.DVD.UpdateServices/Messaging`, `Redbox.DVD.UpdateServices/NamedPipes`, `Redbox.DVD.UpdateServices/Redbox.Command.Tokenizer` … |
+| 22 | 2017-10-13 | *no code name* | 1.25.0.4 | 33 | +10 / −10 |  |
+| 23 | 2017-10-13 | *no code name* | 1.25.0.4 | 33 | +11 / −11 |  |
+| 24 | 2017-10-13 | *no code name* | 1.25.0.4 | 33 | +10 / −13 |  |
+| 25 | 2017-10-13 | **Superman SR** | 1.27.0.85 | 53 | +24107 / −150457 | new: `Redbox.BrokerServices.Kernel`, `Redbox.BrokerServices.KernelExtension`, `Redbox.BrokerServices.Proxy`, `Redbox.BrokerServices.Proxy.ComponentModel`, `Redbox.HardwareServices.Kernel`, `Redbox.HardwareServices.KernelExtension`, `Redbox.HardwareServices.Proxy`, `Redbox.HardwareServices.Proxy.ComponentModel`, `Redbox.KioskEngine.Drawing`, `Redbox.KioskEngine.Environment`, `Redbox.KioskEngine.IDE`, `Redbox.KioskEngine.Kernel`, `Redbox.KioskServices.Kernel`, `Redbox.KioskServices.KernelExtension`, `Redbox.KioskServices.Proxy`, `Redbox.KioskServices.Proxy.ComponentModel`, `Redbox.UpdateServices.Kernel`, `Redbox.UpdateServices.KernelExtension`, `Redbox.UpdateServices.Proxy`, `Redbox.UpdateServices.Proxy.ComponentModel`; + `Redbox.KioskEngine.ComponentModel/TextToSpeech`, `Redbox.Rental.Model/Browse`, `Redbox.Rental.Model/KioskEvents`, `Redbox.Rental.Model/KioskHealth`, `Redbox.Rental.Model/Pricing`, `Redbox.Rental.Model/ShoppingCart`, `Redbox.Rental.Services/KioskEvents`, `Redbox.Rental.Services/KioskHealth` …; − `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Kernel`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.KernelExtension`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Proxy`, `Redbox.DVD.BrokerServices/Redbox.BrokerServices.Proxy.ComponentModel`, `Redbox.DVD.HardwareServices/Kernel`, `Redbox.DVD.HardwareServices/KernelExtension`, `Redbox.DVD.HardwareServices/Proxy`, `Redbox.DVD.KioskServices/Kernel` … |
+| 26 | 2018-02-15 | *no code name* | 1.27.0.85 | 53 | +42 / −39 |  |
+| 27 | 2018-02-15 | **Venom SR2** | 1.30.0.26 | 55 | +34055 / −2925 | new: `Redbox.ControlPanel.UI`, `Redbox.Controls`; + `Redbox.KioskServices.Proxy/Request`, `Redbox.KioskServices.Proxy/Requests`, `Redbox.Rental.Model/Loyalty`, `Redbox.Rental.Model/Personalization`, `Redbox.Rental.Model/Promotion`, `Redbox.Rental.Services/Loyalty`, `Redbox.Rental.Services/Personalization`, `Redbox.Rental.Services/ProductPricing.Model` … |
+| 28 | 2018-04-27 | *no code name* | 1.30.0.26 | 55 | +40 / −36 |  |
+| 29 | 2018-04-27 | *no code name* | 1.30.0.26 | 55 | +83 / −34 |  |
+| 30 | 2018-04-27 | *no code name* | 1.30.0.26 | 55 | +34 / −83 |  |
+| 31 | 2018-04-27 | **Yoda SR3** | 1.32.1.79 | 55 | +11954 / −4307 |  |
+| 32 | 2018-05-21 | *no code name* | 1.32.1.79 | 55 | +86 / −37 |  |
+| 33 | 2018-05-21 | **Zelda SR3** | 1.34.0.17 | 55 | +3405 / −1680 |  |
+| 34 | 2019-04-05 | *no code name* | 1.34.0.17 | 55 | +8203 / −5046 | − `Redbox.HAL.Client/Configuration` |
+| 35 | 2019-04-05 | *no code name* | 1.34.0.17 | 56 | +84 / −31 | new: `Redbox.KioskDataServices.Proxy.ComponentModel` |
+| 36 | 2019-04-05 | *no code name* | 1.34.0.17 | 57 | +182 / −1 | new: `Redbox.KioskDataServices.Proxy` |
+| 37 | 2019-04-05 | *no code name* | 1.34.0.17 | 57 | +69 / −33 |  |
+| 38 | 2019-04-05 | *no code name* | 1.34.0.17 | 57 | +42 / −49 |  |
+| 39 | 2019-04-05 | *no code name* | 1.34.0.17 | 59 | +2123 / −30 | new: `DeviceService.Client`, `DeviceService.ComponentModel` |
+| 40 | 2019-04-05 | **KISS 1.1** | 1.44.1.3 | 61 | +35677 / −7354 | new: `Redbox.FraudServices.Proxy`, `Redbox.FraudServices.Proxy.ComponentModel`; + `Redbox.KioskEngine.ComponentModel/FraudServices`, `Redbox.KioskEngine.Environment/FraudServices`, `Redbox.Rental.Model/Analytics`, `Redbox.Rental.Model/Local`, `Redbox.Rental.Model/Reservation`, `Redbox.Rental.Services/Analytics` |
+| 41 | 2019-09-16 | *no code name* | 1.44.1.3 | 61 | +65 / −48 |  |
+| 42 | 2019-09-16 | *no code name* | 1.44.1.3 | 61 | +63 / −50 |  |
+| 43 | 2019-09-16 | *no code name* | 1.44.1.3 | 61 | +1932 / −110 | + `DeviceService.ComponentModel/Analytics`, `DeviceService.ComponentModel/Bluefin`, `DeviceService.ComponentModel/FileUpdate`, `DeviceService.ComponentModel/KDS` |
+| 44 | 2019-09-16 | **Oasis SR3** | 1.48.0.85 | 61 | +17613 / −4910 | + `Redbox.KioskEngine.ComponentModel/TrackData`, `Redbox.KioskEngine.Environment/CardDataReader`, `Redbox.KioskEngine.Environment/KioskServices` |
+| 45 | 2019-11-05 | *no code name* | 1.48.0.85 | 61 | +161 / −79 |  |
+| 46 | 2019-11-05 | **Primus SR4** | 1.49.0.110 | 61 | +7018 / −3415 | + `Redbox.Rental.Model/EmailOptInCampaign`, `Redbox.Rental.Services/EmailOptinCampaign` |
+| 47 | 2020-02-26 | *no code name* | 1.49.0.110 | 61 | +59 / −46 |  |
+| 48 | 2020-02-26 | *no code name* | 1.49.0.110 | 61 | +43 / −56 |  |
+| 49 | 2020-02-26 | *no code name* | 1.49.0.110 | 61 | +56 / −43 |  |
+| 50 | 2020-02-26 | **Sublime SR** | 1.52.1.2 | 61 | +12576 / −7446 | + `Redbox.KioskEngine.ComponentModel/HardwareServices`, `Redbox.Rental.Model/Ads`, `Redbox.Rental.Model/KioskClientService`, `Redbox.Rental.Model/Transaction`, `Redbox.Rental.Services/Ads`, `Redbox.Rental.Services/KioskClientService`; − `Redbox.KioskEngine.Kernel/Redbox.Rental.Kernel` |
+| 51 | 2020-05-21 | *no code name* | 1.52.1.2 | 61 | +83 / −58 |  |
+| 52 | 2020-05-21 | *no code name* | 1.52.1.2 | 61 | +38 / −38 |  |
+| 53 | 2020-05-21 | *no code name* | 1.52.1.2 | 61 | +38 / −38 |  |
+| 54 | 2020-05-21 | **Van Halen SR2** | 1.55.0.46 | 61 | +4827 / −765 | + `Redbox.Rental.Services/App` |
+| 55 | 2020-08-04 | *no code name* | 1.55.0.46 | 61 | +48 / −45 |  |
+| 56 | 2020-08-04 | **Yes SR3** | 1.57.3.9 | 61 | +1844 / −709 |  |
+| 57 | 2022-02-18 | *no code name* | 1.57.3.9 | 61 | +109 / −47 |  |
+| 58 | 2022-02-18 | **Lincoln SR3** | 1.71.0.21 | 64 | +42027 / −12188 | new: `Redbox.FMA.UI`, `Redbox.KioskEngine.API`, `Redbox.KioskEngine.PreferenceManager`; + `Redbox.KioskEngine.ComponentModel/ApiService`, `Redbox.KioskServices.Proxy.ComponentModel/Loyalty`, `Redbox.Rental.Model/EngineApplication`, `Redbox.Rental.Model/Planogram`, `Redbox.Rental.Model/UpdateClientService`, `Redbox.Rental.Services/RedboxPlus`, `Redbox.Rental.Services/Reservations`, `Redbox.Rental.Services/Starz` …; − `Redbox.KioskServices.Proxy/Requests` |
+| 59 | 2022-03-28 | **McLaren** | 1.72.0.5 | 64 | +220 / −194 |  |
+| 60 | 2022-03-28 | **Nova** | 1.73.0.11 | 64 | +679 / −425 |  |
+| 61 | 2022-04-10 | **Nova SR** | 1.73.0.19 | 64 | +178 / −142 |  |
+| 62 | 2022-04-26 | **Nova SR2** | 1.73.0.27 | 64 | +249 / −192 |  |
+| 63 | 2022-05-09 | **Nova SR3** | 1.73.0.28 | 64 | +116 / −116 |  |
+| 64 | 2022-05-23 | **Nova SR4** | 1.73.0.29 | 64 | +116 / −111 |  |
+| 65 | 2022-05-30 | **Omni** | 1.74.0.24 | 64 | +764 / −401 |  |
+| 66 | 2022-06-13 | **Omni SR** | 1.74.0.27 | 64 | +116 / −125 |  |
+| 67 | 2022-06-26 | **Pinto** | 1.75.0.14 | 64 | +925 / −804 |  |
+| 68 | 2022-07-13 | **Quattro** | 1.76.0.2 | 64 | +222 / −138 |  |
+| 69 | 2022-07-25 | **Quattro SR** | 1.76.0.5 | 64 | +134 / −119 |  |
+| 70 | 2022-09-27 | **Ranchero** | 1.77.0.12 | 64 | +746 / −625 |  |
+| 71 | 2022-10-18 | **Ranchero SR** | 1.77.0.13 | 64 | +167 / −148 |  |
+| 72 | 2022-11-15 | **Studebaker** | 1.78.0.6 | 64 | +1376 / −812 |  |
+| 73 | 2023-01-29 | **Tesla** | 1.79.0.21 | 64 | +793 / −606 |  |
+| 74 | 2023-03-05 | **Ultima** | 1.80.0.12 | 64 | +862 / −1284 |  |
+| 75 | 2023-03-26 | **Vega** | 1.81.0.22 | 64 | +2384 / −7261 | + `Redbox.KioskEngine.PreferenceManager/TransactionService` |
+| 76 | 2023-03-29 | **Vega SR** | 1.81.0.23 | 64 | +114 / −110 |  |
+| 77 | 2023-04-18 | **Vega SR2** | 1.81.0.27 | 64 | +114 / −111 |  |
+| 78 | 2023-04-25 | **Willys** | 1.82.0.20 | 64 | +7718 / −2799 | + `Redbox.KioskEngine.PreferenceManager/KioskDataService`, `Redbox.Rental.Model/Authentication`, `Redbox.Rental.Model/Health`, `Redbox.Rental.Services/Authentication`, `Redbox.Rental.Services/Health`, `Redbox.Rental.Services/StoreServices` |
+| 79 | 2023-06-06 | **Xterra** | 1.83.0.17 | 64 | +1045 / −722 |  |
+| 80 | 2023-08-01 | **Yugo** | 1.84.0.25 | 64 | +2039 / −379 |  |
+| 81 | 2023-08-20 | **Yugo SR** | 1.84.1.2 | 64 | +2269 / −2009 |  |
+| 82 | 2023-08-20 | **Yugo SR2** | 1.84.1.14 | 64 | +223 / −102 |  |
+| 83 | 2023-10-01 | **Z** | 1.85.0.27 | 64 | +662 / −2434 | − `Redbox.Rental.Model/Marketing`, `Redbox.Rental.Services/EmailOptinCampaign` |
+| 84 | 2023-11-14 | **Aquaman 2023** | 1.86.0.57 | 64 | +1771 / −9118 | − `Redbox.Rental.Services/Starz` |
+| 85 | 2023-11-26 | **Aquaman 2023 SR** | 1.86.0.76 | 64 | +101 / −100 |  |
+| 86 | 2023-11-29 | **Bullwinkle** | 1.87.0.77 | 64 | +1289 / −551 |  |
+| 87 | 2024-05-07 | **Calvin** | 1.88.0.80 | 64 | +108 / −127 |  |

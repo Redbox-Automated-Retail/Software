@@ -20,6 +20,7 @@ encryption keys) are replaced with `<redacted>`.
 | [device-service.md](device-service.md) | Card reader service: Ingenico iUC285 through the RBA SDK, SignalR and REST APIs, EMV/contactless flows, Bluefin activation, reader updates |
 | [kiosk-client.md](kiosk-client.md) | Kiosk Client service: the kiosk's gateway to Redbox's cloud APIs (transactions, inventory, pricing, ads), caches and retry queue |
 | [update-manager.md](update-manager.md) | Legacy Update Manager (`updatemgrd`): the update service protocol, the `.store` format, delta patching, activation, watchdog |
+| [store-installer.md](store-installer.md) | Store installer: the RIX setup exe, how a new kiosk PC is provisioned from a `data.zip` seed, the 21 install steps, registry, shell and services it sets up, KioskAdmin |
 | [update-client.md](update-client.md) | Update Client service: the newer cloud agent over AWS IoT (MQTT), its update state machine, remote jobs and configuration sync |
 | [common-libraries.md](common-libraries.md) | Shared libraries (the `rcp://` IPC protocol, Lua hosting, macros, REDS bundle format, compression, product catalog) and tools (KioskShell, kioskutil, inventoryimport) |
 

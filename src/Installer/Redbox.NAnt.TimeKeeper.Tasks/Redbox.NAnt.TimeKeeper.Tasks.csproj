@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Redbox.NAnt.TimeKeeper.Tasks</AssemblyName>
+    <RootNamespace>Redbox.NAnt.TimeKeeper.Tasks</RootNamespace>
+    <TargetFramework>net40</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAnt.Core" Version="0.92.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Redbox.NAnt.Core\Redbox.NAnt.Core.csproj" />
+    <ProjectReference Include="..\Redbox.TimeKeeperGateway\Redbox.TimeKeeperGateway.csproj" />
+  </ItemGroup>
+</Project>

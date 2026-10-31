@@ -902,9 +902,9 @@ strings) that nothing in the kiosk uses.
 
 `.repository\data.zip` contains `<repository>/.active`, `.current`, `.revlog/<n>` and `.patch` files for all
 12 repositories as of Feb 2022 (1,848 entries). `installer-steps.lua` ("Activate Image") expects these to be
-present already and calls `repositoryupdate` + `repositoryactivate` for every repository; extracting the zip
-is presumably done by the outer installer that launches `installer-front-end` (not in this repository —
-inferred).
+present already and calls `repositoryupdate` + `repositoryactivate` for every repository. The zip is copied
+here and extracted in place by the outer setup exe (RIX host), which then launches `installer-front-end`; see
+[`store-installer.md`](store-installer.md).
 
 ---
 
@@ -1101,8 +1101,9 @@ paths and disable sticky keys (PCI); remove Blink; reboot.
 - **Revision `Hash`** values are server-generated; how they are computed is unknown.
 - The **`usdata.active` credential file** format beyond "Redbox.Core `Decrypt()` then JSON" and the server's
   check of `h:` are not visible; the image has no such file and uses compiled defaults (redacted).
-- How **`data.zip`** gets extracted, and what launches `installer-front-end.exe` (and with which script), is
-  outside this code base.
+- ~~How `data.zip` gets extracted and what launches `installer-front-end.exe`~~: answered in
+  [`store-installer.md`](store-installer.md) (the RIX setup host unzips it into `.repository` and runs
+  `installer-front-end.exe -n:unconfigured --eval:..\scripts\post-install.lua`).
 - `Composite` is interpreted as "placeholder, no content" from `DeltaItem.IsPlaceHolder`; why most seed-era
   changes are placeholders (12,219) is not documented — probably files installed by the image rather than
   shipped.
