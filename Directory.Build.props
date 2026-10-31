@@ -13,4 +13,11 @@
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
+  <!-- Opt-in: set RB_ARTIFACTS (or pass -p:ArtifactsPath=...) to put bin/obj outside the source tree. -->
+  <PropertyGroup Condition="'$(ArtifactsPath)' == '' and '$(RB_ARTIFACTS)' != ''">
+    <ArtifactsPath>$(RB_ARTIFACTS)</ArtifactsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ArtifactsPath)' != ''">
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
 </Project>
