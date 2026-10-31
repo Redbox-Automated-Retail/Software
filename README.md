@@ -1,5 +1,10 @@
 # Redbox kiosk software — decompiled sources
 
+> **Branch `modernize`:** a long-lived fork of `main` that moves the code to .NET 10 / .NET Framework 4.8, cleans
+> up the decompiled code, fixes Windows 10/11 issues and points the kiosk at the self-hosted backend through
+> configuration. It is never merged into `main`, which stays the faithful decompile. See
+> [docs/modernization.md](docs/modernization.md) for the plan and progress.
+
 Recompilable C# sources for the Redbox kiosk software stack, produced by decompiling the
 shipped .NET binaries with ILSpy and restructuring the output into one Visual Studio
 solution.
