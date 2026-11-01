@@ -317,15 +317,15 @@ public class PromotionService : IPromotionService
 	{
 		get
 		{
-			int valueOrDefault = (Instance.ValidateRentTwoInCartPromo()?.QualifyingItems?.Count()).GetValueOrDefault();
-			bool flag = valueOrDefault == 1 && !(RentalShoppingCart?.InCartPromoOfferMade ?? false);
-			bool flag2 = valueOrDefault > 1;
+			int qualifyingCount = (Instance.ValidateRentTwoInCartPromo()?.QualifyingItems?.Count()).GetValueOrDefault();
+			bool oneQualifiesNotOffered = qualifyingCount == 1 && !(RentalShoppingCart?.InCartPromoOfferMade ?? false);
+			bool severalQualify = qualifyingCount > 1;
 			if (IsRentTwoInCartOfferRunning)
 			{
 				IRentalShoppingCart rentalShoppingCart = RentalShoppingCart;
 				if ((rentalShoppingCart == null || !rentalShoppingCart.InCartDoNotShow) && GetPromotion() == null)
 				{
-					return flag | flag2;
+					return oneQualifiesNotOffered | severalQualify;
 				}
 			}
 			return false;
@@ -364,14 +364,14 @@ public class PromotionService : IPromotionService
 	{
 		get
 		{
-			bool valueOrDefault = RentalShoppingCart?.Promotion?.IsReturnVisit == true;
+			bool isReturnVisit = RentalShoppingCart?.Promotion?.IsReturnVisit == true;
 			IRentalShoppingCart rentalShoppingCart = RentalShoppingCart;
-			bool flag = rentalShoppingCart != null && rentalShoppingCart.Promotion?.Intent == PromotionIntentCode.FirstNightFreeItem;
-			bool flag2 = (RentalShoppingCart?.Totals?.DiscountAmountUsed).GetValueOrDefault() > 0m;
-			bool flag3 = BrowseState?.ReturnVisitIneligibleCartWarningShown ?? false;
-			if ((valueOrDefault & flag) && !flag2)
+			bool firstNightFreeItem = rentalShoppingCart != null && rentalShoppingCart.Promotion?.Intent == PromotionIntentCode.FirstNightFreeItem;
+			bool discountUsed = (RentalShoppingCart?.Totals?.DiscountAmountUsed).GetValueOrDefault() > 0m;
+			bool warningShown = BrowseState?.ReturnVisitIneligibleCartWarningShown ?? false;
+			if ((isReturnVisit & firstNightFreeItem) && !discountUsed)
 			{
-				return !flag3;
+				return !warningShown;
 			}
 			return false;
 		}
@@ -431,7 +431,7 @@ public class PromotionService : IPromotionService
 				if (!ServiceLocator.Instance.GetService<IStoreServices>().IsStandAlone)
 				{
 					LogHelper.Instance.Log("Live call to remote IPromotionServices.ValidatePromotionCode, URL: " + kioskClientServiceBaseUrl);
-					if (!int.TryParse(storeNumber, out var result2))
+					if (!int.TryParse(storeNumber, out var storeId))
 					{
 						LogHelper.Instance.Log("The passed storeNumber '" + storeNumber + "' cannot be converted into an Int32.", LogEntryType.Error);
 						result.Success = false;
@@ -441,43 +441,43 @@ public class PromotionService : IPromotionService
 					{
 						ServiceLocator.Instance.GetService<IMacroService>();
 						Guid messageId = Guid.NewGuid();
-						IDictionary<string, object> dictionary = await ServiceLocator.Instance.GetService<IKioskClientService>().Promotion.ValidatePromotionCode(messageId, promotionCode, result2);
-						result.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
+						IDictionary<string, object> validation = await ServiceLocator.Instance.GetService<IKioskClientService>().Promotion.ValidatePromotionCode(messageId, promotionCode, storeId);
+						result.Success = validation.ContainsKey("Success") && (bool)validation["Success"];
 						result.Properties["response"] = PromotionValidationResponse.Valid.ToString();
-						result.Properties["amount"] = (dictionary.ContainsKey("Amount") ? dictionary["Amount"] : ((object)1));
-						result.Properties["promotion_intent"] = (dictionary.ContainsKey("PromotionIntentCode") ? dictionary["PromotionIntentCode"] : PromotionIntentCode.FixedValue.ToString());
-						result.Properties["rent_qty"] = (dictionary.ContainsKey("RentQty") ? dictionary["RentQty"] : ((object)0));
-						result.Properties["rent_format"] = (dictionary.ContainsKey("RentFormat") ? dictionary["RentFormat"] : null);
-						result.Properties["get_qty"] = (dictionary.ContainsKey("GetQty") ? dictionary["GetQty"] : ((object)0));
-						result.Properties["get_format"] = (dictionary.ContainsKey("GetFormat") ? dictionary["GetFormat"] : null);
-						Dictionary<string, object> dictionary2 = (dictionary.ContainsKey("CampaignTitles") ? (dictionary["CampaignTitles"] as Dictionary<string, object>) : null);
-						if (dictionary2 != null)
+						result.Properties["amount"] = (validation.ContainsKey("Amount") ? validation["Amount"] : ((object)1));
+						result.Properties["promotion_intent"] = (validation.ContainsKey("PromotionIntentCode") ? validation["PromotionIntentCode"] : PromotionIntentCode.FixedValue.ToString());
+						result.Properties["rent_qty"] = (validation.ContainsKey("RentQty") ? validation["RentQty"] : ((object)0));
+						result.Properties["rent_format"] = (validation.ContainsKey("RentFormat") ? validation["RentFormat"] : null);
+						result.Properties["get_qty"] = (validation.ContainsKey("GetQty") ? validation["GetQty"] : ((object)0));
+						result.Properties["get_format"] = (validation.ContainsKey("GetFormat") ? validation["GetFormat"] : null);
+						Dictionary<string, object> campaignTitleData = (validation.ContainsKey("CampaignTitles") ? (validation["CampaignTitles"] as Dictionary<string, object>) : null);
+						if (campaignTitleData != null)
 						{
-							ArrayList value = dictionary2["Titles"] as ArrayList;
+							ArrayList value = campaignTitleData["Titles"] as ArrayList;
 							Dictionary<string, object> value2 = new Dictionary<string, object>
 							{
-								["include"] = (bool)dictionary2["Include"],
+								["include"] = (bool)campaignTitleData["Include"],
 								["titles"] = value
 							};
 							result.Properties["campaign_titles"] = value2;
 						}
-						if (dictionary.ContainsKey("ServerName"))
+						if (validation.ContainsKey("ServerName"))
 						{
-							result.Properties["server_name"] = dictionary["ServerName"];
+							result.Properties["server_name"] = validation["ServerName"];
 						}
-						result.Properties["product_type_id"] = (dictionary.ContainsKey("ProductTypeId") ? dictionary["ProductTypeId"] : null);
-						result.Properties["format_ids"] = (dictionary.ContainsKey("FormatIds") ? (dictionary["FormatIds"] as ArrayList) : null);
-						result.Properties["action_code"] = (dictionary.ContainsKey("ActionType") ? dictionary["ActionType"] : PromotionActionCode.Rental.ToString());
-						result.Properties["allow_full_discount"] = (dictionary.ContainsKey("AllowFullDiscount") ? dictionary["AllowFullDiscount"] : ((object)true));
-						result.Properties["default_promo"] = (dictionary.ContainsKey("DefaultPromo") ? dictionary["DefaultPromo"] : null);
+						result.Properties["product_type_id"] = (validation.ContainsKey("ProductTypeId") ? validation["ProductTypeId"] : null);
+						result.Properties["format_ids"] = (validation.ContainsKey("FormatIds") ? (validation["FormatIds"] as ArrayList) : null);
+						result.Properties["action_code"] = (validation.ContainsKey("ActionType") ? validation["ActionType"] : PromotionActionCode.Rental.ToString());
+						result.Properties["allow_full_discount"] = (validation.ContainsKey("AllowFullDiscount") ? validation["AllowFullDiscount"] : ((object)true));
+						result.Properties["default_promo"] = (validation.ContainsKey("DefaultPromo") ? validation["DefaultPromo"] : null);
 						if (!result.Success)
 						{
-							ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
+							ArrayList arrayList = (validation.ContainsKey("Errors") ? (validation["Errors"] as ArrayList) : null);
 							if (arrayList != null && arrayList.Count > 0)
 							{
-								if (arrayList[0] is Dictionary<string, object> dictionary3)
+								if (arrayList[0] is Dictionary<string, object> responseCodeEntry)
 								{
-									object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(PromotionValidationResponse?), (string)dictionary3["Code"]);
+									object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(PromotionValidationResponse?), (string)responseCodeEntry["Code"]);
 									result.Properties["response"] = ((fieldsForResponseCode != null) ? fieldsForResponseCode.ToString() : PromotionValidationResponse.Error.ToString());
 								}
 							}
@@ -538,69 +538,69 @@ public class PromotionService : IPromotionService
 				promoCodeValidationResult.StoreNumber = ((!result.Properties.ContainsKey("store")) ? null : result.Properties["store"]?.ToString());
 				promoCodeValidationResult.PromoCode = ((!result.Properties.ContainsKey("code")) ? null : result.Properties["code"]?.ToString());
 				promoCodeValidationResult.Response = ((!result.Properties.ContainsKey("response")) ? null : result.Properties["response"]?.ToString());
-				if (result.Properties.ContainsKey("get_qty") && int.TryParse(result.Properties["get_qty"]?.ToString(), out var result2))
+				if (result.Properties.ContainsKey("get_qty") && int.TryParse(result.Properties["get_qty"]?.ToString(), out var getQuantity))
 				{
-					promoCodeValidationResult.GetQuantity = result2;
+					promoCodeValidationResult.GetQuantity = getQuantity;
 				}
-				if (result.Properties.ContainsKey("rent_qty") && int.TryParse(result.Properties["rent_qty"]?.ToString(), out var result3))
+				if (result.Properties.ContainsKey("rent_qty") && int.TryParse(result.Properties["rent_qty"]?.ToString(), out var rentQuantity))
 				{
-					promoCodeValidationResult.RentQuantity = result3;
+					promoCodeValidationResult.RentQuantity = rentQuantity;
 				}
-				if (result.Properties.ContainsKey("amount") && decimal.TryParse(result.Properties["amount"]?.ToString(), out var result4))
+				if (result.Properties.ContainsKey("amount") && decimal.TryParse(result.Properties["amount"]?.ToString(), out var parsedAmount))
 				{
-					promoCodeValidationResult.Amount = result4;
+					promoCodeValidationResult.Amount = parsedAmount;
 				}
-				if (result.Properties.ContainsKey("get_format") && Enum.TryParse<PromotionGetFormat>(result.Properties["get_format"]?.ToString(), out var result5))
+				if (result.Properties.ContainsKey("get_format") && Enum.TryParse<PromotionGetFormat>(result.Properties["get_format"]?.ToString(), out var getFormat))
 				{
-					promoCodeValidationResult.GetFormat = result5;
+					promoCodeValidationResult.GetFormat = getFormat;
 				}
-				if (result.Properties.ContainsKey("rent_format") && Enum.TryParse<PromotionRentFormat>(result.Properties["rent_format"]?.ToString(), out var result6))
+				if (result.Properties.ContainsKey("rent_format") && Enum.TryParse<PromotionRentFormat>(result.Properties["rent_format"]?.ToString(), out var rentFormat))
 				{
-					promoCodeValidationResult.RentFormat = result6;
+					promoCodeValidationResult.RentFormat = rentFormat;
 				}
-				if (result.Properties.ContainsKey("promotion_intent") && Enum.TryParse<PromotionIntentCode>(result.Properties["promotion_intent"]?.ToString(), out var result7))
+				if (result.Properties.ContainsKey("promotion_intent") && Enum.TryParse<PromotionIntentCode>(result.Properties["promotion_intent"]?.ToString(), out var intentCode))
 				{
-					promoCodeValidationResult.IntentCode = result7;
+					promoCodeValidationResult.IntentCode = intentCode;
 				}
-				if (result.Properties.ContainsKey("campaign_titles") && result.Properties["campaign_titles"] is Dictionary<string, object> dictionary)
+				if (result.Properties.ContainsKey("campaign_titles") && result.Properties["campaign_titles"] is Dictionary<string, object> campaignTitles)
 				{
 					promoCodeValidationResult.CampaignTitles = new CampaignTitles
 					{
 						Titles = new List<long>()
 					};
-					if (dictionary.ContainsKey("include") && bool.TryParse(dictionary["include"]?.ToString(), out var result8))
+					if (campaignTitles.ContainsKey("include") && bool.TryParse(campaignTitles["include"]?.ToString(), out var includeTitles))
 					{
-						promoCodeValidationResult.CampaignTitles.Include = result8;
+						promoCodeValidationResult.CampaignTitles.Include = includeTitles;
 					}
-					if (dictionary.ContainsKey("titles") && dictionary["titles"] is ArrayList arrayList)
+					if (campaignTitles.ContainsKey("titles") && campaignTitles["titles"] is ArrayList titleList)
 					{
-						foreach (object item in arrayList)
+						foreach (object titleIdValue in titleList)
 						{
-							if (long.TryParse(item?.ToString(), out var result9))
+							if (long.TryParse(titleIdValue?.ToString(), out var titleId))
 							{
-								promoCodeValidationResult.CampaignTitles.Titles.Add(result9);
+								promoCodeValidationResult.CampaignTitles.Titles.Add(titleId);
 							}
 						}
 					}
 				}
-				if (result.Properties.ContainsKey("product_type_id") && int.TryParse(result.Properties["product_type_id"]?.ToString(), out var result10))
+				if (result.Properties.ContainsKey("product_type_id") && int.TryParse(result.Properties["product_type_id"]?.ToString(), out var productTypeId))
 				{
-					promoCodeValidationResult.ProductTypeId = result10;
+					promoCodeValidationResult.ProductTypeId = productTypeId;
 				}
-				if (result.Properties.ContainsKey("format_ids") && result.Properties["format_ids"] is ArrayList arrayList2)
+				if (result.Properties.ContainsKey("format_ids") && result.Properties["format_ids"] is ArrayList formatIdList)
 				{
 					promoCodeValidationResult.FormatIds = new List<int>();
-					foreach (object item2 in arrayList2)
+					foreach (object formatIdValue in formatIdList)
 					{
-						if (int.TryParse(item2?.ToString(), out var result11))
+						if (int.TryParse(formatIdValue?.ToString(), out var formatId))
 						{
-							promoCodeValidationResult.FormatIds.Add(result11);
+							promoCodeValidationResult.FormatIds.Add(formatId);
 						}
 					}
 				}
-				if (result.Properties.ContainsKey("action_code") && Enum.TryParse<PromotionActionCode>(result.Properties["action_code"]?.ToString(), out var result12))
+				if (result.Properties.ContainsKey("action_code") && Enum.TryParse<PromotionActionCode>(result.Properties["action_code"]?.ToString(), out var actionCode))
 				{
-					promoCodeValidationResult.ActionCode = result12;
+					promoCodeValidationResult.ActionCode = actionCode;
 				}
 				else
 				{
@@ -648,7 +648,7 @@ public class PromotionService : IPromotionService
 
 	public bool CartQualifiesForInCartOffer(IRentalShoppingCart rentalShoppingCart)
 	{
-		bool flag = false;
+		bool qualifies = false;
 		if (rentalShoppingCart != null)
 		{
 			LogHelper.Instance.Log("CartQualifiesForInCartOffer BEGIN");
@@ -660,52 +660,52 @@ public class PromotionService : IPromotionService
 					{
 						if (!rentalShoppingCart.HasRedboxPlusFreeOneNightRentalSelected)
 						{
-							flag = true;
-							bool flag2 = false;
-							int num = 0;
+							qualifies = true;
+							bool askOnlyOnce = false;
+							int conditionNumber = 0;
 							foreach (Dictionary<string, object> inCartPromoRule in _inCartPromoRules)
 							{
-								num++;
+								conditionNumber++;
 								PromotionRule promotionRule = new PromotionRule(inCartPromoRule);
 								if (!string.IsNullOrEmpty(promotionRule.OfferCondition))
 								{
-									int num2 = 0;
+									int matchingCount = 0;
 									if (promotionRule.OfferCondition == PromotionRule.Constants.Product)
 									{
-										num2 = rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, promotionRule.ProductTypes, null, null, includeMultiNightPricedItems: true, includeFlashDeals: true, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)?.Count ?? 0;
+										matchingCount = rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, promotionRule.ProductTypes, null, null, includeMultiNightPricedItems: true, includeFlashDeals: true, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)?.Count ?? 0;
 									}
 									else if (promotionRule.OfferCondition == PromotionRule.Constants.Cart)
 									{
-										num2 = rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, TitleType.All, TitleFamily.All, null, null, null, null, null, includeMultiNightPricedItems: true, includeFlashDeals: false, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)?.Count ?? 0;
+										matchingCount = rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, TitleType.All, TitleFamily.All, null, null, null, null, null, includeMultiNightPricedItems: true, includeFlashDeals: false, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)?.Count ?? 0;
 									}
 									else if (promotionRule.OfferCondition == PromotionRule.Constants.BrowseMinimumQuantity)
 									{
-										num2 = BrowseCountByCriteria(rentalShoppingCart, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts);
+										matchingCount = BrowseCountByCriteria(rentalShoppingCart, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts);
 									}
-									if (num2 < promotionRule.MinimumQuantity)
+									if (matchingCount < promotionRule.MinimumQuantity)
 									{
-										LogIfVerboseLoggingIsOn(string.Format(">> {2}, min_qty={0} true_count={1}", promotionRule.MinimumQuantity, num2, promotionRule.OfferCondition));
-										LogHelper.Instance.Log("> failed condition {0}", num);
-										flag = false;
+										LogIfVerboseLoggingIsOn(string.Format(">> {2}, min_qty={0} true_count={1}", promotionRule.MinimumQuantity, matchingCount, promotionRule.OfferCondition));
+										LogHelper.Instance.Log("> failed condition {0}", conditionNumber);
+										qualifies = false;
 									}
-									if (num2 > promotionRule.MaximumQuantity)
+									if (matchingCount > promotionRule.MaximumQuantity)
 									{
-										LogIfVerboseLoggingIsOn(string.Format(">> {2}, max_qty={0} true_count={1}", promotionRule.MaximumQuantity, num2, promotionRule.OfferCondition));
-										LogHelper.Instance.Log("> failed condition {0}", num);
-										flag = false;
+										LogIfVerboseLoggingIsOn(string.Format(">> {2}, max_qty={0} true_count={1}", promotionRule.MaximumQuantity, matchingCount, promotionRule.OfferCondition));
+										LogHelper.Instance.Log("> failed condition {0}", conditionNumber);
+										qualifies = false;
 									}
-									LogIfVerboseLoggingIsOn($"> offer condition ({num}) {promotionRule.OfferCondition} returns {flag}");
+									LogIfVerboseLoggingIsOn($"> offer condition ({conditionNumber}) {promotionRule.OfferCondition} returns {qualifies}");
 								}
 								if (promotionRule.AskOnlyOnce == true)
 								{
-									flag2 = true;
+									askOnlyOnce = true;
 								}
 								if (promotionRule.IncludeProducts == null || promotionRule.IncludeProducts.Count <= 0)
 								{
 									continue;
 								}
 								IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-								bool flag3 = true;
+								bool noIncludedProductInStock = true;
 								if (service != null)
 								{
 									foreach (long includeProduct in promotionRule.IncludeProducts)
@@ -714,21 +714,21 @@ public class PromotionService : IPromotionService
 										service.GetProduct(includeProduct, excludeTitleRollup: false, out kioskProduct);
 										if (kioskProduct is ITitleProduct { IsRentableAndInStock: not false })
 										{
-											flag3 = false;
+											noIncludedProductInStock = false;
 											break;
 										}
 									}
 								}
-								if (flag3)
+								if (noIncludedProductInStock)
 								{
 									LogHelper.Instance.Log(">  no titles in the offer are in stock, returning False");
-									flag = false;
+									qualifies = false;
 								}
 							}
-							if (flag2 && rentalShoppingCart.InCartPromoOfferMade)
+							if (askOnlyOnce && rentalShoppingCart.InCartPromoOfferMade)
 							{
 								LogHelper.Instance.Log(">  offer already presented, returning False");
-								flag = false;
+								qualifies = false;
 							}
 						}
 						else
@@ -747,7 +747,7 @@ public class PromotionService : IPromotionService
 				LogHelper.Instance.Log("InCartPromoRules == nil at CartQualifiesForInCartOffer");
 			}
 		}
-		return flag;
+		return qualifies;
 	}
 
 	private IPromoCodeValidationInfo CartSatisfiesInCartOffer(IRentalShoppingCart rentalShoppingCart)
@@ -886,23 +886,23 @@ public class PromotionService : IPromotionService
 
 	private void ComputeQuantityBasedAmountPromoPrice(IRentalShoppingCart rentalShoppingCart, PromotionRule promotionRule, IPromoCodeValidationInfo result)
 	{
-		List<IRentalShoppingCartTitleItem> list = (from x in rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, promotionRule.ProductTypes, null, null, includeMultiNightPricedItems: true, includeFlashDeals: true, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)
+		List<IRentalShoppingCartTitleItem> eligibleItems = (from x in rentalShoppingCart.GetTitleItemsByCriteria(promotionRule.Action, promotionRule.Sequence, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, promotionRule.ProductTypes, null, null, includeMultiNightPricedItems: true, includeFlashDeals: true, includeLoyaltyRedeemedItems: true, null, includeDiscountRestrictionItems: true)
 			orderby x.PricingRecord.InitialNight, x.ProductId
 			select x).ToList();
-		int num = list?.Count() ?? 0;
-		LogHelper.Instance.Log("qty_based_amount = {0} * {1}", promotionRule.RedemptionAmount, num);
-		if (num > promotionRule.MaximumQuantity)
+		int discountedCount = eligibleItems?.Count() ?? 0;
+		LogHelper.Instance.Log("qty_based_amount = {0} * {1}", promotionRule.RedemptionAmount, discountedCount);
+		if (discountedCount > promotionRule.MaximumQuantity)
 		{
 			LogHelper.Instance.Log("> user exceeded the max qty on a qty-based-amount in-cart, resetting discount to max allowed");
-			num = promotionRule.MaximumQuantity;
+			discountedCount = promotionRule.MaximumQuantity;
 		}
-		decimal result2 = 0m;
-		decimal.TryParse(promotionRule.RedemptionAmount, out result2);
-		foreach (IRentalShoppingCartTitleItem item in list)
+		decimal amountPerItem = 0m;
+		decimal.TryParse(promotionRule.RedemptionAmount, out amountPerItem);
+		foreach (IRentalShoppingCartTitleItem item in eligibleItems)
 		{
-			if (result.PromotionItems.Count() < num)
+			if (result.PromotionItems.Count() < discountedCount)
 			{
-				decimal promotionAmount = Math.Min(result2, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+				decimal promotionAmount = Math.Min(amountPerItem, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 				result.PromotionItems.Add(new PromotionItem
 				{
 					RentalShoppingCartItem = item,
@@ -915,25 +915,25 @@ public class PromotionService : IPromotionService
 
 	private void ComputeFixedAmountPromoPrice(IRentalShoppingCart rentalShoppingCart, PromotionRule promotionRule, IPromoCodeValidationInfo result)
 	{
-		if (!decimal.TryParse(promotionRule.RedemptionAmount, out var result2))
+		if (!decimal.TryParse(promotionRule.RedemptionAmount, out var fixedAmount))
 		{
 			return;
 		}
-		List<IRentalShoppingCartTitleItem> list = (from x in rentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
+		List<IRentalShoppingCartTitleItem> eligibleItems = (from x in rentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
 			orderby x.PricingRecord.InitialNight, x.ProductId
 			select x).ToList();
-		decimal num = result2;
-		foreach (IRentalShoppingCartTitleItem item in list)
+		decimal remaining = fixedAmount;
+		foreach (IRentalShoppingCartTitleItem item in eligibleItems)
 		{
-			if (num > 0m)
+			if (remaining > 0m)
 			{
-				decimal num2 = Math.Min(num, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+				decimal itemDiscount = Math.Min(remaining, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 				result.PromotionItems.Add(new PromotionItem
 				{
 					RentalShoppingCartItem = item,
-					PromotionAmount = num2
+					PromotionAmount = itemDiscount
 				});
-				num -= num2;
+				remaining -= itemDiscount;
 			}
 		}
 		result.Price = result.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
@@ -946,7 +946,7 @@ public class PromotionService : IPromotionService
 			return;
 		}
 		IPricingRecord productTypePricingRecord = ServiceLocator.Instance.GetService<IPricingService>().GetProductTypePricingRecord(promotionRule.TitleFamily, promotionRule.TitleType, useAdjustedPrices: true);
-		decimal num = 0m;
+		decimal productTypePrice = 0m;
 		if (productTypePricingRecord != null)
 		{
 			string redemptionAmount = promotionRule.RedemptionAmount;
@@ -954,29 +954,29 @@ public class PromotionService : IPromotionService
 			{
 				if (redemptionAmount == "extra_night")
 				{
-					num = productTypePricingRecord.ExtraNight;
+					productTypePrice = productTypePricingRecord.ExtraNight;
 				}
 			}
 			else
 			{
-				num = productTypePricingRecord.InitialNight;
+				productTypePrice = productTypePricingRecord.InitialNight;
 			}
 		}
-		List<IRentalShoppingCartTitleItem> list = (from x in rentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
+		List<IRentalShoppingCartTitleItem> eligibleItems = (from x in rentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, promotionRule.TitleType, promotionRule.TitleFamily, promotionRule.IncludeProducts, promotionRule.ExcludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
 			orderby x.PricingRecord.InitialNight, x.ProductId
 			select x).ToList();
-		decimal num2 = num;
-		foreach (IRentalShoppingCartTitleItem item in list)
+		decimal remaining = productTypePrice;
+		foreach (IRentalShoppingCartTitleItem item in eligibleItems)
 		{
-			if (num2 > 0m)
+			if (remaining > 0m)
 			{
-				decimal num3 = Math.Min(num2, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+				decimal itemDiscount = Math.Min(remaining, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 				result.PromotionItems.Add(new PromotionItem
 				{
 					RentalShoppingCartItem = item,
-					PromotionAmount = num3
+					PromotionAmount = itemDiscount
 				});
-				num2 -= num3;
+				remaining -= itemDiscount;
 			}
 		}
 		result.Price = result.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
@@ -1037,10 +1037,10 @@ public class PromotionService : IPromotionService
 				PromotionRule promotionRule = new PromotionRule(inCartPromoRule);
 				if (promotionRule.RedemptionAmount != null)
 				{
-					decimal result2 = 0m;
-					if (decimal.TryParse(promotionRule.RedemptionAmount, out result2))
+					decimal redemptionAmount = 0m;
+					if (decimal.TryParse(promotionRule.RedemptionAmount, out redemptionAmount))
 					{
-						result = result2;
+						result = redemptionAmount;
 						return result;
 					}
 				}
@@ -1187,13 +1187,13 @@ public class PromotionService : IPromotionService
 			else
 			{
 				PromotionIntentCode intent = ((offer.DiscountType == OfferDiscountType.Free) ? PromotionIntentCode.FirstNightFreeItem : ((offer.DiscountType == OfferDiscountType.MultiNightPrice) ? PromotionIntentCode.MultiNightItem : PromotionIntentCode.FixedValue));
-				decimal num2 = ((offer.DiscountType == OfferDiscountType.Free) ? 0m : offer.Amount);
-				IPromotion promotion2 = new Redbox.Rental.Services.Promotion.Promotion
+				decimal offerPrice = ((offer.DiscountType == OfferDiscountType.Free) ? 0m : offer.Amount);
+				IPromotion offerPromotion = new Redbox.Rental.Services.Promotion.Promotion
 				{
 					Name = (offer.PromotionCode ?? offer.OfferDiscountCode),
 					DiscountType = ((offer.PromotionCode != null) ? DiscountType.PromotionCode : DiscountType.Discount),
-					Price = num2,
-					OriginalPrice = num2,
+					Price = offerPrice,
+					OriginalPrice = offerPrice,
 					Quantity = 1,
 					Intent = intent,
 					OriginalPercent = 0m,
@@ -1210,7 +1210,7 @@ public class PromotionService : IPromotionService
 					FormatIds = (offer.IncludeFormats ? offer.FormatIds : GetFilteredFormatIds(offer.FormatIds)),
 					ActionCode = ((offer.ActionCode != ActionCode.Purchase) ? PromotionActionCode.Rental : PromotionActionCode.Purchase)
 				};
-				SetPromotion(promotion2);
+				SetPromotion(offerPromotion);
 				IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 				service.CurrentRentalShoppingCart.ValidateAndUpdatePromoCode();
 				service.CurrentRentalShoppingCart.UpdateServiceFee();
@@ -1356,10 +1356,9 @@ public class PromotionService : IPromotionService
 				{
 					continue;
 				}
-				string[] array2 = array;
-				for (int i = 0; i < array2.Length; i++)
+				for (int i = 0; i < array.Length; i++)
 				{
-					if (long.TryParse(array2[i].Trim(), out var result) && !list.Contains(result))
+					if (long.TryParse(array[i].Trim(), out var result) && !list.Contains(result))
 					{
 						list.Add(result);
 					}
@@ -1389,21 +1388,24 @@ public class PromotionService : IPromotionService
 		return result;
 	}
 
+	// The in-cart offer from the kiosk's settings: its template's rules, with each {{VARIABLE}} the template uses replaced by
+	// the setting of that name (title lists get their multi-disc titles added). Without a template, or if a variable is
+	// missing, the default in_cart_promotion_v2 rules are used.
 	public void LoadInCartData(KioskInCartDetails inCart)
 	{
 		List<Dictionary<string, object>> kCSInCartConfigSettings = GetKCSInCartConfigSettings(inCart);
-		Dictionary<string, object> dictionary = ((kCSInCartConfigSettings != null && kCSInCartConfigSettings.Count > 0) ? kCSInCartConfigSettings[0] : null);
-		bool flag = false;
-		if (dictionary != null)
+		Dictionary<string, object> settings = ((kCSInCartConfigSettings != null && kCSInCartConfigSettings.Count > 0) ? kCSInCartConfigSettings[0] : null);
+		bool templateLoaded = false;
+		if (settings != null)
 		{
 			object value = null;
-			dictionary.TryGetValue("template_name", out value);
-			string text = value?.ToString();
-			if (text != "DEFAULT NO OFFER")
+			settings.TryGetValue("template_name", out value);
+			string templateName = value?.ToString();
+			if (templateName != "DEFAULT NO OFFER")
 			{
-				flag = true;
-				LogHelper.Instance.Log("> InCart template loaded: {0}", text);
-				List<Dictionary<string, object>> inCartWorkingRuleSet = GetInCartWorkingRuleSet(text);
+				templateLoaded = true;
+				LogHelper.Instance.Log("> InCart template loaded: {0}", templateName);
+				List<Dictionary<string, object>> inCartWorkingRuleSet = GetInCartWorkingRuleSet(templateName);
 				List<Dictionary<string, object>> workingRuleSetCopy = null;
 				if (inCartWorkingRuleSet != null)
 				{
@@ -1415,54 +1417,53 @@ public class PromotionService : IPromotionService
 				}
 				if (workingRuleSetCopy != null)
 				{
-					object inCartVariablesUsed = GetInCartVariablesUsed(text);
+					object inCartVariablesUsed = GetInCartVariablesUsed(templateName);
 					if (inCartVariablesUsed != null)
 					{
-						string[] array = inCartVariablesUsed.ToString().Split(',');
-						Dictionary<string, string> dictionary2 = new Dictionary<string, string>();
-						string[] array2 = array;
-						foreach (string text2 in array2)
+						string[] variableNames = inCartVariablesUsed.ToString().Split(',');
+						Dictionary<string, string> variableValues = new Dictionary<string, string>();
+						foreach (string variableName in variableNames)
 						{
-							object value2 = null;
-							if (dictionary.TryGetValue(text2, out value2))
+							object variableValue = null;
+							if (settings.TryGetValue(variableName, out variableValue))
 							{
-								dictionary2[text2] = value2.ToString();
-								LogHelper.Instance.Log("> Loaded {0} = {1}", text2, value2.ToString());
+								variableValues[variableName] = variableValue.ToString();
+								LogHelper.Instance.Log("> Loaded {0} = {1}", variableName, variableValue.ToString());
 							}
 						}
-						LogHelper.Instance.Log("> Variable count: {0}, macro count: {1}", array.Length, dictionary2.Count);
-						if (array.Length == dictionary2.Count)
+						LogHelper.Instance.Log("> Variable count: {0}, macro count: {1}", variableNames.Length, variableValues.Count);
+						if (variableNames.Length == variableValues.Count)
 						{
-							foreach (KeyValuePair<string, string> item in dictionary2)
+							foreach (KeyValuePair<string, string> templateVariable in variableValues)
 							{
-								LogHelper.Instance.Log("> making replacements for: {0}", item.Key);
-								string newValue = item.Value;
-								if (item.Key == "INCLUDED_TITLES" || item.Key == "EXCLUDED_TITLES")
+								LogHelper.Instance.Log("> making replacements for: {0}", templateVariable.Key);
+								string newValue = templateVariable.Value;
+								if (templateVariable.Key == "INCLUDED_TITLES" || templateVariable.Key == "EXCLUDED_TITLES")
 								{
-									newValue = AddMultiDiscs(dictionary2[item.Key]);
+									newValue = AddMultiDiscs(variableValues[templateVariable.Key]);
 								}
-								foreach (Dictionary<string, object> item2 in workingRuleSetCopy)
+								foreach (Dictionary<string, object> rule in workingRuleSetCopy)
 								{
-									Dictionary<string, string> dictionary3 = new Dictionary<string, string>();
-									foreach (KeyValuePair<string, object> item3 in item2)
+									Dictionary<string, string> changedSettings = new Dictionary<string, string>();
+									foreach (KeyValuePair<string, object> setting in rule)
 									{
-										string text3 = item3.Value?.ToString() ?? null;
-										string text4 = $"{{{{{item.Key}}}}}";
-										if (text3.Contains(text4))
+										string settingValue = setting.Value?.ToString() ?? null;
+										string placeholder = $"{{{{{templateVariable.Key}}}}}";
+										if (settingValue.Contains(placeholder))
 										{
-											string text5 = text3.Replace(text4, newValue);
-											LogHelper.Instance.Log("> replacing {0} with {1}", item3.Value, text5);
-											dictionary3[item3.Key] = text5;
+											string replaced = settingValue.Replace(placeholder, newValue);
+											LogHelper.Instance.Log("> replacing {0} with {1}", setting.Value, replaced);
+											changedSettings[setting.Key] = replaced;
 										}
 									}
-									foreach (KeyValuePair<string, string> item4 in dictionary3)
+									foreach (KeyValuePair<string, string> changedSetting in changedSettings)
 									{
-										item2[item4.Key] = item4.Value;
+										rule[changedSetting.Key] = changedSetting.Value;
 									}
 								}
 							}
 							_inCartPromoRules = workingRuleSetCopy;
-							ApplicationState.Instance.InCartTemplateName = text;
+							ApplicationState.Instance.InCartTemplateName = templateName;
 							LogHelper.Instance.Log("> InCart template loaded successfully");
 						}
 						else
@@ -1477,11 +1478,11 @@ public class PromotionService : IPromotionService
 				}
 				else
 				{
-					LogHelper.Instance.Log("> InCart template resource file {0} missing or unable to load", text);
+					LogHelper.Instance.Log("> InCart template resource file {0} missing or unable to load", templateName);
 				}
 			}
 		}
-		if (!flag)
+		if (!templateLoaded)
 		{
 			_inCartPromoRules = GetInCartWorkingRuleSet("in_cart_promotion_v2");
 			object inCartProgramName = GetInCartProgramName("in_cart_promotion_v2");
