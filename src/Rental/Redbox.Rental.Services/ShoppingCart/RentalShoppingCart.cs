@@ -530,26 +530,12 @@ public class RentalShoppingCart : IRentalShoppingCart
 
 	public void UpdateServiceFee()
 	{
-		decimal obj = ServiceFee?.ActualAmount ?? 0m;
-		decimal num = TitleItems.Where((IRentalShoppingCartTitleItem x) => x?.TitleProduct?.IsEmptyCase == true).Sum((IRentalShoppingCartTitleItem x) => x.PurchasePrice);
-		TitleItems.Count(delegate(IRentalShoppingCartTitleItem x)
-		{
-			bool? obj2;
-			if (x == null)
-			{
-				obj2 = null;
-			}
-			else
-			{
-				ITitleProduct titleProduct = x.TitleProduct;
-				obj2 = ((titleProduct != null) ? new bool?(!titleProduct.IsEmptyCase) : ((bool?)null));
-			}
-			bool? flag = obj2;
-			return flag == true;
-		});
+		decimal previousFee = ServiceFee?.ActualAmount ?? 0m;
+		// Empty-case items (sold cases) do not count towards the subtotal that carries a service fee.
+		decimal emptyCaseTotal = TitleItems.Where((IRentalShoppingCartTitleItem x) => x?.TitleProduct?.IsEmptyCase == true).Sum((IRentalShoppingCartTitleItem x) => x.PurchasePrice);
 		ServiceFee.DefaultAmount = _defaultServiceFee;
 		ServiceFee.TaxRate = _defaultServiceFeeTaxRate;
-		if (Totals.SubTotal - num > 0m)
+		if (Totals.SubTotal - emptyCaseTotal > 0m)
 		{
 			ServiceFee.ActualAmount = _defaultServiceFee;
 		}
@@ -557,7 +543,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 		{
 			ServiceFee.ActualAmount = 0m;
 		}
-		if (obj != (ServiceFee?.ActualAmount ?? 0m))
+		if (previousFee != (ServiceFee?.ActualAmount ?? 0m))
 		{
 			LogHelper.Instance.Log($"Setting service fee: {ServiceFee?.ActualAmount ?? 0m}");
 		}
@@ -1024,19 +1010,19 @@ public class RentalShoppingCart : IRentalShoppingCart
 				pricingRecord = service?.GetProductTypePricingRecord(TitleFamily.Movies, titleType, useAdjustedPrices: true);
 			}
 			promoCodeValidationInfo.IsCartValid = list.Any();
-			decimal num = pricingRecord?.PromoValue ?? 0m;
+			decimal promoValue = pricingRecord?.PromoValue ?? 0m;
 			foreach (IRentalShoppingCartTitleItem item in list)
 			{
-				if (num > 0m)
+				if (promoValue > 0m)
 				{
-					decimal num2 = Math.Min(num, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+					decimal itemDiscount = Math.Min(promoValue, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 					promoCodeValidationInfo.PromotionItems.Add(new PromotionItem
 					{
 						RentalShoppingCartItem = item,
-						PromotionAmount = num2
+						PromotionAmount = itemDiscount
 					});
 					promoCodeValidationInfo.QualifyingItems.Add(item);
-					num -= num2;
+					promoValue -= itemDiscount;
 				}
 			}
 			promoCodeValidationInfo.Price = promoCodeValidationInfo.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
@@ -1076,19 +1062,19 @@ public class RentalShoppingCart : IRentalShoppingCart
 				pricingRecord = service?.GetProductTypePricingRecord(TitleFamily.Games, TitleType.All, useAdjustedPrices: true);
 			}
 			promoCodeValidationInfo.IsCartValid = list.Any();
-			decimal num = pricingRecord?.PromoValue ?? 0m;
+			decimal promoValue = pricingRecord?.PromoValue ?? 0m;
 			foreach (IRentalShoppingCartTitleItem item in list)
 			{
-				if (num > 0m)
+				if (promoValue > 0m)
 				{
-					decimal num2 = Math.Min(num, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+					decimal itemDiscount = Math.Min(promoValue, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 					promoCodeValidationInfo.PromotionItems.Add(new PromotionItem
 					{
 						RentalShoppingCartItem = item,
-						PromotionAmount = num2
+						PromotionAmount = itemDiscount
 					});
 					promoCodeValidationInfo.QualifyingItems.Add(item);
-					num -= num2;
+					promoValue -= itemDiscount;
 				}
 			}
 			promoCodeValidationInfo.Price = promoCodeValidationInfo.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
@@ -1241,10 +1227,10 @@ public class RentalShoppingCart : IRentalShoppingCart
 		List<IRentalShoppingCartTitleItem> list = GetTitleItemsByCriteria(GetPromoEligibleItemsFilterCriteria(promotionFunctionFilters)).ToList();
 		decimal arg = list.Sum((IRentalShoppingCartTitleItem x) => ((promotion.ActionCode != PromotionActionCode.Rental) ? x.PricingRecord?.Purchase : x.PricingRecord?.InitialNight).GetValueOrDefault());
 		Func<decimal, decimal> func = (decimal originalValue) => decimal.Round(originalValue * (promotion?.Percent ?? 0m), 2, MidpointRounding.AwayFromZero);
-		decimal num = func(arg);
-		decimal num2 = 0m;
+		decimal promoPrice = func(arg);
+		decimal itemsTotal = 0m;
 		promoCodeValidationInfo.IsCartValid = list.Any();
-		promoCodeValidationInfo.Price = num;
+		promoCodeValidationInfo.Price = promoPrice;
 		promoCodeValidationInfo.Percent = Promotion.Percent;
 		foreach (IRentalShoppingCartTitleItem item in list)
 		{
@@ -1255,12 +1241,12 @@ public class RentalShoppingCart : IRentalShoppingCart
 			};
 			promoCodeValidationInfo.PromotionItems.Add(promotionItem);
 			promoCodeValidationInfo.QualifyingItems.Add(item);
-			num2 += promotionItem.PromotionAmount;
+			itemsTotal += promotionItem.PromotionAmount;
 		}
 		if (promoCodeValidationInfo.PromotionItems != null && promoCodeValidationInfo.PromotionItems.Count >= 1)
 		{
-			decimal num3 = num - num2;
-			promoCodeValidationInfo.PromotionItems[0].PromotionAmount += num3;
+			decimal roundingDifference = promoPrice - itemsTotal;
+			promoCodeValidationInfo.PromotionItems[0].PromotionAmount += roundingDifference;
 		}
 		return promoCodeValidationInfo;
 	}
@@ -1273,32 +1259,32 @@ public class RentalShoppingCart : IRentalShoppingCart
 			List<IRentalShoppingCartTitleItem> rentItems = (from x in GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, GetTitleTypeFromPromotionFormat(promotion.RentFormat.Value), GetTitleFamilyFromPromotionFormat(promotion.RentFormat.Value), null, null, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
 				orderby promotion.RentFormat == PromotionRentFormat.Any && promotion.GetFormat != PromotionGetFormat.Any && GetTitleTypeFromPromotionFormat(promotion.GetFormat.Value) == x.TitleType, x.PricingRecord.InitialNight descending, x.ProductId descending
 				select x).Take(promotion.RentQuantity).ToList();
-			List<IRentalShoppingCartTitleItem> list = (from x in GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, GetTitleTypeFromPromotionFormat(promotion.GetFormat.Value), GetTitleFamilyFromPromotionFormat(promotion.GetFormat.Value), null, null, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
+			List<IRentalShoppingCartTitleItem> getItems = (from x in GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, GetTitleTypeFromPromotionFormat(promotion.GetFormat.Value), GetTitleFamilyFromPromotionFormat(promotion.GetFormat.Value), null, null, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, false, includeDiscountRestrictionItems: false)
 				where !rentItems.Contains(x)
 				orderby x.PricingRecord.InitialNight descending, x.ProductId
 				select x).Take(promotion.GetQuantity).ToList();
-			List<IRentalShoppingCartTitleItem> list2 = new List<IRentalShoppingCartTitleItem>();
-			list2.AddRange(list);
-			list2.AddRange(rentItems);
-			int num = RxGxGetRequiredCount("Dvd", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
-			int num2 = Math.Max(num - list2.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType.DVD), 0);
-			int num3 = RxGxGetRequiredCount("BluRay", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
-			int num4 = Math.Max(num3 - list2.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType.Bluray), 0);
-			int num5 = RxGxGetRequiredCount("FourKUhd", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
-			int num6 = Math.Max(num5 - list2.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType._4KUHD), 0);
-			int num7 = RxGxGetRequiredCount("Game", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
-			int num8 = Math.Max(num7 - list2.Count((IRentalShoppingCartTitleItem x) => x.TitleFamily == TitleFamily.Games), 0);
-			int num9 = Math.Max(RxGxGetRequiredCount("Any", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value) + num + num3 + num5 + num7 - num2 - num4 - num6 - num8 - list2.Count(), 0);
-			bool flag = num2 == 0 && num4 == 0 && num6 == 0 && num8 == 0 && num9 == 0;
-			result.IsCartValid = flag;
-			result.Price = (flag ? list.Sum((IRentalShoppingCartTitleItem x) => x.PricingRecord.InitialNight) : 0m);
+			List<IRentalShoppingCartTitleItem> promotionItems = new List<IRentalShoppingCartTitleItem>();
+			promotionItems.AddRange(getItems);
+			promotionItems.AddRange(rentItems);
+			int dvdsRequired = RxGxGetRequiredCount("Dvd", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
+			int dvdsRemaining = Math.Max(dvdsRequired - promotionItems.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType.DVD), 0);
+			int bluRaysRequired = RxGxGetRequiredCount("BluRay", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
+			int bluRaysRemaining = Math.Max(bluRaysRequired - promotionItems.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType.Bluray), 0);
+			int fourKUhdsRequired = RxGxGetRequiredCount("FourKUhd", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
+			int fourKUhdsRemaining = Math.Max(fourKUhdsRequired - promotionItems.Count((IRentalShoppingCartTitleItem x) => x.TitleType == TitleType._4KUHD), 0);
+			int gamesRequired = RxGxGetRequiredCount("Game", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
+			int gamesRemaining = Math.Max(gamesRequired - promotionItems.Count((IRentalShoppingCartTitleItem x) => x.TitleFamily == TitleFamily.Games), 0);
+			int anyRemaining = Math.Max(RxGxGetRequiredCount("Any", promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value) + dvdsRequired + bluRaysRequired + fourKUhdsRequired + gamesRequired - dvdsRemaining - bluRaysRemaining - fourKUhdsRemaining - gamesRemaining - promotionItems.Count(), 0);
+			bool isCartValid = dvdsRemaining == 0 && bluRaysRemaining == 0 && fourKUhdsRemaining == 0 && gamesRemaining == 0 && anyRemaining == 0;
+			result.IsCartValid = isCartValid;
+			result.Price = (isCartValid ? getItems.Sum((IRentalShoppingCartTitleItem x) => x.PricingRecord.InitialNight) : 0m);
 			result.Title = RxGxGetTitle(promotion.RentQuantity, promotion.RentFormat.Value, promotion.GetQuantity, promotion.GetFormat.Value);
-			result.Message = RxGxGetMessage(num2, num4, num6, num8, num9);
+			result.Message = RxGxGetMessage(dvdsRemaining, bluRaysRemaining, fourKUhdsRemaining, gamesRemaining, anyRemaining);
 			rentItems.ForEach(delegate(IRentalShoppingCartTitleItem x)
 			{
 				result.QualifyingItems.Add(x);
 			});
-			list.ForEach(delegate(IRentalShoppingCartTitleItem x)
+			getItems.ForEach(delegate(IRentalShoppingCartTitleItem x)
 			{
 				result.PromotionItems.Add(new PromotionItem
 				{
@@ -1379,8 +1365,8 @@ public class RentalShoppingCart : IRentalShoppingCart
 	private string RxGxGetTitle(int rentQuantity, PromotionRentFormat rentFormat, int getQuantity, PromotionGetFormat getFormat)
 	{
 		string promo_code_rxgx_title = Resources.promo_code_rxgx_title;
-		string empty = string.Empty;
-		empty = rentFormat switch
+		string rentFormatText = string.Empty;
+		rentFormatText = rentFormat switch
 		{
 			PromotionRentFormat.Dvd => Resources.dvd, 
 			PromotionRentFormat.BluRay => Resources.blu_ray, 
@@ -1391,10 +1377,10 @@ public class RentalShoppingCart : IRentalShoppingCart
 		};
 		if (rentQuantity > 1 && rentFormat != PromotionRentFormat.Any)
 		{
-			empty = $"{empty}s";
+			rentFormatText = $"{rentFormatText}s";
 		}
-		string empty2 = string.Empty;
-		empty2 = getFormat switch
+		string getFormatText = string.Empty;
+		getFormatText = getFormat switch
 		{
 			PromotionGetFormat.Dvd => Resources.dvd, 
 			PromotionGetFormat.BluRay => Resources.blu_ray, 
@@ -1405,55 +1391,31 @@ public class RentalShoppingCart : IRentalShoppingCart
 		};
 		if (getQuantity > 1 && getFormat != PromotionGetFormat.Any)
 		{
-			empty2 = $"{empty2}s";
+			getFormatText = $"{getFormatText}s";
 		}
-		return string.Format(promo_code_rxgx_title, rentQuantity, empty, getQuantity, empty2);
+		return string.Format(promo_code_rxgx_title, rentQuantity, rentFormatText, getQuantity, getFormatText);
 	}
 
 	private int RxGxGetRequiredCount(string format, byte rentQuantity, PromotionRentFormat rentFormat, byte getQuantity, PromotionGetFormat getFormat)
 	{
-		int num = 0;
+		int requiredCount = 0;
 		if (format == rentFormat.ToString())
 		{
-			num += rentQuantity;
+			requiredCount += rentQuantity;
 		}
 		if (format == getFormat.ToString())
 		{
-			num += getQuantity;
+			requiredCount += getQuantity;
 		}
-		return num;
+		return requiredCount;
 	}
 
 	private bool IsDiscountRestrictionAndFullValuePromotion(IRentalShoppingCartTitleItem rentalShoppingCartTitleItem)
 	{
-		bool num = (rentalShoppingCartTitleItem?.TitleProduct?.DiscountRestriction).GetValueOrDefault() != DiscountRestriction.None;
-		int num4;
-		if (!((Promotion?.OriginalPrice ?? 0m) >= (rentalShoppingCartTitleItem?.Price ?? 0m)))
-		{
-			decimal? num2 = Promotion?.OriginalPercent;
-			decimal num3 = 1;
-			if (!((num2.GetValueOrDefault() == num3) & num2.HasValue))
-			{
-				IPromotion promotion = Promotion;
-				if (promotion == null || promotion.Intent != PromotionIntentCode.FirstNightDVD)
-				{
-					IPromotion promotion2 = Promotion;
-					if (promotion2 == null || promotion2.Intent != PromotionIntentCode.FirstNightBluray)
-					{
-						IPromotion promotion3 = Promotion;
-						num4 = ((promotion3 != null && promotion3.Intent == PromotionIntentCode.FirstNightFreeItem) ? 1 : 0);
-						goto IL_00f0;
-					}
-				}
-				num4 = 1;
-				goto IL_00f0;
-			}
-		}
-		num4 = 1;
-		goto IL_00f0;
-		IL_00f0:
-		bool flag = (byte)num4 != 0;
-		return num & flag;
+		bool hasDiscountRestriction = (rentalShoppingCartTitleItem?.TitleProduct?.DiscountRestriction).GetValueOrDefault() != DiscountRestriction.None;
+		// The promotion takes the item's whole price: its price covers the item's, it is 100% off, or it is a free first night.
+		bool isFullValuePromotion = (Promotion?.OriginalPrice ?? 0m) >= (rentalShoppingCartTitleItem?.Price ?? 0m) || Promotion?.OriginalPercent == 1m || Promotion?.Intent == PromotionIntentCode.FirstNightDVD || Promotion?.Intent == PromotionIntentCode.FirstNightBluray || Promotion?.Intent == PromotionIntentCode.FirstNightFreeItem;
+		return hasDiscountRestriction & isFullValuePromotion;
 	}
 
 	public List<IRentalShoppingCartTitleItem> GetTitleItemsByCriteria(IRentalShoppingCartFilterCriteria filterCriteria)
