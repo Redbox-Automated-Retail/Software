@@ -48,10 +48,10 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 				return ErrorCodes.PickerEmpty;
 			}
 			pickerSensorReadResult.Log();
-			bool flag = pickerSensorReadResult.IsInputActive(PickerInputs.Sensor4) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor3) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor2) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor1);
+			bool blockingTrack = pickerSensorReadResult.IsInputActive(PickerInputs.Sensor4) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor3) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor2) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor1);
 			if (pickerSensorReadResult.IsInputActive(PickerInputs.Sensor6))
 			{
-				if (flag)
+				if (blockingTrack)
 				{
 					ControllerService.PushOut();
 					runtimeService.Wait(ms);
@@ -79,7 +79,7 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 				}
 				runtimeService.Wait(ms);
 			}
-			else if (flag)
+			else if (blockingTrack)
 			{
 				ControllerService.PushOut();
 				runtimeService.Wait(1500);

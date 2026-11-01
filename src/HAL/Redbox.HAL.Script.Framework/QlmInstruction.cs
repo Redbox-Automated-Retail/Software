@@ -63,10 +63,10 @@ public sealed class QlmInstruction : Instruction
 		}
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		bool home = true;
-		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("HOME");
-		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var result2))
+		KeyValuePair homePair = base.Operands.GetKeyValuePair("HOME");
+		if (homePair != null && bool.TryParse(homePair.Value, out var parsedHome))
 		{
-			home = result2;
+			home = parsedHome;
 		}
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		if (string.Compare(token.Value, "HALT", ignoreCase: true) == 0)
@@ -92,12 +92,12 @@ public sealed class QlmInstruction : Instruction
 		}
 		else if (string.Compare(token.Value, "DISENGAGE", ignoreCase: true) == 0)
 		{
-			ErrorCodes errorCodes2 = controlSystem.DisengageQlm(home, context.AppLog);
-			if (errorCodes2 == ErrorCodes.Success && !context.IsImmediate)
+			ErrorCodes disengageResult = controlSystem.DisengageQlm(home, context.AppLog);
+			if (disengageResult == ErrorCodes.Success && !context.IsImmediate)
 			{
 				motionControlService.TestAndReset();
 			}
-			context.PushTop(errorCodes2.ToString().ToUpper());
+			context.PushTop(disengageResult.ToString().ToUpper());
 		}
 		else if (string.Compare(token.Value, "STATUS", ignoreCase: true) == 0)
 		{
@@ -106,10 +106,10 @@ public sealed class QlmInstruction : Instruction
 		else if (string.Compare(token.Value, "ENDQLMOP", ignoreCase: true) == 0)
 		{
 			ErrorCodes failCode = ErrorCodes.Success;
-			KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair("MOVE-EC");
-			if (keyValuePair2 != null)
+			KeyValuePair moveErrorPair = base.Operands.GetKeyValuePair("MOVE-EC");
+			if (moveErrorPair != null)
 			{
-				string keyValuePairValue = GetKeyValuePairValue<string>(keyValuePair2, result.Errors, context);
+				string keyValuePairValue = GetKeyValuePairValue<string>(moveErrorPair, result.Errors, context);
 				if (result.Errors.Count == 0)
 				{
 					failCode = Enum<ErrorCodes>.ParseIgnoringCase(keyValuePairValue, ErrorCodes.Success);
@@ -126,32 +126,32 @@ public sealed class QlmInstruction : Instruction
 		}
 		else if (string.Compare(token.Value, "SETUP") == 0)
 		{
-			KeyValuePair keyValuePair3 = base.Operands.GetKeyValuePair("CHECK-SLOTS");
+			KeyValuePair checkSlotsPair = base.Operands.GetKeyValuePair("CHECK-SLOTS");
 			bool checkSlots = true;
-			if (keyValuePair3 != null && bool.TryParse(keyValuePair3.Value, out var result3))
+			if (checkSlotsPair != null && bool.TryParse(checkSlotsPair.Value, out var parsedCheckSlots))
 			{
-				checkSlots = result3;
+				checkSlots = parsedCheckSlots;
 			}
 			context.PushTop(MerchandizingHelper.Instance.Setup(result, checkSlots, context));
 		}
 		else if (string.Compare(token.Value, "UNLOAD-DISK") == 0)
 		{
 			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-			int num = CurrentSlot(result, context);
-			if (num != 0)
+			int slot = CurrentSlot(result, context);
+			if (slot != 0)
 			{
 				if (!inventoryService.EmptyCountExceeds(0))
 				{
 					context.PushTop(MerchandizeResult.MachineFull.ToString().ToUpper());
 				}
 				IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
-				MerchandizeResult merchandizeResult = new UnloadHelper(context, result).UnloadDisk(decksService.QlmDeck.Number, num);
-				string text = merchandizeResult.ToString().ToUpper();
+				MerchandizeResult merchandizeResult = new UnloadHelper(context, result).UnloadDisk(decksService.QlmDeck.Number, slot);
+				string status = merchandizeResult.ToString().ToUpper();
 				if (merchandizeResult != MerchandizeResult.Success)
 				{
-					LogHelper.Instance.WithContext("Unload-Disc returned status {0}", text);
+					LogHelper.Instance.WithContext("Unload-Disc returned status {0}", status);
 				}
-				context.PushTop(text);
+				context.PushTop(status);
 			}
 		}
 		else
@@ -163,13 +163,13 @@ public sealed class QlmInstruction : Instruction
 			string iD = GetID(result, context);
 			if (!string.IsNullOrEmpty(iD))
 			{
-				MerchandizeResult merchandizeResult2 = ThinHelper.MakeInstance(result, context).ThinDisk(iD, MerchFlags.None);
-				string text2 = merchandizeResult2.ToString().ToUpper();
-				if (merchandizeResult2 != MerchandizeResult.Success)
+				MerchandizeResult thinResult = ThinHelper.MakeInstance(result, context).ThinDisk(iD, MerchFlags.None);
+				string thinStatus = thinResult.ToString().ToUpper();
+				if (thinResult != MerchandizeResult.Success)
 				{
-					LogHelper.Instance.WithContext("thin-disk returned status {0}", text2);
+					LogHelper.Instance.WithContext("thin-disk returned status {0}", thinStatus);
 				}
-				context.PushTop(text2);
+				context.PushTop(thinStatus);
 			}
 		}
 	}

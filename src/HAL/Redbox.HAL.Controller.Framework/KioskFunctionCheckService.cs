@@ -28,8 +28,8 @@ internal sealed class KioskFunctionCheckService : IKioskFunctionCheckService
 		Table = dataTableService.GetTable<IKioskFunctionCheckData>();
 		if (!Table.Exists)
 		{
-			bool flag = Table.Create();
-			LogHelper.Instance.Log("[KioskFunctionCheckService] KFC table doesn't exist; create returned {0}", flag ? "SUCCESS" : "FAILURE");
+			bool created = Table.Create();
+			LogHelper.Instance.Log("[KioskFunctionCheckService] KFC table doesn't exist; create returned {0}", created ? "SUCCESS" : "FAILURE");
 		}
 	}
 }

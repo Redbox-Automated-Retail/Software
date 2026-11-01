@@ -304,20 +304,20 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 
 	internal override IControlSystemRevision GetRevision()
 	{
-		IBoardVersionResponse[] array = new IBoardVersionResponse[ControllerBoards.Length];
-		int num = 0;
+		IBoardVersionResponse[] responses = new IBoardVersionResponse[ControllerBoards.Length];
+		int failures = 0;
 		for (int i = 0; i < ControllerBoards.Length; i++)
 		{
-			array[i] = GetBoardVersion(ControllerBoards[i]);
-			if (!array[i].ReadSuccess)
+			responses[i] = GetBoardVersion(ControllerBoards[i]);
+			if (!responses[i].ReadSuccess)
 			{
-				num++;
+				failures++;
 			}
 		}
 		return new FmeControllerRevision
 		{
-			Responses = array,
-			Success = (num == 0)
+			Responses = responses,
+			Success = (failures == 0)
 		};
 	}
 

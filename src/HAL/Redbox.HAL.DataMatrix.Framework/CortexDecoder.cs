@@ -683,9 +683,9 @@ internal class CortexDecoder : AbstractBarcodeReader
 		Results.Clear();
 		using Bitmap bmp = (Bitmap)Image.FromFile(sr.ImagePath);
 		using ExecutionTimer executionTimer = new ExecutionTimer();
-		int num = Decode(bmp);
+		int decodeStatus = Decode(bmp);
 		executionTimer.Stop();
-		if (num == 0 && Results.Count > 0)
+		if (decodeStatus == 0 && Results.Count > 0)
 		{
 			Results.ForEach(delegate(CortexDecodeResult each)
 			{
@@ -705,11 +705,11 @@ internal class CortexDecoder : AbstractBarcodeReader
 			LogHelper.Instance.Log("[CortexDecoder] CRD_Create returned {0}", handle);
 			if (handle > 0 && handle < 900)
 			{
-				int num = GetInt(handle, 9);
-				bool flag = SetProperty(9, (void*)(num ^ 0x9E68CBB2u));
+				int licenseSeed = GetInt(handle, 9);
+				bool keyAccepted = SetProperty(9, (void*)(licenseSeed ^ 0x9E68CBB2u));
 				IntPtr functionPointerForDelegate = Marshal.GetFunctionPointerForDelegate(ResultCallback);
 				base.IsLicensed = SetProperty(10, (void*)functionPointerForDelegate);
-				LogHelper.Instance.Log($"[CortexDecoder] IsLicensed: {flag && base.IsLicensed}");
+				LogHelper.Instance.Log($"[CortexDecoder] IsLicensed: {keyAccepted && base.IsLicensed}");
 			}
 		}
 		catch (Exception e)
@@ -725,20 +725,20 @@ internal class CortexDecoder : AbstractBarcodeReader
 		Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
 		BitmapData bitmapData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 		byte* ptr = (byte*)(void*)bitmapData.Scan0;
-		int num = 0;
-		int num2 = 2;
+		int bufferIndex = 0;
+		int rowOffset = 2;
 		for (int i = 0; i < bmp.Height; i++)
 		{
-			int num3 = num2;
+			int pixelOffset = rowOffset;
 			for (int j = 0; j < bmp.Width; j++)
 			{
-				buffer[num++] = ptr[num3];
-				num3 += 3;
+				buffer[bufferIndex++] = ptr[pixelOffset];
+				pixelOffset += 3;
 			}
-			num2 += bitmapData.Stride;
+			rowOffset += bitmapData.Stride;
 		}
 		bmp.UnlockBits(bitmapData);
-		int num4;
+		int decodeStatus;
 		fixed (byte* data = &buffer[0])
 		{
 			SetProperty(0, data);
@@ -750,34 +750,34 @@ internal class CortexDecoder : AbstractBarcodeReader
 			SetProperty(308, (void*)bmp.Width);
 			SetProperty(309, (void*)bmp.Height);
 			using ExecutionTimer executionTimer = new ExecutionTimer();
-			num4 = CRD_Decode(handle);
+			decodeStatus = CRD_Decode(handle);
 			executionTimer.Stop();
-			if (num4 != 0)
+			if (decodeStatus != 0)
 			{
-				LogHelper.Instance.Log("[CortexDecoder] Decode returned error code {0}", num4);
+				LogHelper.Instance.Log("[CortexDecoder] Decode returned error code {0}", decodeStatus);
 			}
 		}
-		return num4;
+		return decodeStatus;
 	}
 
 	private unsafe static byte[] GetBytes(int handle, int id, int maxlen)
 	{
-		byte[] array = new byte[maxlen];
-		fixed (byte* value = &array[0])
+		byte[] bytes = new byte[maxlen];
+		fixed (byte* value = &bytes[0])
 		{
 			CRD_Get(handle, id, value);
 		}
-		return array;
+		return bytes;
 	}
 
 	private unsafe static int[] GetInts(int handle, int id, int maxlen)
 	{
-		int[] array = new int[maxlen];
-		fixed (int* value = &array[0])
+		int[] ints = new int[maxlen];
+		fixed (int* value = &ints[0])
 		{
 			CRD_Get(handle, id, value);
 		}
-		return array;
+		return ints;
 	}
 
 	private unsafe static int GetInt(int handle, int id)
@@ -789,10 +789,10 @@ internal class CortexDecoder : AbstractBarcodeReader
 
 	private unsafe bool SetProperty(int property, void* data)
 	{
-		int num = CRD_Set(handle, property, data);
-		if (num != 0)
+		int status = CRD_Set(handle, property, data);
+		if (status != 0)
 		{
-			LogHelper.Instance.Log("[CortexDecoder] SetProperty ( handle = {0}, property = {1} ) returned {2}", handle, property, num);
+			LogHelper.Instance.Log("[CortexDecoder] SetProperty ( handle = {0}, property = {1} ) returned {2}", handle, property, status);
 			return false;
 		}
 		return true;

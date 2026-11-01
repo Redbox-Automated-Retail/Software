@@ -88,15 +88,15 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 	{
 		try
 		{
-			int num = 0;
+			int inputIndex = 0;
 			for (int i = 0; i < RawResponse.OpCodeResponse.Length; i++)
 			{
 				if (char.IsDigit(RawResponse.OpCodeResponse[i]))
 				{
-					Inputs[num++] = ((RawResponse.OpCodeResponse[i] == '1') ? InputState.Active : InputState.Inactive);
+					Inputs[inputIndex++] = ((RawResponse.OpCodeResponse[i] == '1') ? InputState.Active : InputState.Inactive);
 				}
 			}
-			if (20 != num)
+			if (20 != inputIndex)
 			{
 				OnBogusResponse();
 			}
@@ -115,7 +115,7 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 			OnBogusResponse();
 			return;
 		}
-		int num2 = 0;
+		int inputIndex = 0;
 		try
 		{
 			for (int i = 0; i < index; i++)
@@ -123,10 +123,10 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 				switch (RawResponse.OpCodeResponse[i])
 				{
 				case '0':
-					Inputs[num2++] = InputState.Inactive;
+					Inputs[inputIndex++] = InputState.Inactive;
 					break;
 				case '1':
-					Inputs[num2++] = InputState.Active;
+					Inputs[inputIndex++] = InputState.Active;
 					break;
 				}
 			}
@@ -134,9 +134,9 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 		catch (Exception e)
 		{
 			OnResponseException(e);
-			num2 = 0;
+			inputIndex = 0;
 		}
-		if (num2 != 20)
+		if (inputIndex != 20)
 		{
 			OnBogusResponse();
 		}

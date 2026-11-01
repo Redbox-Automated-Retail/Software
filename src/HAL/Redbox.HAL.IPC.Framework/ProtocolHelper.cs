@@ -67,23 +67,23 @@ public static class ProtocolHelper
 
 	public static ReadOnlyCollection<string> ParseProperties(string data)
 	{
-		List<string> list = new List<string>();
+		List<string> properties = new List<string>();
 		StringBuilder stringBuilder = new StringBuilder();
-		int num = 0;
+		int depth = 0;
 		Stack<char> stack = new Stack<char>();
 		foreach (char c in data)
 		{
-			if (c == '|' && num == 0)
+			if (c == '|' && depth == 0)
 			{
-				list.Add(stringBuilder.ToString());
+				properties.Add(stringBuilder.ToString());
 				stringBuilder.Length = 0;
 				continue;
 			}
 			if (c == '<')
 			{
 				stack.Push('>');
-				num++;
-				if (num == 1)
+				depth++;
+				if (depth == 1)
 				{
 					continue;
 				}
@@ -91,24 +91,24 @@ public static class ProtocolHelper
 			if (c == '[' && (stack.Count == 0 || stack.Peek() != '>'))
 			{
 				stack.Push(']');
-				num++;
-				if (num == 1)
+				depth++;
+				if (depth == 1)
 				{
 					continue;
 				}
 			}
 			if (stack.Count > 0 && c == stack.Peek())
 			{
-				num--;
-				if (num == 0)
+				depth--;
+				if (depth == 0)
 				{
 					continue;
 				}
 			}
 			stringBuilder.Append(c);
 		}
-		list.Add(stringBuilder.ToString());
-		return list.AsReadOnly();
+		properties.Add(stringBuilder.ToString());
+		return properties.AsReadOnly();
 	}
 
 	public static void FormatErrors(ErrorList errors, List<string> messages)

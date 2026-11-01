@@ -39,24 +39,24 @@ internal sealed class KioskTestLogger : ILogger, IDisposable
 	{
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		string path = string.Format("kioskTest-{0}", runtimeService.GenerateUniqueFile(".log"));
-		string text = "c:\\Program Files\\Redbox\\KioskLogs\\KioskTest";
-		bool flag = true;
-		if (!Directory.Exists(text))
+		string logDirectory = "c:\\Program Files\\Redbox\\KioskLogs\\KioskTest";
+		bool directoryExists = true;
+		if (!Directory.Exists(logDirectory))
 		{
 			try
 			{
-				Directory.CreateDirectory(text);
+				Directory.CreateDirectory(logDirectory);
 			}
 			catch (Exception ex)
 			{
-				flag = false;
+				directoryExists = false;
 				Console.WriteLine("Failed to create kiosk logs path", ex.Message);
 			}
 		}
-		if (flag)
+		if (directoryExists)
 		{
-			string path2 = Path.Combine(text, path);
-			LogFile = new StreamWriter(path2)
+			string logPath = Path.Combine(logDirectory, path);
+			LogFile = new StreamWriter(logPath)
 			{
 				AutoFlush = true
 			};

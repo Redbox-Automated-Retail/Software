@@ -59,7 +59,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 	public void NotifyConfigurationChangeEnd()
 	{
 		LogHelper.Instance.Log("[InventoryService] Configuration change end.");
-		int num = 0;
+		int updatedCount = 0;
 		using (new WithWriteLock(Lock))
 		{
 			IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
@@ -89,12 +89,12 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 				});
 				if (updates.Count > 0)
 				{
-					num = updates.Count;
+					updatedCount = updates.Count;
 					Table.Update(updates);
 				}
 			}
 		}
-		if (num > 0)
+		if (updatedCount > 0)
 		{
 			Observers.ForEach(delegate(IInventoryObserver each)
 			{
@@ -112,12 +112,12 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 	public bool MachineIsFull()
 	{
 		int machineEmptyCount = GetMachineEmptyCount();
-		bool flag = machineEmptyCount <= ControllerConfiguration.Instance.ReturnSlotBuffer;
-		if (flag)
+		bool isFull = machineEmptyCount <= ControllerConfiguration.Instance.ReturnSlotBuffer;
+		if (isFull)
 		{
 			LogHelper.Instance.WithContext(LogEntryType.Info, "The machine is full; there is {0} empty slot(s).", machineEmptyCount);
 		}
-		return flag;
+		return isFull;
 	}
 
 	public bool EmptyCountExceeds(int numberOfEmpty)
@@ -565,8 +565,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 			{
 				if (predicate(location))
 				{
-					int num = count + 1;
-					count = num;
+					count++;
 				}
 				return true;
 			}, excludeQLM);
@@ -585,11 +584,11 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 			{
 				continue;
 			}
-			int num = LocationInfo[i].Length;
-			for (int j = 0; j < num; j++)
+			int slotCount = LocationInfo[i].Length;
+			for (int j = 0; j < slotCount; j++)
 			{
-				ILocation obj = LocationInfo[i][j];
-				if (!action(obj))
+				ILocation location = LocationInfo[i][j];
+				if (!action(location))
 				{
 					return;
 				}
@@ -624,28 +623,28 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 				LocationInfo = new ILocation[service.DeckCount][];
 				service.ForAllDecksDo(delegate(IDeck deck)
 				{
-					List<ILocation> list = inventory.FindAll((ILocation each) => each.Deck == deck.Number);
-					if (list.Count == deck.NumberOfSlots)
+					List<ILocation> deckEntries = inventory.FindAll((ILocation each) => each.Deck == deck.Number);
+					if (deckEntries.Count == deck.NumberOfSlots)
 					{
-						LogHelper.Instance.Log("[InventoryService] Loaded {0} entries for deck {1} ( # slots = {2} )", list.Count, deck.Number, deck.NumberOfSlots);
-						LocationInfo[deck.Number - 1] = Sort(list);
+						LogHelper.Instance.Log("[InventoryService] Loaded {0} entries for deck {1} ( # slots = {2} )", deckEntries.Count, deck.Number, deck.NumberOfSlots);
+						LocationInfo[deck.Number - 1] = Sort(deckEntries);
 						return true;
 					}
-					if (list.Count > 0)
+					if (deckEntries.Count > 0)
 					{
-						LogHelper.Instance.Log(LogEntryType.Error, "[InventoryService] LoadInventory: res.count = {0}; deck count = {1}; deleting deck & initializing to UNKNOWN", list.Count, deck.NumberOfSlots);
-						if (!Table.Delete(list))
+						LogHelper.Instance.Log(LogEntryType.Error, "[InventoryService] LoadInventory: res.count = {0}; deck count = {1}; deleting deck & initializing to UNKNOWN", deckEntries.Count, deck.NumberOfSlots);
+						if (!Table.Delete(deckEntries))
 						{
 							m_storeState = ErrorCodes.StoreError;
 							LogHelper.Instance.Log("[InventoryService] Delete returned false.");
 							return false;
 						}
-						list.Clear();
+						deckEntries.Clear();
 					}
-					ILocation[] array = InitializeDeck(deck);
-					if (array != null)
+					ILocation[] deckLocations = InitializeDeck(deck);
+					if (deckLocations != null)
 					{
-						LocationInfo[deck.Number - 1] = array;
+						LocationInfo[deck.Number - 1] = deckLocations;
 						return true;
 					}
 					m_storeState = ErrorCodes.StoreError;

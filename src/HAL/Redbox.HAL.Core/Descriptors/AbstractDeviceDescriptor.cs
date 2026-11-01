@@ -76,12 +76,12 @@ public abstract class AbstractDeviceDescriptor : IDeviceDescriptor
 
 	protected bool OnMatchDriver(IDeviceDescriptor desc, IDriverDescriptor driverDesc)
 	{
-		bool flag = UsbService.MatchDriver(desc, driverDesc);
-		if (!flag)
+		bool matched = UsbService.MatchDriver(desc, driverDesc);
+		if (!matched)
 		{
 			LogHelper.Instance.Log("[{0}] Could not match driver.", GetType().Name);
 		}
-		return flag;
+		return matched;
 	}
 
 	protected AbstractDeviceDescriptor(IUsbDeviceService service, DeviceClass clazz)

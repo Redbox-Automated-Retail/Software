@@ -29,7 +29,7 @@ public sealed class YieldInstruction : Instruction
 	{
 		if (base.Operands.Count == 1)
 		{
-			double? num = null;
+			double? delayMs = null;
 			if (base.Operands[0].IsSymbolOrConst)
 			{
 				object symbolValue = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
@@ -39,17 +39,17 @@ public sealed class YieldInstruction : Instruction
 				}
 				if (symbolValue is int || symbolValue is decimal)
 				{
-					num = (double)Convert.ChangeType(symbolValue, typeof(double));
+					delayMs = (double)Convert.ChangeType(symbolValue, typeof(double));
 				}
 			}
 			else if (base.Operands[0].Type == TokenType.NumericLiteral)
 			{
-				num = (double)Convert.ChangeType(base.Operands[0].ConvertValue(), typeof(double));
+				delayMs = (double)Convert.ChangeType(base.Operands[0].ConvertValue(), typeof(double));
 			}
-			if (num.HasValue)
+			if (delayMs.HasValue)
 			{
-				DateTime value = DateTime.Now.AddMilliseconds(num.Value);
-				context.StartTime = value;
+				DateTime startTime = DateTime.Now.AddMilliseconds(delayMs.Value);
+				context.StartTime = startTime;
 			}
 		}
 		ExecutionEngine.Instance.PerformContextSwitch(runtimeOnly: false);

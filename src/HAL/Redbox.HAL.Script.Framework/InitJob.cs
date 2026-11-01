@@ -25,16 +25,16 @@ internal sealed class InitJob : NativeJobAdapter
 		applicationLog.Write("Init start.");
 		applicationLog.Write("RESET controller boards.");
 		object symbolValue = base.Context.GetSymbolValue("__EE_BOOTSTRAP_INIT", base.Result.Errors);
-		bool flag = false;
+		bool bootstrapInit = false;
 		if (base.Result.Errors.Count == 0)
 		{
-			flag = (bool)symbolValue;
+			bootstrapInit = (bool)symbolValue;
 		}
 		else
 		{
 			base.Result.Errors.Clear();
 		}
-		if (flag)
+		if (bootstrapInit)
 		{
 			if (ControllerConfiguration.Instance.DisableAutoExposureAtInit)
 			{
@@ -139,7 +139,7 @@ internal sealed class InitJob : NativeJobAdapter
 		finally
 		{
 			StartCamera();
-			if (flag)
+			if (bootstrapInit)
 			{
 				CheckShutdown(base.Context, runtimeService);
 			}
@@ -208,12 +208,12 @@ internal sealed class InitJob : NativeJobAdapter
 		IScannerDevice configuredDevice = ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice();
 		if (!configuredDevice.IsConnected)
 		{
-			bool flag = configuredDevice.Start(testFunction: true);
-			if (!flag)
+			bool started = configuredDevice.Start(testFunction: true);
+			if (!started)
 			{
-				flag = configuredDevice.Restart();
+				started = configuredDevice.Restart();
 			}
-			LogHelper.Instance.WithContext("CAMERA START returned {0}", flag);
+			LogHelper.Instance.WithContext("CAMERA START returned {0}", started);
 		}
 	}
 }

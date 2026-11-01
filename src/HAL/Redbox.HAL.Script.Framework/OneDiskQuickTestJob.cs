@@ -15,42 +15,42 @@ internal sealed class OneDiskQuickTestJob : NativeJobAdapter
 			AddError("Misconfigured test");
 			return;
 		}
-		int operand = base.Context.PopTop<int>();
-		int slot = base.Context.PopTop<int>();
-		if (!MoveAndGet(operand, slot))
+		int startDeck = base.Context.PopTop<int>();
+		int startSlot = base.Context.PopTop<int>();
+		if (!MoveAndGet(startDeck, startSlot))
 		{
 			AddError("Failure to retrieve disk from start position.");
 			return;
 		}
-		int num2 = base.Context.PopTop<int>();
-		bool flag = false;
-		int[] array = new int[2] { 30, 60 };
-		int[] array2 = new int[3] { 1, 30, 60 };
-		for (int i = 1; i <= num2; i++)
+		int deckCount = base.Context.PopTop<int>();
+		bool failed = false;
+		int[] startDeckSlots = new int[2] { 30, 60 };
+		int[] testSlots = new int[3] { 1, 30, 60 };
+		for (int i = 1; i <= deckCount; i++)
 		{
-			if (flag)
+			if (failed)
 			{
 				break;
 			}
-			foreach (int slot2 in ((i == operand) ? array : array2))
+			foreach (int testSlot in ((i == startDeck) ? startDeckSlots : testSlots))
 			{
-				if (!MoveAndPut(i, slot2, "UNKNOWN"))
+				if (!MoveAndPut(i, testSlot, "UNKNOWN"))
 				{
 					AddError("Unable to place the disk at a test location.");
-					flag = true;
+					failed = true;
 					break;
 				}
-				if (!MoveAndGet(i, slot2))
+				if (!MoveAndGet(i, testSlot))
 				{
 					AddError("Unable to get the disk from test location.");
-					flag = true;
+					failed = true;
 					break;
 				}
 			}
 		}
-		if (!flag)
+		if (!failed)
 		{
-			if (!MoveAndPut(operand, slot, "UNKNOWN"))
+			if (!MoveAndPut(startDeck, startSlot, "UNKNOWN"))
 			{
 				AddError("Unable to place the disk at a test location.");
 			}

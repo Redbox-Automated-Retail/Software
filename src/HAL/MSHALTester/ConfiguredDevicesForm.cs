@@ -506,10 +506,10 @@ public class ConfiguredDevicesForm : Form
 
 	private void ConfigureCortexPanel()
 	{
-		bool flag = ScannerServices.Cortex == ScannerService;
-		m_installCortexButton.Enabled = !flag;
-		m_uninstallCortexButton.Enabled = flag;
-		WriteToBox(string.Format("The camera {0} enabled.", flag ? "is" : "is not"));
+		bool cortexInstalled = ScannerServices.Cortex == ScannerService;
+		m_installCortexButton.Enabled = !cortexInstalled;
+		m_uninstallCortexButton.Enabled = cortexInstalled;
+		WriteToBox(string.Format("The camera {0} enabled.", cortexInstalled ? "is" : "is not"));
 	}
 
 	private void OnConfigureIceQubeBoard()
@@ -552,8 +552,8 @@ public class ConfiguredDevicesForm : Form
 
 	private void ConfigureIrCameraGroup()
 	{
-		bool flag = ScannerServices.Cortex == ScannerService;
-		if (!flag)
+		bool cortexInstalled = ScannerServices.Cortex == ScannerService;
+		if (!cortexInstalled)
 		{
 			button37.Text = (m_irConfigured ? "Un-configure" : "Configure");
 		}
@@ -561,42 +561,16 @@ public class ConfiguredDevicesForm : Form
 		{
 			button37.Text = "Unavailable";
 		}
-		Button button = button38;
-		Button button2 = button39;
-		Button button3 = button40;
-		bool flag2 = (button41.Enabled = !flag);
-		bool flag4 = (button3.Enabled = flag2);
-		bool enabled = (button2.Enabled = flag4);
-		button.Enabled = enabled;
-		Button button4 = button42;
-		Button button5 = button43;
-		Button button6 = button46;
-		flag2 = (button47.Enabled = !flag);
-		flag4 = (button6.Enabled = flag2);
-		enabled = (button5.Enabled = flag4);
-		button4.Enabled = enabled;
-		Button button7 = button44;
-		Button button8 = button45;
-		flag4 = (button37.Enabled = !flag);
-		enabled = (button8.Enabled = flag4);
-		button7.Enabled = enabled;
+		button38.Enabled = button39.Enabled = button40.Enabled = button41.Enabled = !cortexInstalled;
+		button42.Enabled = button43.Enabled = button46.Enabled = button47.Enabled = !cortexInstalled;
+		button44.Enabled = button45.Enabled = button37.Enabled = !cortexInstalled;
 	}
 
 	private void OnConfigureKioskTest()
 	{
 		ISessionUser currentSession = ServiceLocator.Instance.GetService<ISessionUserService>().GetCurrentSession();
 		FunctionTest = new KioskFunctionTest(Service, KioskTestOutput, ScannerServices.Cortex == ScannerService, currentSession.User);
-		TextBox testVendDoorTB = m_testVendDoorTB;
-		TextBox checkDriversStatusTB = m_checkDriversStatusTB;
-		TextBox cameraSnapTB = m_cameraSnapTB;
-		TextBox initTB = m_initTB;
-		TextBox verticalTestTB = m_verticalTestTB;
-		string text = (m_unknownCountTB.Text = "Not Started");
-		string text3 = (verticalTestTB.Text = text);
-		string text5 = (initTB.Text = text3);
-		string text7 = (cameraSnapTB.Text = text5);
-		string text9 = (checkDriversStatusTB.Text = text7);
-		testVendDoorTB.Text = text9;
+		m_testVendDoorTB.Text = m_checkDriversStatusTB.Text = m_cameraSnapTB.Text = m_initTB.Text = m_verticalTestTB.Text = m_unknownCountTB.Text = "Not Started";
 		m_userName.Text = currentSession.User;
 	}
 
@@ -691,11 +665,11 @@ public class ConfiguredDevicesForm : Form
 			if (HardwareJobStatus.Completed == changeCameraConfigurationExecutor.EndStatus)
 			{
 				ScannerService = scannerServices;
-				bool flag = ScannerServices.Cortex == ScannerService;
+				bool cortexInstalled = ScannerServices.Cortex == ScannerService;
 				WriteToBox("The camera was successfully installed");
-				m_installCortexButton.Enabled = !flag;
+				m_installCortexButton.Enabled = !cortexInstalled;
 				Button uninstallCortexButton = m_uninstallCortexButton;
-				bool enabled = (m_startCortexButton.Enabled = flag);
+				bool enabled = (m_startCortexButton.Enabled = cortexInstalled);
 				uninstallCortexButton.Enabled = enabled;
 			}
 			else
@@ -725,8 +699,8 @@ public class ConfiguredDevicesForm : Form
 				OutputBox.Write(ErrorCodes.ServiceChannelError.ToString().ToUpper());
 				return;
 			}
-			bool flag = bool.Parse(value);
-			WriteToBox(flag ? "Camera started." : "Camera DIDN'T START.");
+			bool started = bool.Parse(value);
+			WriteToBox(started ? "Camera started." : "Camera DIDN'T START.");
 		}
 	}
 
@@ -754,11 +728,11 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !HasFraudSensor;
+			bool enableFraudSensor = !HasFraudSensor;
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"SETCFG \"EnableSecureDiskValidator\" \"{flag.ToString()}\" TYPE=CONTROLLER");
-			stringBuilder.AppendLine($" SETCFG \"EnableFraudSensorCheck\" \"{flag.ToString()}\" TYPE=CONTROLLER");
-			stringBuilder.AppendLine($" SETCFG \"FraudScanJobBitmask2\" \"{(flag ? 32 : 0)}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($"SETCFG \"EnableSecureDiskValidator\" \"{enableFraudSensor.ToString()}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($" SETCFG \"EnableFraudSensorCheck\" \"{enableFraudSensor.ToString()}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($" SETCFG \"FraudScanJobBitmask2\" \"{(enableFraudSensor ? 32 : 0)}\" TYPE=CONTROLLER");
 			stringBuilder.AppendLine(" CLEAR");
 			HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediateProgram(Encoding.ASCII.GetBytes(stringBuilder.ToString()), out var _);
 			if (!hardwareCommandResult.Success)
@@ -768,7 +742,7 @@ public class ConfiguredDevicesForm : Form
 			}
 			else
 			{
-				HasFraudSensor = flag;
+				HasFraudSensor = enableFraudSensor;
 				OnConfigureFraudSensor();
 			}
 		}
@@ -1060,10 +1034,10 @@ public class ConfiguredDevicesForm : Form
 		{
 			return;
 		}
-		int num = 1;
+		int sessionNumber = 1;
 		foreach (IKioskFunctionCheckData item in sessions)
 		{
-			WriteSessionData(item, num++);
+			WriteSessionData(item, sessionNumber++);
 		}
 	}
 
@@ -1094,8 +1068,8 @@ public class ConfiguredDevicesForm : Form
 			try
 			{
 				Version version = new Version(hardwareSurveyExecutor.TouchscreenFirmware);
-				bool flag = version.Major == 4 && version.Minor == 30;
-				col = string.Format("{0} ( {1} CURRENT )", hardwareSurveyExecutor.TouchscreenFirmware, flag ? "MOST" : "NOT MOST");
+				bool isMostCurrent = version.Major == 4 && version.Minor == 30;
+				col = string.Format("{0} ( {1} CURRENT )", hardwareSurveyExecutor.TouchscreenFirmware, isMostCurrent ? "MOST" : "NOT MOST");
 			}
 			catch (Exception)
 			{
@@ -1134,10 +1108,10 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !HasRouterPowerRelay;
+			bool enableRelay = !HasRouterPowerRelay;
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"SETCFG \"RouterPowerCyclePause\" \"{(flag ? RouterPowerCyclePause : 0)}\" TYPE=CONTROLLER");
-			if (flag)
+			stringBuilder.AppendLine($"SETCFG \"RouterPowerCyclePause\" \"{(enableRelay ? RouterPowerCyclePause : 0)}\" TYPE=CONTROLLER");
+			if (enableRelay)
 			{
 				stringBuilder.AppendLine("SETCFG \"TrackHardwareCorrections\" \"TRUE\" TYPE=CONTROLLER");
 			}
@@ -1150,7 +1124,7 @@ public class ConfiguredDevicesForm : Form
 			}
 			else
 			{
-				HasRouterPowerRelay = flag;
+				HasRouterPowerRelay = enableRelay;
 				ConfigureRouterGroup();
 			}
 		}
@@ -1497,10 +1471,10 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !ArcusResetConfigured;
+			bool enableReset = !ArcusResetConfigured;
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"SETCFG \"RestartControllerDuringUserJobs\" \"{flag}\" TYPE=CONTROLLER");
-			if (flag)
+			stringBuilder.AppendLine($"SETCFG \"RestartControllerDuringUserJobs\" \"{enableReset}\" TYPE=CONTROLLER");
+			if (enableReset)
 			{
 				stringBuilder.AppendLine("SETCFG \"TrackHardwareCorrections\" \"TRUE\" TYPE=CONTROLLER");
 			}
@@ -1513,7 +1487,7 @@ public class ConfiguredDevicesForm : Form
 			}
 			else
 			{
-				ArcusResetConfigured = flag;
+				ArcusResetConfigured = enableReset;
 				ConfigureArcusGroup();
 			}
 		}
@@ -1523,10 +1497,10 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !HasRouterPowerRelay;
+			bool enableRelay = !HasRouterPowerRelay;
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"SETCFG \"RouterPowerCyclePause\" \"{(flag ? RouterPowerCyclePause : 0)}\" TYPE=CONTROLLER");
-			if (flag)
+			stringBuilder.AppendLine($"SETCFG \"RouterPowerCyclePause\" \"{(enableRelay ? RouterPowerCyclePause : 0)}\" TYPE=CONTROLLER");
+			if (enableRelay)
 			{
 				stringBuilder.AppendLine("SETCFG \"TrackHardwareCorrections\" \"TRUE\" TYPE=CONTROLLER");
 			}
@@ -1539,7 +1513,7 @@ public class ConfiguredDevicesForm : Form
 			}
 			else
 			{
-				HasRouterPowerRelay = flag;
+				HasRouterPowerRelay = enableRelay;
 				ConfigureRouterGroup();
 			}
 		}
@@ -1569,17 +1543,7 @@ public class ConfiguredDevicesForm : Form
 
 	private void ToggleKfcButtons(bool enable)
 	{
-		Button button = btn_KFCCheckDrivers;
-		Button button2 = btn_KFCDecodeTest;
-		Button button3 = btn_KFCTestVendDoor;
-		Button button4 = btn_KFCInit;
-		Button button5 = btn_KFCVerticalSlotTest;
-		bool flag = (btn_KFCUnknownCount.Enabled = enable);
-		bool flag3 = (button5.Enabled = flag);
-		bool flag5 = (button4.Enabled = flag3);
-		bool flag7 = (button3.Enabled = flag5);
-		bool enabled = (button2.Enabled = flag7);
-		button.Enabled = enabled;
+		btn_KFCCheckDrivers.Enabled = btn_KFCDecodeTest.Enabled = btn_KFCTestVendDoor.Enabled = btn_KFCInit.Enabled = btn_KFCVerticalSlotTest.Enabled = btn_KFCUnknownCount.Enabled = enable;
 	}
 
 	private void m_verticalSyncWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -1624,10 +1588,10 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !m_irConfigured;
+			bool configureIr = !m_irConfigured;
 			DateTime dateTime = DateTime.Now.ToUniversalTime();
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(string.Format("SETCFG \"IRHardwareInstallDate\" \"{0}\" TYPE=KIOSK", flag ? dateTime.ToString() : "NONE"));
+			stringBuilder.AppendLine(string.Format("SETCFG \"IRHardwareInstallDate\" \"{0}\" TYPE=KIOSK", configureIr ? dateTime.ToString() : "NONE"));
 			stringBuilder.AppendLine("CLEAR");
 			HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediateProgram(Encoding.ASCII.GetBytes(stringBuilder.ToString()), out var _);
 			if (!hardwareCommandResult.Success)
@@ -1640,7 +1604,7 @@ public class ConfiguredDevicesForm : Form
 			}
 			else
 			{
-				m_irConfigured = flag;
+				m_irConfigured = configureIr;
 				ConfigureIrCameraGroup();
 			}
 		}

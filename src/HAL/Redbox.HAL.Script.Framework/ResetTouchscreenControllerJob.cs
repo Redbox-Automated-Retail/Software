@@ -12,26 +12,26 @@ internal sealed class ResetTouchscreenControllerJob : NativeJobAdapter
 		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
 		applicationLog.WriteFormatted("Request to reset touchscreen controller");
 		ITouchscreenDescriptor touchscreenDescriptor = service.FindTouchScreen(matchDriver: false);
-		bool flag = false;
+		bool reset = false;
 		if (touchscreenDescriptor != null)
 		{
 			try
 			{
-				flag = touchscreenDescriptor.HardReset();
+				reset = touchscreenDescriptor.HardReset();
 			}
 			catch (Exception e)
 			{
 				LogHelper.Instance.Log("Reset touchscreen caught an exception", e);
-				flag = false;
+				reset = false;
 			}
-			applicationLog.WriteFormatted(" Touchscreen found; reset returned {0}", flag);
+			applicationLog.WriteFormatted(" Touchscreen found; reset returned {0}", reset);
 		}
 		else
 		{
 			applicationLog.WriteFormatted("Unable to locate a touchscreen.");
 		}
-		ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>().Insert(HardwareCorrectionStatistic.Touchscreen, base.Context, flag);
-		if (!flag)
+		ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>().Insert(HardwareCorrectionStatistic.Touchscreen, base.Context, reset);
+		if (!reset)
 		{
 			AddError("Touchscreen rest failure.");
 		}

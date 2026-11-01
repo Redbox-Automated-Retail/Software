@@ -35,21 +35,21 @@ public sealed class RollerInstruction : Instruction
 	{
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		GetWaitFlag();
-		int? num = GetTimeOutValue(result.Errors, context);
+		int? timeout = GetTimeOutValue(result.Errors, context);
 		Token token = base.Operands[0];
 		if (token.IsKeyValuePair)
 		{
-			KeyValuePair obj = (KeyValuePair)token.ConvertValue();
+			KeyValuePair positionPair = (KeyValuePair)token.ConvertValue();
 			RollerPosition position = RollerPosition.Position4;
-			if (int.TryParse(obj.Value, out var result2))
+			if (int.TryParse(positionPair.Value, out var parsedPosition))
 			{
-				position = (RollerPosition)result2;
+				position = (RollerPosition)parsedPosition;
 			}
-			if (!num.HasValue)
+			if (!timeout.HasValue)
 			{
-				num = 8000;
+				timeout = 8000;
 			}
-			HandleError(controlSystem.RollerToPosition(position, num.Value), context);
+			HandleError(controlSystem.RollerToPosition(position, timeout.Value), context);
 		}
 		else if (token.Type == TokenType.Symbol)
 		{

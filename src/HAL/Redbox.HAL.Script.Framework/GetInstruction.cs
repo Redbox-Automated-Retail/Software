@@ -57,28 +57,28 @@ public sealed class GetInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("PEEK");
-		if (keyValuePair != null)
+		KeyValuePair peekPair = base.Operands.GetKeyValuePair("PEEK");
+		if (peekPair != null)
 		{
-			bool.TryParse(keyValuePair.Value, out var _);
+			bool.TryParse(peekPair.Value, out var _);
 		}
-		bool flag = false;
-		KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair("CENTER");
-		if (keyValuePair2 != null && bool.TryParse(keyValuePair2.Value, out var result3))
+		bool center = false;
+		KeyValuePair centerPair = base.Operands.GetKeyValuePair("CENTER");
+		if (centerPair != null && bool.TryParse(centerPair.Value, out var parsedCenter))
 		{
-			flag = result3;
+			center = parsedCenter;
 		}
 		bool test = false;
-		KeyValuePair keyValuePair3 = base.Operands.GetKeyValuePair("TESTONEMPTY");
-		if (keyValuePair3 != null && bool.TryParse(keyValuePair3.Value, out var result4))
+		KeyValuePair testOnEmptyPair = base.Operands.GetKeyValuePair("TESTONEMPTY");
+		if (testOnEmptyPair != null && bool.TryParse(testOnEmptyPair.Value, out var parsedTest))
 		{
-			test = result4;
+			test = parsedTest;
 		}
-		bool flag2 = false;
-		KeyValuePair keyValuePair4 = base.Operands.GetKeyValuePair("GET-RT");
-		if (keyValuePair4 != null && bool.TryParse(keyValuePair4.Value, out var result5))
+		bool pushReturnTime = false;
+		KeyValuePair getReturnTimePair = base.Operands.GetKeyValuePair("GET-RT");
+		if (getReturnTimePair != null && bool.TryParse(getReturnTimePair.Value, out var parsedGetReturnTime))
 		{
-			flag2 = result5;
+			pushReturnTime = parsedGetReturnTime;
 		}
 		if (context.IsImmediate)
 		{
@@ -86,11 +86,11 @@ public sealed class GetInstruction : Instruction
 		}
 		GetInstructionObserver observer = new GetInstructionObserver(test);
 		IGetResult getResult = ServiceLocator.Instance.GetService<IControllerService>().Get(observer);
-		if (getResult.Success & flag)
+		if (getResult.Success & center)
 		{
 			ServiceLocator.Instance.GetService<IControlSystem>().Center(CenterDiskMethod.VendDoorAndBack);
 		}
-		if (flag2)
+		if (pushReturnTime)
 		{
 			context.PushTop(GetDateRepresentation(getResult.ReturnTime));
 		}

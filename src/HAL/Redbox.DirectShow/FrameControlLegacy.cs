@@ -17,8 +17,8 @@ public sealed class FrameControlLegacy : AbstractDirectShowFrameControl
 	{
 		get
 		{
-			int num = Interlocked.CompareExchange(ref m_grabImage, ControlConstants.NotTriggered, ControlConstants.Triggered);
-			return ControlConstants.Triggered == num;
+			int previous = Interlocked.CompareExchange(ref m_grabImage, ControlConstants.NotTriggered, ControlConstants.Triggered);
+			return ControlConstants.Triggered == previous;
 		}
 	}
 
@@ -30,12 +30,12 @@ public sealed class FrameControlLegacy : AbstractDirectShowFrameControl
 		{
 			return false;
 		}
-		bool flag = ImageCapturedEvent.WaitOne(captureWait);
-		if (!flag)
+		bool captured = ImageCapturedEvent.WaitOne(captureWait);
+		if (!captured)
 		{
 			LogHelper.Instance.Log("[{0}] The trigger event was not set.", ControlMoniker);
 		}
-		return flag;
+		return captured;
 	}
 
 	protected override void OnImageCaptured()

@@ -26,27 +26,27 @@ public sealed class SubtractInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		Token token = base.Operands[0];
-		object obj = context.GetSymbolValue(token.Value, result.Errors);
-		if (obj == null || result.Errors.Count > 0)
+		Token target = base.Operands[0];
+		object symbolValue = context.GetSymbolValue(target.Value, result.Errors);
+		if (symbolValue == null || result.Errors.Count > 0)
 		{
 			return;
 		}
-		object obj2 = 0;
-		Token token2 = base.Operands[1];
-		if (token2.Type == TokenType.NumericLiteral)
+		object operand = 0;
+		Token operandToken = base.Operands[1];
+		if (operandToken.Type == TokenType.NumericLiteral)
 		{
-			obj2 = token2.ConvertValue();
+			operand = operandToken.ConvertValue();
 		}
-		else if (token2.Type == TokenType.Symbol || token2.Type == TokenType.ConstSymbol)
+		else if (operandToken.Type == TokenType.Symbol || operandToken.Type == TokenType.ConstSymbol)
 		{
-			obj2 = context.GetSymbolValue(token2.Value, result.Errors);
-			if (obj2 == null || result.Errors.Count > 0)
+			operand = context.GetSymbolValue(operandToken.Value, result.Errors);
+			if (operand == null || result.Errors.Count > 0)
 			{
 				return;
 			}
 		}
-		Type type = obj.GetType();
+		Type type = symbolValue.GetType();
 		if (type != typeof(int) && type != typeof(decimal))
 		{
 			AddError("E004", "Only numeric values of type integer and decimal may be subtracted.", result.Errors);
@@ -54,12 +54,12 @@ public sealed class SubtractInstruction : Instruction
 		}
 		if (type == typeof(int))
 		{
-			obj = (int)decimal.Subtract(Convert.ToDecimal(obj), Convert.ToDecimal(obj2));
+			symbolValue = (int)decimal.Subtract(Convert.ToDecimal(symbolValue), Convert.ToDecimal(operand));
 		}
 		else if (type == typeof(decimal))
 		{
-			obj = decimal.Subtract((decimal)obj, (decimal)obj2);
+			symbolValue = decimal.Subtract((decimal)symbolValue, (decimal)operand);
 		}
-		context.SetSymbolValue(token.Value, obj);
+		context.SetSymbolValue(target.Value, symbolValue);
 	}
 }

@@ -85,15 +85,15 @@ internal abstract class CortexPacket
 			DataSize = dataSize;
 		}
 		ParseData();
-		byte b = Packet[Packet.Length - 1];
-		ushort num = Packet[Packet.Length - 2];
-		num = (ushort)((num << 8) | b);
-		ushort num2 = 0;
+		byte crcLow = Packet[Packet.Length - 1];
+		ushort receivedCrc = Packet[Packet.Length - 2];
+		receivedCrc = (ushort)((receivedCrc << 8) | crcLow);
+		ushort computedCrc = 0;
 		for (int i = 0; i < Packet.Length - 2; i++)
 		{
-			num2 = CRC16.CRC(num2, Packet[i]);
+			computedCrc = CRC16.CRC(computedCrc, Packet[i]);
 		}
-		CRC = num2;
-		ChecksumOk = CRC == num;
+		CRC = computedCrc;
+		ChecksumOk = CRC == receivedCrc;
 	}
 }

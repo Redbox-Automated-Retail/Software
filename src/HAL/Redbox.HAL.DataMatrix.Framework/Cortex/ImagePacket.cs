@@ -13,13 +13,13 @@ internal class ImagePacket : CortexPacket
 
 	protected override void ParseData()
 	{
-		List<byte> list = new List<byte>();
-		int num = 22;
-		while (Packet[num] != 4)
+		List<byte> nameBytes = new List<byte>();
+		int index = 22;
+		while (Packet[index] != 4)
 		{
-			list.Add(Packet[num++]);
+			nameBytes.Add(Packet[index++]);
 		}
-		m_imageName = Encoding.ASCII.GetString(list.ToArray());
+		m_imageName = Encoding.ASCII.GetString(nameBytes.ToArray());
 	}
 
 	internal ImagePacket(CortexPacket packet)

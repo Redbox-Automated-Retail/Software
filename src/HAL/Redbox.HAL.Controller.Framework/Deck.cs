@@ -117,26 +117,26 @@ public sealed class Deck : IDeck
 		{
 			throw new ArgumentException($"The slot parameter must be between 1 and {NumberOfSlots}.");
 		}
-		int num = slot - 1;
-		int num2 = num / SlotsPerQuadrant;
-		if (num2 >= Quadrants.Count)
+		int slotIndex = slot - 1;
+		int quadrantIndex = slotIndex / SlotsPerQuadrant;
+		if (quadrantIndex >= Quadrants.Count)
 		{
-			throw new ArgumentException($"The computed quadrant offset {num2} is outside the range of defined quadrants.  This usuallys means the deck is incorrectly configured.");
+			throw new ArgumentException($"The computed quadrant offset {quadrantIndex} is outside the range of defined quadrants.  This usuallys means the deck is incorrectly configured.");
 		}
-		int offset = Quadrants[num2].Offset;
+		int offset = Quadrants[quadrantIndex].Offset;
 		IQuadrant quadrant = FindQuadrantThatContainsSlot(slot);
-		int num3 = num % SlotsPerQuadrant;
+		int slotInQuadrant = slotIndex % SlotsPerQuadrant;
 		if (quadrant != null)
 		{
-			num3 = slot - quadrant.Slots.Start;
+			slotInQuadrant = slot - quadrant.Slots.Start;
 			offset = quadrant.Offset;
 		}
-		decimal num4 = (decimal)num3 * SlotWidth;
+		decimal slotOffset = (decimal)slotInQuadrant * SlotWidth;
 		if (IsSlotSellThru(slot))
 		{
-			num4 = SellThruOffset ?? 915;
+			slotOffset = SellThruOffset ?? 915;
 		}
-		return (int)((decimal)offset + num4);
+		return (int)((decimal)offset + slotOffset);
 	}
 
 	public bool IsSlotValid(int slot)
@@ -170,39 +170,39 @@ public sealed class Deck : IDeck
 
 	internal static Deck FromXmlNode(XmlNode node)
 	{
-		int attributeValue = node.GetAttributeValue("Number", 1);
-		int attributeValue2 = node.GetAttributeValue("Offset", -18760);
-		bool attributeValue3 = node.GetAttributeValue("IsQlm", defaultValue: false);
-		decimal attributeValue4 = node.GetAttributeValue("SlotWidth", 166.6667m);
-		int attributeValue5 = node.GetAttributeValue("NumberOfSlots", 90);
-		int? attributeValue6 = node.GetAttributeValue<int?>("SellThruSlots", null);
-		int? attributeValue7 = node.GetAttributeValue<int?>("SellThruOffset", null);
+		int number = node.GetAttributeValue("Number", 1);
+		int offset = node.GetAttributeValue("Offset", -18760);
+		bool isQlm = node.GetAttributeValue("IsQlm", defaultValue: false);
+		decimal slotWidth = node.GetAttributeValue("SlotWidth", 166.6667m);
+		int numberOfSlots = node.GetAttributeValue("NumberOfSlots", 90);
+		int? sellThruSlots = node.GetAttributeValue<int?>("SellThruSlots", null);
+		int? sellThruOffset = node.GetAttributeValue<int?>("SellThruOffset", null);
 		List<Quadrant> quadrants = new List<Quadrant>();
-		int num = 0;
+		int quadrantIndex = 0;
 		foreach (XmlNode childNode in node.ChildNodes)
 		{
-			int attributeValue8 = childNode.GetAttributeValue("Offset", 780);
-			int? attributeValue9 = childNode.GetAttributeValue<int?>("StartSlot", null);
-			int? attributeValue10 = childNode.GetAttributeValue<int?>("EndSlot", null);
-			bool attributeValue11 = childNode.GetAttributeValue("IsExcluded", defaultValue: false);
+			int quadrantOffset = childNode.GetAttributeValue("Offset", 780);
+			int? startSlot = childNode.GetAttributeValue<int?>("StartSlot", null);
+			int? endSlot = childNode.GetAttributeValue<int?>("EndSlot", null);
+			bool isExcluded = childNode.GetAttributeValue("IsExcluded", defaultValue: false);
 			Range range = null;
-			if (attributeValue9.HasValue && attributeValue10.HasValue)
+			if (startSlot.HasValue && endSlot.HasValue)
 			{
-				range = new Range(attributeValue9.Value, attributeValue10.Value);
+				range = new Range(startSlot.Value, endSlot.Value);
 			}
 			else
 			{
-				int num2 = ((90 == attributeValue5) ? 15 : 6);
-				int num3 = num * num2 + 1;
-				int end = num3 + num2 - 1;
-				range = new Range(num3, end);
+				int slotsPerQuadrant = ((90 == numberOfSlots) ? 15 : 6);
+				int firstSlot = quadrantIndex * slotsPerQuadrant + 1;
+				int end = firstSlot + slotsPerQuadrant - 1;
+				range = new Range(firstSlot, end);
 			}
-			Quadrant quadrant = new Quadrant(attributeValue8, range);
+			Quadrant quadrant = new Quadrant(quadrantOffset, range);
 			quadrants.Add(quadrant);
-			quadrant.IsExcluded = attributeValue11;
-			num++;
+			quadrant.IsExcluded = isExcluded;
+			quadrantIndex++;
 		}
-		return new Deck(attributeValue, attributeValue2, attributeValue3, attributeValue5, attributeValue4, attributeValue6, attributeValue7, quadrants.ToArray());
+		return new Deck(number, offset, isQlm, numberOfSlots, slotWidth, sellThruSlots, sellThruOffset, quadrants.ToArray());
 	}
 
 	internal void ToXmlWriter(XmlWriter writer)

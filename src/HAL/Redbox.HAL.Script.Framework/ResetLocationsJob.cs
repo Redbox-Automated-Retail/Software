@@ -9,20 +9,20 @@ internal sealed class ResetLocationsJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		int operand = base.Context.PopTop<int>();
+		int count = base.Context.PopTop<int>();
 		List<ILocation> locations = new List<ILocation>();
 		using (new DisposeableList<ILocation>(locations))
 		{
-			for (int i = 0; i < operand; i++)
+			for (int i = 0; i < count; i++)
 			{
-				int num2 = base.Context.PopTop<int>();
-				int num3 = base.Context.PopTop<int>();
-				IDeck byNumber = base.DecksService.GetByNumber(num2);
-				if (byNumber != null && byNumber.IsSlotValid(num3))
+				int deck = base.Context.PopTop<int>();
+				int slot = base.Context.PopTop<int>();
+				IDeck byNumber = base.DecksService.GetByNumber(deck);
+				if (byNumber != null && byNumber.IsSlotValid(slot))
 				{
-					ILocation item = inventoryService.Get(num2, num3);
+					ILocation item = inventoryService.Get(deck, slot);
 					locations.Add(item);
-					base.Context.CreateResult("LocationReset", "The location was reset.", num2, num3, null, null, null);
+					base.Context.CreateResult("LocationReset", "The location was reset.", deck, slot, null, null, null);
 				}
 			}
 			inventoryService.Reset(locations);

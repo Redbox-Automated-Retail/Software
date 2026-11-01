@@ -31,16 +31,16 @@ public sealed class PlatterConfig
 		{
 			throw new InvalidOperationException($"Can't compute segments on type {Type}");
 		}
-		int[] array = new int[QuadrantCount];
-		decimal num = startOffset;
+		int[] offsets = new int[QuadrantCount];
+		decimal offset = startOffset;
 		for (int i = 0; i < QuadrantCount; i++)
 		{
-			array[i] = (int)num;
-			decimal num2 = 0m;
-			num2 = ((PlatterType.Sparse != Type) ? ((decimal)SlotsPerQuadrant * SlotWidth + SlotWidth) : ((decimal)(SlotsPerQuadrant - 1) * SlotWidth + 0.5m + 466m));
-			num += num2;
+			offsets[i] = (int)offset;
+			decimal quadrantWidth = 0m;
+			quadrantWidth = ((PlatterType.Sparse != Type) ? ((decimal)SlotsPerQuadrant * SlotWidth + SlotWidth) : ((decimal)(SlotsPerQuadrant - 1) * SlotWidth + 0.5m + 466m));
+			offset += quadrantWidth;
 		}
-		return array;
+		return offsets;
 	}
 
 	private PlatterConfig(PlatterData data)

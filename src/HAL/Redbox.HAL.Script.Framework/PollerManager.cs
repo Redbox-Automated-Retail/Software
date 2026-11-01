@@ -43,29 +43,29 @@ internal sealed class PollerManager
 	public void InitializePollers()
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
-		string text = ServiceLocator.Instance.GetService<IRuntimeService>().RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
+		string assemblyPath = ServiceLocator.Instance.GetService<IRuntimeService>().RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
 		Assembly assembly = null;
 		try
 		{
-			assembly = Assembly.LoadFrom(text);
+			assembly = Assembly.LoadFrom(assemblyPath);
 		}
 		catch (Exception e)
 		{
-			LogHelper.Instance.Log($"[PollerManager] Unable to load assembly '{text}' to scan for commands.", e);
+			LogHelper.Instance.Log($"[PollerManager] Unable to load assembly '{assemblyPath}' to scan for commands.", e);
 			return;
 		}
 		Type[] types = assembly.GetTypes();
 		foreach (Type type in types)
 		{
-			PollerAttribute[] array = (PollerAttribute[])type.GetCustomAttributes(typeof(PollerAttribute), inherit: false);
-			if (array != null && array.Length != 0 && !string.IsNullOrEmpty(array[0].Name))
+			PollerAttribute[] attributes = (PollerAttribute[])type.GetCustomAttributes(typeof(PollerAttribute), inherit: false);
+			if (attributes != null && attributes.Length != 0 && !string.IsNullOrEmpty(attributes[0].Name))
 			{
 				try
 				{
 					ScriptPoller scriptPoller = Activator.CreateInstance(type, nonPublic: true) as ScriptPoller;
-					PollerMap[array[0].Name] = scriptPoller;
-					scriptPoller.PollerName = array[0].Name;
-					scriptPoller.ConfigNotifications = array[0].ConfigNotifications;
+					PollerMap[attributes[0].Name] = scriptPoller;
+					scriptPoller.PollerName = attributes[0].Name;
+					scriptPoller.ConfigNotifications = attributes[0].ConfigNotifications;
 					LogHelper.Instance.Log("[PollerManager] Registered poller {0}", scriptPoller.PollerName);
 				}
 				catch (Exception e2)
@@ -90,8 +90,8 @@ internal sealed class PollerManager
 	{
 		foreach (string key in PollerMap.Keys)
 		{
-			ScriptPoller obj = PollerMap[key];
-			if (!predicate(obj))
+			ScriptPoller poller = PollerMap[key];
+			if (!predicate(poller))
 			{
 				break;
 			}

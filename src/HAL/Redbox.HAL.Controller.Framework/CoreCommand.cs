@@ -145,8 +145,7 @@ internal sealed class CoreCommand
 
 	private string ComputeCommunicationError(AddressSelector address)
 	{
-		string text = null;
-		string text2 = string.Format("{0} is not responsive.", address switch
+		string message = string.Format("{0} is not responsive.", address switch
 		{
 			AddressSelector.H001 => "PCB", 
 			AddressSelector.H002 => "AUX board", 
@@ -154,8 +153,8 @@ internal sealed class CoreCommand
 			AddressSelector.H555 => "QR device", 
 			_ => $"Unknown board {address.ToString()}", 
 		});
-		LogHelper.Instance.Log(text2, LogEntryType.Error);
-		return text2;
+		LogHelper.Instance.Log(message, LogEntryType.Error);
+		return message;
 	}
 
 	private CoreCommand(CommandType type, int? timeout, ICommPort port)

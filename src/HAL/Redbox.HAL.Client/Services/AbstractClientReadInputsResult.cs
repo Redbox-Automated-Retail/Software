@@ -30,8 +30,7 @@ internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 		Array.ForEach(Inputs, delegate
 		{
 			LogHelper.Instance.Log(" input {0} = {1}", input, Inputs[input]);
-			int num = input + 1;
-			input = num;
+			input++;
 		});
 	}
 
@@ -77,13 +76,13 @@ internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 			Error = errorCodes;
 			return;
 		}
-		int num = Convert.ToInt32(stack.Pop());
-		LogHelper.Instance.Log("[ClientReadInputsResult] Stack count = {0}", num);
+		int inputCount = Convert.ToInt32(stack.Pop());
+		LogHelper.Instance.Log("[ClientReadInputsResult] Stack count = {0}", inputCount);
 		Error = ErrorCodes.Success;
-		Inputs = new string[num];
-		for (int num2 = num - 1; num2 >= 0; num2--)
+		Inputs = new string[inputCount];
+		for (int index = inputCount - 1; index >= 0; index--)
 		{
-			Inputs[num2] = stack.Pop();
+			Inputs[index] = stack.Pop();
 		}
 	}
 }

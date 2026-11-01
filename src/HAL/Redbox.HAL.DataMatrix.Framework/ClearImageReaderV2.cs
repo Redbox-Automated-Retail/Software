@@ -22,15 +22,15 @@ internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 		int maxBcIn = 6;
 		for (int i = 0; i < 2; i++)
 		{
-			bool flag = false;
+			bool failed = false;
 			try
 			{
 				TheReader.Image.Open(result.ImagePath);
 				using ExecutionTimer executionTimer = new ExecutionTimer();
-				int num = TheReader.Find(maxBcIn);
+				int found = TheReader.Find(maxBcIn);
 				executionTimer.Stop();
 				result.ExecutionTime = executionTimer.Elapsed;
-				if (num > 0)
+				if (found > 0)
 				{
 					foreach (CiBarcode barcode in TheReader.Barcodes)
 					{
@@ -40,7 +40,7 @@ internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 			}
 			catch (Exception e)
 			{
-				flag = true;
+				failed = true;
 				LogHelper.Instance.Log("[ClearImageReaderV2] Exception during scan.", e);
 				result.ResetOnException();
 			}
@@ -52,7 +52,7 @@ internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 			{
 				LogHelper.Instance.Log("[ClearImageReaderV2] Exception closing barcode image.", e2);
 			}
-			if (!flag)
+			if (!failed)
 			{
 				return;
 			}

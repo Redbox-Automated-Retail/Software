@@ -36,8 +36,7 @@ public static class CompositeFunctions
 		{
 			if (result.Code == "ErrorMessage")
 			{
-				int num = errors + 1;
-				errors = num;
+				errors++;
 			}
 			box.Write(result.Message);
 		});
@@ -49,15 +48,15 @@ public static class CompositeFunctions
 	{
 		using PutInLocationResult putInLocationResult = new PutInLocationResult(service, deck, slot);
 		putInLocationResult.Run();
-		int num = 0;
+		int errors = 0;
 		foreach (ProgramResult result in putInLocationResult.Results)
 		{
 			if (result.Code == "JobError")
 			{
-				num++;
+				errors++;
 			}
 			box.Write(result.Message);
 		}
-		return num == 0;
+		return errors == 0;
 	}
 }

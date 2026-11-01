@@ -75,13 +75,11 @@ internal sealed class InventoryHelper : IDisposable
 			{
 				if (InventoryItemsEqual(_r, outputSuccessfulCompare))
 				{
-					int num = inventoryMatches + 1;
-					inventoryMatches = num;
+					inventoryMatches++;
 				}
 				else
 				{
-					int num = inventoryMismatches + 1;
-					inventoryMismatches = num;
+					inventoryMismatches++;
 				}
 			}
 		});
@@ -139,8 +137,8 @@ internal sealed class InventoryHelper : IDisposable
 		}
 		if ((options & SyncOptions.Attach) != SyncOptions.None)
 		{
-			string[] array = hardwareCommandResult.CommandMessages[0].Split('|');
-			if (Service.GetJob(array[0], out var job).Success)
+			string[] jobInfo = hardwareCommandResult.CommandMessages[0].Split('|');
+			if (Service.GetJob(jobInfo[0], out var job).Success)
 			{
 				job.EventRaised += delegate(HardwareJob hardwareJob, DateTime eventTime, string eventMessage)
 				{
@@ -196,7 +194,7 @@ internal sealed class InventoryHelper : IDisposable
 
 	internal bool RebuildInventory(bool force)
 	{
-		bool flag = true;
+		bool succeeded = true;
 		using (HardwareStatusExecutor hardwareStatusExecutor = new HardwareStatusExecutor(Service))
 		{
 			hardwareStatusExecutor.Run();
@@ -205,15 +203,15 @@ internal sealed class InventoryHelper : IDisposable
 				using RebuildInventoryExecutor rebuildInventoryExecutor = new RebuildInventoryExecutor(Service);
 				rebuildInventoryExecutor.Run();
 				Console.WriteLine("Rebuild job {0} ended with status {1}", rebuildInventoryExecutor.ID, rebuildInventoryExecutor.EndStatus);
-				flag = HardwareJobStatus.Completed == rebuildInventoryExecutor.EndStatus;
-				if (!flag)
+				succeeded = HardwareJobStatus.Completed == rebuildInventoryExecutor.EndStatus;
+				if (!succeeded)
 				{
 					Console.WriteLine("Rebuild job failed.");
 					rebuildInventoryExecutor.Errors.Dump(Console.Out);
 				}
 			}
 		}
-		return flag;
+		return succeeded;
 	}
 
 	internal InventoryHelper(HardwareService service)

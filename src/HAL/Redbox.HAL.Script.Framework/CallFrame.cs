@@ -44,15 +44,15 @@ public class CallFrame
 
 	internal static CallFrame Load(RegistryKey parentKey, IDictionary<string, ProgramInstruction> programCache)
 	{
-		string text = (string)parentKey.GetValue("ProgramName");
-		int num = (int)parentKey.GetValue("ParentContext");
+		string programName = (string)parentKey.GetValue("ProgramName");
+		int parentLine = (int)parentKey.GetValue("ParentContext");
 		return new CallFrame
 		{
 			X = (int)parentKey.GetValue("X", 0),
 			Y = (int)parentKey.GetValue("Y", 0),
 			PC = (int)parentKey.GetValue("PC"),
-			ProgramName = text,
-			ParentContext = ((num != -1 && programCache.ContainsKey(text)) ? programCache[text].GetByLineNumber(num) : null)
+			ProgramName = programName,
+			ParentContext = ((parentLine != -1 && programCache.ContainsKey(programName)) ? programCache[programName].GetByLineNumber(parentLine) : null)
 		};
 	}
 

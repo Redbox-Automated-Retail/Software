@@ -6,26 +6,26 @@ public static class Tools
 {
 	public static IPin GetPin(IBaseFilter filter, PinDirection dir, int num)
 	{
-		IPin[] array = new IPin[1];
+		IPin[] pins = new IPin[1];
 		IEnumPins enumPins = null;
 		if (filter.EnumPins(out enumPins) == 0)
 		{
 			try
 			{
 				int pinsFetched;
-				while (enumPins.Next(1, array, out pinsFetched) == 0)
+				while (enumPins.Next(1, pins, out pinsFetched) == 0)
 				{
-					array[0].QueryDirection(out var pinDirection);
+					pins[0].QueryDirection(out var pinDirection);
 					if (pinDirection == dir)
 					{
 						if (num == 0)
 						{
-							return array[0];
+							return pins[0];
 						}
 						num--;
 					}
-					Marshal.ReleaseComObject(array[0]);
-					array[0] = null;
+					Marshal.ReleaseComObject(pins[0]);
+					pins[0] = null;
 				}
 			}
 			finally

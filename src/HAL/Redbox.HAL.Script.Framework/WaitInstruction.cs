@@ -24,18 +24,18 @@ public sealed class WaitInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		int ms = 0;
-		object obj = base.Operands[0].Value;
+		object duration = base.Operands[0].Value;
 		if (base.Operands[0].Type == TokenType.Symbol)
 		{
-			obj = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
-			if (obj == null)
+			duration = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
+			if (duration == null)
 			{
 				return;
 			}
 		}
-		if (int.TryParse(obj.ToString(), out var result2))
+		if (int.TryParse(duration.ToString(), out var parsed))
 		{
-			ms = result2;
+			ms = parsed;
 		}
 		ServiceLocator.Instance.GetService<IRuntimeService>().Wait(ms);
 	}

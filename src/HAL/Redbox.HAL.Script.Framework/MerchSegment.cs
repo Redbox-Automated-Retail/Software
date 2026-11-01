@@ -38,8 +38,7 @@ internal abstract class MerchSegment
 		{
 			if (loc.Flags == Flags)
 			{
-				int num = count + 1;
-				count = num;
+				count++;
 			}
 			return true;
 		}, low, location);

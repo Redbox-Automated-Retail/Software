@@ -9,34 +9,34 @@ internal sealed class PrepDeckForRedeployJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int operand = base.Context.PopTop<int>();
-		int num2 = 0;
+		int deckCount = base.Context.PopTop<int>();
+		int changedCount = 0;
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
-		for (int i = 0; i < operand; i++)
+		for (int i = 0; i < deckCount; i++)
 		{
-			int num3 = base.Context.PopTop<int>();
-			IDeck byNumber = base.DecksService.GetByNumber(num3);
+			int deck = base.Context.PopTop<int>();
+			IDeck byNumber = base.DecksService.GetByNumber(deck);
 			if (byNumber == null)
 			{
-				LogHelper.Instance.Log("Invalid deck '{0}' specified to prep redeploy deck job.", num3);
+				LogHelper.Instance.Log("Invalid deck '{0}' specified to prep redeploy deck job.", deck);
 				continue;
 			}
 			if (!isVMZMachine && byNumber.IsQlm)
 			{
-				LogHelper.Instance.Log("Deck specified '{0}' is QLM; will not alter.", num3);
+				LogHelper.Instance.Log("Deck specified '{0}' is QLM; will not alter.", deck);
 				continue;
 			}
 			Range slotRange = new Range((!isVMZMachine) ? 1 : (VMZ.Instance.Bounds.End + 1), byNumber.NumberOfSlots);
-			List<int> list = base.InventoryService.SwapEmptyWith(byNumber, "UNKNOWN", MerchFlags.None, slotRange);
-			foreach (int item in list)
+			List<int> changedSlots = base.InventoryService.SwapEmptyWith(byNumber, "UNKNOWN", MerchFlags.None, slotRange);
+			foreach (int slot in changedSlots)
 			{
-				base.Context.CreateResult("LocationChanged", "The location was set to UNKNOWN", num3, item, null, null, null);
+				base.Context.CreateResult("LocationChanged", "The location was set to UNKNOWN", deck, slot, null, null, null);
 			}
-			num2 += list.Count;
-			LogHelper.Instance.Log("Inventory: changed {0} empty slots on deck {1} to UNKNOWN", list.Count, num3);
-			list.Clear();
+			changedCount += changedSlots.Count;
+			LogHelper.Instance.Log("Inventory: changed {0} empty slots on deck {1} to UNKNOWN", changedSlots.Count, deck);
+			changedSlots.Clear();
 		}
-		base.Context.CreateInfoResult("LocationChangedCount", num2.ToString());
+		base.Context.CreateInfoResult("LocationChangedCount", changedCount.ToString());
 	}
 
 	internal PrepDeckForRedeployJob(ExecutionResult result, ExecutionContext ctx)

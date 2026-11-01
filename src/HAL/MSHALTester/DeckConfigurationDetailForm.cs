@@ -434,14 +434,14 @@ public class DeckConfigurationDetailForm : Form
 	{
 		m_quadrantDataGridView.SuspendLayout();
 		m_quadrantDataGridView.Rows.Clear();
-		int num = 1;
+		int quadrantNumber = 1;
 		foreach (XmlNode childNode in WorkingNode.ChildNodes)
 		{
-			int attributeValue = childNode.GetAttributeValue<int>("Offset");
-			int? attributeValue2 = childNode.GetAttributeValue<int?>("StartSlot");
-			int? attributeValue3 = childNode.GetAttributeValue<int?>("EndSlot");
-			bool attributeValue4 = childNode.GetAttributeValue("IsExcluded", defaultValue: false);
-			m_quadrantDataGridView.Rows.Add(num++, attributeValue, attributeValue2, attributeValue3, attributeValue4);
+			int offset = childNode.GetAttributeValue<int>("Offset");
+			int? startSlot = childNode.GetAttributeValue<int?>("StartSlot");
+			int? endSlot = childNode.GetAttributeValue<int?>("EndSlot");
+			bool isExcluded = childNode.GetAttributeValue("IsExcluded", defaultValue: false);
+			m_quadrantDataGridView.Rows.Add(quadrantNumber++, offset, startSlot, endSlot, isExcluded);
 		}
 		m_quadrantDataGridView.ResumeLayout();
 	}

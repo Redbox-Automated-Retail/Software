@@ -66,9 +66,9 @@ internal sealed class DumpbinService : IDumpbinService
 		{
 			LogHelper.Instance.Log("Failed to log dump bin contents.", e);
 		}
-		int num = CurrentCount();
+		int count = CurrentCount();
 		m_itemCount = 0;
-		return Table.DeleteAll() == num;
+		return Table.DeleteAll() == count;
 	}
 
 	public void DumpContents(TextWriter log)

@@ -22,16 +22,16 @@ public sealed class HomeYInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		bool flag = true;
+		bool clearGripper = true;
 		if (base.Operands.Count == 1)
 		{
 			KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("CLEARGRIPPER");
-			if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var result2))
+			if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var parsed))
 			{
-				flag = result2;
+				clearGripper = parsed;
 			}
 		}
-		if (flag && ControllerConfiguration.Instance.ClearPickerOnHome)
+		if (clearGripper && ControllerConfiguration.Instance.ClearPickerOnHome)
 		{
 			using ClearPickerFrontOperation clearPickerFrontOperation = new ClearPickerFrontOperation();
 			clearPickerFrontOperation.Execute();

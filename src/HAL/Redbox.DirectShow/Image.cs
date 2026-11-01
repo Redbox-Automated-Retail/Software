@@ -125,26 +125,26 @@ public static class Image
 	public unsafe static Bitmap Convert16bppTo8bpp(Bitmap bimap)
 	{
 		Bitmap bitmap = null;
-		int num = 0;
+		int channels = 0;
 		int width = bimap.Width;
 		int height = bimap.Height;
 		switch (bimap.PixelFormat)
 		{
 		case PixelFormat.Format16bppGrayScale:
 			bitmap = CreateGrayscaleImage(width, height);
-			num = 1;
+			channels = 1;
 			break;
 		case PixelFormat.Format48bppRgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-			num = 3;
+			channels = 3;
 			break;
 		case PixelFormat.Format64bppArgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-			num = 4;
+			channels = 4;
 			break;
 		case PixelFormat.Format64bppPArgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
-			num = 4;
+			channels = 4;
 			break;
 		default:
 			throw new UnsupportedImageFormatException("Invalid pixel format of the source image.");
@@ -159,12 +159,12 @@ public static class Image
 		{
 			ushort* ptr3 = (ushort*)(ptr + i * stride);
 			byte* ptr4 = ptr2 + i * stride2;
-			int num2 = 0;
-			int num3 = width * num;
-			while (num2 < num3)
+			int x = 0;
+			int rowLength = width * channels;
+			while (x < rowLength)
 			{
 				*ptr4 = (byte)(*ptr3 >> 8);
-				num2++;
+				x++;
 				ptr3++;
 				ptr4++;
 			}
@@ -177,26 +177,26 @@ public static class Image
 	public unsafe static Bitmap Convert8bppTo16bpp(Bitmap bimap)
 	{
 		Bitmap bitmap = null;
-		int num = 0;
+		int channels = 0;
 		int width = bimap.Width;
 		int height = bimap.Height;
 		switch (bimap.PixelFormat)
 		{
 		case PixelFormat.Format8bppIndexed:
 			bitmap = new Bitmap(width, height, PixelFormat.Format16bppGrayScale);
-			num = 1;
+			channels = 1;
 			break;
 		case PixelFormat.Format24bppRgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format48bppRgb);
-			num = 3;
+			channels = 3;
 			break;
 		case PixelFormat.Format32bppArgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format64bppArgb);
-			num = 4;
+			channels = 4;
 			break;
 		case PixelFormat.Format32bppPArgb:
 			bitmap = new Bitmap(width, height, PixelFormat.Format64bppPArgb);
-			num = 4;
+			channels = 4;
 			break;
 		default:
 			throw new UnsupportedImageFormatException("Invalid pixel format of the source image.");
@@ -211,12 +211,12 @@ public static class Image
 		{
 			byte* ptr3 = ptr + i * stride;
 			ushort* ptr4 = (ushort*)(ptr2 + i * stride2);
-			int num2 = 0;
-			int num3 = width * num;
-			while (num2 < num3)
+			int x = 0;
+			int rowLength = width * channels;
+			while (x < rowLength)
 			{
 				*ptr4 = (ushort)(*ptr3 << 8);
-				num2++;
+				x++;
 				ptr3++;
 				ptr4++;
 			}

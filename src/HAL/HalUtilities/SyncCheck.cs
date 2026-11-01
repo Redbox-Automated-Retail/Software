@@ -47,9 +47,9 @@ internal class SyncCheck
 				ExtractDeckSlot(statement);
 				return;
 			}
-			bool flag = statement.IndexOf("PUT") != -1;
-			bool flag2 = statement.IndexOf("GET") != -1;
-			if (!flag && !flag2)
+			bool isPut = statement.IndexOf("PUT") != -1;
+			bool isGet = statement.IndexOf("GET") != -1;
+			if (!isPut && !isGet)
 			{
 				throw new ArgumentException($"Unrecognized line '{statement}'");
 			}
@@ -62,11 +62,11 @@ internal class SyncCheck
 			}
 			int index = statement.IndexOf("ID=");
 			string text = statement.Substring(index + "ID=".Length);
-			if (flag2)
+			if (isGet)
 			{
 				GetMatrix = text;
 			}
-			else if (flag)
+			else if (isPut)
 			{
 				PutMatrix = text;
 			}
@@ -84,10 +84,10 @@ internal class SyncCheck
 			Deck = int.Parse(s);
 			index = statement.IndexOf("Slot =");
 			string text = statement.Substring(index + "Slot =".Length + 1);
-			char[] array = text.ToCharArray();
-			for (int i = 0; i < array.Length; i++)
+			char[] slotChars = text.ToCharArray();
+			for (int i = 0; i < slotChars.Length; i++)
 			{
-				if (char.IsWhiteSpace(array[i]))
+				if (char.IsWhiteSpace(slotChars[i]))
 				{
 					if (!int.TryParse(text.Substring(0, i + 1), out result))
 					{
@@ -192,18 +192,18 @@ internal class SyncCheck
 					}
 					if (text.IndexOf("Sync location") != -1)
 					{
-						string text2 = "Deck = ";
-						string text3 = "Slot = ";
-						int index = text.IndexOf(text2);
+						string deckMarker = "Deck = ";
+						string slotMarker = "Slot = ";
+						int index = text.IndexOf(deckMarker);
 						if (-1 != index)
 						{
 							int result = -1;
-							int deck = int.Parse(text.Substring(index + text2.Length, 1));
-							index = text.IndexOf(text3);
-							string text4 = text.Substring(index + text3.Length).TrimEnd();
-							if (!int.TryParse(text4, out result))
+							int deck = int.Parse(text.Substring(index + deckMarker.Length, 1));
+							index = text.IndexOf(slotMarker);
+							string slotText = text.Substring(index + slotMarker.Length).TrimEnd();
+							if (!int.TryParse(slotText, out result))
 							{
-								streamWriter.WriteLine("Unable to parse {0}", text4);
+								streamWriter.WriteLine("Unable to parse {0}", slotText);
 								Environment.Exit(1);
 							}
 							readData = new ReadData(deck, result);
@@ -227,8 +227,8 @@ internal class SyncCheck
 								continue;
 							}
 							string value = "data (barcode = ";
-							int num2 = text.IndexOf(">> Reponse packet");
-							if (-1 != num2 && text.IndexOf(value) != -1)
+							int responseIndex = text.IndexOf(">> Reponse packet");
+							if (-1 != responseIndex && text.IndexOf(value) != -1)
 							{
 								if (text.Contains("YES") || text.Contains("yes"))
 								{
@@ -245,15 +245,15 @@ internal class SyncCheck
 			}
 			readDataList.RemoveAll((ReadData each) => each.IsEmpty);
 			Console.WriteLine("There are {0} readable disks.", readDataList.Count);
-			List<ReadData> list2 = readDataList.FindAll((ReadData each) => each.SecureFound && !each.Read);
-			Console.WriteLine(" {0} read only the secure code.", list2.Count);
-			list2.ForEach(delegate(ReadData item)
+			List<ReadData> secureOnly = readDataList.FindAll((ReadData each) => each.SecureFound && !each.Read);
+			Console.WriteLine(" {0} read only the secure code.", secureOnly.Count);
+			secureOnly.ForEach(delegate(ReadData item)
 			{
 				Console.WriteLine("   YesOnly: deck = {0} slot = {1}", item.Deck, item.Slot);
 			});
-			List<ReadData> list3 = readDataList.FindAll((ReadData each) => each.Read && !each.SecureFound);
-			Console.WriteLine(" {0} read only the std code.", list3.Count);
-			list3.ForEach(delegate(ReadData item)
+			List<ReadData> matrixOnly = readDataList.FindAll((ReadData each) => each.Read && !each.SecureFound);
+			Console.WriteLine(" {0} read only the std code.", matrixOnly.Count);
+			matrixOnly.ForEach(delegate(ReadData item)
 			{
 				Console.WriteLine("   MatrixOnly: deck = {0} slot = {1}", item.Deck, item.Slot);
 			});
@@ -275,10 +275,10 @@ internal class SyncCheck
 	private string ParseItem(string statement, int startIdx, int tokLength)
 	{
 		string text = statement.Substring(startIdx + tokLength);
-		char[] array = text.ToCharArray();
-		for (int i = 0; i < array.Length; i++)
+		char[] chars = text.ToCharArray();
+		for (int i = 0; i < chars.Length; i++)
 		{
-			if (char.IsWhiteSpace(array[i]))
+			if (char.IsWhiteSpace(chars[i]))
 			{
 				return text.Substring(0, i + 1);
 			}

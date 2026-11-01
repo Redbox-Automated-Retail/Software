@@ -161,19 +161,19 @@ public sealed class LocInstruction : Instruction
 			}
 			else if (base.Operands[0].Value.Equals("RESETRT"))
 			{
-				DateTime result2;
+				DateTime resetTime;
 				if (base.Operands[1].Type != TokenType.StringLiteral)
 				{
 					AddError("E999", "Unspecified context exit; check the logs.", result.Errors);
 				}
-				else if (!DateTime.TryParse(base.Operands[1].Value, out result2))
+				else if (!DateTime.TryParse(base.Operands[1].Value, out resetTime))
 				{
 					LogHelper.Instance.Log("Location RESETRT Instruction - Unable to parse date/time information.", LogEntryType.Error);
 					AddError("E999", "Unspecified context exit; check the logs.", result.Errors);
 				}
 				else
 				{
-					SetReturnTime(result, result2, leaveResult: true, context);
+					SetReturnTime(result, resetTime, leaveResult: true, context);
 				}
 			}
 			else if (base.Operands[0].Value.Equals("TIMESTAMP"))
@@ -190,14 +190,14 @@ public sealed class LocInstruction : Instruction
 				string text = context.GetSymbolValue(base.Operands[1].Value, result.Errors) as string;
 				if (!"NONE".Equals(text))
 				{
-					if (!DateTime.TryParse(text, out var result3))
+					if (!DateTime.TryParse(text, out var returnTime))
 					{
 						LogHelper.Instance.Log("Location SETRETURNTIME Instruction - Unable to parse date/time information.", LogEntryType.Error);
 						AddError("E999", "Unspecified context exit; check the logs.", result.Errors);
 					}
 					else
 					{
-						SetReturnTime(result, result3, leaveResult: true, context);
+						SetReturnTime(result, returnTime, leaveResult: true, context);
 					}
 				}
 			}
@@ -261,10 +261,10 @@ public sealed class LocInstruction : Instruction
 		}
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		location.ReturnDate = newTime;
-		bool flag = inventoryService.Save(location);
+		bool saved = inventoryService.Save(location);
 		if (leaveResult)
 		{
-			context.PushTop(flag);
+			context.PushTop(saved);
 		}
 	}
 }

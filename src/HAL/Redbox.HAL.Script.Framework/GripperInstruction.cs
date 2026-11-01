@@ -68,15 +68,15 @@ public sealed class GripperInstruction : Instruction
 			return;
 		}
 		ErrorList errors = new ErrorList();
-		string text = token.Value.ToUpper();
-		if (context.GetSymbolValue(token.Value, errors) is string text2)
+		string operand = token.Value.ToUpper();
+		if (context.GetSymbolValue(token.Value, errors) is string symbolValue)
 		{
-			text = text2;
+			operand = symbolValue;
 		}
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
-		switch (text)
+		switch (operand)
 		{
 		case "VEND-DISC-AT-DOOR":
 			context.PushTop(controllerService.VendItemInPicker().Status.ToString().ToUpper());
@@ -186,9 +186,9 @@ public sealed class GripperInstruction : Instruction
 		}
 		default:
 		{
-			string text3 = $"Unrecognized operand {text}";
-			LogHelper.Instance.WithContext(LogEntryType.Error, text3);
-			result.Errors.Add(Error.NewError("E001", "Unknown operand", text3));
+			string error = $"Unrecognized operand {operand}";
+			LogHelper.Instance.WithContext(LogEntryType.Error, error);
+			result.Errors.Add(Error.NewError("E001", "Unknown operand", error));
 			break;
 		}
 		}

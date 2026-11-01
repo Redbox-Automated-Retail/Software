@@ -17,9 +17,9 @@ internal sealed class SoftSyncJob : NativeJobAdapter
 			int numberOfSlots = deck.NumberOfSlots;
 			for (int i = 0; i < numberOfSlots; i++)
 			{
-				int num = i + 1;
-				ILocation location = base.InventoryService.Get(deck.Number, num);
-				base.Context.CreateResult("SoftSync", "The inventory location has been successfully inspected.", deck.Number, num, location.ID, null, null);
+				int slot = i + 1;
+				ILocation location = base.InventoryService.Get(deck.Number, slot);
+				base.Context.CreateResult("SoftSync", "The inventory location has been successfully inspected.", deck.Number, slot, location.ID, null, null);
 			}
 			return true;
 		});

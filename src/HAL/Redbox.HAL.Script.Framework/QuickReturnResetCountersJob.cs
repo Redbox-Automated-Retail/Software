@@ -13,8 +13,7 @@ internal sealed class QuickReturnResetCountersJob : NativeJobAdapter
 		{
 			if (!pcs.Reset(counter))
 			{
-				int num = errors + 1;
-				errors = num;
+				errors++;
 			}
 		});
 		if (errors > 0)

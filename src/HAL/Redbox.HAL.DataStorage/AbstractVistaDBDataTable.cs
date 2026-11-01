@@ -118,7 +118,6 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 
 	public int GetRowCount()
 	{
-		int num = -1;
 		using VistaDBConnection connection = Connect();
 		using VistaDBCommand vistaDBCommand = new VistaDBCommand($"select count(*) from {Name}", connection);
 		return (int)vistaDBCommand.ExecuteScalar();
@@ -237,10 +236,10 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 	private bool ExecuteStatement(Statement s, T obj)
 	{
 		string text = s(obj);
-		int num = ExecuteStatement(text);
-		if (1 != num)
+		int affected = ExecuteStatement(text);
+		if (1 != affected)
 		{
-			LogHelper.Instance.Log("[AbstractSQLDataTable] ERROR: Execute statement '{0}' returned {1}", text, num);
+			LogHelper.Instance.Log("[AbstractSQLDataTable] ERROR: Execute statement '{0}' returned {1}", text, affected);
 			return false;
 		}
 		return true;
@@ -248,21 +247,21 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 
 	private bool ExecuteStatements(Statement s, IList<T> entries)
 	{
-		List<string> list = new List<string>();
-		using (new DisposeableList<string>(list))
+		List<string> statements = new List<string>();
+		using (new DisposeableList<string>(statements))
 		{
 			foreach (T entry in entries)
 			{
-				list.Add(s(entry));
+				statements.Add(s(entry));
 			}
-			if (list.Count == 0)
+			if (statements.Count == 0)
 			{
 				return false;
 			}
-			int num = (UseTransaction ? ExecuteTransaction(list) : ExecuteStatements(list));
-			if (entries.Count != num)
+			int executed = (UseTransaction ? ExecuteTransaction(statements) : ExecuteStatements(statements));
+			if (entries.Count != executed)
 			{
-				LogHelper.Instance.Log("[AbstractSQLDataTable] ERROR: Execute statements returned {0} ( expected {1} )", num, entries.Count);
+				LogHelper.Instance.Log("[AbstractSQLDataTable] ERROR: Execute statements returned {0} ( expected {1} )", executed, entries.Count);
 				return false;
 			}
 			return true;
@@ -288,7 +287,7 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 
 	private int ExecuteStatements(List<string> statements)
 	{
-		int num = 0;
+		int succeeded = 0;
 		using VistaDBConnection connection = Connect();
 		using VistaDBCommand vistaDBCommand = new VistaDBCommand();
 		vistaDBCommand.Connection = connection;
@@ -299,7 +298,7 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 			{
 				if (1 == vistaDBCommand.ExecuteNonQuery())
 				{
-					num++;
+					succeeded++;
 				}
 			}
 			catch (Exception e)
@@ -307,7 +306,7 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 				LogHelper.Instance.Log($"[RunStatement] of '{arg}' caught an exception.", e);
 			}
 		}
-		return num;
+		return succeeded;
 	}
 
 	private int ExecuteTransaction(List<string> statements)

@@ -31,10 +31,10 @@ internal sealed class IpcClientTester : IDisposable
 
 	internal static void RunTest(string[] args)
 	{
-		bool flag = true;
+		bool debug = true;
 		string pipeName = "HAL7001";
-		int num = 5;
-		int num2 = 65536;
+		int iterations = 5;
+		int dataSize = 65536;
 		ClientType clientType = ClientType.None;
 		string protocol = "rcp://127.0.0.1:7001";
 		for (int i = 0; i < args.Length; i++)
@@ -49,11 +49,11 @@ internal sealed class IpcClientTester : IDisposable
 			}
 			else if (args[i].StartsWith("--iterations"))
 			{
-				num = CommandLineOption.GetOptionVal(args[i], num);
+				iterations = CommandLineOption.GetOptionVal(args[i], iterations);
 			}
 			else if (args[i].StartsWith("--dataSize"))
 			{
-				num2 = CommandLineOption.GetOptionVal(args[i], num2);
+				dataSize = CommandLineOption.GetOptionVal(args[i], dataSize);
 			}
 			else if (args[i].StartsWith("-protocol"))
 			{
@@ -61,11 +61,11 @@ internal sealed class IpcClientTester : IDisposable
 			}
 			else if (args[i].StartsWith("--debug"))
 			{
-				flag = CommandLineOption.GetOptionVal(args[i], flag);
+				debug = CommandLineOption.GetOptionVal(args[i], debug);
 			}
 		}
 		using IpcClientTester ipcClientTester = new IpcClientTester(protocol);
-		new ConsoleLogger(flag);
+		new ConsoleLogger(debug);
 		if (ClientType.Message == clientType)
 		{
 			ipcClientTester.RunMessageClient(pipeName);
@@ -76,15 +76,15 @@ internal sealed class IpcClientTester : IDisposable
 		}
 		else if (ClientType.Redbox == clientType)
 		{
-			ipcClientTester.RedboxClient(num, num2);
+			ipcClientTester.RedboxClient(iterations, dataSize);
 		}
 	}
 
 	private void TestGuid()
 	{
-		byte[] array = Guid.NewGuid().ToByteArray();
+		byte[] guidBytes = Guid.NewGuid().ToByteArray();
 		byte[] buffer = new byte[64];
-		Array.Copy(array, buffer, array.Length);
+		Array.Copy(guidBytes, buffer, guidBytes.Length);
 		new Guid(buffer);
 	}
 
@@ -95,11 +95,11 @@ internal sealed class IpcClientTester : IDisposable
 		if (clientPipeChannel.Connect())
 		{
 			IIPCMessage iIPCMessage = iPCMessageFactory.Create(MessageType.Information, MessageSeverity.Low, "Hello world!");
-			bool flag = iPCMessageFactory.Write(iIPCMessage, clientPipeChannel);
-			Console.WriteLine("[MsgPipeClient] {0} Message sent {1}", DateTime.Now.ToString(), flag ? "successfully" : "failed");
+			bool sent = iPCMessageFactory.Write(iIPCMessage, clientPipeChannel);
+			Console.WriteLine("[MsgPipeClient] {0} Message sent {1}", DateTime.Now.ToString(), sent ? "successfully" : "failed");
 			Console.WriteLine(iIPCMessage.ToString());
-			IIPCMessage iIPCMessage2 = iPCMessageFactory.Read(clientPipeChannel);
-			Console.WriteLine("[MsgPipeClient] {0} Received message {1} from server", DateTime.Now, iIPCMessage2.ToString());
+			IIPCMessage reply = iPCMessageFactory.Read(clientPipeChannel);
+			Console.WriteLine("[MsgPipeClient] {0} Received message {1} from server", DateTime.Now, reply.ToString());
 		}
 	}
 
@@ -113,8 +113,8 @@ internal sealed class IpcClientTester : IDisposable
 			Console.WriteLine("Received message {0} from server.", arg);
 			byte[] buffer = new byte[65536];
 			rNGCryptoServiceProvider.GetBytes(buffer);
-			bool flag = clientPipeChannel.Write(buffer);
-			Console.WriteLine("[PipeClient] {0} Message sent {1}", DateTime.Now.ToString(), flag ? "successfully" : "failed");
+			bool sent = clientPipeChannel.Write(buffer);
+			Console.WriteLine("[PipeClient] {0} Message sent {1}", DateTime.Now.ToString(), sent ? "successfully" : "failed");
 			arg = Encoding.ASCII.GetString(clientPipeChannel.Read());
 			Console.WriteLine("[PipeClient] {0} Received message '{0}' from server", DateTime.Now, arg);
 		}
@@ -169,14 +169,14 @@ internal sealed class IpcClientTester : IDisposable
 
 	private void RedboxClient(int iterations, int size)
 	{
-		Thread[] array = new Thread[iterations];
+		Thread[] threads = new Thread[iterations];
 		for (int i = 0; i < iterations; i++)
 		{
-			Thread obj = (array[i] = new Thread(RunDataTest));
-			obj.Name = $"Clientthread-{i}";
-			obj.Start(size);
+			Thread thread = (threads[i] = new Thread(RunDataTest));
+			thread.Name = $"Clientthread-{i}";
+			thread.Start(size);
 		}
-		Array.ForEach(array, delegate(Thread t)
+		Array.ForEach(threads, delegate(Thread t)
 		{
 			t.Join();
 		});

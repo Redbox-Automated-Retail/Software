@@ -45,18 +45,18 @@ internal sealed class LegacyService : ICameraPlugin
 			return false;
 		}
 		Device = new VCDevice3(filterInfoCollection[0].MonikerString, GrabTime, debug: false);
-		bool flag = false;
+		bool found = false;
 		VideoCapabilities[] videoCapabilities = Device.VideoCapabilities;
-		foreach (VideoCapabilities videoCapabilities2 in videoCapabilities)
+		foreach (VideoCapabilities capability in videoCapabilities)
 		{
-			if (videoCapabilities2.FrameSize == ImageSize)
+			if (capability.FrameSize == ImageSize)
 			{
-				flag = true;
-				Device.VideoResolution = videoCapabilities2;
+				found = true;
+				Device.VideoResolution = capability;
 				break;
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			LogHelper.Instance.Log("Unable to find video capability with size {0}w X {1}h", ImageSize.Width, ImageSize.Height);
 			Device = null;

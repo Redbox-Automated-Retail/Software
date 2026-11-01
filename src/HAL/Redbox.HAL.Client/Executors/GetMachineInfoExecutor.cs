@@ -34,7 +34,7 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 		List<DeckConfiguration> deckConfigurations = new List<DeckConfiguration>();
 		try
 		{
-			bool flag = false;
+			bool hasQlm = false;
 			foreach (ProgramResult result in base.Results)
 			{
 				string code = result.Code;
@@ -47,12 +47,12 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 				}
 				else
 				{
-					flag = true;
+					hasQlm = true;
 					LocateOrCreate(result.Deck, deckConfigurations).IsQlm = true;
 				}
 			}
 			deckConfigurations.Sort((DeckConfiguration x, DeckConfiguration y) => x.Number.CompareTo(y.Number));
-			if (!flag)
+			if (!hasQlm)
 			{
 				Info.Configuration = KioskConfiguration.R717;
 			}

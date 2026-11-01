@@ -198,12 +198,12 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 		int timeout = ControllerConfiguration.Instance.GripperArmExtendRetractTimeout;
 		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
-		bool flag = false;
+		bool atQlm = false;
 		if (currentLocation != null)
 		{
-			flag = decksService.GetByNumber(currentLocation.Deck).IsQlm;
+			atQlm = decksService.GetByNumber(currentLocation.Deck).IsQlm;
 		}
-		if (flag)
+		if (atQlm)
 		{
 			timeout = ControllerConfiguration.Instance.QlmExtendTime;
 		}

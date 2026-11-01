@@ -63,8 +63,8 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 			});
 			LogHelper.Instance.WithContext("Vend start, Method = {0}", Method);
 			base.Context.Send("VendStart");
-			int operand = base.Context.PopTop<int>();
-			int num2 = operand;
+			int remaining = base.Context.PopTop<int>();
+			int requested = remaining;
 			if (VendMethod.Location == Method)
 			{
 				using CheckPickerOperation checkPickerOperation = new CheckPickerOperation(base.Context);
@@ -75,10 +75,10 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				}
 			}
 			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-			string text = null;
-			while (operand > 0)
+			string id = null;
+			while (remaining > 0)
 			{
-				if (num2 != operand)
+				if (requested != remaining)
 				{
 					base.Context.Send("VendGraphicDisplay");
 					if (ContextSwitchRequested())
@@ -91,14 +91,14 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					int deck = base.Context.PopTop<int>();
 					int slot = base.Context.PopTop<int>();
 					location = inventoryService.Get(deck, slot);
-					text = location.ID;
+					id = location.ID;
 				}
 				else
 				{
-					text = base.Context.PopTop<string>();
+					id = base.Context.PopTop<string>();
 					using (CheckPickerOperation checkPickerOperation2 = new CheckPickerOperation(base.Context))
 					{
-						ErrorCodes errorCodes = checkPickerOperation2.CheckPicker(base.Result, text);
+						ErrorCodes errorCodes = checkPickerOperation2.CheckPicker(base.Result, id);
 						if (ErrorCodes.PickerEmpty != errorCodes)
 						{
 							LogHelper.Instance.WithContext("Check picker returned an error status {0}", errorCodes.ToString());
@@ -111,12 +111,12 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					{
 						base.Context.Send("FindItemToVend");
 					}
-					location = inventoryService.Lookup(text);
+					location = inventoryService.Lookup(id);
 					if (location == null)
 					{
 						base.Context.Send("ItemNotFound");
-						base.Context.CreateLookupErrorResult("VendError", text);
-						if (--operand <= 0)
+						base.Context.CreateLookupErrorResult("VendError", id);
+						if (--remaining <= 0)
 						{
 							WaitForSignal();
 							break;
@@ -124,17 +124,17 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 						continue;
 					}
 				}
-				LogHelper.Instance.WithContext(LogEntryType.Info, "Trying to vend ID: {0} at {1}", text, location);
-				TransactionResult transactionResult = MoveAndGet(location, text);
+				LogHelper.Instance.WithContext(LogEntryType.Info, "Trying to vend ID: {0} at {1}", id, location);
+				TransactionResult transactionResult = MoveAndGet(location, id);
 				if (TransactionResult.MachineError == transactionResult)
 				{
 					WaitForSignal();
-					OnMachineError(text);
+					OnMachineError(id);
 					break;
 				}
 				if (TransactionResult.ContinueToNext == transactionResult)
 				{
-					if (--operand <= 0)
+					if (--remaining <= 0)
 					{
 						WaitForSignal();
 						break;
@@ -144,7 +144,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				if (ControllerConfiguration.Instance.PrepositionVendFraudMove && VendMethod.Preposition == Method)
 				{
 					ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(6, location.Slot, MoveMode.None, base.AppLog);
-					if (!OnPrePosition(location, text))
+					if (!OnPrePosition(location, id))
 					{
 						break;
 					}
@@ -154,11 +154,11 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				{
 					base.Context.Send("MachineError");
 					WaitForSignal();
-					base.Context.OnMoveVendError(errorCodes2, text);
+					base.Context.OnMoveVendError(errorCodes2, id);
 					break;
 				}
 				base.ControlSystem.TrackCycle();
-				if (Method == VendMethod.Preposition && !OnPrePosition(location, text))
+				if (Method == VendMethod.Preposition && !OnPrePosition(location, id))
 				{
 					break;
 				}
@@ -167,14 +167,14 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				if (ErrorCodes.PickerEmpty == vendItemResult.Status)
 				{
 					base.Context.Send("ItemVended");
-					LogHelper.Instance.WithContext("The item {0} was taken.", text);
-					base.Context.CreateResult("ItemVended", "The item was successfully vended.", location.Deck, location.Slot, text, null, null);
-					operand--;
+					LogHelper.Instance.WithContext("The item {0} was taken.", id);
+					base.Context.CreateResult("ItemVended", "The item was successfully vended.", location.Deck, location.Slot, id, null, null);
+					remaining--;
 					continue;
 				}
 				if (ErrorCodes.PickerFull != vendItemResult.Status)
 				{
-					OnMachineError(text);
+					OnMachineError(id);
 					break;
 				}
 				if (!vendItemResult.Presented)
@@ -183,7 +183,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					base.MotionService.HomeAxis(Axis.Y);
 					base.ControlSystem.RollerToPosition(RollerPosition.Position6, 3000);
 				}
-				OnFraudAttempt(location, text);
+				OnFraudAttempt(location, id);
 				break;
 			}
 		}
@@ -406,10 +406,10 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 		{
 			return true;
 		}
-		int num = 300000;
-		if (!SignalEvent.WaitOne(num))
+		int timeout = 300000;
+		if (!SignalEvent.WaitOne(timeout))
 		{
-			LogHelper.Instance.WithContext("Didn't receive a signal in the specified time ( {0}ms )", num);
+			LogHelper.Instance.WithContext("Didn't receive a signal in the specified time ( {0}ms )", timeout);
 			base.Context.PushTop("TIMEOUT");
 			return false;
 		}
@@ -417,8 +417,8 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 		{
 			ReceivedSignal = "NONE";
 		}
-		bool flag = ReceivedSignal.Equals("continue", StringComparison.CurrentCultureIgnoreCase);
-		LogHelper.Instance.WithContext("Received a signal '{0}' ( {1} ) within timeout.", ReceivedSignal, flag ? "expected" : "not expected");
-		return flag;
+		bool continueSignaled = ReceivedSignal.Equals("continue", StringComparison.CurrentCultureIgnoreCase);
+		LogHelper.Instance.WithContext("Received a signal '{0}' ( {1} ) within timeout.", ReceivedSignal, continueSignaled ? "expected" : "not expected");
+		return continueSignaled;
 	}
 }

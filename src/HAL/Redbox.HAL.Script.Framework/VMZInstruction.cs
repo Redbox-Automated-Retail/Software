@@ -55,25 +55,25 @@ public sealed class VMZInstruction : Instruction
 			}
 			else if (string.Compare(base.Operands[0].Value, "CLEAN-SLOT", ignoreCase: true) == 0)
 			{
-				CleanResult result2 = default(CleanResult);
-				CleanManager.Instance.CleanSlot(ref result2, context, SegmentManager.Instance);
-				ProcessAnyTransfers(result2, context);
-				if (result2.VisitedAllSlots)
+				CleanResult cleanResult = default(CleanResult);
+				CleanManager.Instance.CleanSlot(ref cleanResult, context, SegmentManager.Instance);
+				ProcessAnyTransfers(cleanResult, context);
+				if (cleanResult.VisitedAllSlots)
 				{
 					context.PushTop("CLEAN");
 				}
-				else if (result2.NoEmptySlots)
+				else if (cleanResult.NoEmptySlots)
 				{
 					context.PushTop(MerchandizeResult.MachineFull.ToString().ToUpper());
 				}
 				else
 				{
-					context.PushTop((result2.TransferFailures > 0) ? "TRANSFERFAILURE" : base.SuccessMessage);
+					context.PushTop((cleanResult.TransferFailures > 0) ? "TRANSFERFAILURE" : base.SuccessMessage);
 				}
 			}
 			else if (string.Compare(base.Operands[0].Value, "MARK-UNLOAD", ignoreCase: true) == 0)
 			{
-				int num = 0;
+				int lastDeck = 0;
 				KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("LAST-DECK");
 				int? keyValuePairValue = GetKeyValuePairValue<int?>(keyValuePair, result.Errors, context);
 				if (result.Errors.Count > 0 || !keyValuePairValue.HasValue)
@@ -81,8 +81,8 @@ public sealed class VMZInstruction : Instruction
 					context.PushTop("ERROR");
 					return;
 				}
-				num = keyValuePairValue.Value;
-				context.PushTop(VMZ.Instance.ReserveUnload(num));
+				lastDeck = keyValuePairValue.Value;
+				context.PushTop(VMZ.Instance.ReserveUnload(lastDeck));
 			}
 			else if (string.Compare(base.Operands[0].Value, "MARK-EMPTY", ignoreCase: true) == 0)
 			{
@@ -191,8 +191,8 @@ public sealed class VMZInstruction : Instruction
 	private void PushCount(MerchFlags flags, ExecutionContext context)
 	{
 		MerchSegment merchSegment = MerchSegmentFactory.Get(flags);
-		int num = ((context != null) ? merchSegment.ItemCount() : 0);
-		context.PushTop(num);
+		int count = ((context != null) ? merchSegment.ItemCount() : 0);
+		context.PushTop(count);
 	}
 
 	private void ThinType(ExecutionResult result, ExecutionContext context, MerchFlags flags)
@@ -210,15 +210,15 @@ public sealed class VMZInstruction : Instruction
 	{
 		if (result.Transfers != 0)
 		{
-			int num = 0;
+			int transferCount = 0;
 			ErrorList errorList = new ErrorList();
 			object symbolValue = context.GetSymbolValue("TRANSFER-COUNT", errorList);
 			if (errorList.Count == 0)
 			{
-				num = (int)symbolValue;
+				transferCount = (int)symbolValue;
 			}
-			num += result.Transfers;
-			context.SetSymbolValue("TRANSFER-COUNT", num);
+			transferCount += result.Transfers;
+			context.SetSymbolValue("TRANSFER-COUNT", transferCount);
 		}
 	}
 
@@ -237,14 +237,14 @@ public sealed class VMZInstruction : Instruction
 
 	private void AggregateCleanData(ExecutionContext ctx)
 	{
-		int num = 0;
+		int transferCount = 0;
 		ErrorList errorList = new ErrorList();
 		object symbolValue = ctx.GetSymbolValue("TRANSFER-COUNT", errorList);
 		if (errorList.Count == 0)
 		{
-			num = (int)symbolValue;
+			transferCount = (int)symbolValue;
 		}
-		ctx.CreateInfoResult("TransferredDiskCount", num.ToString());
+		ctx.CreateInfoResult("TransferredDiskCount", transferCount.ToString());
 		foreach (MerchFlags item in SegmentManager.Instance.DecreasingPriorityOrder)
 		{
 			MerchSegment merchSegment = MerchSegmentFactory.Get(item);

@@ -110,20 +110,20 @@ internal class MerchandizingHelper
 			ClearQlmInventory();
 			context.CreateInfoResult("QlmDeckDisengageSuccess", "The QLM disengaged successfully.");
 		}
-		bool result2 = true;
+		bool success = true;
 		if (!motionControlService.TestAndReset(quick: false))
 		{
 			context.AppLog.WriteFormatted("The job completed; however, communication with the motion controller isn't working.", LogEntryType.Error);
 			result.Errors.Add(Error.NewError("E231", "Motion control error.", "The motion controller is not responding."));
-			result2 = false;
+			success = false;
 		}
 		else if (motionControlService.MoveVend(MoveMode.Get, context.AppLog) != ErrorCodes.Success)
 		{
 			context.CreateInfoResult("MachineError", "There was an error executing the MOVEVEND instruction.");
 			result.Errors.Add(Error.NewError("E999", "Execution context error.", "The MOVEVEND instruction failed."));
-			result2 = false;
+			success = false;
 		}
-		return result2;
+		return success;
 	}
 
 	internal void AddItemStuckError(ExecutionResult result)

@@ -590,10 +590,10 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 		{
 			if (CameraHelper.LegacyCamera)
 			{
-				bool flag = !RinglightOn;
-				if (ServiceLocator.Instance.GetService<IControlSystem>().ToggleRingLight(flag, null).Success)
+				bool turnOn = !RinglightOn;
+				if (ServiceLocator.Instance.GetService<IControlSystem>().ToggleRingLight(turnOn, null).Success)
 				{
-					RinglightOn = flag;
+					RinglightOn = turnOn;
 					buttonAspects.Button.Text = (RinglightOn ? "Turn Ringlight Off" : "Turn Ringlight On");
 				}
 				return;
@@ -798,10 +798,10 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 			{
 				return;
 			}
-			bool flag = false;
+			bool sensorCheckWasOn = false;
 			if (m_secure && m_sensorCheckBox.Checked)
 			{
-				flag = true;
+				sensorCheckWasOn = true;
 				m_sensorCheckBox.Checked = false;
 			}
 			m_errorProvider.SetError(m_encoderUnitsTextBox, string.Empty);
@@ -844,11 +844,11 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 					OutputBox.Write("Unable to query motor positions.");
 					return;
 				}
-				int value = position.XCoordinate.Value;
-				int value2 = position.YCoordinate.Value;
+				int xPosition = position.XCoordinate.Value;
+				int yPosition = position.YCoordinate.Value;
 				Axis axis = ((direction == Direction.Up || direction == Direction.Down) ? Axis.Y : Axis.X);
-				int units = ((Axis.Y == axis) ? (value2 + result) : (value + result));
-				ErrorCodes errorCodes = MoveHelper.MoveAbs(axis, units, !(m_secure & flag));
+				int units = ((Axis.Y == axis) ? (yPosition + result) : (xPosition + result));
+				ErrorCodes errorCodes = MoveHelper.MoveAbs(axis, units, !(m_secure & sensorCheckWasOn));
 				OutputBox.Write(errorCodes.ToString().ToUpper());
 			}
 			else
@@ -883,7 +883,7 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 
 	private void StopJobs()
 	{
-		int num = 0;
+		int activeJobs = 0;
 		if (!HardwareService.GetJobs(out var jobs).Success)
 		{
 			OutputBox.Write("Unable to read job list - JOBS MAY BE ACTIVE!");
@@ -893,10 +893,10 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 		{
 			if ((hardwareJob.Status == HardwareJobStatus.Pending || hardwareJob.Status == HardwareJobStatus.Running) && !hardwareJob.ProgramName.Equals("job-watchdog"))
 			{
-				num++;
+				activeJobs++;
 			}
 		}
-		if (num > 0)
+		if (activeJobs > 0)
 		{
 			OutputBox.Write("WARNING: jobs are currently running or pending.");
 		}
@@ -924,8 +924,8 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 				return;
 			}
 			int integer2 = m_rollerTimeoutTextBox.GetInteger("Roller Timeout", OutputBox);
-			int num = ((integer2 != -1) ? integer2 : 5000);
-			string text = $"ROLLER POS={integer} TIMEOUT={num} WAIT=TRUE";
+			int timeout = ((integer2 != -1) ? integer2 : 5000);
+			string text = $"ROLLER POS={integer} TIMEOUT={timeout} WAIT=TRUE";
 			using InstructionHelper instructionHelper = new InstructionHelper(HardwareService);
 			LogResponse(instructionHelper.ExecuteWithResponse(text), text);
 		}
@@ -1146,16 +1146,16 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 		{
 			using PushInDvdJob pushInDvdJob = new PushInDvdJob(HardwareService);
 			pushInDvdJob.Run();
-			int num = 0;
+			int errorCount = 0;
 			foreach (ProgramResult result in pushInDvdJob.Results)
 			{
 				if (result.Code == "MachineError")
 				{
-					num++;
+					errorCount++;
 					OutputBox.Write(result.Message);
 				}
 			}
-			if (num == 0)
+			if (errorCount == 0)
 			{
 				OutputBox.Write("push-in-dvd SUCCESS");
 				return;
@@ -1226,9 +1226,9 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 		{
 			_inputs[count++] = (inputs.IsInputActive(each) ? '1' : '0');
 		});
-		for (int num = _inputs.Length - 1; num >= 0; num--)
+		for (int index = _inputs.Length - 1; index >= 0; index--)
 		{
-			OutputBox.Write("{0} I/O {1} = {2}", header, num + 1, _inputs[num]);
+			OutputBox.Write("{0} I/O {1} = {2}", header, index + 1, _inputs[index]);
 		}
 	}
 
@@ -1349,15 +1349,7 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 		m_qlmEngageButton.Text = "Query Door Sensors";
 		m_qlmDisengageButton.Enabled = true;
 		m_qlmDisengageButton.Text = "Test deck 8.";
-		Button qlmCaseStatusButton = m_qlmCaseStatusButton;
-		Button qlmDownButton = m_qlmDownButton;
-		Button qlmStopButton = m_qlmStopButton;
-		Button qlmUpButton = m_qlmUpButton;
-		bool flag = (m_qlmDoorStatus.Visible = false);
-		bool flag3 = (qlmUpButton.Visible = flag);
-		bool flag5 = (qlmStopButton.Visible = flag3);
-		bool visible = (qlmDownButton.Visible = flag5);
-		qlmCaseStatusButton.Visible = visible;
+		m_qlmCaseStatusButton.Visible = m_qlmDownButton.Visible = m_qlmStopButton.Visible = m_qlmUpButton.Visible = m_qlmDoorStatus.Visible = false;
 	}
 
 	private void ToggleQLMButtons(bool show)
@@ -1697,9 +1689,9 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 				OutputBox.Write("GET was successful.");
 				return;
 			}
-			foreach (ProgramResult result2 in pickAtOffsetExecutor.Results)
+			foreach (ProgramResult programResult in pickAtOffsetExecutor.Results)
 			{
-				OutputBox.Write(result2.Message);
+				OutputBox.Write(programResult.Message);
 			}
 		}
 	}

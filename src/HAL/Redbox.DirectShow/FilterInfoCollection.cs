@@ -37,8 +37,8 @@ public class FilterInfoCollection : CollectionBase
 					m_useOldOption = false;
 					return m_useOldOption.Value;
 				}
-				bool value2 = ConversionHelper.ChangeType<bool>(registryValue);
-				m_useOldOption = value2;
+				bool useOld = ConversionHelper.ChangeType<bool>(registryValue);
+				m_useOldOption = useOld;
 				return m_useOldOption.Value;
 			}
 			catch (Exception)
@@ -60,20 +60,20 @@ public class FilterInfoCollection : CollectionBase
 
 	private void CollectFilters(Guid category)
 	{
-		object obj = null;
+		object deviceEnumerator = null;
 		IEnumMoniker enumMoniker = null;
-		IMoniker[] array = new IMoniker[1];
+		IMoniker[] monikers = new IMoniker[1];
 		try
 		{
-			obj = Activator.CreateInstance(Type.GetTypeFromCLSID(Clsid.SystemDeviceEnum) ?? throw new ApplicationException("Failed creating device enumerator"));
-			if (((ICreateDevEnum)obj).CreateClassEnumerator(ref category, out enumMoniker, 0) != 0)
+			deviceEnumerator = Activator.CreateInstance(Type.GetTypeFromCLSID(Clsid.SystemDeviceEnum) ?? throw new ApplicationException("Failed creating device enumerator"));
+			if (((ICreateDevEnum)deviceEnumerator).CreateClassEnumerator(ref category, out enumMoniker, 0) != 0)
 			{
 				throw new ApplicationException("No devices of the category");
 			}
 			IntPtr zero = IntPtr.Zero;
-			while (enumMoniker.Next(1, array, zero) == 0)
+			while (enumMoniker.Next(1, monikers, zero) == 0)
 			{
-				if (array[0] == null)
+				if (monikers[0] == null)
 				{
 					if (UseOld)
 					{
@@ -82,10 +82,10 @@ public class FilterInfoCollection : CollectionBase
 				}
 				else
 				{
-					FilterInfo value = new FilterInfo(array[0]);
+					FilterInfo value = new FilterInfo(monikers[0]);
 					base.InnerList.Add(value);
-					Marshal.ReleaseComObject(array[0]);
-					array[0] = null;
+					Marshal.ReleaseComObject(monikers[0]);
+					monikers[0] = null;
 				}
 			}
 			base.InnerList.Sort();
@@ -95,20 +95,20 @@ public class FilterInfoCollection : CollectionBase
 		}
 		finally
 		{
-			if (obj != null)
+			if (deviceEnumerator != null)
 			{
-				Marshal.ReleaseComObject(obj);
-				obj = null;
+				Marshal.ReleaseComObject(deviceEnumerator);
+				deviceEnumerator = null;
 			}
 			if (enumMoniker != null)
 			{
 				Marshal.ReleaseComObject(enumMoniker);
 				enumMoniker = null;
 			}
-			if (array[0] != null)
+			if (monikers[0] != null)
 			{
-				Marshal.ReleaseComObject(array[0]);
-				array[0] = null;
+				Marshal.ReleaseComObject(monikers[0]);
+				monikers[0] = null;
 			}
 		}
 	}

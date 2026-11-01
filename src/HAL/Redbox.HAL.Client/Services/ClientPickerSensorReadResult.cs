@@ -73,14 +73,13 @@ internal sealed class ClientPickerSensorReadResult : IPickerSensorReadResult, IR
 
 	internal ClientPickerSensorReadResult(Stack<string> jobStack)
 	{
-		for (int num = 5; num >= 0; num--)
+		for (int index = 5; index >= 0; index--)
 		{
 			string text = jobStack.Pop();
-			m_sensors[num] = (text.Contains("BLOCKED") ? true : false);
-			if (m_sensors[num])
+			m_sensors[index] = (text.Contains("BLOCKED") ? true : false);
+			if (m_sensors[index])
 			{
-				int blockedCount = BlockedCount + 1;
-				BlockedCount = blockedCount;
+				BlockedCount++;
 			}
 		}
 		Error = ErrorCodes.Success;

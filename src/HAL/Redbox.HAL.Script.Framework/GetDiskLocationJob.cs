@@ -7,18 +7,18 @@ internal sealed class GetDiskLocationJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int operand = base.Context.PopTop<int>();
-		for (int i = 0; i < operand; i++)
+		int count = base.Context.PopTop<int>();
+		for (int i = 0; i < count; i++)
 		{
-			string text = base.Context.PopTop<string>();
-			ILocation location = base.InventoryService.Lookup(text);
+			string barcode = base.Context.PopTop<string>();
+			ILocation location = base.InventoryService.Lookup(barcode);
 			if (location == null)
 			{
 				base.Context.CreateInfoResult("BarcodeNotInInventory", "The barcode isn't in inventory.");
 				continue;
 			}
-			bool flag = SegmentManager.Instance.InCompressedZone(location);
-			base.Context.CreateResult(flag ? "BarcodeInVMZ" : "BarcodeOutsideVMZ", "Barcode status", location.Deck, location.Slot, text, null, null);
+			bool inVmz = SegmentManager.Instance.InCompressedZone(location);
+			base.Context.CreateResult(inVmz ? "BarcodeInVMZ" : "BarcodeOutsideVMZ", "Barcode status", location.Deck, location.Slot, barcode, null, null);
 		}
 	}
 

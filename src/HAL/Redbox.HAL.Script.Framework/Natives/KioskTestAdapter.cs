@@ -43,12 +43,12 @@ internal class KioskTestAdapter : IDisposable
 
 	internal void Run()
 	{
-		bool flag = Context.PopTop<bool>();
-		int deck = Context.PopTop<int>();
-		int slot = Context.PopTop<int>();
-		int deck2 = Context.PopTop<int>();
-		int slot2 = Context.PopTop<int>();
-		if (MotionService.MoveTo(deck, slot, MoveMode.Get, Context.AppLog) != ErrorCodes.Success)
+		bool vend = Context.PopTop<bool>();
+		int sourceDeck = Context.PopTop<int>();
+		int sourceSlot = Context.PopTop<int>();
+		int destDeck = Context.PopTop<int>();
+		int destSlot = Context.PopTop<int>();
+		if (MotionService.MoveTo(sourceDeck, sourceSlot, MoveMode.Get, Context.AppLog) != ErrorCodes.Success)
 		{
 			Context.CreateInfoResult("MoveError", "Failed to move to initial slot");
 			HandleMachineError();
@@ -61,20 +61,20 @@ internal class KioskTestAdapter : IDisposable
 			HandleMachineError();
 			return;
 		}
-		string text = Scanner.ReadDiskInPicker(ReadDiskOptions.None, Context);
-		if (flag && !VendDisk(text))
+		string matrix = Scanner.ReadDiskInPicker(ReadDiskOptions.None, Context);
+		if (vend && !VendDisk(matrix))
 		{
 			HandleMachineError();
 			return;
 		}
-		if (MotionService.MoveTo(deck2, slot2, MoveMode.Put, Context.AppLog) != ErrorCodes.Success)
+		if (MotionService.MoveTo(destDeck, destSlot, MoveMode.Put, Context.AppLog) != ErrorCodes.Success)
 		{
 			Context.CreateInfoResult("MoveFailed", "Kiosk was unable to move to put position of destination slot");
 			HandleMachineError();
 			return;
 		}
 		ControlSystem.TrackCycle();
-		if (!controllerService.Put(text).Success)
+		if (!controllerService.Put(matrix).Success)
 		{
 			Context.CreateInfoResult("PutFailed", "Kiosk failed to put disc into slot");
 			HandleMachineError();

@@ -216,8 +216,8 @@ public sealed class ClientControlSystem : IControlSystem
 
 	public IControlResponse RollerToPosition(RollerPosition position, int opTimeout, bool logSensors)
 	{
-		int num = (int)position;
-		return From($"ROLLER POS={num.ToString()} TIMEOUT={opTimeout} WAIT=TRUE");
+		int positionNumber = (int)position;
+		return From($"ROLLER POS={positionNumber.ToString()} TIMEOUT={opTimeout} WAIT=TRUE");
 	}
 
 	public QlmStatus GetQlmStatus()

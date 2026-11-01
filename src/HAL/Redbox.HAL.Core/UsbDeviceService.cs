@@ -300,12 +300,11 @@ public sealed class UsbDeviceService : IUsbDeviceService
 			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
 			if (deviceDescriptor != null && Match(deviceDescriptor, descriptor))
 			{
-				bool flag = ChangeState(devInfo, ref did, state);
-				LogHelper.Instance.Log("[{0}] Found HWID {1}; change state to {2} returned {3}", GetType().Name, hardwareId, state.ToString(), flag ? "OK" : "FAIL");
-				if (!flag)
+				bool changed = ChangeState(devInfo, ref did, state);
+				LogHelper.Instance.Log("[{0}] Found HWID {1}; change state to {2} returned {3}", GetType().Name, hardwareId, state.ToString(), changed ? "OK" : "FAIL");
+				if (!changed)
 				{
-					int num = failures + 1;
-					failures = num;
+					failures++;
 				}
 			}
 			return ProcessDeviceInfoResult.Continue;
@@ -635,12 +634,12 @@ public sealed class UsbDeviceService : IUsbDeviceService
 
 	private uint SearchFlags(IDeviceDescriptor desc)
 	{
-		uint num = 2u;
+		uint flags = 2u;
 		if (desc.SetupClass.Class == DeviceClass.None)
 		{
-			num |= 4;
+			flags |= 4;
 		}
-		return num;
+		return flags;
 	}
 
 	private string QueryDeviceDescription(IntPtr devInfo, ref SP_DEVINFO_DATA deviceInfoData, out int lastError)
@@ -743,7 +742,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		{
 			DriverInfoData driverInfoData = default(DriverInfoData);
 			driverInfoData.Size = Marshal.SizeOf(driverInfoData);
-			for (uint num = 0u; SetupDiEnumDriverInfo(hDevInfo, ref did, DriverType.SPDIT_COMPATDRIVER, num, ref driverInfoData); num++)
+			for (uint driverIndex = 0u; SetupDiEnumDriverInfo(hDevInfo, ref did, DriverType.SPDIT_COMPATDRIVER, driverIndex, ref driverInfoData); driverIndex++)
 			{
 				if (Debug)
 				{
@@ -778,19 +777,19 @@ public sealed class UsbDeviceService : IUsbDeviceService
 
 	private bool EnumerateDevices(Guid deviceClass, uint searchFlags, ProcessDeviceInfo callback)
 	{
-		IntPtr intPtr = IntPtr.Zero;
+		IntPtr deviceInfoSet = IntPtr.Zero;
 		try
 		{
-			intPtr = SetupDiGetClassDevs(ref deviceClass, 0u, IntPtr.Zero, searchFlags);
-			if (intPtr.ToInt32() == -1)
+			deviceInfoSet = SetupDiGetClassDevs(ref deviceClass, 0u, IntPtr.Zero, searchFlags);
+			if (deviceInfoSet.ToInt32() == -1)
 			{
 				return false;
 			}
 			SP_DEVINFO_DATA data = default(SP_DEVINFO_DATA);
 			data.cbSize = Marshal.SizeOf(data);
-			for (uint num = 0u; SetupDiEnumDeviceInfo(intPtr, num, ref data); num++)
+			for (uint deviceIndex = 0u; SetupDiEnumDeviceInfo(deviceInfoSet, deviceIndex, ref data); deviceIndex++)
 			{
-				ProcessDeviceInfoResult processDeviceInfoResult = callback(intPtr, ref data);
+				ProcessDeviceInfoResult processDeviceInfoResult = callback(deviceInfoSet, ref data);
 				if (ProcessDeviceInfoResult.Error == processDeviceInfoResult)
 				{
 					return false;
@@ -811,9 +810,9 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		{
 			try
 			{
-				if (intPtr != IntPtr.Zero && intPtr.ToInt32() != -1)
+				if (deviceInfoSet != IntPtr.Zero && deviceInfoSet.ToInt32() != -1)
 				{
-					SetupDiDestroyDeviceInfoList(intPtr);
+					SetupDiDestroyDeviceInfoList(deviceInfoSet);
 				}
 			}
 			catch (Exception e)

@@ -8,29 +8,26 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		int num2 = base.Context.PopTop<int>();
+		int deck = base.Context.PopTop<int>();
+		int slot = base.Context.PopTop<int>();
 		int failures = 0;
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		if (!controlSystem.GetBoardVersion(ControlBoards.Aux).ReadSuccess)
 		{
 			base.Context.CreateInfoResult("BoardVersionTimeout", "Move: AUX board not responsive.");
-			int num3 = failures + 1;
-			failures = num3;
+			failures++;
 		}
 		if (!controlSystem.GetBoardVersion(ControlBoards.Picker).ReadSuccess)
 		{
 			base.Context.CreateInfoResult("BoardVersionTimeout", "Move: PCB not responsive.");
-			int num3 = failures + 1;
-			failures = num3;
+			failures++;
 		}
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IMotionControlLimitResponse motionControlLimitResponse = motionControlService.ReadLimits();
 		if (!motionControlLimitResponse.ReadOk)
 		{
 			base.Context.CreateInfoResult(ErrorCodes.ArcusNotResponsive.ToString().ToUpper(), "Unable to read limits.");
-			int num3 = failures + 1;
-			failures = num3;
+			failures++;
 		}
 		else
 		{
@@ -39,8 +36,7 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 				if (limit.Blocked)
 				{
 					base.Context.CreateInfoResult("LimitBlocked", $"MOVE: {limit.Limit.ToString().ToUpper()} LIMIT BLOCKED");
-					int num4 = failures + 1;
-					failures = num4;
+					failures++;
 				}
 			});
 		}
@@ -50,8 +46,8 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 			return;
 		}
 		IFormattedLogFactoryService formattedLogFactoryService = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
-		ErrorCodes errorCodes = motionControlService.MoveTo(num, num2, MoveMode.None, formattedLogFactoryService.NilLog);
-		base.Context.CreateInfoResult("MoveResult", $"MOVE DECK={num} SLOT={num2} {errorCodes.ToString().ToUpper()}");
+		ErrorCodes errorCodes = motionControlService.MoveTo(deck, slot, MoveMode.None, formattedLogFactoryService.NilLog);
+		base.Context.CreateInfoResult("MoveResult", $"MOVE DECK={deck} SLOT={slot} {errorCodes.ToString().ToUpper()}");
 	}
 
 	internal MSMoveToSlot(ExecutionResult result, ExecutionContext ctx)

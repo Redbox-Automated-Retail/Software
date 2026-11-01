@@ -103,14 +103,14 @@ internal sealed class KioskFunctionTest : JobExecutor, IKioskFunctionCheckData
 						{
 							string text = symbols[key];
 							LogHelper.Instance.Log("[TestCameraSnap] val = {0}", text);
-							int num = (HasCortex ? 1 : 3);
+							int minimumFound = (HasCortex ? 1 : 3);
 							int index = text.IndexOf(':');
 							text = text.Substring(index + 1);
 							string[] parts = text.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 							_ = parts[0];
-							int num3 = Convert.ToInt32(parts[2].Substring(1, 1));
+							int found = Convert.ToInt32(parts[2].Substring(1, 1));
 							TimeSpan timeSpan = TimeSpan.Parse(parts[5]);
-							SnapDecodeStatus = ((num3 >= num && timeSpan.Seconds <= 0) ? TestState.Success : TestState.Failure);
+							SnapDecodeStatus = ((found >= minimumFound && timeSpan.Seconds <= 0) ? TestState.Success : TestState.Failure);
 							break;
 						}
 					}

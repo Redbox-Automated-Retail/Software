@@ -89,17 +89,17 @@ public sealed class KioskInventory : IDisposable
 		XmlNodeList elementsByTagName = xmlDocument.GetElementsByTagName("item");
 		for (int i = 0; i < elementsByTagName.Count; i++)
 		{
-			string value = elementsByTagName[i].Attributes["id"].Value;
-			string value2 = elementsByTagName[i].Attributes["ReturnTime"].Value;
+			string id = elementsByTagName[i].Attributes["id"].Value;
+			string returnTimeText = elementsByTagName[i].Attributes["ReturnTime"].Value;
 			DateTime? returnTime = null;
-			if (value2 != "NONE")
+			if (returnTimeText != "NONE")
 			{
-				returnTime = DateTime.Parse(value2);
+				returnTime = DateTime.Parse(returnTimeText);
 			}
-			string value3 = elementsByTagName[i].Attributes["excluded"].Value;
-			string value4 = elementsByTagName[i].Attributes["emptyStuckCount"].Value;
-			string value5 = elementsByTagName[i].Attributes["merchFlags"].Value;
-			InventoryLocation item = new InventoryLocation(Convert.ToInt32(elementsByTagName[i].Attributes["deck"].Value), Convert.ToInt32(elementsByTagName[i].Attributes["slot"].Value), value, Convert.ToInt32(value4), returnTime, value5, Convert.ToBoolean(value3));
+			string excluded = elementsByTagName[i].Attributes["excluded"].Value;
+			string emptyStuckCount = elementsByTagName[i].Attributes["emptyStuckCount"].Value;
+			string merchFlags = elementsByTagName[i].Attributes["merchFlags"].Value;
+			InventoryLocation item = new InventoryLocation(Convert.ToInt32(elementsByTagName[i].Attributes["deck"].Value), Convert.ToInt32(elementsByTagName[i].Attributes["slot"].Value), id, Convert.ToInt32(emptyStuckCount), returnTime, merchFlags, Convert.ToBoolean(excluded));
 			DeckInfo.Add(item);
 		}
 		DeckInfo.Sort(new InventoryLocationSorter());

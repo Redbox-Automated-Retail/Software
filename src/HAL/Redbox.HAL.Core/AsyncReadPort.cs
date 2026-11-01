@@ -68,17 +68,17 @@ internal sealed class AsyncReadPort : RedboxSerialPort
 
 	private void EndReadCallback(IAsyncResult result)
 	{
-		int num = 0;
+		int bytesRead = 0;
 		ChannelResponse channelResponse = null;
 		try
 		{
 			channelResponse = (ChannelResponse)result.AsyncState;
-			num = Port.BaseStream.EndRead(result);
+			bytesRead = Port.BaseStream.EndRead(result);
 			if (base.EnableDebugging)
 			{
-				LogHelper.Instance.Log("[AsyncReadPort, {0}] EndReadCallback bytesRead = {1}, current buffer size = {2} ID  = {3}", base.DisplayName, num, channelResponse.RawResponse.Length, channelResponse.ID);
+				LogHelper.Instance.Log("[AsyncReadPort, {0}] EndReadCallback bytesRead = {1}, current buffer size = {2} ID  = {3}", base.DisplayName, bytesRead, channelResponse.RawResponse.Length, channelResponse.ID);
 			}
-			if (num == 0)
+			if (bytesRead == 0)
 			{
 				channelResponse.ReponseValid = base.ValidateResponse(channelResponse);
 				channelResponse.ReadEnd();
@@ -91,7 +91,7 @@ internal sealed class AsyncReadPort : RedboxSerialPort
 			LogHelper.Instance.Log($"[AsyncReadPort, {base.DisplayName}] EndReadCallback caught an exception.", e);
 			return;
 		}
-		channelResponse.Accumulate(num);
+		channelResponse.Accumulate(bytesRead);
 		if (!base.ValidateResponse(channelResponse))
 		{
 			ReadInner(channelResponse);

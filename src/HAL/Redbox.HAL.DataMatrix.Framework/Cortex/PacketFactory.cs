@@ -76,19 +76,19 @@ internal sealed class PacketFactory
 		{
 			return new NilPacket(data);
 		}
-		ushort num = Converter.ToUInt16(data, startIndex + 13);
-		int num2 = num + 17;
-		byte[] buffer = new byte[num2];
-		if (startIndex + num2 > data.Length)
+		ushort dataSize = Converter.ToUInt16(data, startIndex + 13);
+		int packetLength = dataSize + 17;
+		byte[] buffer = new byte[packetLength];
+		if (startIndex + packetLength > data.Length)
 		{
 			return new IncompletePacket();
 		}
-		Array.Copy(data, startIndex, buffer, 0, num2);
+		Array.Copy(data, startIndex, buffer, 0, packetLength);
 		if (IsNonDataPacket(data, startIndex))
 		{
-			return new NonDataPacket(buffer, num);
+			return new NonDataPacket(buffer, dataSize);
 		}
-		return new DataPacket(buffer, num);
+		return new DataPacket(buffer, dataSize);
 	}
 
 	private PacketFactory()

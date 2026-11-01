@@ -12,20 +12,20 @@ public sealed class PushInstruction : Instruction
 	{
 		foreach (Token operand in base.Operands)
 		{
-			object obj = operand.ConvertValue();
-			if (operand.Type == TokenType.Symbol && operand.Value.Equals(obj))
+			object operandValue = operand.ConvertValue();
+			if (operand.Type == TokenType.Symbol && operand.Value.Equals(operandValue))
 			{
-				obj = context.GetSymbolValue(operand.Value, result.Errors);
-				if (obj == null)
+				operandValue = context.GetSymbolValue(operand.Value, result.Errors);
+				if (operandValue == null)
 				{
 					break;
 				}
 			}
 			else
 			{
-				obj = operand.ConvertValue();
+				operandValue = operand.ConvertValue();
 			}
-			context.PushTop(obj);
+			context.PushTop(operandValue);
 		}
 	}
 }

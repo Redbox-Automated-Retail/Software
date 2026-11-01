@@ -243,17 +243,17 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			return null;
 		}
-		Match match = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
-		Match match2 = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
+		Match keyMatch = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
+		Match numberMatch = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
 		object result = null;
-		int result2;
-		if (match.Success)
+		int intIndex;
+		if (keyMatch.Success)
 		{
-			result = match.Groups["indexer"].Captures[0].Value;
+			result = keyMatch.Groups["indexer"].Captures[0].Value;
 		}
-		else if (match2.Success && int.TryParse(match2.Groups["indexer"].Captures[0].Value, out result2))
+		else if (numberMatch.Success && int.TryParse(numberMatch.Groups["indexer"].Captures[0].Value, out intIndex))
 		{
-			result = result2;
+			result = intIndex;
 		}
 		return result;
 	}
@@ -274,21 +274,21 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			length -= depthAdjust.Value;
 		}
-		object obj = rootObject;
+		object current = rootObject;
 		for (int i = 0; i < length; i++)
 		{
 			object[] args = null;
-			string text = pathParts[i];
-			object obj2 = ExtractIndexInternal(text);
-			if (obj2 != null)
+			string memberName = pathParts[i];
+			object index = ExtractIndexInternal(memberName);
+			if (index != null)
 			{
-				text = text.Substring(0, text.IndexOf("["));
-				args = new object[1] { obj2 };
+				memberName = memberName.Substring(0, memberName.IndexOf("["));
+				args = new object[1] { index };
 			}
 			try
 			{
-				obj = obj.GetType().InvokeMember(text, GetObjectFromPathBindingFlags, null, obj, args);
-				if (obj == null)
+				current = current.GetType().InvokeMember(memberName, GetObjectFromPathBindingFlags, null, current, args);
+				if (current == null)
 				{
 					break;
 				}
@@ -298,7 +298,7 @@ public sealed class ConfigurationService : IConfigurationService
 				return null;
 			}
 		}
-		return obj;
+		return current;
 	}
 
 	private void SetValueForPath(string path, object rootObject, object value)

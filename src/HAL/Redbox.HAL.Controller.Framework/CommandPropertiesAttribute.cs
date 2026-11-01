@@ -26,10 +26,10 @@ public class CommandPropertiesAttribute : Attribute
 
 	public static CommandPropertiesAttribute GetProperties(FieldInfo fieldInfo)
 	{
-		CommandPropertiesAttribute[] array = (CommandPropertiesAttribute[])Attribute.GetCustomAttributes(fieldInfo, typeof(CommandPropertiesAttribute));
-		if (array != null && array.Length != 0)
+		CommandPropertiesAttribute[] attributes = (CommandPropertiesAttribute[])Attribute.GetCustomAttributes(fieldInfo, typeof(CommandPropertiesAttribute));
+		if (attributes != null && attributes.Length != 0)
 		{
-			return array[0];
+			return attributes[0];
 		}
 		return null;
 	}

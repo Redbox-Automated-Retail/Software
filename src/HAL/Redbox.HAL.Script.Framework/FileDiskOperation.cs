@@ -45,9 +45,9 @@ internal struct FileDiskOperation : IDisposable
 		}
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		ServiceLocator.Instance.GetService<IInventoryService>().IsBarcodeDuplicate(idInPicker, out var _);
-		int num = ((emptySearchResult.FoundEmpty > 1) ? (emptySearchResult.FoundEmpty - 1) : 0);
+		int reinitAfter = ((emptySearchResult.FoundEmpty > 1) ? (emptySearchResult.FoundEmpty - 1) : 0);
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
-		int num2 = 0;
+		int slotInUseCount = 0;
 		foreach (ILocation emptyLocation in emptySearchResult.EmptyLocations)
 		{
 			LogHelper.Instance.WithContext("Moving to {0} to put item in picker away.", emptyLocation.ToString());
@@ -71,7 +71,7 @@ internal struct FileDiskOperation : IDisposable
 				Handler.DiskFiled(result, putResult);
 				return ErrorCodes.Success;
 			}
-			if (putResult.IsSlotInUse && ++num2 == num)
+			if (putResult.IsSlotInUse && ++slotInUseCount == reinitAfter)
 			{
 				motionControlService.InitAxes();
 			}

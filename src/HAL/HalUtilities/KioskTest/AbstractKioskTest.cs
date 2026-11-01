@@ -96,11 +96,11 @@ internal abstract class AbstractKioskTest : IDisposable
 
 	internal int Run(TimeSpan? runTime, TestLocation diskSource, MachineInformation config)
 	{
-		DateTime? dateTime = null;
+		DateTime? endTime = null;
 		if (runTime.HasValue)
 		{
-			dateTime = DateTime.Now.Add(runTime.Value);
-			LogHelper.Instance.Log("Kiosk Test Starting - will run until {0}. Deck details:", dateTime);
+			endTime = DateTime.Now.Add(runTime.Value);
+			LogHelper.Instance.Log("Kiosk Test Starting - will run until {0}. Deck details:", endTime);
 		}
 		else
 		{
@@ -114,32 +114,32 @@ internal abstract class AbstractKioskTest : IDisposable
 		});
 		LogHelper.Instance.Log("-------------------------------------");
 		List<TestLocation> list = PopulateLocations(diskSource, config);
-		TestLocation testLocation = diskSource;
+		TestLocation current = diskSource;
 		while (list.Count > 0)
 		{
-			bool flag = VendFrequency > 0 && Transfers % VendFrequency == 0;
+			bool shouldVend = VendFrequency > 0 && Transfers % VendFrequency == 0;
 			int index = new Random(DateTime.Now.Millisecond).Next(0, list.Count - 1);
-			TestLocation testLocation2 = list[index];
+			TestLocation next = list[index];
 			list.RemoveAt(index);
-			LogHelper.Instance.Log("## Move Disc From Deck {0}, Slot {1} to Deck {2}, Slot {3} - Vend {4} ##", testLocation.Deck, testLocation.Slot, testLocation2.Deck, testLocation2.Slot, flag);
-			if (!RunTransfer(testLocation, testLocation2, flag))
+			LogHelper.Instance.Log("## Move Disc From Deck {0}, Slot {1} to Deck {2}, Slot {3} - Vend {4} ##", current.Deck, current.Slot, next.Deck, next.Slot, shouldVend);
+			if (!RunTransfer(current, next, shouldVend))
 			{
 				LogHelper.Instance.Log("Transfer job failed.");
 				Environment.Exit(-1);
 			}
-			testLocation = testLocation2;
-			if (dateTime.HasValue)
+			current = next;
+			if (endTime.HasValue)
 			{
-				LogHelper.Instance.Log("## Time Remaining {0} ##", dateTime - DateTime.Now);
+				LogHelper.Instance.Log("## Time Remaining {0} ##", endTime - DateTime.Now);
 				DateTime now = DateTime.Now;
-				DateTime? dateTime2 = dateTime;
-				if (now > dateTime2)
+				DateTime? end = endTime;
+				if (now > end)
 				{
 					break;
 				}
 			}
 		}
-		RunTransfer(testLocation, diskSource, vend: false);
+		RunTransfer(current, diskSource, vend: false);
 		LogHelper.Instance.Log("## TestComplete - {0} total transfers ##", Transfers);
 		OnCleanup(diskSource);
 		UpdateGamp();

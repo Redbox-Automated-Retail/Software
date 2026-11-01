@@ -59,17 +59,17 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[num];
+				_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index];
 				if (iCiImageEvents_SinkHelper.m_LogDelegate != null && ((iCiImageEvents_SinkHelper.m_LogDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(iCiImageEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -79,9 +79,9 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -104,16 +104,16 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 < count)
 			{
 				do
 				{
-					_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[num];
+					_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index];
 					m_ConnectionPoint.Unadvise(iCiImageEvents_SinkHelper.m_dwCookie);
-					num++;
+					index++;
 				}
-				while (num < count);
+				while (index < count);
 			}
 			Marshal.ReleaseComObject(m_ConnectionPoint);
 		}

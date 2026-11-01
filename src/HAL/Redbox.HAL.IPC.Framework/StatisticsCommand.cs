@@ -15,14 +15,14 @@ public class StatisticsCommand
 		FieldInfo[] fields = typeof(Statistics).GetFields(bindingAttr);
 		foreach (FieldInfo fieldInfo in fields)
 		{
-			string item = $"{fieldInfo.Name} = {fieldInfo.GetValue(Statistics.Instance)}";
-			context.Messages.Add(item);
+			string fieldLine = $"{fieldInfo.Name} = {fieldInfo.GetValue(Statistics.Instance)}";
+			context.Messages.Add(fieldLine);
 		}
 		PropertyInfo[] properties = typeof(Statistics).GetProperties(bindingAttr);
 		foreach (PropertyInfo propertyInfo in properties)
 		{
-			string item2 = $"{propertyInfo.Name} = {propertyInfo.GetValue(Statistics.Instance, null)}";
-			context.Messages.Add(item2);
+			string propertyLine = $"{propertyInfo.Name} = {propertyInfo.GetValue(Statistics.Instance, null)}";
+			context.Messages.Add(propertyLine);
 		}
 	}
 }

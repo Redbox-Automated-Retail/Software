@@ -52,24 +52,24 @@ internal sealed class GetImageCommand : TextCommand
 		{
 			return false;
 		}
-		List<CortexPacket> list = PacketFactory.Instance.Parse(array);
-		if (list.Count == 0)
+		List<CortexPacket> packets = PacketFactory.Instance.Parse(array);
+		if (packets.Count == 0)
 		{
 			return false;
 		}
-		if (list[0].RawPacketType != 'g' || list[list.Count - 1].RawPacketType != 'd')
+		if (packets[0].RawPacketType != 'g' || packets[packets.Count - 1].RawPacketType != 'd')
 		{
 			return false;
 		}
-		List<CortexPacket> list2 = list.FindAll((CortexPacket each) => each.PacketType == PacketType.Data);
+		List<CortexPacket> dataPackets = packets.FindAll((CortexPacket each) => each.PacketType == PacketType.Data);
 		ImageBytes = new byte[Descriptor.ImageSize];
 		int offset = 0;
-		list2.ForEach(delegate(CortexPacket each)
+		dataPackets.ForEach(delegate(CortexPacket each)
 		{
 			Array.Copy(each.PayloadData, 0, ImageBytes, offset, each.PayloadData.Length);
 			offset += each.PayloadData.Length;
 		});
-		DumpPackets(list);
+		DumpPackets(packets);
 		return true;
 	}
 

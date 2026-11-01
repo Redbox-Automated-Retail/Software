@@ -32,45 +32,45 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 		base.Context.CreateInfoResult("FreeDiskSpace", computerinfo.DiskFreeSpace.ToString());
 		IDeviceDescriptor deviceDescriptor = usbDeviceService.FindActiveCamera(matchDriver: false);
 		base.Context.CreateInfoResult("CameraInfo", (deviceDescriptor == null) ? "NONE" : deviceDescriptor.Friendlyname);
-		DeviceStatus deviceStatus2 = DeviceStatus.None;
+		DeviceStatus abeStatus = DeviceStatus.None;
 		if (new AbeDeviceDescriptor(usbDeviceService).Locate())
 		{
-			deviceStatus2 = DeviceStatus.Found;
+			abeStatus = DeviceStatus.Found;
 		}
-		base.Context.CreateInfoResult("AbeDeviceStatus", deviceStatus2.ToString());
+		base.Context.CreateInfoResult("AbeDeviceStatus", abeStatus.ToString());
 		ITouchscreenDescriptor touchscreenDescriptor = usbDeviceService.FindTouchScreen();
 		base.Context.CreateInfoResult("TouchscreenDevice", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.Friendlyname);
 		base.Context.CreateInfoResult("TouchscreenFirmware", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.ReadFirmware());
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		base.Context.CreateInfoResult("ControllerFirmware", controlSystem.GetBoardVersion(ControlBoards.Serial).Version);
-		List<IDeviceDescriptor> list = usbDeviceService.FindDevices(DeviceClass.Monitor);
-		string message = "UNKNOWN";
-		foreach (IDeviceDescriptor item in list)
+		List<IDeviceDescriptor> monitors = usbDeviceService.FindDevices(DeviceClass.Monitor);
+		string monitorInfo = "UNKNOWN";
+		foreach (IDeviceDescriptor monitor in monitors)
 		{
-			string key = item.Product.ToLower();
+			string key = monitor.Product.ToLower();
 			if (Monitors.ContainsKey(key))
 			{
-				message = Monitors[key];
+				monitorInfo = Monitors[key];
 				break;
 			}
 		}
-		base.Context.CreateInfoResult("MonitorInfo", message);
-		List<IDeviceDescriptor> list2 = usbDeviceService.FindDevices(DeviceClass.Battery);
-		string message2 = "NONE";
-		foreach (IDeviceDescriptor item2 in list2)
+		base.Context.CreateInfoResult("MonitorInfo", monitorInfo);
+		List<IDeviceDescriptor> batteries = usbDeviceService.FindDevices(DeviceClass.Battery);
+		string upsInfo = "NONE";
+		foreach (IDeviceDescriptor battery in batteries)
 		{
-			if (item2.Vendor.Equals("051d", StringComparison.CurrentCultureIgnoreCase))
+			if (battery.Vendor.Equals("051d", StringComparison.CurrentCultureIgnoreCase))
 			{
-				message2 = "APC";
+				upsInfo = "APC";
 				break;
 			}
-			if (item2.Vendor.Equals("09ae", StringComparison.CurrentCultureIgnoreCase))
+			if (battery.Vendor.Equals("09ae", StringComparison.CurrentCultureIgnoreCase))
 			{
-				message2 = "Tripplite";
+				upsInfo = "Tripplite";
 				break;
 			}
 		}
-		base.Context.CreateInfoResult("UpsInfo", message2);
+		base.Context.CreateInfoResult("UpsInfo", upsInfo);
 	}
 
 	internal HardwareSurveyJob(ExecutionResult result, ExecutionContext ctx)

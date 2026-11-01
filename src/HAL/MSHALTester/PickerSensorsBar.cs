@@ -87,13 +87,13 @@ public class PickerSensorsBar : UserControl
 	{
 		using (ButtonManager.MakeAspect(sender))
 		{
-			bool flag = false;
+			bool readFailed = false;
 			try
 			{
 				IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 				IPickerSensorReadResult result = controlSystem.ReadPickerSensors(forceTrackClose: false);
-				flag = result.Error != ErrorCodes.Success;
-				if (!flag)
+				readFailed = result.Error != ErrorCodes.Success;
+				if (!readFailed)
 				{
 					int i = 0;
 					result.Foreach(delegate(PickerInputs each)
@@ -106,7 +106,7 @@ public class PickerSensorsBar : UserControl
 			{
 				if (ReadEvents != null)
 				{
-					ReadEvents(flag);
+					ReadEvents(readFailed);
 				}
 			}
 		}

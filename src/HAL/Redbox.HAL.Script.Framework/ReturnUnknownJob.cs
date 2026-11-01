@@ -70,7 +70,7 @@ internal class ReturnUnknownJob : NativeJobAdapter, IFileDiskHandler
 		base.Context.CreateResult("ItemReturned", "The item was successfully returned.", putResult.PutLocation.Deck, putResult.PutLocation.Slot, putResult.StoredMatrix, null, null);
 		if (!IsFieldInsert && InventoryConstants.CodeIsUnknown(putResult.StoredMatrix) && "NONE" != Previous)
 		{
-			if (!DateTime.TryParse(Previous, out var result2))
+			if (!DateTime.TryParse(Previous, out var returnDate))
 			{
 				base.AppLog.WriteFormatted("Unable to parse date/time information {0}.", Previous);
 				AddError("Failed to parse date/time");
@@ -78,7 +78,7 @@ internal class ReturnUnknownJob : NativeJobAdapter, IFileDiskHandler
 			else
 			{
 				IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-				putResult.PutLocation.ReturnDate = result2;
+				putResult.PutLocation.ReturnDate = returnDate;
 				inventoryService.Save(putResult.PutLocation);
 			}
 		}

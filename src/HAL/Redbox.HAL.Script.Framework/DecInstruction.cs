@@ -27,12 +27,12 @@ public sealed class DecInstruction : Instruction
 		{
 			return;
 		}
-		object obj = context.GetSymbolValue(token.Value, result.Errors);
-		if (obj == null || result.Errors.Count > 0)
+		object symbolValue = context.GetSymbolValue(token.Value, result.Errors);
+		if (symbolValue == null || result.Errors.Count > 0)
 		{
 			return;
 		}
-		Type type = obj.GetType();
+		Type type = symbolValue.GetType();
 		if (type != typeof(int) && type != typeof(decimal))
 		{
 			AddError("E002", "Only numeric values of type integer and decimal may be decremented.", result.Errors);
@@ -40,12 +40,12 @@ public sealed class DecInstruction : Instruction
 		}
 		if (type == typeof(int))
 		{
-			obj = (int)obj - 1;
+			symbolValue = (int)symbolValue - 1;
 		}
 		else if (type == typeof(decimal))
 		{
-			obj = (decimal)obj - 1m;
+			symbolValue = (decimal)symbolValue - 1m;
 		}
-		context.SetSymbolValue(token.Value, Convert.ChangeType(obj, type));
+		context.SetSymbolValue(token.Value, Convert.ChangeType(symbolValue, type));
 	}
 }

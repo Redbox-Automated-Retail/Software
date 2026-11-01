@@ -83,29 +83,29 @@ public class VideoCapabilities
 		{
 			throw new NotSupportedException("Unable to retrieve video device capabilities. This video device requires a larger VideoStreamConfigCaps structure.");
 		}
-		Dictionary<uint, VideoCapabilities> dictionary = new Dictionary<uint, VideoCapabilities>();
+		Dictionary<uint, VideoCapabilities> bySize = new Dictionary<uint, VideoCapabilities>();
 		for (int i = 0; i < count; i++)
 		{
 			try
 			{
 				VideoCapabilities videoCapabilities = new VideoCapabilities(videoStreamConfig, i);
 				uint key = (uint)(videoCapabilities.FrameSize.Height | (videoCapabilities.FrameSize.Width << 16));
-				if (!dictionary.ContainsKey(key))
+				if (!bySize.ContainsKey(key))
 				{
-					dictionary.Add(key, videoCapabilities);
+					bySize.Add(key, videoCapabilities);
 				}
-				else if (videoCapabilities.BitCount > dictionary[key].BitCount)
+				else if (videoCapabilities.BitCount > bySize[key].BitCount)
 				{
-					dictionary[key] = videoCapabilities;
+					bySize[key] = videoCapabilities;
 				}
 			}
 			catch
 			{
 			}
 		}
-		VideoCapabilities[] array = new VideoCapabilities[dictionary.Count];
-		dictionary.Values.CopyTo(array, 0);
-		return array;
+		VideoCapabilities[] capabilities = new VideoCapabilities[bySize.Count];
+		bySize.Values.CopyTo(capabilities, 0);
+		return capabilities;
 	}
 
 	internal VideoCapabilities(IAMStreamConfig videoStreamConfig, int index)

@@ -51,10 +51,10 @@ public class CameraInsutrction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		bool flag = false;
+		bool center = false;
 		if (FindBooleanOperand(ExpectedOperand.Center.ToString().ToUpper(), result, out var boolValue))
 		{
-			flag = boolValue;
+			center = boolValue;
 		}
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IScannerDevice configuredDevice = ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice();
@@ -70,7 +70,7 @@ public class CameraInsutrction : Instruction
 			context.PushTop(configuredDevice.IsConnected ? "RUNNING" : "STOPPED");
 			break;
 		case ExpectedOperand.Start:
-			if (flag)
+			if (center)
 			{
 				controlSystem.Center(CenterDiskMethod.VendDoorAndBack);
 			}
@@ -113,9 +113,9 @@ public class CameraInsutrction : Instruction
 	{
 		boolValue = false;
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair(operand);
-		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var result2))
+		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var parsed))
 		{
-			boolValue = result2;
+			boolValue = parsed;
 			return true;
 		}
 		return false;

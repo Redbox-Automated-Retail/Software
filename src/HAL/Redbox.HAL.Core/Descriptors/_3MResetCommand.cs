@@ -59,16 +59,16 @@ internal abstract class _3MResetCommand : Abstract3MCommand
 	{
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		bool result = false;
-		_3mStatusCommand _3mStatusCommand2 = new _3mStatusCommand();
+		_3mStatusCommand statusCommand = new _3mStatusCommand();
 		for (int i = 0; i < 5; i++)
 		{
 			runtimeService.Wait(pause);
-			byte[] array = _3mStatusCommand2.SendReceive();
-			if (array.Length == 0)
+			byte[] response = statusCommand.SendReceive();
+			if (response.Length == 0)
 			{
 				break;
 			}
-			if (array[3] == CompletionByte)
+			if (response[3] == CompletionByte)
 			{
 				result = true;
 				break;

@@ -70,23 +70,23 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	internal override ErrorCodes MoveToVend(MoveMode mode)
 	{
-		int num = ControllerConfiguration.Instance.VendYPosition;
+		int vendY = ControllerConfiguration.Instance.VendYPosition;
 		if (ControllerConfiguration.Instance.VendPositionReceiveOffset != 0)
 		{
 			switch (mode)
 			{
 			case MoveMode.Get:
-				num -= ControllerConfiguration.Instance.VendPositionReceiveOffset;
+				vendY -= ControllerConfiguration.Instance.VendPositionReceiveOffset;
 				break;
 			case MoveMode.Put:
-				num += ControllerConfiguration.Instance.VendPositionReceiveOffset;
+				vendY += ControllerConfiguration.Instance.VendPositionReceiveOffset;
 				break;
 			}
 		}
 		if (ControllerConfiguration.Instance.QueryPositionForVendMove)
 		{
 			IControllerPosition controllerPosition = ReadPositions();
-			if (controllerPosition.ReadOk && controllerPosition.YCoordinate.Value == num)
+			if (controllerPosition.ReadOk && controllerPosition.YCoordinate.Value == vendY)
 			{
 				if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
 				{
@@ -103,7 +103,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		MoveTarget target = new MoveTarget
 		{
 			Axis = Axis.Y,
-			YCoordinate = num
+			YCoordinate = vendY
 		};
 		return MoveAbsolute(ref target);
 	}
@@ -262,18 +262,18 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 			{
 				if (motorWaitDecoder.Error != ErrorCodes.Success)
 				{
-					string text2 = motorWaitDecoder.FormatError(axis, text);
-					LogHelper.Instance.Log(text2, LogEntryType.Error);
-					WriteToLog(text2);
+					string errorMessage = motorWaitDecoder.FormatError(axis, text);
+					LogHelper.Instance.Log(errorMessage, LogEntryType.Error);
+					WriteToLog(errorMessage);
 				}
 				return motorWaitDecoder.Error;
 			}
 			runtimeService.SpinWait(timespan);
 		}
 		while (executionTimer.ElapsedMilliseconds < timeout);
-		string text3 = motorWaitDecoder.FormatError(axis, text);
-		LogHelper.Instance.Log(text3, LogEntryType.Error);
-		WriteToLog(text3);
+		string timeoutMessage = motorWaitDecoder.FormatError(axis, text);
+		LogHelper.Instance.Log(timeoutMessage, LogEntryType.Error);
+		WriteToLog(timeoutMessage);
 		HaltMotor();
 		return ErrorCodes.Timeout;
 	}
@@ -285,7 +285,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	private ErrorCodes HomeXAxis()
 	{
-		string[] array = new string[11]
+		string[] commands = new string[11]
 		{
 			"$",
 			"RSTOP",
@@ -299,7 +299,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 			"PX=0",
 			"I2=3072"
 		};
-		foreach (string command in array)
+		foreach (string command in commands)
 		{
 			if (SendReciveRaw(command) == null)
 			{
@@ -320,8 +320,8 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		{
 			return errorCodes;
 		}
-		array = new string[2] { "I2=3136", "I7=15" };
-		foreach (string command2 in array)
+		commands = new string[2] { "I2=3136", "I7=15" };
+		foreach (string command2 in commands)
 		{
 			if (SendReciveRaw(command2) == null)
 			{
@@ -342,7 +342,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	private ErrorCodes HomeYAxis()
 	{
-		string[] array = new string[9]
+		string[] commands = new string[9]
 		{
 			"$",
 			"RSTOP",
@@ -354,7 +354,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 			"EY=0",
 			"PY=0"
 		};
-		foreach (string command in array)
+		foreach (string command in commands)
 		{
 			if (SendReciveRaw(command) == null)
 			{
@@ -363,16 +363,16 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		}
 		if (ControllerConfiguration.Instance.HomeYDropBack != 0)
 		{
-			int num = ControllerConfiguration.Instance.HomeYDropBack;
-			if (Math.Sign(num) == 1)
+			int dropBack = ControllerConfiguration.Instance.HomeYDropBack;
+			if (Math.Sign(dropBack) == 1)
 			{
-				num = -num;
+				dropBack = -dropBack;
 			}
 			if (SendReciveRaw("MIOY") == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;
 			}
-			string command2 = $"Y{num}";
+			string command2 = $"Y{dropBack}";
 			if (SendReciveRaw(command2) == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;
@@ -400,9 +400,9 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		{
 			return "OK";
 		}
-		bool flag = LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug) || DebugEnabled;
-		StringBuilder stringBuilder = (flag ? new StringBuilder() : null);
-		if (flag)
+		bool logCommand = LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug) || DebugEnabled;
+		StringBuilder stringBuilder = (logCommand ? new StringBuilder() : null);
+		if (logCommand)
 		{
 			stringBuilder.AppendFormat("ArcusMotionController: Instruction={0}", command);
 		}
@@ -411,7 +411,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		{
 			LogHelper.Instance.Log("ArcusMotionControl.SendCommand(): channel error returned {0}", channelResponse.Error);
 			WriteToLog("[ArcusMotionController] Send command {0}; error = {1}", command, ErrorCodes.ArcusNotResponsive.ToString());
-			if (flag)
+			if (logCommand)
 			{
 				stringBuilder.AppendFormat(", Error = {0}", ErrorCodes.ArcusNotResponsive.ToString());
 				WriteToLog(stringBuilder.ToString());
@@ -421,7 +421,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		int index = channelResponse.GetIndex(13);
 		int count = ((index == -1) ? (channelResponse.RawResponse.Length - 1) : index);
 		string text = Encoding.ASCII.GetString(channelResponse.RawResponse, 0, count);
-		if (flag)
+		if (logCommand)
 		{
 			stringBuilder.AppendFormat(", Response={0}", text);
 			WriteToLog(stringBuilder.ToString());

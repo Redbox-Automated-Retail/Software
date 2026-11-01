@@ -31,11 +31,11 @@ public class CommandRepository
 	internal static List<string> DiscoverInstalledCommands()
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
-		List<string> list = new List<string>();
+		List<string> commands = new List<string>();
 		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		List<string> list2 = new List<string>();
-		list2.AddRange(Directory.GetFiles(directoryName, "*.dll"));
-		foreach (string item in list2)
+		List<string> assemblyFiles = new List<string>();
+		assemblyFiles.AddRange(Directory.GetFiles(directoryName, "*.dll"));
+		foreach (string item in assemblyFiles)
 		{
 #if !NETFRAMEWORK
 			// A self-contained .NET service has the whole runtime next to it, and an .exe's code is in <name>.dll; .NET
@@ -48,7 +48,7 @@ public class CommandRepository
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(item);
-				list.AddRange(FindCommands(assembly.GetTypes()));
+				commands.AddRange(FindCommands(assembly.GetTypes()));
 			}
 			catch (BadImageFormatException)
 			{
@@ -59,7 +59,7 @@ public class CommandRepository
 			}
 		}
 		LogHelper.Instance.Log($"Time to scan for commands: {executionTimer.Elapsed}");
-		return list;
+		return commands;
 	}
 
 	internal static CommandInstance GetCommand(string name)
@@ -68,21 +68,21 @@ public class CommandRepository
 		{
 			return null;
 		}
-		if (!m_commands.TryGetValue(name.ToUpper(), out var value))
+		if (!m_commands.TryGetValue(name.ToUpper(), out var commandType))
 		{
 			return null;
 		}
-		if (!m_instanceCache.TryGetValue(value, out var value2))
+		if (!m_instanceCache.TryGetValue(commandType, out var instance))
 		{
-			value2 = new CommandInstance
+			instance = new CommandInstance
 			{
-				CommandType = value
+				CommandType = commandType
 			};
-			if (Attribute.GetCustomAttribute(value, typeof(DescriptionAttribute)) is DescriptionAttribute descriptionAttribute)
+			if (Attribute.GetCustomAttribute(commandType, typeof(DescriptionAttribute)) is DescriptionAttribute descriptionAttribute)
 			{
-				value2.CommandDescription = descriptionAttribute.Description;
+				instance.CommandDescription = descriptionAttribute.Description;
 			}
-			MethodInfo[] methods = value.GetMethods();
+			MethodInfo[] methods = commandType.GetMethods();
 			foreach (MethodInfo methodInfo in methods)
 			{
 				if (!(Attribute.GetCustomAttribute(methodInfo, typeof(CommandFormAttribute)) is CommandFormAttribute commandFormAttribute))
@@ -95,14 +95,14 @@ public class CommandRepository
 					continue;
 				}
 				UsageAttribute usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
-				DescriptionAttribute descriptionAttribute2 = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
+				DescriptionAttribute methodDescription = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
 				FormMethod formMethod = new FormMethod
 				{
 					Method = methodInfo,
 					Usage = ((usageAttribute != null) ? usageAttribute.Template : string.Empty),
-					Description = ((descriptionAttribute2 != null) ? descriptionAttribute2.Description : string.Empty)
+					Description = ((methodDescription != null) ? methodDescription.Description : string.Empty)
 				};
-				int num = 0;
+				int parameterIndex = 0;
 				foreach (ParameterInfo parameterInfo in parameters)
 				{
 					if (parameterInfo.ParameterType == typeof(CommandContext))
@@ -112,7 +112,7 @@ public class CommandRepository
 					FormMethodParameter formMethodParameter = new FormMethodParameter
 					{
 						Parameter = parameterInfo,
-						Index = num++
+						Index = parameterIndex++
 					};
 					CommandKeyValueAttribute commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
 					formMethodParameter.KeyName = parameterInfo.Name.ToUpper();
@@ -130,19 +130,19 @@ public class CommandRepository
 						formMethod.ParameterCache[formMethodParameter.KeyName] = formMethodParameter;
 					}
 				}
-				value2.FormMethodCache[commandFormAttribute.Name.ToUpper()] = formMethod;
+				instance.FormMethodCache[commandFormAttribute.Name.ToUpper()] = formMethod;
 			}
-			MethodInfo method = value.GetMethod("Default", new Type[1] { typeof(CommandContext) });
+			MethodInfo method = commandType.GetMethod("Default", new Type[1] { typeof(CommandContext) });
 			if (method != null)
 			{
-				value2.FormMethodCache["Default"] = new FormMethod
+				instance.FormMethodCache["Default"] = new FormMethod
 				{
 					Method = method
 				};
 			}
-			m_instanceCache[value] = value2;
+			m_instanceCache[commandType] = instance;
 		}
-		return value2;
+		return instance;
 	}
 
 	internal static void Register(IEnumerable<Type> types)

@@ -197,19 +197,19 @@ public sealed class ClientHelper : IDisposable
 
 	private string[] GetStackEntriesInner(HardwareJob job, int depth)
 	{
-		string[] array = new string[depth];
+		string[] entries = new string[depth];
 		for (int i = 0; i < depth; i++)
 		{
-			array[i] = string.Empty;
+			entries[i] = string.Empty;
 		}
 		if (job.GetStack(out var stack).Success && stack.Count >= depth)
 		{
 			for (int j = 0; j < depth; j++)
 			{
-				array[j] = stack.Pop();
+				entries[j] = stack.Pop();
 			}
 		}
-		return array;
+		return entries;
 	}
 
 	private bool BootstrapInitRunningChecked()

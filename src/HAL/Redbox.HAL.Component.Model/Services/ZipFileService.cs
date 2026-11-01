@@ -21,7 +21,7 @@ public sealed class ZipFileService : IZipFileService
 			using ZipOutputStream zipOutputStream = new ZipOutputStream(File.Create(zipPath));
 			zipOutputStream.SetLevel(9);
 			byte[] buffer = new byte[4096];
-			int num = 0;
+			int entryCount = 0;
 			foreach (string file in files)
 			{
 				FileInfo fileInfo = new FileInfo(file);
@@ -31,19 +31,19 @@ public sealed class ZipFileService : IZipFileService
 				});
 				using (FileStream fileStream = File.OpenRead(file))
 				{
-					int num2;
+					int bytesRead;
 					do
 					{
-						num2 = fileStream.Read(buffer, 0, buffer.Length);
-						zipOutputStream.Write(buffer, 0, num2);
+						bytesRead = fileStream.Read(buffer, 0, buffer.Length);
+						zipOutputStream.Write(buffer, 0, bytesRead);
 					}
-					while (num2 > 0);
+					while (bytesRead > 0);
 				}
-				num++;
+				entryCount++;
 			}
 			zipOutputStream.Finish();
 			zipOutputStream.Close();
-			zipResult.EntryCount = num;
+			zipResult.EntryCount = entryCount;
 			zipResult.Success = true;
 		}
 		catch (Exception e)
@@ -87,14 +87,14 @@ public sealed class ZipFileService : IZipFileService
 					string path = Path.Combine(unzipPath, nextEntry.Name);
 					using (FileStream fileStream = File.Create(path))
 					{
-						int num = 2048;
+						int bytesRead = 2048;
 						byte[] buffer = new byte[2048];
 						while (true)
 						{
-							num = zipInputStream.Read(buffer, 0, buffer.Length);
-							if (num > 0)
+							bytesRead = zipInputStream.Read(buffer, 0, buffer.Length);
+							if (bytesRead > 0)
 							{
-								fileStream.Write(buffer, 0, num);
+								fileStream.Write(buffer, 0, bytesRead);
 								continue;
 							}
 							break;
@@ -130,11 +130,11 @@ public sealed class ZipFileService : IZipFileService
 		{
 			return unzipResult;
 		}
-		int num = 0;
-		using ZipFile zipFile2 = new ZipFile(zipFile);
-		foreach (ZipEntry item in zipFile2)
+		int entryCount = 0;
+		using ZipFile archive = new ZipFile(zipFile);
+		foreach (ZipEntry item in archive)
 		{
-			num++;
+			entryCount++;
 			if (item.IsDirectory)
 			{
 				if (!SafeCreateDirectory(item.Name))
@@ -144,7 +144,7 @@ public sealed class ZipFileService : IZipFileService
 				continue;
 			}
 			byte[] buffer = new byte[4096];
-			Stream inputStream = zipFile2.GetInputStream(item);
+			Stream inputStream = archive.GetInputStream(item);
 			string path = Path.Combine(outputPath, item.Name);
 			string directoryName = Path.GetDirectoryName(path);
 			if (directoryName.Length > 0 && !SafeCreateDirectory(directoryName))
@@ -154,8 +154,8 @@ public sealed class ZipFileService : IZipFileService
 			using FileStream destination = File.Create(path);
 			StreamUtils.Copy(inputStream, destination, buffer);
 		}
-		unzipResult.EntryCount = num;
-		unzipResult.Success = num == zipFile2.Count;
+		unzipResult.EntryCount = entryCount;
+		unzipResult.Success = entryCount == archive.Count;
 		return unzipResult;
 	}
 

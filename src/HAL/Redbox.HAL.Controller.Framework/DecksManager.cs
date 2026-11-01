@@ -80,8 +80,8 @@ internal sealed class DecksManager : IDecksService
 		int count = Decks.Count;
 		while (count >= 1)
 		{
-			IDeck obj = Decks[count - 1];
-			if (predicate(obj))
+			IDeck deck = Decks[count - 1];
+			if (predicate(deck))
 			{
 				count--;
 				continue;
@@ -140,8 +140,8 @@ internal sealed class DecksManager : IDecksService
 		{
 			return;
 		}
-		List<Deck> list = new List<Deck>();
-		using (new DisposeableList<Deck>(list))
+		List<Deck> changedDecks = new List<Deck>();
+		using (new DisposeableList<Deck>(changedDecks))
 		{
 			if (xmlNodeList.Count != Decks.Count)
 			{
@@ -151,13 +151,13 @@ internal sealed class DecksManager : IDecksService
 			foreach (XmlNode item in xmlNodeList)
 			{
 				Deck deck = Deck.FromXmlNode(item);
-				Deck deck2 = GetByNumber(deck.Number) as Deck;
-				if (deck != deck2)
+				Deck current = GetByNumber(deck.Number) as Deck;
+				if (deck != current)
 				{
-					list.Add(deck);
+					changedDecks.Add(deck);
 				}
 			}
-			if (list.Count == 0)
+			if (changedDecks.Count == 0)
 			{
 				LogHelper.Instance.Log("Update decks: there were no changes.");
 				return;
@@ -165,22 +165,22 @@ internal sealed class DecksManager : IDecksService
 			try
 			{
 				LogHelper.Instance.Log("Update decks info:");
-				foreach (Deck item2 in list)
+				foreach (Deck changed in changedDecks)
 				{
-					Deck deck3 = GetByNumber(item2.Number) as Deck;
-					LogHelper.Instance.Log(" Deck Number {0} changes", deck3.Number);
-					LogHelper.Instance.Log("  Y-offset: new = {0} old = {1}", item2.YOffset, deck3.YOffset);
-					if (item2.Quadrants.Count == deck3.Quadrants.Count)
+					Deck existing = GetByNumber(changed.Number) as Deck;
+					LogHelper.Instance.Log(" Deck Number {0} changes", existing.Number);
+					LogHelper.Instance.Log("  Y-offset: new = {0} old = {1}", changed.YOffset, existing.YOffset);
+					if (changed.Quadrants.Count == existing.Quadrants.Count)
 					{
-						for (int i = 0; i < item2.Quadrants.Count; i++)
+						for (int i = 0; i < changed.Quadrants.Count; i++)
 						{
-							LogHelper.Instance.Log("   Quadrant {0} offsets: new = {1} ( excluded = {2} ) old = {3} ( excluded = {4} )", i + 1, item2.Quadrants[i].Offset, item2.Quadrants[i].IsExcluded, deck3.Quadrants[i].Offset, deck3.Quadrants[i].IsExcluded);
+							LogHelper.Instance.Log("   Quadrant {0} offsets: new = {1} ( excluded = {2} ) old = {3} ( excluded = {4} )", i + 1, changed.Quadrants[i].Offset, changed.Quadrants[i].IsExcluded, existing.Quadrants[i].Offset, existing.Quadrants[i].IsExcluded);
 						}
-						deck3.UpdateFrom(item2);
+						existing.UpdateFrom(changed);
 					}
 					else
 					{
-						LogHelper.Instance.Log(LogEntryType.Error, "[DecksManager] Unsupported configuration change: slot count ( old count = {0} new count = {1}", deck3.NumberOfSlots, item2.NumberOfSlots);
+						LogHelper.Instance.Log(LogEntryType.Error, "[DecksManager] Unsupported configuration change: slot count ( old count = {0} new count = {1}", existing.NumberOfSlots, changed.NumberOfSlots);
 					}
 				}
 			}

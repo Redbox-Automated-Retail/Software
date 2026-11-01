@@ -132,10 +132,10 @@ public sealed class HardwareJob
 		session.ServerEvent += delegate(string message)
 		{
 			string[] parts = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			DateTime result2 = DateTime.Now;
+			DateTime eventTime = DateTime.Now;
 			if (parts.Length > 1)
 			{
-				DateTime.TryParse(parts[0], out result2);
+				DateTime.TryParse(parts[0], out eventTime);
 			}
 			string text = ((parts.Length > 1) ? parts[1] : parts[0]);
 			if (text.StartsWith(">STATUS CHANGE<"))
@@ -148,7 +148,7 @@ public sealed class HardwareJob
 			}
 			if (EventRaised != null)
 			{
-				EventRaised(this, result2, text);
+				EventRaised(this, eventTime, text);
 			}
 		};
 		HardwareCommandResult result = ClientCommand<HardwareCommandResult>.ExecuteCommand(session, $"JOB connect job: '{ID}'");
@@ -241,9 +241,9 @@ public sealed class HardwareJob
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"STACK show job: '{ID}'");
 		if (hardwareCommandResult.Success)
 		{
-			for (int num = hardwareCommandResult.CommandMessages.Count - 1; num >= 0; num--)
+			for (int index = hardwareCommandResult.CommandMessages.Count - 1; index >= 0; index--)
 			{
-				stack.Push(hardwareCommandResult.CommandMessages[num].Substring(hardwareCommandResult.CommandMessages[num].IndexOf(":") + 1).Trim());
+				stack.Push(hardwareCommandResult.CommandMessages[index].Substring(hardwareCommandResult.CommandMessages[index].IndexOf(":") + 1).Trim());
 			}
 		}
 		return hardwareCommandResult;
@@ -285,14 +285,14 @@ public sealed class HardwareJob
 			};
 		}
 		HardwareCommandResult hardwareCommandResult = null;
-		foreach (object obj in values)
+		foreach (object value in values)
 		{
-			object obj2 = obj;
-			if (obj2 is string)
+			object formatted = value;
+			if (formatted is string)
 			{
-				obj2 = $"\"{obj}\"";
+				formatted = $"\"{value}\"";
 			}
-			hardwareCommandResult = ExecuteCommand($"STACK push value: '{obj2}' job: '{ID}'");
+			hardwareCommandResult = ExecuteCommand($"STACK push value: '{formatted}' job: '{ID}'");
 			if (!hardwareCommandResult.Success)
 			{
 				return hardwareCommandResult;
@@ -466,13 +466,13 @@ public sealed class HardwareJob
 			hardwareJob.EnableDebugging = readOnlyCollection[8] == "1";
 			hardwareJob.TraceExecution = readOnlyCollection[9] == "1";
 		}
-		if (DateTime.TryParse(readOnlyCollection[4], out var result))
+		if (DateTime.TryParse(readOnlyCollection[4], out var startTime))
 		{
-			hardwareJob.StartTime = result;
+			hardwareJob.StartTime = startTime;
 		}
-		if (TimeSpan.TryParse(readOnlyCollection[6], out var result2))
+		if (TimeSpan.TryParse(readOnlyCollection[6], out var executionTime))
 		{
-			hardwareJob.ExecutionTime = result2;
+			hardwareJob.ExecutionTime = executionTime;
 		}
 		return hardwareJob;
 	}

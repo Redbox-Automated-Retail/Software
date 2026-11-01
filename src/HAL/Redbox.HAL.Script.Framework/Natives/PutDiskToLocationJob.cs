@@ -7,24 +7,24 @@ internal sealed class PutDiskToLocationJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		int num2 = base.Context.PopTop<int>();
-		ErrorCodes errorCodes = base.MotionService.MoveTo(num2, num, MoveMode.Put, base.AppLog);
+		int slot = base.Context.PopTop<int>();
+		int deck = base.Context.PopTop<int>();
+		ErrorCodes errorCodes = base.MotionService.MoveTo(deck, slot, MoveMode.Put, base.AppLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
-			base.Context.CreateInfoResult("JobError", $"MOVE DECK={num2} SLOT={num} MODE=PUT {errorCodes.ToString().ToUpper()}");
+			base.Context.CreateInfoResult("JobError", $"MOVE DECK={deck} SLOT={slot} MODE=PUT {errorCodes.ToString().ToUpper()}");
 			return;
 		}
-		string text = "UNKNOWN";
+		string matrix = "UNKNOWN";
 		using (Scanner scanner = new Scanner(CenterDiskMethod.VendDoorAndBack, base.ControlSystem))
 		{
 			using ScanResult scanResult = scanner.Read();
-			text = scanResult.ScannedMatrix;
+			matrix = scanResult.ScannedMatrix;
 		}
-		IPutResult putResult = ServiceLocator.Instance.GetService<IControllerService>().Put(text);
+		IPutResult putResult = ServiceLocator.Instance.GetService<IControllerService>().Put(matrix);
 		if (putResult.Success)
 		{
-			base.Context.CreateInfoResult("JobSuccess", $"PUT SUCCESS (barcode = {text})");
+			base.Context.CreateInfoResult("JobSuccess", $"PUT SUCCESS (barcode = {matrix})");
 		}
 		else
 		{

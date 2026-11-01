@@ -368,12 +368,12 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 
 	public object Pop(StackEnd end)
 	{
-		object obj = null;
+		object popped = null;
 		using (new WithWriteLock(ContextLock))
 		{
-			obj = OnPop(end);
+			popped = OnPop(end);
 			SaveUnderLock();
-			return obj;
+			return popped;
 		}
 	}
 
@@ -912,27 +912,27 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		}
 		using (new WithWriteLock(ContextLock))
 		{
-			string text = "~";
+			string location = "~";
 			if (deck.HasValue && slot.HasValue)
 			{
-				text = $"{deck},{slot}";
+				location = $"{deck},{slot}";
 			}
-			string text2 = "~";
+			string returnTimeText = "~";
 			if (returnTime.HasValue)
 			{
-				text2 = returnTime.ToString();
+				returnTimeText = returnTime.ToString();
 			}
 			Guid guid = Guid.NewGuid();
 			DateTime now = DateTime.Now;
-			string text3 = item ?? "~";
-			string text4 = previousID ?? "~";
+			string itemText = item ?? "~";
+			string previousIdText = previousID ?? "~";
 			if (message.Contains("'"))
 			{
 				message = message.Replace('\'', ' ');
 			}
-			string text5 = string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}", "RESULT", guid, now, code, text, text3, message, text2, text4);
-			CachedResults.Add(text5);
-			return text5;
+			string result = string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}", "RESULT", guid, now, code, location, itemText, message, returnTimeText, previousIdText);
+			CachedResults.Add(result);
+			return result;
 		}
 	}
 
@@ -1126,7 +1126,7 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		{
 			return false;
 		}
-		int num = 0;
+		int sent = 0;
 		while (Messages.Count > 0)
 		{
 			string text = Messages.PopTop().ToString();
@@ -1134,14 +1134,14 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 			try
 			{
 				MessageSink.Send(text);
-				num++;
+				sent++;
 			}
 			catch (Exception ex)
 			{
 				LogHelper.Instance.Log(LogEntryType.Error, "Job {0} ID {1} failed to send message: exception message = {2}", ProgramName, ID, ex.Message);
 			}
 		}
-		return num > 0;
+		return sent > 0;
 	}
 
 	private void SaveUnderLock()

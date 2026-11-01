@@ -49,22 +49,22 @@ public sealed class ProgramResult
 				TimeStamp = DateTime.Parse(parts[2]),
 				Code = parts[3].Trim()
 			};
-			string[] array2 = parts[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array2.Length == 2)
+			string[] location = parts[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (location.Length == 2)
 			{
-				if (int.TryParse(array2[0], out var result))
+				if (int.TryParse(location[0], out var parsed))
 				{
-					programResult.Deck = result;
+					programResult.Deck = parsed;
 				}
-				if (int.TryParse(array2[1], out result))
+				if (int.TryParse(location[1], out parsed))
 				{
-					programResult.Slot = result;
+					programResult.Slot = parsed;
 				}
 			}
-			string text = parts[5].Trim();
-			if (text != "~")
+			string itemId = parts[5].Trim();
+			if (itemId != "~")
 			{
-				programResult.ItemID = new ResultItem(text);
+				programResult.ItemID = new ResultItem(itemId);
 			}
 			programResult.Message = parts[6];
 			if (!string.IsNullOrEmpty(programResult.Message) && programResult.Message.StartsWith("{"))
@@ -73,15 +73,15 @@ public sealed class ProgramResult
 			}
 			if (9 == parts.Length)
 			{
-				string text2 = parts[7].Trim();
-				if (text2 != "~")
+				string returnTime = parts[7].Trim();
+				if (returnTime != "~")
 				{
-					programResult.ReturnTime = DateTime.Parse(text2);
+					programResult.ReturnTime = DateTime.Parse(returnTime);
 				}
-				string text3 = parts[8].Trim();
-				if (text3 != "~")
+				string previousItem = parts[8].Trim();
+				if (previousItem != "~")
 				{
-					programResult.PreviousItem = new ResultItem(text3);
+					programResult.PreviousItem = new ResultItem(previousItem);
 				}
 			}
 			return programResult;

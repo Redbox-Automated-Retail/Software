@@ -45,13 +45,13 @@ internal struct MoveDecoratorService : IDisposable
 	internal ErrorCodes MoveOffset(ILocation location, int offset)
 	{
 		IDeck deck = ServiceLocator.Instance.GetService<IDecksService>().GetFrom(location);
-		int num = location.Slot - offset;
-		if (num <= 0)
+		int targetSlot = location.Slot - offset;
+		if (targetSlot <= 0)
 		{
-			num = deck.NumberOfSlots - Math.Abs(num);
+			targetSlot = deck.NumberOfSlots - Math.Abs(targetSlot);
 		}
-		ErrorCodes result = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(location.Deck, num, MoveMode.None, Context.AppLog);
-		string msg = $"MOVE-OFFSET Deck = {deck.Number} Slot = {num} returned {result.ToString().ToUpper()}";
+		ErrorCodes result = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(location.Deck, targetSlot, MoveMode.None, Context.AppLog);
+		string msg = $"MOVE-OFFSET Deck = {deck.Number} Slot = {targetSlot} returned {result.ToString().ToUpper()}";
 		Context.AppLog.Write(msg);
 		return result;
 	}

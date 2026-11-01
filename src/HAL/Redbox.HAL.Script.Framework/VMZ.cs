@@ -122,9 +122,9 @@ internal sealed class VMZ
 		ILocation found = null;
 		decksService.ForAllDecksDo(delegate(IDeck deck)
 		{
-			for (int num = m_slots.End; num >= m_slots.Start; num--)
+			for (int slot = m_slots.End; slot >= m_slots.Start; slot--)
 			{
-				ILocation location = inventory.Get(deck.Number, num);
+				ILocation location = inventory.Get(deck.Number, slot);
 				if (location.Flags == flags)
 				{
 					found = location;
@@ -138,7 +138,7 @@ internal sealed class VMZ
 
 	internal int ResetCompressedZone(ILocation high)
 	{
-		int num = 0;
+		int resetCount = 0;
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		List<ILocation> updates = new List<ILocation>();
 		using (new DisposeableList<ILocation>(updates))
@@ -154,29 +154,29 @@ internal sealed class VMZ
 				}
 				return true;
 			}, First, high);
-			num = updates.Count;
+			resetCount = updates.Count;
 			inventoryService.Save(updates);
 			executionTimer.Stop();
-			LogHelper.Instance.Log("VMZ.ClearZone: reset {0} locations ( time = {1}ms ).", num, executionTimer.ElapsedMilliseconds);
-			return num;
+			LogHelper.Instance.Log("VMZ.ClearZone: reset {0} locations ( time = {1}ms ).", resetCount, executionTimer.ElapsedMilliseconds);
+			return resetCount;
 		}
 	}
 
 	internal ILocation ComputeNextHigherLocation(ILocation location)
 	{
-		int num = location.Slot + 1;
-		int num2 = location.Deck;
-		if (num > m_slots.End)
+		int slot = location.Slot + 1;
+		int deck = location.Deck;
+		if (slot > m_slots.End)
 		{
-			num = m_slots.Start;
-			num2--;
+			slot = m_slots.Start;
+			deck--;
 			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
-			if (num2 < decksService.First.Number)
+			if (deck < decksService.First.Number)
 			{
 				return null;
 			}
 		}
-		return ServiceLocator.Instance.GetService<IInventoryService>().Get(num2, num);
+		return ServiceLocator.Instance.GetService<IInventoryService>().Get(deck, slot);
 	}
 
 	internal void DumpZone(IFormattedLog log)
@@ -197,19 +197,19 @@ internal sealed class VMZ
 		ServiceLocator.Instance.GetService<IDecksService>();
 		ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation location = start;
-		bool flag = true;
-		while (flag)
+		bool keepGoing = true;
+		while (keepGoing)
 		{
 			if (location == end)
 			{
-				flag = false;
+				keepGoing = false;
 			}
 			if (match(location))
 			{
 				location = ComputeNextHigherLocation(location);
 				if (location == null)
 				{
-					flag = false;
+					keepGoing = false;
 				}
 				continue;
 			}

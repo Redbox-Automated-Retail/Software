@@ -14,9 +14,9 @@ public sealed class PlatterData
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append(YOffset);
 		int[] segmentOffsets = SegmentOffsets;
-		foreach (int num in segmentOffsets)
+		foreach (int offset in segmentOffsets)
 		{
-			stringBuilder.Append($",{num}");
+			stringBuilder.Append($",{offset}");
 		}
 		return stringBuilder.ToString();
 	}

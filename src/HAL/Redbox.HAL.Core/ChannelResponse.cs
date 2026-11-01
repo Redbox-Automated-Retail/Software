@@ -41,14 +41,14 @@ internal sealed class ChannelResponse : IChannelResponse, IDisposable
 
 	public int GetIndex(byte b)
 	{
-		byte[] array = PortResponse.ToArray();
-		if (array == null || array.Length == 0)
+		byte[] bytes = PortResponse.ToArray();
+		if (bytes == null || bytes.Length == 0)
 		{
 			return -1;
 		}
-		for (int i = 0; i < array.Length; i++)
+		for (int i = 0; i < bytes.Length; i++)
 		{
-			if (array[i] == b)
+			if (bytes[i] == b)
 			{
 				return i;
 			}

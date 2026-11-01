@@ -74,27 +74,27 @@ internal class InventoryChecker
 		XmlDocument xmlDocument = new XmlDocument();
 		xmlDocument.LoadXml(xml);
 		List<InventoryLocation> locations = GetLocations(xmlDocument);
-		XmlDocument xmlDocument2 = new XmlDocument();
-		xmlDocument2.Load(against);
-		List<InventoryLocation> locations2 = GetLocations(xmlDocument2);
-		if (locations2.Count != locations.Count)
+		XmlDocument fileDocument = new XmlDocument();
+		fileDocument.Load(against);
+		List<InventoryLocation> fileLocations = GetLocations(fileDocument);
+		if (fileLocations.Count != locations.Count)
 		{
 			log.WriteLine("The counts don't match.");
 			return false;
 		}
-		int num = 0;
-		for (int i = 0; i < locations2.Count; i++)
+		int mismatches = 0;
+		for (int i = 0; i < fileLocations.Count; i++)
 		{
-			InventoryLocation inventoryLocation = locations2[i];
-			InventoryLocation inventoryLocation2 = locations[i];
-			if (!inventoryLocation.IsEquivalent(inventoryLocation2))
+			InventoryLocation fileLocation = fileLocations[i];
+			InventoryLocation serviceLocation = locations[i];
+			if (!fileLocation.IsEquivalent(serviceLocation))
 			{
-				log.WriteLine("{0} (service) didn't compare to {1} (inv-file)", inventoryLocation2, inventoryLocation);
-				num++;
+				log.WriteLine("{0} (service) didn't compare to {1} (inv-file)", serviceLocation, fileLocation);
+				mismatches++;
 			}
 		}
-		log.WriteLine("There were {0} comparison errors.", num);
-		return num == 0;
+		log.WriteLine("There were {0} comparison errors.", mismatches);
+		return mismatches == 0;
 	}
 
 	private List<InventoryLocation> GetLocations(XmlDocument document)

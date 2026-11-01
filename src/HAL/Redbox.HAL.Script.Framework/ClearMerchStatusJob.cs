@@ -8,7 +8,7 @@ internal sealed class ClearMerchStatusJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = 0;
+		int resetCount = 0;
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		try
 		{
@@ -16,8 +16,8 @@ internal sealed class ClearMerchStatusJob : NativeJobAdapter
 			{
 				return;
 			}
-			int operand = base.Context.PopTop<int>();
-			for (int i = 0; i < operand; i++)
+			int count = base.Context.PopTop<int>();
+			for (int i = 0; i < count; i++)
 			{
 				string id = base.Context.PopTop<string>();
 				ILocation location = inventoryService.Lookup(id);
@@ -26,13 +26,13 @@ internal sealed class ClearMerchStatusJob : NativeJobAdapter
 					LogHelper.Instance.WithContext("The flags at {0} are changed from {1} -> None", location.ToString(), location.Flags.ToString());
 					location.Flags = MerchFlags.None;
 					inventoryService.Save(location);
-					num++;
+					resetCount++;
 				}
 			}
 		}
 		finally
 		{
-			base.Context.CreateInfoResult("MerchFlagsResetCount", num.ToString());
+			base.Context.CreateInfoResult("MerchFlagsResetCount", resetCount.ToString());
 		}
 	}
 

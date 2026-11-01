@@ -150,25 +150,25 @@ internal abstract class AbstractCortexCommand : IDisposable
 
 	private byte[] PrepCommand(byte[] baseCommand)
 	{
-		List<byte> list = new List<byte>();
+		List<byte> command = new List<byte>();
 		try
 		{
-			list.AddRange(Prefix);
-			ushort num = 0;
+			command.AddRange(Prefix);
+			ushort crc = 0;
 			for (int i = 0; i < baseCommand.Length; i++)
 			{
-				num = CRC16.CRC(num, baseCommand[i]);
-				list.Add(baseCommand[i]);
+				crc = CRC16.CRC(crc, baseCommand[i]);
+				command.Add(baseCommand[i]);
 			}
-			byte item = (byte)((num >> 8) & 0x7F);
-			list.Add(item);
-			byte item2 = (byte)(num & 0x7F);
-			list.Add(item2);
-			return list.ToArray();
+			byte crcHigh = (byte)((crc >> 8) & 0x7F);
+			command.Add(crcHigh);
+			byte crcLow = (byte)(crc & 0x7F);
+			command.Add(crcLow);
+			return command.ToArray();
 		}
 		finally
 		{
-			list.Clear();
+			command.Clear();
 		}
 	}
 

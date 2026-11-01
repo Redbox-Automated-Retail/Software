@@ -41,10 +41,10 @@ public sealed class BatchCommandRunner : ISession, IMessageSink
 	{
 		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.txt");
 		ErrorList errorList = new ErrorList();
-		string[] array = files;
-		for (int i = 0; i < array.Length; i++)
+		string[] startupFiles = files;
+		for (int i = 0; i < startupFiles.Length; i++)
 		{
-			ExecuteFile(array[i], errorList);
+			ExecuteFile(startupFiles[i], errorList);
 		}
 		return errorList;
 	}

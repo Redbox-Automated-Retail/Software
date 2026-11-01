@@ -55,34 +55,34 @@ public sealed class ResultInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("END");
-		bool flag = keyValuePair != null && string.Compare(keyValuePair.Value, "bottom", ignoreCase: true) == 0;
-		string keyValuePairValue = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("CODE"), result.Errors, context);
-		string keyValuePairValue2 = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("MESSAGE"), result.Errors, context);
-		int? keyValuePairValue3 = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("DECK"), result.Errors, context);
-		int? keyValuePairValue4 = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("SLOT"), result.Errors, context);
-		string keyValuePairValue5 = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("ITEM"), result.Errors, context);
-		string keyValuePairValue6 = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("RETURNTIME"), result.Errors, context);
-		string keyValuePairValue7 = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("PREVIOUS"), result.Errors, context);
+		bool atBottom = keyValuePair != null && string.Compare(keyValuePair.Value, "bottom", ignoreCase: true) == 0;
+		string code = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("CODE"), result.Errors, context);
+		string message = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("MESSAGE"), result.Errors, context);
+		int? deck = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("DECK"), result.Errors, context);
+		int? slot = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("SLOT"), result.Errors, context);
+		string item = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("ITEM"), result.Errors, context);
+		string returnTimeText = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("RETURNTIME"), result.Errors, context);
+		string previous = GetKeyValuePairValue<string>(base.Operands.GetKeyValuePair("PREVIOUS"), result.Errors, context);
 		if (result.Errors.Count > 0)
 		{
 			return;
 		}
 		DateTime? returnTime = null;
-		if (!string.IsNullOrEmpty(keyValuePairValue6))
+		if (!string.IsNullOrEmpty(returnTimeText))
 		{
-			if (!DateTime.TryParse(keyValuePairValue6, out var result2))
+			if (!DateTime.TryParse(returnTimeText, out var parsedReturnTime))
 			{
-				if (!"NONE".Equals(keyValuePairValue6))
+				if (!"NONE".Equals(returnTimeText))
 				{
-					LogHelper.Instance.Log($"Unable to parse date time {keyValuePairValue6}", LogEntryType.Error);
+					LogHelper.Instance.Log($"Unable to parse date time {returnTimeText}", LogEntryType.Error);
 				}
 				returnTime = null;
 			}
 			else
 			{
-				returnTime = result2;
+				returnTime = parsedReturnTime;
 			}
 		}
-		context.CreateResult((!flag) ? StackEnd.Top : StackEnd.Bottom, keyValuePairValue, keyValuePairValue2, keyValuePairValue3, keyValuePairValue4, keyValuePairValue5, returnTime, keyValuePairValue7);
+		context.CreateResult((!atBottom) ? StackEnd.Top : StackEnd.Bottom, code, message, deck, slot, item, returnTime, previous);
 	}
 }

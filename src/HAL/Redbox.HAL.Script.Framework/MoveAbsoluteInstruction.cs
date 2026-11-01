@@ -31,28 +31,28 @@ public sealed class MoveAbsoluteInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		bool checkSensors = true;
-		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("SENSOR-CHECK");
-		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var result2))
+		KeyValuePair sensorCheckPair = base.Operands.GetKeyValuePair("SENSOR-CHECK");
+		if (sensorCheckPair != null && bool.TryParse(sensorCheckPair.Value, out var parsedSensorCheck))
 		{
-			checkSensors = result2;
+			checkSensors = parsedSensorCheck;
 		}
-		KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair("AXIS");
-		KeyValuePair keyValuePair3 = base.Operands.GetKeyValuePair("UNITS");
-		KeyValuePair keyValuePair4 = base.Operands.GetKeyValuePair("SECONDARY-UNITS");
-		int? keyValuePairValue = GetKeyValuePairValue<int?>(keyValuePair3, result.Errors, context);
-		int? keyValuePairValue2 = GetKeyValuePairValue<int?>(keyValuePair4, result.Errors, context);
-		if (result.Errors.Count <= 0 && keyValuePairValue.HasValue)
+		KeyValuePair axisPair = base.Operands.GetKeyValuePair("AXIS");
+		KeyValuePair unitsPair = base.Operands.GetKeyValuePair("UNITS");
+		KeyValuePair secondaryUnitsPair = base.Operands.GetKeyValuePair("SECONDARY-UNITS");
+		int? units = GetKeyValuePairValue<int?>(unitsPair, result.Errors, context);
+		int? secondaryUnits = GetKeyValuePairValue<int?>(secondaryUnitsPair, result.Errors, context);
+		if (result.Errors.Count <= 0 && units.HasValue)
 		{
 			Axis axis = Axis.X;
-			if (string.Compare(keyValuePair2.Value, Axis.X.ToString(), ignoreCase: true) == 0)
+			if (string.Compare(axisPair.Value, Axis.X.ToString(), ignoreCase: true) == 0)
 			{
 				axis = Axis.X;
 			}
-			else if (string.Compare(keyValuePair2.Value, Axis.Y.ToString(), ignoreCase: true) == 0)
+			else if (string.Compare(axisPair.Value, Axis.Y.ToString(), ignoreCase: true) == 0)
 			{
 				axis = Axis.Y;
 			}
-			else if (string.Compare(keyValuePair2.Value, Axis.XY.ToString(), ignoreCase: true) == 0)
+			else if (string.Compare(axisPair.Value, Axis.XY.ToString(), ignoreCase: true) == 0)
 			{
 				axis = Axis.XY;
 			}
@@ -60,18 +60,18 @@ public sealed class MoveAbsoluteInstruction : Instruction
 			int? yunits = null;
 			if (axis == Axis.X)
 			{
-				xunits = keyValuePairValue;
+				xunits = units;
 				yunits = null;
 			}
 			else if (Axis.XY == axis)
 			{
-				xunits = keyValuePairValue;
-				yunits = keyValuePairValue2;
+				xunits = units;
+				yunits = secondaryUnits;
 			}
 			else if (Axis.Y == axis)
 			{
 				xunits = null;
-				yunits = keyValuePairValue;
+				yunits = units;
 			}
 			context.PushTop(ServiceLocator.Instance.GetService<IMotionControlService>().MoveAbsolute(axis, xunits, yunits, checkSensors).ToString()
 				.ToUpper());

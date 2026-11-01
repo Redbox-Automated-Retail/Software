@@ -20,13 +20,13 @@ internal sealed class BackupHelper
 	internal void Trim()
 	{
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
-		int num = 5;
+		int keep = 5;
 		List<BackupEntry> sorted = GetSorted();
 		using (new DisposeableList<BackupEntry>(sorted))
 		{
-			if (sorted.Count > num)
+			if (sorted.Count > keep)
 			{
-				for (int i = 0; i < sorted.Count - num; i++)
+				for (int i = 0; i < sorted.Count - keep; i++)
 				{
 					runtimeService.SafeDelete(sorted[i].FullPath);
 				}

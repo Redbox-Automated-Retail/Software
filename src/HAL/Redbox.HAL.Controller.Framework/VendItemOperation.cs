@@ -38,15 +38,15 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 			return vendItemResult;
 		}
 		int ms = 1000;
-		ErrorCodes errorCodes2 = ControllerService.PushOut();
-		if (ErrorCodes.TrackCloseTimeout == errorCodes2 || ErrorCodes.SensorReadError == errorCodes2)
+		ErrorCodes pushOutResult = ControllerService.PushOut();
+		if (ErrorCodes.TrackCloseTimeout == pushOutResult || ErrorCodes.SensorReadError == pushOutResult)
 		{
-			vendItemResult.Status = errorCodes2;
+			vendItemResult.Status = pushOutResult;
 			vendItemResult.Presented = false;
 			return vendItemResult;
 		}
 		Controller.TrackCycle();
-		int num = 0;
+		int pushBacks = 0;
 		IPickerSensorReadResult pickerSensorReadResult;
 		for (int i = 0; i <= PollCount; i++)
 		{
@@ -59,21 +59,21 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 			if (pickerSensorReadResult.IsInputActive(PickerInputs.Sensor1) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor2) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor3) || pickerSensorReadResult.IsInputActive(PickerInputs.Sensor4))
 			{
 				pickerSensorReadResult.Log(LogEntryType.Error);
-				if (num == 1 && ControllerConfiguration.Instance.TrackPushOutFailures)
+				if (pushBacks == 1 && ControllerConfiguration.Instance.TrackPushOutFailures)
 				{
 					vendItemResult.Presented = false;
 					LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Error, "[VendItemInPicker] After 2 pushes, the disk has not cleared sensor 4.");
 					vendItemResult.Status = ErrorCodes.PickerFull;
 					return vendItemResult;
 				}
-				num++;
+				pushBacks++;
 				LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Error, "[VendItemInPicker] Disc was pushed to the drum - push it back out.");
 				Controller.TrackCycle();
 				ControllerService.PushOut();
 				runtimeService.Wait(ms);
 				continue;
 			}
-			num = 0;
+			pushBacks = 0;
 			if (pickerSensorReadResult.IsInputActive(PickerInputs.Sensor5))
 			{
 				if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))

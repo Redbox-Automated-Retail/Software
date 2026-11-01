@@ -437,9 +437,9 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 	private void WorkerThread(bool runGraph)
 	{
 		ReasonToFinishPlaying reason = ReasonToFinishPlaying.StoppedByUser;
-		object obj = null;
-		object obj2 = null;
-		object obj3 = null;
+		object graphBuilderObject = null;
+		object graphObject = null;
+		object grabberObject = null;
 		object retInterface = null;
 		ICaptureGraphBuilder2 captureGraphBuilder = null;
 		IFilterGraph2 filterGraph = null;
@@ -457,16 +457,16 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 				LogHelper.Instance.Log("[{0}] Failed creating capture graph builder", "DirectShowSlim");
 				return;
 			}
-			obj = Activator.CreateInstance(typeFromCLSID);
-			captureGraphBuilder = (ICaptureGraphBuilder2)obj;
+			graphBuilderObject = Activator.CreateInstance(typeFromCLSID);
+			captureGraphBuilder = (ICaptureGraphBuilder2)graphBuilderObject;
 			typeFromCLSID = Type.GetTypeFromCLSID(Clsid.FilterGraph);
 			if (typeFromCLSID == null)
 			{
 				LogHelper.Instance.Log("[{0}]Failed creating filter graph", "DirectShowSlim");
 				return;
 			}
-			obj2 = Activator.CreateInstance(typeFromCLSID);
-			filterGraph = (IFilterGraph2)obj2;
+			graphObject = Activator.CreateInstance(typeFromCLSID);
+			filterGraph = (IFilterGraph2)graphObject;
 			captureGraphBuilder.SetFiltergraph((IGraphBuilder)filterGraph);
 			sourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			if (sourceObject == null)
@@ -488,9 +488,9 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 				LogHelper.Instance.Log("[{0}] Failed creating sample grabber", "DirectShowSlim");
 				return;
 			}
-			obj3 = Activator.CreateInstance(typeFromCLSID);
-			sampleGrabber = (ISampleGrabber)obj3;
-			baseFilter2 = (IBaseFilter)obj3;
+			grabberObject = Activator.CreateInstance(typeFromCLSID);
+			sampleGrabber = (ISampleGrabber)grabberObject;
+			baseFilter2 = (IBaseFilter)grabberObject;
 			filterGraph.AddFilter(baseFilter, "source");
 			filterGraph.AddFilter(baseFilter2, "grabber_video");
 			AMMediaType aMMediaType = new AMMediaType();
@@ -524,8 +524,8 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 					FrameSize = new Size(videoInfoHeader.BmiHeader.Width, videoInfoHeader.BmiHeader.Height);
 					aMMediaType.Dispose();
 				}
-				mediaControl = (IMediaControl)obj2;
-				mediaEventEx = (IMediaEventEx)obj2;
+				mediaControl = (IMediaControl)graphObject;
+				mediaEventEx = (IMediaEventEx)graphObject;
 				mediaControl.Run();
 				StartEvent.Set();
 				LogHelper.Instance.Log("[{0}] graph is running; avg rate = {1}.", "DirectShowSlim", videoResolution.AverageFrameRate);
@@ -596,25 +596,25 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 			iAMCrossbar = null;
 			baseFilter2 = null;
 			sampleGrabber = null;
-			if (obj2 != null)
+			if (graphObject != null)
 			{
-				Marshal.ReleaseComObject(obj2);
-				obj2 = null;
+				Marshal.ReleaseComObject(graphObject);
+				graphObject = null;
 			}
 			if (sourceObject != null)
 			{
 				Marshal.ReleaseComObject(sourceObject);
 				sourceObject = null;
 			}
-			if (obj3 != null)
+			if (grabberObject != null)
 			{
-				Marshal.ReleaseComObject(obj3);
-				obj3 = null;
+				Marshal.ReleaseComObject(grabberObject);
+				grabberObject = null;
 			}
-			if (obj != null)
+			if (graphBuilderObject != null)
 			{
-				Marshal.ReleaseComObject(obj);
-				obj = null;
+				Marshal.ReleaseComObject(graphBuilderObject);
+				graphBuilderObject = null;
 			}
 			if (retInterface != null)
 			{
@@ -716,10 +716,10 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 					}
 				}
 			}
-			VideoInput[] array = new VideoInput[videoInputs.Count];
-			videoInputs.CopyTo(array);
-			cacheCrossbarVideoInputs.Add(deviceMoniker, array);
-			return array;
+			VideoInput[] inputs = new VideoInput[videoInputs.Count];
+			videoInputs.CopyTo(inputs);
+			cacheCrossbarVideoInputs.Add(deviceMoniker, inputs);
+			return inputs;
 		}
 	}
 
@@ -728,17 +728,17 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 		VideoInput result = VideoInput.Default;
 		if (crossbar.get_PinCounts(out var outputPinCount, out var _) == 0)
 		{
-			int num = -1;
+			int decoderPin = -1;
 			int pinIndexRelated;
 			for (int i = 0; i < outputPinCount; i++)
 			{
 				if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out var physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 				{
-					num = i;
+					decoderPin = i;
 					break;
 				}
 			}
-			if (num != -1 && crossbar.get_IsRoutedTo(num, out var inputPinIndex) == 0)
+			if (decoderPin != -1 && crossbar.get_IsRoutedTo(decoderPin, out var inputPinIndex) == 0)
 			{
 				crossbar.get_CrossbarPinInfo(isInputPin: true, inputPinIndex, out pinIndexRelated, out var physicalType2);
 				result = new VideoInput(inputPinIndex, physicalType2);
@@ -753,15 +753,15 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 		{
 			return;
 		}
-		int num = -1;
-		int num2 = -1;
+		int decoderPin = -1;
+		int inputPin = -1;
 		int pinIndexRelated;
 		PhysicalConnectorType physicalType;
 		for (int i = 0; i < outputPinCount; i++)
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 			{
-				num = i;
+				decoderPin = i;
 				break;
 			}
 		}
@@ -769,13 +769,13 @@ public class DirectShowFrameControl : IVideoSource, ISampleGrabberCB
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: true, j, out pinIndexRelated, out physicalType) == 0 && physicalType == videoInput.Type && j == videoInput.Index)
 			{
-				num2 = j;
+				inputPin = j;
 				break;
 			}
 		}
-		if (num2 != -1 && num != -1 && crossbar.CanRoute(num, num2) == 0)
+		if (inputPin != -1 && decoderPin != -1 && crossbar.CanRoute(decoderPin, inputPin) == 0)
 		{
-			crossbar.Route(num, num2);
+			crossbar.Route(decoderPin, inputPin);
 		}
 	}
 }

@@ -163,19 +163,19 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 
 	public string[] GetProgramList()
 	{
-		List<string> list = new List<string>();
-		List<string> list2 = ProgramCache.ProgramList();
-		using (new DisposeableList<string>(list2))
+		List<string> programs = new List<string>();
+		List<string> cachedNames = ProgramCache.ProgramList();
+		using (new DisposeableList<string>(cachedNames))
 		{
-			foreach (string item in list2)
+			foreach (string item in cachedNames)
 			{
 				if (!item.StartsWith("$"))
 				{
-					list.Add($"{item}|{ProgramCache.GetProgram(item)}|{false}");
+					programs.Add($"{item}|{ProgramCache.GetProgram(item)}|{false}");
 				}
 			}
 		}
-		return list.ToArray();
+		return programs.ToArray();
 	}
 
 	public ExecutionContextStatus GetInitJobStatus()
@@ -385,12 +385,12 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 		{
 			if (IsSingletonJob(progName))
 			{
-				ExecutionContext executionContext2 = Contexts.Find((ExecutionContext each) => each.ProgramName.Equals(progName, StringComparison.CurrentCultureIgnoreCase) && !each.IsComplete);
-				if (executionContext2 != null)
+				ExecutionContext running = Contexts.Find((ExecutionContext each) => each.ProgramName.Equals(progName, StringComparison.CurrentCultureIgnoreCase) && !each.IsComplete);
+				if (running != null)
 				{
-					string text2 = $"[ExecutionEngine] The program '{text}' is marked singleton, instance currently running - deny new job.";
-					LogHelper.Instance.Log(text2);
-					executionContext.Result.Errors.Add(Error.NewError("E001", text2, "Reschedule the program ."));
+					string message = $"[ExecutionEngine] The program '{text}' is marked singleton, instance currently running - deny new job.";
+					LogHelper.Instance.Log(message);
+					executionContext.Result.Errors.Add(Error.NewError("E001", message, "Reschedule the program ."));
 					return executionContext;
 				}
 			}
@@ -554,9 +554,9 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 			}
 			Array.Sort(byName, (ExecutionContext left, ExecutionContext right) => left.CreatedOn.CompareTo(right.CreatedOn));
 			ExecutionContext executionContext = null;
-			for (int num = byName.Length - 1; num >= 0; num--)
+			for (int index = byName.Length - 1; index >= 0; index--)
 			{
-				executionContext = byName[num];
+				executionContext = byName[index];
 				if (!executionContext.IsComplete)
 				{
 					_ = DateTime.Now;

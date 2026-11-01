@@ -206,16 +206,16 @@ public sealed class JobCommand
 	[Usage("JOB schedule name: program-name [debugging: flag] [priority: priority] [startTime: startTime] [label: label] [resume-now] [no-duplicates]")]
 	public void Schedule(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, bool? debugging, ProgramPriority? priority, DateTime? startTime, string label)
 	{
-		bool flag = context.Parameters.ContainsKey("resume-now");
-		bool num = context.Parameters.ContainsKey("no-duplicates");
+		bool resumeNow = context.Parameters.ContainsKey("resume-now");
+		bool noDuplicates = context.Parameters.ContainsKey("no-duplicates");
 		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
-		if (num && label != null)
+		if (noDuplicates && label != null)
 		{
 			IExecutionContext[] byLabel = executionService.GetByLabel(label);
 			if (byLabel.Length != 0)
 			{
 				context.Errors.Add(Error.NewWarning("S998", $"A job with the label '{label}' already exists and the no-duplicates flag was specified.", "Issue the JOB schedule command again passing in a non-duplicate label: or remove the no-duplicates parameter."));
-				if (flag)
+				if (resumeNow)
 				{
 					Array.ForEach(byLabel, delegate(IExecutionContext each)
 					{
@@ -227,7 +227,7 @@ public sealed class JobCommand
 		}
 		IExecutionContext executionContext = ScheduleJob(name, label, startTime, priority ?? ProgramPriority.Normal, debugging == true);
 		context.Errors.AddRange(executionContext.Result.Errors);
-		if (!context.Errors.ContainsError() & flag)
+		if (!context.Errors.ContainsError() & resumeNow)
 		{
 			executionContext.Resume();
 		}

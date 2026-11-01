@@ -84,8 +84,8 @@ internal sealed class HardwareCorrectionStatisticService : IHardwareCorrectionSt
 		StatsTable = DataTableService.GetTable<IHardwareCorrectionStatistic>();
 		if (!StatsTable.Exists)
 		{
-			bool flag = StatsTable.Create();
-			LogHelper.Instance.Log("[HardwareCorrectionStatisticsService] Stats table doesn't exist; create returned {0}", flag ? "SUCCESS" : "FAILURE");
+			bool created = StatsTable.Create();
+			LogHelper.Instance.Log("[HardwareCorrectionStatisticsService] Stats table doesn't exist; create returned {0}", created ? "SUCCESS" : "FAILURE");
 		}
 	}
 }

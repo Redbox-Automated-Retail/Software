@@ -75,7 +75,7 @@ internal sealed class WatchdogPoller : ScriptPoller
 
 	private void TrimLogs()
 	{
-		int num = 0;
+		int removed = 0;
 		DateTime now = DateTime.Now;
 		if (now.DayOfWeek != DayOfWeek.Sunday || now.Hour < 2 || now.Hour > 4)
 		{
@@ -86,16 +86,16 @@ internal sealed class WatchdogPoller : ScriptPoller
 		{
 			if (!text.Contains("Service") && !text.Contains("ErrorLogs"))
 			{
-				num += TrimFilesInSubdirectory(text, "*.log", ControllerConfiguration.Instance.ApplogDayAge);
+				removed += TrimFilesInSubdirectory(text, "*.log", ControllerConfiguration.Instance.ApplogDayAge);
 			}
 		}
-		num += TrimFilesInSubdirectory("c:\\Program Files\\Redbox\\HALService\\Video", "*.jpg", ControllerConfiguration.Instance.WatchdogImageDayAge);
-		LogHelper.Instance.Log("Watchdog removed {0} files", num);
+		removed += TrimFilesInSubdirectory("c:\\Program Files\\Redbox\\HALService\\Video", "*.jpg", ControllerConfiguration.Instance.WatchdogImageDayAge);
+		LogHelper.Instance.Log("Watchdog removed {0} files", removed);
 	}
 
 	private int TrimFilesInSubdirectory(string directory, string filePattern, int ageInDays)
 	{
-		int num = 0;
+		int deleted = 0;
 		string[] files = Directory.GetFiles(directory, filePattern);
 		foreach (string text in files)
 		{
@@ -111,18 +111,18 @@ internal sealed class WatchdogPoller : ScriptPoller
 					LogHelper.Instance.Log($"Deleting file {text}", LogEntryType.Debug);
 				}
 				File.Delete(text);
-				num++;
+				deleted++;
 			}
 			catch (Exception e)
 			{
 				LogHelper.Instance.Log($"Unable to delete file {text}", e);
 			}
 		}
-		if (num > 0)
+		if (deleted > 0)
 		{
-			LogHelper.Instance.Log("AppLog Trimmer: deleted {0} files of type {1} from {2}", num, (filePattern == "*.log") ? "Application Log" : "image", directory);
+			LogHelper.Instance.Log("AppLog Trimmer: deleted {0} files of type {1} from {2}", deleted, (filePattern == "*.log") ? "Application Log" : "image", directory);
 		}
-		return num;
+		return deleted;
 	}
 
 	private bool JobIsIgnored(IExecutionContext context)
@@ -131,10 +131,10 @@ internal sealed class WatchdogPoller : ScriptPoller
 		{
 			return false;
 		}
-		string[] array = ignoreList;
-		for (int i = 0; i < array.Length; i++)
+		string[] ignored = ignoreList;
+		for (int i = 0; i < ignored.Length; i++)
 		{
-			if (array[i].Equals(context.ProgramName, StringComparison.CurrentCultureIgnoreCase))
+			if (ignored[i].Equals(context.ProgramName, StringComparison.CurrentCultureIgnoreCase))
 			{
 				return true;
 			}
@@ -159,13 +159,11 @@ internal sealed class WatchdogPoller : ScriptPoller
 				}
 				else
 				{
-					int num = time + 1;
-					time = num;
+					time++;
 				}
 				if (now >= dateTime.AddHours(time))
 				{
-					int num = trashed + 1;
-					trashed = num;
+					trashed++;
 					job.Trash();
 				}
 			}
@@ -184,8 +182,7 @@ internal sealed class WatchdogPoller : ScriptPoller
 				DateTime createdOn = job.CreatedOn;
 				if (now >= createdOn.AddDays(5.0))
 				{
-					int num = cleaned + 1;
-					cleaned = num;
+					cleaned++;
 					job.Trash();
 				}
 			}

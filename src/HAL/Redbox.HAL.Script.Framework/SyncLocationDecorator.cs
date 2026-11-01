@@ -39,15 +39,15 @@ internal sealed class SyncLocationDecorator : SyncDecorator, IGetObserver
 	protected override void OnReadDisk(ScanResult scanResult)
 	{
 		string scannedMatrix = scanResult.ScannedMatrix;
-		int num = scanResult.ReadCount;
+		int readCount = scanResult.ReadCount;
 		TimeSpan timeSpan = scanResult.ExecutionTime;
 		if (!scanResult.ReadCode)
 		{
-			num = 0;
+			readCount = 0;
 			timeSpan = default(TimeSpan);
 		}
-		string value = (ServiceLocator.Instance.GetService<IInventoryService>().IsBarcodeDuplicate(scannedMatrix, out var _) ? $"SUCCESS: {scannedMatrix} codes ({num}), time = {timeSpan.ToString()} DUPLICATE" : $"SUCCESS: {scannedMatrix} codes ({num}), time = {timeSpan.ToString()}");
-		UpdateSymbol("MSTESTER-SYMBOL-FORMATTED-DETAIL-MSG", value);
+		string message = (ServiceLocator.Instance.GetService<IInventoryService>().IsBarcodeDuplicate(scannedMatrix, out var _) ? $"SUCCESS: {scannedMatrix} codes ({readCount}), time = {timeSpan.ToString()} DUPLICATE" : $"SUCCESS: {scannedMatrix} codes ({readCount}), time = {timeSpan.ToString()}");
+		UpdateSymbol("MSTESTER-SYMBOL-FORMATTED-DETAIL-MSG", message);
 	}
 
 	protected override void OnMoveErrorInner(ErrorCodes moveRes)

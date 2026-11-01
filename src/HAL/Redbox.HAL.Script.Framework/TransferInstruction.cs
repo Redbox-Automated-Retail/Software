@@ -40,38 +40,38 @@ public sealed class TransferInstruction : Instruction
 			return;
 		}
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("SRC-DECK");
-		int? keyValuePairValue = GetKeyValuePairValue<int?>(keyValuePair, result.Errors, context);
-		if (!keyValuePairValue.HasValue)
+		KeyValuePair sourceDeckPair = base.Operands.GetKeyValuePair("SRC-DECK");
+		int? sourceDeckValue = GetKeyValuePairValue<int?>(sourceDeckPair, result.Errors, context);
+		if (!sourceDeckValue.HasValue)
 		{
 			AddError("E004", "Source deck or source slot are undefined, reissue the XFER instruction specifying both source deck and slot values.", result.Errors);
 			return;
 		}
-		int value = keyValuePairValue.Value;
-		KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair("SRC-SLOT");
-		int? keyValuePairValue2 = GetKeyValuePairValue<int?>(keyValuePair2, result.Errors, context);
-		if (!keyValuePairValue2.HasValue)
+		int sourceDeck = sourceDeckValue.Value;
+		KeyValuePair sourceSlotPair = base.Operands.GetKeyValuePair("SRC-SLOT");
+		int? sourceSlotValue = GetKeyValuePairValue<int?>(sourceSlotPair, result.Errors, context);
+		if (!sourceSlotValue.HasValue)
 		{
 			AddError("E004", "Source deck or source slot are undefined, reissue the XFER instruction specifying both source deck and slot values.", result.Errors);
 			return;
 		}
-		int value2 = keyValuePairValue2.Value;
-		KeyValuePair keyValuePair3 = base.Operands.GetKeyValuePair("DEST-DECK");
-		int? keyValuePairValue3 = GetKeyValuePairValue<int?>(keyValuePair3, result.Errors, context);
-		KeyValuePair keyValuePair4 = base.Operands.GetKeyValuePair("DEST-SLOT");
-		int? keyValuePairValue4 = GetKeyValuePairValue<int?>(keyValuePair4, result.Errors, context);
+		int sourceSlot = sourceSlotValue.Value;
+		KeyValuePair destDeckPair = base.Operands.GetKeyValuePair("DEST-DECK");
+		int? destDeck = GetKeyValuePairValue<int?>(destDeckPair, result.Errors, context);
+		KeyValuePair destSlotPair = base.Operands.GetKeyValuePair("DEST-SLOT");
+		int? destSlot = GetKeyValuePairValue<int?>(destSlotPair, result.Errors, context);
 		if (result.Errors.Count <= 0)
 		{
-			if (!keyValuePairValue3.HasValue || !keyValuePairValue4.HasValue)
+			if (!destDeck.HasValue || !destSlot.HasValue)
 			{
 				AddError("E004", "Expected key value pair SRC-DECK=y, SRC-SLOT=x, DEST-DECK=y, DEST-SLOT=x. The values of x and y may be numeric literals or symbols.", result.Errors);
 				return;
 			}
-			ILocation location = inventoryService.Get(value, value2);
-			ILocation location2 = inventoryService.Get(keyValuePairValue3.Value, keyValuePairValue4.Value);
-			LogHelper.Instance.Log("XFER: {0} to {1}", location.ToString(), location2.ToString());
+			ILocation source = inventoryService.Get(sourceDeck, sourceSlot);
+			ILocation destination = inventoryService.Get(destDeck.Value, destSlot.Value);
+			LogHelper.Instance.Log("XFER: {0} to {1}", source.ToString(), destination.ToString());
 			_ = context.AppLog;
-			ITransferResult transferResult = ServiceLocator.Instance.GetService<IControllerService>().Transfer(location, location2, preserveFlags: false);
+			ITransferResult transferResult = ServiceLocator.Instance.GetService<IControllerService>().Transfer(source, destination, preserveFlags: false);
 			context.PushTop(transferResult.Transferred ? base.SuccessMessage : transferResult.TransferError.ToString().ToUpper());
 		}
 	}

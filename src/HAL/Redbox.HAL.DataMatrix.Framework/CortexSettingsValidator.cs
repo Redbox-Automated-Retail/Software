@@ -48,8 +48,7 @@ internal sealed class CortexSettingsValidator
 			getRegisterValueCommand.Send(Service.ConfiguredPort());
 			if (!getRegisterValueCommand.IsCorrectlySet)
 			{
-				int num = errors + 1;
-				errors = num;
+				errors++;
 				sink.Send($"The register {register.Register} received an unexpected response");
 			}
 			else

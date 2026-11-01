@@ -38,16 +38,16 @@ public sealed class CameraAdapter
 		{
 			return false;
 		}
-		int num = 0;
+		int errorCount = 0;
 		try
 		{
-			num = int.Parse(text);
+			errorCount = int.Parse(text);
 		}
 		catch
 		{
-			num = 0;
+			errorCount = 0;
 		}
-		return num > 0;
+		return errorCount > 0;
 	}
 
 	public CameraState ToggleState()

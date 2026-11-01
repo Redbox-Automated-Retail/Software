@@ -33,13 +33,13 @@ internal sealed class ArcusLimitResponse : IMotionControlLimitResponse
 		Limits = null;
 		if (queryResponse != null)
 		{
-			string[] array = queryResponse.Trim().Split(',');
-			if (array.Length == 28 && int.TryParse(array[13].TrimEnd('.'), out var result))
+			string[] fields = queryResponse.Trim().Split(',');
+			if (fields.Length == 28 && int.TryParse(fields[13].TrimEnd('.'), out var limitBits))
 			{
 				ReadOk = true;
 				Limits = new IMotionControlLimit[2];
-				Limits[0] = new ArcusControllerLimit(MotionControlLimits.Upper, (result & 0x10) != 0);
-				Limits[1] = new ArcusControllerLimit(MotionControlLimits.Lower, (result & 0x20) != 0);
+				Limits[0] = new ArcusControllerLimit(MotionControlLimits.Upper, (limitBits & 0x10) != 0);
+				Limits[1] = new ArcusControllerLimit(MotionControlLimits.Lower, (limitBits & 0x20) != 0);
 			}
 		}
 	}

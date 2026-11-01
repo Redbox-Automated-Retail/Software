@@ -26,29 +26,29 @@ internal struct MotorWaitDecoder
 
 	internal bool MotorRunning(string response, MoveOperation operation)
 	{
-		if (!int.TryParse(response, out var result))
+		if (!int.TryParse(response, out var status))
 		{
 			StatusCode = 999;
 			Error = ErrorCodes.MotorError;
 			return false;
 		}
-		StatusCode = result;
+		StatusCode = status;
 		Error = ErrorCodes.Success;
-		bool result2 = StatusCode != 0;
+		bool running = StatusCode != 0;
 		if (16 == StatusCode)
 		{
 			if (operation == MoveOperation.Dropback)
 			{
 				Error = ErrorCodes.Success;
 				StatusCode = 0;
-				result2 = false;
+				running = false;
 			}
 			else if (MoveOperation.Normal == operation)
 			{
 				Error = ErrorCodes.LowerLimitError;
-				result2 = false;
+				running = false;
 			}
 		}
-		return result2;
+		return running;
 	}
 }

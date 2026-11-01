@@ -31,18 +31,18 @@ public sealed class PushFormatInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("END");
-		bool flag = keyValuePair != null && string.Compare(keyValuePair.Value, "bottom", ignoreCase: true) == 0;
+		bool atBottom = keyValuePair != null && string.Compare(keyValuePair.Value, "bottom", ignoreCase: true) == 0;
 		object[] args = ConvertSymbolsToParameterArray(result.Errors, context);
 		if (result.Errors.Count <= 0)
 		{
-			string instance = string.Format(base.Operands[0].Value, args);
-			if (flag)
+			string formatted = string.Format(base.Operands[0].Value, args);
+			if (atBottom)
 			{
-				context.PushBottom(instance);
+				context.PushBottom(formatted);
 			}
 			else
 			{
-				context.PushTop(instance);
+				context.PushTop(formatted);
 			}
 		}
 	}

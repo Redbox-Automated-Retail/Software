@@ -32,10 +32,10 @@ internal sealed class _3mFirmwareCommand : Abstract3MCommand
 
 	internal string GetFirmwareRevision()
 	{
-		byte[] array = SendReceive();
-		if (array.Length != 0)
+		byte[] response = SendReceive();
+		if (response.Length != 0)
 		{
-			return $"{BitConverter.ToString(array, 3, 1)}.{BitConverter.ToString(array, 4, 1)}";
+			return $"{BitConverter.ToString(response, 3, 1)}.{BitConverter.ToString(response, 4, 1)}";
 		}
 		return "UNKNOWN";
 	}

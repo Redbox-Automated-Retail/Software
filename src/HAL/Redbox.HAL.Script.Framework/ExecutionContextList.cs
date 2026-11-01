@@ -73,8 +73,7 @@ internal sealed class ExecutionContextList
 					{
 						g.Dispose();
 						m_list.Remove(g);
-						int num = cleaned + 1;
-						cleaned = num;
+						cleaned++;
 					}
 				});
 			}
@@ -89,8 +88,8 @@ internal sealed class ExecutionContextList
 			List<ExecutionContext> list = m_list.FindAll((ExecutionContext context) => context.EligibleForScheduling);
 			list.Sort(delegate(ExecutionContext x, ExecutionContext y)
 			{
-				int num = x.Priority.CompareTo(y.Priority);
-				return (num != 0) ? num : x.CreatedOn.CompareTo(y.CreatedOn);
+				int byPriority = x.Priority.CompareTo(y.Priority);
+				return (byPriority != 0) ? byPriority : x.CreatedOn.CompareTo(y.CreatedOn);
 			});
 			foreach (ExecutionContext item in list)
 			{

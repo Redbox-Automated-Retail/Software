@@ -92,8 +92,8 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 	public IEmptySearchResult FindEmptyLocations()
 	{
 		EmptySearchResult emptySearchResult = new EmptySearchResult();
-		int num = SlotsAvailable();
-		if (num == 0)
+		int available = SlotsAvailable();
+		if (available == 0)
 		{
 			return emptySearchResult;
 		}
@@ -103,7 +103,7 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 			if (location.IsEmpty)
 			{
 				emptySearchResult.EmptyLocations.Add(location);
-				if (emptySearchResult.EmptyLocations.Count == num)
+				if (emptySearchResult.EmptyLocations.Count == available)
 				{
 					break;
 				}
@@ -115,8 +115,8 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 	public IEmptySearchResult FindEmptyOutsideOf(ILocation top)
 	{
 		EmptySearchResult emptySearchResult = new EmptySearchResult();
-		int num = SlotsAvailable();
-		if (num == 0)
+		int available = SlotsAvailable();
+		if (available == 0)
 		{
 			return emptySearchResult;
 		}
@@ -131,7 +131,7 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 			{
 				emptySearchResult.EmptyLocations.Add(location);
 			}
-			if (emptySearchResult.EmptyLocations.Count == num)
+			if (emptySearchResult.EmptyLocations.Count == available)
 			{
 				break;
 			}
@@ -164,17 +164,17 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 			return 0;
 		}
 		int returnSlotBuffer = ControllerConfiguration.Instance.ReturnSlotBuffer;
-		int num = InventoryService.GetMachineEmptyCount() - returnSlotBuffer;
-		if (num <= 0)
+		int available = InventoryService.GetMachineEmptyCount() - returnSlotBuffer;
+		if (available <= 0)
 		{
 			LogHelper.Instance.Log("[EmptySearchService] There are no empty slots available.");
 			return 0;
 		}
-		if (num > ControllerConfiguration.Instance.PutAwayItemAttempts)
+		if (available > ControllerConfiguration.Instance.PutAwayItemAttempts)
 		{
-			num = ControllerConfiguration.Instance.PutAwayItemAttempts;
+			available = ControllerConfiguration.Instance.PutAwayItemAttempts;
 		}
-		return num;
+		return available;
 	}
 
 	private void AddLocation(IDeck deck, int slot, ref int idx)

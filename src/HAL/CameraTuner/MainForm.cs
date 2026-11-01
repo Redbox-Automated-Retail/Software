@@ -107,18 +107,18 @@ public class MainForm : Form
 			WriteErrorText("Found no devices.");
 			return;
 		}
-		bool flag = false;
+		bool found = false;
 		VideoCapabilities[] videoCapabilities = videoDevice.VideoCapabilities;
-		foreach (VideoCapabilities videoCapabilities2 in videoCapabilities)
+		foreach (VideoCapabilities capability in videoCapabilities)
 		{
-			if (videoCapabilities2.FrameSize == ImageSize)
+			if (capability.FrameSize == ImageSize)
 			{
-				flag = true;
-				videoDevice.VideoResolution = videoCapabilities2;
+				found = true;
+				videoDevice.VideoResolution = capability;
 				break;
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			LogHelper.Instance.Log("Unable to find video capability with size {0}w X {1}h", base.Size.Width, base.Size.Height);
 		}
@@ -230,12 +230,12 @@ public class MainForm : Form
 
 	private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 	{
-		bool flag = false;
+		bool grabbed = false;
 		using (new AtomicFlagHelper(SnapFlag))
 		{
-			flag = ImageGrabbedWaiter.WaitOne(5000);
+			grabbed = ImageGrabbedWaiter.WaitOne(5000);
 		}
-		e.Result = (flag ? ScanResult.Scan(CurrentImage) : ScanResult.ErrorResult());
+		e.Result = (grabbed ? ScanResult.Scan(CurrentImage) : ScanResult.ErrorResult());
 	}
 
 	private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

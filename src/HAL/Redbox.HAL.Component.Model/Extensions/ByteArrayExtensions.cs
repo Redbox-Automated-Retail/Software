@@ -14,18 +14,18 @@ public static class ByteArrayExtensions
 			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		int num = 0;
-		int num2 = 0;
-		while (num < array.Length)
+		int index = 0;
+		int column = 0;
+		while (index < array.Length)
 		{
-			if (16 == num2)
+			if (16 == column)
 			{
-				num2 = 0;
+				column = 0;
 				stringBuilder.AppendLine();
 			}
-			stringBuilder.AppendFormat("{0:x2} ", array[num]);
-			num++;
-			num2++;
+			stringBuilder.AppendFormat("{0:x2} ", array[index]);
+			index++;
+			column++;
 		}
 		LogHelper.Instance.Log(stringBuilder.ToString());
 	}

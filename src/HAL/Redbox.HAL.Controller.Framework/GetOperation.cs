@@ -112,9 +112,9 @@ internal sealed class GetOperation : AbstractOperation<GetResult>
 		Controller.StartRollerIn();
 		try
 		{
-			bool flag = ClearDiskFromPicker();
+			bool timedOut = ClearDiskFromPicker();
 			PushIntoSlot();
-			LogHelper.Instance.WithContext(false, LogEntryType.Error, "[GET] couldn't get disc, ClearDiscFromPicker returned {0}", flag ? "TIMEOUT" : "SUCCESS");
+			LogHelper.Instance.WithContext(false, LogEntryType.Error, "[GET] couldn't get disc, ClearDiscFromPicker returned {0}", timedOut ? "TIMEOUT" : "SUCCESS");
 			IPickerSensorReadResult pickerSensorReadResult = Controller.ReadPickerSensors();
 			pickerSensorReadResult.Log(LogEntryType.Error);
 			if (!pickerSensorReadResult.Success)

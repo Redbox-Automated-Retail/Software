@@ -49,20 +49,20 @@ internal sealed class TestQlmJob : NativeJobAdapter
 			return;
 		}
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
-		int number = decksService.QlmDeck.Number;
+		int qlmDeck = decksService.QlmDeck.Number;
 		int[] targetSlots = TargetSlots;
-		foreach (int num in targetSlots)
+		foreach (int slot in targetSlots)
 		{
-			if (!MoveAndPut(number, num, "UNKNOWN"))
+			if (!MoveAndPut(qlmDeck, slot, "UNKNOWN"))
 			{
-				base.Context.CreateResult("SyncFailure", "Filing the disk to the QLM failed.", number, num, null, null, null);
+				base.Context.CreateResult("SyncFailure", "Filing the disk to the QLM failed.", qlmDeck, slot, null, null, null);
 				AddError("Unable to PUT disk.");
 				return;
 			}
 			runtimeService.Wait(1000);
-			if (!MoveAndGet(number, num))
+			if (!MoveAndGet(qlmDeck, slot))
 			{
-				base.Context.CreateResult("SyncFailure", "Filing the disk to the QLM failed.", number, num, null, null, null);
+				base.Context.CreateResult("SyncFailure", "Filing the disk to the QLM failed.", qlmDeck, slot, null, null, null);
 				AddError("Failure to get disk.");
 				return;
 			}

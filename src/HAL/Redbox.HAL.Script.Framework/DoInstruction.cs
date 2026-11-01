@@ -39,19 +39,19 @@ public sealed class DoInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		object obj = base.Operands[0].Value;
+		object countValue = base.Operands[0].Value;
 		if (base.Operands[0].Type == TokenType.Symbol)
 		{
-			obj = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
-			if (obj == null || result.Errors.Count > 0)
+			countValue = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
+			if (countValue == null || result.Errors.Count > 0)
 			{
 				return;
 			}
 		}
-		int num = Convert.ToInt32(obj);
-		if (num > 0)
+		int count = Convert.ToInt32(countValue);
+		if (count > 0)
 		{
-			base.X = num;
+			base.X = count;
 			result.SwitchToContext = this;
 		}
 	}

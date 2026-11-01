@@ -42,10 +42,10 @@ internal sealed class Registers
 	{
 		while (ActiveFrame != null)
 		{
-			int num = ActiveFrame.ParentContext.Instructions.FindInstructionIndexAtLabel(labelName);
-			if (num != -1)
+			int labelIndex = ActiveFrame.ParentContext.Instructions.FindInstructionIndexAtLabel(labelName);
+			if (labelIndex != -1)
 			{
-				ActiveFrame.PC = num - 1;
+				ActiveFrame.PC = labelIndex - 1;
 				return true;
 			}
 			PopCallFrame();

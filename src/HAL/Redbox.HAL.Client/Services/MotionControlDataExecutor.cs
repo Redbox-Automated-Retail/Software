@@ -25,46 +25,46 @@ public sealed class MotionControlDataExecutor : JobExecutor
 		bool readOk = true;
 		int? x = null;
 		int? y = null;
-		foreach (ProgramResult result3 in base.Results)
+		foreach (ProgramResult programResult in base.Results)
 		{
-			if (result3.Code == "PositionReadError")
+			if (programResult.Code == "PositionReadError")
 			{
 				ok = false;
 				continue;
 			}
-			if (result3.Code == "PositionX")
+			if (programResult.Code == "PositionX")
 			{
-				if (int.TryParse(result3.Message, out var result))
+				if (int.TryParse(programResult.Message, out var parsedX))
 				{
-					x = result;
+					x = parsedX;
 				}
 				continue;
 			}
-			if (result3.Code == "PositionY")
+			if (programResult.Code == "PositionY")
 			{
-				if (int.TryParse(result3.Message, out var result2))
+				if (int.TryParse(programResult.Message, out var parsedY))
 				{
-					y = result2;
+					y = parsedY;
 				}
 				continue;
 			}
-			if (result3.Code == "LimitReadError")
+			if (programResult.Code == "LimitReadError")
 			{
 				readOk = false;
 				continue;
 			}
-			if (result3.Code == "CurrentLocation")
+			if (programResult.Code == "CurrentLocation")
 			{
-				CurrentLocation = result3.Message;
+				CurrentLocation = programResult.Message;
 				continue;
 			}
-			MotionControlLimits l = Enum<MotionControlLimits>.Parse(result3.Code, MotionControlLimits.None);
+			MotionControlLimits l = Enum<MotionControlLimits>.Parse(programResult.Code, MotionControlLimits.None);
 			if (l != MotionControlLimits.None)
 			{
 				IMotionControlLimit motionControlLimit = motionControlLimits.Find((IMotionControlLimit each) => each.Limit == l);
 				if (motionControlLimit == null)
 				{
-					motionControlLimits.Add(new ClientControlLimit(l, result3.Message == "BLOCKED"));
+					motionControlLimits.Add(new ClientControlLimit(l, programResult.Message == "BLOCKED"));
 				}
 			}
 		}

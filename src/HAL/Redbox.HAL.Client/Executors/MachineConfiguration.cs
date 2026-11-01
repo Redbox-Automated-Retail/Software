@@ -169,8 +169,8 @@ public sealed class MachineConfiguration : JobExecutor
 					case 'D':
 						if (code == "DisableKFCInit")
 						{
-							bool result3 = false;
-							KFCDisableInit = bool.TryParse(result.Message, out result3) && result3;
+							bool disableInit = false;
+							KFCDisableInit = bool.TryParse(result.Message, out disableInit) && disableInit;
 						}
 						break;
 					}
@@ -222,22 +222,22 @@ public sealed class MachineConfiguration : JobExecutor
 					case 'C':
 						if (code == "DisableKFCCheckDrivers")
 						{
-							bool result8 = false;
-							KFCDisableCheckDrivers = bool.TryParse(result.Message, out result8) && result8;
+							bool disableCheckDrivers = false;
+							KFCDisableCheckDrivers = bool.TryParse(result.Message, out disableCheckDrivers) && disableCheckDrivers;
 						}
 						break;
 					case 'T':
 						if (code == "DisableKFCTestVendDoor")
 						{
-							bool result7 = false;
-							KFCDisableVendDoorTest = bool.TryParse(result.Message, out result7) && result7;
+							bool disableVendDoorTest = false;
+							KFCDisableVendDoorTest = bool.TryParse(result.Message, out disableVendDoorTest) && disableVendDoorTest;
 						}
 						break;
 					case 'U':
 						if (code == "DisableKFCUnknownCount")
 						{
-							bool result6 = false;
-							KFCDisableUnknownCount = bool.TryParse(result.Message, out result6) && result6;
+							bool disableUnknownCount = false;
+							KFCDisableUnknownCount = bool.TryParse(result.Message, out disableUnknownCount) && disableUnknownCount;
 						}
 						break;
 					}
@@ -292,22 +292,22 @@ public sealed class MachineConfiguration : JobExecutor
 				case 10:
 					if (code == "BufferSlot")
 					{
-						int result5 = 1;
-						BufferSlot = ((!int.TryParse(result.Message, out result5)) ? 1 : result5);
+						int bufferSlot = 1;
+						BufferSlot = ((!int.TryParse(result.Message, out bufferSlot)) ? 1 : bufferSlot);
 					}
 					break;
 				case 20:
 					if (code == "DisableKFCDecodeTest")
 					{
-						bool result4 = false;
-						KFCDisableDecodeTest = bool.TryParse(result.Message, out result4) && result4;
+						bool disableDecodeTest = false;
+						KFCDisableDecodeTest = bool.TryParse(result.Message, out disableDecodeTest) && disableDecodeTest;
 					}
 					break;
 				case 26:
 					if (code == "DisableKFCVerticalSlotTest")
 					{
-						bool result2 = false;
-						KFCDisableVerticalSlotTest = bool.TryParse(result.Message, out result2) && result2;
+						bool disableVerticalSlotTest = false;
+						KFCDisableVerticalSlotTest = bool.TryParse(result.Message, out disableVerticalSlotTest) && disableVerticalSlotTest;
 					}
 					break;
 				case 19:

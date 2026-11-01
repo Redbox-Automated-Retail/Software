@@ -127,29 +127,29 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 			LogMoveError(deck, slot, errorCodes);
 			return errorCodes;
 		}
-		int num = byNumber.YOffset;
-		int num2 = (byNumber.IsQlm ? ControllerConfiguration.Instance.QlmYOffset : 50);
+		int targetY = byNumber.YOffset;
+		int modeYOffset = (byNumber.IsQlm ? ControllerConfiguration.Instance.QlmYOffset : 50);
 		switch (mode)
 		{
 		case MoveMode.Put:
-			num += num2 * (int)ControllerConfiguration.Instance.GearY.GetStepRatio();
+			targetY += modeYOffset * (int)ControllerConfiguration.Instance.GearY.GetStepRatio();
 			break;
 		case MoveMode.Get:
-			num -= num2 * (int)ControllerConfiguration.Instance.GearY.GetStepRatio();
+			targetY -= modeYOffset * (int)ControllerConfiguration.Instance.GearY.GetStepRatio();
 			break;
 		}
-		int num3 = byNumber.GetSlotOffset(slot);
+		int targetX = byNumber.GetSlotOffset(slot);
 		if (byNumber.IsQlm)
 		{
 			IControllerPosition controllerPosition = Controller.ReadPositions();
 			if (controllerPosition.ReadOk)
 			{
-				int value = num3 - ControllerConfiguration.Instance.QlmApproachOffset;
+				int approachX = targetX - ControllerConfiguration.Instance.QlmApproachOffset;
 				MoveTarget target = new MoveTarget
 				{
 					Axis = Axis.XY,
-					XCoordinate = value,
-					YCoordinate = num
+					XCoordinate = approachX,
+					YCoordinate = targetY
 				};
 				switch (mode)
 				{
@@ -158,7 +158,7 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 					MoveWithCheck(ref target);
 					break;
 				case MoveMode.Put:
-					if (num3 < controllerPosition.XCoordinate.Value)
+					if (targetX < controllerPosition.XCoordinate.Value)
 					{
 						MoveWithCheck(ref target);
 					}
@@ -168,17 +168,17 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		}
 		if (data.XOffset.HasValue)
 		{
-			num3 += data.XOffset.Value;
+			targetX += data.XOffset.Value;
 		}
 		if (data.YOffset.HasValue)
 		{
-			num += data.YOffset.Value;
+			targetY += data.YOffset.Value;
 		}
 		MoveTarget target2 = new MoveTarget
 		{
 			Axis = Axis.XY,
-			XCoordinate = num3,
-			YCoordinate = num
+			XCoordinate = targetX,
+			YCoordinate = targetY
 		};
 		ErrorCodes errorCodes2 = MoveWithCheck(ref target2);
 		switch (errorCodes2)
@@ -381,18 +381,18 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		{
 			return ErrorCodes.Success;
 		}
-		int num = 0;
+		int unhomedAxes = 0;
 		if (!XAxisHomed)
 		{
-			num++;
+			unhomedAxes++;
 			LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Info, "The X axis did not init.");
 		}
 		if (!YAxisHomed)
 		{
-			num++;
+			unhomedAxes++;
 			LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Info, "The Y axis did not init.");
 		}
-		if (num != 0)
+		if (unhomedAxes != 0)
 		{
 			return ErrorCodes.MotorNotHomed;
 		}
@@ -427,8 +427,8 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		}
 		IFormattedLog contextLog = ServiceLocator.Instance.GetService<IExecutionService>().GetActiveContext().ContextLog;
 		contextLog.WriteFormatted("Home the X motor.");
-		int num = (fast ? 1 : 2);
-		for (int i = 0; i < num; i++)
+		int xHomePasses = (fast ? 1 : 2);
+		for (int i = 0; i < xHomePasses; i++)
 		{
 			ErrorCodes errorCodes = HomeAxisChecked(Axis.X);
 			if (errorCodes != ErrorCodes.Success)

@@ -101,8 +101,7 @@ internal sealed class PowerhouseUtilities : IDisposable
 				string dest = Path.Combine(backup, cf);
 				if (DoCopy(path, dest))
 				{
-					int num = copies + 1;
-					copies = num;
+					copies++;
 				}
 			}
 			else

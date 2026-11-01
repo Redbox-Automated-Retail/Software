@@ -155,9 +155,9 @@ internal sealed class Program
 
 	private static string[] GetProgramArgs(string[] allArgs, int start)
 	{
-		string[] array = new string[allArgs.Length - (start + 1)];
-		Array.Copy(allArgs, start + 1, array, 0, array.Length);
-		return array;
+		string[] programArgs = new string[allArgs.Length - (start + 1)];
+		Array.Copy(allArgs, start + 1, programArgs, 0, programArgs.Length);
+		return programArgs;
 	}
 
 	private static void OnSearchAndFix(GetResult getResult, IUsbDeviceService usb, CorrectionOptions options)
@@ -213,7 +213,7 @@ internal sealed class Program
 		ServiceLocator.Instance.AddService<IUsbDeviceService>(usbDeviceService);
 		HardwareService hardwareService = new HardwareService(IPCProtocol.Parse(Constants.HALIPCStrings.TcpServer));
 		ClientHelper clientHelper = new ClientHelper(hardwareService);
-		bool flag = true;
+		bool debugConsole = true;
 		for (int i = 0; i < args.Length; i++)
 		{
 			if (args[i].StartsWith("--protocol"))
@@ -321,7 +321,7 @@ internal sealed class Program
 			}
 			if (args[i].StartsWith("--consoleDebug"))
 			{
-				flag = CommandLineOption.GetOptionVal(args[i], flag);
+				debugConsole = CommandLineOption.GetOptionVal(args[i], debugConsole);
 				continue;
 			}
 			if (args[i] == "-customerReturn")
@@ -347,37 +347,37 @@ internal sealed class Program
 			}
 			if (args[i].StartsWith("-randomSync"))
 			{
-				int num = 1;
-				int num2 = 1;
-				int num3 = 1;
-				bool flag2 = false;
-				for (int num4 = i + 1; num4 < args.Length; num4++)
+				int iterationCount = 1;
+				int vendTime = 1;
+				int vendFrequency = 1;
+				bool oneDisk = false;
+				for (int optionIndex = i + 1; optionIndex < args.Length; optionIndex++)
 				{
-					if (args[num4].StartsWith("--iterations"))
+					if (args[optionIndex].StartsWith("--iterations"))
 					{
-						num = CommandLineOption.GetOptionVal(args[num4], num);
+						iterationCount = CommandLineOption.GetOptionVal(args[optionIndex], iterationCount);
 					}
-					else if (args[num4].StartsWith("--vendTime"))
+					else if (args[optionIndex].StartsWith("--vendTime"))
 					{
-						num2 = CommandLineOption.GetOptionVal(args[num4], num2);
+						vendTime = CommandLineOption.GetOptionVal(args[optionIndex], vendTime);
 					}
-					else if (args[num4].StartsWith("--vendFrequency"))
+					else if (args[optionIndex].StartsWith("--vendFrequency"))
 					{
-						num3 = CommandLineOption.GetOptionVal(args[num4], num3);
+						vendFrequency = CommandLineOption.GetOptionVal(args[optionIndex], vendFrequency);
 					}
-					else if (args[num4].StartsWith("--oneDisk"))
+					else if (args[optionIndex].StartsWith("--oneDisk"))
 					{
-						flag2 = CommandLineOption.GetOptionVal(args[num4], flag2);
+						oneDisk = CommandLineOption.GetOptionVal(args[optionIndex], oneDisk);
 					}
 				}
 				int exitCode = 0;
-				for (int num5 = 1; num5 <= num; num5++)
+				for (int iteration = 1; iteration <= iterationCount; iteration++)
 				{
-					Console.WriteLine("Iteration {0} of {1} total.", num5, num);
+					Console.WriteLine("Iteration {0} of {1} total.", iteration, iterationCount);
 					JobExecutor jobExecutor;
-					if (flag2)
+					if (oneDisk)
 					{
-						jobExecutor = new OneDiskRandomSyncExecutor(hardwareService, num2, num3);
+						jobExecutor = new OneDiskRandomSyncExecutor(hardwareService, vendTime, vendFrequency);
 						jobExecutor.AddSink(delegate(HardwareJob j, DateTime eventTime, string eventMessage)
 						{
 							Console.WriteLine("{0}: {1}", eventTime, eventMessage);
@@ -385,7 +385,7 @@ internal sealed class Program
 					}
 					else
 					{
-						jobExecutor = new RandomSyncExecutor(hardwareService, num2, num3);
+						jobExecutor = new RandomSyncExecutor(hardwareService, vendTime, vendFrequency);
 					}
 					using (jobExecutor)
 					{
@@ -409,22 +409,22 @@ internal sealed class Program
 			}
 			if (args[i].StartsWith("--msgServer"))
 			{
-				AbstractPipeSever.RunServer(args[i], PipeServers.Message, flag);
+				AbstractPipeSever.RunServer(args[i], PipeServers.Message, debugConsole);
 				continue;
 			}
 			if (args[i].StartsWith("--pipeServer"))
 			{
-				AbstractPipeSever.RunServer(args[i], PipeServers.Basic, flag);
+				AbstractPipeSever.RunServer(args[i], PipeServers.Basic, debugConsole);
 				continue;
 			}
 			if (args[i] == "-rdbxPipeServer")
 			{
-				ServiceHostRunner.Run(Constants.HALIPCStrings.PipeServer, flag);
+				ServiceHostRunner.Run(Constants.HALIPCStrings.PipeServer, debugConsole);
 				continue;
 			}
 			if (args[i] == "-rdbxTcpServer")
 			{
-				ServiceHostRunner.Run(Constants.HALIPCStrings.TcpServer, flag);
+				ServiceHostRunner.Run(Constants.HALIPCStrings.TcpServer, debugConsole);
 				continue;
 			}
 			if ("-kioskTest" == args[i])
@@ -434,7 +434,7 @@ internal sealed class Program
 			}
 			if (args[i] == "-findABEDevice")
 			{
-				new ConsoleLogger(flag);
+				new ConsoleLogger(debugConsole);
 				Console.WriteLine("ABE device {0}", hardwareService.HasABEDevice ? "found" : "not found");
 				continue;
 			}
@@ -450,7 +450,7 @@ internal sealed class Program
 				string path = "KFC.log";
 				using (StreamWriter streamWriter = new StreamWriter(runtimeService.CreateBackup(path)))
 				{
-					new ConsoleLogger(flag);
+					new ConsoleLogger(debugConsole);
 					ITouchscreenDescriptor touchscreenDescriptor = usbDeviceService.FindTouchScreen(matchDriver: true);
 					if (touchscreenDescriptor == null)
 					{
@@ -478,7 +478,7 @@ internal sealed class Program
 				runtimeService.CreateBackup(path2);
 				using (StreamWriter streamWriter2 = new StreamWriter(path2))
 				{
-					new ConsoleLogger(flag);
+					new ConsoleLogger(debugConsole);
 					ITouchscreenDescriptor touchscreenDescriptor2 = usbDeviceService.FindTouchScreen(matchDriver: true);
 					if (touchscreenDescriptor2 == null)
 					{
@@ -498,7 +498,7 @@ internal sealed class Program
 				runtimeService.CreateBackup(path3);
 				using (StreamWriter streamWriter3 = new StreamWriter(path3))
 				{
-					new ConsoleLogger(flag);
+					new ConsoleLogger(debugConsole);
 					IDeviceDescriptor deviceDescriptor2 = usbDeviceService.FindActiveCamera(matchDriver: true);
 					if (deviceDescriptor2 == null)
 					{
@@ -518,7 +518,7 @@ internal sealed class Program
 			}
 			if ("-resetControlSystem" == args[i])
 			{
-				new ConsoleLogger(flag);
+				new ConsoleLogger(debugConsole);
 				using (ResetControlSystemJob resetControlSystemJob = new ResetControlSystemJob(hardwareService))
 				{
 					resetControlSystemJob.Run();
@@ -621,13 +621,13 @@ internal sealed class Program
 			if (args[i].StartsWith("-assemblyVersions"))
 			{
 				string path5 = "c:\\Program Files\\Redbox\\HALService\\bin";
-				List<string> list = new List<string>();
+				List<string> assemblyFiles = new List<string>();
 				foreach (string searchPattern in new string[2] { "*.dll", "*.exe" })
 				{
-					list.AddRange(Directory.GetFiles(path5, searchPattern));
+					assemblyFiles.AddRange(Directory.GetFiles(path5, searchPattern));
 				}
-				Console.WriteLine("{0} ( {1} files total )", DateTime.Now, list.Count);
-				list.ForEach(delegate(string assembly)
+				Console.WriteLine("{0} ( {1} files total )", DateTime.Now, assemblyFiles.Count);
+				assemblyFiles.ForEach(delegate(string assembly)
 				{
 					try
 					{
@@ -650,9 +650,9 @@ internal sealed class Program
 					Dictionary<string, List<string>> deviceMap = new Dictionary<string, List<string>>();
 					Action<string, string> onDeviceFound = delegate(string clazz, string hwid)
 					{
-						List<string> list5 = null;
-						list5 = (deviceMap.ContainsKey(clazz) ? deviceMap[clazz] : (deviceMap[clazz] = new List<string>()));
-						list5.Add(hwid);
+						List<string> classDevices = null;
+						classDevices = (deviceMap.ContainsKey(clazz) ? deviceMap[clazz] : (deviceMap[clazz] = new List<string>()));
+						classDevices.Add(hwid);
 					};
 					usbDeviceService.EnumDevices(onDeviceFound);
 					foreach (string key in deviceMap.Keys)
@@ -901,12 +901,12 @@ internal sealed class Program
 						Console.WriteLine("Unable to create directory: {0}", ex.Message);
 					}
 				}
-				int num7 = 1;
+				int snapshotNumber = 1;
 				DateTime now = DateTime.Now;
 				string empty = string.Empty;
 				do
 				{
-					string path9 = $"{runtimeService.KioskId}-{now.Month}-{now.Day}-{now.Year}-{num7++}.csv";
+					string path9 = $"{runtimeService.KioskId}-{now.Month}-{now.Day}-{now.Year}-{snapshotNumber++}.csv";
 					empty = Path.Combine("C:\\Program Files\\Redbox\\inventory-snapshots", path9);
 				}
 				while (File.Exists(empty));
@@ -968,9 +968,9 @@ internal sealed class Program
 					continue;
 				}
 				streamWriter8.WriteLine("There are {0} locations total.", excludedLocsJob.Results.Count);
-				foreach (Location item2 in excludedLocations)
+				foreach (Location excludedLocation in excludedLocations)
 				{
-					streamWriter8.WriteLine("Excluded location deck = {0} slot = {1}", item2.Deck, item2.Slot);
+					streamWriter8.WriteLine("Excluded location deck = {0} slot = {1}", excludedLocation.Deck, excludedLocation.Slot);
 				}
 			}
 			else if (args[i].StartsWith("--hwSurvey"))
@@ -1100,14 +1100,14 @@ internal sealed class Program
 			}
 			else if (args[i] == "-qlmThin")
 			{
-				List<string> list2 = new List<string>();
-				using (new DisposeableList<string>(list2))
+				List<string> thinArgs = new List<string>();
+				using (new DisposeableList<string>(thinArgs))
 				{
-					for (int num8 = i + 1; num8 < args.Length; num8++)
+					for (int thinArgIndex = i + 1; thinArgIndex < args.Length; thinArgIndex++)
 					{
-						list2.Add(args[num8]);
+						thinArgs.Add(args[thinArgIndex]);
 					}
-					HardwareCommandResult hardwareCommandResult3 = hardwareService.Thin(list2.ToArray(), new HardwareJobSchedule
+					HardwareCommandResult hardwareCommandResult3 = hardwareService.Thin(thinArgs.ToArray(), new HardwareJobSchedule
 					{
 						Priority = HardwareJobPriority.High
 					}, out var job11);
@@ -1146,22 +1146,22 @@ internal sealed class Program
 				List<FraudLocInfo> fraudLocInfoList = new List<FraudLocInfo>();
 				FraudLocInfo fraudLocInfo = null;
 				char[] separator2 = new char[1] { ' ' };
-				foreach (string text2 in lines)
+				foreach (string logLine in lines)
 				{
-					if (text2.Contains("GET Deck"))
+					if (logLine.Contains("GET Deck"))
 					{
-						string[] array4 = text2.Split(separator2);
-						fraudLocInfo = new FraudLocInfo(Convert.ToInt32(array4[6]), Convert.ToInt32(array4[9]));
+						string[] getFields = logLine.Split(separator2);
+						fraudLocInfo = new FraudLocInfo(Convert.ToInt32(getFields[6]), Convert.ToInt32(getFields[9]));
 						fraudLocInfoList.Add(fraudLocInfo);
 					}
-					else if (text2.Contains("PUT Deck"))
+					else if (logLine.Contains("PUT Deck"))
 					{
 						fraudLocInfo = null;
 					}
-					else if (text2.Contains("Matrix"))
+					else if (logLine.Contains("Matrix"))
 					{
-						string[] array5 = text2.Split(separator2);
-						fraudLocInfo.Dumps.Add(new DecodeInfo(array5[6], Convert.ToInt32(array5[8])));
+						string[] matrixFields = logLine.Split(separator2);
+						fraudLocInfo.Dumps.Add(new DecodeInfo(matrixFields[6], Convert.ToInt32(matrixFields[8])));
 					}
 				}
 				StreamWriter output = new StreamWriter(Path.GetFileNameWithoutExtension(optionVal14) + ".csv");
@@ -1173,8 +1173,8 @@ internal sealed class Program
 						output.WriteLine("{0},{1},{2},{3}", each.Location.Deck, each.Location.Slot, each.Matrix, each.HasSecureRead());
 					});
 					output.WriteLine(" -- decode stats -- ");
-					List<FraudLocInfo> list4 = fraudLocInfoList.FindAll((FraudLocInfo each) => each.Matrix != "UNKNOWN");
-					output.WriteLine("  Items with found barcode: {0}", list4.Count);
+					List<FraudLocInfo> withBarcode = fraudLocInfoList.FindAll((FraudLocInfo each) => each.Matrix != "UNKNOWN");
+					output.WriteLine("  Items with found barcode: {0}", withBarcode.Count);
 					output.WriteLine("  items with a secure read: {0}", fraudLocInfoList.FindAll((FraudLocInfo each) => each.HasSecureRead()).Count);
 				}
 				finally

@@ -29,15 +29,15 @@ public sealed class SetInstruction : Instruction
 		{
 			return;
 		}
-		object obj = base.Operands[1].ConvertValue();
-		if (IsSymbolic(base.Operands[1]) && base.Operands[1].Value.Equals(obj))
+		object newValue = base.Operands[1].ConvertValue();
+		if (IsSymbolic(base.Operands[1]) && base.Operands[1].Value.Equals(newValue))
 		{
-			obj = context.GetSymbolValue(base.Operands[1].Value, result.Errors);
+			newValue = context.GetSymbolValue(base.Operands[1].Value, result.Errors);
 			if (result.Errors.Count > 0)
 			{
 				return;
 			}
 		}
-		context.SetSymbolValue(token.Value, obj);
+		context.SetSymbolValue(token.Value, newValue);
 	}
 }

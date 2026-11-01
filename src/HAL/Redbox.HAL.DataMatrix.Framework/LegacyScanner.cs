@@ -25,8 +25,8 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 		get
 		{
 			IScannerDeviceService scannerDeviceService = ServiceLocator.Instance.GetService<IScannerDeviceService>();
-			bool flag = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>().GetConfiguredReader().Service == BarcodeServices.Cortex;
-			if (scannerDeviceService.IRHardwareInstall.HasValue & flag)
+			bool cortexConfigured = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>().GetConfiguredReader().Service == BarcodeServices.Cortex;
+			if (scannerDeviceService.IRHardwareInstall.HasValue & cortexConfigured)
 			{
 				if (CurrentCameraGeneration != CameraGeneration.Fifth)
 				{
@@ -154,8 +154,8 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 			DeviceStatus deviceStatus = service.FindDeviceStatus(deviceDescriptor);
 			if ((deviceStatus & DeviceStatus.Found) != DeviceStatus.None && (deviceStatus & DeviceStatus.Enabled) != DeviceStatus.None)
 			{
-				bool flag = deviceDescriptor.ResetDriver();
-				LogHelper.Instance.Log(" RESET camera returned {0}", flag ? "OK" : "FAILURE");
+				bool reset = deviceDescriptor.ResetDriver();
+				LogHelper.Instance.Log(" RESET camera returned {0}", reset ? "OK" : "FAILURE");
 			}
 		}
 		return Start();
@@ -232,22 +232,22 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 							{
 								continue;
 							}
-							string value = childNode.Attributes["name"].Value;
-							string value2 = childNode.Attributes["value"].Value;
+							string name = childNode.Attributes["name"].Value;
+							string propertyValue = childNode.Attributes["value"].Value;
 							XmlAttribute xmlAttribute = childNode.Attributes["type"];
 							if (xmlAttribute == null)
 							{
-								BarcodeConfiguration.Instance.Properties[value] = value2;
+								BarcodeConfiguration.Instance.Properties[name] = propertyValue;
 								continue;
 							}
 							try
 							{
 								Type type = Type.GetType(xmlAttribute.Value);
-								BarcodeConfiguration.Instance.Properties[value] = Convert.ChangeType(value2, type);
+								BarcodeConfiguration.Instance.Properties[name] = Convert.ChangeType(propertyValue, type);
 							}
 							catch
 							{
-								BarcodeConfiguration.Instance.Properties[value] = value2;
+								BarcodeConfiguration.Instance.Properties[name] = propertyValue;
 							}
 						}
 					}

@@ -112,18 +112,18 @@ internal sealed class SegmentManager : IGetObserver
 	{
 		result = MerchandizeResult.Success;
 		MerchSegment merchSegment = MerchSegmentFactory.Get(flags);
-		ILocation location = merchSegment.FindHigh();
-		ILocation location2 = FindLastHigherPriority(merchSegment);
-		bool flag = location2 != null;
-		if (!flag)
+		ILocation high = merchSegment.FindHigh();
+		ILocation start = FindLastHigherPriority(merchSegment);
+		bool hasHigherPriority = start != null;
+		if (!hasHigherPriority)
 		{
-			location2 = VMZ.Instance.First;
+			start = VMZ.Instance.First;
 		}
 		VMZIterator vMZIterator = null;
 		MerchandizeResult _mr = result;
 		ILocation target = null;
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (location != null)
+		if (high != null)
 		{
 			VMZ.ForAllBetweenDo(delegate(ILocation loc)
 			{
@@ -151,7 +151,7 @@ internal sealed class SegmentManager : IGetObserver
 					}
 				}
 				return true;
-			}, location2, location);
+			}, start, high);
 			result = _mr;
 			if (target != null)
 			{
@@ -161,7 +161,7 @@ internal sealed class SegmentManager : IGetObserver
 				}
 				return target;
 			}
-			vMZIterator = new VMZIterator(location);
+			vMZIterator = new VMZIterator(high);
 			if (!vMZIterator.Up())
 			{
 				result = MerchandizeResult.VMZFull;
@@ -170,8 +170,8 @@ internal sealed class SegmentManager : IGetObserver
 		}
 		else
 		{
-			vMZIterator = new VMZIterator(location2);
-			if (flag && !vMZIterator.Up())
+			vMZIterator = new VMZIterator(start);
+			if (hasHigherPriority && !vMZIterator.Up())
 			{
 				result = MerchandizeResult.VMZFull;
 				return null;
@@ -270,9 +270,9 @@ internal sealed class SegmentManager : IGetObserver
 
 	private int Compare(MerchFlags left, MerchFlags right)
 	{
-		int index = IncreasingPriorityOrder.IndexOf(left);
-		int num2 = IncreasingPriorityOrder.IndexOf(right);
-		return index - num2;
+		int leftIndex = IncreasingPriorityOrder.IndexOf(left);
+		int rightIndex = IncreasingPriorityOrder.IndexOf(right);
+		return leftIndex - rightIndex;
 	}
 
 	private ILocation FindTarget(VMZIterator iterator, MerchFlags flags, MerchTransferManager manager, out MerchandizeResult result)
@@ -377,15 +377,15 @@ internal sealed class SegmentManager : IGetObserver
 		Debug = true;
 		VMZ = VMZ.Instance;
 		IncreasingPriorityOrder = Array.AsReadOnly(IncreasingPriorityFlags);
-		MerchFlags[] array = new MerchFlags[IncreasingPriorityFlags.Length];
-		int num = IncreasingPriorityFlags.Length - 1;
-		int num2 = 0;
-		while (num >= 0)
+		MerchFlags[] decreasing = new MerchFlags[IncreasingPriorityFlags.Length];
+		int source = IncreasingPriorityFlags.Length - 1;
+		int dest = 0;
+		while (source >= 0)
 		{
-			array[num2] = IncreasingPriorityFlags[num];
-			num--;
-			num2++;
+			decreasing[dest] = IncreasingPriorityFlags[source];
+			source--;
+			dest++;
 		}
-		DecreasingPriorityOrder = Array.AsReadOnly(array);
+		DecreasingPriorityOrder = Array.AsReadOnly(decreasing);
 	}
 }

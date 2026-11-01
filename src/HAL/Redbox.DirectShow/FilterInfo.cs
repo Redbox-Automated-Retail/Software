@@ -65,19 +65,19 @@ public class FilterInfo : IComparable
 		{
 			Guid riid = typeof(IPropertyBag).GUID;
 			moniker.BindToStorage(null, null, ref riid, out ppvObj);
-			IPropertyBag obj = (IPropertyBag)ppvObj;
+			IPropertyBag propertyBag = (IPropertyBag)ppvObj;
 			object pVar = "";
-			int bytesRead = obj.Read("FriendlyName", ref pVar, IntPtr.Zero);
+			int bytesRead = propertyBag.Read("FriendlyName", ref pVar, IntPtr.Zero);
 			if (bytesRead != 0)
 			{
 				Marshal.ThrowExceptionForHR(bytesRead);
 			}
-			string text = (string)pVar;
-			if (text == null || text.Length < 1)
+			string name = (string)pVar;
+			if (name == null || name.Length < 1)
 			{
 				throw new ApplicationException();
 			}
-			return text;
+			return name;
 		}
 		catch (Exception)
 		{

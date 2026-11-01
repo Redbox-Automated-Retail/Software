@@ -110,35 +110,35 @@ public sealed class LegacySlotData : IConfigurationFile, IDisposable
 
 	private void ReadLegacyFile(bool removeZeroes)
 	{
-		int num = 1;
-		bool flag = false;
+		int lineNumber = 1;
+		bool invalid = false;
 		StringBuilder stringBuilder = new StringBuilder();
-		foreach (string text in File.ReadAllLines(FullSourcePath))
+		foreach (string line in File.ReadAllLines(FullSourcePath))
 		{
-			List<int> list = new List<int>();
+			List<int> row = new List<int>();
 			int result;
-			for (int j = 0; j < text.Length; j++)
+			for (int j = 0; j < line.Length; j++)
 			{
-				if (char.IsWhiteSpace(text[j]) || text[j] == ',')
+				if (char.IsWhiteSpace(line[j]) || line[j] == ',')
 				{
 					if (stringBuilder.Length > 0)
 					{
 						if (!int.TryParse(stringBuilder.ToString(), out result))
 						{
 							result = 0;
-							LogHelper.Instance.Log(LogEntryType.Error, "The value {0} in slotdata.dat (line {1}) is invalid", stringBuilder.ToString(), num);
-							flag = true;
+							LogHelper.Instance.Log(LogEntryType.Error, "The value {0} in slotdata.dat (line {1}) is invalid", stringBuilder.ToString(), lineNumber);
+							invalid = true;
 						}
 						else
 						{
-							list.Add(result);
+							row.Add(result);
 						}
 						stringBuilder.Remove(0, stringBuilder.Length);
 					}
 				}
 				else
 				{
-					stringBuilder.Append(text[j]);
+					stringBuilder.Append(line[j]);
 				}
 			}
 			if (stringBuilder.Length > 0)
@@ -146,22 +146,22 @@ public sealed class LegacySlotData : IConfigurationFile, IDisposable
 				if (!int.TryParse(stringBuilder.ToString(), out result))
 				{
 					result = 0;
-					LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {num}) is invalid", LogEntryType.Error);
-					flag = true;
+					LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {lineNumber}) is invalid", LogEntryType.Error);
+					invalid = true;
 				}
 				else
 				{
-					list.Add(result);
+					row.Add(result);
 				}
 				stringBuilder.Remove(0, stringBuilder.Length);
 			}
-			num++;
-			if (list.Count > 0)
+			lineNumber++;
+			if (row.Count > 0)
 			{
-				SlotData.Add(PlatterConfig.Get(new PlatterData(list, removeZeroes)));
+				SlotData.Add(PlatterConfig.Get(new PlatterData(row, removeZeroes)));
 			}
 		}
-		if (flag)
+		if (invalid)
 		{
 			SlotData.Clear();
 		}

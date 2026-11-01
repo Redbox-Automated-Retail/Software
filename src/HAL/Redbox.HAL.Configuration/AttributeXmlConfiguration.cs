@@ -184,18 +184,18 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 
 	private XmlNode GetTargetNode(XmlNode node, string path)
 	{
-		string[] array = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		XmlNode xmlNode = node;
-		foreach (string text in array)
+		string[] names = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		XmlNode current = node;
+		foreach (string name in names)
 		{
-			XmlNode xmlNode2 = xmlNode.SelectSingleNode(text);
-			if (xmlNode2 == null)
+			XmlNode child = current.SelectSingleNode(name);
+			if (child == null)
 			{
-				xmlNode2 = xmlNode.OwnerDocument.CreateElement(text);
-				xmlNode.AppendChild(xmlNode2);
+				child = current.OwnerDocument.CreateElement(name);
+				current.AppendChild(child);
 			}
-			xmlNode = xmlNode2;
+			current = child;
 		}
-		return xmlNode;
+		return current;
 	}
 }

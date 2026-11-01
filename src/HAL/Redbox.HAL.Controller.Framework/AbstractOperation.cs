@@ -68,15 +68,15 @@ public abstract class AbstractOperation<T> : IDisposable
 	{
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int clearSensorPauseDelay = ControllerConfiguration.Instance.ClearSensorPauseDelay;
-		bool flag = WaitToClear(8000);
-		if (!flag)
+		bool blocked = WaitToClear(8000);
+		if (!blocked)
 		{
 			runtimeService.SpinWait(clearSensorPauseDelay);
-			bool flag2 = true;
+			bool stillBlocked = true;
 			IPickerSensorReadResult pickerSensorReadResult;
-			for (int i = 0; (i < 3) & flag2; i++)
+			for (int i = 0; (i < 3) & stillBlocked; i++)
 			{
-				if (flag2)
+				if (stillBlocked)
 				{
 					if (i > 0)
 					{
@@ -89,7 +89,7 @@ public abstract class AbstractOperation<T> : IDisposable
 				{
 					return true;
 				}
-				flag2 = ClearPickerBlockedCount(pickerSensorReadResult) > 0;
+				stillBlocked = ClearPickerBlockedCount(pickerSensorReadResult) > 0;
 				runtimeService.SpinWait(clearSensorPauseDelay);
 			}
 			pickerSensorReadResult = Controller.ReadPickerSensors();
@@ -97,9 +97,9 @@ public abstract class AbstractOperation<T> : IDisposable
 			{
 				return true;
 			}
-			flag = ClearPickerBlockedCount(pickerSensorReadResult) > 0;
+			blocked = ClearPickerBlockedCount(pickerSensorReadResult) > 0;
 		}
-		return flag;
+		return blocked;
 	}
 
 	protected ErrorCodes WaitSensor(PickerInputs sensor, InputState state)
@@ -254,24 +254,24 @@ public abstract class AbstractOperation<T> : IDisposable
 
 	protected int ClearPickerBlockedCount(IPickerSensorReadResult readResult)
 	{
-		int num = 0;
+		int blocked = 0;
 		if (readResult.IsInputActive(PickerInputs.Sensor2))
 		{
-			num++;
+			blocked++;
 		}
 		if (readResult.IsInputActive(PickerInputs.Sensor3))
 		{
-			num++;
+			blocked++;
 		}
 		if (readResult.IsInputActive(PickerInputs.Sensor4))
 		{
-			num++;
+			blocked++;
 		}
 		if (readResult.IsInputActive(PickerInputs.Sensor5))
 		{
-			num++;
+			blocked++;
 		}
-		return num;
+		return blocked;
 	}
 
 	protected ErrorCodes OpenDoorChecked()

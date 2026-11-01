@@ -10,30 +10,30 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		ApplicationLog applicationLog = ApplicationLog.ConfigureLog(base.Context, logAppends: false, "RandomSync", flushOnWrite: true, null);
-		int operand = base.Context.PopTop<int>();
-		int num2 = base.Context.PopTop<int>();
+		int vendFrequency = base.Context.PopTop<int>();
+		int vendTime = base.Context.PopTop<int>();
 		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
-		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, operand);
+		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", vendTime, vendFrequency);
 		base.Context.AppLog.Write("One disk random sync test start.");
 		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, base.InventoryService);
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
-		int num3 = 0;
-		bool flag = false;
+		int iteration = 0;
+		bool failed = false;
 		try
 		{
 			if (motionControlService.MoveTo(1, 1, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
 			{
-				flag = true;
+				failed = true;
 				return;
 			}
 			if (!controllerService.Get().Success)
 			{
-				flag = true;
+				failed = true;
 				return;
 			}
-			while (!flag)
+			while (!failed)
 			{
 				ILocation location = randomLocationSelector.SelectTargetLocation();
 				if (location == null)
@@ -49,21 +49,21 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 				{
 					if (base.ControlSystem.EngageQlm(base.Context.AppLog) != ErrorCodes.Success)
 					{
-						flag = true;
+						failed = true;
 						continue;
 					}
 					Thread.Sleep(1500);
 					if (base.ControlSystem.DisengageQlm(base.Context.AppLog) != ErrorCodes.Success)
 					{
-						flag = true;
+						failed = true;
 					}
 					continue;
 				}
 				base.Context.AppLog.WriteFormatted("Sync {0}", location.ToString());
-				base.Context.Send($"Iteration {++num3}");
-				if (operand != 0)
+				base.Context.Send($"Iteration {++iteration}");
+				if (vendFrequency != 0)
 				{
-					_ = num3 % operand == 0;
+					_ = iteration % vendFrequency == 0;
 				}
 				else
 					_ = 0;
@@ -75,45 +75,45 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 					if (!scanResult.SnapOk)
 					{
 						base.Context.CreateCameraCaptureErrorResult();
-						flag = true;
+						failed = true;
 					}
 				}
 				if (motionControlService.MoveTo(location, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
 				{
-					flag = true;
+					failed = true;
 					break;
 				}
 				if (!controllerService.Put(id).Success)
 				{
-					flag = true;
+					failed = true;
 					break;
 				}
 				if (motionControlService.MoveTo(location, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
 				{
-					flag = true;
+					failed = true;
 					break;
 				}
-				if (!controllerService.Get().Success || OnVendReceive(num2) != ErrorCodes.Success)
+				if (!controllerService.Get().Success || OnVendReceive(vendTime) != ErrorCodes.Success)
 				{
-					flag = true;
+					failed = true;
 				}
 			}
-			if (!flag)
+			if (!failed)
 			{
 				if (motionControlService.MoveTo(1, 1, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
 				{
-					flag = true;
+					failed = true;
 				}
 				else if (!controllerService.Put("UNKNOWN").Success)
 				{
-					flag = true;
+					failed = true;
 				}
 			}
 		}
 		finally
 		{
-			applicationLog.WriteFormatted("Job visited {0} locations", num3);
-			if (flag)
+			applicationLog.WriteFormatted("Job visited {0} locations", iteration);
+			if (failed)
 			{
 				AddError("Job error");
 			}

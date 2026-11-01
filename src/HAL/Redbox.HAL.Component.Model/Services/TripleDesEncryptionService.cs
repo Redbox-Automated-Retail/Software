@@ -49,15 +49,15 @@ public sealed class TripleDesEncryptionService : IEncryptionService
 		{
 			throw new ArgumentException("fullFilePath doesn't exist.");
 		}
-		byte[] array = null;
+		byte[] hash = null;
 		using (FileStream inputStream = new FileStream(fullFilePath, FileMode.Open))
 		{
-			array = algorithm.ComputeHash(inputStream);
+			hash = algorithm.ComputeHash(inputStream);
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < array.Length; i++)
+		for (int i = 0; i < hash.Length; i++)
 		{
-			stringBuilder.Append(array[i].ToString("x2"));
+			stringBuilder.Append(hash[i].ToString("x2"));
 		}
 		return stringBuilder.ToString();
 	}

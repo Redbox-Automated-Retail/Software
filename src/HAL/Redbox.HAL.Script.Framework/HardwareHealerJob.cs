@@ -39,8 +39,8 @@ internal class HardwareHealerJob : NativeJobAdapter
 		using ISnapResult snapResult = configuredDevice.Snap();
 		if (!snapResult.SnapOk)
 		{
-			bool flag = configuredDevice.Restart();
-			LogHelper.Instance.WithContext("Camera snap returned failure; restart device returned {0}", flag.ToString());
+			bool restarted = configuredDevice.Restart();
+			LogHelper.Instance.WithContext("Camera snap returned failure; restart device returned {0}", restarted.ToString());
 		}
 	}
 

@@ -27,40 +27,40 @@ internal sealed class TakePictureCommand : AbstractCortexCommand
 
 	protected override bool CoreValidate()
 	{
-		int num = 0;
+		int responseCount = 0;
 		foreach (CortexPacket packet in Packets)
 		{
 			if (packet.RawPacketType == 'm')
 			{
-				num++;
+				responseCount++;
 			}
 			else if (packet.RawPacketType == 'd')
 			{
-				num++;
+				responseCount++;
 			}
 		}
-		return num >= 2;
+		return responseCount >= 2;
 	}
 
 	protected override bool CoreProcess()
 	{
-		bool flag = false;
-		bool flag2 = false;
+		bool doneSeen = false;
+		bool pictureSeen = false;
 		foreach (CortexPacket packet in Packets)
 		{
 			if (packet.RawPacketType == 'd')
 			{
-				flag = true;
+				doneSeen = true;
 			}
 			else if (packet.RawPacketType == 'm')
 			{
-				flag2 = true;
+				pictureSeen = true;
 			}
 			else if (packet.PacketType == PacketType.Incomplete)
 			{
-				flag = (flag2 = false);
+				doneSeen = (pictureSeen = false);
 			}
 		}
-		return flag & flag2;
+		return doneSeen & pictureSeen;
 	}
 }

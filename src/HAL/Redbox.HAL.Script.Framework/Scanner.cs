@@ -203,11 +203,11 @@ internal struct Scanner : IDisposable
 	{
 		if (ControllerConfiguration.Instance.RetryReadOnNoMarkersFound && ControllerConfiguration.Instance.AdditionalFraudReadAttempts > 0)
 		{
-			int num = methods.Length;
-			int num2 = num + ControllerConfiguration.Instance.AdditionalFraudReadAttempts;
-			LogHelper.Instance.Log($"original length: {num}, new length: {num2}");
-			Array.Resize(ref methods, num2);
-			for (int i = num; i < num2; i++)
+			int originalLength = methods.Length;
+			int newLength = originalLength + ControllerConfiguration.Instance.AdditionalFraudReadAttempts;
+			LogHelper.Instance.Log($"original length: {originalLength}, new length: {newLength}");
+			Array.Resize(ref methods, newLength);
+			for (int i = originalLength; i < newLength; i++)
 			{
 				methods[i] = CenterDiskMethod.None;
 			}

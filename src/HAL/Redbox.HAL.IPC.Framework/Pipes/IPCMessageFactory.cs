@@ -45,24 +45,24 @@ public sealed class IPCMessageFactory : IIPCMessageFactory
 
 	public IIPCMessage Read(IIPCChannel channel)
 	{
-		byte[] array = channel.Read();
-		int num = 4;
-		int num2 = 0;
-		int num3 = BitConverter.ToInt32(array, num2);
-		num2 += num;
-		byte[] buffer = new byte[num3];
-		Array.Copy(array, num2, buffer, 0, num3);
+		byte[] data = channel.Read();
+		int intSize = 4;
+		int offset = 0;
+		int uidLength = BitConverter.ToInt32(data, offset);
+		offset += intSize;
+		byte[] buffer = new byte[uidLength];
+		Array.Copy(data, offset, buffer, 0, uidLength);
 		Guid uID = new Guid(buffer);
-		num2 += num3;
-		MessageType type = (MessageType)BitConverter.ToInt32(array, num2);
-		num2 += num;
-		MessageSeverity severity = (MessageSeverity)BitConverter.ToInt32(array, num2);
-		num2 += num;
-		int num4 = BitConverter.ToInt32(array, num2);
-		num2 += num;
-		string message = Encoding.ASCII.GetString(array, num2, num4);
-		num2 += num4;
-		DateTime timestamp = DateTime.FromBinary(BitConverter.ToInt64(array, num2));
+		offset += uidLength;
+		MessageType type = (MessageType)BitConverter.ToInt32(data, offset);
+		offset += intSize;
+		MessageSeverity severity = (MessageSeverity)BitConverter.ToInt32(data, offset);
+		offset += intSize;
+		int messageLength = BitConverter.ToInt32(data, offset);
+		offset += intSize;
+		string message = Encoding.ASCII.GetString(data, offset, messageLength);
+		offset += messageLength;
+		DateTime timestamp = DateTime.FromBinary(BitConverter.ToInt64(data, offset));
 		return new IPCMessage
 		{
 			Type = type,
@@ -78,9 +78,9 @@ public sealed class IPCMessageFactory : IIPCMessageFactory
 		List<byte> list = new List<byte>();
 		try
 		{
-			byte[] array = msg.UID.ToByteArray();
-			list.AddRange(BitConverter.GetBytes(array.Length));
-			list.AddRange(array);
+			byte[] uidBytes = msg.UID.ToByteArray();
+			list.AddRange(BitConverter.GetBytes(uidBytes.Length));
+			list.AddRange(uidBytes);
 			list.AddRange(BitConverter.GetBytes((int)msg.Type));
 			list.AddRange(BitConverter.GetBytes((int)msg.Severity));
 			list.AddRange(BitConverter.GetBytes(msg.Message.Length));

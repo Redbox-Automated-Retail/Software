@@ -62,9 +62,9 @@ internal sealed class PutOperation : AbstractOperation<PutResult>
 			return ErrorCodes.GripperRentTimeout;
 		}
 		Controller.StartRollerIn();
-		bool num = ClearDiskFromPicker();
+		bool notCleared = ClearDiskFromPicker();
 		RuntimeService.SpinWait(100);
-		if (num)
+		if (notCleared)
 		{
 			LogHelper.Instance.WithContext(LogEntryType.Error, "PUT: Disk cannot be placed into {0} because it cannot clear sensor 2.", PutLocation.ToString());
 			Controller.LogPickerSensorState(LogEntryType.Error);
@@ -127,8 +127,8 @@ internal sealed class PutOperation : AbstractOperation<PutResult>
 			Controller.StopRoller();
 			return ErrorCodes.PickerObstructed;
 		}
-		IPickerSensorReadResult pickerSensorReadResult2 = Controller.ReadPickerSensors();
-		if (pickerSensorReadResult2.IsInputActive(PickerInputs.Sensor1) || pickerSensorReadResult2.IsInputActive(PickerInputs.Sensor6))
+		IPickerSensorReadResult afterPull = Controller.ReadPickerSensors();
+		if (afterPull.IsInputActive(PickerInputs.Sensor1) || afterPull.IsInputActive(PickerInputs.Sensor6))
 		{
 			return ErrorCodes.PickerObstructed;
 		}

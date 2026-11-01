@@ -152,8 +152,8 @@ public class AdvancedMode : Form
 	{
 		foreach (DataGridViewRow selectedRow in m_jobListDataView.SelectedRows)
 		{
-			HardwareJobAdapter obj = selectedRow.DataBoundItem as HardwareJobAdapter;
-			action(obj);
+			HardwareJobAdapter job = selectedRow.DataBoundItem as HardwareJobAdapter;
+			action(job);
 		}
 	}
 

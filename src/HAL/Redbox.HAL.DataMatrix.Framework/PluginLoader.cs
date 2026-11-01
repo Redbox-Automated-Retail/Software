@@ -41,10 +41,10 @@ internal sealed class PluginLoader
 			LogHelper.Instance.Log("[Camera Plugin Manager] There are no plugin descriptor files.", LogEntryType.Error);
 			return;
 		}
-		string[] array = files;
-		for (int i = 0; i < array.Length; i++)
+		string[] descriptorFiles = files;
+		for (int i = 0; i < descriptorFiles.Length; i++)
 		{
-			CameraPluginDescriptor cameraPluginDescriptor = CameraPluginDescriptor.FromXml(array[i]);
+			CameraPluginDescriptor cameraPluginDescriptor = CameraPluginDescriptor.FromXml(descriptorFiles[i]);
 			if (cameraPluginDescriptor != null)
 			{
 				PluginDescriptors.Add(cameraPluginDescriptor);

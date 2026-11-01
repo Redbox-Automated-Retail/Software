@@ -27,18 +27,18 @@ public sealed class PopInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		object value = null;
-		int? num = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("DEPTH"), result.Errors, context);
+		int? depth = GetKeyValuePairValue<int?>(base.Operands.GetKeyValuePair("DEPTH"), result.Errors, context);
 		if (result.Errors.Count > 0)
 		{
 			return;
 		}
-		if (!num.HasValue)
+		if (!depth.HasValue)
 		{
-			num = 1;
+			depth = 1;
 		}
-		if (context.StackDepth >= num)
+		if (context.StackDepth >= depth)
 		{
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < depth; i++)
 			{
 				value = context.PopTop();
 			}
@@ -53,7 +53,7 @@ public sealed class PopInstruction : Instruction
 		}
 		else
 		{
-			AddError("E002", $"The specified DEPTH of {num} exceeds the current depth of the stack: {context.StackDepth}.", result.Errors);
+			AddError("E002", $"The specified DEPTH of {depth} exceeds the current depth of the stack: {context.StackDepth}.", result.Errors);
 		}
 	}
 }

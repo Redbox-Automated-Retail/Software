@@ -97,8 +97,7 @@ internal sealed class PickerSensorReadResult : IPickerSensorReadResult, IReadInp
 		{
 			if (pickerSensorReadResult.ReadResult.IsInputActive(each))
 			{
-				int num = bc + 1;
-				bc = num;
+				bc++;
 			}
 		});
 		m_blockedCount = bc;

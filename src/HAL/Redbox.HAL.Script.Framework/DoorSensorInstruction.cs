@@ -52,10 +52,10 @@ public sealed class DoorSensorInstruction : Instruction
 			{
 				val = "off";
 			}
-			bool flag = (service.SoftwareOverride = val.Equals("off", StringComparison.CurrentCultureIgnoreCase));
+			bool overrideOn = (service.SoftwareOverride = val.Equals("off", StringComparison.CurrentCultureIgnoreCase));
 			using (StreamWriter streamWriter = new StreamWriter(File.Open(Path.Combine(ServiceLocator.Instance.GetService<IFormattedLogFactoryService>().LogsBasePath, "Service\\DoorSensorConfiguration.log"), FileMode.Append, FileAccess.Write, FileShare.Read)))
 			{
-				streamWriter.WriteLine(flag ? $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}: Door sensors have a software override in place: they are not active - *UNCHECKED MOVEMENT IS POSSIBLE*." : $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}: Door sensors do not have a software override; they are active.");
+				streamWriter.WriteLine(overrideOn ? $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}: Door sensors have a software override in place: they are not active - *UNCHECKED MOVEMENT IS POSSIBLE*." : $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}: Door sensors do not have a software override; they are active.");
 			}
 			context.PushTop(service.SensorsEnabled);
 			break;

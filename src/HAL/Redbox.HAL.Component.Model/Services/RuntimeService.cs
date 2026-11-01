@@ -169,11 +169,11 @@ public sealed class RuntimeService : IRuntimeService
 		{
 			return null;
 		}
-		byte[] array = null;
+		byte[] buffer = null;
 		using FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-		array = new byte[fileStream.Length];
-		fileStream.Read(array, 0, (int)fileStream.Length);
-		return array;
+		buffer = new byte[fileStream.Length];
+		fileStream.Read(buffer, 0, (int)fileStream.Length);
+		return buffer;
 	}
 
 	public bool ForceSafeCopy(string source, string dest)
@@ -223,7 +223,6 @@ public sealed class RuntimeService : IRuntimeService
 		{
 			return false;
 		}
-		bool flag = false;
 		try
 		{
 			File.Delete(path);
@@ -356,17 +355,17 @@ public sealed class RuntimeService : IRuntimeService
 		}
 		while (true)
 		{
-			string text = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
-			if (string.IsNullOrEmpty(text))
+			string macro = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
+			if (string.IsNullOrEmpty(macro))
 			{
 				break;
 			}
-			string text2 = Values[text];
-			if (text2 == null)
+			string replacement = Values[macro];
+			if (replacement == null)
 			{
-				text2 = string.Empty;
+				replacement = string.Empty;
 			}
-			value = value.Replace($"{preamble}{text}{postamble}", text2);
+			value = value.Replace($"{preamble}{macro}{postamble}", replacement);
 		}
 		return value;
 	}

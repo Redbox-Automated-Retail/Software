@@ -48,21 +48,21 @@ internal struct OperandsHelper : IDisposable
 
 	internal object[] ConvertSymbolsToParameterArray(ExecutionContext context)
 	{
-		List<object> list = new List<object>();
+		List<object> parameters = new List<object>();
 		for (int i = 1; i < Tokens.Count; i++)
 		{
 			Token token = Tokens[i];
 			if (!token.IsKeyValuePair)
 			{
-				object obj = token.ConvertValue();
-				if ((token.Type == TokenType.Symbol || token.Type == TokenType.ConstSymbol) && token.Value.Equals(obj))
+				object parameter = token.ConvertValue();
+				if ((token.Type == TokenType.Symbol || token.Type == TokenType.ConstSymbol) && token.Value.Equals(parameter))
 				{
-					obj = context.GetSymbolValue(token.Value, Errors);
+					parameter = context.GetSymbolValue(token.Value, Errors);
 				}
-				list.Add(obj);
+				parameters.Add(parameter);
 			}
 		}
-		return list.ToArray();
+		return parameters.ToArray();
 	}
 
 	internal bool GetKeyValuePairValue<T>(string key, out T val, ExecutionContext context)
@@ -161,7 +161,7 @@ internal struct OperandsHelper : IDisposable
 
 	internal int? GetTimeOutValue(ExecutionContext context)
 	{
-		int? result = null;
+		int? timeout = null;
 		KeyValuePair keyValuePair = Tokens.GetKeyValuePair("TIMEOUT");
 		if (keyValuePair == null)
 		{
@@ -171,22 +171,22 @@ internal struct OperandsHelper : IDisposable
 		{
 			return (int?)context.GetSymbolValue(keyValuePair.Value, Errors);
 		}
-		if (keyValuePair.Type == TokenType.NumericLiteral && int.TryParse(keyValuePair.Value, out var result2))
+		if (keyValuePair.Type == TokenType.NumericLiteral && int.TryParse(keyValuePair.Value, out var parsed))
 		{
-			result = result2;
+			timeout = parsed;
 		}
-		return result;
+		return timeout;
 	}
 
 	internal bool GetWaitFlag()
 	{
-		bool result = false;
+		bool wait = false;
 		KeyValuePair keyValuePair = Tokens.GetKeyValuePair("WAIT");
-		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var result2))
+		if (keyValuePair != null && bool.TryParse(keyValuePair.Value, out var parsed))
 		{
-			result = result2;
+			wait = parsed;
 		}
-		return result;
+		return wait;
 	}
 
 	private bool GetLocationInner(ExecutionContext context, out int deck, out int slot)

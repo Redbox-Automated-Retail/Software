@@ -72,9 +72,9 @@ public sealed class LegacySystemData : IConfigurationFile, IDisposable
 	{
 		FullSourcePath = System.IO.Path.Combine(Path, FileName);
 		SystemData = new Dictionary<string, int>();
-		Action<string, int> action = delegate(string key3, int value)
+		Action<string, int> action = delegate(string name, int value)
 		{
-			SystemData[key3] = value;
+			SystemData[name] = value;
 		};
 		OnReadSystemData(action);
 		KioskConfig = KioskConfiguration.None;
@@ -87,8 +87,8 @@ public sealed class LegacySystemData : IConfigurationFile, IDisposable
 		{
 			return;
 		}
-		int num = SystemData[key];
-		if (72 == num)
+		int maxSlots = SystemData[key];
+		if (72 == maxSlots)
 		{
 			KioskConfig = KioskConfiguration.R504;
 			return;
@@ -135,10 +135,10 @@ public sealed class LegacySystemData : IConfigurationFile, IDisposable
 		string[] lines = File.ReadAllLines(FullSourcePath);
 		for (int i = 0; i < lines.Length; i++)
 		{
-			string[] array2 = lines[i].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array2.Length >= 2 && int.TryParse(array2[1], out var result))
+			string[] fields = lines[i].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (fields.Length >= 2 && int.TryParse(fields[1], out var result))
 			{
-				action(array2[0], result);
+				action(fields[0], result);
 			}
 		}
 	}

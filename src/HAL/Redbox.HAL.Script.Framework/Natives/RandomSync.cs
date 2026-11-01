@@ -16,47 +16,47 @@ internal sealed class RandomSync : NativeJobAdapter
 			return;
 		}
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		int operand = base.Context.PopTop<int>();
-		int num2 = base.Context.PopTop<int>();
-		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, operand);
+		int vendFrequency = base.Context.PopTop<int>();
+		int vendTime = base.Context.PopTop<int>();
+		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", vendTime, vendFrequency);
 		base.Context.AppLog.Write("Random sync test start.");
 		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, inventoryService);
-		int num3 = 0;
-		int num4 = 0;
-		bool flag = true;
-		while (flag)
+		int secureFinds = 0;
+		int visited = 0;
+		bool running = true;
+		while (running)
 		{
 			ILocation location = randomLocationSelector.SelectTargetLocation();
 			if (location == null)
 			{
-				flag = false;
+				running = false;
 				break;
 			}
 			base.Context.AppLog.WriteFormatted("Sync {0}", location.ToString());
-			num4++;
+			visited++;
 			bool vend = false;
-			if (operand != 0 && num4 % operand == 0)
+			if (vendFrequency != 0 && visited % vendFrequency == 0)
 			{
 				vend = true;
 			}
-			RandomSyncDecorator randomSyncDecorator = new RandomSyncDecorator(base.Context, base.Result, location, num2, vend);
+			RandomSyncDecorator randomSyncDecorator = new RandomSyncDecorator(base.Context, base.Result, location, vendTime, vend);
 			SyncResult syncResult = SyncHelper.SyncSlot(base.Result, base.Context, location, randomSyncDecorator);
 			if (syncResult == SyncResult.HardwareError || syncResult == SyncResult.GetError)
 			{
 				base.Context.AppLog.WriteFormatted("Sync returned error {0}", syncResult.ToString());
-				flag = false;
+				running = false;
 				AddError("Sync encountered an error.");
 			}
 			if (randomSyncDecorator.SecureReads > 0)
 			{
-				num3++;
+				secureFinds++;
 			}
 			if (ContextSwitchRequested())
 			{
-				flag = false;
+				running = false;
 			}
 		}
-		base.Context.AppLog.WriteFormatted("Disk count with secure code finds: {0}", num3);
+		base.Context.AppLog.WriteFormatted("Disk count with secure code finds: {0}", secureFinds);
 	}
 
 	internal RandomSync(ExecutionResult result, ExecutionContext context)

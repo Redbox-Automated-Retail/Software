@@ -26,21 +26,21 @@ internal sealed class InventoryStatisticsJob : NativeJobAdapter
 		int machineEmptyCount = base.InventoryService.GetMachineEmptyCount();
 		List<ILocation> unknowns = base.InventoryService.GetUnknowns();
 		int excludedSlotsCount = base.InventoryService.GetExcludedSlotsCount();
-		int num = machineEmptyCount - ControllerConfiguration.Instance.ReturnSlotBuffer;
-		if (num < 0)
+		int usableEmpty = machineEmptyCount - ControllerConfiguration.Instance.ReturnSlotBuffer;
+		if (usableEmpty < 0)
 		{
-			num = 0;
+			usableEmpty = 0;
 		}
 		applicationLog.Write("Inventory snapshot.");
 		applicationLog.WriteFormatted(" Total Empty: {0}", machineEmptyCount);
-		applicationLog.WriteFormatted(" Usable empty: {0}", num);
+		applicationLog.WriteFormatted(" Usable empty: {0}", usableEmpty);
 		applicationLog.WriteFormatted(" Unknown: {0}", unknowns.Count);
 		applicationLog.WriteFormatted(" Excluded: {0}", excludedSlotsCount);
 		applicationLog.WriteFormatted(" Total Slots: {0}", totalMachineSlots);
 		applicationLog.WriteFormatted(" Dumpbin capacity: {0}", base.DumpbinService.Capacity);
 		applicationLog.WriteFormatted(" Dumpbin current count: {0}", base.DumpbinService.CurrentCount());
 		base.Context.CreateInfoResult("TotalEmptyCount", machineEmptyCount.ToString());
-		base.Context.CreateInfoResult("UsableEmptyCount", num.ToString());
+		base.Context.CreateInfoResult("UsableEmptyCount", usableEmpty.ToString());
 		base.Context.CreateInfoResult("UnknownCount", unknowns.Count.ToString());
 		base.Context.CreateInfoResult("ExcludedCount", excludedSlotsCount.ToString());
 		base.Context.CreateInfoResult("TotalMachineSlots", totalMachineSlots.ToString());

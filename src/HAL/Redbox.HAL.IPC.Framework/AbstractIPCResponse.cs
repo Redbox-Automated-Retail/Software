@@ -55,13 +55,13 @@ internal abstract class AbstractIPCResponse : IIPCResponse, IDisposable
 
 	protected string GetNextBufferLine()
 	{
-		string text = ReadBuilder.ToString();
-		int index = text.IndexOf(Environment.NewLine);
+		string buffer = ReadBuilder.ToString();
+		int index = buffer.IndexOf(Environment.NewLine);
 		if (-1 != index)
 		{
-			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			string line = buffer.Substring(0, index + Environment.NewLine.Length);
 			ReadBuilder.Remove(0, index + Environment.NewLine.Length);
-			return text2.Trim();
+			return line.Trim();
 		}
 		return string.Empty;
 	}

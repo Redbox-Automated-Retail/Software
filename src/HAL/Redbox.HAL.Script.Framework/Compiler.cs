@@ -38,17 +38,17 @@ public class Compiler
 
 	public ExecutionResult Compile(out ProgramInstruction compiledProgram)
 	{
-		int num = 0;
+		int cooperativeCount = 0;
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		compiledProgram = null;
 		ExecutionResult executionResult = new ExecutionResult();
 		Stack<Instruction> stack = new Stack<Instruction>();
 		stack.Push(ProgramInstruction.CreateEmpty(ProgramName));
-		int num2 = 0;
+		int lineNumber = 0;
 		Deque<string> deque = new Deque<string>();
 		ConstTokens = new Dictionary<string, bool>();
 		IPersistentMap map = ServiceLocator.Instance.GetService<IPersistentMapService>().GetMap();
-		bool value = map.GetValue("Compiler.EnablePreprocessor", def: true);
+		bool preprocessorEnabled = map.GetValue("Compiler.EnablePreprocessor", def: true);
 		ControlFlowAnalyzer = CFA.Initialize(CFAVersion, executionResult);
 		Instruction instruction = null;
 		using (TextReader textReader = new StreamReader(Stream))
@@ -62,12 +62,12 @@ public class Compiler
 					{
 						CFAInternals controlFlowAnalyzer = ControlFlowAnalyzer;
 						NopInstruction nopInstruction = new NopInstruction();
-						num2 = (nopInstruction.LineNumber = num2 + 1);
+						lineNumber = (nopInstruction.LineNumber = lineNumber + 1);
 						controlFlowAnalyzer.ProcessInstruction(nopInstruction, null, executionResult);
 					}
 					break;
 				}
-				if (value && IsDirective(text, out var directiveName))
+				if (preprocessorEnabled && IsDirective(text, out var directiveName))
 				{
 					ProcessDirective(directiveName, text, executionResult, deque);
 					if (executionResult.Errors.ContainsError())
@@ -76,7 +76,7 @@ public class Compiler
 					}
 					continue;
 				}
-				Tokenizer tokenizer = new Tokenizer(++num2, text, ConstTokens);
+				Tokenizer tokenizer = new Tokenizer(++lineNumber, text, ConstTokens);
 				tokenizer.Tokenize();
 				if (tokenizer.Errors.Count != 0)
 				{
@@ -89,16 +89,16 @@ public class Compiler
 				}
 				if (tokenizer.Tokens.HasOnlyLabel())
 				{
-					string value2 = tokenizer.Tokens.GetLabel().Value;
+					string labelName = tokenizer.Tokens.GetLabel().Value;
 					instruction = Instruction.Parse(new TokenList(new Token[1]
 					{
 						new Token(TokenType.Mnemonic, "NOP", isKeyValuePair: false)
-					}), num2, executionResult);
-					instruction.LabelName = value2;
+					}), lineNumber, executionResult);
+					instruction.LabelName = labelName;
 				}
 				else
 				{
-					instruction = Instruction.Parse(tokenizer.Tokens, num2, executionResult);
+					instruction = Instruction.Parse(tokenizer.Tokens, lineNumber, executionResult);
 				}
 				if (instruction == null)
 				{
@@ -118,16 +118,16 @@ public class Compiler
 				TokenList symbols = tokenizer.Tokens.GetSymbols();
 				foreach (Token item in symbols)
 				{
-					string text2 = TranslateKeyValuePairToSymbol(item);
-					if (!string.IsNullOrEmpty(text2) && !instruction.OperandRecognized(text2) && instruction.BranchType != Instruction.Branch.Unconditional)
+					string symbolName = TranslateKeyValuePairToSymbol(item);
+					if (!string.IsNullOrEmpty(symbolName) && !instruction.OperandRecognized(symbolName) && instruction.BranchType != Instruction.Branch.Unconditional)
 					{
 						if (instruction.CreatesVariableDef)
 						{
-							ControlFlowAnalyzer.AddVariableDef(text2, instruction.LineNumber, executionResult);
+							ControlFlowAnalyzer.AddVariableDef(symbolName, instruction.LineNumber, executionResult);
 						}
 						else
 						{
-							ControlFlowAnalyzer.AddVariableUse(text2, instruction.LineNumber, executionResult);
+							ControlFlowAnalyzer.AddVariableUse(symbolName, instruction.LineNumber, executionResult);
 						}
 					}
 					if (item.Value.StartsWith("__"))
@@ -143,7 +143,7 @@ public class Compiler
 				}
 				if (instruction.IsCooperativeMultitask)
 				{
-					num++;
+					cooperativeCount++;
 				}
 				stack.Peek().Instructions.Add(instruction);
 				if (instruction.BeginsContext)
@@ -205,7 +205,7 @@ public class Compiler
 				}
 			}
 		}
-		if (num == 0 && m_warningTable["W008"])
+		if (cooperativeCount == 0 && m_warningTable["W008"])
 		{
 			executionResult.Errors.Add(Error.NewWarning("W008", "Script does not contain cooperative multi-tasking instruction", "The script doesn't contain an instruction, such as YIELD, that allows another script to run. Is this the expected behavior?"));
 		}
@@ -216,7 +216,7 @@ public class Compiler
 		executionResult.ExecutionTime = new TimeSpan(executionTimer.ElapsedTicks);
 		if (compiledProgram != null)
 		{
-			compiledProgram.IsCooperative = num > 0;
+			compiledProgram.IsCooperative = cooperativeCount > 0;
 		}
 		if (map.GetValue("Compiler.DumpCompiledProgram", def: false) && compiledProgram != null)
 		{
@@ -224,8 +224,8 @@ public class Compiler
 			using TextWriter textWriter = new StreamWriter("C:\\temp\\" + ProgramName + ".preprocessed");
 			for (int i = 0; i < instructions.Count; i++)
 			{
-				Instruction value3 = instructions[i];
-				textWriter.WriteLine(value3);
+				Instruction compiledInstruction = instructions[i];
+				textWriter.WriteLine(compiledInstruction);
 			}
 		}
 		return executionResult;
@@ -257,10 +257,10 @@ public class Compiler
 
 	public static void AppendSearchPath(string wholePath)
 	{
-		string[] array = ParseDelimitedPaths(wholePath);
-		if (array.Length != 0)
+		string[] paths = ParseDelimitedPaths(wholePath);
+		if (paths.Length != 0)
 		{
-			m_configScriptPaths.AddManyToFront(array);
+			m_configScriptPaths.AddManyToFront(paths);
 		}
 	}
 
@@ -338,7 +338,7 @@ public class Compiler
 	{
 		try
 		{
-			bool flag = false;
+			bool found = false;
 			if (!File.Exists(fileName))
 			{
 				if (-1 != fileName.IndexOf(Path.DirectorySeparatorChar))
@@ -348,15 +348,15 @@ public class Compiler
 				}
 				foreach (string configScriptPath in m_configScriptPaths)
 				{
-					string text = Path.Combine(configScriptPath, fileName);
-					if (File.Exists(text))
+					string candidate = Path.Combine(configScriptPath, fileName);
+					if (File.Exists(candidate))
 					{
-						fileName = text;
-						flag = true;
+						fileName = candidate;
+						found = true;
 						break;
 					}
 				}
-				if (!flag)
+				if (!found)
 				{
 					result.Errors.Add(Error.NewError("C006", "PREPROCESSOR Error processing @INC file " + fileName + ": unable to locate.", "Correct your source and recompile."));
 					return;
@@ -367,10 +367,10 @@ public class Compiler
 			{
 				while (true)
 				{
-					string text2 = textReader.ReadLine();
-					if (text2 != null)
+					string includeLine = textReader.ReadLine();
+					if (includeLine != null)
 					{
-						deque.AddToBack(text2);
+						deque.AddToBack(includeLine);
 						continue;
 					}
 					break;
@@ -379,10 +379,10 @@ public class Compiler
 			int count = deque.Count;
 			for (int i = 0; i < count; i++)
 			{
-				string text3 = deque.PopBottom();
-				if (!string.IsNullOrEmpty(text3))
+				string line = deque.PopBottom();
+				if (!string.IsNullOrEmpty(line))
 				{
-					results.PushTop(text3);
+					results.PushTop(line);
 				}
 			}
 			deque = null;

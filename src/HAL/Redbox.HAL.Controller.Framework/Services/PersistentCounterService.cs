@@ -135,19 +135,19 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 	{
 		foreach (TimeoutCounters value in Enum.GetValues(typeof(TimeoutCounters)))
 		{
-			string item = KeyFrom(value);
-			if (!WeeklyResettableCounters.Contains(item))
+			string key = KeyFrom(value);
+			if (!WeeklyResettableCounters.Contains(key))
 			{
-				WeeklyResettableCounters.Add(item);
+				WeeklyResettableCounters.Add(key);
 			}
 		}
 		CounterTable = dts.GetTable<IPersistentCounter>();
-		List<IPersistentCounter> list = CounterTable.LoadEntries();
-		using (new DisposeableList<IPersistentCounter>(list))
+		List<IPersistentCounter> counters = CounterTable.LoadEntries();
+		using (new DisposeableList<IPersistentCounter>(counters))
 		{
-			foreach (IPersistentCounter item2 in list)
+			foreach (IPersistentCounter counter in counters)
 			{
-				Counters[item2.Name] = item2;
+				Counters[counter.Name] = counter;
 			}
 		}
 	}

@@ -23,38 +23,38 @@ internal sealed class DecodeCommand : AbstractCortexCommand
 
 	protected override bool CoreValidate()
 	{
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
+		int doneResponses = 0;
+		int errorResponses = 0;
+		int dataPacketCount = 0;
 		foreach (CortexPacket packet in Packets)
 		{
 			if (packet.RawPacketType == 'd')
 			{
-				num++;
+				doneResponses++;
 			}
 			else if (packet.RawPacketType == 'r')
 			{
-				num2++;
+				errorResponses++;
 			}
 			else if (packet.PacketType == PacketType.Data)
 			{
-				num3++;
+				dataPacketCount++;
 			}
 		}
-		if (num == 0)
+		if (doneResponses == 0)
 		{
 			return false;
 		}
-		if (num2 <= 0)
+		if (errorResponses <= 0)
 		{
-			return num3 > 0;
+			return dataPacketCount > 0;
 		}
 		return true;
 	}
 
 	protected override bool CoreProcess()
 	{
-		bool flag = false;
+		bool sawDone = false;
 		if (LogDetails)
 		{
 			LogHelper.Instance.Log("[Decode Command] start.");
@@ -85,9 +85,9 @@ internal sealed class DecodeCommand : AbstractCortexCommand
 						DecodeFailure = true;
 						continue;
 					}
-					for (int num = 3; num < parts.Length; num++)
+					for (int partIndex = 3; partIndex < parts.Length; partIndex++)
 					{
-						FoundCodes.Add(parts[num]);
+						FoundCodes.Add(parts[partIndex]);
 					}
 				}
 				else
@@ -103,12 +103,12 @@ internal sealed class DecodeCommand : AbstractCortexCommand
 						DecodeFailure = true;
 						break;
 					case 'd':
-						flag = true;
+						sawDone = true;
 						break;
 					}
 				}
 			}
-			if (!flag || DataPackets.Count == 0)
+			if (!sawDone || DataPackets.Count == 0)
 			{
 				return false;
 			}

@@ -20,12 +20,12 @@ internal class GetAndCenterOperation
 			Context.CreateResult("ErrorMessage", "The picker is full.", null, null, null, null, null);
 			return false;
 		}
-		int num = Context.PopTop<int>();
-		int num2 = Context.PopTop<int>();
-		bool flag = Context.PopTop<bool>();
-		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(num2, num, MoveMode.Get, Context.AppLog);
-		string message = $"MOVE DECK={num2} SLOT={num} MODE=GET {errorCodes.ToString().ToUpper()}";
-		Context.CreateResult((errorCodes == ErrorCodes.Success) ? "SuccessMessage" : "ErrorMessage", message, num2, num, null, null, null);
+		int slot = Context.PopTop<int>();
+		int deck = Context.PopTop<int>();
+		bool center = Context.PopTop<bool>();
+		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(deck, slot, MoveMode.Get, Context.AppLog);
+		string message = $"MOVE DECK={deck} SLOT={slot} MODE=GET {errorCodes.ToString().ToUpper()}";
+		Context.CreateResult((errorCodes == ErrorCodes.Success) ? "SuccessMessage" : "ErrorMessage", message, deck, slot, null, null, null);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			return false;
@@ -33,10 +33,10 @@ internal class GetAndCenterOperation
 		IGetResult getResult = ServiceLocator.Instance.GetService<IControllerService>().Get();
 		if (!getResult.Success)
 		{
-			Context.CreateResult("ErrorMessage", $"GET returned error status {getResult.ToString()}", num2, num, null, null, null);
+			Context.CreateResult("ErrorMessage", $"GET returned error status {getResult.ToString()}", deck, slot, null, null, null);
 			return false;
 		}
-		if (flag)
+		if (center)
 		{
 			controlSystem.Center(CenterDiskMethod.VendDoorAndBack);
 		}

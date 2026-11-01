@@ -21,8 +21,7 @@ internal sealed class ClearImagesFolderJob : NativeJobAdapter
 			{
 				LogHelper.Instance.WithContext("Failed to delete file '{0}'", file);
 				LogHelper.Instance.Log(ex.Message);
-				int num = errors + 1;
-				errors = num;
+				errors++;
 			}
 		});
 		if (errors > 0)

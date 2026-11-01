@@ -172,11 +172,11 @@ public sealed class SyscallInstruction : Instruction
 		newst.Count = 1;
 		newst.Luid = 0L;
 		newst.Attr = 2;
-		bool flag = LookupPrivilegeValue(null, "SeShutdownPrivilege", ref newst.Luid);
-		bool flag2 = AdjustTokenPrivileges(phtok, disall: false, ref newst, 0, IntPtr.Zero, IntPtr.Zero);
-		if (!flag || !flag2)
+		bool lookedUp = LookupPrivilegeValue(null, "SeShutdownPrivilege", ref newst.Luid);
+		bool adjusted = AdjustTokenPrivileges(phtok, disall: false, ref newst, 0, IntPtr.Zero, IntPtr.Zero);
+		if (!lookedUp || !adjusted)
 		{
-			LogHelper.Instance.Log($"Unable to lookup or adjust privileges: lookup = {flag}, adjust = {flag2}", LogEntryType.Error);
+			LogHelper.Instance.Log($"Unable to lookup or adjust privileges: lookup = {lookedUp}, adjust = {adjusted}", LogEntryType.Error);
 			return false;
 		}
 		return ExitWindowsEx(flags, reason);

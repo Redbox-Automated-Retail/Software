@@ -219,22 +219,22 @@ public class EditSlotData : Form
 			{
 				result = -result;
 			}
-			bool flag = direction == Direction.Up || direction == Direction.Down;
-			int num = (flag ? (CurrentEY + result) : (CurrentEX + result));
-			ErrorCodes errorCodes = new MoveHelper(Service).MoveAbs(flag ? Axis.Y : Axis.X, num);
-			OutputBox.Write("MOVE {0} {1} UNITS - New Location {2} ...", direction.ToString().ToUpper(), text, num);
+			bool isVertical = direction == Direction.Up || direction == Direction.Down;
+			int target = (isVertical ? (CurrentEY + result) : (CurrentEX + result));
+			ErrorCodes errorCodes = new MoveHelper(Service).MoveAbs(isVertical ? Axis.Y : Axis.X, target);
+			OutputBox.Write("MOVE {0} {1} UNITS - New Location {2} ...", direction.ToString().ToUpper(), text, target);
 			OutputBox.Write(errorCodes.ToString());
 			if (errorCodes != ErrorCodes.Success)
 			{
 				return false;
 			}
-			if (flag)
+			if (isVertical)
 			{
-				CurrentEY = num;
+				CurrentEY = target;
 			}
 			else
 			{
-				CurrentEX = num;
+				CurrentEX = target;
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append(RinglightActive ? "RINGLIGHT ON" : ("RINGLIGHT OFF" + Environment.NewLine));
@@ -454,15 +454,15 @@ public class EditSlotData : Form
 		}
 		if (Deck == 1 && m_applyToAllDecksCheckBox.Checked)
 		{
-			int num = 0;
+			int updatedDecks = 0;
 			foreach (XmlNode item in Manager.FindAllDeckNodes())
 			{
 				if (UpdateDeckNode(item, deltaX, deltaY, applyBlind: true))
 				{
-					num++;
+					updatedDecks++;
 				}
 			}
-			return num > 0;
+			return updatedDecks > 0;
 		}
 		XmlNode node2 = Manager.FindDeckNode(Deck);
 		return UpdateDeckNode(node2, deltaX, deltaY, applyBlind: false);
@@ -478,46 +478,46 @@ public class EditSlotData : Form
 		{
 			return false;
 		}
-		int attributeValue = node.GetAttributeValue<int>("Number");
+		int number = node.GetAttributeValue<int>("Number");
 		if (deltaY != 0)
 		{
-			int attributeValue2 = node.GetAttributeValue<int>("Offset");
-			attributeValue2 += deltaY;
-			node.SetAttributeValue("Offset", attributeValue2);
+			int newOffset = node.GetAttributeValue<int>("Offset");
+			newOffset += deltaY;
+			node.SetAttributeValue("Offset", newOffset);
 		}
 		if (deltaX != 0)
 		{
 			XmlNode node2 = node.ChildNodes[0];
-			decimal? attributeValue3 = node.GetAttributeValue<decimal?>("SlotWidth");
-			decimal num = 0m;
-			if (attributeValue == 8 && !applyBlind)
+			decimal? slotWidth = node.GetAttributeValue<decimal?>("SlotWidth");
+			decimal firstQuadrantOffset = 0m;
+			if (number == 8 && !applyBlind)
 			{
-				num = (decimal)StartXPosition + (decimal)deltaX - attributeValue3.Value;
+				firstQuadrantOffset = (decimal)StartXPosition + (decimal)deltaX - slotWidth.Value;
 			}
 			else
 			{
-				num = node2.GetAttributeValue<int>("Offset");
-				num += (decimal)deltaX;
+				firstQuadrantOffset = node2.GetAttributeValue<int>("Offset");
+				firstQuadrantOffset += (decimal)deltaX;
 			}
-			int attributeValue4 = node.GetAttributeValue<int>("Offset");
-			int? attributeValue5 = node.GetAttributeValue<int?>("NumberOfSlots");
-			int? attributeValue6 = node.GetAttributeValue<int?>("SellThruSlots");
-			int? attributeValue7 = node.GetAttributeValue<int?>("SellThruOffset");
-			int? attributeValue8 = node.GetAttributeValue<int?>("ApproachOffset");
-			bool attributeValue9 = node.GetAttributeValue<bool>("IsQlm");
-			int? num2 = (attributeValue6.HasValue ? 6 : 15);
+			int offset = node.GetAttributeValue<int>("Offset");
+			int? numberOfSlots = node.GetAttributeValue<int?>("NumberOfSlots");
+			int? sellThruSlots = node.GetAttributeValue<int?>("SellThruSlots");
+			int? sellThruOffset = node.GetAttributeValue<int?>("SellThruOffset");
+			int? approachOffset = node.GetAttributeValue<int?>("ApproachOffset");
+			bool isQlm = node.GetAttributeValue<bool>("IsQlm");
+			int? slotsPerQuadrant = (sellThruSlots.HasValue ? 6 : 15);
 			int count = node.ChildNodes.Count;
 			node.Attributes.RemoveAll();
-			CommonFunctions.ComputeQuadrants(num, count, attributeValue6, attributeValue7, num2, attributeValue3, node);
-			node.SetAttributeValue("Number", attributeValue);
-			node.SetAttributeValue("Offset", attributeValue4);
-			node.SetAttributeValue("NumberOfSlots", attributeValue5);
-			node.SetAttributeValue("SlotWidth", attributeValue3);
-			node.SetAttributeValue("IsQlm", attributeValue9);
-			node.SetAttributeValue("SellThruSlots", attributeValue6);
-			node.SetAttributeValue("SellThruOffset", attributeValue7);
-			node.SetAttributeValue("ApproachOffset", attributeValue8);
-			node.SetAttributeValue("SlotsPerQuadrant", num2);
+			CommonFunctions.ComputeQuadrants(firstQuadrantOffset, count, sellThruSlots, sellThruOffset, slotsPerQuadrant, slotWidth, node);
+			node.SetAttributeValue("Number", number);
+			node.SetAttributeValue("Offset", offset);
+			node.SetAttributeValue("NumberOfSlots", numberOfSlots);
+			node.SetAttributeValue("SlotWidth", slotWidth);
+			node.SetAttributeValue("IsQlm", isQlm);
+			node.SetAttributeValue("SellThruSlots", sellThruSlots);
+			node.SetAttributeValue("SellThruOffset", sellThruOffset);
+			node.SetAttributeValue("ApproachOffset", approachOffset);
+			node.SetAttributeValue("SlotsPerQuadrant", slotsPerQuadrant);
 		}
 		return true;
 	}

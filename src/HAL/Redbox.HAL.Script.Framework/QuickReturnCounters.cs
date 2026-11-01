@@ -9,9 +9,9 @@ internal sealed class QuickReturnCounters
 	internal void DoForeach(Action<string> action)
 	{
 		string[] counters = Counters;
-		foreach (string obj in counters)
+		foreach (string counter in counters)
 		{
-			action(obj);
+			action(counter);
 		}
 	}
 

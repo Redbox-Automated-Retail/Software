@@ -67,14 +67,14 @@ public sealed class NamedPipeServer : IDisposable
 
 	public BasePipeChannel WaitForClientConnect()
 	{
-		int num = 0;
+		int error = 0;
 		SafeFileHandle safeFileHandle = CreateNamedPipe(PipePath, 3u, 0u, 255u, (uint)BufferSize, (uint)BufferSize, uint.MaxValue, IntPtr.Zero);
 		if (safeFileHandle.IsInvalid)
 		{
 			return null;
 		}
-		num = ((!ConnectNamedPipe(safeFileHandle, IntPtr.Zero)) ? Marshal.GetLastWin32Error() : 0);
-		if (535 == num || num == 0)
+		error = ((!ConnectNamedPipe(safeFileHandle, IntPtr.Zero)) ? Marshal.GetLastWin32Error() : 0);
+		if (535 == error || error == 0)
 		{
 			return ServerPipeChannel.Make(safeFileHandle);
 		}

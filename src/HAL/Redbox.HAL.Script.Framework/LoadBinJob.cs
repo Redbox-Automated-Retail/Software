@@ -16,17 +16,17 @@ internal sealed class LoadBinJob : NativeJobAdapter
 			AddError("The dump bin is not configured.");
 			return;
 		}
-		string text = base.Context.PopTop<string>();
-		LoadBy loadBy = Enum<LoadBy>.ParseIgnoringCase(text, LoadBy.None);
+		string loadByText = base.Context.PopTop<string>();
+		LoadBy loadBy = Enum<LoadBy>.ParseIgnoringCase(loadByText, LoadBy.None);
 		if (loadBy == LoadBy.None)
 		{
-			string text2 = $"Unrecognized argument {text}";
-			applicationLog.Write(text2);
-			AddError(text2);
+			string error = $"Unrecognized argument {loadByText}";
+			applicationLog.Write(error);
+			AddError(error);
 			return;
 		}
-		int operand = base.Context.PopTop<int>();
-		for (int i = 0; i < operand; i++)
+		int count = base.Context.PopTop<int>();
+		for (int i = 0; i < count; i++)
 		{
 			if (base.DumpbinService.IsFull())
 			{

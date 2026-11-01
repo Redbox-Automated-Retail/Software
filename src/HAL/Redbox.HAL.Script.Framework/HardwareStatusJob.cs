@@ -9,38 +9,38 @@ internal sealed class HardwareStatusJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
-		int num = 0;
+		int failures = 0;
 		if (ControllerConfiguration.Instance.FixArcusDuringStatusJob && !base.MotionService.TestAndReset())
 		{
 			base.Context.CreateInfoResult("MotionControllerCommunicationError", "Could not talk with the motion controller.");
-			num++;
+			failures++;
 		}
 		if (ControllerConfiguration.Instance.EnableDoorCheckInStatus && doorSensorService.Query() != DoorSensorResult.Ok)
 		{
 			base.Context.CreateInfoResult("MotionControllerCommunicationError", "The door sensors are not in a safe mode.");
-			num++;
+			failures++;
 		}
 		if (ServiceLocator.Instance.GetService<IControllerService>().ClearGripper() != ErrorCodes.Success)
 		{
-			num++;
+			failures++;
 			base.Context.CreateInfoResult("GripperObstructed", "The gripper is obstructed.");
 		}
 		IPickerSensorReadResult pickerSensorReadResult = base.ControlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success || pickerSensorReadResult.IsFull)
 		{
-			num++;
+			failures++;
 			base.Context.CreateInfoResult("GripperObstructed", "The picker is full.");
 		}
 		if (VendDoorState.Closed != base.ControlSystem.VendDoorState && !base.ControlSystem.VendDoorClose().Success)
 		{
-			num++;
+			failures++;
 			base.Context.CreateInfoResult("VendDoorOpen", "Unable to close the vend door.");
 		}
 		if (!TestInventoryStore())
 		{
-			num++;
+			failures++;
 		}
-		if (num == 0)
+		if (failures == 0)
 		{
 			base.Context.CreateInfoResult("HardwareStatusOk", "The three tests passed!");
 		}

@@ -8,14 +8,14 @@ internal sealed class LookupBarcodeJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int operand = base.Context.PopTop<int>();
-		string[] array = new string[operand];
-		for (int i = 0; i < operand; i++)
+		int count = base.Context.PopTop<int>();
+		string[] barcodes = new string[count];
+		for (int i = 0; i < count; i++)
 		{
-			array[i] = base.Context.PopTop<string>();
+			barcodes[i] = base.Context.PopTop<string>();
 		}
 		IInventoryService iis = ServiceLocator.Instance.GetService<IInventoryService>();
-		Array.ForEach(array, delegate(string id)
+		Array.ForEach(barcodes, delegate(string id)
 		{
 			ILocation location = iis.Lookup(id);
 			if (location == null)

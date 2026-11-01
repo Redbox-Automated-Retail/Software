@@ -38,34 +38,34 @@ internal class ScriptMode : IDisposable
 
 	internal int Run(string[] programArgs)
 	{
-		string text = null;
+		string scriptPath = null;
 		ImmediateCommand.Service = Service;
 		for (int i = 0; i < programArgs.Length; i++)
 		{
 			if (programArgs[i].StartsWith("--script"))
 			{
-				text = CommandLineOption.GetOptionVal(programArgs[i], "=", string.Empty);
-				if (text == string.Empty)
+				scriptPath = CommandLineOption.GetOptionVal(programArgs[i], "=", string.Empty);
+				if (scriptPath == string.Empty)
 				{
 					m_console.WriteLine("An invalid script option was passed; please correct. Thank you.");
 					return 1;
 				}
-				if (!File.Exists(text))
+				if (!File.Exists(scriptPath))
 				{
-					m_console.WriteLine("The specified file '{0}' doesn't exist. Try again.", text);
+					m_console.WriteLine("The specified file '{0}' doesn't exist. Try again.", scriptPath);
 					return 1;
 				}
-				ExecuteScriptCommands(text);
+				ExecuteScriptCommands(scriptPath);
 				return 0;
 			}
 		}
 		m_console.WriteLine("HAL Interactive Console, use ? for help.");
-		bool flag = true;
-		while (flag)
+		bool keepRunning = true;
+		while (keepRunning)
 		{
 			m_console.Write("> ");
 			string statement = Console.ReadLine();
-			flag = ExecuteStatement(statement);
+			keepRunning = ExecuteStatement(statement);
 			if (Service.GetJob(Constants.ExecutionContexts.ImmediateModeContext, out var job).Success && job.GetStack(out var stack).Success)
 			{
 				FormatStack(stack, m_console);
@@ -92,9 +92,9 @@ internal class ScriptMode : IDisposable
 		if (result.CommandMessages.Count > 0)
 		{
 			console.WriteLine("Command Messages:");
-			for (int num = 0; num < result.CommandMessages.Count; num++)
+			for (int index = 0; index < result.CommandMessages.Count; index++)
 			{
-				console.WriteLine(result.CommandMessages[num]);
+				console.WriteLine(result.CommandMessages[index]);
 			}
 		}
 		console.Write("Command ");

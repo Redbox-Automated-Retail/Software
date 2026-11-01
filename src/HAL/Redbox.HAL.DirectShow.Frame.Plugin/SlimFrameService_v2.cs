@@ -15,18 +15,18 @@ internal sealed class SlimFrameService_v2 : AbstractDirectShowControl
 	protected override bool OnStartup(string moniker)
 	{
 		Control = AbstractDirectShowFrameControl.GetControl(FrameControl, moniker, GrabTime, Debug);
-		bool flag = false;
+		bool found = false;
 		VideoCapabilities[] videoCapabilities = Control.VideoCapabilities;
-		foreach (VideoCapabilities videoCapabilities2 in videoCapabilities)
+		foreach (VideoCapabilities capability in videoCapabilities)
 		{
-			if (videoCapabilities2.FrameSize == ImageSize)
+			if (capability.FrameSize == ImageSize)
 			{
-				flag = true;
-				Control.VideoResolution = videoCapabilities2;
+				found = true;
+				Control.VideoResolution = capability;
 				break;
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			LogHelper.Instance.Log("{0} Unable to find video capability with size {1}w X {2}h", LogHeader, ImageSize.Width, ImageSize.Height);
 			Control = null;

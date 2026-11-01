@@ -9,18 +9,18 @@ internal class ImageDescriptorPacket : ImagePacket
 
 	protected override void ParseData()
 	{
-		List<byte> list = new List<byte>();
-		int num = 22;
-		while (Packet[num] != 9)
+		List<byte> nameBytes = new List<byte>();
+		int index = 22;
+		while (Packet[index] != 9)
 		{
-			list.Add(Packet[num++]);
+			nameBytes.Add(Packet[index++]);
 		}
-		m_imageName = Encoding.ASCII.GetString(list.ToArray());
-		num += 2;
+		m_imageName = Encoding.ASCII.GetString(nameBytes.ToArray());
+		index += 2;
 		StringBuilder stringBuilder = new StringBuilder();
-		for (; Packet[num] != 41; num++)
+		for (; Packet[index] != 41; index++)
 		{
-			stringBuilder.Append((byte)(Packet[num] - 48));
+			stringBuilder.Append((byte)(Packet[index] - 48));
 		}
 		ImageSize = int.Parse(stringBuilder.ToString());
 		stringBuilder = null;

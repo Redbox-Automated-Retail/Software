@@ -53,28 +53,28 @@ internal sealed class ScanResult : IDisposable
 
 	internal bool CopyToFraudFolder()
 	{
-		string text = ImageFile;
-		if (string.IsNullOrEmpty(text))
+		string imagePath = ImageFile;
+		if (string.IsNullOrEmpty(imagePath))
 		{
 			ISnapResult snapResult = ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice().Snap();
 			if (!snapResult.SnapOk)
 			{
 				return false;
 			}
-			text = snapResult.Path;
+			imagePath = snapResult.Path;
 		}
 		IFraudService fraudService = ServiceLocator.Instance.GetService<IFraudService>();
-		string text2 = Path.Combine(path2: $"{ScannedMatrix}_{Path.GetFileName(text)}", path1: fraudService.FraudImagesPath);
-		bool num = ServiceLocator.Instance.GetService<IRuntimeService>().SafeMove(text, text2);
-		string path = (num ? text2 : text);
+		string fraudPath = Path.Combine(path2: $"{ScannedMatrix}_{Path.GetFileName(imagePath)}", path1: fraudService.FraudImagesPath);
+		bool moved = ServiceLocator.Instance.GetService<IRuntimeService>().SafeMove(imagePath, fraudPath);
+		string path = (moved ? fraudPath : imagePath);
 		IExecutionContext executionContext = ServiceLocator.Instance.GetService<IExecutionService>()?.GetActiveContext();
 		if (executionContext != null && File.Exists(path))
 		{
 			executionContext.CreateResult("PeeledImageFile", Path.GetFileName(path), ScannedMatrix);
-			return num;
+			return moved;
 		}
 		executionContext.ContextLog.WriteFormatted("Failed to create PeeledImageFile Result.");
-		return num;
+		return moved;
 	}
 
 	internal void PushTo(ExecutionContext context)

@@ -22,18 +22,18 @@ public sealed class PrintInstruction : Instruction
 	{
 		if (base.Operands.Count > 0)
 		{
-			object[] arg = ConvertSymbolsToParameterArray(result.Errors, context);
+			object[] args = ConvertSymbolsToParameterArray(result.Errors, context);
 			if (result.Errors.Count <= 0)
 			{
-				Console.WriteLine(base.Operands[0].Value, arg);
+				Console.WriteLine(base.Operands[0].Value, args);
 			}
 		}
 		else if (context.StackDepth > 0)
 		{
-			object obj = context.PopTop();
-			if (obj != null)
+			object top = context.PopTop();
+			if (top != null)
 			{
-				Console.WriteLine(obj);
+				Console.WriteLine(top);
 			}
 		}
 	}

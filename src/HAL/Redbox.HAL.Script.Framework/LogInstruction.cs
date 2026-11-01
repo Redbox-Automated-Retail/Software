@@ -37,7 +37,7 @@ public sealed class LogInstruction : Instruction
 		{
 			type = Enum<LogEntryType>.ParseIgnoringCase(keyValuePair.Value, LogEntryType.Info);
 		}
-		string text = base.Operands[0].Value;
+		string format = base.Operands[0].Value;
 		if (base.Operands[0].Type == TokenType.Symbol)
 		{
 			object symbolValue = context.GetSymbolValue(base.Operands[0].Value, result.Errors);
@@ -45,14 +45,14 @@ public sealed class LogInstruction : Instruction
 			{
 				return;
 			}
-			text = symbolValue as string;
-			if (text == null)
+			format = symbolValue as string;
+			if (format == null)
 			{
 				result.Errors.Add(Error.NewError("E001", "Incorrect type argument.", "The symbol specified for LOG is not a string type."));
 				return;
 			}
 		}
-		string text2 = string.Format(text, args);
-		LogHelper.Instance.Log(type, "[{0}, {1}]: {2}", context.ProgramName, context.ID, text2);
+		string message = string.Format(format, args);
+		LogHelper.Instance.Log(type, "[{0}, {1}]: {2}", context.ProgramName, context.ID, message);
 	}
 }

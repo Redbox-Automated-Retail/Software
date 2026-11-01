@@ -119,22 +119,22 @@ internal sealed class PackageInstaller : IDisposable
 	{
 		Array.ForEach(DefaultDatabases, delegate(string fileName)
 		{
-			string text = RuntimeService.RuntimePath($"data\\{fileName}");
+			string databasePath = RuntimeService.RuntimePath($"data\\{fileName}");
 #if NETFRAMEWORK
-			if (File.Exists(text))
+			if (File.Exists(databasePath))
 #else
 			// The .NET HAL keeps its tables in <name>.sqlite (converted from the VistaDB file on its first start).
-			if (File.Exists(text) || File.Exists(Path.ChangeExtension(text, ".sqlite")))
+			if (File.Exists(databasePath) || File.Exists(Path.ChangeExtension(databasePath, ".sqlite")))
 #endif
 			{
 				Writer.WriteLine("The database {0} already exists - take no further action.", fileName);
 				return;
 			}
-			string text2 = RuntimeService.RuntimePath($"{fileName}.default");
-			string arg = $"copy {text2} -> {text}";
+			string defaultPath = RuntimeService.RuntimePath($"{fileName}.default");
+			string arg = $"copy {defaultPath} -> {databasePath}";
 			try
 			{
-				File.Copy(text2, text);
+				File.Copy(defaultPath, databasePath);
 				Writer.WriteLine("{0}: SUCCESS", arg);
 			}
 			catch (Exception ex)
@@ -161,9 +161,9 @@ internal sealed class PackageInstaller : IDisposable
 			backups.Sort((FileInfo x, FileInfo y) => x.CreationTime.CompareTo(y.CreationTime));
 			if (backups.Count > 2)
 			{
-				for (int num = 0; num < backups.Count - 2; num++)
+				for (int index = 0; index < backups.Count - 2; index++)
 				{
-					RuntimeService.SafeDelete(backups[num].FullName);
+					RuntimeService.SafeDelete(backups[index].FullName);
 				}
 			}
 		}
@@ -230,26 +230,26 @@ internal sealed class PackageInstaller : IDisposable
 	{
 		Writer.WriteLine("Register package handlers");
 		string[] files = Directory.GetFiles(RuntimeService.AssemblyDirectory, "*.dll");
-		string[] array = new string[4] { "CortexDecoder.dll", "Hasp_windows_110892.dll", "CortexDecoderHasp.dll", "CDHelper.dll" };
-		foreach (string text in files)
+		string[] excludedFiles = new string[4] { "CortexDecoder.dll", "Hasp_windows_110892.dll", "CortexDecoderHasp.dll", "CDHelper.dll" };
+		foreach (string path in files)
 		{
-			string file = Path.GetFileName(text);
-			if (!string.IsNullOrEmpty(Array.Find(array, (string a) => a.Equals(file, StringComparison.CurrentCultureIgnoreCase))))
+			string file = Path.GetFileName(path);
+			if (!string.IsNullOrEmpty(Array.Find(excludedFiles, (string a) => a.Equals(file, StringComparison.CurrentCultureIgnoreCase))))
 			{
-				Writer.WriteLine(" Exclude {0} ( '{1}' ) from handler search", file, text);
+				Writer.WriteLine(" Exclude {0} ( '{1}' ) from handler search", file, path);
 				continue;
 			}
 #if !NETFRAMEWORK
 			// A self-contained .NET installer has the whole runtime next to it, and an .exe's code is in <name>.dll; .NET
 			// Framework scanned neither (only libraries are .dll there).
-			if (file.StartsWith("System.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("Microsoft.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("api-ms-", StringComparison.OrdinalIgnoreCase) || File.Exists(Path.ChangeExtension(text, ".runtimeconfig.json")) || !IsAssembly(text))
+			if (file.StartsWith("System.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("Microsoft.", StringComparison.OrdinalIgnoreCase) || file.StartsWith("api-ms-", StringComparison.OrdinalIgnoreCase) || File.Exists(Path.ChangeExtension(path, ".runtimeconfig.json")) || !IsAssembly(path))
 			{
 				continue;
 			}
 #endif
 			try
 			{
-				Assembly assembly = Assembly.LoadFrom(text);
+				Assembly assembly = Assembly.LoadFrom(path);
 				Type typeFromHandle = typeof(IPackageInstallHandler);
 				Type[] types = assembly.GetTypes();
 				foreach (Type type in types)
@@ -264,7 +264,7 @@ internal sealed class PackageInstaller : IDisposable
 			}
 			catch (Exception ex)
 			{
-				Writer.WriteLine(" Unable to load assembly '{0}' to scan for installer handlers.", text);
+				Writer.WriteLine(" Unable to load assembly '{0}' to scan for installer handlers.", path);
 				Writer.WriteLine(" Exception: {0}", ex.Message);
 			}
 		}
@@ -309,16 +309,16 @@ internal sealed class PackageInstaller : IDisposable
 			}
 			installer.CreateDirectories();
 			Platform platform = installer.RuntimeService.GetPlatform();
-			string text = "1.0.0.x";
+			string version = "1.0.0.x";
 			try
 			{
-				text = typeof(PackageInstaller).Assembly.GetName().Version.ToString();
+				version = typeof(PackageInstaller).Assembly.GetName().Version.ToString();
 			}
 			catch
 			{
-				text = "1.0.0.x";
+				version = "1.0.0.x";
 			}
-			installer.Writer.WriteLine("HAL package installer version {0} running on {1} at {2} (platform = {3})", text, DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString(), platform.ToString());
+			installer.Writer.WriteLine("HAL package installer version {0} running on {1} at {2} (platform = {3})", version, DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString(), platform.ToString());
 			if (Platform.Windows7 != platform)
 			{
 				installer.Writer.WriteLine("** ERROR ** This version is not supported on this platform ( {0} )", platform.ToString());
@@ -351,14 +351,14 @@ internal sealed class PackageInstaller : IDisposable
 			else
 			{
 				installer.Writer.WriteLine("Installing configuration from GAMP.");
-				string text2 = installer.RuntimeService.RuntimePath("HAL.xml.default");
+				string defaultConfigPath = installer.RuntimeService.RuntimePath("HAL.xml.default");
 				try
 				{
-					File.Copy(text2, installer.ConfigurationFullPath);
+					File.Copy(defaultConfigPath, installer.ConfigurationFullPath);
 				}
 				catch (Exception ex)
 				{
-					installer.InstallErrors.Add(Error.NewError("I004", "Configuration install failed.", $"Unable to move file '{text2}' - error: {ex.Message}"));
+					installer.InstallErrors.Add(Error.NewError("I004", "Configuration install failed.", $"Unable to move file '{defaultConfigPath}' - error: {ex.Message}"));
 					return;
 				}
 				configurationService.LoadAndImport(installer.InstallErrors);

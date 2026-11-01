@@ -51,29 +51,29 @@ internal abstract class AbstractIPCServiceHost : IIpcServiceHost
 
 	public void Unregister(ISession session)
 	{
-		int num = 0;
+		int sessionCount = 0;
 		lock (m_sessionLockObject)
 		{
 			m_sessions.Remove(session);
-			num = m_sessions.Count;
+			sessionCount = m_sessions.Count;
 		}
 		if (LogDetailedMessages)
 		{
-			LogHelper.Instance.Log("[IPCServiceHost] Unregister - there are {0} active server sessions.", num);
+			LogHelper.Instance.Log("[IPCServiceHost] Unregister - there are {0} active server sessions.", sessionCount);
 		}
 	}
 
 	public void Register(ISession session)
 	{
-		int num = 0;
+		int sessionCount = 0;
 		lock (m_sessionLockObject)
 		{
 			m_sessions.Add(session);
-			num = m_sessions.Count;
+			sessionCount = m_sessions.Count;
 		}
 		if (LogDetailedMessages)
 		{
-			LogHelper.Instance.Log("[IPCServiceHost] Register - there are {0} active server sessions.", num);
+			LogHelper.Instance.Log("[IPCServiceHost] Register - there are {0} active server sessions.", sessionCount);
 		}
 	}
 

@@ -59,9 +59,9 @@ internal class EmptyStuckAnalyzer
 			typeStats.Add(new TypeStat(StuckType.ExtendFail));
 			typeStats.Add(new TypeStat(StuckType.LookupFail));
 			int sampleCount = 0;
-			int num = 0;
-			string text = "GET Deck=";
-			string text2 = "Slot=";
+			int vmzCount = 0;
+			string deckMarker = "GET Deck=";
+			string slotMarker = "Slot=";
 			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 			string path = runtimeService.RuntimePath("EmptyStuckAnalysis.log");
 			if (File.Exists(path))
@@ -84,35 +84,33 @@ internal class EmptyStuckAnalyzer
 					while (true)
 					{
 						StuckType type = StuckType.None;
-						string text3 = textReader.ReadLine();
-						if (text3 == null)
+						string line = textReader.ReadLine();
+						if (line == null)
 						{
 							break;
 						}
-						int num2;
-						if (text3.IndexOf("ITEMSTUCK") != -1)
+						if (line.IndexOf("ITEMSTUCK") != -1)
 						{
 							type = StuckType.Stuck;
 						}
-						else if (text3.IndexOf("SLOTEMPTY") != -1)
+						else if (line.IndexOf("SLOTEMPTY") != -1)
 						{
 							type = StuckType.Empty;
 						}
-						else if (text3.IndexOf("GRIPPEREXTEND") != -1)
+						else if (line.IndexOf("GRIPPEREXTEND") != -1)
 						{
 							type = StuckType.ExtendFail;
 						}
-						else if (text3.IndexOf("LOOKUP") != -1)
+						else if (line.IndexOf("LOOKUP") != -1)
 						{
 							type = StuckType.LookupFail;
-							num2 = sampleCount + 1;
-							sampleCount = num2;
+							sampleCount++;
 							typeStats.Find((TypeStat each) => each.Type == type).Increment();
 							if (type == StuckType.LookupFail)
 							{
-								int index = text3.IndexOf("item") + 5;
-								int num4 = text3.IndexOf("returned") - 1;
-								string _bc = text3.Substring(index, num4 - index);
+								int index = line.IndexOf("item") + 5;
+								int matrixEnd = line.IndexOf("returned") - 1;
+								string _bc = line.Substring(index, matrixEnd - index);
 								LookupFailStat lookupFailStat = lookupFailStats.Find((LookupFailStat each) => each.Matrix == _bc);
 								if (lookupFailStat == null)
 								{
@@ -127,27 +125,26 @@ internal class EmptyStuckAnalyzer
 						{
 							continue;
 						}
-						int num5 = text3.IndexOf(text);
-						if (-1 == num5)
+						int markerIndex = line.IndexOf(deckMarker);
+						if (-1 == markerIndex)
 						{
 							continue;
 						}
-						num2 = sampleCount + 1;
-						sampleCount = num2;
+						sampleCount++;
 						typeStats.Find((TypeStat each) => each.Type == type).Increment();
-						string s = text3.Substring(num5 + text.Length, 1);
+						string s = line.Substring(markerIndex + deckMarker.Length, 1);
 						int deck = int.Parse(s);
-						num5 = text3.IndexOf(text2);
-						string text4 = text3.Substring(num5 + text2.Length);
-						char[] array = text4.ToCharArray();
-						for (int num6 = 0; num6 < array.Length; num6++)
+						markerIndex = line.IndexOf(slotMarker);
+						string slotText = line.Substring(markerIndex + slotMarker.Length);
+						char[] slotChars = slotText.ToCharArray();
+						for (int charIndex = 0; charIndex < slotChars.Length; charIndex++)
 						{
-							if (char.IsWhiteSpace(array[num6]))
+							if (char.IsWhiteSpace(slotChars[charIndex]))
 							{
-								string text5 = text4.Substring(0, num6 + 1);
-								if (!int.TryParse(text5, out var _targetSlot))
+								string slotNumberText = slotText.Substring(0, charIndex + 1);
+								if (!int.TryParse(slotNumberText, out var _targetSlot))
 								{
-									log.WriteLine("Unable to parse {0}", text5);
+									log.WriteLine("Unable to parse {0}", slotNumberText);
 									Environment.Exit(1);
 								}
 								LocStat locStat = locStats.Find((LocStat each) => each.Deck == deck && each.Slot == _targetSlot);
@@ -159,7 +156,7 @@ internal class EmptyStuckAnalyzer
 								locStat.Increment();
 								if (_targetSlot >= 1 && _targetSlot <= 15)
 								{
-									num++;
+									vmzCount++;
 								}
 								break;
 							}
@@ -175,20 +172,20 @@ internal class EmptyStuckAnalyzer
 				int _d;
 				for (_d = 1; _d <= 8; _d++)
 				{
-					List<LocStat> list4 = locStats.FindAll((LocStat each) => each.Deck == _d);
-					log.WriteLine("  Deck {0} had {1} unique failures.", _d, list4.Count);
+					List<LocStat> deckStats = locStats.FindAll((LocStat each) => each.Deck == _d);
+					log.WriteLine("  Deck {0} had {1} unique failures.", _d, deckStats.Count);
 					if (dump)
 					{
-						list4.ForEach(delegate(LocStat _s)
+						deckStats.ForEach(delegate(LocStat _s)
 						{
 							log.WriteLine("   Slot {0} had {1} failures.", _s.Slot, _s.Count);
 						});
 					}
 				}
 				log.WriteLine(" VMZ breakdown");
-				decimal pct = (decimal)num / (decimal)sampleCount;
+				decimal pct = (decimal)vmzCount / (decimal)sampleCount;
 				pct *= 100m;
-				log.WriteLine("    Of those, {0} were in the VMZ ( {1}% )", num, pct.ToString("00.00"));
+				log.WriteLine("    Of those, {0} were in the VMZ ( {1}% )", vmzCount, pct.ToString("00.00"));
 				log.WriteLine(" Failure type:");
 				typeStats.ForEach(delegate(TypeStat t)
 				{

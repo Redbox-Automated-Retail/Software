@@ -67,13 +67,13 @@ public sealed class AppLogInstruction : Instruction
 			return;
 		}
 		bool logAppends = false;
-		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair(OperandArgs.Name.ToString().ToUpper());
-		if (keyValuePair != null)
+		KeyValuePair namePair = base.Operands.GetKeyValuePair(OperandArgs.Name.ToString().ToUpper());
+		if (namePair != null)
 		{
-			_ = keyValuePair.Value;
-			if (keyValuePair.Type == TokenType.ConstSymbol || keyValuePair.Type == TokenType.Symbol)
+			_ = namePair.Value;
+			if (namePair.Type == TokenType.ConstSymbol || namePair.Type == TokenType.Symbol)
 			{
-				_ = (string)context.GetSymbolValue(keyValuePair.Value, result.Errors);
+				_ = (string)context.GetSymbolValue(namePair.Value, result.Errors);
 				if (result.Errors.ContainsError())
 				{
 					return;
@@ -82,19 +82,19 @@ public sealed class AppLogInstruction : Instruction
 			logAppends = true;
 		}
 		bool flushOnWrite = true;
-		KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair(OperandArgs.FlushOnWrite.ToString().ToUpper());
-		if (keyValuePair2 != null && bool.TryParse(keyValuePair2.Value, out var result2))
+		KeyValuePair flushPair = base.Operands.GetKeyValuePair(OperandArgs.FlushOnWrite.ToString().ToUpper());
+		if (flushPair != null && bool.TryParse(flushPair.Value, out var parsedFlush))
 		{
-			flushOnWrite = result2;
+			flushOnWrite = parsedFlush;
 		}
 		string subDirectory = string.Empty;
-		KeyValuePair keyValuePair3 = base.Operands.GetKeyValuePair(OperandArgs.Subdirectory.ToString().ToUpper());
-		if (keyValuePair3 != null)
+		KeyValuePair subdirectoryPair = base.Operands.GetKeyValuePair(OperandArgs.Subdirectory.ToString().ToUpper());
+		if (subdirectoryPair != null)
 		{
-			string text = keyValuePair3.Value;
-			if (keyValuePair3.Type == TokenType.ConstSymbol || keyValuePair3.Type == TokenType.Symbol)
+			string text = subdirectoryPair.Value;
+			if (subdirectoryPair.Type == TokenType.ConstSymbol || subdirectoryPair.Type == TokenType.Symbol)
 			{
-				text = (string)context.GetSymbolValue(keyValuePair3.Value, result.Errors);
+				text = (string)context.GetSymbolValue(subdirectoryPair.Value, result.Errors);
 				if (result.Errors.ContainsError())
 				{
 					return;

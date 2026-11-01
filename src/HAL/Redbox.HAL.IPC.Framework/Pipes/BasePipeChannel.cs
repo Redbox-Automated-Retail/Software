@@ -67,12 +67,12 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 
 	public byte[] Read()
 	{
-		byte[] array = ReadBytes(MessageHeaderSize);
-		if (array == null || array.Length != MessageHeaderSize)
+		byte[] header = ReadBytes(MessageHeaderSize);
+		if (header == null || header.Length != MessageHeaderSize)
 		{
 			return null;
 		}
-		return ReadBytes(BitConverter.ToInt32(array, 0));
+		return ReadBytes(BitConverter.ToInt32(header, 0));
 	}
 
 	public byte[] Read(int timeout)
@@ -87,10 +87,10 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 
 	public void Read(IIPCResponse response, int timeout)
 	{
-		byte[] array = Read();
-		if (array != null)
+		byte[] message = Read();
+		if (message != null)
 		{
-			response.Accumulate(array);
+			response.Accumulate(message);
 		}
 	}
 
@@ -105,8 +105,8 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 			return null;
 		}
 		int lpNumberOfBytesRead = 0;
-		byte[] array = new byte[count];
-		if (!Win32.ReadFile(PipeHandle, array, count, out lpNumberOfBytesRead, IntPtr.Zero))
+		byte[] buffer = new byte[count];
+		if (!Win32.ReadFile(PipeHandle, buffer, count, out lpNumberOfBytesRead, IntPtr.Zero))
 		{
 			int lastWin32Error = Marshal.GetLastWin32Error();
 			LogHelper.Instance.Log($"PipeClientSession.ReadFile() returned false; error code = {lastWin32Error}", LogEntryType.Error);
@@ -114,7 +114,7 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 		}
 		if (lpNumberOfBytesRead == count)
 		{
-			return array;
+			return buffer;
 		}
 		return null;
 	}

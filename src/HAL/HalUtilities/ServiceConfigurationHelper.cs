@@ -45,23 +45,23 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 	internal bool UpdateOption(string updateConfigurationString)
 	{
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
-		char c = ':';
+		char separator = ':';
 		int index = updateConfigurationString.IndexOf('|');
 		if (-1 != index)
 		{
-			c = '|';
+			separator = '|';
 		}
-		string[] parts = updateConfigurationString.Split(c);
+		string[] parts = updateConfigurationString.Split(separator);
 		if (parts.Length < 3)
 		{
 			Console.WriteLine("Unable to parse option {0}", updateConfigurationString);
 			return false;
 		}
 		string path = runtimeService.RuntimePath("ConfigurationUpdateError.log");
-		string text = parts[0];
-		string arg = parts[1];
-		string text2 = parts[2];
-		bool flag = parts.Length == 4;
+		string configType = parts[0];
+		string option = parts[1];
+		string newValue = parts[2];
+		bool validate = parts.Length == 4;
 		if (File.Exists(path))
 		{
 			try
@@ -80,7 +80,7 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 			}
 			return false;
 		}
-		HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediate($"SETCFG \"{arg}\" \"{text2}\" TYPE={text}", out var job);
+		HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediate($"SETCFG \"{option}\" \"{newValue}\" TYPE={configType}", out var job);
 		if (!hardwareCommandResult.Success)
 		{
 			StreamWriter log = new StreamWriter(path);
@@ -101,15 +101,15 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 			}
 			return false;
 		}
-		if (!flag)
+		if (!validate)
 		{
 			return true;
 		}
-		hardwareCommandResult = Service.ExecuteImmediate($"GETCFG \"{arg}\" TYPE={text}", out job);
-		string path2 = runtimeService.RuntimePath("ConfigurationUpdateValidateError.log");
-		runtimeService.SafeDelete(path2);
-		bool result = false;
-		StreamWriter validateFile = new StreamWriter(path2);
+		hardwareCommandResult = Service.ExecuteImmediate($"GETCFG \"{option}\" TYPE={configType}", out job);
+		string validatePath = runtimeService.RuntimePath("ConfigurationUpdateValidateError.log");
+		runtimeService.SafeDelete(validatePath);
+		bool validated = false;
+		StreamWriter validateFile = new StreamWriter(validatePath);
 		try
 		{
 			if (!hardwareCommandResult.Success)
@@ -127,14 +127,14 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 			}
 			else
 			{
-				string text3 = stack.Pop();
-				if (!text3.Equals(text2, StringComparison.CurrentCultureIgnoreCase))
+				string currentValue = stack.Pop();
+				if (!currentValue.Equals(newValue, StringComparison.CurrentCultureIgnoreCase))
 				{
-					validateFile.WriteLine("The new value {0} doesn't match {1}", text3, text2);
+					validateFile.WriteLine("The new value {0} doesn't match {1}", currentValue, newValue);
 				}
 				else
 				{
-					result = true;
+					validated = true;
 				}
 			}
 		}
@@ -145,7 +145,7 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 				((IDisposable)validateFile).Dispose();
 			}
 		}
-		return result;
+		return validated;
 	}
 
 	internal ServiceConfigurationHelper(HardwareService service)

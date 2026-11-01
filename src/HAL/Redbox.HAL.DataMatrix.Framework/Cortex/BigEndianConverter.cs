@@ -23,11 +23,11 @@ internal sealed class BigEndianConverter
 
 	private int Read(byte[] buffer, int startIndex, int bytesToConvert)
 	{
-		int num = 0;
+		int value = 0;
 		for (int i = 0; i < bytesToConvert; i++)
 		{
-			num = (num << 8) | buffer[startIndex + i];
+			value = (value << 8) | buffer[startIndex + i];
 		}
-		return num;
+		return value;
 	}
 }

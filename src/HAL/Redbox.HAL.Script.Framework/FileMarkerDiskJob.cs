@@ -7,8 +7,8 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int operand = base.Context.PopTop<int>();
-		int num2 = base.Context.PopTop<int>();
+		int deck = base.Context.PopTop<int>();
+		int slot = base.Context.PopTop<int>();
 		ErrorCodes errorCodes = base.MotionService.MoveVend(MoveMode.Get, base.Context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
@@ -16,18 +16,18 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 			return;
 		}
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
-		ErrorCodes errorCodes2 = controllerService.AcceptDiskAtDoor();
-		switch (errorCodes2)
+		ErrorCodes acceptResult = controllerService.AcceptDiskAtDoor();
+		switch (acceptResult)
 		{
 		case ErrorCodes.PickerEmpty:
 			base.Context.CreateInfoResult("NoReceivedItem", "No disk was placed in the picker.");
 			break;
 		default:
-			HandleHWError(errorCodes2.ToString());
+			HandleHWError(acceptResult.ToString());
 			break;
 		case ErrorCodes.PickerFull:
 		{
-			errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(operand, num2, MoveMode.Put, base.Context.AppLog);
+			errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(deck, slot, MoveMode.Put, base.Context.AppLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				HandleHWError(errorCodes.ToString());
@@ -36,7 +36,7 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 			base.ControlSystem.TrackCycle();
 			if (controllerService.Put("UNKNOWN").Success)
 			{
-				base.Context.CreateResult("ItemReturned", "The marker disk was filed.", operand, num2, "UNKNOWN", null, null);
+				base.Context.CreateResult("ItemReturned", "The marker disk was filed.", deck, slot, "UNKNOWN", null, null);
 				break;
 			}
 			errorCodes = base.MotionService.MoveVend(MoveMode.None, base.Context.AppLog);

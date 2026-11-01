@@ -11,8 +11,8 @@ internal sealed class MerchClearAndOffset : NativeJobAdapter
 		int slot = base.Context.PopTop<int>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation location = inventoryService.Get(deck, slot);
-		bool flag = inventoryService.Reset(location);
-		base.Context.CreateInfoResult(flag ? "ResetSuccess" : "ResetFailure", "The location was {0} reset.", flag ? "successfully" : "unsuccessfully");
+		bool reset = inventoryService.Reset(location);
+		base.Context.CreateInfoResult(reset ? "ResetSuccess" : "ResetFailure", "The location was {0} reset.", reset ? "successfully" : "unsuccessfully");
 		ShowEmptyStuck(location);
 	}
 
