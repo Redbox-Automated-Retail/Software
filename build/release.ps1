@@ -139,6 +139,24 @@ foreach ($p in $comp.projects) {
     }
 }
 
+# Assemblies ILRepack merged into an exe are not shipped next to it (Redbox's ILMerged releases did not have them),
+# unless the component ships one as a project of its own (e.g. Redbox.UpdateService.Client).
+$mergedAway = @{}
+$ownAssemblies = @{}
+foreach ($p in $comp.projects) {
+    $projText = Get-Content (Join-Path $root $p.path) -Raw
+    $name = [regex]::Match($projText, '<AssemblyName>([^<]+)').Groups[1].Value
+    if ($p.merged -and $Framework -eq "net48") {
+        foreach ($a in [regex]::Match($projText, '<ILRepackAssemblies>([^<]+)').Groups[1].Value.Split(';')) { if ($a) { $mergedAway[$a.Trim()] = $true } }
+    } else {
+        $ownAssemblies[$name] = $true
+    }
+}
+foreach ($a in @($mergedAway.Keys)) {
+    if ($ownAssemblies.ContainsKey($a)) { continue }
+    Get-ChildItem $stage -Recurse -File | Where-Object { $_.BaseName -eq $a -and $_.Extension -in '.dll', '.pdb', '.xml' } | Remove-Item
+}
+
 # What the kiosk does not need.
 Get-ChildItem $stage -Recurse -File -Include *.pdb | Remove-Item
 $files = Get-ChildItem $stage -Recurse -File | Sort-Object FullName
