@@ -1193,13 +1193,13 @@ public class HardwareService : IHardwareService
 	public Redbox.KioskEngine.ComponentModel.ErrorList GetSuspendedMaintenanceModeJobs(out ReadOnlyCollection<IHardwareJob> suspendedJobs)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList result = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		List<IHardwareJob> list = new List<IHardwareJob>();
+		List<IHardwareJob> hardwareJobs = new List<IHardwareJob>();
 		Redbox.HAL.Client.HardwareJob[] suspendedMaintenanceModeJobs = SuspendedMaintenanceModeJobs;
 		foreach (Redbox.HAL.Client.HardwareJob hardwareJob in suspendedMaintenanceModeJobs)
 		{
 			string startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
 			string executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());
-			list.Add(new HardwareJob
+			hardwareJobs.Add(new HardwareJob
 			{
 				ID = hardwareJob.ID,
 				Label = hardwareJob.Label,
@@ -1210,7 +1210,7 @@ public class HardwareService : IHardwareService
 				Priority = hardwareJob.Priority.ToString()
 			});
 		}
-		suspendedJobs = list.AsReadOnly();
+		suspendedJobs = hardwareJobs.AsReadOnly();
 		return result;
 	}
 

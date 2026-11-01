@@ -164,22 +164,22 @@ internal sealed class InitJob : NativeJobAdapter
 		{
 			return;
 		}
-		List<EventLogEntry> list = new List<EventLogEntry>();
-		using (new DisposeableList<EventLogEntry>(list))
+		List<EventLogEntry> eventLogEntries = new List<EventLogEntry>();
+		using (new DisposeableList<EventLogEntry>(eventLogEntries))
 		{
 			foreach (EventLogEntry entry in eventLog.Entries)
 			{
 				if (entry.InstanceId == 41 || entry.InstanceId == 12)
 				{
-					list.Add(entry);
+					eventLogEntries.Add(entry);
 				}
 			}
-			if (list.Count == 0)
+			if (eventLogEntries.Count == 0)
 			{
 				return;
 			}
-			list.Sort(new EventEntryComparer());
-			EventLogEntry e = list[0];
+			eventLogEntries.Sort(new EventEntryComparer());
+			EventLogEntry e = eventLogEntries[0];
 			if (e.InstanceId == 41)
 			{
 				IHardwareCorrectionStatisticService hardwareCorrectionStatisticService = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();

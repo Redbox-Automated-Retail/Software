@@ -275,18 +275,18 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	public bool MarkDeckInventory(IDeck deck, string newMatrix)
 	{
-		List<ILocation> list = new List<ILocation>();
+		List<ILocation> locations = new List<ILocation>();
 		using (new WithWriteLock(Lock))
 		{
-			using (new DisposeableList<ILocation>(list))
+			using (new DisposeableList<ILocation>(locations))
 			{
 				for (int i = 1; i <= deck.NumberOfSlots; i++)
 				{
 					ILocation underLock = GetUnderLock(deck.Number, i);
 					underLock.ID = newMatrix;
-					list.Add(underLock);
+					locations.Add(underLock);
 				}
-				return Table.Update(list);
+				return Table.Update(locations);
 			}
 		}
 	}
@@ -294,10 +294,10 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 	public List<int> SwapEmptyWith(IDeck deck, string id, MerchFlags flags, IRange<int> range)
 	{
 		List<int> list = new List<int>();
-		List<ILocation> list2 = new List<ILocation>();
+		List<ILocation> locations = new List<ILocation>();
 		using (new WithWriteLock(Lock))
 		{
-			using (new DisposeableList<ILocation>(list2))
+			using (new DisposeableList<ILocation>(locations))
 			{
 				for (int i = range.Start; i <= range.End; i++)
 				{
@@ -306,11 +306,11 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 					{
 						underLock.ID = id;
 						underLock.Flags = flags;
-						list2.Add(underLock);
+						locations.Add(underLock);
 						list.Add(i);
 					}
 				}
-				Table.Update(list2);
+				Table.Update(locations);
 				return list;
 			}
 		}
@@ -318,8 +318,8 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	public bool ResetAndMark(IDeck deck, string id)
 	{
-		List<ILocation> list = new List<ILocation>();
-		using (new DisposeableList<ILocation>(list))
+		List<ILocation> locations = new List<ILocation>();
+		using (new DisposeableList<ILocation>(locations))
 		{
 			using (new WithWriteLock(Lock))
 			{
@@ -328,9 +328,9 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 					ILocation underLock = GetUnderLock(deck.Number, i);
 					ResetLocation(underLock);
 					underLock.ID = id;
-					list.Add(underLock);
+					locations.Add(underLock);
 				}
-				return Table.Update(list);
+				return Table.Update(locations);
 			}
 		}
 	}

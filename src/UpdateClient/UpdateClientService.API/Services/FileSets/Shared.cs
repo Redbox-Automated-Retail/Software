@@ -9,7 +9,7 @@ internal class Shared
 {
 	internal static void SafeDelete(string path)
 	{
-		List<Error> list = new List<Error>();
+		List<Error> errors = new List<Error>();
 		try
 		{
 			if (File.Exists(path))
@@ -19,7 +19,7 @@ internal class Shared
 		}
 		catch (Exception arg)
 		{
-			list.Add(new Error
+			errors.Add(new Error
 			{
 				Message = $"FileSetService.SafeDelete An unhandled exception occurred. Exception {arg}"
 			});

@@ -90,7 +90,7 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 
 	public static IRecommendedTitles UnrollRecommendedTitles(IRecommendedTitles recommendedTitles)
 	{
-		List<IRecommendedTitleId> list = new List<IRecommendedTitleId>();
+		List<IRecommendedTitleId> recommendedTitleIds = new List<IRecommendedTitleId>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		if (dataService != null)
 		{
@@ -98,7 +98,7 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 			{
 				if (recommendedTitle.IdType == RecommendedTitlesIdType.TitleID)
 				{
-					list.Add(recommendedTitle);
+					recommendedTitleIds.Add(recommendedTitle);
 				}
 				else
 				{
@@ -118,7 +118,7 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 					}
 					foreach (ITitleProduct item in titleRollupProduct.KioskProducts.OrderBy((ITitleProduct p) => p.TitleType))
 					{
-						list.Add(new RecommendedTitleId
+						recommendedTitleIds.Add(new RecommendedTitleId
 						{
 							Id = item.ProductId,
 							IdType = RecommendedTitlesIdType.TitleID
@@ -127,7 +127,7 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 				}
 			}
 		}
-		return new RecommendedTitles(list)
+		return new RecommendedTitles(recommendedTitleIds)
 		{
 			OfferCode = recommendedTitles.OfferCode
 		};
@@ -154,21 +154,21 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 			where kp is ITitleProduct && (((ITitleProduct)kp).Genres.Intersect(titleProduct.Genres).Count() > 0 || ((ITitleProduct)kp).Genres.Contains(1093L)) && ((ITitleProduct)kp).IsRentableAndInStock
 			orderby !((ITitleProduct)kp).Genres.Contains(1093L) descending
 			select kp).ToList();
-		List<IRecommendedTitleId> list2 = new List<IRecommendedTitleId>();
+		List<IRecommendedTitleId> recommendedTitleIds = new List<IRecommendedTitleId>();
 		foreach (IKioskProduct item in list)
 		{
-			list2.Add(new RecommendedTitleId
+			recommendedTitleIds.Add(new RecommendedTitleId
 			{
 				Id = ((ITitleProduct)item).ProductId,
 				IdType = RecommendedTitlesIdType.TitleID
 			});
 		}
-		return new RecommendedTitles(list2);
+		return new RecommendedTitles(recommendedTitleIds);
 	}
 
 	public static List<IBrowseItemModel> CreateBrowseItemsFromRecommendedTitles(IRecommendedTitles recommendedTitles, int numberOfTitlesToShow)
 	{
-		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
+		List<IBrowseItemModel> browseItemModels = new List<IBrowseItemModel>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		if (dataService != null)
 		{
@@ -224,10 +224,10 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 				{
 					AddFormatButtonData(displayProductModel, titleProduct);
 				}
-				list.Add(displayProductModel);
+				browseItemModels.Add(displayProductModel);
 			}
 		}
-		return list.Take(numberOfTitlesToShow).ToList();
+		return browseItemModels.Take(numberOfTitlesToShow).ToList();
 	}
 
 	private static RecommendedTitlesPopupViewModel GetRecommendedTitlesPopupViewModel()

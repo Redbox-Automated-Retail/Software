@@ -23,10 +23,10 @@ public static class Utils
 		IntPtr SID2 = new IntPtr(0);
 		int psUse = 0;
 		StringBuilder stringBuilder = new StringBuilder(255);
-		StringBuilder stringBuilder2 = new StringBuilder(255);
-		if (NativeMethods.ConvertStringSidToSidW(SID, ref SID2) && NativeMethods.LookupAccountSidW(string.Empty, SID2, stringBuilder, ref cbName, stringBuilder2, ref cbDomainName, ref psUse))
+		StringBuilder builder = new StringBuilder(255);
+		if (NativeMethods.ConvertStringSidToSidW(SID, ref SID2) && NativeMethods.LookupAccountSidW(string.Empty, SID2, stringBuilder, ref cbName, builder, ref cbDomainName, ref psUse))
 		{
-			return stringBuilder2.ToString() + "\\" + stringBuilder.ToString();
+			return builder.ToString() + "\\" + stringBuilder.ToString();
 		}
 		return string.Empty;
 	}
@@ -88,9 +88,9 @@ public static class Utils
 			{
 				return BitsVersion.Bits0_0;
 			}
-			int num3 = int.Parse(parts[0]);
+			int number = int.Parse(parts[0]);
 			int num4 = int.Parse(parts[1]);
-			return num3 switch
+			return number switch
 			{
 				6 => num4 switch
 				{

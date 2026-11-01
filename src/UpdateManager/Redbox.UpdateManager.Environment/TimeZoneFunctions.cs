@@ -261,11 +261,11 @@ public static class TimeZoneFunctions
 	{
 		try
 		{
-			RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", writable: true);
-			if (registryKey != null)
+			RegistryKey key = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", writable: true);
+			if (key != null)
 			{
-				registryKey.DeleteValue("DisableAutoDaylightTimeSet", throwOnMissingValue: false);
-				registryKey.Close();
+				key.DeleteValue("DisableAutoDaylightTimeSet", throwOnMissingValue: false);
+				key.Close();
 			}
 		}
 		catch (Exception e)

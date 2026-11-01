@@ -37,13 +37,13 @@ public class StoreManagerService : IStoreManager
 				{
 					string text = "ID";
 					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, "");
-					if (value == null || string.IsNullOrEmpty(value.ToString()))
+					object registryValue = Registry.GetValue(text2, text, "");
+					if (registryValue == null || string.IsNullOrEmpty(registryValue.ToString()))
 					{
 						LogHelper.Instance.Log("Kiosk ID is not set in the registry at {0}\\{1}", text2, text);
 						return 0L;
 					}
-					_kioskId = Convert.ToInt32(value);
+					_kioskId = Convert.ToInt32(registryValue);
 				}
 			}
 			catch (Exception e)
@@ -64,13 +64,13 @@ public class StoreManagerService : IStoreManager
 				{
 					string text = "Market";
 					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, null);
-					if (value == null)
+					object registryValue = Registry.GetValue(text2, text, null);
+					if (registryValue == null)
 					{
 						LogHelper.Instance.Log("Market is not set in the registry at {0}\\{1}", text2, text);
 						return null;
 					}
-					_market = ((string)value).Trim();
+					_market = ((string)registryValue).Trim();
 				}
 			}
 			catch (Exception e)
@@ -91,13 +91,13 @@ public class StoreManagerService : IStoreManager
 				{
 					string text = "Banner";
 					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, null);
-					if (value == null)
+					object registryValue = Registry.GetValue(text2, text, null);
+					if (registryValue == null)
 					{
 						LogHelper.Instance.Log("Banner is not set in the registry at {0}\\{1}", text2, text);
 						return null;
 					}
-					_banner = ((string)value).Trim();
+					_banner = ((string)registryValue).Trim();
 				}
 			}
 			catch (Exception e)

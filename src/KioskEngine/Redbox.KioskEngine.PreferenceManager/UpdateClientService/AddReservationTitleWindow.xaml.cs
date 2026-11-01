@@ -37,24 +37,24 @@ public partial class AddReservationTitleWindow : Window, IComponentConnector
 	public AddReservationTitleWindow()
 	{
 		InitializeComponent();
-		List<DisplayReservationTitleType> list = new List<DisplayReservationTitleType>();
+		List<DisplayReservationTitleType> displayReservationTitleTypes = new List<DisplayReservationTitleType>();
 		foreach (ReservationTitleType item in Enum.GetValues(typeof(ReservationTitleType)).Cast<ReservationTitleType>())
 		{
-			list.Add(new DisplayReservationTitleType
+			displayReservationTitleTypes.Add(new DisplayReservationTitleType
 			{
 				ReservationTitleType = item
 			});
 		}
-		TypeComboBox.ItemsSource = list;
-		List<DisplayReservationDiscountType> list2 = new List<DisplayReservationDiscountType>();
+		TypeComboBox.ItemsSource = displayReservationTitleTypes;
+		List<DisplayReservationDiscountType> displayReservationDiscountTypes = new List<DisplayReservationDiscountType>();
 		foreach (ReservationDiscountType item2 in Enum.GetValues(typeof(ReservationDiscountType)).Cast<ReservationDiscountType>())
 		{
-			list2.Add(new DisplayReservationDiscountType
+			displayReservationDiscountTypes.Add(new DisplayReservationDiscountType
 			{
 				ReservationDiscountType = item2
 			});
 		}
-		ReservationDiscountTypeComboBox.ItemsSource = list2;
+		ReservationDiscountTypeComboBox.ItemsSource = displayReservationDiscountTypes;
 	}
 
 	private void CancelButton_Click(object sender, RoutedEventArgs e)

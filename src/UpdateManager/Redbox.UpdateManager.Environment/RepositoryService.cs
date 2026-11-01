@@ -440,10 +440,10 @@ public class RepositoryService : IRepositoryService, IDisposable
 			{
 				string s = Path.Combine(changeSet.Items[changeSet.Items.Count - 1].TargetPath, changeSet.Items[changeSet.Items.Count - 1].TargetName);
 				string arg = Encoding.ASCII.GetBytes(s).ToASCIISHA1Hash();
-				string text = Path.Combine(StagingDirectory, $"{changeSet.Revisions.Last()}-{arg}.patch");
-				File.Delete(text);
-				File.Move(archive, text);
-				LogHelper.Instance.Log("Unpacked file: {0}", text);
+				string path = Path.Combine(StagingDirectory, $"{changeSet.Revisions.Last()}-{arg}.patch");
+				File.Delete(path);
+				File.Move(archive, path);
+				LogHelper.Instance.Log("Unpacked file: {0}", path);
 			}
 			else
 			{
@@ -846,7 +846,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 				};
 				revLog2.Changes.Add(changeItem);
 				revLog[num] = revLog2;
-				string text = Path.Combine(FormatRepositoryLocationInternal(name), revLog2.HashFileName(changeItem.FormatFileName()));
+				string path = Path.Combine(FormatRepositoryLocationInternal(name), revLog2.HashFileName(changeItem.FormatFileName()));
 				LogHelper.Instance.Log("Add patch from Revision: {0} with the following properties.\r\nComposite: {1}\r\n ContentHash: {2}\r\n TargetName: {3}\r\n TargetPath: {4}\r\n VersionHash: {5}\r\n IsSeed: {6}\r\n", deltaItem.Revision, changeItem.Composite, changeItem.ContentHash, changeItem.TargetName, changeItem.TargetPath, changeItem.VersionHash, changeItem.IsSeed);
 				if (!deltaItem.IsPlaceHolder)
 				{
@@ -860,11 +860,11 @@ public class RepositoryService : IRepositoryService, IDisposable
 					{
 						throw new FileNotFoundException($"Could not find staged file: {patchFile}");
 					}
-					if (File.Exists(text))
+					if (File.Exists(path))
 					{
-						File.Delete(text);
+						File.Delete(path);
 					}
-					File.Move(patchFile, text);
+					File.Move(patchFile, path);
 				}
 			}
 		}

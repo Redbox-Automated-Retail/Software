@@ -46,8 +46,8 @@ public sealed class KioskFunctionCheckExecutor : JobExecutor
 	{
 		if (base.Job.GetStack(out var stack).Success)
 		{
-			int num = int.Parse(stack.Pop());
-			for (int i = 0; i < num; i++)
+			int number = int.Parse(stack.Pop());
+			for (int i = 0; i < number; i++)
 			{
 				KFCData kFCData = new KFCData();
 				kFCData.VerticalSlotTestResult = stack.Pop();

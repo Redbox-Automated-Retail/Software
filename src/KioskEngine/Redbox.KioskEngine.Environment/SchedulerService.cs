@@ -135,15 +135,15 @@ public class SchedulerService : ISchedulerService
 	{
 		ErrorList result = new ErrorList();
 		ServiceLocator.Instance.AddService(typeof(ISchedulerService), this);
-		List<SchedulerEntry> list = new List<SchedulerEntry>();
+		List<SchedulerEntry> schedulerEntries = new List<SchedulerEntry>();
 		foreach (SchedulerEntry entry in Entries)
 		{
 			if (!ScheduleEntry(entry))
 			{
-				list.Add(entry);
+				schedulerEntries.Add(entry);
 			}
 		}
-		list.ForEach(delegate(SchedulerEntry s)
+		schedulerEntries.ForEach(delegate(SchedulerEntry s)
 		{
 			m_entries.Remove(s);
 			LogHelper.Instance.Log("ScheduleEntry failed, Deleting: jobname: {0} label: {1} ", s.JobName, s.Label);

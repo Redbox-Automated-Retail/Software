@@ -228,14 +228,14 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					int index = i + ((_carouselDirection != CarouselDirection.Left) ? 1 : (-1));
 					CarouselPosition carouselPosition2 = _carouselPositions[index];
 					DisplayProductCarouselUserControl displayProductCarouselUserControl = _displayProductUserControlList[i];
-					TranslateTransform value = new TranslateTransform();
-					ScaleTransform value2 = new ScaleTransform();
+					TranslateTransform translateTransform = new TranslateTransform();
+					ScaleTransform scaleTransform = new ScaleTransform();
 					displayProductCarouselUserControl.RenderTransform = new TransformGroup
 					{
 						Children = 
 						{
-							(Transform)value2,
-							(Transform)value
+							(Transform)scaleTransform,
+							(Transform)translateTransform
 						}
 					};
 					bool flag = carouselPosition2 == _carouselPositions.CenterCarouselPosition;
@@ -649,11 +649,11 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 		{
 			return;
 		}
-		List<DisplayProductModel> list = new List<DisplayProductModel>();
+		List<DisplayProductModel> displayProductModels = new List<DisplayProductModel>();
 		int count = ((_carouselDirection == CarouselDirection.Left) ? 1 : (_rotatingCarouselProducts.Count - 1));
-		list.AddRange(_rotatingCarouselProducts.Skip(count));
-		list.AddRange(_rotatingCarouselProducts.Take(count));
-		_rotatingCarouselProducts = list;
+		displayProductModels.AddRange(_rotatingCarouselProducts.Skip(count));
+		displayProductModels.AddRange(_rotatingCarouselProducts.Take(count));
+		_rotatingCarouselProducts = displayProductModels;
 		foreach (DisplayProductCarouselUserControl displayProductUserControl in _displayProductUserControlList)
 		{
 			int index = _displayProductUserControlList.IndexOf(displayProductUserControl);

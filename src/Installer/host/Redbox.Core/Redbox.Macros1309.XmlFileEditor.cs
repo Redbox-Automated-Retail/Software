@@ -49,18 +49,18 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 
 	public ReadOnlyCollection<Redbox_002EMacros1309_002EXmlEditorError> Apply()
 	{
-		List<Redbox_002EMacros1309_002EXmlEditorError> list = new List<Redbox_002EMacros1309_002EXmlEditorError>();
+		List<Redbox_002EMacros1309_002EXmlEditorError> redbox_002EMacros1309_002EXmlEditorErrors = new List<Redbox_002EMacros1309_002EXmlEditorError>();
 		try
 		{
 			if (!File.Exists(FileName))
 			{
-				list.Add(new Redbox_002EMacros1309_002EXmlEditorError
+				redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
 				{
 					Code = "I006",
 					Description = "Unable to edit XML file '" + FileName + "'; it does not exist.",
 					Details = "Correct the setup script to specify a valid file path."
 				});
-				return list.AsReadOnly();
+				return redbox_002EMacros1309_002EXmlEditorErrors.AsReadOnly();
 			}
 			NameTable nameTable = new NameTable();
 			XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
@@ -75,17 +75,17 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 			}
 			catch (Exception ex)
 			{
-				list.Add(new Redbox_002EMacros1309_002EXmlEditorError
+				redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
 				{
 					Code = "I015",
 					Description = "Unable to parse XML file '" + FileName + "'; see details for more information.",
 					Details = ex.ToString()
 				});
-				return list.AsReadOnly();
+				return redbox_002EMacros1309_002EXmlEditorErrors.AsReadOnly();
 			}
 			if (xmlDocument.DocumentElement == null)
 			{
-				return list.AsReadOnly();
+				return redbox_002EMacros1309_002EXmlEditorErrors.AsReadOnly();
 			}
 			foreach (Redbox_002EMacros1309_002EXmlEdit edit in Edits)
 			{
@@ -117,7 +117,7 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 								item2.InnerText = edit.Value;
 								continue;
 							}
-							list.Add(new Redbox_002EMacros1309_002EXmlEditorError
+							redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
 							{
 								Code = "I015",
 								Description = $"XPath expression '{edit.XPath}' yielded an XML node type RIX cannot process.",
@@ -128,7 +128,7 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 				}
 				else if (RaiseErrors)
 				{
-					list.Add(new Redbox_002EMacros1309_002EXmlEditorError
+					redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
 					{
 						Code = "I015",
 						Description = $"XPath expression '{edit.XPath}' did not yield a valid node(s).",
@@ -143,13 +143,13 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 		}
 		catch (Exception ex2)
 		{
-			list.Add(new Redbox_002EMacros1309_002EXmlEditorError
+			redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
 			{
 				Code = "I015",
 				Description = $"Unable to edit XML file {FileName}; see details for exception.",
 				Details = ex2.ToString()
 			});
 		}
-		return list.AsReadOnly();
+		return redbox_002EMacros1309_002EXmlEditorErrors.AsReadOnly();
 	}
 }

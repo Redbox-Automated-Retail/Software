@@ -173,11 +173,11 @@ public class Startup
 		IEnumerable<Type> enumerable = from p in AppDomain.CurrentDomain.GetAssemblies().SelectMany((Assembly s) => s.GetTypes())
 			where icommandType.IsAssignableFrom(p) && !p.IsInterface
 			select p;
-		List<ICommandIoTController> list = new List<ICommandIoTController>();
+		List<ICommandIoTController> commandIoTControllers = new List<ICommandIoTController>();
 		foreach (Type item in enumerable)
 		{
 			services.AddScoped(typeof(ICommandIoTController), item);
-			list.Add(item as ICommandIoTController);
+			commandIoTControllers.Add(item as ICommandIoTController);
 		}
 		services.AddScoped(typeof(List<ICommandIoTController>), typeof(List<ICommandIoTController>));
 	}

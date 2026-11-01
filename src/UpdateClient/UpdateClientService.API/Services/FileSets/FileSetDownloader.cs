@@ -155,14 +155,14 @@ public class FileSetDownloader : IFileSetDownloader
 			return DownloadMethod.None;
 		}
 		int numberOfDownloads = fileSetInfoList.Count((FileSetFileInfo x) => !x.Exists);
-		List<DownloadMethodSize> list = new List<DownloadMethodSize>();
-		list.Add(new DownloadMethodSize
+		List<DownloadMethodSize> downloadMethodSizes = new List<DownloadMethodSize>();
+		downloadMethodSizes.Add(new DownloadMethodSize
 		{
 			DownloadMethod = DownloadMethod.Files,
 			Size = num,
 			NumberOfDownloads = numberOfDownloads
 		});
-		list.Add(new DownloadMethodSize
+		downloadMethodSizes.Add(new DownloadMethodSize
 		{
 			DownloadMethod = DownloadMethod.FileSet,
 			Size = clientFileSetRevision.SetFileSize,
@@ -171,7 +171,7 @@ public class FileSetDownloader : IFileSetDownloader
 		if (clientFileSetRevision.PatchSetFileSize > 0)
 		{
 			long size = fileSetInfoList.Sum((FileSetFileInfo x) => (!x.Exists) ? ((x.PatchSize <= 0) ? x.FileSize : x.PatchSize) : 0);
-			list.Add(new DownloadMethodSize
+			downloadMethodSizes.Add(new DownloadMethodSize
 			{
 				DownloadMethod = DownloadMethod.Patches,
 				Size = size,
@@ -180,14 +180,14 @@ public class FileSetDownloader : IFileSetDownloader
 			int num2 = fileSetInfoList.Count((FileSetFileInfo x) => !x.Exists || x.PatchSize == 0);
 			long num3 = fileSetInfoList.Sum((FileSetFileInfo x) => (!x.Exists && x.PatchSize <= 0) ? x.FileSize : 0);
 			num3 += clientFileSetRevision.PatchSetFileSize;
-			list.Add(new DownloadMethodSize
+			downloadMethodSizes.Add(new DownloadMethodSize
 			{
 				DownloadMethod = DownloadMethod.PatchSet,
 				Size = num3,
 				NumberOfDownloads = num2 + 1
 			});
 		}
-		DownloadMethodSize downloadMethodSize = (from x in list
+		DownloadMethodSize downloadMethodSize = (from x in downloadMethodSizes
 			orderby x.Size, x.NumberOfDownloads
 			select x).FirstOrDefault();
 		return downloadMethodSize.DownloadMethod;

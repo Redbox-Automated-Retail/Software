@@ -76,8 +76,8 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 					}
 					else if (Attribute.GetCustomAttribute(property, typeof(XmlConfigurationAttribute)) is XmlConfigurationAttribute)
 					{
-						object value = ConversionHelper.ChangeType(childNode.InnerText, property.PropertyType);
-						property.SetValue(this, value, null);
+						object converted = ConversionHelper.ChangeType(childNode.InnerText, property.PropertyType);
+						property.SetValue(this, converted, null);
 					}
 				}
 				catch (Exception e)
@@ -139,8 +139,8 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 			{
 				try
 				{
-					object value = ConversionHelper.ChangeType(xmlConfigurationAttribute.DefaultValue, propertyInfo.PropertyType);
-					propertyInfo.SetValue(this, value, null);
+					object converted = ConversionHelper.ChangeType(xmlConfigurationAttribute.DefaultValue, propertyInfo.PropertyType);
+					propertyInfo.SetValue(this, converted, null);
 				}
 				catch (Exception e)
 				{

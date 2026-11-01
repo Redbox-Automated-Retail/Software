@@ -20,7 +20,7 @@ public sealed class MotionControlDataExecutor : JobExecutor
 		{
 			return;
 		}
-		List<IMotionControlLimit> list = new List<IMotionControlLimit>();
+		List<IMotionControlLimit> motionControlLimits = new List<IMotionControlLimit>();
 		bool ok = true;
 		bool readOk = true;
 		int? x = null;
@@ -61,15 +61,15 @@ public sealed class MotionControlDataExecutor : JobExecutor
 			MotionControlLimits l = Enum<MotionControlLimits>.Parse(result3.Code, MotionControlLimits.None);
 			if (l != MotionControlLimits.None)
 			{
-				IMotionControlLimit motionControlLimit = list.Find((IMotionControlLimit each) => each.Limit == l);
+				IMotionControlLimit motionControlLimit = motionControlLimits.Find((IMotionControlLimit each) => each.Limit == l);
 				if (motionControlLimit == null)
 				{
-					list.Add(new ClientControlLimit(l, result3.Message == "BLOCKED"));
+					motionControlLimits.Add(new ClientControlLimit(l, result3.Message == "BLOCKED"));
 				}
 			}
 		}
 		Position = new ClientControllerPosition(ok, x, y);
-		Limits = new LimitResponse(readOk, list.ToArray());
+		Limits = new LimitResponse(readOk, motionControlLimits.ToArray());
 	}
 
 	public MotionControlDataExecutor(HardwareService service)

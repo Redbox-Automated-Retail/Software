@@ -629,10 +629,10 @@ public class InventoryData : IInventoryData
 		{
 			return;
 		}
-		List<MerchStatusUpdate> list = new List<MerchStatusUpdate>();
+		List<MerchStatusUpdate> merchStatusUpdates = new List<MerchStatusUpdate>();
 		foreach (KeyValuePair<string, MerchOrderBarcode> item in _merchOrderBarcodes.Where((KeyValuePair<string, MerchOrderBarcode> b) => !b.Value.WasSent))
 		{
-			list.Add(new MerchStatusUpdate
+			merchStatusUpdates.Add(new MerchStatusUpdate
 			{
 				Barcode = item.Key,
 				MerchandStatus = 2L,
@@ -642,9 +642,9 @@ public class InventoryData : IInventoryData
 			});
 			item.Value.WasSent = true;
 		}
-		if (list.Count > 0)
+		if (merchStatusUpdates.Count > 0)
 		{
-			ServiceLocator.Instance.GetService<IQueueService>().Enqueue(105, "UpdateMerchandizingStatus", list);
+			ServiceLocator.Instance.GetService<IQueueService>().Enqueue(105, "UpdateMerchandizingStatus", merchStatusUpdates);
 			WriteMerchOrderBarcodeData();
 		}
 	}
@@ -660,10 +660,10 @@ public class InventoryData : IInventoryData
 		{
 			return;
 		}
-		List<MerchStatusUpdate> list = new List<MerchStatusUpdate>();
+		List<MerchStatusUpdate> merchStatusUpdates = new List<MerchStatusUpdate>();
 		foreach (string item in barcodesToReport)
 		{
-			list.Add(new MerchStatusUpdate
+			merchStatusUpdates.Add(new MerchStatusUpdate
 			{
 				Barcode = item,
 				MerchandStatus = 1L,
@@ -672,7 +672,7 @@ public class InventoryData : IInventoryData
 				UpdateDateTimeUTC = DateTime.UtcNow
 			});
 		}
-		ServiceLocator.Instance.GetService<IQueueService>().Enqueue(105, "UpdateMerchandizingStatus", list);
+		ServiceLocator.Instance.GetService<IQueueService>().Enqueue(105, "UpdateMerchandizingStatus", merchStatusUpdates);
 	}
 
 	private long? ConvertToThinReasonCode(Redbox.KioskEngine.ComponentModel.InventoryStatusCode code)

@@ -10,8 +10,8 @@ internal sealed class ResetLocationsJob : NativeJobAdapter
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		int operand = base.Context.PopTop<int>();
-		List<ILocation> list = new List<ILocation>();
-		using (new DisposeableList<ILocation>(list))
+		List<ILocation> locations = new List<ILocation>();
+		using (new DisposeableList<ILocation>(locations))
 		{
 			for (int i = 0; i < operand; i++)
 			{
@@ -21,12 +21,12 @@ internal sealed class ResetLocationsJob : NativeJobAdapter
 				if (byNumber != null && byNumber.IsSlotValid(num3))
 				{
 					ILocation item = inventoryService.Get(num2, num3);
-					list.Add(item);
+					locations.Add(item);
 					base.Context.CreateResult("LocationReset", "The location was reset.", num2, num3, null, null, null);
 				}
 			}
-			inventoryService.Reset(list);
-			base.Context.CreateInfoResult("TotalLocationsReset", list.Count.ToString());
+			inventoryService.Reset(locations);
+			base.Context.CreateInfoResult("TotalLocationsReset", locations.Count.ToString());
 		}
 	}
 

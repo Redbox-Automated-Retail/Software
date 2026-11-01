@@ -8,21 +8,21 @@ public static class RectangleHelper
 	public static List<Rectangle> Merged(this IEnumerable<Rectangle> rects)
 	{
 		List<Rectangle> list = new List<Rectangle>();
-		List<Rectangle> list2 = new List<Rectangle>(rects);
-		if (list2.Count == 0)
+		List<Rectangle> rectangles = new List<Rectangle>(rects);
+		if (rectangles.Count == 0)
 		{
 			return list;
 		}
-		list2.Sort(delegate(Rectangle lhs, Rectangle rhs)
+		rectangles.Sort(delegate(Rectangle lhs, Rectangle rhs)
 		{
 			int num2 = lhs.Left.CompareTo(rhs.Left);
 			int num3 = lhs.Top.CompareTo(rhs.Top);
 			return (num2 <= num3) ? num2 : num3;
 		});
-		Rectangle rectangle = list2[0];
-		for (int num = 1; num < list2.Count; num++)
+		Rectangle rectangle = rectangles[0];
+		for (int num = 1; num < rectangles.Count; num++)
 		{
-			Rectangle rectangle2 = list2[num];
+			Rectangle rectangle2 = rectangles[num];
 			if (rectangle.IntersectsWith(rectangle2))
 			{
 				rectangle = Rectangle.Union(rectangle, rectangle2);

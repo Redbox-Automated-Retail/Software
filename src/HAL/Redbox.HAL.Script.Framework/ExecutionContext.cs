@@ -1110,13 +1110,13 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 
 	private bool SendUnderLock(string message)
 	{
-		DateTime dateTime = DateTime.Now;
-		if (LastEventTime.HasValue && dateTime.Second <= LastEventTime.Value.Second)
+		DateTime now = DateTime.Now;
+		if (LastEventTime.HasValue && now.Second <= LastEventTime.Value.Second)
 		{
-			dateTime = LastEventTime.Value.AddSeconds(1.0);
+			now = LastEventTime.Value.AddSeconds(1.0);
 		}
-		LastEventTime = dateTime;
-		Messages.PushTop(new ScriptMessage(dateTime, message));
+		LastEventTime = now;
+		Messages.PushTop(new ScriptMessage(now, message));
 		return FlushUnderLock();
 	}
 

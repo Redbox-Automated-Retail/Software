@@ -148,11 +148,11 @@ public class ResourceType : IResourceType
 
 	public ReadOnlyCollection<IPropertyType> GetFilterProperties()
 	{
-		List<IPropertyType> list = new List<IPropertyType>();
+		List<IPropertyType> propertyTypes = new List<IPropertyType>();
 		for (ResourceType resourceType = this; resourceType != null; resourceType = (ResourceType)resourceType.SuperType)
 		{
-			list.AddRange(resourceType.InnerProperties.FindAll((IPropertyType each) => each.IsFilter));
+			propertyTypes.AddRange(resourceType.InnerProperties.FindAll((IPropertyType each) => each.IsFilter));
 		}
-		return list.AsReadOnly();
+		return propertyTypes.AsReadOnly();
 	}
 }

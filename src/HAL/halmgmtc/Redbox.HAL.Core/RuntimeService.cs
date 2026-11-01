@@ -69,10 +69,10 @@ public sealed class RuntimeService : IRuntimeService
 				registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
 				if (registryKey != null)
 				{
-					object value = registryKey.GetValue("ID");
-					if (value != null)
+					object registryValue = registryKey.GetValue("ID");
+					if (registryValue != null)
 					{
-						m_kioskId = (string)ConversionHelper.ChangeType(value, typeof(string));
+						m_kioskId = (string)ConversionHelper.ChangeType(registryValue, typeof(string));
 					}
 				}
 			}

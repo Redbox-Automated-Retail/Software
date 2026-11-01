@@ -56,9 +56,9 @@ public static class LuaHelper
 		}
 		if (value is LuaTable luaTable)
 		{
-			StringBuilder stringBuilder2 = new StringBuilder();
-			luaTable.FormatTable(stringBuilder2, new List<LuaTable>());
-			return stringBuilder2.ToString();
+			StringBuilder builder = new StringBuilder();
+			luaTable.FormatTable(builder, new List<LuaTable>());
+			return builder.ToString();
 		}
 		if (value is LuaFunction)
 		{

@@ -703,13 +703,13 @@ public class FileUpdateService : IFileUpdateService
 	{
 		try
 		{
-			string text = Path.Combine(destinationFolderName, Path.GetFileName(zipFileUpdateResult.FileName));
-			if (File.Exists(text))
+			string path = Path.Combine(destinationFolderName, Path.GetFileName(zipFileUpdateResult.FileName));
+			if (File.Exists(path))
 			{
-				text = GetUniqueFileName(text);
+				path = GetUniqueFileName(path);
 			}
-			File.Move(zipFileUpdateResult.FileName, text);
-			Log("Moved file " + Path.GetFileName(zipFileUpdateResult.FileName) + " to folder " + text);
+			File.Move(zipFileUpdateResult.FileName, path);
+			Log("Moved file " + Path.GetFileName(zipFileUpdateResult.FileName) + " to folder " + path);
 		}
 		catch (Exception arg)
 		{

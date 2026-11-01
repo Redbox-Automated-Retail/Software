@@ -87,18 +87,18 @@ public static class BandwidthUsageSettings
 
 	private static T Get<T>(string keyName)
 	{
-		using RegistryKey registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\BITS");
-		object value = registryKey.GetValue(keyName);
-		if (value == null)
+		using RegistryKey key = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\BITS");
+		object registryValue = key.GetValue(keyName);
+		if (registryValue == null)
 		{
 			return default(T);
 		}
-		return (T)ConversionHelper.ChangeType(value, typeof(T));
+		return (T)ConversionHelper.ChangeType(registryValue, typeof(T));
 	}
 
 	private static void Set(object value, string keyName)
 	{
-		using RegistryKey registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\BITS");
-		registryKey.SetValue(keyName, value);
+		using RegistryKey key = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\BITS");
+		key.SetValue(keyName, value);
 	}
 }

@@ -113,9 +113,9 @@ public class TransactionApiClient : ITransactionApiClient
 
 	public async Task<APIResponse<GetCustomerOffersResponse>> GetCustomerOffers(GetCustomerOffersRequest request)
 	{
-		List<Header> list = new List<Header>(_requestHeaders);
-		list.Remove(list.SingleOrDefault((Header h) => h.Key == "x-redbox-activityid"));
-		list.Add(new Header("x-redbox-activityid", request.MessageId.ToString()));
+		List<Header> headers = new List<Header>(_requestHeaders);
+		headers.Remove(headers.SingleOrDefault((Header h) => h.Key == "x-redbox-activityid"));
+		headers.Add(new Header("x-redbox-activityid", request.MessageId.ToString()));
 		return await _httpService.SendRequest<GetCustomerOffersResponse>(_kioskConfiguration.KioskClientDefault.TransactionApiUrl, "api/customeroffers", request, HttpMethod.Post, _requestHeaders);
 	}
 

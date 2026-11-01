@@ -330,10 +330,10 @@ public class ProfileDataService : IProfileDataService
 		DataTable<Product> dataTable = await GetProducts();
 		if (dataTable?.Data?.Any() == true)
 		{
-			List<Product> list = new List<Product>();
-			list.AddRange(from x in dataTable.Data.ToList()
+			List<Product> products = new List<Product>();
+			products.AddRange(from x in dataTable.Data.ToList()
 				select x.Value.Data);
-			missingProductIds = await GetMissingProductIdsFromProductGroups(list);
+			missingProductIds = await GetMissingProductIdsFromProductGroups(products);
 		}
 		return missingProductIds;
 	}

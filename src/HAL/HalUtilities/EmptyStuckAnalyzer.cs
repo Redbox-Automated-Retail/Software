@@ -49,15 +49,15 @@ internal class EmptyStuckAnalyzer
 
 	private void Analyze(List<string> fileList, bool dump)
 	{
-		List<TypeStat> list = new List<TypeStat>();
-		List<LookupFailStat> list2 = new List<LookupFailStat>();
-		List<LocStat> list3 = new List<LocStat>();
+		List<TypeStat> typeStats = new List<TypeStat>();
+		List<LookupFailStat> lookupFailStats = new List<LookupFailStat>();
+		List<LocStat> locStats = new List<LocStat>();
 		try
 		{
-			list.Add(new TypeStat(StuckType.Empty));
-			list.Add(new TypeStat(StuckType.Stuck));
-			list.Add(new TypeStat(StuckType.ExtendFail));
-			list.Add(new TypeStat(StuckType.LookupFail));
+			typeStats.Add(new TypeStat(StuckType.Empty));
+			typeStats.Add(new TypeStat(StuckType.Stuck));
+			typeStats.Add(new TypeStat(StuckType.ExtendFail));
+			typeStats.Add(new TypeStat(StuckType.LookupFail));
 			int sampleCount = 0;
 			int num = 0;
 			string text = "GET Deck=";
@@ -107,17 +107,17 @@ internal class EmptyStuckAnalyzer
 							type = StuckType.LookupFail;
 							num2 = sampleCount + 1;
 							sampleCount = num2;
-							list.Find((TypeStat each) => each.Type == type).Increment();
+							typeStats.Find((TypeStat each) => each.Type == type).Increment();
 							if (type == StuckType.LookupFail)
 							{
 								int index = text3.IndexOf("item") + 5;
 								int num4 = text3.IndexOf("returned") - 1;
 								string _bc = text3.Substring(index, num4 - index);
-								LookupFailStat lookupFailStat = list2.Find((LookupFailStat each) => each.Matrix == _bc);
+								LookupFailStat lookupFailStat = lookupFailStats.Find((LookupFailStat each) => each.Matrix == _bc);
 								if (lookupFailStat == null)
 								{
 									lookupFailStat = new LookupFailStat(_bc);
-									list2.Add(lookupFailStat);
+									lookupFailStats.Add(lookupFailStat);
 								}
 								lookupFailStat.Increment();
 								continue;
@@ -134,7 +134,7 @@ internal class EmptyStuckAnalyzer
 						}
 						num2 = sampleCount + 1;
 						sampleCount = num2;
-						list.Find((TypeStat each) => each.Type == type).Increment();
+						typeStats.Find((TypeStat each) => each.Type == type).Increment();
 						string s = text3.Substring(num5 + text.Length, 1);
 						int deck = int.Parse(s);
 						num5 = text3.IndexOf(text2);
@@ -150,11 +150,11 @@ internal class EmptyStuckAnalyzer
 									log.WriteLine("Unable to parse {0}", text5);
 									Environment.Exit(1);
 								}
-								LocStat locStat = list3.Find((LocStat each) => each.Deck == deck && each.Slot == _targetSlot);
+								LocStat locStat = locStats.Find((LocStat each) => each.Deck == deck && each.Slot == _targetSlot);
 								if (locStat == null)
 								{
 									locStat = new LocStat(deck, _targetSlot);
-									list3.Add(locStat);
+									locStats.Add(locStat);
 								}
 								locStat.Increment();
 								if (_targetSlot >= 1 && _targetSlot <= 15)
@@ -167,7 +167,7 @@ internal class EmptyStuckAnalyzer
 					}
 				}
 				log.WriteLine("Analysis: There were {0} total samples.", sampleCount);
-				list2.ForEach(delegate(LookupFailStat fail)
+				lookupFailStats.ForEach(delegate(LookupFailStat fail)
 				{
 					log.WriteLine(" There were {0} lookup failures for matrix {1}", fail.Count, fail.Matrix);
 				});
@@ -175,7 +175,7 @@ internal class EmptyStuckAnalyzer
 				int _d;
 				for (_d = 1; _d <= 8; _d++)
 				{
-					List<LocStat> list4 = list3.FindAll((LocStat each) => each.Deck == _d);
+					List<LocStat> list4 = locStats.FindAll((LocStat each) => each.Deck == _d);
 					log.WriteLine("  Deck {0} had {1} unique failures.", _d, list4.Count);
 					if (dump)
 					{
@@ -190,7 +190,7 @@ internal class EmptyStuckAnalyzer
 				pct *= 100m;
 				log.WriteLine("    Of those, {0} were in the VMZ ( {1}% )", num, pct.ToString("00.00"));
 				log.WriteLine(" Failure type:");
-				list.ForEach(delegate(TypeStat t)
+				typeStats.ForEach(delegate(TypeStat t)
 				{
 					pct = (decimal)t.Count / (decimal)sampleCount * 100m;
 					log.WriteLine("  There were {0} instances of {1} ( {2}% )", t.Count, t.Type.ToString(), pct.ToString("00.00"));
@@ -206,9 +206,9 @@ internal class EmptyStuckAnalyzer
 		}
 		finally
 		{
-			list.Clear();
-			list2.Clear();
-			list3.Clear();
+			typeStats.Clear();
+			lookupFailStats.Clear();
+			locStats.Clear();
 		}
 	}
 

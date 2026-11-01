@@ -14,8 +14,8 @@ internal sealed class MarkLocationsUnknownJobs : NativeJobAdapter
 			return;
 		}
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		List<ILocation> list = new List<ILocation>();
-		using (new DisposeableList<ILocation>(list))
+		List<ILocation> locations = new List<ILocation>();
+		using (new DisposeableList<ILocation>(locations))
 		{
 			for (int i = 0; i < operand; i++)
 			{
@@ -27,7 +27,7 @@ internal sealed class MarkLocationsUnknownJobs : NativeJobAdapter
 					location.ID = "UNKNOWN";
 				}
 			}
-			if (!inventoryService.Save(list))
+			if (!inventoryService.Save(locations))
 			{
 				AddError("FAILED TO UPDATE");
 			}

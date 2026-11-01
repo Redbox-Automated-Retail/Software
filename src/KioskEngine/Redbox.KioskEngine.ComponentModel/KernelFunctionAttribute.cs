@@ -16,7 +16,7 @@ public class KernelFunctionAttribute : Attribute
 
 	public static ReadOnlyCollection<KernelFunctionInfo> GetKernelFunctionInfos(Assembly assembly, string extension)
 	{
-		List<KernelFunctionInfo> list = new List<KernelFunctionInfo>();
+		List<KernelFunctionInfo> kernelFunctionInfoList = new List<KernelFunctionInfo>();
 		Type[] types = assembly.GetTypes();
 		for (int i = 0; i < types.Length; i++)
 		{
@@ -36,11 +36,11 @@ public class KernelFunctionAttribute : Attribute
 						DeprecationWarning = obsoleteAttribute?.Message
 					};
 					kernelFunctionInfo.InnerAttributes.AddRange(array);
-					list.Add(kernelFunctionInfo);
+					kernelFunctionInfoList.Add(kernelFunctionInfo);
 				}
 			}
 		}
-		return list.AsReadOnly();
+		return kernelFunctionInfoList.AsReadOnly();
 	}
 
 	public string GetNamespace()

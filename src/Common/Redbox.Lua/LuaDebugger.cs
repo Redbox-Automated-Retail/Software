@@ -161,29 +161,29 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 
 	public LuaVar[] GetGlobalVars()
 	{
-		List<LuaVar> list = new List<LuaVar>();
+		List<LuaVar> luaVars = new List<LuaVar>();
 		LuaTable luaTable = (LuaTable)Lua["_G"];
 		int num = 1;
 		foreach (object key in luaTable.Keys)
 		{
 			if (!(key.ToString() == "_G"))
 			{
-				list.Add(new LuaVar(num++, key.ToString(), luaTable[key]));
+				luaVars.Add(new LuaVar(num++, key.ToString(), luaTable[key]));
 			}
 		}
-		return list.ToArray();
+		return luaVars.ToArray();
 	}
 
 	public CallStackEntry[] GetCallStack()
 	{
-		List<CallStackEntry> list = new List<CallStackEntry>();
+		List<CallStackEntry> callStackEntries = new List<CallStackEntry>();
 		LuaDebug luaDebug;
 		for (int i = 0; Lua.GetStack(i, out luaDebug); i++)
 		{
 			Lua.GetInfo("nSl", ref luaDebug);
-			list.Add(new CallStackEntry(new LuaDebugInfo(luaDebug)));
+			callStackEntries.Add(new CallStackEntry(new LuaDebugInfo(luaDebug)));
 		}
-		return list.ToArray();
+		return callStackEntries.ToArray();
 	}
 
 	public LuaVar[] GetLocalVars()
@@ -198,14 +198,14 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 
 	public LuaVar[] GetLocalVars(LuaDebug luaDebugInfo)
 	{
-		List<LuaVar> list = new List<LuaVar>();
+		List<LuaVar> luaVars = new List<LuaVar>();
 		int n = 1;
 		for (string local = Lua.GetLocal(luaDebugInfo, n); local != null; local = Lua.GetLocal(luaDebugInfo, n))
 		{
 			object value = Lua.Stack.Pop();
-			list.Add(new LuaVar(n++, local, value));
+			luaVars.Add(new LuaVar(n++, local, value));
 		}
-		return list.ToArray();
+		return luaVars.ToArray();
 	}
 
 	public void SetLocalVar(LuaDebug luaDebugInfo, ref LuaVar var, object newValue)
@@ -239,19 +239,19 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 
 	public LuaVar[] GetUpValues(int functionIndex)
 	{
-		List<LuaVar> list = new List<LuaVar>();
+		List<LuaVar> luaVars = new List<LuaVar>();
 		if (m_state != LuaDebuggerState.Stopped)
 		{
-			return list.ToArray();
+			return luaVars.ToArray();
 		}
 		int num = 1;
 		for (string upValue = Lua.GetUpValue(functionIndex, num); upValue != null; upValue = Lua.GetUpValue(functionIndex, num))
 		{
 			object value = Lua.Stack.Pop();
-			list.Add(new LuaVar(num, upValue, value));
+			luaVars.Add(new LuaVar(num, upValue, value));
 			num++;
 		}
-		return list.ToArray();
+		return luaVars.ToArray();
 	}
 
 	public void SetUpValue(int functionIndex, ref LuaVar var, object newValue)

@@ -148,11 +148,11 @@ public partial class EmvInsertAndTapUserControl : UserControl, IComponentConnect
 	{
 		Storyboard storyboard = new Storyboard();
 		storyboard.RepeatBehavior = RepeatBehavior.Forever;
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(translateTransform);
+		transformGroup.Children.Add(rotateTransform);
 		CardAndHand.RenderTransform = transformGroup;
 		AnimationInfo animationInfo = CreatePhoneAndHandAnimationInfo();
 		AnimationInfo animationInfo2 = CreateInsertChipAnimationInfo();
@@ -318,11 +318,11 @@ public partial class EmvInsertAndTapUserControl : UserControl, IComponentConnect
 
 	private void CreatePhoneAndHandAnimation(Storyboard storyboard, AnimationInfo phoneAndHandAnimationInfo)
 	{
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(translateTransform);
+		transformGroup.Children.Add(rotateTransform);
 		PhoneAndHand.RenderTransform = transformGroup;
 		DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames();
 		doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame

@@ -18,8 +18,8 @@ public class RegistryOptions
 			{
 				return result;
 			}
-			object value = registryKey.GetValue(option);
-			result = (T)ConversionHelper.ChangeType(value, typeof(T));
+			object registryValue = registryKey.GetValue(option);
+			result = (T)ConversionHelper.ChangeType(registryValue, typeof(T));
 			return result;
 		}
 		catch (Exception e)
@@ -43,12 +43,12 @@ public class RegistryOptions
 			{
 				return def;
 			}
-			object value = registryKey.GetValue(option);
-			if (value == null)
+			object registryValue = registryKey.GetValue(option);
+			if (registryValue == null)
 			{
 				return def;
 			}
-			return (T)ConversionHelper.ChangeType(value, typeof(T));
+			return (T)ConversionHelper.ChangeType(registryValue, typeof(T));
 		}
 		catch (Exception e)
 		{

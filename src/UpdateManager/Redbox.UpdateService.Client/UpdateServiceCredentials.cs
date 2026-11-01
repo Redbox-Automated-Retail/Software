@@ -32,22 +32,22 @@ public class UpdateServiceCredentials
 		try
 		{
 			string directoryName = Path.GetDirectoryName(typeof(UpdateService).Assembly.Location);
-			string text = Path.Combine(directoryName, "usdata.active");
+			string path = Path.Combine(directoryName, "usdata.active");
 			string text2 = Path.Combine(directoryName, "usdata.staged");
 			if (File.Exists(text2))
 			{
-				if (File.Exists(text))
+				if (File.Exists(path))
 				{
-					File.Delete(text);
+					File.Delete(path);
 				}
-				File.Move(text2, text);
+				File.Move(text2, path);
 				_credentials = null;
 			}
 			if (_credentials != null)
 			{
 				return _credentials;
 			}
-			if (!File.Exists(text))
+			if (!File.Exists(path))
 			{
 				_credentials = new Credentials
 				{
@@ -56,7 +56,7 @@ public class UpdateServiceCredentials
 				};
 				return _credentials;
 			}
-			byte[] bytes = File.ReadAllBytes(text).Decrypt();
+			byte[] bytes = File.ReadAllBytes(path).Decrypt();
 			_credentials = Encoding.UTF8.GetString(bytes).ToObject<Credentials>();
 			return _credentials;
 		}

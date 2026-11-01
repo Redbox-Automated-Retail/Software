@@ -86,16 +86,16 @@ public class PropertyGridService : IPropertyGridService
 
 	public IPropertyGridItem[] GetProperty(string name)
 	{
-		List<IPropertyGridItem> list = new List<IPropertyGridItem>();
+		List<IPropertyGridItem> propertyGridItems = new List<IPropertyGridItem>();
 		foreach (IPropertyGridCategory value in RootCategories.Values)
 		{
 			IPropertyGridItem property = value.GetProperty(name);
 			if (property != null)
 			{
-				list.Add(property);
+				propertyGridItems.Add(property);
 			}
 		}
-		return list.ToArray();
+		return propertyGridItems.ToArray();
 	}
 
 	public void Clear()

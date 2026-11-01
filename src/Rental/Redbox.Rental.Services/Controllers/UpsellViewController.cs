@@ -71,8 +71,8 @@ public class UpsellViewController : BaseLoyaltyController
 	private static void ConfigureUpsellProductDisplay(UpsellViewModel upsellViewModel)
 	{
 		BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.UpsellInfo.AddMissingUpsellItems(upsellViewModel.UpsellFromTitleType);
-		List<IKioskProduct> list = new List<IKioskProduct>();
-		List<DisplayUpsellProductModel> list2 = new List<DisplayUpsellProductModel>();
+		List<IKioskProduct> kioskProducts = new List<IKioskProduct>();
+		List<DisplayUpsellProductModel> displayUpsellProductModels = new List<DisplayUpsellProductModel>();
 		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IUpsellItem> list3 = new List<IUpsellItem>();
@@ -103,7 +103,7 @@ public class UpsellViewController : BaseLoyaltyController
 				dataService.GetProduct(eachUpsellItem.UpsellProductId, excludeTitleRollup: true, out kioskProduct2);
 				if (kioskProduct2 != null)
 				{
-					list.Add(kioskProduct2);
+					kioskProducts.Add(kioskProduct2);
 				}
 				ITitleProduct titleProduct = kioskProduct2 as ITitleProduct;
 				IList<IPricingRecord> list4 = pricingService?.GetProductPricingRecords(titleProduct?.ProductId ?? 0);
@@ -115,14 +115,14 @@ public class UpsellViewController : BaseLoyaltyController
 				BrowseFunctions.ConfigureBanner(displayUpsellProductModel, titleProduct, hideBanner, bannerType, BaseViewController.GetViewUserControl());
 				displayUpsellProductModel.CheckboxBorderVisibility = ((list3.Count == 1) ? Visibility.Collapsed : Visibility.Visible);
 				displayUpsellProductModel.CheckboxVisibility = ((list3.Count != 1) ? Visibility.Collapsed : Visibility.Visible);
-				list2.Add(displayUpsellProductModel);
+				displayUpsellProductModels.Add(displayUpsellProductModel);
 			}
 		}
 		if (Redbox.Rental.Services.Session.Session.Instance?.BrowseState != null)
 		{
-			Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseProductsShown = list;
+			Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseProductsShown = kioskProducts;
 		}
-		upsellViewModel.DisplayProductModels = list2;
+		upsellViewModel.DisplayProductModels = displayUpsellProductModels;
 	}
 
 	private static void ConfigureCommands(UpsellViewModel upsellViewModel)

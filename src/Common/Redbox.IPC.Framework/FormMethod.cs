@@ -59,7 +59,7 @@ internal class FormMethod
 				{
 					if (m_requiredParameters == null)
 					{
-						List<FormMethodParameter> list = new List<FormMethodParameter>();
+						List<FormMethodParameter> formMethodParameters = new List<FormMethodParameter>();
 						foreach (string key in ParameterCache.Keys)
 						{
 							FormMethodParameter formMethodParameter = ParameterCache[key];
@@ -69,10 +69,10 @@ internal class FormMethod
 							}
 							if (formMethodParameter != null && formMethodParameter.IsRequired())
 							{
-								list.Add(formMethodParameter);
+								formMethodParameters.Add(formMethodParameter);
 							}
 						}
-						m_requiredParameters = list;
+						m_requiredParameters = formMethodParameters;
 					}
 				}
 			}

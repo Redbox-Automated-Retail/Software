@@ -105,16 +105,16 @@ public class MainForm : Form, IWizardView, IShellConfiguration
 	public Redbox.Installer.Framework.ErrorList ConfigurePages()
 	{
 		Redbox.Installer.Framework.ErrorList errorList = new Redbox.Installer.Framework.ErrorList();
-		List<WizardPageBase> list = new List<WizardPageBase>();
+		List<WizardPageBase> wizardPageBases = new List<WizardPageBase>();
 		foreach (PageDefinition page in InstallerProject.Instance.Pages)
 		{
 			errorList.AddRange(DynamicWizardPage.GetWizardPage(page, out var wizardPage));
 			if (!errorList.ContainsError() && wizardPage != null)
 			{
-				list.Add(wizardPage);
+				wizardPageBases.Add(wizardPage);
 			}
 		}
-		WizardPageBase[] array = list.ToArray();
+		WizardPageBase[] array = wizardPageBases.ToArray();
 		m_wizard.Controls.AddRange(array);
 		Wizard.SetPageOrder(array);
 		return errorList;

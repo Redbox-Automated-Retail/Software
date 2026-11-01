@@ -49,18 +49,18 @@ public class XmlFileEditor
 
 	public ReadOnlyCollection<XmlEditorError> Apply()
 	{
-		List<XmlEditorError> list = new List<XmlEditorError>();
+		List<XmlEditorError> xmlEditorErrors = new List<XmlEditorError>();
 		try
 		{
 			if (!File.Exists(FileName))
 			{
-				list.Add(new XmlEditorError
+				xmlEditorErrors.Add(new XmlEditorError
 				{
 					Code = "I006",
 					Description = "Unable to edit XML file '" + FileName + "'; it does not exist.",
 					Details = "Correct the setup script to specify a valid file path."
 				});
-				return list.AsReadOnly();
+				return xmlEditorErrors.AsReadOnly();
 			}
 			NameTable nameTable = new NameTable();
 			XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
@@ -75,17 +75,17 @@ public class XmlFileEditor
 			}
 			catch (Exception ex)
 			{
-				list.Add(new XmlEditorError
+				xmlEditorErrors.Add(new XmlEditorError
 				{
 					Code = "I015",
 					Description = "Unable to parse XML file '" + FileName + "'; see details for more information.",
 					Details = ex.ToString()
 				});
-				return list.AsReadOnly();
+				return xmlEditorErrors.AsReadOnly();
 			}
 			if (xmlDocument.DocumentElement == null)
 			{
-				return list.AsReadOnly();
+				return xmlEditorErrors.AsReadOnly();
 			}
 			foreach (XmlEdit edit in Edits)
 			{
@@ -117,7 +117,7 @@ public class XmlFileEditor
 								item2.InnerText = edit.Value;
 								continue;
 							}
-							list.Add(new XmlEditorError
+							xmlEditorErrors.Add(new XmlEditorError
 							{
 								Code = "I015",
 								Description = $"XPath expression '{edit.XPath}' yielded an XML node type RIX cannot process.",
@@ -128,7 +128,7 @@ public class XmlFileEditor
 				}
 				else if (RaiseErrors)
 				{
-					list.Add(new XmlEditorError
+					xmlEditorErrors.Add(new XmlEditorError
 					{
 						Code = "I015",
 						Description = $"XPath expression '{edit.XPath}' did not yield a valid node(s).",
@@ -144,13 +144,13 @@ public class XmlFileEditor
 		}
 		catch (Exception ex2)
 		{
-			list.Add(new XmlEditorError
+			xmlEditorErrors.Add(new XmlEditorError
 			{
 				Code = "I015",
 				Description = $"Unable to edit XML file {FileName}; see details for exception.",
 				Details = ex2.ToString()
 			});
 		}
-		return list.AsReadOnly();
+		return xmlEditorErrors.AsReadOnly();
 	}
 }

@@ -342,12 +342,12 @@ public class AdServerService : IAdService
 	private async Task<bool> ExpireAll()
 	{
 		_logger?.LogInfoWithSource("Expiring all ads", "ExpireAll");
-		List<Task> list = new List<Task>();
+		List<Task> tasks = new List<Task>();
 		foreach (AdServerCachedAdvertisement item in Cached.Values.ToList())
 		{
-			list.Add(ExpireAdAndRemoveFromCache(item.Ad.Id));
+			tasks.Add(ExpireAdAndRemoveFromCache(item.Ad.Id));
 		}
-		await Task.WhenAll(list);
+		await Task.WhenAll(tasks);
 		Cached.Clear();
 		return true;
 	}
@@ -455,12 +455,12 @@ public class AdServerService : IAdService
 			return;
 		}
 		_logger?.LogInfoWithSource($"Found {list.Count} ads to expire", "ExpireCachedAds");
-		List<Task> list2 = new List<Task>();
+		List<Task> tasks = new List<Task>();
 		foreach (AdServerCachedAdvertisement item in list)
 		{
-			list2.Add(ExpireAdAndRemoveFromCache(item.Ad.Id));
+			tasks.Add(ExpireAdAndRemoveFromCache(item.Ad.Id));
 			_logger?.LogInfoWithSource($"Expiring {item.Ad.Id}, requested {item.Requested}, cached {item.RequestedTime}", "ExpireCachedAds");
 		}
-		await Task.WhenAll(list2);
+		await Task.WhenAll(tasks);
 	}
 }

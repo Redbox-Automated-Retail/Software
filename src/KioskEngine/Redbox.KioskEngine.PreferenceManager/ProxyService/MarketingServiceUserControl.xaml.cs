@@ -252,15 +252,15 @@ public partial class MarketingServiceUserControl : UserControl, IPreferencePageH
 
 	private bool PopulateComboBoxes()
 	{
-		List<ConfirmationStatus> list = new List<ConfirmationStatus>();
+		List<ConfirmationStatus> confirmationStatusList = new List<ConfirmationStatus>();
 		foreach (object value in Enum.GetValues(typeof(ConfirmationStatus)))
 		{
-			if (!list.Contains((ConfirmationStatus)value))
+			if (!confirmationStatusList.Contains((ConfirmationStatus)value))
 			{
-				list.Add((ConfirmationStatus)value);
+				confirmationStatusList.Add((ConfirmationStatus)value);
 			}
 		}
-		list.ForEach(delegate(ConfirmationStatus x)
+		confirmationStatusList.ForEach(delegate(ConfirmationStatus x)
 		{
 			ConfirmationStatusComboBox.Items.Add(x);
 		});

@@ -19,8 +19,8 @@ internal sealed class HWCorrectionStat : IHardwareCorrectionStatistic
 	{
 		if (job.GetStack(out var stack).Success)
 		{
-			int num = int.Parse(stack.Pop());
-			for (int i = 0; i < num; i++)
+			int number = int.Parse(stack.Pop());
+			for (int i = 0; i < number; i++)
 			{
 				HWCorrectionStat item = new HWCorrectionStat
 				{

@@ -17,7 +17,7 @@ public static class RepositoryDiffMerge
 		{
 			rdw = new RepositoryDiffWrapper();
 			List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
-			List<ClientRepositoryDataDTO> list2 = new List<ClientRepositoryDataDTO>();
+			List<ClientRepositoryDataDTO> clientRepositoryDataDTOs = new List<ClientRepositoryDataDTO>();
 			foreach (ClientRepositoryDataDTO item in output)
 			{
 				ClientRepositoryDataDTO i = item;
@@ -53,7 +53,7 @@ public static class RepositoryDiffMerge
 				}
 				else
 				{
-					list2.Add(item);
+					clientRepositoryDataDTOs.Add(item);
 				}
 			}
 			List<string> d = (from inputItem in input
@@ -64,7 +64,7 @@ public static class RepositoryDiffMerge
 				O = Hash(output),
 				I = Hash(input),
 				U = list,
-				A = list2,
+				A = clientRepositoryDataDTOs,
 				D = d
 			};
 			return !verify || Verify(input, rdw);

@@ -116,12 +116,12 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 					remoteServiceResult.Properties["EmailAddress"] = result.EmailAddress;
 					if (result.StoredOffers != null && result.StoredOffers.Count > 0)
 					{
-						List<CustomerOffer> list = new List<CustomerOffer>();
+						List<CustomerOffer> customerOffers = new List<CustomerOffer>();
 						foreach (CustomerOfferResult storedOffer in result.StoredOffers)
 						{
-							list.Add(CustomerOfferFromCustomerOfferResult(storedOffer));
+							customerOffers.Add(CustomerOfferFromCustomerOfferResult(storedOffer));
 						}
-						remoteServiceResult.Properties["StoredOffers"] = list;
+						remoteServiceResult.Properties["StoredOffers"] = customerOffers;
 					}
 					if (result.NewOffers != null && result.NewOffers.Count > 0)
 					{

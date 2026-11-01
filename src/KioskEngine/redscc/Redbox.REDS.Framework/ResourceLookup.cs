@@ -30,7 +30,7 @@ internal static class ResourceLookup
 			}
 			return null;
 		}
-		List<ScoredResource> list = new List<ScoredResource>();
+		List<ScoredResource> scoredResources = new List<ScoredResource>();
 		IResource each;
 		foreach (IResource item in collection)
 		{
@@ -58,18 +58,18 @@ internal static class ResourceLookup
 					}
 				}
 			}
-			list.Add(new ScoredResource
+			scoredResources.Add(new ScoredResource
 			{
 				Score = num,
 				Resource = each
 			});
 		}
-		list.Sort((ScoredResource x, ScoredResource y) => y.Score.CompareTo(x.Score));
-		if (list.Count <= 0)
+		scoredResources.Sort((ScoredResource x, ScoredResource y) => y.Score.CompareTo(x.Score));
+		if (scoredResources.Count <= 0)
 		{
 			return null;
 		}
-		return list[0].Resource;
+		return scoredResources[0].Resource;
 	}
 
 	public static IResource GetResource2(MultiDictionary<string, IResource> resources, string name, IResourceBundleFilter filter)
@@ -88,7 +88,7 @@ internal static class ResourceLookup
 			}
 			return null;
 		}
-		List<ScoredResource> list = new List<ScoredResource>();
+		List<ScoredResource> scoredResources = new List<ScoredResource>();
 		IResource each;
 		foreach (IResource item in collection)
 		{
@@ -116,18 +116,18 @@ internal static class ResourceLookup
 					}
 				}
 			}
-			list.Add(new ScoredResource
+			scoredResources.Add(new ScoredResource
 			{
 				Score = num,
 				Resource = each
 			});
 		}
-		list.Sort((ScoredResource x, ScoredResource y) => y.Score.CompareTo(x.Score));
-		if (list.Count <= 0)
+		scoredResources.Sort((ScoredResource x, ScoredResource y) => y.Score.CompareTo(x.Score));
+		if (scoredResources.Count <= 0)
 		{
 			return null;
 		}
-		return list[0].Resource;
+		return scoredResources[0].Resource;
 	}
 
 	private static bool IsResourceEffective(IResource resource)

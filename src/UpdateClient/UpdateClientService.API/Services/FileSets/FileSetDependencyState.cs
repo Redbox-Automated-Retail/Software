@@ -68,9 +68,9 @@ public class FileSetDependencyState
 
 	private bool IsStringDependencyMet(string sourceVersion, string minVersion, string maxVersion)
 	{
-		string text = sourceVersion.Trim();
+		string trimmed = sourceVersion.Trim();
 		string strB = minVersion.Trim();
-		if (text.CompareTo(strB) < 0)
+		if (trimmed.CompareTo(strB) < 0)
 		{
 			return false;
 		}
@@ -79,7 +79,7 @@ public class FileSetDependencyState
 			return true;
 		}
 		string strB2 = maxVersion.Trim();
-		if (text.CompareTo(strB2) > 0)
+		if (trimmed.CompareTo(strB2) > 0)
 		{
 			return false;
 		}

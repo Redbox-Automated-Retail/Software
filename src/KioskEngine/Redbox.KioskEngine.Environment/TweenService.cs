@@ -119,13 +119,13 @@ public class TweenService : ITweenService
 	{
 		lock (m_syncObject)
 		{
-			List<Tween> list = new List<Tween>(Tweens.Values);
-			for (int i = 0; i < list.Count && i < list.Count; i++)
+			List<Tween> tweens = new List<Tween>(Tweens.Values);
+			for (int i = 0; i < tweens.Count && i < tweens.Count; i++)
 			{
-				if (!list[i].Update())
+				if (!tweens[i].Update())
 				{
-					list[i].RaiseEnd();
-					list[i].Enabled = false;
+					tweens[i].RaiseEnd();
+					tweens[i].Enabled = false;
 				}
 			}
 		}

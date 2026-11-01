@@ -60,9 +60,9 @@ public class KernelService : IKernelService
 	{
 		try
 		{
-			string text = data.ToJson();
-			_logger.LogInfoWithSource("sync time data: " + text, "SyncTimeAndTimezone", "/sln/src/UpdateClientService.API/Services/Kernel/KernelService.cs");
-			SyncTimestampAndTimeZoneData syncTimestampAndTimeZoneData = JsonConvert.DeserializeObject<SyncTimestampAndTimeZoneData>(text);
+			string json = data.ToJson();
+			_logger.LogInfoWithSource("sync time data: " + json, "SyncTimeAndTimezone", "/sln/src/UpdateClientService.API/Services/Kernel/KernelService.cs");
+			SyncTimestampAndTimeZoneData syncTimestampAndTimeZoneData = JsonConvert.DeserializeObject<SyncTimestampAndTimeZoneData>(json);
 			if (syncTimestampAndTimeZoneData == null)
 			{
 				_logger.LogErrorWithSource("unable to deserialize sync time data!", "SyncTimeAndTimezone", "/sln/src/UpdateClientService.API/Services/Kernel/KernelService.cs");

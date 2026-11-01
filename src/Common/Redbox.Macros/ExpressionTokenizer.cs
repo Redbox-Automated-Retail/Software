@@ -162,8 +162,8 @@ public class ExpressionTokenizer
 			if (c == '_' || char.IsLetter(c))
 			{
 				CurrentToken = TokenType.Keyword;
-				StringBuilder stringBuilder2 = new StringBuilder();
-				stringBuilder2.Append(c);
+				StringBuilder builder = new StringBuilder();
+				builder.Append(c);
 				ReadChar();
 				while ((num = PeekChar()) != -1)
 				{
@@ -171,7 +171,7 @@ public class ExpressionTokenizer
 					if (c2 == '_' || c2 == '-' || c2 == '.' || c2 == '\\' || char.IsLetterOrDigit(c2))
 					{
 						ReadChar();
-						stringBuilder2.Append(c2);
+						builder.Append(c2);
 						continue;
 					}
 					if (c2 != ':' || PeekChar2() == 58)
@@ -179,9 +179,9 @@ public class ExpressionTokenizer
 						break;
 					}
 					ReadChar();
-					stringBuilder2.Append(':');
+					builder.Append(':');
 				}
-				TokenText = stringBuilder2.ToString();
+				TokenText = builder.ToString();
 				if (TokenText.EndsWith("-") || TokenText.EndsWith(".") || TokenText.EndsWith(":"))
 				{
 					throw new ExpressionParseException(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1182"), TokenText), CurrentPosition.CharIndex);

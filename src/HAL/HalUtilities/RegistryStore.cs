@@ -18,12 +18,12 @@ internal sealed class RegistryStore
 			{
 				return def;
 			}
-			object value = registryKey.GetValue(option);
-			if (value == null)
+			object registryValue = registryKey.GetValue(option);
+			if (registryValue == null)
 			{
 				return def;
 			}
-			return (T)ChangeType(value, typeof(T));
+			return (T)ChangeType(registryValue, typeof(T));
 		}
 		catch (Exception)
 		{

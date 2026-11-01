@@ -57,38 +57,38 @@ public class ResourceBundleSet : IResourceBundleSet
 
 	public ReadOnlyCollection<IResource> GetResources(string typeName, IResourceBundleFilter filter)
 	{
-		List<IResource> list = new List<IResource>();
+		List<IResource> resources = new List<IResource>();
 		foreach (string bundle in Bundles.GetBundles())
 		{
 			foreach (IBundleSpecifier bundleVersion in Bundles.GetBundleVersions(bundle))
 			{
-				list.AddRange(bundleVersion.Instance.GetResources(typeName, filter));
+				resources.AddRange(bundleVersion.Instance.GetResources(typeName, filter));
 			}
 		}
-		return list.AsReadOnly();
+		return resources.AsReadOnly();
 	}
 
 	public ReadOnlyCollection<IBundleSpecifier> GetBundles()
 	{
-		List<IBundleSpecifier> list = new List<IBundleSpecifier>();
+		List<IBundleSpecifier> bundleSpecifiers = new List<IBundleSpecifier>();
 		foreach (IBundleSpecifier allBundleVersion in Bundles.GetAllBundleVersions())
 		{
-			list.Add(allBundleVersion);
+			bundleSpecifiers.Add(allBundleVersion);
 		}
-		return list.AsReadOnly();
+		return bundleSpecifiers.AsReadOnly();
 	}
 
 	public ReadOnlyCollection<IResource> GetResourcesUnfiltered(string typeName)
 	{
-		List<IResource> list = new List<IResource>();
+		List<IResource> resources = new List<IResource>();
 		foreach (string bundle in Bundles.GetBundles())
 		{
 			foreach (IBundleSpecifier bundleVersion in Bundles.GetBundleVersions(bundle))
 			{
-				list.AddRange(bundleVersion.Instance.GetAllResources(typeName));
+				resources.AddRange(bundleVersion.Instance.GetAllResources(typeName));
 			}
 		}
-		return list.AsReadOnly();
+		return resources.AsReadOnly();
 	}
 
 	public IResource GetResource(string name, IResourceBundleFilter filter)

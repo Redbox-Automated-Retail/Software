@@ -319,11 +319,11 @@ public class DownloadFilesService : IDownloadFilesService
 
 	private bool TryDownloadAndExecuteScript(DownloadFileJob job, DownloadData download)
 	{
-		string text = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".ps1");
+		string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".ps1");
 		Directory.CreateDirectory(Path.GetTempPath());
-		File.Copy(download.Path, text);
-		bool result = !_cmdService.TryExecutePowerShellScriptFromFile(text);
-		File.Delete(text);
+		File.Copy(download.Path, path);
+		bool result = !_cmdService.TryExecutePowerShellScriptFromFile(path);
+		File.Delete(path);
 		return result;
 	}
 

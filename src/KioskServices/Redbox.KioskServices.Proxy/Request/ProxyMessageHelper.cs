@@ -80,7 +80,7 @@ public class ProxyMessageHelper
 				group x by x.Action)
 			{
 				LineItemGroupType groupType = ((item.Key == RentalShoppingCartItemAction.rental) ? LineItemGroupType.Rental : LineItemGroupType.Purchase);
-				List<LineItem> list = new List<LineItem>();
+				List<LineItem> lineItems = new List<LineItem>();
 				foreach (IRentalShoppingCartTitleItem item2 in item)
 				{
 					IUpsellItem upsellItemByRentalShoppingCartItem = rentalShoppingCart.UpsellInfo.GetUpsellItemByRentalShoppingCartItem(item2);
@@ -96,7 +96,7 @@ public class ProxyMessageHelper
 						};
 					}
 					IPricingRecord pricingRecord = item2?.PricingRecord;
-					list.Add(new LineItem
+					lineItems.Add(new LineItem
 					{
 						Barcode = item2.Barcode,
 						BlurayUpsell = blurayUpsell,
@@ -130,7 +130,7 @@ public class ProxyMessageHelper
 				shoppingCart.Groups.Add(new LineItemGroup
 				{
 					GroupType = groupType,
-					Items = list,
+					Items = lineItems,
 					Totals = new Totals
 					{
 						DiscountedSubtotal = subTotalGroup.SubTotal,

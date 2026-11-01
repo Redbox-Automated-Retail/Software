@@ -60,9 +60,9 @@ public class OptionValue
 		}
 		else
 		{
-			object value2 = ConversionHelper.ChangeType(value, m_member.Type);
-			EnsureConstraints(value2);
-			m_member.SetValue(m_container, value2);
+			object converted = ConversionHelper.ChangeType(value, m_member.Type);
+			EnsureConstraints(converted);
+			m_member.SetValue(m_container, converted);
 		}
 	}
 

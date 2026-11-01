@@ -157,7 +157,7 @@ public sealed class HardwareJob
 	public HardwareCommandResult GetResults(out ProgramResult[] results)
 	{
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB get-results job: '{ID}'");
-		List<ProgramResult> list = new List<ProgramResult>();
+		List<ProgramResult> programResults = new List<ProgramResult>();
 		try
 		{
 			if (hardwareCommandResult.Success)
@@ -167,16 +167,16 @@ public sealed class HardwareJob
 					ProgramResult programResult = ProgramResult.FromString(commandMessage);
 					if (programResult != null)
 					{
-						list.Add(programResult);
+						programResults.Add(programResult);
 					}
 				}
 			}
-			results = list.ToArray();
+			results = programResults.ToArray();
 			return hardwareCommandResult;
 		}
 		finally
 		{
-			list.Clear();
+			programResults.Clear();
 		}
 	}
 

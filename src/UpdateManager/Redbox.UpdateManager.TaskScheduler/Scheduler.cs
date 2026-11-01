@@ -482,17 +482,17 @@ public class Scheduler : ITaskScheduler
 	{
 		try
 		{
-			string text = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "default-schedule.lua");
+			string path = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "default-schedule.lua");
 			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (!File.Exists(text))
+			if (!File.Exists(path))
 			{
-				LogHelper.Instance.Log("RunDefaultSchedule: Script: {0} not found.", text);
+				LogHelper.Instance.Log("RunDefaultSchedule: Script: {0} not found.", path);
 				return;
 			}
 			dataStoreService.Set("config-schedule", new object());
 			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-			string chunk = File.ReadAllText(text);
-			LogHelper.Instance.Log("RunDefaultSchedule: Executing lua script at {0}", text);
+			string chunk = File.ReadAllText(path);
+			LogHelper.Instance.Log("RunDefaultSchedule: Executing lua script at {0}", path);
 			kernelService.ExecuteChunk(chunk);
 		}
 		catch (Exception e)

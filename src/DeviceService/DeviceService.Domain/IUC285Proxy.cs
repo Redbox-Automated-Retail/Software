@@ -2181,12 +2181,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	private bool Offline(int attempts = 3)
 	{
 		ERROR_ID errorId = ERROR_ID.RESULT_ERROR;
-		List<ERROR_ID> list = new List<ERROR_ID>();
+		List<ERROR_ID> eRROR_IDs = new List<ERROR_ID>();
 		while (errorId != ERROR_ID.RESULT_SUCCESS && attempts-- > 0)
 		{
 			errorId = _rba_api.ProcessMessage(MESSAGE_ID.M00_OFFLINE);
 			HandleAndLogResult(errorId, "00 Offline");
-			list.Add(errorId);
+			eRROR_IDs.Add(errorId);
 			int num = 5250;
 			if (errorId == ERROR_ID.RESULT_SUCCESS && !_areOfflineResponse.WaitOne(num))
 			{
@@ -2194,7 +2194,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				return false;
 			}
 		}
-		if (list.All((ERROR_ID x) => x == ERROR_ID.RESULT_ERROR_TIMEOUT))
+		if (eRROR_IDs.All((ERROR_ID x) => x == ERROR_ID.RESULT_ERROR_TIMEOUT))
 		{
 			Reconnect();
 		}

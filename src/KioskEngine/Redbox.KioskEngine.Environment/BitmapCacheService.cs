@@ -276,17 +276,17 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 	{
 		int num = Math.Max(0, _bitmapImages.Count - maximumItems);
 		LogHelper.Instance.Log("Trim the bitmap image cache:");
-		List<ImageUsage> list = new List<ImageUsage>();
+		List<ImageUsage> imageUsages = new List<ImageUsage>();
 		foreach (KeyValuePair<string, int> item in _bitmapImageUsageCount)
 		{
-			list.Add(new ImageUsage
+			imageUsages.Add(new ImageUsage
 			{
 				Name = item.Key,
 				Uses = item.Value
 			});
 		}
-		list.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
-		foreach (ImageUsage item2 in list.Take(num))
+		imageUsages.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
+		foreach (ImageUsage item2 in imageUsages.Take(num))
 		{
 			LogHelper.Instance.Log("...Trim bitmap image '{0}' from the cache.", item2.Name);
 			_bitmapImages.Remove(item2.Name);
@@ -304,7 +304,7 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			return num;
 		}
 		LogHelper.Instance.Log("Trim the image cache:");
-		List<ImageUsage> list = new List<ImageUsage>();
+		List<ImageUsage> imageUsages = new List<ImageUsage>();
 		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		if (renderingService != null)
 		{
@@ -312,7 +312,7 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			{
 				if (!renderingService.IsBitmapReferenced(image.Value.Instance))
 				{
-					list.Add(new ImageUsage
+					imageUsages.Add(new ImageUsage
 					{
 						Name = image.Key,
 						Uses = (m_usageCounts.ContainsKey(image.Key) ? m_usageCounts[image.Key] : 0)
@@ -320,10 +320,10 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 				}
 			}
 		}
-		list.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
+		imageUsages.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
 		for (int num2 = 0; num2 < m_images.Count - maximumItems; num2++)
 		{
-			string name = list[num2].Name;
+			string name = imageUsages[num2].Name;
 			LogHelper.Instance.Log("...Trim image '{0}' from the cache.", name);
 			ImageTracker imageTracker = m_images[name];
 			try

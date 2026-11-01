@@ -28,11 +28,11 @@ internal sealed class GetRegisterValueCommand : TextCommand
 			LogHelper.Instance.Log("The response packet for GetRegister is malformed ( found '{0}' packet ).", (parsedPackets.Length == 0) ? "nil" : parsedPackets[0].RawPacketType.ToString());
 			return false;
 		}
-		int num = int.Parse(Register.Value);
+		int number = int.Parse(Register.Value);
 		string text = Encoding.ASCII.GetString(parsedPackets[0].PayloadData, 0, 8);
 		try
 		{
-			if (int.Parse(text, NumberStyles.HexNumber) != num)
+			if (int.Parse(text, NumberStyles.HexNumber) != number)
 			{
 				LogHelper.Instance.Log("[GetRegisterValue] register {0} expected value {1} found {2}", Register.Register, Register.Value, text);
 				return false;

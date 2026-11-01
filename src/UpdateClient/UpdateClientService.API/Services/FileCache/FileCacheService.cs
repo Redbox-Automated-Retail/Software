@@ -109,7 +109,7 @@ public class FileCacheService : IFileCacheService
 				return result;
 			}
 			string revisionFilePath = GetRevisionFilePath(fileSetId, fileId, filePatchRevisionId);
-			List<Error> list = new List<Error>();
+			List<Error> errors = new List<Error>();
 			using (FileStream fileStream = new FileStream(revisionFilePath, FileMode.Open, FileAccess.Read))
 			{
 				fileStream.Position = 0L;
@@ -117,14 +117,14 @@ public class FileCacheService : IFileCacheService
 				memoryStream.Position = 0L;
 				string revisionFilePath2 = GetRevisionFilePath(fileSetId, fileId, fileRevisionId);
 				using FileStream target = new FileStream(revisionFilePath2, FileMode.OpenOrCreate, FileAccess.Write);
-				list.AddRange(XDeltaHelper.Apply(fileStream, memoryStream, target));
+				errors.AddRange(XDeltaHelper.Apply(fileStream, memoryStream, target));
 			}
 			string fileInfoPath = GetFileInfoPath(fileSetId, fileId, fileRevisionId);
 			File.WriteAllText(fileInfoPath, info);
 			_logger.LogInfoWithSource("FileCacheService.AddFilePatch - Info: " + info, "AddFilePatch", "/sln/src/UpdateClientService.API/Services/FileCache/FileCacheService.cs");
-			if (list.Count > 0)
+			if (errors.Count > 0)
 			{
-				_logger.LogErrorWithSource(list[0].Message, "AddFilePatch", "/sln/src/UpdateClientService.API/Services/FileCache/FileCacheService.cs");
+				_logger.LogErrorWithSource(errors[0].Message, "AddFilePatch", "/sln/src/UpdateClientService.API/Services/FileCache/FileCacheService.cs");
 			}
 			else
 			{
@@ -222,7 +222,7 @@ public class FileCacheService : IFileCacheService
 	public bool GetFile(long fileSetId, long fileId, long fileRevisionId, out byte[] data)
 	{
 		data = null;
-		List<Error> list = new List<Error>();
+		List<Error> errors = new List<Error>();
 		try
 		{
 			string revisionFilePath = GetRevisionFilePath(fileSetId, fileId, fileRevisionId);
@@ -234,7 +234,7 @@ public class FileCacheService : IFileCacheService
 		}
 		catch (Exception arg)
 		{
-			list.Add(new Error
+			errors.Add(new Error
 			{
 				Message = $"FileCacheService.GetFile Unhandled exception occurred. {arg}"
 			});

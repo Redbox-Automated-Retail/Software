@@ -609,7 +609,7 @@ public sealed class HardwareService
 
 	public HardwareCommandResult SuspendJobsBelowPriority(HardwareJobPriority priority, out HardwareJob[] suspendedJobs)
 	{
-		List<HardwareJob> list = new List<HardwareJob>();
+		List<HardwareJob> hardwareJobs = new List<HardwareJob>();
 		HardwareJob[] jobs = null;
 		HardwareCommandResult hardwareCommandResult = new HardwareCommandResult();
 		HardwareCommandResult jobs2 = GetJobs(out jobs);
@@ -619,7 +619,7 @@ public sealed class HardwareService
 			{
 				hardwareCommandResult.Errors.AddRange(jobs2.Errors);
 			}
-			suspendedJobs = list.ToArray();
+			suspendedJobs = hardwareJobs.ToArray();
 			return hardwareCommandResult;
 		}
 		HardwareJob[] array = jobs;
@@ -630,7 +630,7 @@ public sealed class HardwareService
 				HardwareCommandResult hardwareCommandResult2 = hardwareJob.Suspend();
 				if (hardwareCommandResult2.Success)
 				{
-					list.Add(hardwareJob);
+					hardwareJobs.Add(hardwareJob);
 				}
 				else if (hardwareCommandResult2.Errors.Count > 0)
 				{
@@ -638,7 +638,7 @@ public sealed class HardwareService
 				}
 			}
 		}
-		suspendedJobs = list.ToArray();
+		suspendedJobs = hardwareJobs.ToArray();
 		return hardwareCommandResult;
 	}
 

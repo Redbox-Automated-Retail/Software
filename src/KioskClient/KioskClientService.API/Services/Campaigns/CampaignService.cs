@@ -305,12 +305,12 @@ internal class CampaignService : ICampaignService
 			_logger.LogInfoWithSource($"campaign id: {startScreenDetail.CampaignId}, promos: {string.Join(',', enumerable)}", "ValidatePromoCodes");
 			hashSet.UnionWith(enumerable);
 		}
-		List<Task> list = new List<Task>();
+		List<Task> tasks = new List<Task>();
 		foreach (string item in hashSet)
 		{
-			list.Add(ValidatePromoCode(item));
+			tasks.Add(ValidatePromoCode(item));
 		}
-		await Task.WhenAll(list);
+		await Task.WhenAll(tasks);
 	}
 
 	private async Task<PromotionCodeValidationResponse> ValidatePromoCode(string code)

@@ -90,13 +90,13 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 		}
 		try
 		{
-			using RegistryKey registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
+			using RegistryKey key = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
 			string text = string.Empty;
-			object value = registryKey.GetValue("RebootTime");
-			LogHelper.Instance.Log(LogEntryType.Debug, "[ExecutionEngine] rtValue = {0}", value.ToString());
-			if (value != null)
+			object registryValue = key.GetValue("RebootTime");
+			LogHelper.Instance.Log(LogEntryType.Debug, "[ExecutionEngine] rtValue = {0}", registryValue.ToString());
+			if (registryValue != null)
 			{
-				text = ConversionHelper.ChangeType<string>(value);
+				text = ConversionHelper.ChangeType<string>(registryValue);
 			}
 			if (!string.IsNullOrEmpty(text))
 			{

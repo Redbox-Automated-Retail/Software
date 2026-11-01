@@ -73,17 +73,17 @@ public class BitsDownloader : BaseDownloader
 			{
 				return false;
 			}
-			List<Error> list = new List<Error>();
+			List<Error> errors = new List<Error>();
 			foreach (ITransferJob item in jobs)
 			{
 				DownloadData byBitsGuid = downloadList.GetByBitsGuid(item.ID);
 				if (byBitsGuid == null)
 				{
 					_logger.LogInfoWithSource($"Clearing bits job, guid {item.ID} that has no download file changeset.", "Cleanup", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
-					list.AddRange(item.Cancel());
+					errors.AddRange(item.Cancel());
 				}
 			}
-			flag = !list.Any();
+			flag = !errors.Any();
 		}
 		catch (Exception ex)
 		{
@@ -142,21 +142,21 @@ public class BitsDownloader : BaseDownloader
 		_logger.LogInfoWithSource(string.Format("{0} checking state: {1} for {2}", "Bits downloader", downloadData.DownloadState, downloadData.Key), "CheckNone", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
 		try
 		{
-			List<Error> list = new List<Error>();
+			List<Error> errors = new List<Error>();
 			string name = $"<UCS::~{downloadData.Key}~::UCS>";
-			list.AddRange(_transferService.CreateDownloadJob(name, out var job));
-			list.AddRange(job.SetMinimumRetryDelay(60u));
-			list.AddRange(job.SetNoProgressTimeout(0u));
-			list.AddRange(job.SetPriority(GetJobPriority(downloadData)));
-			list.AddRange(job.AddItem(downloadData.Url, Path.GetTempFileName()));
-			if (list.Any())
+			errors.AddRange(_transferService.CreateDownloadJob(name, out var job));
+			errors.AddRange(job.SetMinimumRetryDelay(60u));
+			errors.AddRange(job.SetNoProgressTimeout(0u));
+			errors.AddRange(job.SetPriority(GetJobPriority(downloadData)));
+			errors.AddRange(job.AddItem(downloadData.Url, Path.GetTempFileName()));
+			if (errors.Any())
 			{
 				processDownloadDataInfo.Success = false;
-				list.AddRange(job.Cancel());
+				errors.AddRange(job.Cancel());
 				if (downloadData.RetryCount == 10)
 				{
 					downloadData.DownloadState = DownloadState.Error;
-					list.Add(new Error
+					errors.Add(new Error
 					{
 						Message = $"Retry limit exceeded for {job.ID}"
 					});
@@ -165,7 +165,7 @@ public class BitsDownloader : BaseDownloader
 				{
 					downloadData.DownloadState = DownloadState.None;
 				}
-				downloadData.Message = string.Join(",", from e in list
+				downloadData.Message = string.Join(",", from e in errors
 					where !string.IsNullOrWhiteSpace(e.Message)
 					select e.Message);
 				downloadData.RetryCount++;
@@ -173,10 +173,10 @@ public class BitsDownloader : BaseDownloader
 			}
 			else
 			{
-				list.AddRange(job.Resume());
-				if (list.Any())
+				errors.AddRange(job.Resume());
+				if (errors.Any())
 				{
-					await processDownloadDataInfo.Update(DownloadState.Error, list[0].Message);
+					await processDownloadDataInfo.Update(DownloadState.Error, errors[0].Message);
 					return;
 				}
 				downloadData.BitsGuid = job.ID;
@@ -261,10 +261,10 @@ public class BitsDownloader : BaseDownloader
 		try
 		{
 			_logger.LogInfoWithSource("Bits downloader FinishBitsDownload for " + downloadData.Key, "FinishBitsDownload", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
-			List<Error> list = new List<Error>();
-			list.AddRange(job.GetItems(out var items));
-			list.AddRange(job.Complete());
-			if (list.Any())
+			List<Error> errors = new List<Error>();
+			errors.AddRange(job.GetItems(out var items));
+			errors.AddRange(job.Complete());
+			if (errors.Any())
 			{
 				job.Cancel();
 				await processDownloadDataInfo.Update(DownloadState.Error, $"BitsDownloader -> Job {job.ID} get items or completion failed. This download will be canceled.");
@@ -330,28 +330,28 @@ public class BitsDownloader : BaseDownloader
 		}
 		_logger.LogInfoWithSource(string.Format("{0} checking state: {1} for {2}", "Bits downloader", downloadData.DownloadState, downloadData.Key), "CheckError", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
 		_ = downloadData.BitsGuid;
-		List<Error> list = new List<Error>();
+		List<Error> errors = new List<Error>();
 		if (GetDownloadFileBitsJobs(out var jobs))
 		{
 			ITransferJob transferJob = jobs.Where((ITransferJob j) => j.ID == downloadData.BitsGuid).FirstOrDefault();
 			if (transferJob != null)
 			{
-				list.AddRange(transferJob.GetErrors());
-				string text = string.Join(", ", list.Select((Error x) => x.Message));
+				errors.AddRange(transferJob.GetErrors());
+				string text = string.Join(", ", errors.Select((Error x) => x.Message));
 				_logger.LogWarningWithSource("Bits job error message for DownloadData " + downloadData.Key + ": " + text, "CheckError", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
-				list.AddRange(transferJob.Cancel());
+				errors.AddRange(transferJob.Cancel());
 			}
 		}
-		processDownloadDataInfo.Success &= !list.Any();
+		processDownloadDataInfo.Success &= !errors.Any();
 		bool success = processDownloadDataInfo.Success;
 		processDownloadDataInfo.Success = success & await DeleteDownload(downloadData);
 	}
 
 	private bool GetDownloadFileBitsJobs(out List<ITransferJob> jobs)
 	{
-		List<Error> list = new List<Error>();
-		list.AddRange(_transferService.GetJobs(out jobs, allUsers: false));
-		if (list.Any())
+		List<Error> errors = new List<Error>();
+		errors.AddRange(_transferService.GetJobs(out jobs, allUsers: false));
+		if (errors.Any())
 		{
 			jobs = new List<ITransferJob>();
 		}
@@ -359,7 +359,7 @@ public class BitsDownloader : BaseDownloader
 		{
 			jobs = jobs.Where((ITransferJob j) => j.Name.StartsWith("<UCS::~") && j.Name.EndsWith("~::UCS>")).ToList();
 		}
-		return !list.Any();
+		return !errors.Any();
 	}
 
 	private bool CheckHash(string filePath, string hash, out string fileHash)

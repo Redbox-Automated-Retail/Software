@@ -50,13 +50,13 @@ internal sealed class KioskTest_R717 : AbstractKioskTest
 	protected override int OnCleanup(TestLocation diskSource)
 	{
 		LogHelper.Instance.Log("## Schedule load bin job ##");
-		List<Location> list = new List<Location>();
-		list.Add(new Location
+		List<Location> locations = new List<Location>();
+		locations.Add(new Location
 		{
 			Deck = diskSource.Deck,
 			Slot = diskSource.Slot
 		});
-		if (!ScheduleAndBlockLoadBinJob(list))
+		if (!ScheduleAndBlockLoadBinJob(locations))
 		{
 			return -9;
 		}

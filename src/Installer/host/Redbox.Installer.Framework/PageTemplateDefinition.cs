@@ -307,17 +307,17 @@ public class PageTemplateDefinition : Definition, IDisposable
 				foreach (ConstructorInfo item2 in list)
 				{
 					int num = 0;
-					List<ParameterInfo> list2 = new List<ParameterInfo>(item2.GetParameters());
+					List<ParameterInfo> parameterInfoList = new List<ParameterInfo>(item2.GetParameters());
 					foreach (string property2 in node.GetProperties())
 					{
 						string candidateParameterName = property2;
-						ParameterInfo parameterInfo = list2.Find((ParameterInfo eachParam) => string.Compare(candidateParameterName, eachParam.Name, ignoreCase: true) == 0);
+						ParameterInfo parameterInfo = parameterInfoList.Find((ParameterInfo eachParam) => string.Compare(candidateParameterName, eachParam.Name, ignoreCase: true) == 0);
 						if (parameterInfo != null)
 						{
 							num++;
 						}
 					}
-					if (num == list2.Count)
+					if (num == parameterInfoList.Count)
 					{
 						constructorInfo = item2;
 						break;
@@ -352,16 +352,16 @@ public class PageTemplateDefinition : Definition, IDisposable
 			else
 			{
 				string addTarget = node.Properties["Add-Target"];
-				List<PropertyInfo> list5 = new List<PropertyInfo>(parent.GetType().GetProperties());
-				PropertyInfo propertyInfo = list5.Find((PropertyInfo eachProp) => eachProp.Name == addTarget);
+				List<PropertyInfo> propertyInfoList = new List<PropertyInfo>(parent.GetType().GetProperties());
+				PropertyInfo propertyInfo = propertyInfoList.Find((PropertyInfo eachProp) => eachProp.Name == addTarget);
 				if (propertyInfo != null)
 				{
 					object value = propertyInfo.GetValue(parent, null);
 					if (value != null)
 					{
-						List<Type> list6 = new List<Type>();
-						list6.Add(type);
-						List<Type> list7 = list6;
+						List<Type> types = new List<Type>();
+						types.Add(type);
+						List<Type> list7 = types;
 						List<object> list8 = new List<object>();
 						list8.Add(node.Instance);
 						List<object> list9 = list8;

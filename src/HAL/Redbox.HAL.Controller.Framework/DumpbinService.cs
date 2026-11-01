@@ -125,8 +125,8 @@ internal sealed class DumpbinService : IDumpbinService
 		{
 			return;
 		}
-		List<IDumpBinInventoryItem> list = new List<IDumpBinInventoryItem>();
-		using (new DisposeableList<IDumpBinInventoryItem>(list))
+		List<IDumpBinInventoryItem> dumpBinInventoryItems = new List<IDumpBinInventoryItem>();
+		using (new DisposeableList<IDumpBinInventoryItem>(dumpBinInventoryItems))
 		{
 			foreach (XmlNode item in xmlNodeList)
 			{
@@ -145,12 +145,12 @@ internal sealed class DumpbinService : IDumpbinService
 						timestamp = DateTime.Now;
 					}
 				}
-				list.Add(tableTypeFactory.NewBinItem(attributeValue, timestamp));
+				dumpBinInventoryItems.Add(tableTypeFactory.NewBinItem(attributeValue, timestamp));
 			}
-			if (list.Count > 0)
+			if (dumpBinInventoryItems.Count > 0)
 			{
-				Table.Insert(list);
-				m_itemCount += list.Count;
+				Table.Insert(dumpBinInventoryItems);
+				m_itemCount += dumpBinInventoryItems.Count;
 			}
 		}
 	}

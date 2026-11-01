@@ -176,7 +176,7 @@ internal class SyncCheck
 			}
 		}
 		ReadData readData = null;
-		List<ReadData> list = new List<ReadData>();
+		List<ReadData> readDataList = new List<ReadData>();
 		try
 		{
 			using StreamWriter streamWriter = new StreamWriter(path);
@@ -207,7 +207,7 @@ internal class SyncCheck
 								Environment.Exit(1);
 							}
 							readData = new ReadData(deck, result);
-							list.Add(readData);
+							readDataList.Add(readData);
 						}
 					}
 					else
@@ -243,32 +243,32 @@ internal class SyncCheck
 					}
 				}
 			}
-			list.RemoveAll((ReadData each) => each.IsEmpty);
-			Console.WriteLine("There are {0} readable disks.", list.Count);
-			List<ReadData> list2 = list.FindAll((ReadData each) => each.SecureFound && !each.Read);
+			readDataList.RemoveAll((ReadData each) => each.IsEmpty);
+			Console.WriteLine("There are {0} readable disks.", readDataList.Count);
+			List<ReadData> list2 = readDataList.FindAll((ReadData each) => each.SecureFound && !each.Read);
 			Console.WriteLine(" {0} read only the secure code.", list2.Count);
 			list2.ForEach(delegate(ReadData item)
 			{
 				Console.WriteLine("   YesOnly: deck = {0} slot = {1}", item.Deck, item.Slot);
 			});
-			List<ReadData> list3 = list.FindAll((ReadData each) => each.Read && !each.SecureFound);
+			List<ReadData> list3 = readDataList.FindAll((ReadData each) => each.Read && !each.SecureFound);
 			Console.WriteLine(" {0} read only the std code.", list3.Count);
 			list3.ForEach(delegate(ReadData item)
 			{
 				Console.WriteLine("   MatrixOnly: deck = {0} slot = {1}", item.Deck, item.Slot);
 			});
-			int count = list.FindAll((ReadData each) => each.Read && each.SecureFound).Count;
+			int count = readDataList.FindAll((ReadData each) => each.Read && each.SecureFound).Count;
 			Console.WriteLine(" {0} read both.", count);
-			int count2 = list.FindAll((ReadData each) => !each.Read && !each.SecureFound).Count;
+			int count2 = readDataList.FindAll((ReadData each) => !each.Read && !each.SecureFound).Count;
 			Console.WriteLine(" {0} were no read.", count2);
-			list.FindAll((ReadData each) => !each.Read && !each.SecureFound).ForEach(delegate(ReadData item)
+			readDataList.FindAll((ReadData each) => !each.Read && !each.SecureFound).ForEach(delegate(ReadData item)
 			{
 				Console.WriteLine("   Noread: deck = {0} slot = {1}", item.Deck, item.Slot);
 			});
 		}
 		finally
 		{
-			list.Clear();
+			readDataList.Clear();
 		}
 	}
 

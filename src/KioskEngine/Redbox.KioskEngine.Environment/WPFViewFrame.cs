@@ -70,10 +70,10 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 		{
 			return;
 		}
-		string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
-		if (File.Exists(text))
+		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
+		if (File.Exists(path))
 		{
-			Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(text);
+			Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(path);
 			if (assembly != null)
 			{
 				foreach (Type item in from x in assembly.GetTypes()
@@ -98,11 +98,11 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 				}
 				return;
 			}
-			LogHelper.Instance.Log("Unable to load assembly {0}", text);
+			LogHelper.Instance.Log("Unable to load assembly {0}", path);
 		}
 		else
 		{
-			LogHelper.Instance.Log("Unable to find assembly {0}", text);
+			LogHelper.Instance.Log("Unable to find assembly {0}", path);
 		}
 	}
 }

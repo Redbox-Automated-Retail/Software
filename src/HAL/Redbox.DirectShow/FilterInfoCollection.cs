@@ -31,13 +31,13 @@ public class FilterInfoCollection : CollectionBase
 					m_useOldOption = false;
 					return m_useOldOption.Value;
 				}
-				object value = registryKey.GetValue("UseOldEnumerator");
-				if (value == null)
+				object registryValue = registryKey.GetValue("UseOldEnumerator");
+				if (registryValue == null)
 				{
 					m_useOldOption = false;
 					return m_useOldOption.Value;
 				}
-				bool value2 = ConversionHelper.ChangeType<bool>(value);
+				bool value2 = ConversionHelper.ChangeType<bool>(registryValue);
 				m_useOldOption = value2;
 				return m_useOldOption.Value;
 			}

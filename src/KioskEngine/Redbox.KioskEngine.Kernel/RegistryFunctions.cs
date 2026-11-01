@@ -17,13 +17,13 @@ internal static class RegistryFunctions
 			{
 				return null;
 			}
-			object value = registryKey.GetValue(key);
+			object registryValue = registryKey.GetValue(key);
 			registryKey.Close();
-			if (value == null)
+			if (registryValue == null)
 			{
 				return null;
 			}
-			return (string)ConversionHelper.ChangeType(value, typeof(string));
+			return (string)ConversionHelper.ChangeType(registryValue, typeof(string));
 		}
 		catch (Exception e)
 		{

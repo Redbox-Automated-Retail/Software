@@ -17,11 +17,11 @@ internal static class Redbox_002EMacros1309_002EFontHelper
 	public static void RemoveFontResource(string path, string typeFaceName, bool isTrueType)
 	{
 		RemoveFontResourceA(path);
-		RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", RegistryKeyPermissionCheck.ReadWriteSubTree);
-		if (registryKey != null)
+		RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", RegistryKeyPermissionCheck.ReadWriteSubTree);
+		if (key != null)
 		{
-			registryKey.DeleteValue(FormatTypeFaceName(typeFaceName, isTrueType));
-			registryKey.Close();
+			key.DeleteValue(FormatTypeFaceName(typeFaceName, isTrueType));
+			key.Close();
 			Redbox_002EMacros1309_002EMessageHelper.SendNotifyMessage(Redbox_002EMacros1309_002EMessageHelper.HWND_BROADCAST, 29u, IntPtr.Zero, IntPtr.Zero);
 		}
 	}

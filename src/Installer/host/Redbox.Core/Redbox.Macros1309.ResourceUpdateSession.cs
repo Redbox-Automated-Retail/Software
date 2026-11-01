@@ -72,10 +72,10 @@ internal class Redbox_002EMacros1309_002EResourceUpdateSession
 		{
 			throw new Win32Exception(Marshal.GetLastWin32Error());
 		}
-		List<ResourceKey> list = new List<ResourceKey>(m_resources.Keys);
+		List<ResourceKey> resourceKeys = new List<ResourceKey>(m_resources.Keys);
 		for (int i = 0; i < m_resources.Keys.Count; i++)
 		{
-			ResourceKey resourceKey = list[i];
+			ResourceKey resourceKey = resourceKeys[i];
 			UpdateResource(intPtr, resourceKey.Group, resourceKey.Name, (ushort)MAKELANGID(9, 1), m_resources[resourceKey], m_resources[resourceKey].Length);
 			int lastWin32Error = Marshal.GetLastWin32Error();
 			if (lastWin32Error != 0)
@@ -101,7 +101,7 @@ internal class Redbox_002EMacros1309_002EResourceUpdateSession
 				}
 			}
 		}
-		if (list.Count % 8 > 0)
+		if (resourceKeys.Count % 8 > 0)
 		{
 			EndUpdateResource(intPtr, fDiscard: false);
 			int lastWin32Error = Marshal.GetLastWin32Error();

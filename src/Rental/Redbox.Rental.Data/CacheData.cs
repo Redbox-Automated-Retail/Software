@@ -252,12 +252,12 @@ public class CacheData : ICacheData
 			titleCache = AddTitleCache(instance, Convert.ToInt64(pair.Key));
 			isNew = true;
 		}
-		List<BarcodeProduct> list = new List<BarcodeProduct>();
+		List<BarcodeProduct> barcodeProducts = new List<BarcodeProduct>();
 		titleCache.BarcodeProducts.ForEach(delegate(KeyValuePair<string, BarcodeProduct> item)
 		{
-			list.Add(item.Value);
+			barcodeProducts.Add(item.Value);
 		});
-		list.ForEach(delegate(BarcodeProduct item)
+		barcodeProducts.ForEach(delegate(BarcodeProduct item)
 		{
 			if (!valueData.ContainsKey(item.Barcode) && titleCache.BarcodeProducts.ContainsKey(item.Barcode))
 			{

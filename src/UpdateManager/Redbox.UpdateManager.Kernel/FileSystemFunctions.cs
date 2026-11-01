@@ -38,10 +38,10 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = macroService.ExpandProperties(source);
+			string expanded = macroService.ExpandProperties(source);
 			string text2 = macroService.ExpandProperties(target);
-			LogHelper.Instance.Log("TAR: source={0}, target={1}", text, text2);
-			TarHelper.Archive(text, text2);
+			LogHelper.Instance.Log("TAR: source={0}, target={1}", expanded, text2);
+			TarHelper.Archive(expanded, text2);
 			return true;
 		}
 		catch (Exception e)
@@ -73,18 +73,18 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = macroService.ExpandProperties(source);
+			string expanded = macroService.ExpandProperties(source);
 			string text2 = macroService.ExpandProperties(target);
 			string text3 = macroService.ExpandProperties(fileFilter);
 			string text4 = macroService.ExpandProperties(dirFilter);
-			LogHelper.Instance.Log("ZIP: source={0}, target={1}, recurse={2}, fileFilter={3}, dirFilter={4}", text, text2, recurse, text3, text4);
+			LogHelper.Instance.Log("ZIP: source={0}, target={1}, recurse={2}, fileFilter={3}, dirFilter={4}", expanded, text2, recurse, text3, text4);
 			if (string.IsNullOrEmpty(dirFilter))
 			{
-				ZipHelper.CreateZipFile(text2, text, recurse, text3);
+				ZipHelper.CreateZipFile(text2, expanded, recurse, text3);
 			}
 			else
 			{
-				ZipHelper.CreateZipFile(text2, text, recurse, text3, text4);
+				ZipHelper.CreateZipFile(text2, expanded, recurse, text3, text4);
 			}
 			return true;
 		}
@@ -101,10 +101,10 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = macroService.ExpandProperties(source);
+			string expanded = macroService.ExpandProperties(source);
 			string text2 = macroService.ExpandProperties(target);
-			LogHelper.Instance.Log("UNZIP: source={0}, target={1}", text, text2);
-			ZipHelper.ExtractAllFiles(text, text2);
+			LogHelper.Instance.Log("UNZIP: source={0}, target={1}", expanded, text2);
+			ZipHelper.ExtractAllFiles(expanded, text2);
 			return true;
 		}
 		catch (Exception e)
@@ -120,14 +120,14 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = macroService.ExpandProperties(source);
+			string expanded = macroService.ExpandProperties(source);
 			string path = macroService.ExpandProperties(target);
-			if (!File.Exists(text))
+			if (!File.Exists(expanded))
 			{
-				throw new FileNotFoundException("File does not exists and can not be decompressed.", text);
+				throw new FileNotFoundException("File does not exists and can not be decompressed.", expanded);
 			}
 			CompressionAlgorithm algorithm = CompressionAlgorithm.GetAlgorithm(CompressionType.GZip);
-			using (FileStream source2 = File.OpenRead(text))
+			using (FileStream source2 = File.OpenRead(expanded))
 			{
 				using FileStream target2 = File.Create(path);
 				algorithm.Decompress(source2, target2);
@@ -147,14 +147,14 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = macroService.ExpandProperties(source);
+			string expanded = macroService.ExpandProperties(source);
 			string path = macroService.ExpandProperties(target);
-			if (!File.Exists(text))
+			if (!File.Exists(expanded))
 			{
-				throw new FileNotFoundException("File does not exists and can not be decompressed.", text);
+				throw new FileNotFoundException("File does not exists and can not be decompressed.", expanded);
 			}
 			CompressionAlgorithm algorithm = CompressionAlgorithm.GetAlgorithm(CompressionType.GZip);
-			using (FileStream source2 = File.OpenRead(text))
+			using (FileStream source2 = File.OpenRead(expanded))
 			{
 				using FileStream target2 = File.Create(path);
 				algorithm.Compress(source2, target2);

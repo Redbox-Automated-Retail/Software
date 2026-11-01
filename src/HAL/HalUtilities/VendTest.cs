@@ -37,7 +37,7 @@ internal sealed class VendTest : IDisposable
 			Waiter.WaitOne();
 		}
 		console.WriteLine("Starting test at {0} on {1}", DateTime.Now.ToShortTimeString(), DateTime.Now.ToShortDateString());
-		List<Location> list = new List<Location>();
+		List<Location> locations = new List<Location>();
 		for (int i = 0; i < Iterations; i++)
 		{
 			console.WriteLine("Starting iteration {0}", i);
@@ -50,8 +50,8 @@ internal sealed class VendTest : IDisposable
 				{
 					break;
 				}
-				list.Add(inventoryLocation.Location);
-				if (!Service.Vend(list, new HardwareJobSchedule
+				locations.Add(inventoryLocation.Location);
+				if (!Service.Vend(locations, new HardwareJobSchedule
 				{
 					Priority = HardwareJobPriority.High
 				}, out var job).Success)
@@ -61,7 +61,7 @@ internal sealed class VendTest : IDisposable
 				}
 				job.Pend();
 				Helper.WaitForJob(job, out var endStatus);
-				list.Clear();
+				locations.Clear();
 				if (endStatus != HardwareJobStatus.Completed)
 				{
 					console.WriteLine("Vend job {0} failed with status {1}.", job.ID, endStatus.ToString());

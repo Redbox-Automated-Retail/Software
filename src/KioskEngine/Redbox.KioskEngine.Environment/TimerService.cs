@@ -19,12 +19,12 @@ public class TimerService : ITimerService
 	{
 		get
 		{
-			List<ITimer> list = new List<ITimer>();
+			List<ITimer> timers = new List<ITimer>();
 			foreach (KeyValuePair<string, SoftTimer> innerTimer in InnerTimers)
 			{
-				list.Add(innerTimer.Value);
+				timers.Add(innerTimer.Value);
 			}
-			return list.AsReadOnly();
+			return timers.AsReadOnly();
 		}
 	}
 
@@ -116,14 +116,14 @@ public class TimerService : ITimerService
 	{
 		lock (m_syncLock)
 		{
-			List<ITimer> list = new List<ITimer>();
+			List<ITimer> timers = new List<ITimer>();
 			foreach (SoftTimer value in InnerTimers.Values)
 			{
-				list.Add(value);
+				timers.Add(value);
 			}
-			for (int i = 0; i < list.Count && i < list.Count; i++)
+			for (int i = 0; i < timers.Count && i < timers.Count; i++)
 			{
-				((SoftTimer)list[i]).UpdateTimer();
+				((SoftTimer)timers[i]).UpdateTimer();
 			}
 		}
 	}

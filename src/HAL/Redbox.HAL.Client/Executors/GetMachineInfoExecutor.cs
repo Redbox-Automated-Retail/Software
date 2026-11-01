@@ -31,7 +31,7 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 
 	protected override void OnJobCompleted()
 	{
-		List<DeckConfiguration> list = new List<DeckConfiguration>();
+		List<DeckConfiguration> deckConfigurations = new List<DeckConfiguration>();
 		try
 		{
 			bool flag = false;
@@ -42,33 +42,33 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 				{
 					if (code == "DeckInfo")
 					{
-						LocateOrCreate(result.Deck, list).SlotCount = result.Slot;
+						LocateOrCreate(result.Deck, deckConfigurations).SlotCount = result.Slot;
 					}
 				}
 				else
 				{
 					flag = true;
-					LocateOrCreate(result.Deck, list).IsQlm = true;
+					LocateOrCreate(result.Deck, deckConfigurations).IsQlm = true;
 				}
 			}
-			list.Sort((DeckConfiguration x, DeckConfiguration y) => x.Number.CompareTo(y.Number));
+			deckConfigurations.Sort((DeckConfiguration x, DeckConfiguration y) => x.Number.CompareTo(y.Number));
 			if (!flag)
 			{
 				Info.Configuration = KioskConfiguration.R717;
 			}
 			else
 			{
-				DeckConfiguration deckConfiguration = list[0];
+				DeckConfiguration deckConfiguration = deckConfigurations[0];
 				Info.Configuration = ((deckConfiguration.SlotCount != 90) ? KioskConfiguration.R504 : KioskConfiguration.R630);
 			}
-			list.ForEach(delegate(DeckConfiguration each)
+			deckConfigurations.ForEach(delegate(DeckConfiguration each)
 			{
 				Info.DecksConfiguration.Add(each);
 			});
 		}
 		finally
 		{
-			list.Clear();
+			deckConfigurations.Clear();
 		}
 	}
 

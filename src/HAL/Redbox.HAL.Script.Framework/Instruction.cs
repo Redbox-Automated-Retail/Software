@@ -218,25 +218,25 @@ public class Instruction : ICloneable<Instruction>
 			stringBuilder.Append(LabelName + ":");
 		}
 		stringBuilder.AppendFormat(" {0,-16}", Mnemonic);
-		StringBuilder stringBuilder2 = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		foreach (Token operand in Operands)
 		{
-			if (stringBuilder2.Length > 0)
+			if (builder.Length > 0)
 			{
-				stringBuilder2.Append(" ");
+				builder.Append(" ");
 			}
 			if (operand.Type == TokenType.StringLiteral)
 			{
-				stringBuilder2.AppendFormat("\"{0}\"", operand.Value.ToUpper());
+				builder.AppendFormat("\"{0}\"", operand.Value.ToUpper());
 			}
 			else
 			{
-				stringBuilder2.Append(operand.Value.ToUpper());
+				builder.Append(operand.Value.ToUpper());
 			}
 		}
-		if (stringBuilder2.Length > 0)
+		if (builder.Length > 0)
 		{
-			stringBuilder.Append(stringBuilder2.ToString());
+			stringBuilder.Append(builder.ToString());
 		}
 		return stringBuilder.ToString();
 	}

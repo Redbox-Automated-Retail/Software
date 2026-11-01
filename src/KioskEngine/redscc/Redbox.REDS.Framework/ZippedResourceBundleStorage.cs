@@ -104,12 +104,12 @@ internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 
 	public ReadOnlyCollection<IResourceBundleStorageEntry> GetResourceManifest()
 	{
-		List<IResourceBundleStorageEntry> list = new List<IResourceBundleStorageEntry>();
+		List<IResourceBundleStorageEntry> resourceBundleStorageEntries = new List<IResourceBundleStorageEntry>();
 		if (m_zipFile != null)
 		{
 			foreach (ZipEntry item in m_zipFile)
 			{
-				list.Add(new ResourceBundleStorageEntry
+				resourceBundleStorageEntries.Add(new ResourceBundleStorageEntry
 				{
 					Name = item.Name,
 					Size = item.Size,
@@ -117,6 +117,6 @@ internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 				});
 			}
 		}
-		return list.AsReadOnly();
+		return resourceBundleStorageEntries.AsReadOnly();
 	}
 }

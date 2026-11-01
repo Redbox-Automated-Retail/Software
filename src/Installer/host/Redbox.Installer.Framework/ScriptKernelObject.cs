@@ -120,9 +120,9 @@ public class ScriptKernelObject : KernelObject
 
 	public void SetLocalMachineRegistry(string path, string name, object value)
 	{
-		RegistryKey registryKey = Registry.LocalMachine.CreateSubKey(path);
-		registryKey.SetValue(name, value);
-		registryKey.Close();
+		RegistryKey key = Registry.LocalMachine.CreateSubKey(path);
+		key.SetValue(name, value);
+		key.Close();
 	}
 
 	public void launchprocessblocking(string name, string arguments)

@@ -795,10 +795,10 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 				registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
 				if (registryKey != null)
 				{
-					object value = registryKey.GetValue("MaxSlots");
-					if (value != null)
+					object registryValue = registryKey.GetValue("MaxSlots");
+					if (registryValue != null)
 					{
-						result = ConversionHelper.ChangeType<int>(value);
+						result = ConversionHelper.ChangeType<int>(registryValue);
 					}
 				}
 			}

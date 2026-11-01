@@ -291,17 +291,17 @@ public class ReservationFunctions
 
 	public static void SetValidatedReservations(List<string> validatedRefNumbers)
 	{
-		List<IReservation> list = new List<IReservation>();
+		List<IReservation> reservations = new List<IReservation>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		foreach (string validatedRefNumber in validatedRefNumbers)
 		{
 			IReservation reservation = dataService.GetReservation(validatedRefNumber);
 			if (reservation != null)
 			{
-				list.Add(reservation);
+				reservations.Add(reservation);
 			}
 		}
-		Redbox.Rental.Services.Session.Session.Instance.ValidatedReservations = list;
+		Redbox.Rental.Services.Session.Session.Instance.ValidatedReservations = reservations;
 	}
 
 	public static void InitializeExpireReservationTimer()
@@ -490,7 +490,7 @@ public class ReservationFunctions
 				LogHelper.Instance.Log($"Setting cart default service fee to {reservationDetails.DefaultServiceFee} from reservation.");
 				decimal totalDiscount = 0m;
 				decimal value = 0m;
-				List<IPromotionItem> list = new List<IPromotionItem>();
+				List<IPromotionItem> promotionItems = new List<IPromotionItem>();
 				RentalShoppingCartItemAction rentalShoppingCartItemAction = RentalShoppingCartItemAction.rental;
 				IDataService productDataService = ServiceLocator.Instance.GetService<IDataService>();
 				foreach (IReservedTitle reservedTitle2 in reservationDetails.ReservedTitles)
@@ -542,7 +542,7 @@ public class ReservationFunctions
 								}
 								else if (reservedTitle.DiscountType == ReservationDiscountType.Promotion && reservedTitle.Discount != 0m)
 								{
-									list.Add(new PromotionItem
+									promotionItems.Add(new PromotionItem
 									{
 										PromotionAmount = Math.Abs(reservedTitle.Discount),
 										RentalShoppingCartItem = rentalShoppingCartTitleItem
@@ -625,7 +625,7 @@ public class ReservationFunctions
 						CampaignTitles = null,
 						ProductTypeId = null,
 						FormatIds = null,
-						PromotionItems = list,
+						PromotionItems = promotionItems,
 						ActionCode = ((rentalShoppingCartItemAction != RentalShoppingCartItemAction.purchase) ? PromotionActionCode.Rental : PromotionActionCode.Purchase)
 					};
 					PromotionService.Instance.SetPromotion(promotion);
@@ -734,21 +734,21 @@ public class ReservationFunctions
 		lock (_reservationSyncObject)
 		{
 			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-			List<IReservationDetails> list = new List<IReservationDetails>();
+			List<IReservationDetails> reservationDetailsList = new List<IReservationDetails>();
 			IReservation reservation = dataService?.GetReservation(referenceNumber);
 			if (reservation != null)
 			{
 				LogHelper.Instance.Log("ReservationFunctions.CancelReservation removed reservation for Reference Number " + referenceNumber + ":");
-				list.Add(reservation.ReservationDetails);
+				reservationDetailsList.Add(reservation.ReservationDetails);
 			}
-			if (list.Count == 0)
+			if (reservationDetailsList.Count == 0)
 			{
 				result = ReservationCancelResult.ReservationNotFound;
 				LogHelper.Instance.Log("ReservationFunctions.CancelReservation - reservation not found for Reference Number: " + referenceNumber);
 			}
 			else
 			{
-				DeleteReservationDetails(list, dataService?.GetAllReservations());
+				DeleteReservationDetails(reservationDetailsList, dataService?.GetAllReservations());
 			}
 		}
 		return result;
@@ -906,7 +906,7 @@ public class ReservationFunctions
 	public static IReservationResult CreateReservationCallback(string cardId, string email, long referenceNumber, DateTime reserveDate, IDictionary<string, List<int>> productsToReserve, bool appliedCredit, bool appliedHiveOnlinePromotion, bool appliedTitleMarketing, string customerNumber, decimal discountedSubTotal, decimal grandTotal, List<int> historyTitleIDs, decimal hiveOnlinePromotionDiscount, bool isMultiNightPricing, int numberOfCreditsRemaining, string promoCode, decimal subTotal, decimal tax, List<ReservationTitle3> reservationTitles, bool isGc, List<string> gcIds, List<string> ccIds, decimal taxRate, string zip, bool isMdv, bool isLoyaltyRedemption, decimal defaultServiceFee, decimal actualServiceFee, bool authorizeAtPickup, ReservationCardHash cardHashData, List<ReservationCardHash> alternateCardHashes)
 	{
 		LogHelper.Instance.Log("ReservationFunctions.CreateReservationCallback: Begin");
-		List<ReservationRequestTitle> list = new List<ReservationRequestTitle>();
+		List<ReservationRequestTitle> reservationRequestTitles = new List<ReservationRequestTitle>();
 		foreach (ReservationTitle3 reservationTitle in reservationTitles)
 		{
 			ReservationRequestTitle item = new ReservationRequestTitle
@@ -921,7 +921,7 @@ public class ReservationFunctions
 				NumberOfCredits = reservationTitle.NumberOfCredits,
 				LoyaltyPoints = reservationTitle.LoyaltyPoints
 			};
-			list.Add(item);
+			reservationRequestTitles.Add(item);
 		}
 		ReservationRequestCardHash reservationCardHash = null;
 		if (cardHashData != null)
@@ -962,7 +962,7 @@ public class ReservationFunctions
 			PromoCode = promoCode,
 			SubTotal = subTotal,
 			Tax = tax,
-			Titles = list,
+			Titles = reservationRequestTitles,
 			IsGc = isGc,
 			GcIds = gcIds,
 			CcIds = ccIds,
@@ -1076,21 +1076,21 @@ public class ReservationFunctions
 
 	private static List<IBarcodeForProductResult> GetBarcodesForNewReservation(List<ReservationRequestTitle> reservationTitles, List<string> barcodesAlreadyInPlay)
 	{
-		List<ISearchBarcodeForProduct> list = new List<ISearchBarcodeForProduct>();
+		List<ISearchBarcodeForProduct> searchBarcodeForProductList = new List<ISearchBarcodeForProduct>();
 		if (reservationTitles != null)
 		{
 			foreach (ReservationRequestTitle reservationTitle in reservationTitles)
 			{
 				RentalShoppingCartItemAction result = RentalShoppingCartItemAction.rental;
 				Enum.TryParse<RentalShoppingCartItemAction>(reservationTitle.ReservationType.ToString(), ignoreCase: true, out result);
-				list.Add(new SearchBarcodeForProduct
+				searchBarcodeForProductList.Add(new SearchBarcodeForProduct
 				{
 					ProductId = reservationTitle.TitleID,
 					Action = result
 				});
 			}
 		}
-		return ServiceLocator.Instance.GetService<IDataService>()?.GetBarcodesForProducts(list, barcodesAlreadyInPlay);
+		return ServiceLocator.Instance.GetService<IDataService>()?.GetBarcodesForProducts(searchBarcodeForProductList, barcodesAlreadyInPlay);
 	}
 
 	private static List<string> GetBarcodesAlreadyInPlay()

@@ -712,15 +712,15 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 	private bool IsWindows10()
 	{
 		bool result = false;
-		RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion");
-		if (registryKey != null)
+		RegistryKey key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion");
+		if (key != null)
 		{
-			object value = registryKey.GetValue("CurrentMajorVersionNumber");
-			if (value != null)
+			object registryValue = key.GetValue("CurrentMajorVersionNumber");
+			if (registryValue != null)
 			{
-				result = Convert.ToInt32(value) == 10;
+				result = Convert.ToInt32(registryValue) == 10;
 			}
-			registryKey.Close();
+			key.Close();
 		}
 		return result;
 	}

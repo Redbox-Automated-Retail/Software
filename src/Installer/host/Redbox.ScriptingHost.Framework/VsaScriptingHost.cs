@@ -171,12 +171,12 @@ public class VsaScriptingHost : KernelObject, IJSVsaSite, IDisposable
 
 	public ReadOnlyCollection<IJSVsaReferenceItem> CreateAssemblyReferences(params string[] assemblyNames)
 	{
-		List<IJSVsaReferenceItem> list = new List<IJSVsaReferenceItem>();
+		List<IJSVsaReferenceItem> jSVsaReferenceItems = new List<IJSVsaReferenceItem>();
 		foreach (string text in assemblyNames)
 		{
-			list.Add(CreateReferenceItem(text, text));
+			jSVsaReferenceItems.Add(CreateReferenceItem(text, text));
 		}
-		return list.AsReadOnly();
+		return jSVsaReferenceItems.AsReadOnly();
 	}
 
 	public void GetCompiledState(out byte[] pe, out byte[] debugInfo)

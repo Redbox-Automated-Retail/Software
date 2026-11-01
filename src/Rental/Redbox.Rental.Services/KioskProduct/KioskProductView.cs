@@ -347,38 +347,38 @@ public class KioskProductView
 
 	public List<IKioskProduct> GetProducts(BrowseViewFilter browseFilter, TitleFamily titleFamily, TitleType titleType, BrowseSort browseSort, long? genreFilter, long? ratingFilter, List<long> include, List<long> exclude, bool isADAView, decimal? priceRangeLow, decimal? priceRangeHigh, string studio = null, List<TitleType> excludeTitleTypes = null, bool excludeDiscountRestriction = false)
 	{
-		List<ITitleProduct> list = new List<ITitleProduct>();
-		list = FilterByTitleFamily(browseFilter, titleFamily, new List<TitleType> { titleType }, list);
+		List<ITitleProduct> titleProducts = new List<ITitleProduct>();
+		titleProducts = FilterByTitleFamily(browseFilter, titleFamily, new List<TitleType> { titleType }, titleProducts);
 		if (genreFilter.HasValue)
 		{
-			list = list.Where((ITitleProduct item) => ApplyGenreFilter(item, genreFilter.Value)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct item) => ApplyGenreFilter(item, genreFilter.Value)).ToList();
 		}
 		if (ratingFilter.HasValue)
 		{
-			list = list.Where((ITitleProduct item) => ApplyRatingFilter(item, ratingFilter.Value)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct item) => ApplyRatingFilter(item, ratingFilter.Value)).ToList();
 		}
 		if (((include != null && include.Count > 0) || (exclude != null && exclude.Count > 0) || (excludeTitleTypes != null && excludeTitleTypes.Count > 0)) | excludeDiscountRestriction)
 		{
-			list = FilterInCarts(list, include, exclude, excludeTitleTypes, excludeDiscountRestriction);
+			titleProducts = FilterInCarts(titleProducts, include, exclude, excludeTitleTypes, excludeDiscountRestriction);
 		}
 		if (isADAView)
 		{
-			list = FilterToTitles(list);
+			titleProducts = FilterToTitles(titleProducts);
 		}
 		if (browseFilter == BrowseViewFilter.ForSale && (priceRangeHigh.HasValue || priceRangeLow.HasValue))
 		{
-			list = list.Where((ITitleProduct item) => FilterByPrice(item, priceRangeLow, priceRangeHigh)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct item) => FilterByPrice(item, priceRangeLow, priceRangeHigh)).ToList();
 		}
 		if (browseFilter == BrowseViewFilter.All && priceRangeLow.HasValue && priceRangeHigh.HasValue)
 		{
-			list = list.Where((ITitleProduct item) => FilterByRentalPrice(item, priceRangeLow, priceRangeHigh)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct item) => FilterByRentalPrice(item, priceRangeLow, priceRangeHigh)).ToList();
 		}
 		if (browseFilter == BrowseViewFilter.All && studio != null)
 		{
-			list = list.Where((ITitleProduct item) => FilterByStudio(item, studio)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct item) => FilterByStudio(item, studio)).ToList();
 		}
-		list = ApplyMainFilter(list, browseFilter);
-		return ((IEnumerable<ITitleProduct>)list.OrderList(browseSort, browseFilter, MovieTitles)).Select((Func<ITitleProduct, IKioskProduct>)((ITitleProduct item) => item)).ToList();
+		titleProducts = ApplyMainFilter(titleProducts, browseFilter);
+		return ((IEnumerable<ITitleProduct>)titleProducts.OrderList(browseSort, browseFilter, MovieTitles)).Select((Func<ITitleProduct, IKioskProduct>)((ITitleProduct item) => item)).ToList();
 	}
 
 	private List<ITitleProduct> FilterByTitleFamily(BrowseViewFilter browseFilter, TitleFamily titleFamily, List<TitleType> titleTypes, List<ITitleProduct> list, bool includeTitleTypes = true)
@@ -414,37 +414,37 @@ public class KioskProductView
 
 	public List<ITitleProduct> GetProductsForCustomerOffer(TitleFamily titleFamily, List<TitleType> titleTypes, bool includeTitleTypes, List<long> include, List<long> exclude, TimeSpan? includeOlderThan, bool isAdaView, bool isPurchase)
 	{
-		List<ITitleProduct> list = new List<ITitleProduct>();
+		List<ITitleProduct> titleProducts = new List<ITitleProduct>();
 		if (include == null || include.Count == 0)
 		{
 			BrowseViewFilter browseFilter = (isPurchase ? BrowseViewFilter.ForSale : BrowseViewFilter.All);
-			list = FilterByTitleFamily(browseFilter, titleFamily, titleTypes, list, includeTitleTypes);
+			titleProducts = FilterByTitleFamily(browseFilter, titleFamily, titleTypes, titleProducts, includeTitleTypes);
 		}
 		else
 		{
-			list.AddRange(_movieProducts.Where((ITitleProduct p) => include.Contains(p.ProductId)));
-			list.AddRange(_gamesProducts.Where((ITitleProduct p) => include.Contains(p.ProductId)));
+			titleProducts.AddRange(_movieProducts.Where((ITitleProduct p) => include.Contains(p.ProductId)));
+			titleProducts.AddRange(_gamesProducts.Where((ITitleProduct p) => include.Contains(p.ProductId)));
 		}
 		if (exclude != null && exclude.Count > 0)
 		{
-			list = list.Where((ITitleProduct i) => !exclude.Contains(i.ProductId)).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct i) => !exclude.Contains(i.ProductId)).ToList();
 		}
-		list = list.Where((ITitleProduct i) => i.InStock).ToList();
+		titleProducts = titleProducts.Where((ITitleProduct i) => i.InStock).ToList();
 		if (includeOlderThan.HasValue)
 		{
 			DateTime cutoffDate = DateTime.Now.Date.AddDays(-includeOlderThan.Value.Days);
-			list = list.Where((ITitleProduct i) => i.ReleaseDate < cutoffDate).ToList();
+			titleProducts = titleProducts.Where((ITitleProduct i) => i.ReleaseDate < cutoffDate).ToList();
 		}
 		if (!isPurchase)
 		{
-			list.AddRange(list.Where((ITitleProduct i) => i.HasDeal && i is TitleRollupProduct).SelectMany((ITitleProduct r) => ((TitleRollupProduct)r).KioskProducts.Where((ITitleProduct k) => !k.HasDeal)).ToList());
-			list = list.Where((ITitleProduct i) => !i.HasDeal).ToList();
+			titleProducts.AddRange(titleProducts.Where((ITitleProduct i) => i.HasDeal && i is TitleRollupProduct).SelectMany((ITitleProduct r) => ((TitleRollupProduct)r).KioskProducts.Where((ITitleProduct k) => !k.HasDeal)).ToList());
+			titleProducts = titleProducts.Where((ITitleProduct i) => !i.HasDeal).ToList();
 		}
 		if (isAdaView)
 		{
-			list = FilterToTitles(list);
+			titleProducts = FilterToTitles(titleProducts);
 		}
-		return list.OrderList(BrowseSort.SortDate, BrowseViewFilter.All, MovieTitles);
+		return titleProducts.OrderList(BrowseSort.SortDate, BrowseViewFilter.All, MovieTitles);
 	}
 
 	public List<IKioskProduct> GetCarouselProducts(int maxCarouselItems)

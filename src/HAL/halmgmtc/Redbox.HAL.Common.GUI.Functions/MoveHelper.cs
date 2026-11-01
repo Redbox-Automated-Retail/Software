@@ -82,9 +82,9 @@ public sealed class MoveHelper
 		string s = stack.Peek();
 		try
 		{
-			int num = int.Parse(s);
+			int number = int.Parse(s);
 			stack.Pop();
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < number; i++)
 			{
 				list.Add(stack.Pop());
 			}

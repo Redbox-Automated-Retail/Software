@@ -38,12 +38,12 @@ public class ViewService : IViewService
 	{
 		get
 		{
-			List<IViewFrameInstance> list = new List<IViewFrameInstance>();
+			List<IViewFrameInstance> viewFrameInstances = new List<IViewFrameInstance>();
 			foreach (IViewFrameInstance item in InnerStack)
 			{
-				list.Add(item);
+				viewFrameInstances.Add(item);
 			}
-			return list.AsReadOnly();
+			return viewFrameInstances.AsReadOnly();
 		}
 	}
 

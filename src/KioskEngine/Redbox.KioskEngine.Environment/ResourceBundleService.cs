@@ -222,7 +222,7 @@ public class ResourceBundleService : IResourceBundleService
 			}
 			SwitchToBundle = null;
 			ActiveBundle.Activate(Filter, out var manifestInfo).CopyToLocalCollection(errorList);
-			List<IResourceBundle> list2 = new List<IResourceBundle>();
+			List<IResourceBundle> resourceBundles = new List<IResourceBundle>();
 			List<string> list3 = new List<string> { manifestInfo.StartupScript };
 			foreach (IBundleSpecifier require in manifestInfo.Requires)
 			{
@@ -240,11 +240,11 @@ public class ResourceBundleService : IResourceBundleService
 				{
 					list3.Add(manifestInfo2.StartupScript);
 				}
-				list2.Add(bundle);
+				resourceBundles.Add(bundle);
 			}
 			if (!errorList.ContainsError())
 			{
-				ActiveBundleSet = new ResourceBundleSet($"Bundle Set: {manifestInfo.ProductName}, {manifestInfo.ProductVersion}", ActiveBundle, list2);
+				ActiveBundleSet = new ResourceBundleSet($"Bundle Set: {manifestInfo.ProductName}, {manifestInfo.ProductVersion}", ActiveBundle, resourceBundles);
 				CurrentBundleName = manifestInfo.ProductName;
 				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 				macroService["ProductName"] = manifestInfo.ProductName;

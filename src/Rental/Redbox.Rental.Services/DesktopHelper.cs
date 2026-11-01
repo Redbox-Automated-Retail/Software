@@ -41,36 +41,36 @@ public class DesktopHelper
 		else if (File.Exists(path) && (path.Trim().ToLowerInvariant().EndsWith(".bmp") || path.Trim().ToLowerInvariant().EndsWith(".jpg") || path.Trim().ToLowerInvariant().EndsWith(".jpeg")))
 		{
 			SystemParametersInfoSetWallpaper(20, 0, path, 3);
-			RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
+			RegistryKey key = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
 			switch (style)
 			{
 			case WallpaperStyle.Stretch:
-				registryKey.SetValue("WallpaperStyle", "2");
-				registryKey.SetValue("TileWallpaper", "0");
+				key.SetValue("WallpaperStyle", "2");
+				key.SetValue("TileWallpaper", "0");
 				break;
 			case WallpaperStyle.Center:
-				registryKey.SetValue("WallpaperStyle", "1");
-				registryKey.SetValue("TileWallpaper", "0");
+				key.SetValue("WallpaperStyle", "1");
+				key.SetValue("TileWallpaper", "0");
 				break;
 			case WallpaperStyle.Tile:
-				registryKey.SetValue("WallpaperStyle", "1");
-				registryKey.SetValue("TileWallpaper", "1");
+				key.SetValue("WallpaperStyle", "1");
+				key.SetValue("TileWallpaper", "1");
 				break;
 			}
-			registryKey.Close();
+			key.Close();
 		}
 	}
 
 	public static bool IsBackgroundSet(string path)
 	{
-		RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
-		string text = registryKey.GetValue("Wallpaper") as string;
+		RegistryKey key = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
+		string text = key.GetValue("Wallpaper") as string;
 		if (string.IsNullOrEmpty(text))
 		{
 			return false;
 		}
 		bool result = text.Equals(path, StringComparison.CurrentCultureIgnoreCase);
-		registryKey.Close();
+		key.Close();
 		return result;
 	}
 }

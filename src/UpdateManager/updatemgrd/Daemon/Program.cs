@@ -35,8 +35,8 @@ public class Program
 		}
 		catch (Exception ex)
 		{
-			string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\logs");
-			Directory.CreateDirectory(text);
+			string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\logs");
+			Directory.CreateDirectory(path);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine(DateTime.Now.ToString());
 			stringBuilder.AppendLine("An unhandled exception occurred registering log4net.");
@@ -47,7 +47,7 @@ public class Program
 				stringBuilder.AppendLine(ex.InnerException.Message);
 				stringBuilder.AppendLine(ex.InnerException.StackTrace);
 			}
-			File.AppendAllText(Path.Combine(text, "errors.log"), stringBuilder.ToString());
+			File.AppendAllText(Path.Combine(path, "errors.log"), stringBuilder.ToString());
 			return;
 		}
 		try

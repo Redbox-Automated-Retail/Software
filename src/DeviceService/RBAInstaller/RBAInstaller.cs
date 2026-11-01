@@ -76,9 +76,9 @@ public class RBAInstaller : IHostedService
 		UpdateJson result = null;
 		try
 		{
-			string text = File.ReadAllText(filePath);
-			Log(text);
-			result = JsonConvert.DeserializeObject<UpdateJson>(text, new JsonSerializerSettings
+			string contents = File.ReadAllText(filePath);
+			Log(contents);
+			result = JsonConvert.DeserializeObject<UpdateJson>(contents, new JsonSerializerSettings
 			{
 				MissingMemberHandling = MissingMemberHandling.Ignore
 			});
@@ -173,10 +173,10 @@ public class RBAInstaller : IHostedService
 			bool flag = true;
 			foreach (UpdateFile file in updateJson.Files)
 			{
-				string text = Path.GetExtension(file.Path).ToUpper();
+				string extension = Path.GetExtension(file.Path).ToUpper();
 				Log("File Path: " + file.Path + " - Compare Version: " + file.CompareVersion);
 				Log($"Connected: {WaitForConnection()}");
-				switch (text)
+				switch (extension)
 				{
 				case ".OGZ":
 					flag = UpdateRBA(file);

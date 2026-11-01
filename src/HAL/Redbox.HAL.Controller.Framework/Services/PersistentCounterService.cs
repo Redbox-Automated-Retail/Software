@@ -115,8 +115,8 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 
 	public void ResetWeekly()
 	{
-		List<IPersistentCounter> list = new List<IPersistentCounter>();
-		using (new DisposeableList<IPersistentCounter>(list))
+		List<IPersistentCounter> persistentCounters = new List<IPersistentCounter>();
+		using (new DisposeableList<IPersistentCounter>(persistentCounters))
 		{
 			foreach (string weeklyResettableCounter in WeeklyResettableCounters)
 			{
@@ -124,10 +124,10 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 				if (persistentCounter != null && persistentCounter.Value != 0)
 				{
 					persistentCounter.Reset();
-					list.Add(persistentCounter);
+					persistentCounters.Add(persistentCounter);
 				}
 			}
-			CounterTable.Update(list);
+			CounterTable.Update(persistentCounters);
 		}
 	}
 

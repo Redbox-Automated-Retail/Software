@@ -84,10 +84,10 @@ public class DataFileStoreService : IDataFileStoreService
 		type = GetCachedSerializationType(assemblyName, typeName);
 		if (type == null && !string.IsNullOrEmpty(typeName) && !string.IsNullOrEmpty(assemblyName))
 		{
-			string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
-			if (File.Exists(text))
+			string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), assemblyName);
+			if (File.Exists(path))
 			{
-				Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(text);
+				Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(path);
 				if (assembly != null)
 				{
 					type = assembly.GetType(typeName);
@@ -97,17 +97,17 @@ public class DataFileStoreService : IDataFileStoreService
 					}
 					else
 					{
-						LogHelper.Instance.Log("Unable to get type {1} in assembly {0}", text, typeName);
+						LogHelper.Instance.Log("Unable to get type {1} in assembly {0}", path, typeName);
 					}
 				}
 				else
 				{
-					LogHelper.Instance.Log("Unable to load assembly {0}", text);
+					LogHelper.Instance.Log("Unable to load assembly {0}", path);
 				}
 			}
 			else
 			{
-				LogHelper.Instance.Log("Unable to find assembly {0}", text);
+				LogHelper.Instance.Log("Unable to find assembly {0}", path);
 			}
 		}
 		return type;

@@ -112,11 +112,11 @@ public partial class EMVInsertCardAndTapPhoneUserControl : UserControl, ICompone
 	{
 		Storyboard storyboard = new Storyboard();
 		storyboard.RepeatBehavior = RepeatBehavior.Forever;
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(translateTransform);
+		transformGroup.Children.Add(rotateTransform);
 		InsertChip.RenderTransform = transformGroup;
 		AnimationInfo animationInfo = CreateInsertChipAnimationInfo();
 		AnimationInfo animationInfo2 = CreateTapPhoneAnimationInfo();
@@ -287,11 +287,11 @@ public partial class EMVInsertCardAndTapPhoneUserControl : UserControl, ICompone
 
 	private void CreateTapPhoneAnimation(Storyboard storyboard, AnimationInfo tapPhoneAnimationInfo)
 	{
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(translateTransform);
+		transformGroup.Children.Add(rotateTransform);
 		TapPhone.RenderTransform = transformGroup;
 		DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames();
 		doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
@@ -415,9 +415,9 @@ public partial class EMVInsertCardAndTapPhoneUserControl : UserControl, ICompone
 
 	private void CreateTapPhoneCheckmarkAnimation(Storyboard storyboard, AnimationInfo tapPhoneCheckmarkAnimationInfo)
 	{
-		TranslateTransform value = new TranslateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
+		transformGroup.Children.Add(translateTransform);
 		TapPhoneCheckmark.RenderTransform = transformGroup;
 		DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames();
 		doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame

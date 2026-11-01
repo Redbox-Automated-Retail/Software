@@ -43,17 +43,17 @@ public class SubscriptionPlansData : IPersistentData
 
 	public void RemoveNonActive()
 	{
-		List<SubscriptionPlan> list = new List<SubscriptionPlan>();
+		List<SubscriptionPlan> subscriptionPlans = new List<SubscriptionPlan>();
 		DateTime dt = DateTime.Now;
 		SubscriptionPlans.ForEach(delegate(SubscriptionPlan plan)
 		{
 			if (plan.EffectiveStartDate <= dt && plan.EffectiveEndDate > dt)
 			{
-				list.Add(plan);
+				subscriptionPlans.Add(plan);
 			}
 		});
 		SubscriptionPlans.Clear();
-		list.ForEach(delegate(SubscriptionPlan plan)
+		subscriptionPlans.ForEach(delegate(SubscriptionPlan plan)
 		{
 			SubscriptionPlans.Add(plan);
 		});

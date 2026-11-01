@@ -216,10 +216,10 @@ public class Program : IDisposable
 	{
 		try
 		{
-			string text = data.ToJson();
-			byte[] bytes = Encoding.ASCII.GetBytes(text);
+			string json = data.ToJson();
+			byte[] bytes = Encoding.ASCII.GetBytes(json);
 			File.WriteAllBytes(KioskUnhandledExceptionFilePath, bytes);
-			LogHelper.Instance.Log(text, LogEntryType.Error);
+			LogHelper.Instance.Log(json, LogEntryType.Error);
 		}
 		catch (Exception e)
 		{

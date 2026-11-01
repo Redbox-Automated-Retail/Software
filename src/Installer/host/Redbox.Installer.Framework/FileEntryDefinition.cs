@@ -245,10 +245,10 @@ public class FileEntryDefinition : Definition
 
 	public bool IsLoadableModule()
 	{
-		string text = Path.GetFileName(SourcePath).ToLower();
-		if (!text.EndsWith(".dll") && !text.EndsWith(".exe"))
+		string fileName = Path.GetFileName(SourcePath).ToLower();
+		if (!fileName.EndsWith(".dll") && !fileName.EndsWith(".exe"))
 		{
-			return text.EndsWith(".ocx");
+			return fileName.EndsWith(".ocx");
 		}
 		return true;
 	}

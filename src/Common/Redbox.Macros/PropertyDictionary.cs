@@ -225,34 +225,34 @@ public class PropertyDictionary : DictionaryBase
 		}
 		catch (ExpressionParseException ex)
 		{
-			StringBuilder stringBuilder2 = new StringBuilder();
+			StringBuilder builder = new StringBuilder();
 			string text = input;
 			text = text.Replace('\n', ' ');
 			text = text.Replace('\r', ' ');
 			text = text.Replace('\t', ' ');
-			stringBuilder2.Append(ex.Message);
-			stringBuilder2.Append(Environment.NewLine);
-			stringBuilder2.Append("Expression: ");
-			stringBuilder2.Append(text);
+			builder.Append(ex.Message);
+			builder.Append(Environment.NewLine);
+			builder.Append("Expression: ");
+			builder.Append(text);
 			int startPos = ex.StartPos;
 			int num = ex.EndPos;
 			if (startPos != -1 || num != -1)
 			{
-				stringBuilder2.Append(Environment.NewLine);
+				builder.Append(Environment.NewLine);
 				if (num == -1)
 				{
 					num = startPos + 1;
 				}
 				for (int i = 0; i < startPos + "Expression: ".Length; i++)
 				{
-					stringBuilder2.Append(' ');
+					builder.Append(' ');
 				}
 				for (int j = startPos; j < num; j++)
 				{
-					stringBuilder2.Append('^');
+					builder.Append('^');
 				}
 			}
-			throw new EvaluatorException(stringBuilder2.ToString(), location, ex.InnerException);
+			throw new EvaluatorException(builder.ToString(), location, ex.InnerException);
 		}
 	}
 

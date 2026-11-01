@@ -125,15 +125,15 @@ public class WorkService : IPollRequestReply
 		{
 			IEnumerable<ClientWorkScript> enumerable = pollReplyList.Select((PollReply pollReply) => pollReply.Data.ToObject<ClientWorkScript>());
 			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
-			List<Guid> list = new List<Guid>();
+			List<Guid> guids = new List<Guid>();
 			foreach (ClientWorkScript item in enumerable)
 			{
 				Guid guid = Guid.NewGuid();
-				list.Add(guid);
+				guids.Add(guid);
 				dataStoreService.Set(string.Concat(guid, ".workdat"), item);
 				LogHelper.Instance.Log("Script Id: {0} has been put on the work queue.", item.ID);
 			}
-			dataStoreService.Set(".incomplete", list);
+			dataStoreService.Set(".incomplete", guids);
 		}
 		catch (Exception e)
 		{

@@ -30,10 +30,10 @@ public class ShoppingCartController : ApiController
 			if (rentalShoppingCartService != null)
 			{
 				IRentalShoppingCart currentRentalShoppingCart = rentalShoppingCartService.CurrentRentalShoppingCart;
-				List<LoyaltyTestShoppingCartItem> list = new List<LoyaltyTestShoppingCartItem>();
+				List<LoyaltyTestShoppingCartItem> loyaltyTestShoppingCartItems = new List<LoyaltyTestShoppingCartItem>();
 				foreach (IRentalShoppingCartTitleItem eachRentalShoppingCartTitleItem in currentRentalShoppingCart.TitleItems)
 				{
-					list.Add(new LoyaltyTestShoppingCartItem
+					loyaltyTestShoppingCartItems.Add(new LoyaltyTestShoppingCartItem
 					{
 						ProductId = eachRentalShoppingCartTitleItem.ProductId,
 						Name = eachRentalShoppingCartTitleItem.SortName,
@@ -43,7 +43,7 @@ public class ShoppingCartController : ApiController
 				}
 				response.StatusCode = HttpStatusCode.OK;
 				response.Success = true;
-				response.Content = list;
+				response.Content = loyaltyTestShoppingCartItems;
 			}
 			else
 			{

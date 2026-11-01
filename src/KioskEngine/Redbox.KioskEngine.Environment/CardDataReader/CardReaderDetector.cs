@@ -47,20 +47,20 @@ public class CardReaderDetector
 	private static List<string> GetUSBCardReaderKeys()
 	{
 		List<string> list = new List<string>();
-		using (RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Redbox\\CRList"))
+		using (RegistryKey key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Redbox\\CRList"))
 		{
-			if (registryKey != null)
+			if (key != null)
 			{
-				object value = registryKey.GetValue("List");
-				if (value != null)
+				object registryValue = key.GetValue("List");
+				if (registryValue != null)
 				{
-					string[] array = value.ToString().Split(',');
+					string[] array = registryValue.ToString().Split(',');
 					for (int i = 0; i < array.Length; i++)
 					{
-						list.Add((string)registryKey.GetValue(array[i]));
+						list.Add((string)key.GetValue(array[i]));
 					}
 				}
-				registryKey.Close();
+				key.Close();
 			}
 		}
 		if (list.Count == 0)

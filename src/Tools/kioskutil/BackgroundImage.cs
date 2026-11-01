@@ -15,18 +15,18 @@ public static class BackgroundImage
 
 	public static string GetWallpaper()
 	{
-		RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: false);
-		string result = registryKey.GetValue("WallPaper").ToString();
-		registryKey.Close();
+		RegistryKey key = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: false);
+		string result = key.GetValue("WallPaper").ToString();
+		key.Close();
 		return result;
 	}
 
 	private static void SetWallpaper(string WallpaperLocation, int WallpaperStyle, int TileWallpaper)
 	{
 		SystemParametersInfo(20, 0, WallpaperLocation, 3);
-		RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
-		registryKey.SetValue("WallpaperStyle", WallpaperStyle);
-		registryKey.SetValue("TileWallpaper", TileWallpaper);
-		registryKey.Close();
+		RegistryKey key = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);
+		key.SetValue("WallpaperStyle", WallpaperStyle);
+		key.SetValue("TileWallpaper", TileWallpaper);
+		key.Close();
 	}
 }

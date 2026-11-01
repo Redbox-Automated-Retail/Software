@@ -83,11 +83,11 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList GetDownloadState(out ReadOnlyCollection<IDownloadData> downloads)
 	{
-		List<IDownloadData> list = new List<IDownloadData>();
+		List<IDownloadData> downloadDataList = new List<IDownloadData>();
 		ClientCommandResult currentDownloads = m_service.GetCurrentDownloads(out var jobs);
 		foreach (Download item in jobs)
 		{
-			list.Add(new DownloadData
+			downloadDataList.Add(new DownloadData
 			{
 				Id = item.ID,
 				Name = item.Name,
@@ -101,7 +101,7 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 				TotalBytesTransferred = item.TotalBytesTransfered
 			});
 		}
-		downloads = list.AsReadOnly();
+		downloads = downloadDataList.AsReadOnly();
 		return MakeLocalErrorList(currentDownloads.Errors);
 	}
 

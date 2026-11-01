@@ -132,10 +132,10 @@ public class Resource : IResource
 				string[] array = attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 				foreach (string text in array)
 				{
-					string text2 = text.Trim();
-					if (!(text2 == resource.Name))
+					string trimmed = text.Trim();
+					if (!(trimmed == resource.Name))
 					{
-						resource.AddDependency(text2);
+						resource.AddDependency(trimmed);
 					}
 				}
 			}

@@ -441,14 +441,14 @@ public class ConfigurationClient
 						LogHelper.Instance.Log("Error: Config file {0} does not exist.", _filePath);
 						return;
 					}
-					string text = File.ReadAllText(_filePath);
-					if (string.IsNullOrEmpty(text))
+					string contents = File.ReadAllText(_filePath);
+					if (string.IsNullOrEmpty(contents))
 					{
 						LogHelper.Instance.Log("Error: Config file {0} is empty.", _filePath);
 					}
 					else
 					{
-						_clientConfigFile = text.ToObject<ClientConfigFile>();
+						_clientConfigFile = contents.ToObject<ClientConfigFile>();
 					}
 				}
 				catch (Exception e)

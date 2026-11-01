@@ -177,7 +177,7 @@ public sealed class Deck : IDeck
 		int attributeValue5 = node.GetAttributeValue("NumberOfSlots", 90);
 		int? attributeValue6 = node.GetAttributeValue<int?>("SellThruSlots", null);
 		int? attributeValue7 = node.GetAttributeValue<int?>("SellThruOffset", null);
-		List<Quadrant> list = new List<Quadrant>();
+		List<Quadrant> quadrants = new List<Quadrant>();
 		int num = 0;
 		foreach (XmlNode childNode in node.ChildNodes)
 		{
@@ -198,11 +198,11 @@ public sealed class Deck : IDeck
 				range = new Range(num3, end);
 			}
 			Quadrant quadrant = new Quadrant(attributeValue8, range);
-			list.Add(quadrant);
+			quadrants.Add(quadrant);
 			quadrant.IsExcluded = attributeValue11;
 			num++;
 		}
-		return new Deck(attributeValue, attributeValue2, attributeValue3, attributeValue5, attributeValue4, attributeValue6, attributeValue7, list.ToArray());
+		return new Deck(attributeValue, attributeValue2, attributeValue3, attributeValue5, attributeValue4, attributeValue6, attributeValue7, quadrants.ToArray());
 	}
 
 	internal void ToXmlWriter(XmlWriter writer)

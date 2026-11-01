@@ -76,7 +76,7 @@ public class ShoppingCartMessageHelper
 			foreach (IGrouping<RentalShoppingCartItemAction, IBaseRentalShoppingCartItem> item in from x in rentalShoppingCart.Items
 				group x by x.Action)
 			{
-				List<LineItem> list = new List<LineItem>();
+				List<LineItem> lineItems = new List<LineItem>();
 				LineItemGroupType groupType = ((item.Key == RentalShoppingCartItemAction.subscription) ? LineItemGroupType.Subscription : ((item.Key == RentalShoppingCartItemAction.rental) ? LineItemGroupType.Rental : LineItemGroupType.Purchase));
 				if (item.Key == RentalShoppingCartItemAction.subscription)
 				{
@@ -86,7 +86,7 @@ public class ShoppingCartMessageHelper
 					}
 					foreach (IRentalShoppingCartSubscriptionItem item2 in item)
 					{
-						list.Add(new LineItem
+						lineItems.Add(new LineItem
 						{
 							SubscriptionId = item2.SubscriptionProduct.SubscriptionId,
 							TempPassword = item2.TempPassword
@@ -95,7 +95,7 @@ public class ShoppingCartMessageHelper
 					shoppingCart.Groups.Add(new LineItemGroup
 					{
 						GroupType = groupType,
-						Items = list
+						Items = lineItems
 					});
 					continue;
 				}
@@ -114,7 +114,7 @@ public class ShoppingCartMessageHelper
 						};
 					}
 					IPricingRecord pricingRecord = item3?.PricingRecord;
-					list.Add(new LineItem
+					lineItems.Add(new LineItem
 					{
 						Barcode = item3.Barcode,
 						BlurayUpsell = blurayUpsell,
@@ -149,7 +149,7 @@ public class ShoppingCartMessageHelper
 				shoppingCart.Groups.Add(new LineItemGroup
 				{
 					GroupType = groupType,
-					Items = list,
+					Items = lineItems,
 					Totals = new Totals
 					{
 						DiscountedSubtotal = subTotalGroup.SubTotal,

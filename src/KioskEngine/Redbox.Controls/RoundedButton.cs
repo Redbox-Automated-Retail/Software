@@ -331,9 +331,9 @@ public class RoundedButton : Button, IThemedControl
 			Duration = new Duration(TimeSpan.FromSeconds(value))
 		};
 		base.RenderTransformOrigin = new Point(0.5, 0.5);
-		ScaleTransform value2 = new ScaleTransform();
+		ScaleTransform scaleTransform = new ScaleTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(scaleTransform);
 		base.RenderTransform = transformGroup;
 		DoubleAnimation doubleAnimation = new DoubleAnimation
 		{

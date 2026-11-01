@@ -84,8 +84,8 @@ public sealed class ZipFileService : IZipFileService
 					{
 						continue;
 					}
-					string text = Path.Combine(unzipPath, nextEntry.Name);
-					using (FileStream fileStream = File.Create(text))
+					string path = Path.Combine(unzipPath, nextEntry.Name);
+					using (FileStream fileStream = File.Create(path))
 					{
 						int num = 2048;
 						byte[] buffer = new byte[2048];
@@ -100,7 +100,7 @@ public sealed class ZipFileService : IZipFileService
 							break;
 						}
 					}
-					new FileInfo(text).CreationTime = nextEntry.DateTime;
+					new FileInfo(path).CreationTime = nextEntry.DateTime;
 				}
 			}
 			unzipResult.Success = true;

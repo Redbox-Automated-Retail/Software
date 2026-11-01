@@ -167,10 +167,10 @@ internal sealed class ApplicationLog : IFormattedLog
 		FileName = fileName;
 		FlushOnWrite = flushOnWrite;
 		AppendToExisting = appends;
-		string text2 = Path.Combine(Directory, FileName);
-		if (AppendToExisting && File.Exists(text2) && new FileInfo(text2).Length >= 1024000)
+		string path = Path.Combine(Directory, FileName);
+		if (AppendToExisting && File.Exists(path) && new FileInfo(path).Length >= 1024000)
 		{
-			CreateBackup(text2);
+			CreateBackup(path);
 		}
 		Open();
 	}

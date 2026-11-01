@@ -71,20 +71,20 @@ public sealed class BundleCollection
 			errorList.Add(Error.NewError("B125", $"Found NO bundles named: {productName}", "Check the bundles folder under the Kiosk Engine folder and ensure the bundle is actually installed."));
 			return errorList;
 		}
-		List<IBundleSpecifier> list = new List<IBundleSpecifier>(collection);
-		Console.WriteLine("> found [" + list.Count + "] bundles named " + productName);
+		List<IBundleSpecifier> bundleSpecifiers = new List<IBundleSpecifier>(collection);
+		Console.WriteLine("> found [" + bundleSpecifiers.Count + "] bundles named " + productName);
 		BundleSpecifier targetVersion = new BundleSpecifier($"{productName},{productVersion}");
-		IBundleSpecifier bundleSpecifier = list.Find((IBundleSpecifier wv) => wv.Name == targetVersion.Name && wv.Version == targetVersion.Version);
+		IBundleSpecifier bundleSpecifier = bundleSpecifiers.Find((IBundleSpecifier wv) => wv.Name == targetVersion.Name && wv.Version == targetVersion.Version);
 		if (bundleSpecifier != null)
 		{
 			bundle = bundleSpecifier.Instance;
 		}
 		else
 		{
-			list.Add(targetVersion);
-			list.Sort((IBundleSpecifier lhs, IBundleSpecifier rhs) => lhs.Version.CompareTo(rhs.Version));
-			int index = list.IndexOf(targetVersion);
-			bundle = ((index == 0) ? null : list[index - 1].Instance);
+			bundleSpecifiers.Add(targetVersion);
+			bundleSpecifiers.Sort((IBundleSpecifier lhs, IBundleSpecifier rhs) => lhs.Version.CompareTo(rhs.Version));
+			int index = bundleSpecifiers.IndexOf(targetVersion);
+			bundle = ((index == 0) ? null : bundleSpecifiers[index - 1].Instance);
 		}
 		if (bundle != null)
 		{

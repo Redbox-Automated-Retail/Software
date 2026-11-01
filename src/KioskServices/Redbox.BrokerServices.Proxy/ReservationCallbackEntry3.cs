@@ -80,14 +80,14 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 		IReservationResult reservationResult = ReservationServicesProxy.Instance.RequestCallback3(Cart.CardID, Cart.Email, Cart.ReferenceNumber, Cart.ReserveDate, dictionary4, Cart.AppliedCredit, Cart.AppliedHiveOnlinePromotion, Cart.AppliedTitleMarketing, Cart.CustomerNumber, Cart.DiscountedSubTotal, Cart.GrandTotal, Cart.HistoryTitleIDs, Cart.HiveOnlinePromotionDiscount, Cart.IsMnp, Cart.NumberOfCreditsRemaining, Cart.PromoCode, Cart.SubTotal, Cart.Tax, Cart.Titles, Cart.IsGc, Cart.GcIds, Cart.CcIds, Cart.TaxRate, Cart.Zip, Cart.IsMdv, Cart.LoyaltyRedemption, Cart.DefaultServiceFeeAmount, Cart.ActualServiceFeeAmount, Cart.AuthorizeAtPickup, Cart.ReservationCardHash, Cart.AlternateCardHashes);
 		BrokerResult.ReservationSucceeded = reservationResult.Success;
 		BrokerResult.ErrorMessage = reservationResult.ErrorMessage;
-		List<TitleResult> list3 = new List<TitleResult>();
+		List<TitleResult> titleResults = new List<TitleResult>();
 		foreach (IReservedItem item2 in reservationResult.Items)
 		{
 			foreach (ReservationTitle3 title2 in Cart.Titles)
 			{
 				if (title2.TitleID == item2.ProductId)
 				{
-					list3.Add(new TitleResult
+					titleResults.Add(new TitleResult
 					{
 						ItemID = title2.ItemID,
 						Reservable = (item2.Barcode != "empty"),
@@ -97,7 +97,7 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 				}
 			}
 		}
-		BrokerResult.TitleResults = list3;
+		BrokerResult.TitleResults = titleResults;
 		LogHelper.Instance.Log("BrokerServicesProxy reservation response: {0}", reservationResult.ToJson());
 		ResetEvent.Set();
 	}

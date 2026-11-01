@@ -391,41 +391,41 @@ public class DeviceHelper : IDisposable
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			string text = QueryHardwareId(devInfo, ref did, out lastError);
-			if (!text.ToLower().StartsWith("vid"))
+			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			if (!hardwareId.ToLower().StartsWith("vid"))
 			{
-				int index = text.IndexOf("vid");
+				int index = hardwareId.IndexOf("vid");
 				if (index == -1)
 				{
 					errors.Add("Invalid string.");
 					return ProcessDeviceInfoResult.Error;
 				}
-				text = text.Substring(index).ToLower();
+				hardwareId = hardwareId.Substring(index).ToLower();
 			}
-			string[] parts = text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = hardwareId.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length < 2)
 			{
-				LogHelper.Instance.Log("The HWID '{0}' is malformed.", text);
+				LogHelper.Instance.Log("The HWID '{0}' is malformed.", hardwareId);
 				return ProcessDeviceInfoResult.Continue;
 			}
 			string text2 = parts[0].Substring(4);
 			string s = parts[1].Substring(4);
 			if (text2 == vid)
 			{
-				int num2 = int.Parse(s);
+				int number = int.Parse(s);
 				int num3 = int.Parse(pid);
 				switch (matcher)
 				{
 				case MatchType.GTEPid:
-					if (num2 >= num3)
+					if (number >= num3)
 					{
-						devMatches.Add(text);
+						devMatches.Add(hardwareId);
 					}
 					break;
 				case MatchType.ExactPID:
-					if (num2 == num3)
+					if (number == num3)
 					{
-						devMatches.Add(text);
+						devMatches.Add(hardwareId);
 					}
 					break;
 				}
@@ -585,12 +585,12 @@ public class DeviceHelper : IDisposable
 				lastError = Marshal.GetLastWin32Error();
 				return ProcessDeviceInfoResult.Continue;
 			}
-			string text = QueryHardwareId(devInfo, ref did, out lastError);
-			if (text == null || !text.Contains(descriptor.ToString()))
+			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			if (hardwareId == null || !hardwareId.Contains(descriptor.ToString()))
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			LogHelper.Instance.Log("Found HWID {0} on class {1}", text, clazzNameBuffer);
+			LogHelper.Instance.Log("Found HWID {0} on class {1}", hardwareId, clazzNameBuffer);
 			bool flag = ChangeState(devInfo, ref did, state);
 			LogHelper.Instance.Log("Change state {0} returned {1}", state.ToString(), flag ? "OK" : "FAIL");
 			if (!flag)

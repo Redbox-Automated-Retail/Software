@@ -54,8 +54,8 @@ internal static class Win32ServiceFunctions
 	{
 		try
 		{
-			List<ServiceController> list = new List<ServiceController>(ServiceController.GetServices());
-			if (list.FindIndex((ServiceController p) => p.ServiceName == name) > -1)
+			List<ServiceController> serviceControllers = new List<ServiceController>(ServiceController.GetServices());
+			if (serviceControllers.FindIndex((ServiceController p) => p.ServiceName == name) > -1)
 			{
 				string keyName = $"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\{name}";
 				switch (type)

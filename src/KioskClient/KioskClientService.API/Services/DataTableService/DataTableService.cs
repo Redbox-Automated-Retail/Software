@@ -206,15 +206,15 @@ public class DataTableService : IDataTableService
 			}
 			if (getDataObjectsResult.MissingIds.Any())
 			{
-				List<RecordRequest> list = new List<RecordRequest>();
+				List<RecordRequest> recordRequests = new List<RecordRequest>();
 				foreach (long missingId in getDataObjectsResult.MissingIds)
 				{
-					list.Add(new RecordRequest
+					recordRequests.Add(new RecordRequest
 					{
 						Id = missingId
 					});
 				}
-				DataUpdateResult dataUpdateResult = await RequestDataTableUpdate<T>(list);
+				DataUpdateResult dataUpdateResult = await RequestDataTableUpdate<T>(recordRequests);
 				response.TableFileUpdated = dataUpdateResult?.TableFileUpdated ?? false;
 				if (dataUpdateResult.Success)
 				{

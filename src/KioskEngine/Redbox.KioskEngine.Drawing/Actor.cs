@@ -823,10 +823,10 @@ public class Actor : IActor, IDisposable
 		{
 			if (!string.IsNullOrEmpty(WPFControlName) && !string.IsNullOrEmpty(WPFControlAssemblyName))
 			{
-				string text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), WPFControlAssemblyName);
-				if (File.Exists(text))
+				string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), WPFControlAssemblyName);
+				if (File.Exists(path))
 				{
-					Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(text);
+					Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(path);
 					if (assembly != null)
 					{
 						Type type = assembly.GetType(WPFControlName);
@@ -851,17 +851,17 @@ public class Actor : IActor, IDisposable
 						}
 						else
 						{
-							LogHelper.Instance.Log("Unable to get type {1} in assembly {0}", text, WPFControlName);
+							LogHelper.Instance.Log("Unable to get type {1} in assembly {0}", path, WPFControlName);
 						}
 					}
 					else
 					{
-						LogHelper.Instance.Log("Unable to load assembly {0}", text);
+						LogHelper.Instance.Log("Unable to load assembly {0}", path);
 					}
 				}
 				else
 				{
-					LogHelper.Instance.Log("Unable to find assembly {0}", text);
+					LogHelper.Instance.Log("Unable to find assembly {0}", path);
 				}
 			}
 			else
@@ -1196,8 +1196,8 @@ public class Actor : IActor, IDisposable
 						{
 							if (name != "image")
 							{
-								object value2 = ConversionHelper.ChangeType(obj, propertyInfo.PropertyType);
-								propertyInfo.SetValue(this, value2, null);
+								object converted = ConversionHelper.ChangeType(obj, propertyInfo.PropertyType);
+								propertyInfo.SetValue(this, converted, null);
 								continue;
 							}
 							string text = obj as string;

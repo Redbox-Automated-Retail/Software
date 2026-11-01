@@ -42,9 +42,9 @@ public sealed class FunctionFactory
 			return;
 		}
 		DirectoryInfo directoryInfo = new DirectoryInfo(path);
-		List<FileInfo> list = new List<FileInfo>(directoryInfo.GetFiles("*.dll"));
-		list.AddRange(directoryInfo.GetFiles("*.exe"));
-		list.ForEach(delegate(FileInfo f)
+		List<FileInfo> fileInfoList = new List<FileInfo>(directoryInfo.GetFiles("*.dll"));
+		fileInfoList.AddRange(directoryInfo.GetFiles("*.exe"));
+		fileInfoList.ForEach(delegate(FileInfo f)
 		{
 #if !NETFRAMEWORK
 			if (!NetFrameworkCompatibility.IsNetAssembly(f.FullName))

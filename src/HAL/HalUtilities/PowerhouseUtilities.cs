@@ -49,10 +49,10 @@ internal sealed class PowerhouseUtilities : IDisposable
 	internal void Backup()
 	{
 		ForFiles(GampFolder, BackupDirectory);
-		string text = Path.Combine(HALInstallFolder, HALConfig);
-		if (File.Exists(text))
+		string path = Path.Combine(HALInstallFolder, HALConfig);
+		if (File.Exists(path))
 		{
-			DoCopy(text, Path.Combine(BackupDirectory, HALConfig));
+			DoCopy(path, Path.Combine(BackupDirectory, HALConfig));
 		}
 		string kioskId = RuntimeService.KioskId;
 		if ("UNKNOWN" != kioskId)
@@ -69,10 +69,10 @@ internal sealed class PowerhouseUtilities : IDisposable
 		{
 			ForFiles(BackupDirectory, GampFolder);
 		}
-		string text = Path.Combine(BackupDirectory, HALConfig);
-		if (File.Exists(text) && CreateDir(HALInstallFolder))
+		string path = Path.Combine(BackupDirectory, HALConfig);
+		if (File.Exists(path) && CreateDir(HALInstallFolder))
 		{
-			DoCopy(text, Path.Combine(HALInstallFolder, HALConfig));
+			DoCopy(path, Path.Combine(HALInstallFolder, HALConfig));
 		}
 	}
 
@@ -82,10 +82,10 @@ internal sealed class PowerhouseUtilities : IDisposable
 		Console.WriteLine("Enter identifier:");
 		string text = Console.ReadLine();
 		Console.WriteLine("Identifier entered: {0}", text);
-		string text2 = Path.Combine(RuntimeService.AssemblyDirectory, text);
-		if (CreateDir(text2))
+		string path = Path.Combine(RuntimeService.AssemblyDirectory, text);
+		if (CreateDir(path))
 		{
-			BackupDirectory = text2;
+			BackupDirectory = path;
 			BackupOk = true;
 		}
 	}
@@ -95,11 +95,11 @@ internal sealed class PowerhouseUtilities : IDisposable
 		int copies = 0;
 		Array.ForEach(GampFiles, delegate(string cf)
 		{
-			string text = Path.Combine(sourceDirectory, cf);
-			if (File.Exists(text))
+			string path = Path.Combine(sourceDirectory, cf);
+			if (File.Exists(path))
 			{
 				string dest = Path.Combine(backup, cf);
-				if (DoCopy(text, dest))
+				if (DoCopy(path, dest))
 				{
 					int num = copies + 1;
 					copies = num;

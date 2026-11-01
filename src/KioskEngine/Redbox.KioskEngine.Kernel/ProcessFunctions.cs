@@ -229,10 +229,10 @@ internal static class ProcessFunctions
 					{
 						text = "c:\\windows";
 					}
-					string text2 = Path.Combine(text, processStartInfo.FileName);
-					if (File.Exists(text2))
+					string path = Path.Combine(text, processStartInfo.FileName);
+					if (File.Exists(path))
 					{
-						processStartInfo.FileName = text2;
+						processStartInfo.FileName = path;
 					}
 				}
 			}

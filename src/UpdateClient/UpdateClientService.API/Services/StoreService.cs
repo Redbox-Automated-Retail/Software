@@ -51,13 +51,13 @@ public class StoreService : IStoreService
 				{
 					string text = "Market";
 					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, null);
-					if (value == null)
+					object registryValue = Registry.GetValue(text2, text, null);
+					if (registryValue == null)
 					{
 						_logger.LogInformation("Market is not set in the registry at {0}\\{1}", text2, text);
 						return null;
 					}
-					_market = ((string)value).Trim();
+					_market = ((string)registryValue).Trim();
 				}
 			}
 			catch (Exception exception)
@@ -78,13 +78,13 @@ public class StoreService : IStoreService
 				{
 					string text = "Banner";
 					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, null);
-					if (value == null)
+					object registryValue = Registry.GetValue(text2, text, null);
+					if (registryValue == null)
 					{
 						_logger.LogInformation("Banner is not set in the registry at {0}\\{1}", text2, text);
 						return null;
 					}
-					_banner = ((string)value).Trim();
+					_banner = ((string)registryValue).Trim();
 				}
 			}
 			catch (Exception exception)

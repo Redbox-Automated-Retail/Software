@@ -108,11 +108,11 @@ public partial class EMVSwipeCardUserControl : UserControl, IComponentConnector
 	{
 		Storyboard storyboard = new Storyboard();
 		storyboard.RepeatBehavior = RepeatBehavior.Forever;
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup transformGroup = new TransformGroup();
-		transformGroup.Children.Add(value);
-		transformGroup.Children.Add(value2);
+		transformGroup.Children.Add(translateTransform);
+		transformGroup.Children.Add(rotateTransform);
 		SwipeCard.RenderTransform = transformGroup;
 		AnimationInfo animationInfo = CreateSwipeCardAnimationInfo();
 		FirstAnimationInfo = null;

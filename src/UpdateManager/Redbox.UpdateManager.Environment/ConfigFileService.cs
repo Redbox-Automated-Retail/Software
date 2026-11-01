@@ -60,8 +60,8 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		{
 			ErrorList cCFDTOList = GetCCFDTOList(out var clientConfigFileDataList);
 			errorList.AddRange(cCFDTOList);
-			string text = clientConfigFileDataList.ToJson();
-			string text2 = Encoding.ASCII.GetBytes(text).ToASCIISHA1Hash();
+			string json = clientConfigFileDataList.ToJson();
+			string text2 = Encoding.ASCII.GetBytes(json).ToASCIISHA1Hash();
 			if (!string.IsNullOrEmpty(_clientConfigFileHash) && _clientConfigFileHash != text2)
 			{
 				_syncID = 0;
@@ -73,7 +73,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 				{
 					PollRequestType = PollRequestType.ConfigFiles,
 					SyncId = 0,
-					Data = text
+					Data = json
 				});
 			}
 			else

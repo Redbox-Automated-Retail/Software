@@ -41,10 +41,10 @@ public class OutdoorElo : GenericTouchScreen
 	{
 		try
 		{
-			List<Process> list = new List<Process>();
-			list.AddRange(GetDriverProcess());
-			list.AddRange(GetDriverProcess("EloPCap_Control"));
-			list.ForEach(delegate(Process process)
+			List<Process> processes = new List<Process>();
+			processes.AddRange(GetDriverProcess());
+			processes.AddRange(GetDriverProcess("EloPCap_Control"));
+			processes.ForEach(delegate(Process process)
 			{
 				process.Kill();
 			});

@@ -384,11 +384,11 @@ public class InstallerProject
 	public bool ShouldAllowModify(ErrorList errors)
 	{
 		string text = string.Empty;
-		RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(GetUninstallKeyWithoutHive());
-		if (registryKey != null)
+		RegistryKey key = Registry.LocalMachine.OpenSubKey(GetUninstallKeyWithoutHive());
+		if (key != null)
 		{
-			text = registryKey.GetValue("DisplayVersion") as string;
-			registryKey.Close();
+			text = key.GetValue("DisplayVersion") as string;
+			key.Close();
 		}
 		if (Mode == InstallMode.Install && !AllowModify && !string.IsNullOrEmpty(text))
 		{

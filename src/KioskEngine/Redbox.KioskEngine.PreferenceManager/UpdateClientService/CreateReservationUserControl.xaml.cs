@@ -216,12 +216,12 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 	private async void AddTitleButton_Click(object sender, RoutedEventArgs e)
 	{
 		APIResponse<GetReservableTitlesResponse> aPIResponse = await KioskEngineApiReservationClient.GetReservableTitles();
-		List<DisplayReservableTitle> list = new List<DisplayReservableTitle>();
+		List<DisplayReservableTitle> displayReservableTitles = new List<DisplayReservableTitle>();
 		if (aPIResponse?.Response?.Content != null)
 		{
 			foreach (ReservableTitle item in aPIResponse.Response.Content)
 			{
-				list.Add(new DisplayReservableTitle
+				displayReservableTitles.Add(new DisplayReservableTitle
 				{
 					ReservableTitle = item
 				});
@@ -234,7 +234,7 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 		};
 		AddReservationTitleWindow addReservationTitleWindow = new AddReservationTitleWindow
 		{
-			DisplayReservableTitles = list,
+			DisplayReservableTitles = displayReservableTitles,
 			Owner = GetParentWindow(),
 			ReservationRequestTitle = reservationRequestTitle
 		};

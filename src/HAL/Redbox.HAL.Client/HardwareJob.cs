@@ -211,8 +211,8 @@ public sealed class HardwareJob
 	public HardwareCommandResult GetResults(out ProgramResult[] results)
 	{
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB get-results job: '{ID}'");
-		List<ProgramResult> list = new List<ProgramResult>();
-		using (new DisposeableList<ProgramResult>(list))
+		List<ProgramResult> programResults = new List<ProgramResult>();
+		using (new DisposeableList<ProgramResult>(programResults))
 		{
 			if (hardwareCommandResult.Success)
 			{
@@ -221,11 +221,11 @@ public sealed class HardwareJob
 					ProgramResult programResult = ProgramResult.FromString(each);
 					if (programResult != null)
 					{
-						list.Add(programResult);
+						programResults.Add(programResult);
 					}
 				});
 			}
-			results = list.ToArray();
+			results = programResults.ToArray();
 			return hardwareCommandResult;
 		}
 	}

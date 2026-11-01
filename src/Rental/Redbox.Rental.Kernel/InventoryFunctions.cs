@@ -362,12 +362,12 @@ public static class InventoryFunctions
 	[KernelFunction(Name = "kernel.invsvcs_snapshot")]
 	internal static void Snapshot(string storeNumber, LuaTable items)
 	{
-		List<IInventoryItem> list = new List<IInventoryItem>();
+		List<IInventoryItem> inventoryItems = new List<IInventoryItem>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService != null)
 		{
-			InnerSnapshot(items, list);
-			inventoryService.Snapshot(storeNumber, list.AsReadOnly(), null);
+			InnerSnapshot(items, inventoryItems);
+			inventoryService.Snapshot(storeNumber, inventoryItems.AsReadOnly(), null);
 		}
 	}
 

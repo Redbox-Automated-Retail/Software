@@ -324,19 +324,19 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 		LogHelper.Instance.Log("RentalShoppingCartService.AssignBarcodesToVend");
 		List<string> list = new List<string>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-		List<ISearchBarcodeForProduct> list2 = new List<ISearchBarcodeForProduct>();
+		List<ISearchBarcodeForProduct> searchBarcodeForProductList = new List<ISearchBarcodeForProduct>();
 		if (rentalShoppingCart != null)
 		{
 			foreach (IRentalShoppingCartTitleItem titleItem in rentalShoppingCart.TitleItems)
 			{
-				list2.Add(new SearchBarcodeForProduct
+				searchBarcodeForProductList.Add(new SearchBarcodeForProduct
 				{
 					ProductId = titleItem.ProductId,
 					Barcode = titleItem.Barcode,
 					Action = titleItem.Action
 				});
 			}
-			List<IBarcodeForProductResult> list3 = dataService?.GetBarcodesForProducts(list2, null);
+			List<IBarcodeForProductResult> list3 = dataService?.GetBarcodesForProducts(searchBarcodeForProductList, null);
 			if (list3 != null)
 			{
 				foreach (IBarcodeForProductResult eachBarcodeForProductResult in list3)

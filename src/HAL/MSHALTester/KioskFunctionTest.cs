@@ -80,9 +80,9 @@ internal sealed class KioskFunctionTest : JobExecutor, IKioskFunctionCheckData
 	internal TestState TestCameraSnap(Location loc)
 	{
 		SnapDecodeStatus = TestState.Failure;
-		List<Location> list = new List<Location>();
-		list.Add(loc);
-		if (!Service.HardSync(list, "KFC Test Sync", new HardwareJobSchedule
+		List<Location> locations = new List<Location>();
+		locations.Add(loc);
+		if (!Service.HardSync(locations, "KFC Test Sync", new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.Highest
 		}, out var job).Success)

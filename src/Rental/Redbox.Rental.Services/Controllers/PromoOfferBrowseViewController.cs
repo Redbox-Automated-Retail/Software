@@ -295,7 +295,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 
 	private static List<IBrowseItemModel> CreateBrowseItemsFromTitleProducts(List<ITitleProduct> products, bool isForMiniCart = false, bool isAdaMiniCart = false)
 	{
-		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
+		List<IBrowseItemModel> browseItemModels = new List<IBrowseItemModel>();
 		if (ServiceLocator.Instance.GetService<IDataService>() != null)
 		{
 			foreach (ITitleProduct product in products)
@@ -383,10 +383,10 @@ public class PromoOfferBrowseViewController : BaseViewController
 					BrowseFunctions.ConfigureProductFlag(displayProductModel, productFlag, hideFlag: false, BaseViewController.GetViewUserControl(), product, displayProductModelConstants);
 				}
 				displayProductModel.ButtonData.Clear();
-				list.Add(displayProductModel);
+				browseItemModels.Add(displayProductModel);
 			}
 		}
-		return list.ToList();
+		return browseItemModels.ToList();
 	}
 
 	private static DisplayProductModelConstants GetDisplayProductModelConstants()
@@ -526,7 +526,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 
 	private static void BrowseProductControl_OnNotifyBrowseItemsShown(List<IBrowseItemModel> browseItemModels, object parameter)
 	{
-		List<IKioskProduct> list = new List<IKioskProduct>();
+		List<IKioskProduct> kioskProducts = new List<IKioskProduct>();
 		List<IBrowseItemModel> list2 = new List<IBrowseItemModel>();
 		if (browseItemModels != null)
 		{
@@ -534,7 +534,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 			{
 				if (browseItemModel?.Data is IKioskProduct item)
 				{
-					list.Add(item);
+					kioskProducts.Add(item);
 				}
 				if (!browseItemModel.IsBorderItem)
 				{
@@ -542,13 +542,13 @@ public class PromoOfferBrowseViewController : BaseViewController
 				}
 			}
 		}
-		if (!AreProductListsIdentical(list, PromoOfferState?.BrowseProductsShown))
+		if (!AreProductListsIdentical(kioskProducts, PromoOfferState?.BrowseProductsShown))
 		{
-			_ = list?.Count ?? 0;
+			_ = kioskProducts?.Count ?? 0;
 			_ = 0;
 			if (PromoOfferState != null)
 			{
-				PromoOfferState.BrowseProductsShown = list;
+				PromoOfferState.BrowseProductsShown = kioskProducts;
 				PromoOfferState.TTSBrowseItemModelsShown = list2;
 			}
 		}

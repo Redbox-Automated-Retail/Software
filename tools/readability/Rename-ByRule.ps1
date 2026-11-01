@@ -29,7 +29,8 @@ foreach ($f in $Files) {
                     $old = $dm.Groups['old'].Value
                     $new = $r.Name
                     # {n}: camelCase of the "n" group (a leading interface I dropped), e.g. IKernelService -> kernelService.
-                    if ($new.Contains('{n}')) { $n = $dm.Groups['n'].Value -replace '^I(?=[A-Z])', ''; $new = $new.Replace('{n}', $n.Substring(0, 1).ToLower() + $n.Substring(1)) }
+                    if ($new.Contains('{p}')) { $n = $dm.Groups['n'].Value -creplace '^I(?=[A-Z])', ''; $n = $n.Substring(0, 1).ToLower() + $n.Substring(1); $n = if ($n -cmatch '(Data|Details|Info|Information|Metadata|Status|Settings|Criteria|For\w+)$') { $n + 'List' } elseif ($n -match '(s|x|ch|sh)$') { $n + 'es' } elseif ($n -match '[^aeiou]y$') { $n.Substring(0, $n.Length - 1) + 'ies' } else { $n + 's' }; $new = $new.Replace('{p}', $n) }
+                    if ($new.Contains('{n}')) { $n = $dm.Groups['n'].Value -creplace '^I(?=[A-Z])', ''; $new = $new.Replace('{n}', $n.Substring(0, 1).ToLower() + $n.Substring(1)) }
                     if ($new -eq $old -or $map.ContainsKey($old) -or $map.Values -contains $new) { continue }
                     if ([regex]::IsMatch($body, "\b$([regex]::Escape($new))\b")) { continue }
                     # Only rename a name declared once in the member (a reused decompiler name may mean two things).

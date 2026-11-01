@@ -150,15 +150,15 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 	{
 		try
 		{
-			List<IInventoryItem> list = new List<IInventoryItem>();
+			List<IInventoryItem> inventoryItems = new List<IInventoryItem>();
 			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
 			if (service == null)
 			{
 				LogHelper.Instance.Log("Unexpected exception in SnapshotImmidiate, Unable to connect to Inventory Service IInventoryService");
 				return;
 			}
-			ProcessFunctions.InnerSnapshot(storeNumber, items, list);
-			service.Snapshot(storeNumber, list.AsReadOnly(), callBackDelegate);
+			ProcessFunctions.InnerSnapshot(storeNumber, items, inventoryItems);
+			service.Snapshot(storeNumber, inventoryItems.AsReadOnly(), callBackDelegate);
 		}
 		catch (Exception ex)
 		{

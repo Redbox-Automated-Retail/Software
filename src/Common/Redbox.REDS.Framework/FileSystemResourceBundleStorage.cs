@@ -88,18 +88,18 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 
 	public ReadOnlyCollection<IResourceBundleStorageEntry> GetResourceManifest()
 	{
-		List<IResourceBundleStorageEntry> list = new List<IResourceBundleStorageEntry>();
+		List<IResourceBundleStorageEntry> resourceBundleStorageEntries = new List<IResourceBundleStorageEntry>();
 		string[] files = Directory.GetFiles(BundlePath, "*.*", SearchOption.AllDirectories);
 		for (int i = 0; i < files.Length; i++)
 		{
 			FileInfo fileInfo = new FileInfo(files[i]);
-			list.Add(new ResourceBundleStorageEntry
+			resourceBundleStorageEntries.Add(new ResourceBundleStorageEntry
 			{
 				Name = fileInfo.Name,
 				Size = fileInfo.Length,
 				Path = fileInfo.FullName
 			});
 		}
-		return list.AsReadOnly();
+		return resourceBundleStorageEntries.AsReadOnly();
 	}
 }

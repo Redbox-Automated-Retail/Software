@@ -176,17 +176,17 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
 		string directoryName = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location);
 		ErrorList errorList = new ErrorList();
-		string text = macroService.ExpandProperties(script);
-		if (!Path.IsPathRooted(text))
+		string expanded = macroService.ExpandProperties(script);
+		if (!Path.IsPathRooted(expanded))
 		{
-			text = Path.Combine(directoryName, text);
+			expanded = Path.Combine(directoryName, expanded);
 		}
-		if (!File.Exists(text))
+		if (!File.Exists(expanded))
 		{
 			errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("F999", $"Script file at {script} not found.", "Supply a valid script file."));
 			return errorList;
 		}
-		Script = text;
+		Script = expanded;
 		macroService["StoreNumber"] = storeNumber;
 		macroService["ProgramFiles"] = "C:\\Program Files";
 		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";

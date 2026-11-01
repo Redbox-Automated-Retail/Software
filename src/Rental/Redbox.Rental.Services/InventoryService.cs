@@ -322,9 +322,9 @@ public class InventoryService : IInventoryService
 			LogHelper.Instance.Log("InventoryService.Snapshot - Enqueue soft sync call to kiosk client service, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
 			List<RemovedQueueItem> removedItems = ServiceLocator.Instance.GetService<IDataService>().GetRemovedQueueItems();
 			LogHelper.Instance.Log("InventoryService.Snapshot - appending the following removed barcodes: " + string.Join(",", removedItems.Select((RemovedQueueItem ri) => ri.Barcode)));
-			List<IInventoryItem> list = new List<IInventoryItem>(items);
-			list.AddRange(removedItems.ToInventoryItems());
-			IKioskClientServiceResult kioskClientServiceResult = await ServiceLocator.Instance.GetService<IKioskClientService>().Inventory.SnapshotAsync(storeNumber, list);
+			List<IInventoryItem> inventoryItems = new List<IInventoryItem>(items);
+			inventoryItems.AddRange(removedItems.ToInventoryItems());
+			IKioskClientServiceResult kioskClientServiceResult = await ServiceLocator.Instance.GetService<IKioskClientService>().Inventory.SnapshotAsync(storeNumber, inventoryItems);
 			if (kioskClientServiceResult == null || !kioskClientServiceResult.Success)
 			{
 				LogHelper.Instance.Log("InventoryService.Snapshot - KCS call to snapshot failed!");

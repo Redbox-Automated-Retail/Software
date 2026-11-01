@@ -22,13 +22,13 @@ public class UserSettingsStore : IUserSettingsStore
 		{
 			return defaultValue;
 		}
-		object value = registryKey.GetValue(key, defaultValue);
+		object registryValue = registryKey.GetValue(key, defaultValue);
 		registryKey.Close();
-		if (value == null || value.Equals(default(T)))
+		if (registryValue == null || registryValue.Equals(default(T)))
 		{
 			return defaultValue;
 		}
-		return (T)ConversionHelper.ChangeType(value, typeof(T));
+		return (T)ConversionHelper.ChangeType(registryValue, typeof(T));
 	}
 
 	public void SetValue<T>(string path, string key, T value)

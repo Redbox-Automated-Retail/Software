@@ -125,12 +125,12 @@ public class SymbolsToolWindow : ToolWindow
 				if (!(var.Name == "package"))
 				{
 					object adjustedValue = GetAdjustedValue(var.Value, out var type, out var _);
-					List<Attribute> list = new List<Attribute>
+					List<Attribute> attributes = new List<Attribute>
 					{
 						new DefaultValueAttribute(adjustedValue)
 					};
 					LuaTable obj = var.Value as LuaTable;
-					PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(underCategory, num++, var.Name, type, adjustedValue, string.Empty, list.ToArray());
+					PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(underCategory, num++, var.Name, type, adjustedValue, string.Empty, attributes.ToArray());
 					if (obj != null)
 					{
 						propertyEnumerator.Property.Tag = var.Value;
@@ -163,11 +163,11 @@ public class SymbolsToolWindow : ToolWindow
 		foreach (object key in table.Keys)
 		{
 			object adjustedValue = GetAdjustedValue(table[key], out var type, out var _);
-			List<Attribute> list = new List<Attribute>
+			List<Attribute> attributes = new List<Attribute>
 			{
 				new DefaultValueAttribute(adjustedValue)
 			};
-			PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(parentEnumerator, id++, key.ToString(), type, adjustedValue, key.ToString(), list.ToArray());
+			PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(parentEnumerator, id++, key.ToString(), type, adjustedValue, key.ToString(), attributes.ToArray());
 			if (table[key] is LuaTable tag)
 			{
 				propertyEnumerator.Property.Tag = tag;

@@ -422,8 +422,8 @@ public class ScheduleTaskDefinition : Definition
 		{
 			return false;
 		}
-		object value = ConversionHelper.ChangeType(MacroContainer.Instance.ExpandConstantMacros(node.Attributes["months-of-year"].Value), typeof(MonthsOfTheYear));
-		monthsOfYear = (MonthsOfTheYear)Convert.ToInt16(value);
+		object converted = ConversionHelper.ChangeType(MacroContainer.Instance.ExpandConstantMacros(node.Attributes["months-of-year"].Value), typeof(MonthsOfTheYear));
+		monthsOfYear = (MonthsOfTheYear)Convert.ToInt16(converted);
 		return true;
 	}
 
@@ -432,8 +432,8 @@ public class ScheduleTaskDefinition : Definition
 		daysOfWeek = (DaysOfTheWeek)0;
 		if (node.Attributes["days-of-week"] != null)
 		{
-			object value = ConversionHelper.ChangeType(MacroContainer.Instance.ExpandConstantMacros(node.Attributes["days-of-week"].Value), typeof(DaysOfTheWeek));
-			daysOfWeek = (DaysOfTheWeek)Convert.ToInt16(value);
+			object converted = ConversionHelper.ChangeType(MacroContainer.Instance.ExpandConstantMacros(node.Attributes["days-of-week"].Value), typeof(DaysOfTheWeek));
+			daysOfWeek = (DaysOfTheWeek)Convert.ToInt16(converted);
 		}
 	}
 }

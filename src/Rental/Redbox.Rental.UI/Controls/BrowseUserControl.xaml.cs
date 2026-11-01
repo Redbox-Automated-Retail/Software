@@ -211,14 +211,14 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 
 	public void Render()
 	{
-		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
-		list.AddRange(RenderPage(m_priorPageBrowseControls, VisibleItemCount * -1, isBorderPage: true));
-		list.AddRange(RenderPage(m_currentPageBrowseControls, 0, isBorderPage: false));
-		list.AddRange(RenderPage(m_nextPageBrowseControls, VisibleItemCount, isBorderPage: true));
+		List<IBrowseItemModel> browseItemModels = new List<IBrowseItemModel>();
+		browseItemModels.AddRange(RenderPage(m_priorPageBrowseControls, VisibleItemCount * -1, isBorderPage: true));
+		browseItemModels.AddRange(RenderPage(m_currentPageBrowseControls, 0, isBorderPage: false));
+		browseItemModels.AddRange(RenderPage(m_nextPageBrowseControls, VisibleItemCount, isBorderPage: true));
 		RenderNoResultsMessage();
 		RenderNavigationButtons();
 		RenderPageNumbers();
-		_browseControlModel?.ProcessNotifyBrowseItemsShown(list, null);
+		_browseControlModel?.ProcessNotifyBrowseItemsShown(browseItemModels, null);
 	}
 
 	private void RenderNoResultsMessage()

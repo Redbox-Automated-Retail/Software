@@ -733,14 +733,14 @@ public class RentalShoppingCart : IRentalShoppingCart
 
 	private void RecordOfferCodesForDiscsUsingOffer(CustomerOffer acceptedOffer)
 	{
-		List<IDiscOfferCode> list = new List<IDiscOfferCode>();
+		List<IDiscOfferCode> discOfferCodes = new List<IDiscOfferCode>();
 		if (Promotion != null)
 		{
 			if ((Promotion.PromotionItems?.Count ?? 0) > 0)
 			{
 				foreach (IPromotionItem promotionItem in Promotion.PromotionItems)
 				{
-					list.Add(new DiscOfferCode
+					discOfferCodes.Add(new DiscOfferCode
 					{
 						Barcode = promotionItem.RentalShoppingCartItem.Barcode,
 						OfferCode = acceptedOffer.OfferDiscountCode
@@ -761,7 +761,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 					OfferProduct offerProduct = acceptedOffer.OfferProducts.FirstOrDefault((OfferProduct o) => o.ProductId == item.ProductId);
 					if (offerProduct != null && item.PricingRecord.InitialDays == offerProduct.NumberOfNights)
 					{
-						list.Add(new DiscOfferCode
+						discOfferCodes.Add(new DiscOfferCode
 						{
 							Barcode = item.Barcode,
 							OfferCode = acceptedOffer.OfferDiscountCode
@@ -770,7 +770,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 				}
 				else if (item.Action == RentalShoppingCartItemAction.purchase && item.Price != item.PurchasePrice)
 				{
-					list.Add(new DiscOfferCode
+					discOfferCodes.Add(new DiscOfferCode
 					{
 						Barcode = item.Barcode,
 						OfferCode = acceptedOffer.OfferDiscountCode
@@ -778,7 +778,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 				}
 			}
 		}
-		Redbox.Rental.Services.Session.Session.Instance.PromoOfferState.DiscOfferCodes = list;
+		Redbox.Rental.Services.Session.Session.Instance.PromoOfferState.DiscOfferCodes = discOfferCodes;
 	}
 
 	private void RemoveNonVendedPromoItems()

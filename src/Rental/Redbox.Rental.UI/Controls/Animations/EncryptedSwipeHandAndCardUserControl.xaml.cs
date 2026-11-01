@@ -46,14 +46,14 @@ public partial class EncryptedSwipeHandAndCardUserControl : UserControl, ICompon
 			AutoReverse = true,
 			RepeatBehavior = RepeatBehavior.Forever
 		};
-		TranslateTransform value = new TranslateTransform();
-		RotateTransform value2 = new RotateTransform();
+		TranslateTransform translateTransform = new TranslateTransform();
+		RotateTransform rotateTransform = new RotateTransform();
 		TransformGroup renderTransform = new TransformGroup
 		{
 			Children = 
 			{
-				(Transform)value,
-				(Transform)value2
+				(Transform)translateTransform,
+				(Transform)rotateTransform
 			}
 		};
 		CardAndHand.RenderTransform = renderTransform;

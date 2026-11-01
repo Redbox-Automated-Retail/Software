@@ -1144,7 +1144,7 @@ internal sealed class Program
 					break;
 				}
 				string[] lines = File.ReadAllLines(optionVal14);
-				List<FraudLocInfo> list3 = new List<FraudLocInfo>();
+				List<FraudLocInfo> fraudLocInfoList = new List<FraudLocInfo>();
 				FraudLocInfo fraudLocInfo = null;
 				char[] separator2 = new char[1] { ' ' };
 				string[] array = lines;
@@ -1154,7 +1154,7 @@ internal sealed class Program
 					{
 						string[] array4 = text2.Split(separator2);
 						fraudLocInfo = new FraudLocInfo(Convert.ToInt32(array4[6]), Convert.ToInt32(array4[9]));
-						list3.Add(fraudLocInfo);
+						fraudLocInfoList.Add(fraudLocInfo);
 					}
 					else if (text2.Contains("PUT Deck"))
 					{
@@ -1170,14 +1170,14 @@ internal sealed class Program
 				try
 				{
 					output.WriteLine("deck,slot,matrix,secure_found");
-					list3.ForEach(delegate(FraudLocInfo each)
+					fraudLocInfoList.ForEach(delegate(FraudLocInfo each)
 					{
 						output.WriteLine("{0},{1},{2},{3}", each.Location.Deck, each.Location.Slot, each.Matrix, each.HasSecureRead());
 					});
 					output.WriteLine(" -- decode stats -- ");
-					List<FraudLocInfo> list4 = list3.FindAll((FraudLocInfo each) => each.Matrix != "UNKNOWN");
+					List<FraudLocInfo> list4 = fraudLocInfoList.FindAll((FraudLocInfo each) => each.Matrix != "UNKNOWN");
 					output.WriteLine("  Items with found barcode: {0}", list4.Count);
-					output.WriteLine("  items with a secure read: {0}", list3.FindAll((FraudLocInfo each) => each.HasSecureRead()).Count);
+					output.WriteLine("  items with a secure read: {0}", fraudLocInfoList.FindAll((FraudLocInfo each) => each.HasSecureRead()).Count);
 				}
 				finally
 				{

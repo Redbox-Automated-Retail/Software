@@ -575,19 +575,19 @@ public abstract class AbstractDirectShowFrameControl : IVideoSource, ISampleGrab
 			{
 				return cacheCrossbarVideoInputs[deviceMoniker];
 			}
-			List<VideoInput> list = new List<VideoInput>();
+			List<VideoInput> videoInputs = new List<VideoInput>();
 			if (crossbar != null && crossbar.get_PinCounts(out var _, out var inputPinCount) == 0)
 			{
 				for (int i = 0; i < inputPinCount; i++)
 				{
 					if (crossbar.get_CrossbarPinInfo(isInputPin: true, i, out var _, out var physicalType) == 0 && physicalType < PhysicalConnectorType.AudioTuner)
 					{
-						list.Add(new VideoInput(i, physicalType));
+						videoInputs.Add(new VideoInput(i, physicalType));
 					}
 				}
 			}
-			VideoInput[] array = new VideoInput[list.Count];
-			list.CopyTo(array);
+			VideoInput[] array = new VideoInput[videoInputs.Count];
+			videoInputs.CopyTo(array);
 			cacheCrossbarVideoInputs.Add(deviceMoniker, array);
 			return array;
 		}

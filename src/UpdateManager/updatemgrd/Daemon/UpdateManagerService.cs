@@ -295,9 +295,9 @@ public class UpdateManagerService : ServiceBase
 								if (ScriptLockedNeedsReboot)
 								{
 									LogHelper.Instance.Log("Health Check Script - attempting reboot");
-									object value2 = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RunInitialSync", "false");
+									object registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RunInitialSync", "false");
 									bool flag2 = false;
-									if (value2 != null && value2 is string && bool.TryParse(value2 as string, out var result2))
+									if (registryValue != null && registryValue is string && bool.TryParse(registryValue as string, out var result2))
 									{
 										flag2 = result2;
 									}
@@ -383,16 +383,16 @@ public class UpdateManagerService : ServiceBase
 					LogHelper.Instance.Log("Running Health Entry for watchdog: {0}.", flag);
 					if (flag)
 					{
-						string text = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "watchdog.lua");
-						if (!File.Exists(text))
+						string path = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "watchdog.lua");
+						if (!File.Exists(path))
 						{
-							LogHelper.Instance.Log("Health Entry for watchdog.  Script: {0} not found.", text);
+							LogHelper.Instance.Log("Health Entry for watchdog.  Script: {0} not found.", path);
 						}
 						else
 						{
 							IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-							string chunk = File.ReadAllText(text);
-							LogHelper.Instance.Log("Health Entry for watchdog. Executing lua script at {0}", text);
+							string chunk = File.ReadAllText(path);
+							LogHelper.Instance.Log("Health Entry for watchdog. Executing lua script at {0}", path);
 							service.ExecuteChunk(chunk);
 						}
 					}

@@ -358,13 +358,13 @@ public class AnalyticsService : IAnalyticsService
 			IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
 			if (engineApplication != null)
 			{
-				string text = Path.Combine(engineApplication.DataPath, _analyticsSessionsPath);
-				if (!Directory.Exists(text))
+				string path = Path.Combine(engineApplication.DataPath, _analyticsSessionsPath);
+				if (!Directory.Exists(path))
 				{
-					_logger.Log("AnalyticsService.WriteToFile: {0} not found, creating directory.", text);
-					Directory.CreateDirectory(text);
+					_logger.Log("AnalyticsService.WriteToFile: {0} not found, creating directory.", path);
+					Directory.CreateDirectory(path);
 				}
-				string text2 = Path.Combine(text, sessionId + "." + extension);
+				string text2 = Path.Combine(path, sessionId + "." + extension);
 				_logger.Log("AnalyticsService.WriteToFile: writing file {0}.", text2);
 				File.WriteAllText(text2, contents);
 			}

@@ -116,13 +116,13 @@ public class KioskFilesService : IKioskFilesService
 			_ioTProcessStatusService.UploadFilesStatus = IoTProcessStatusEnum.InProgress;
 			if (kioskFileRequest.FileNames.Count > 1 || kioskFileRequest.ZipFiles)
 			{
-				List<FileInfo> list = new List<FileInfo>();
+				List<FileInfo> fileInfoList = new List<FileInfo>();
 				foreach (string fileName2 in kioskFileRequest.FileNames)
 				{
 					string fileName = Path.Combine(path, fileName2);
-					list.Add(new FileInfo(fileName));
+					fileInfoList.Add(new FileInfo(fileName));
 				}
-				await _fileService.ZipAndUploadToS3(list, kioskFileRequest.S3PreSignedUrl);
+				await _fileService.ZipAndUploadToS3(fileInfoList, kioskFileRequest.S3PreSignedUrl);
 			}
 			else
 			{

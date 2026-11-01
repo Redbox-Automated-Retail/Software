@@ -24,18 +24,18 @@ public class Vidcapform : Form
 
 	private void button1_Click(object sender, EventArgs e)
 	{
-		string text = Path.Combine(WorkingPath, "SnapAndDecode.jpg");
+		string path = Path.Combine(WorkingPath, "SnapAndDecode.jpg");
 		try
 		{
-			if (File.Exists(text))
+			if (File.Exists(path))
 			{
-				File.Delete(text);
+				File.Delete(path);
 			}
 		}
 		catch (Exception)
 		{
 		}
-		Videocap.SnapShotJPEG(text, 100);
+		Videocap.SnapShotJPEG(path, 100);
 	}
 
 	private void m_cameraPropertiesButton_Click(object sender, EventArgs e)

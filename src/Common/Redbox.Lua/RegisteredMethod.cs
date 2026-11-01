@@ -167,7 +167,7 @@ public class RegisteredMethod
 		{
 			return Method;
 		}
-		List<ScoredMethodInfo> list = new List<ScoredMethodInfo>();
+		List<ScoredMethodInfo> scoredMethodInfoList = new List<ScoredMethodInfo>();
 		foreach (MethodInfo methodOverload in MethodOverloads)
 		{
 			ParameterInfo[] parameters = methodOverload.GetParameters();
@@ -221,18 +221,18 @@ public class RegisteredMethod
 			}
 			if (num > 0)
 			{
-				list.Add(new ScoredMethodInfo
+				scoredMethodInfoList.Add(new ScoredMethodInfo
 				{
 					Score = num,
 					MethodInfo = methodOverload
 				});
 			}
 		}
-		list.Sort((ScoredMethodInfo x, ScoredMethodInfo y) => y.Score.CompareTo(x.Score));
-		if (list.Count <= 0)
+		scoredMethodInfoList.Sort((ScoredMethodInfo x, ScoredMethodInfo y) => y.Score.CompareTo(x.Score));
+		if (scoredMethodInfoList.Count <= 0)
 		{
 			return Method;
 		}
-		return list[0].MethodInfo;
+		return scoredMethodInfoList[0].MethodInfo;
 	}
 }

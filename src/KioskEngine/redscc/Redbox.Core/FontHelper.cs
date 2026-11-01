@@ -17,11 +17,11 @@ public static class FontHelper
 	public static void RemoveFontResource(string path, string typeFaceName, bool isTrueType)
 	{
 		RemoveFontResourceA(path);
-		RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", RegistryKeyPermissionCheck.ReadWriteSubTree);
-		if (registryKey != null)
+		RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", RegistryKeyPermissionCheck.ReadWriteSubTree);
+		if (key != null)
 		{
-			registryKey.DeleteValue(FormatTypeFaceName(typeFaceName, isTrueType));
-			registryKey.Close();
+			key.DeleteValue(FormatTypeFaceName(typeFaceName, isTrueType));
+			key.Close();
 			MessageHelper.SendNotifyMessage(MessageHelper.HWND_BROADCAST, 29u, IntPtr.Zero, IntPtr.Zero);
 		}
 	}

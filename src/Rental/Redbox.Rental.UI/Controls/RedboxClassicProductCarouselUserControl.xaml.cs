@@ -249,14 +249,14 @@ public partial class RedboxClassicProductCarouselUserControl : UserControl, ICom
 					CarouselPosition carouselPosition2 = _carouselPositions[index];
 					DisplayProductUserControl displayProductUserControl = _displayProductUserControlList[i];
 					DisplayProductModel value = displayProductUserControl.DataContext as DisplayProductModel;
-					TranslateTransform value2 = new TranslateTransform();
-					ScaleTransform value3 = new ScaleTransform();
+					TranslateTransform translateTransform = new TranslateTransform();
+					ScaleTransform scaleTransform = new ScaleTransform();
 					displayProductUserControl.RenderTransform = new TransformGroup
 					{
 						Children = 
 						{
-							(Transform)value3,
-							(Transform)value2
+							(Transform)scaleTransform,
+							(Transform)translateTransform
 						}
 					};
 					Thickness value4 = new Thickness(3.0);
@@ -531,11 +531,11 @@ public partial class RedboxClassicProductCarouselUserControl : UserControl, ICom
 		{
 			return;
 		}
-		List<DisplayProductModel> list = new List<DisplayProductModel>();
+		List<DisplayProductModel> displayProductModels = new List<DisplayProductModel>();
 		int count = ((_carouselDirection == CarouselDirection.Left) ? 1 : (_rotatingCarouselProducts.Count - 1));
-		list.AddRange(_rotatingCarouselProducts.Skip(count));
-		list.AddRange(_rotatingCarouselProducts.Take(count));
-		_rotatingCarouselProducts = list;
+		displayProductModels.AddRange(_rotatingCarouselProducts.Skip(count));
+		displayProductModels.AddRange(_rotatingCarouselProducts.Take(count));
+		_rotatingCarouselProducts = displayProductModels;
 		foreach (DisplayProductUserControl displayProductUserControl in _displayProductUserControlList)
 		{
 			int index = _displayProductUserControlList.IndexOf(displayProductUserControl);
