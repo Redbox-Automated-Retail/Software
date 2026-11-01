@@ -48,80 +48,80 @@ public static class StringExtensions
 
 	public static IDictionary<string, string> GetNameValuePairs(this string source)
 	{
-		IDictionary<string, string> dictionary = new Dictionary<string, string>();
-		foreach (Match item in Regex.Matches(source, "(?n:((?<name>[\\w-_]*)=(?<val>[\\w-_\\\\\\/\\(\\)\\,'\\.\\s]*)))"))
+		IDictionary<string, string> pairs = new Dictionary<string, string>();
+		foreach (Match match in Regex.Matches(source, "(?n:((?<name>[\\w-_]*)=(?<val>[\\w-_\\\\\\/\\(\\)\\,'\\.\\s]*)))"))
 		{
-			Group obj2 = item.Groups["name"];
-			Group obj3 = item.Groups["val"];
-			if (obj2.Captures.Count == obj3.Captures.Count)
+			Group names = match.Groups["name"];
+			Group values = match.Groups["val"];
+			if (names.Captures.Count == values.Captures.Count)
 			{
-				for (int i = 0; i < obj2.Captures.Count; i++)
+				for (int i = 0; i < names.Captures.Count; i++)
 				{
-					dictionary[obj2.Captures[i].Value] = obj3.Captures[i].Value;
+					pairs[names.Captures[i].Value] = values.Captures[i].Value;
 				}
 			}
 		}
-		return dictionary;
+		return pairs;
 	}
 
 	public static string RemoveString(this string value, string token)
 	{
-		int num = value.IndexOf(token);
-		if (num <= -1)
+		int index = value.IndexOf(token);
+		if (index <= -1)
 		{
 			return value;
 		}
-		return value.Remove(num, token.Length);
+		return value.Remove(index, token.Length);
 	}
 
 	public static string InnerTrim(this string value)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		bool flag = false;
+		StringBuilder trimmed = new StringBuilder();
+		bool pendingSpace = false;
 		foreach (char c in value)
 		{
 			if (!char.IsControl(c))
 			{
-				if (flag)
+				if (pendingSpace)
 				{
-					stringBuilder.Append(' ');
-					flag = false;
+					trimmed.Append(' ');
+					pendingSpace = false;
 				}
-				stringBuilder.Append(c);
+				trimmed.Append(c);
 			}
 			else
 			{
-				flag = true;
+				pendingSpace = true;
 			}
 		}
-		return stringBuilder.ToString();
+		return trimmed.ToString();
 	}
 
 	public static string GetOnlyDigits(this string value)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder digits = new StringBuilder();
 		foreach (char c in value)
 		{
 			if (char.IsDigit(c))
 			{
-				stringBuilder.Append(c);
+				digits.Append(c);
 			}
 		}
-		return stringBuilder.ToString();
+		return digits.ToString();
 	}
 
 	public static byte[] HexToBytes(this string source)
 	{
-		List<byte> list = new List<byte>();
-		int num = 0;
-		int num2 = 0;
-		while (num < source.Length / 2)
+		List<byte> bytes = new List<byte>();
+		int byteIndex = 0;
+		int charIndex = 0;
+		while (byteIndex < source.Length / 2)
 		{
-			list.Add(byte.Parse(source.Substring(num2, 2), NumberStyles.HexNumber));
-			num++;
-			num2 += 2;
+			bytes.Add(byte.Parse(source.Substring(charIndex, 2), NumberStyles.HexNumber));
+			byteIndex++;
+			charIndex += 2;
 		}
-		return list.ToArray();
+		return bytes.ToArray();
 	}
 
 	public static byte[] Base85ToBytes(this string source)
@@ -151,14 +151,14 @@ public static class StringExtensions
 
 	public static void SetValueForPath(this string path, object rootObject, object value)
 	{
-		object objectFromPath = GetObjectFromPath(path, rootObject, 1);
-		if (objectFromPath != null)
+		object parent = GetObjectFromPath(path, rootObject, 1);
+		if (parent != null)
 		{
-			string[] array = path.Split(PropertyPathSeparators);
-			PropertyInfo property = objectFromPath.GetType().GetProperty(array[array.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			string[] parts = path.Split(PropertyPathSeparators);
+			PropertyInfo property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
 			if (property != null)
 			{
-				property.SetValue(objectFromPath, ConversionHelper.ChangeType(value, property.PropertyType), null);
+				property.SetValue(parent, ConversionHelper.ChangeType(value, property.PropertyType), null);
 			}
 		}
 	}
@@ -178,19 +178,19 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		Match match = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
-		Match match2 = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object result = null;
-		int result2;
-		if (match.Success)
+		Match stringIndexer = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
+		Match numericIndexer = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
+		object index = null;
+		int number;
+		if (stringIndexer.Success)
 		{
-			result = match.Groups["indexer"].Captures[0].Value;
+			index = stringIndexer.Groups["indexer"].Captures[0].Value;
 		}
-		else if (match2.Success && int.TryParse(match2.Groups["indexer"].Captures[0].Value, out result2))
+		else if (numericIndexer.Success && int.TryParse(numericIndexer.Groups["indexer"].Captures[0].Value, out number))
 		{
-			result = result2;
+			index = number;
 		}
-		return result;
+		return index;
 	}
 
 	public static Dictionary<string, object> ToDictionary(this string json)
@@ -219,19 +219,19 @@ public static class StringExtensions
 		{
 			return cardNumber;
 		}
-		int num = cardNumber.Length - 4;
-		string text = cardNumber.Substring(num);
+		int maskedLength = cardNumber.Length - 4;
+		string lastFour = cardNumber.Substring(maskedLength);
 		if (!pad)
 		{
-			return text;
+			return lastFour;
 		}
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < num; i++)
+		StringBuilder masked = new StringBuilder();
+		for (int i = 0; i < maskedLength; i++)
 		{
-			stringBuilder.Append("X");
+			masked.Append("X");
 		}
-		stringBuilder.Append(text);
-		return stringBuilder.ToString();
+		masked.Append(lastFour);
+		return masked.ToString();
 	}
 
 	public static string Escaped(this string input)
@@ -264,19 +264,19 @@ public static class StringExtensions
 
 	public static void ForEach(this string value, Action<char> action)
 	{
-		foreach (char obj in value)
+		foreach (char c in value)
 		{
-			action(obj);
+			action(c);
 		}
 	}
 
 	public static int? ToInt32(this string numberToConvert)
 	{
-		if (!int.TryParse(numberToConvert, out var result))
+		if (!int.TryParse(numberToConvert, out var number))
 		{
 			return null;
 		}
-		return result;
+		return number;
 	}
 
 	public static string SafePadLeft(this string theString, int length, char padCharacter)
@@ -290,31 +290,31 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		string[] array = path.Split(PropertyPathSeparators);
-		if (array.Length == 0 || rootObject == null)
+		string[] parts = path.Split(PropertyPathSeparators);
+		if (parts.Length == 0 || rootObject == null)
 		{
 			return null;
 		}
-		int num = array.Length;
+		int depth = parts.Length;
 		if (depthAdjust.HasValue)
 		{
-			num -= depthAdjust.Value;
+			depth -= depthAdjust.Value;
 		}
-		object obj = rootObject;
-		for (int i = 0; i < num; i++)
+		object current = rootObject;
+		for (int i = 0; i < depth; i++)
 		{
 			object[] args = null;
-			string text = array[i];
-			object obj2 = ExtractIndex(text);
-			if (obj2 != null)
+			string member = parts[i];
+			object index = ExtractIndex(member);
+			if (index != null)
 			{
-				text = text.Substring(0, text.IndexOf("["));
-				args = new object[1] { obj2 };
+				member = member.Substring(0, member.IndexOf("["));
+				args = new object[1] { index };
 			}
 			try
 			{
-				obj = obj.GetType().InvokeMember(text, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, obj, args);
-				if (obj == null)
+				current = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				if (current == null)
 				{
 					break;
 				}
@@ -324,6 +324,6 @@ public static class StringExtensions
 				return null;
 			}
 		}
-		return obj;
+		return current;
 	}
 }

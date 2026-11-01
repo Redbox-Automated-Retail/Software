@@ -63,58 +63,58 @@ public static class StringExtensions
 
 	public static string RemoveString(this string value, string token)
 	{
-		int num = value.IndexOf(token);
-		return (num > -1) ? value.Remove(num, token.Length) : value;
+		int index = value.IndexOf(token);
+		return (index > -1) ? value.Remove(index, token.Length) : value;
 	}
 
 	public static string InnerTrim(this string value)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		bool flag = false;
+		StringBuilder trimmed = new StringBuilder();
+		bool pendingSpace = false;
 		foreach (char c in value)
 		{
 			if (!char.IsControl(c))
 			{
-				if (flag)
+				if (pendingSpace)
 				{
-					stringBuilder.Append(' ');
-					flag = false;
+					trimmed.Append(' ');
+					pendingSpace = false;
 				}
-				stringBuilder.Append(c);
+				trimmed.Append(c);
 			}
 			else
 			{
-				flag = true;
+				pendingSpace = true;
 			}
 		}
-		return stringBuilder.ToString();
+		return trimmed.ToString();
 	}
 
 	public static string GetOnlyDigits(this string value)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder digits = new StringBuilder();
 		foreach (char c in value)
 		{
 			if (char.IsDigit(c))
 			{
-				stringBuilder.Append(c);
+				digits.Append(c);
 			}
 		}
-		return stringBuilder.ToString();
+		return digits.ToString();
 	}
 
 	public static byte[] HexToBytes(this string source)
 	{
-		List<byte> list = new List<byte>();
-		int num = 0;
-		int num2 = 0;
-		while (num < source.Length / 2)
+		List<byte> bytes = new List<byte>();
+		int byteIndex = 0;
+		int charIndex = 0;
+		while (byteIndex < source.Length / 2)
 		{
-			list.Add(byte.Parse(source.Substring(num2, 2), NumberStyles.HexNumber));
-			num++;
-			num2 += 2;
+			bytes.Add(byte.Parse(source.Substring(charIndex, 2), NumberStyles.HexNumber));
+			byteIndex++;
+			charIndex += 2;
 		}
-		return list.ToArray();
+		return bytes.ToArray();
 	}
 
 	public static byte[] Base85ToBytes(this string source)
@@ -144,12 +144,12 @@ public static class StringExtensions
 
 	public static void SetValueForPath(this string path, object rootObject, object value)
 	{
-		object objectFromPath = GetObjectFromPath(path, rootObject, 1);
-		if (objectFromPath != null)
+		object parent = GetObjectFromPath(path, rootObject, 1);
+		if (parent != null)
 		{
-			string[] array = path.Split(PropertyPathSeparators);
-			PropertyInfo property = objectFromPath.GetType().GetProperty(array[array.Length - 1], BindingFlags.Instance | BindingFlags.Public);
-			property?.SetValue(objectFromPath, ConversionHelper.ChangeType(value, property.PropertyType), null);
+			string[] parts = path.Split(PropertyPathSeparators);
+			PropertyInfo property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			property?.SetValue(parent, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}
 
@@ -164,22 +164,22 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		Match match = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
-		Match match2 = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object result = null;
-		if (match.Success)
+		Match stringIndexer = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
+		Match numericIndexer = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
+		object index = null;
+		if (stringIndexer.Success)
 		{
-			result = match.Groups["indexer"].Captures[0].Value;
+			index = stringIndexer.Groups["indexer"].Captures[0].Value;
 		}
-		else if (match2.Success)
+		else if (numericIndexer.Success)
 		{
-			string value = match2.Groups["indexer"].Captures[0].Value;
-			if (int.TryParse(value, out var result2))
+			string value = numericIndexer.Groups["indexer"].Captures[0].Value;
+			if (int.TryParse(value, out var number))
 			{
-				result = result2;
+				index = number;
 			}
 		}
-		return result;
+		return index;
 	}
 
 	public static Dictionary<string, object> ToDictionary(this string json)
@@ -243,9 +243,9 @@ public static class StringExtensions
 
 	public static void ForEach(this string value, Action<char> action)
 	{
-		foreach (char obj in value)
+		foreach (char c in value)
 		{
-			action(obj);
+			action(c);
 		}
 	}
 
@@ -255,32 +255,32 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		string[] array = path.Split(PropertyPathSeparators);
-		if (array.Length == 0 || rootObject == null)
+		string[] parts = path.Split(PropertyPathSeparators);
+		if (parts.Length == 0 || rootObject == null)
 		{
 			return null;
 		}
-		int num = array.Length;
+		int depth = parts.Length;
 		if (depthAdjust.HasValue)
 		{
-			num -= depthAdjust.Value;
+			depth -= depthAdjust.Value;
 		}
-		object obj = rootObject;
-		for (int i = 0; i < num; i++)
+		object current = rootObject;
+		for (int i = 0; i < depth; i++)
 		{
 			object[] args = null;
-			string text = array[i];
-			object obj2 = ExtractIndex(text);
-			if (obj2 != null)
+			string member = parts[i];
+			object index = ExtractIndex(member);
+			if (index != null)
 			{
-				text = text.Substring(0, text.IndexOf("["));
-				args = new object[1] { obj2 };
+				member = member.Substring(0, member.IndexOf("["));
+				args = new object[1] { index };
 			}
 			try
 			{
-				object obj3 = obj.GetType().InvokeMember(text, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, obj, args);
-				obj = obj3;
-				if (obj == null)
+				object obj3 = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				current = obj3;
+				if (current == null)
 				{
 					break;
 				}
@@ -290,6 +290,6 @@ public static class StringExtensions
 				return null;
 			}
 		}
-		return obj;
+		return current;
 	}
 }

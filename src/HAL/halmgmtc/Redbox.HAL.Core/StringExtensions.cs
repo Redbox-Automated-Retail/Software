@@ -33,26 +33,26 @@ public static class StringExtensions
 
 	public static string RemoveString(string value, string token)
 	{
-		int num = value.IndexOf(token);
-		if (num <= -1)
+		int index = value.IndexOf(token);
+		if (index <= -1)
 		{
 			return value;
 		}
-		return value.Remove(num, token.Length);
+		return value.Remove(index, token.Length);
 	}
 
 	public static byte[] HexToBytes(string source)
 	{
-		List<byte> list = new List<byte>();
-		int num = 0;
-		int num2 = 0;
-		while (num < source.Length / 2)
+		List<byte> bytes = new List<byte>();
+		int byteIndex = 0;
+		int charIndex = 0;
+		while (byteIndex < source.Length / 2)
 		{
-			list.Add(byte.Parse(source.Substring(num2, 2), NumberStyles.HexNumber));
-			num++;
-			num2 += 2;
+			bytes.Add(byte.Parse(source.Substring(charIndex, 2), NumberStyles.HexNumber));
+			byteIndex++;
+			charIndex += 2;
 		}
-		return list.ToArray();
+		return bytes.ToArray();
 	}
 
 	public static byte[] Base64ToBytes(string source)
@@ -78,12 +78,12 @@ public static class StringExtensions
 
 	public static void SetValueForPath(string path, object rootObject, object value)
 	{
-		object objectFromPath = GetObjectFromPath(path, rootObject, 1);
-		if (objectFromPath != null)
+		object parent = GetObjectFromPath(path, rootObject, 1);
+		if (parent != null)
 		{
-			string[] array = path.Split(PropertyPathSeparators);
-			PropertyInfo property = objectFromPath.GetType().GetProperty(array[array.Length - 1], BindingFlags.Instance | BindingFlags.Public);
-			property?.SetValue(objectFromPath, ConversionHelper.ChangeType(value, property.PropertyType), null);
+			string[] parts = path.Split(PropertyPathSeparators);
+			PropertyInfo property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			property?.SetValue(parent, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}
 
@@ -98,64 +98,64 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		Match match = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
-		Match match2 = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object result = null;
-		int result2;
-		if (match.Success)
+		Match stringIndexer = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
+		Match numericIndexer = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
+		object index = null;
+		int number;
+		if (stringIndexer.Success)
 		{
-			result = match.Groups["indexer"].Captures[0].Value;
+			index = stringIndexer.Groups["indexer"].Captures[0].Value;
 		}
-		else if (match2.Success && int.TryParse(match2.Groups["indexer"].Captures[0].Value, out result2))
+		else if (numericIndexer.Success && int.TryParse(numericIndexer.Groups["indexer"].Captures[0].Value, out number))
 		{
-			result = result2;
+			index = number;
 		}
-		return result;
+		return index;
 	}
 
 	public static string ExtractCodeFromBrackets(string value, string prefix, string postfix)
 	{
-		int num = 0;
-		int num2 = -1;
-		int num3 = -1;
-		int num4 = 0;
+		int depth = 0;
+		int codeStart = -1;
+		int codeEnd = -1;
+		int position = 0;
 		do
 		{
-			string text = string.Empty;
-			if (num4 + prefix.Length < value.Length)
+			string candidatePrefix = string.Empty;
+			if (position + prefix.Length < value.Length)
 			{
-				text = value.Substring(num4, prefix.Length);
+				candidatePrefix = value.Substring(position, prefix.Length);
 			}
-			string text2 = string.Empty;
-			if (num4 + text2.Length < value.Length)
+			string candidatePostfix = string.Empty;
+			if (position + candidatePostfix.Length < value.Length)
 			{
-				text2 = value.Substring(num4, postfix.Length);
+				candidatePostfix = value.Substring(position, postfix.Length);
 			}
-			if (text == prefix)
+			if (candidatePrefix == prefix)
 			{
-				if (num2 == -1)
+				if (codeStart == -1)
 				{
-					num2 = num4 + prefix.Length;
+					codeStart = position + prefix.Length;
 				}
-				num++;
+				depth++;
 			}
-			else if (text2 == postfix)
+			else if (candidatePostfix == postfix)
 			{
-				num--;
-				if (num == 0)
+				depth--;
+				if (depth == 0)
 				{
-					num3 = num4 - postfix.Length;
+					codeEnd = position - postfix.Length;
 					break;
 				}
 			}
-			num4++;
+			position++;
 		}
-		while (num4 < value.Length);
-		if (num2 == -1 || num3 == -1)
+		while (position < value.Length);
+		if (codeStart == -1 || codeEnd == -1)
 		{
 			return null;
 		}
-		return value.Substring(num2, num3 - num2 + postfix.Length);
+		return value.Substring(codeStart, codeEnd - codeStart + postfix.Length);
 	}
 
 	private static object GetObjectFromPath(string path, object rootObject, int? depthAdjust)
@@ -164,31 +164,31 @@ public static class StringExtensions
 		{
 			return null;
 		}
-		string[] array = path.Split(PropertyPathSeparators);
-		if (array.Length == 0 || rootObject == null)
+		string[] parts = path.Split(PropertyPathSeparators);
+		if (parts.Length == 0 || rootObject == null)
 		{
 			return null;
 		}
-		int num = array.Length;
+		int depth = parts.Length;
 		if (depthAdjust.HasValue)
 		{
-			num -= depthAdjust.Value;
+			depth -= depthAdjust.Value;
 		}
-		object obj = rootObject;
-		for (int i = 0; i < num; i++)
+		object current = rootObject;
+		for (int i = 0; i < depth; i++)
 		{
 			object[] args = null;
-			string text = array[i];
-			object obj2 = ExtractIndex(text);
-			if (obj2 != null)
+			string member = parts[i];
+			object index = ExtractIndex(member);
+			if (index != null)
 			{
-				text = text.Substring(0, text.IndexOf("["));
-				args = new object[1] { obj2 };
+				member = member.Substring(0, member.IndexOf("["));
+				args = new object[1] { index };
 			}
 			try
 			{
-				obj = obj.GetType().InvokeMember(text, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, obj, args);
-				if (obj == null)
+				current = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				if (current == null)
 				{
 					break;
 				}
@@ -198,6 +198,6 @@ public static class StringExtensions
 				return null;
 			}
 		}
-		return obj;
+		return current;
 	}
 }
