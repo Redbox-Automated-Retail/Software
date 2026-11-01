@@ -3,13 +3,20 @@
     <AssemblyName>KioskShell</AssemblyName>
     <RootNamespace>Redbox.Shell</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>ICSharpCode.SharpZipLib;SevenZip;log4net;Redbox.Command.Tokenizer;Redbox.Compression;Redbox.Core;Redbox.GetOpts;Redbox.IPC.Framework;Redbox.Log.Framework;Redbox.Macros;Redbox.Macros.Functions;Redbox.Tokenizer.Framework</ILRepackAssemblies>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- The shell was AnyCPU, i.e. a 64-bit process on 64-bit Windows (System32, registry view); self-contained it has to
+         pick one: x64, as Windows 11 is 64-bit only. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <UseWPF>True</UseWPF>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -30,7 +37,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="2.0.8" Condition="'$(TargetFramework)' == 'net48'" />
+    <PackageReference Include="log4net" Version="2.0.17" Condition="'$(TargetFramework)' != 'net48'" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Redbox.Command.Tokenizer\Redbox.Command.Tokenizer.csproj" />

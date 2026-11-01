@@ -44,7 +44,12 @@ internal class HotKey
 
 	internal void Execute()
 	{
+#if NETFRAMEWORK
 		_action.BeginInvoke(null, new object());
+#else
+		// Delegate BeginInvoke is not supported on .NET; the action still runs on a thread-pool thread.
+		System.Threading.Tasks.Task.Run(_action);
+#endif
 	}
 
 	public override string ToString()

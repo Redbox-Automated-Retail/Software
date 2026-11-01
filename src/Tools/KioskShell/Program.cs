@@ -37,6 +37,9 @@ public class Program
 	[STAThread]
 	public static int Main()
 	{
+#if !NETFRAMEWORK
+		NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		logger = LogHelper.Instance.CreateLog4NetLogger(typeof(Program));
 		logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shell-log4net.config"));
 		LogHelper.Instance.Logger = logger;

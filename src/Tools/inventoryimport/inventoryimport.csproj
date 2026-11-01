@@ -3,16 +3,24 @@
     <AssemblyName>inventoryimport</AssemblyName>
     <RootNamespace>InventoryImport</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <!-- Was net35 (needs the .NET 3.5 feature on Windows 10/11) and AnyCPU: on 64-bit Windows it wrote
+         HKLM\SOFTWARE\Redbox\HAL\State\... into the 64-bit registry view, while the x86 HAL service reads the 32-bit one.
+         x86 like HAL. -->
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>log4net</ILRepackAssemblies>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="Redbox.Core\ErrorForm.resx" LogicalName="Redbox.Core.ErrorForm.resources" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -23,8 +31,17 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="log4net" Version="1.2.10" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="System.Data.OleDb" Version="10.0.14" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
+    <!-- System.Configuration.Install and AppDomains do not exist on .NET 10; nothing in this tool uses the helper. -->
+    <Compile Remove="Redbox.Core\AssemblyInstallerHelper.cs" />
+    <!-- WindowsImpersonationContext does not exist on .NET 10; nothing in this tool impersonates. -->
+    <Compile Remove="Redbox.Core\NTUserImpersonator.cs" />
+    <!-- System.Web.Script.Serialization (JavaScriptSerializer) for .NET 10: the port in Redbox.Core (Compat\ScriptSerialization\README.md). -->
+    <Compile Include="..\..\Common\Redbox.Core\Compat\ScriptSerialization\*.cs" Link="Compat\ScriptSerialization\%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

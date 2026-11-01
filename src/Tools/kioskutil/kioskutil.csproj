@@ -3,13 +3,26 @@
     <AssemblyName>kioskutil</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.KioskUtil</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net35</TargetFramework>
+    <!-- Was net35, which needs the .NET 3.5 feature on Windows 10/11. x86 like the rest of the kiosk software (it only
+         uses registry keys that 32- and 64-bit processes share). -->
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
+    <!-- System.Web.Script.Serialization (JavaScriptSerializer) for .NET 10: the port in Redbox.Core (Compat\ScriptSerialization\README.md). -->
+    <Compile Include="..\..\Common\Redbox.Core\Compat\ScriptSerialization\*.cs" Link="Compat\ScriptSerialization\%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

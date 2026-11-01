@@ -8,7 +8,10 @@ using System.Security.Permissions;
 
 namespace Redbox.UpdateManager.KioskUtil;
 
+#if NETFRAMEWORK
+// Code access security; .NET (Core) has none.
 [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+#endif
 public class ShellHelper
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
