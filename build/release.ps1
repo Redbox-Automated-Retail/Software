@@ -7,7 +7,7 @@
   <Out>\<component>-<version>.zip:
 
     release.json   Format, Component, Version, Kind, Repository/TargetRoot or FileSet/Destination, Source
-                   (git commit, ref, dirty), Built, Files {relative path: SHA-1}
+                   (git commit, ref, dirty), Built, Files {relative path: SHA-1}; Framework for a non-net48 build
     files\...      the staged output, relative to TargetRoot (repository) or Destination (file set)
 
   Publish it with the backend (docs/releases.md there): `admin release-publish <zip>` or
@@ -15,6 +15,10 @@
 
   Needs Visual Studio 2022+ or Build Tools (MSBuild with the .NET desktop workload), .NET Framework 3.5 for HAL,
   and the .NET SDK; NuGet packages are restored from nuget.org.
+.PARAMETER Framework
+  For projects that build for both .NET Framework 4.8 and .NET 10 (net48;net10.0-windows): which one to release.
+  net48 (the default) gives what the kiosks run today. net10.0-windows publishes those projects self-contained
+  (win-x86) and leaves out the component's projects that are still .NET Framework only.
 .PARAMETER Component
   A key of build/components.json (kioskclient, updateclient, device-service, kop-update-manager, kop-v2-engine,
   kop-hal-install, kop-ms-hal-tester, kop-tools, kioskclient-fileset).
@@ -37,6 +41,7 @@ param(
     # Extra MSBuild properties, Name=Value. kop-v2-engine needs RedboxEngine181Refs=<folder> (the engine 1.81.0.27
     # assemblies that Redbox.KioskServices.* build against; src/KioskServices/Engine181.targets).
     [string[]] $Property = @(),
+    [ValidateSet("net48", "net10.0-windows")] [string] $Framework = "net48",
     [switch] $AllowDirty
 )
 $ErrorActionPreference = "Stop"
@@ -87,10 +92,33 @@ if ($RestoreSources) { $common += "-p:RestoreSources=$($RestoreSources.Replace('
 foreach ($prop in $Property) { $common += "-p:$prop" }
 foreach ($p in $comp.projects) {
     $proj = Join-Path $root $p.path
+    $projText = Get-Content $proj -Raw
+    $multi = $projText -match '<TargetFrameworks>[^<]*net10\.0-windows'
+    if ($Framework -ne "net48" -and -not $multi -and $projText -notmatch '<TargetFramework>net(5|6|7|8|9|10)\.') {
+        Write-Host "== $($p.path): skipped (.NET Framework only; not part of a $Framework release)"
+        continue
+    }
     $dest = if ($p.to) { Join-Path $stage $p.to } else { $stage }
     New-Item -ItemType Directory -Force $dest | Out-Null
     Write-Host "== $($p.path) -> $(if ($p.to) { $p.to } else { '.' })"
-    if ($p.publish) {
+    if ($multi) {
+        # Both frameworks build into the same OutDir otherwise. .NET 10 is published like the .NET 5+ projects
+        # below (self-contained, the project's own RuntimeIdentifier).
+        # Restored without TargetFramework: given globally, it would also apply to netstandard2.0 references.
+        $noRestore = $common | Where-Object { $_ -ne "-restore" }
+        & $msbuild $proj -t:Restore @noRestore
+        if ($LASTEXITCODE) { throw "restore of $($p.path) failed" }
+        $tf = "-p:TargetFramework=$Framework"
+        if ($Framework -eq "net48" -or $projText -notmatch '<OutputType>(Win)?Exe</OutputType>') {
+            # .NET Framework, and libraries (plug-ins) for either framework: a build, which copies the project
+            # references but not every runtime's package assets.
+            $extra = @()
+            if ($p.merged -and $Framework -eq "net48") { $extra += "-p:ILRepack=true" }
+            & $msbuild $proj @noRestore @extra $tf "-p:OutDir=$dest\"
+        } else {
+            & $msbuild $proj -t:Publish @noRestore $tf "-p:PublishDir=$dest\"
+        }
+    } elseif ($p.publish) {
         # .NET Core 2.x projects as shipped: framework-dependent, win7-x86, with the apphost .exe. Projects on
         # .NET 5+ use their own RuntimeIdentifier/SelfContained (self-contained win-x86 on the modernize branch).
         # No web.config: the kiosk keeps its own (the SDK's would drop hostingModel="InProcess").
@@ -103,7 +131,7 @@ foreach ($p in $comp.projects) {
         & $msbuild $proj @common @extra "-p:OutDir=$dest\"
     }
     if ($LASTEXITCODE) { throw "build of $($p.path) failed" }
-    if ($p.merged) {
+    if ($p.merged -and -not ($multi -and $Framework -ne "net48")) {   # ILRepack runs for .NET Framework builds only
         $merged = Join-Path $dest "merged"
         if (-not (Test-Path $merged)) { throw "$($p.path): no merged output (ILRepack)" }
         Copy-Item (Join-Path $merged "*") $dest -Force
@@ -133,6 +161,11 @@ if ($comp.kind -eq "fileset") {
 } else {
     $meta.Repository = $comp.repository; $meta.TargetRoot = $comp.targetRoot
     if ($comp.newFiles) { $meta.NewFiles = @($comp.newFiles) }
+    if ($Framework -ne "net48") {
+        # The .NET runtime and the new assemblies are new files in the kiosk's repository.
+        $meta.Framework = $Framework
+        $meta.NewFiles = @($manifest.Keys)
+    }
 }
 
 # Entries sorted, forward slashes, fixed timestamps: the zip depends only on the build output.
