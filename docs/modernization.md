@@ -17,24 +17,18 @@ built in along the way:
 
 - Code that is Windows-only (registry, Windows services, BITS, COM, DirectShow, WMI, Shell Launcher, Task
   Scheduler) goes behind interfaces as each component is ported, with the Windows implementation unchanged.
-- Non-UI components target 
-et10.0` with a Windows-specific implementation assembly where needed, so they also
+- Non-UI components target `net10.0` with a Windows-specific implementation assembly where needed, so they also
   build and run on Linux.
 
 | Component | Linux path |
 |---|---|
-| Kiosk Client | 
-et10.0`; already almost platform-neutral |
-| Update Client | 
-et10.0` core; the Windows service host, BITS and PowerShell jobs behind interfaces (systemd, HTTP download, `pwsh`/shell) |
-| HAL core (serial, scripts, jobs, storage) | 
-et10.0` + SQLite; serial port names come from configuration |
+| Kiosk Client | `net10.0`; already almost platform-neutral |
+| Update Client | `net10.0` core; the Windows service host, BITS and PowerShell jobs behind interfaces (systemd, HTTP download, `pwsh`/shell) |
+| HAL core (serial, scripts, jobs, storage) | `net10.0` + SQLite; serial port names come from configuration |
 | HAL camera / barcode | `ICameraPlugin` already exists. DirectShow + ClearImage stay for Windows, and V4L2 + ZXing/libdmtx are added for Linux. |
 | Device Service | depends on a Linux build of the Ingenico RBA SDK (to be checked); the simulator runs anywhere |
-| Update Manager | 
-et10.0` core. The Lua `kernel.*` functions that touch Windows (registry, services, shell) get Linux equivalents or report "not supported". |
-| Engine host + Rental / Control Panel / FMA UI | WinForms + WPF are Windows-only, so these move to **Avalonia**. This is the only real rewrite, and it comes last. Until then the engine runs on 
-et10.0-windows`. |
+| Update Manager | `net10.0` core. The Lua `kernel.*` functions that touch Windows (registry, services, shell) get Linux equivalents or report "not supported". |
+| Engine host + Rental / Control Panel / FMA UI | WinForms + WPF are Windows-only, so these move to **Avalonia**. This is the only real rewrite, and it comes last. Until then the engine runs on `net10.0-windows`. |
 | Kiosk shell | KioskShell on Windows; a Wayland kiosk compositor (e.g. `cage`) plus a systemd unit on Linux |
 
 The Windows 10/11 fixes below still matter: kiosks run Windows until the UI exists on Linux.
@@ -63,23 +57,15 @@ The Windows 10/11 fixes below still matter: kiosks run Windows until the UI exis
 ## Target frameworks
 
 **.NET 10 (LTS, supported to November 2028)** is the target, not .NET 8: .NET 8 support ends on 2026-11-10.
-Windows-only projects use 
-et10.0-windows`, and services that load x86 native code stay x86.
+Windows-only projects use `net10.0-windows`, and services that load x86 native code stay x86.
 
 | Today | Moves to | Why |
 |---|---|---|
-| .NET Core 2.1/2.2 (Device Service, Kiosk Client, Update Client) | 
-et10.0` / 
-et10.0-windows`, x86 where needed | ASP.NET Core 2.2 → 10 is a well-trodden path; these projects don't reference the shared Redbox libraries |
-| .NET Framework 3.5 (HAL, tools) | **4.8** first, then 
-et10.0-windows` (done for the HAL service folder; `halmgmtc`, MSHALTester and HalUtilities are still 4.8) | .NET 3.5 is the main thing that breaks on Windows 11 (an optional feature; Windows Sandbox can't enable it). 4.8 ships in Windows 10 1903+ and 11. It loads the same 2.0-era DLLs (VistaDB 3.5, log4net 1.2.9) unchanged. |
+| .NET Core 2.1/2.2 (Device Service, Kiosk Client, Update Client) | `net10.0` / `net10.0-windows`, x86 where needed | ASP.NET Core 2.2 → 10 is a well-trodden path; these projects don't reference the shared Redbox libraries |
+| .NET Framework 3.5 (HAL, tools) | **4.8** first, then `net10.0-windows` (done for the HAL service folder, `halmgmtc`, MSHALTester and HalUtilities) | .NET 3.5 is the main thing that breaks on Windows 11 (an optional feature; Windows Sandbox can't enable it). 4.8 ships in Windows 10 1903+ and 11. It loads the same 2.0-era DLLs (VistaDB 3.5, log4net 1.2.9) unchanged. |
 | .NET Framework 4.0–4.7.2 (engine, Update Manager, installer) | **4.8** first; .NET 10 where the blockers below are solved | Targeting 4.7+ alone fixes the TLS 1.0 default of `SslStream`/`HttpWebRequest`. |
-| 
-etstandard2.0` libraries (Device Service model, RBA SDK) | stay 
-etstandard2.0` | the 4.8 engine and the .NET 10 services both use them |
-| Shared `Redbox.*` libraries (
-et46`) | 
-et48;net10.0-windows` multi-target, once a .NET 10 consumer needs them | |
+| `netstandard2.0` libraries (Device Service model, RBA SDK) | stay `netstandard2.0` | the 4.8 engine and the .NET 10 services both use them |
+| Shared `Redbox.*` libraries (`net46`) | `net48;net10.0-windows` multi-target, once a .NET 10 consumer needs them | |
 
 ### What keeps a component on 4.8 (for now)
 
@@ -107,12 +93,9 @@ by far the riskiest to move to .NET 10, so its .NET 10 move comes last.
 | 0 | Build plumbing | — | `ArtifactsPath` opt-in so output can go outside the tree; shared settings for modernized projects; a `tests/` project per ported component | low |
 | 1 | **HAL** (`src/HAL`, incl. `HAL.PackageInstaller`, `halsvc-win32`) | 4.8 x86 | **High:** without .NET 3.5 no HAL service is installed or runs (store-installer.md §11) | low–medium: serial/COM/DirectShow timing, VistaDB on the 4 CLR, log4net 1.2.9 |
 | 2 | **Windows 10/11 fixes in the Update Manager kernel and KioskShell** (shell replacement, registry views, wmic) | 4.8 | **High:** the shell stays `explorer.exe` on Windows 11 | low |
-| 3 | **Update Client** | 
-et10.0-windows` x86 | **High:** .NET Core 2.2 is EOL and needs the 2.2.1 runtimes (8 min of the install); MQTT TLS; IoT endpoints | medium: MQTTnet 3 on .NET 10, BITS COM, Coravel, App.Metrics/AWSSDK leftovers |
-| 4 | **Kiosk Client** | 
-et10.0` | **High:** same EOL runtime; it is the gateway for every cloud call | medium: 596 files, Newtonsoft output must stay identical, Coravel 4 |
-| 5 | **Device Service** (+ `RBAInstaller`, `Status.Client`, `BluefinService.Client`) | 
-et10.0-windows` x86 | **High:** same EOL runtime; it takes payments | medium: the RBA SDK native DLL (x86), System.IO.Ports, SignalR protocol compatibility with the engine's 1.1 client |
+| 3 | **Update Client** | `net10.0-windows` x86 | **High:** .NET Core 2.2 is EOL and needs the 2.2.1 runtimes (8 min of the install); MQTT TLS; IoT endpoints | medium: MQTTnet 3 on .NET 10, BITS COM, Coravel, App.Metrics/AWSSDK leftovers |
+| 4 | **Kiosk Client** | `net10.0` | **High:** same EOL runtime; it is the gateway for every cloud call | medium: 596 files, Newtonsoft output must stay identical, Coravel 4 |
+| 5 | **Device Service** (+ `RBAInstaller`, `Status.Client`, `BluefinService.Client`) | `net10.0-windows` x86 | **High:** same EOL runtime; it takes payments | medium: the RBA SDK native DLL (x86), System.IO.Ports, SignalR protocol compatibility with the engine's 1.1 client |
 | 6 | **Update Manager** (`updatemgrd`, `update-console`, `updatemgr-ui`, libraries) | 4.8 (then .NET 10 assessed) | medium: TLS defaults, `wmic`, endpoint defaults | low on 4.8. On .NET 10 the blockers are Quartz 2, `JavaScriptSerializer` and the Lua x86 DLL. It references Remoting but does not use it. |
 | 7 | **Kiosk Engine** (+ KioskServices kernel extensions, Rental) | 4.8 now, with Windows fixes and endpoint defaults; .NET 10 after the spikes above | medium on 4.8 (it works today); high on .NET 10 for maintainability | high: see blockers |
 | 8 | **Installer pieces**: the setup host (bring over Backend PR #5's 4.8 + `jsc` overlay), `installer-front-end`, `KioskAdmin`, NAnt tasks/TimeKeeper | 4.8 | medium: the Backend's PowerShell installer already provisions working kiosks | low |
@@ -124,10 +107,7 @@ Readability work (below) happens inside each component's port, not as a separate
 
 ### 1. HAL → 4.8
 
-- Retarget all `src/HAL` projects (and `src/HAL/Legacy`) from 
-et35`/
-et40` to 
-et48`, keeping x86.
+- Retarget all `src/HAL` projects (and `src/HAL/Legacy`) from `net35`/`net40` to `net48`, keeping x86.
   `HAL.PackageInstaller` gets a 4.8 build, so step 7 of the installer works without .NET 3.5.
 - `app.config`: `supportedRuntime v4.0`, and the 4.x `useLegacyV2RuntimeActivationPolicy` where mixed-mode
   DLLs need it.
@@ -163,8 +143,7 @@ et48`, keeping x86.
 
 Common to the three:
 
-- `Microsoft.NET.Sdk.Web`, 
-et10.0(-windows)`, generic host with `UseWindowsService()` (same service names:
+- `Microsoft.NET.Sdk.Web`, `net10.0(-windows)`, generic host with `UseWindowsService()` (same service names:
   `updateclient$service`, `kioskclient$service`, `device$service`), and Kestrel on the same URLs and ports.
 - **JSON stays Newtonsoft** (`AddNewtonsoftJson` with the 2.2 defaults: camelCase, `DateTimeZoneHandling`,
   null handling as before). A golden test records the 2.2 responses of representative endpoints and compares.
@@ -198,15 +177,12 @@ Device Service specifics:
 - SignalR hub `/CardReaderEvents`: the engine's client is ASP.NET Core SignalR 1.1 on 4.7.2. Test that it
   negotiates with the .NET 10 server (JSON hub protocol v1, negotiate v0). If it doesn't, the engine side's
   client package is upgraded in the same step.
-- `DeviceService.Client` (consumed by the engine) becomes 
-etstandard2.0;net48` instead of 
-et461`.
+- `DeviceService.Client` (consumed by the engine) becomes `netstandard2.0;net48` instead of `net461`.
 - `RBA_SDK_Simulator` and `tests/RBA_SDK_Simulator.SmokeTest` keep working (smoke test is already .NET 8 → 10).
 
 ### 6. Update Manager → 4.8
 
-- Retarget the `src/UpdateManager` projects to 
-et48` x86. Drop the unused `System.Runtime.Remoting` reference.
+- Retarget the `src/UpdateManager` projects to `net48` x86. Drop the unused `System.Runtime.Remoting` reference.
 - Defaults: `updatemgrd` `Settings` (`Url = http://bundle-dev-02:8002`, a Redbox dev box) and
   `installer-front-end` / `update-console` `UpdateServiceUrl` become unset; see "Endpoints and secrets".
 - `srcp://` client: OS-default TLS; the certificate validation callback is unchanged (it validates against the
@@ -220,9 +196,7 @@ et48` x86. Drop the unused `System.Runtime.Remoting` reference.
 
 Now (4.8, no runtime change):
 
-- 
-et472` → 
-et48`; the `Tls12` pin → OS default; `Windows10TouchScreen` without `wmic`; registry helper.
+- `net472` → `net48`; the `Tls12` pin → OS default; `Windows10TouchScreen` without `wmic`; registry helper.
 - Endpoint defaults removed (`KioskServicesURL`, `BrokerServicesURL`); unset means "not configured", which the
   proxies already handle (`ExecuteMessage` returns `Success = false`, broker registration is skipped and
   logged).
@@ -282,8 +256,7 @@ as an intermediate state. The options for each blocker, with the recommended one
   The work:
   1. Map each table and the SQL dialect used (`VistaDBStringHelper`) to SQLite.
   2. One-time migration of existing `.vdb3` files on first start. The options for reading the old files:
-     1. *(recommended)* a small 
-et48` `vistadb-export` tool, run once by the update package, that dumps each
+     1. *(recommended)* a small `net48` `vistadb-export` tool, run once by the update package, that dumps each
         table with the shipped VistaDB.NET20;
      2. loading VistaDB.NET20 into .NET 10 just for the import, if it turns out to load;
      3. reading the file format directly (no documentation).
@@ -411,10 +384,23 @@ comments. The work is mostly elsewhere:
 - **Decompiler artifacts:** hand-written `<>c__DisplayClass` / `<>9__` / `[CompilerGenerated]` leftovers
   (42 places) are collapsed back to lambdas and local functions. State machines decompiled as `MoveNext`
   classes are turned back into `async`/iterators.
-- **Names:** decompiler locals (`text2`, `dictionary3`, 
-um`, `flag`) are renamed by hand, prioritized on the
-  main paths: IPC framing, update protocol, HAL jobs, payment flow, broker, configuration. A repo-wide rename of
-  7,224 files by hand is out of scope; tooling can't infer meaning.
+- **Names:** decompiler locals (`text2`, `dictionary3`, `num`, `flag`) are renamed so each says what it holds.
+  The main paths (engine start-up, Update Manager, Rental controllers and promotions, HAL jobs and configuration,
+  the card reader) were done by hand. The rest goes through `tools/readability/`:
+  - `Rename-Member.ps1` renames locals inside one member, all at once, and refuses a name already used there
+    (so a field is never shadowed) or `value` in a setter. `Apply-Spec.ps1` applies the same renames to every
+    copy of a member; many helpers exist in several decompiled copies (Redbox.Core in the tools and installer,
+    the HAL and halmgmtc cores, the two LZMA SDK copies).
+  - `Rename-ByRule.ps1` names a local from how it is declared, e.g. `GetService<IFoo>()` → `foo`,
+    `List<Location>` → `locations`, `.Split(` → `parts`, `Read(`/`EndRead(` → `bytesRead`.
+  - `Inline-ForeachAlias.ps1` puts `T[] array = Expr(); foreach (x in array)` back into `foreach (x in Expr())`.
+  - Third-party code keeps its original authors' names: the LZMA SDK, AForge's capture device, LuaInterface's
+    delegate emitter, NAnt's expression parser. The LZMA rename was checked byte for byte against the previous
+    build (compressed output identical, each decodes the other).
+
+  Every pass builds the whole solution, plus the projects that aren't in it (legacy HAL, KioskServices). Count
+  of decompiler names left (`num`/`flag`/`obj`/`array` and numbered `text2`-style names): 18,177 at the start,
+  9,735 after the tool passes. The obfuscated `clsRBDM.cs` (DataMatrix decoder) is left alone.
 - **Nullable:** `<Nullable>enable</Nullable>` per ported project (not globally), annotate public surfaces, fix real
   null bugs, and `!` only where the decompiled flow proves non-null. Warnings stay visible (no blanket
   `NoWarn` for nullable codes in modernized projects).
@@ -477,11 +463,11 @@ only in Windows Sandbox.
 | kioskutil, inventoryimport, redscc: net35 -> net48 + .NET 10; KioskShell: + .NET 10 (x64) | builds; same output on both frameworks; KioskShell starts in the Sandbox (not as the logon shell). inventoryimport is now x86: as AnyCPU it wrote HAL's deck keys into the 64-bit registry view, which the x86 HAL never reads | `kioskutil, inventoryimport, redscc off .NET 3.5 ...` |
 | Release zips without the assemblies ILRepack merged into an exe | done; `kop-update-manager` (net48) now has only files the kiosk install has (26 merged-away DLLs were shipped before) | `release.ps1: leave out merged-away assemblies` |
 | `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (328 files with `halmgmtc`, `NewFiles` lists them all). **Installed end to end** (2026-11-01): published to the backend (`admin release-publish`), rolled out to the Sandbox store, and an Update Manager round on the 4.8 HAL install staged (xdelta3, SHA-1 verified) and activated it; the .NET 10 HAL then converted its databases, imported the 4.8 jobs, listened on 7001 and served the .NET 10 engine. See the note on the backend's HAL scripts below | `release.ps1: -Framework ...` |
+| Readability: decompiler local names | in progress: main paths by hand, then `tools/readability` passes (see "Readability"); 18,177 → 9,735 names left before the per-area pass; every step builds clean | `Readability: ...` |
 
 Notes from the .NET 10 engine work:
 
-- **Multi-targeting.** Every project the engine uses builds for 
-et48;net10.0-windows`, so the 4.8 engine stays
+- **Multi-targeting.** Every project the engine uses builds for `net48;net10.0-windows`, so the 4.8 engine stays
   shippable while the .NET 10 one is brought up. Things .NET 10 lacks are behind `#if NETFRAMEWORK` with a .NET 10
   path next to them (LINQ to SQL overload, `System.Configuration.Install`, AppDomains, Evidence, `BinaryFormatter`,
   .NET Remoting).
