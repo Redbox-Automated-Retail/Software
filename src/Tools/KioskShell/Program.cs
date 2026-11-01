@@ -66,17 +66,17 @@ public class Program
 		}
 		StringCollection startupFileMask = Settings.Default.StartupFileMask;
 		List<string> searchPatterns = ((startupFileMask == null || startupFileMask.Count == 0) ? new List<string> { "*.lnk" } : startupFileMask.ToList());
-		List<string> list = (from sd in Settings.Default.StartupDirectories.Cast<string>().Where(Directory.Exists)
+		List<string> startupFiles = (from sd in Settings.Default.StartupDirectories.Cast<string>().Where(Directory.Exists)
 			from sp in searchPatterns
 			from f in Directory.GetFiles(sd, sp)
 			select f).ToList();
 		IEnumerable<string> startupExclusions = Settings.Default.StartupExclusions.Cast<string>();
-		List<string> list2 = list.Where((string f) => startupExclusions.All((string e) => f.IndexOf(e, StringComparison.OrdinalIgnoreCase) == -1)).ToList();
-		list2.ForEach(delegate(string ef)
+		List<string> excludedFiles = startupFiles.Where((string f) => startupExclusions.All((string e) => f.IndexOf(e, StringComparison.OrdinalIgnoreCase) == -1)).ToList();
+		excludedFiles.ForEach(delegate(string ef)
 		{
 			LogHelper.Instance.Log("Skipping \"{0}\" since file matches exclusion list", ef);
 		});
-		list.Except(list2).ToList().ForEach(ExecuteWindowsStartupFile);
+		startupFiles.Except(excludedFiles).ToList().ForEach(ExecuteWindowsStartupFile);
 		Application.Run(new Shell());
 		return 0;
 	}
@@ -153,15 +153,15 @@ public class Program
 			};
 			process.Start();
 			process.BeginOutputReadLine();
-			string text = process.StandardError.ReadToEnd();
-			if (!string.IsNullOrEmpty(text))
+			string errorOutput = process.StandardError.ReadToEnd();
+			if (!string.IsNullOrEmpty(errorOutput))
 			{
-				LogHelper.Instance.Log($"stderr: {text}");
+				LogHelper.Instance.Log($"stderr: {errorOutput}");
 			}
 			process.WaitForExit();
-			string text2 = string.Format("{0}.{1}.bak", filename, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-			LogHelper.Instance.Log("Moving start up file to:\"{0}\"", text2);
-			File.Move(filename, text2);
+			string backupName = string.Format("{0}.{1}.bak", filename, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+			LogHelper.Instance.Log("Moving start up file to:\"{0}\"", backupName);
+			File.Move(filename, backupName);
 		}
 		catch (Exception e)
 		{

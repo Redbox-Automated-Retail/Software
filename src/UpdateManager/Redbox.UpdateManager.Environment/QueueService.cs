@@ -78,10 +78,10 @@ public class QueueService : IQueueService
 
 	public void Dequeue(string label)
 	{
-		int num = m_queueFile.AsList().FindIndex((QueueEntry each) => each != null && string.Compare(each.Label, label, ignoreCase: true) == 0);
-		if (num != -1)
+		int index = m_queueFile.AsList().FindIndex((QueueEntry each) => each != null && string.Compare(each.Label, label, ignoreCase: true) == 0);
+		if (index != -1)
 		{
-			m_queueFile.RemoveAt(num);
+			m_queueFile.RemoveAt(index);
 		}
 	}
 

@@ -136,17 +136,17 @@ public sealed class RedboxSerialPort : IDisposable
 			return channelResponse;
 		}
 		ReadInner(channelResponse);
-		bool flag = false;
+		bool timedOut = false;
 		if (!channelResponse.ReadEvent.WaitOne(readTimeout))
 		{
 			LogHelper.Instance.Log("Communication ERROR: port read timed out", LogEntryType.Error);
 			channelResponse.SetCommunicationError();
-			flag = true;
+			timedOut = true;
 		}
 		if (EnableDebugging)
 		{
-			string text = Encoding.ASCII.GetString(channelResponse.RawResponse);
-			LogHelper.Instance.Log(" Read {0}, data: {1}", flag ? "timed out" : "ok", text);
+			string response = Encoding.ASCII.GetString(channelResponse.RawResponse);
+			LogHelper.Instance.Log(" Read {0}, data: {1}", timedOut ? "timed out" : "ok", response);
 			LogHelper.Instance.Log("  raw response: {0}", ByteHelper.AsString(channelResponse.RawResponse));
 		}
 		return channelResponse;
@@ -258,13 +258,13 @@ public sealed class RedboxSerialPort : IDisposable
 
 	private void EndReadCallback(IAsyncResult result)
 	{
-		int num = 0;
+		int bytesRead = 0;
 		ChannelResponse channelResponse = null;
 		try
 		{
 			channelResponse = (ChannelResponse)result.AsyncState;
-			num = Port.BaseStream.EndRead(result);
-			if (num == 0)
+			bytesRead = Port.BaseStream.EndRead(result);
+			if (bytesRead == 0)
 			{
 				LogHelper.Instance.Log("SerialPort {0}: received 0 bytes in read.", Port.PortName);
 				channelResponse.ReadEvent.Set();
@@ -276,7 +276,7 @@ public sealed class RedboxSerialPort : IDisposable
 			LogHelper.Instance.Log("Port.EndReadCallback caught an exception.", e);
 			return;
 		}
-		channelResponse.Accumulate(num);
+		channelResponse.Accumulate(bytesRead);
 		if (!Validate(channelResponse))
 		{
 			ReadInner(channelResponse);

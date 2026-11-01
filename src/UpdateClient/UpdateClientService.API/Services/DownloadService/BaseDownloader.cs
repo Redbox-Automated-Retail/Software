@@ -25,11 +25,11 @@ public class BaseDownloader : IDownloader, IPersistentData
 
 	public virtual async Task<bool> SaveDownload(DownloadData downloadData)
 	{
-		bool flag;
+		bool success;
 		try
 		{
-			flag = await _persistentDataCacheService.Write(downloadData, downloadData.FileName, UpdateClientServiceConstants.DownloadDataFolder);
-			if (!flag)
+			success = await _persistentDataCacheService.Write(downloadData, downloadData.FileName, UpdateClientServiceConstants.DownloadDataFolder);
+			if (!success)
 			{
 				_logger.LogErrorWithSource("Unable to save DownloadData " + downloadData?.ToJson(), "SaveDownload", "/sln/src/UpdateClientService.API/Services/DownloadService/BaseDownloader.cs");
 			}
@@ -37,28 +37,28 @@ public class BaseDownloader : IDownloader, IPersistentData
 		catch (Exception ex)
 		{
 			_logger.LogErrorWithSource(ex, "Exception while saving DownloadData " + downloadData?.ToJson(), "SaveDownload", "/sln/src/UpdateClientService.API/Services/DownloadService/BaseDownloader.cs");
-			flag = false;
+			success = false;
 		}
-		return flag;
+		return success;
 	}
 
 	public virtual async Task<bool> DeleteDownload(DownloadData downloadData)
 	{
-		bool flag;
+		bool success;
 		try
 		{
-			flag = await _persistentDataCacheService.Delete(downloadData.FileName, UpdateClientServiceConstants.DownloadDataFolder);
-			if (!flag)
+			success = await _persistentDataCacheService.Delete(downloadData.FileName, UpdateClientServiceConstants.DownloadDataFolder);
+			if (!success)
 			{
 				_logger.LogErrorWithSource("Unable to delete DownloadData with key: " + downloadData?.Key, "DeleteDownload", "/sln/src/UpdateClientService.API/Services/DownloadService/BaseDownloader.cs");
 			}
 		}
 		catch (Exception ex)
 		{
-			flag = false;
+			success = false;
 			_logger.LogErrorWithSource(ex, "Exception while deleting DownloadData with key " + downloadData?.Key, "DeleteDownload", "/sln/src/UpdateClientService.API/Services/DownloadService/BaseDownloader.cs");
 		}
-		return flag;
+		return success;
 	}
 
 	public virtual async Task<bool> Complete(DownloadData downloadData)

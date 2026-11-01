@@ -135,9 +135,9 @@ public abstract class XmlConfiguration
 
 	private XmlNode GetTargetNode(XmlNode node, string path)
 	{
-		string[] array = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] pathParts = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		XmlNode xmlNode = node;
-		foreach (string text in array)
+		foreach (string text in pathParts)
 		{
 			XmlNode xmlNode2 = xmlNode.SelectSingleNode(text);
 			if (xmlNode2 == null)

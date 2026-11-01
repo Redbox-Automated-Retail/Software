@@ -21,8 +21,8 @@ public class StatisticsCommand
 		PropertyInfo[] properties = typeof(Statistics).GetProperties(bindingAttr);
 		foreach (PropertyInfo propertyInfo in properties)
 		{
-			string item2 = $"{propertyInfo.Name} = {propertyInfo.GetValue(Statistics.Instance, null)}";
-			context.Messages.Add(item2);
+			string message = $"{propertyInfo.Name} = {propertyInfo.GetValue(Statistics.Instance, null)}";
+			context.Messages.Add(message);
 		}
 	}
 }

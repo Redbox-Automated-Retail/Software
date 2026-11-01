@@ -14,16 +14,16 @@ public static class ProductCatalogExtensions
 
 	public static List<ProductWrapper> ToProductWraper(this List<Product> list)
 	{
-		List<ProductWrapper> list2 = new List<ProductWrapper>();
+		List<ProductWrapper> wrappers = new List<ProductWrapper>();
 		DateTime now = DateTime.Now;
-		foreach (Product item in list)
+		foreach (Product product in list)
 		{
-			list2.Add(new ProductWrapper
+			wrappers.Add(new ProductWrapper
 			{
 				DownloadedOn = now,
-				Product = item
+				Product = product
 			});
 		}
-		return list2;
+		return wrappers;
 	}
 }

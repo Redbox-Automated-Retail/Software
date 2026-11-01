@@ -34,30 +34,30 @@ internal class ScheduleEventCommand
 	public void Create(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, [CommandKeyValue(IsRequired = true)] string payload, [CommandKeyValue(IsRequired = true)] string payloadType, [CommandKeyValue(IsRequired = false)] int startOffset, [CommandKeyValue(IsRequired = false)] string startTime, [CommandKeyValue(IsRequired = false)] string endTime, [CommandKeyValue(IsRequired = false)] string cronExpression, [CommandKeyValue(IsRequired = false)] string repeatInterval)
 	{
 		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		TimeSpan? startOffset2 = null;
+		TimeSpan? offset = null;
 		if (startOffset > 0)
 		{
-			startOffset2 = new TimeSpan(0, 0, startOffset);
+			offset = new TimeSpan(0, 0, startOffset);
 		}
-		DateTime? startTime2 = null;
+		DateTime? startAt = null;
 		if (!string.IsNullOrEmpty(startTime))
 		{
-			if (!DateTime.TryParse(startTime, out var result))
+			if (!DateTime.TryParse(startTime, out var parsedStart))
 			{
 				context.Errors.Add(Redbox.IPC.Framework.Error.NewError("C434", "Could not parse startTime.", "Please enter a time that can be parsed."));
 				return;
 			}
-			startTime2 = result;
+			startAt = parsedStart;
 		}
-		DateTime? endTime2 = null;
+		DateTime? endAt = null;
 		if (!string.IsNullOrEmpty(endTime))
 		{
-			if (!DateTime.TryParse(endTime, out var result2))
+			if (!DateTime.TryParse(endTime, out var parsedEnd))
 			{
 				context.Errors.Add(Redbox.IPC.Framework.Error.NewError("C433", "Could not parse endTime.", "Please enter a time that can be parsed."));
 				return;
 			}
-			endTime2 = result2;
+			endAt = parsedEnd;
 		}
 		if ((!string.IsNullOrEmpty(repeatInterval) && !string.IsNullOrEmpty(cronExpression)) || (string.IsNullOrEmpty(repeatInterval) && string.IsNullOrEmpty(cronExpression)))
 		{
@@ -66,16 +66,16 @@ internal class ScheduleEventCommand
 		}
 		if (!string.IsNullOrEmpty(repeatInterval))
 		{
-			if (!TimeSpan.TryParse(repeatInterval, out var result3))
+			if (!TimeSpan.TryParse(repeatInterval, out var interval))
 			{
 				context.Errors.Add(Redbox.IPC.Framework.Error.NewError("C437", "Could not parse repeatInterval.", "Please enter a timespan that can be parsed."));
 				return;
 			}
-			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleSimpleJob(name, payload, payloadType, startOffset2, startTime2, endTime2, result3)));
+			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleSimpleJob(name, payload, payloadType, offset, startAt, endAt, interval)));
 		}
 		else
 		{
-			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleCronJob(name, payload, payloadType, startOffset2, startTime2, endTime2, cronExpression)));
+			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleCronJob(name, payload, payloadType, offset, startAt, endAt, cronExpression)));
 		}
 		if (!context.Errors.ContainsError())
 		{

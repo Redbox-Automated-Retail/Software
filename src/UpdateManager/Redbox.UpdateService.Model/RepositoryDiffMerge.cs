@@ -16,7 +16,7 @@ public static class RepositoryDiffMerge
 		try
 		{
 			rdw = new RepositoryDiffWrapper();
-			List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+			List<Dictionary<string, string>> diffs = new List<Dictionary<string, string>>();
 			List<ClientRepositoryDataDTO> clientRepositoryDataDTOs = new List<ClientRepositoryDataDTO>();
 			foreach (ClientRepositoryDataDTO item in output)
 			{
@@ -24,31 +24,31 @@ public static class RepositoryDiffMerge
 				ClientRepositoryDataDTO clientRepositoryDataDTO = input.FirstOrDefault((ClientRepositoryDataDTO fromItem) => i.R == fromItem.R);
 				if (clientRepositoryDataDTO != null)
 				{
-					bool flag = false;
-					Dictionary<string, string> dictionary = new Dictionary<string, string> { { "R", item.R } };
+					bool changed = false;
+					Dictionary<string, string> diff = new Dictionary<string, string> { { "R", item.R } };
 					if (item.H != clientRepositoryDataDTO.H)
 					{
-						dictionary.Add("H", item.H);
-						flag = true;
+						diff.Add("H", item.H);
+						changed = true;
 					}
 					if (item.I != clientRepositoryDataDTO.I)
 					{
-						dictionary.Add("I", item.I);
-						flag = true;
+						diff.Add("I", item.I);
+						changed = true;
 					}
 					if (item.A != clientRepositoryDataDTO.A)
 					{
-						dictionary.Add("A", item.A);
-						flag = true;
+						diff.Add("A", item.A);
+						changed = true;
 					}
 					if (item.S != clientRepositoryDataDTO.S)
 					{
-						dictionary.Add("S", item.S);
-						flag = true;
+						diff.Add("S", item.S);
+						changed = true;
 					}
-					if (flag)
+					if (changed)
 					{
-						list.Add(dictionary);
+						diffs.Add(diff);
 					}
 				}
 				else
@@ -63,7 +63,7 @@ public static class RepositoryDiffMerge
 			{
 				O = Hash(output),
 				I = Hash(input),
-				U = list,
+				U = diffs,
 				A = clientRepositoryDataDTOs,
 				D = d
 			};
@@ -188,14 +188,14 @@ public static class RepositoryDiffMerge
 		try
 		{
 			RepositoryDiffWrapper wrapper = rdw.Copy();
-			List<ClientRepositoryDataDTO> input2 = input.Copy();
+			List<ClientRepositoryDataDTO> inputCopy = input.Copy();
 			wrapper = Expand(Minimize(wrapper));
-			bool flag = TryMerge(input2, wrapper, out var _);
-			if (!flag)
+			bool merged = TryMerge(inputCopy, wrapper, out var _);
+			if (!merged)
 			{
 				LogHelper.Instance.Log("RDS400", "Verification failed at merging.");
 			}
-			return flag;
+			return merged;
 		}
 		catch (Exception ex)
 		{

@@ -103,16 +103,16 @@ public class FileSetCleanup : IFileSetCleanup
 		{
 			return;
 		}
-		List<long> list = (from x in _fileCacheService.GetFileSetRevisionIds(fileSetId)
+		List<long> revisionIds = (from x in _fileCacheService.GetFileSetRevisionIds(fileSetId)
 			orderby x descending
 			select x).ToList();
-		foreach (long item in list)
+		foreach (long revisionId in revisionIds)
 		{
-			bool revisionRetained = IsRevisionRetained(fileSetCleanupData, item);
-			List<string> clientFileSetRevisionFilePaths = _fileCacheService.GetClientFileSetRevisionFilePaths(fileSetId, item);
-			foreach (string item2 in clientFileSetRevisionFilePaths)
+			bool revisionRetained = IsRevisionRetained(fileSetCleanupData, revisionId);
+			List<string> clientFileSetRevisionFilePaths = _fileCacheService.GetClientFileSetRevisionFilePaths(fileSetId, revisionId);
+			foreach (string revisionFilePath in clientFileSetRevisionFilePaths)
 			{
-				ClientFileSetRevision clientFileSetRevision = await _fileCacheService.GetClientFileSetRevision(item2);
+				ClientFileSetRevision clientFileSetRevision = await _fileCacheService.GetClientFileSetRevision(revisionFilePath);
 				if (clientFileSetRevision != null)
 				{
 					if (revisionRetained)

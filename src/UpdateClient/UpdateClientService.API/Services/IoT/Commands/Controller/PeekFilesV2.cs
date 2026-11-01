@@ -31,7 +31,7 @@ public class PeekFilesV2 : ICommandIoTController
 	public async Task Execute(IoTCommandModel ioTCommand)
 	{
 		KioskFilePeekRequest logRequestModel = JsonConvert.DeserializeObject<KioskFilePeekRequest>(ioTCommand.Payload.ToJson());
-		MqttResponse<Dictionary<string, string>> obj = await _kioskFilesService.PeekRequestedFilesAsync(logRequestModel);
+		MqttResponse<Dictionary<string, string>> response = await _kioskFilesService.PeekRequestedFilesAsync(logRequestModel);
 		await _mqttRepo.PublishIoTCommandAsync("redbox/updateservice-instance/" + ioTCommand.SourceId + "/request", new IoTCommandModel
 		{
 			RequestId = ioTCommand.RequestId,
@@ -39,7 +39,7 @@ public class PeekFilesV2 : ICommandIoTController
 			Version = Version,
 			MessageType = MessageTypeEnum.Response,
 			SourceId = _store.KioskId.ToString(),
-			Payload = obj.ToJson(),
+			Payload = response.ToJson(),
 			LogRequest = false
 		});
 	}

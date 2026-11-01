@@ -41,16 +41,16 @@ public class StoreFilePollRequestList
 		try
 		{
 			StoreFilePollRequests.Clear();
-			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string item)
+			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string entry)
 			{
-				string[] parts = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
-				StoreFilePollRequest item2 = new StoreFilePollRequest
+				string[] parts = entry.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+				StoreFilePollRequest request = new StoreFilePollRequest
 				{
 					StoreFile = Convert.ToInt64(parts[0]),
 					StoreFileData = Convert.ToInt64(parts[1]),
 					SyncId = Convert.ToInt32(parts[2])
 				};
-				StoreFilePollRequests.Add(item2);
+				StoreFilePollRequests.Add(request);
 			});
 		}
 		catch (Exception e)

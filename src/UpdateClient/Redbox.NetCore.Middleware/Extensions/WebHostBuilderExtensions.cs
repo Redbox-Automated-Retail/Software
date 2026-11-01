@@ -75,8 +75,8 @@ public static class WebHostBuilderExtensions
 	{
 		string setting = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
 		builder.UseSetting(WebHostDefaults.ServerUrlsKey, $"{setting};http://*:{metricsPort}/");
-		MetricsEndpointsHostingOptions obj = new MetricsEndpointsHostingOptions();
-		setupAction(obj);
+		MetricsEndpointsHostingOptions options = new MetricsEndpointsHostingOptions();
+		setupAction(options);
 		services.Configure(setupAction);
 	}
 }

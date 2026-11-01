@@ -72,27 +72,27 @@ public class HardwareService : IHardwareService
 		{
 			CleanActiveJobs();
 		}
-		List<Redbox.HAL.Client.HardwareJob> list = RunableReturnJobs.ToList();
-		int num;
-		if (!list.Any())
+		List<Redbox.HAL.Client.HardwareJob> returnJobs = RunableReturnJobs.ToList();
+		int canSwitch;
+		if (!returnJobs.Any())
 		{
-			num = ((m_working == 0) ? 1 : 0);
-			if (num != 0)
+			canSwitch = ((m_working == 0) ? 1 : 0);
+			if (canSwitch != 0)
 			{
 				goto IL_005b;
 			}
 		}
 		else
 		{
-			num = 0;
+			canSwitch = 0;
 		}
-		list.ForEach(delegate(Redbox.HAL.Client.HardwareJob item)
+		returnJobs.ForEach(delegate(Redbox.HAL.Client.HardwareJob item)
 		{
 			Redbox.Core.LogHelper.Instance.Log("Return Job {0} in state {1}", item.ID, item.Status.ToString());
 		});
 		goto IL_005b;
 		IL_005b:
-		return (byte)num != 0;
+		return (byte)canSwitch != 0;
 	}
 
 	public bool IsRunable(HardwareJobStatus status)
@@ -339,25 +339,25 @@ public class HardwareService : IHardwareService
 	public Redbox.KioskEngine.ComponentModel.ErrorList VendLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string jobId)
 	{
 		jobId = null;
-		int num = 1;
+		int position = 1;
 		Location location = new Location();
-		List<Location> list = new List<Location>();
-		foreach (int location2 in locations)
+		List<Location> locationList = new List<Location>();
+		foreach (int deckOrSlot in locations)
 		{
-			if (num % 2 == 0)
+			if (position % 2 == 0)
 			{
-				location.Slot = location2;
-				list.Add(location);
+				location.Slot = deckOrSlot;
+				locationList.Add(location);
 				location = new Location();
 			}
 			else
 			{
-				location.Deck = location2;
+				location.Deck = deckOrSlot;
 			}
-			num++;
+			position++;
 		}
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		HardwareCommandResult hardwareCommandResult = Service.Vend(list, new HardwareJobSchedule
+		HardwareCommandResult hardwareCommandResult = Service.Vend(locationList, new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.High
 		}, out var job);
@@ -375,25 +375,25 @@ public class HardwareService : IHardwareService
 	public Redbox.KioskEngine.ComponentModel.ErrorList ResetLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string jobId)
 	{
 		jobId = null;
-		int num = 1;
+		int position = 1;
 		Location location = new Location();
-		List<Location> list = new List<Location>();
-		foreach (int location2 in locations)
+		List<Location> locationList = new List<Location>();
+		foreach (int deckOrSlot in locations)
 		{
-			if (num % 2 == 0)
+			if (position % 2 == 0)
 			{
-				location.Slot = location2;
-				list.Add(location);
+				location.Slot = deckOrSlot;
+				locationList.Add(location);
 				location = new Location();
 			}
 			else
 			{
-				location.Deck = location2;
+				location.Deck = deckOrSlot;
 			}
-			num++;
+			position++;
 		}
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		HardwareCommandResult hardwareCommandResult = Service.ResetLocations(list, new HardwareJobSchedule
+		HardwareCommandResult hardwareCommandResult = Service.ResetLocations(locationList, new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.Highest
 		}, out var job);

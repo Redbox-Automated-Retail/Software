@@ -33,21 +33,21 @@ public class EncryptionService : IEncryptionService
 			throw new ArgumentNullException("key");
 		}
 		using Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(_key, _saltSize);
-		byte[] array = rfc2898DeriveBytes.Salt;
-		byte[] bytes = rfc2898DeriveBytes.GetBytes(32);
-		byte[] bytes2 = rfc2898DeriveBytes.GetBytes(16);
+		byte[] saltAndCipher = rfc2898DeriveBytes.Salt;
+		byte[] keyBytes = rfc2898DeriveBytes.GetBytes(32);
+		byte[] ivBytes = rfc2898DeriveBytes.GetBytes(16);
 		using AesManaged aesManaged = new AesManaged();
-		using ICryptoTransform transform = aesManaged.CreateEncryptor(bytes, bytes2);
+		using ICryptoTransform transform = aesManaged.CreateEncryptor(keyBytes, ivBytes);
 		using MemoryStream memoryStream = new MemoryStream();
 		using (CryptoStream stream = new CryptoStream(memoryStream, transform, CryptoStreamMode.Write))
 		{
 			using StreamWriter streamWriter = new StreamWriter(stream);
 			streamWriter.Write(plainText);
 		}
-		byte[] array2 = memoryStream.ToArray();
-		Array.Resize(ref array, array.Length + array2.Length);
-		Array.Copy(array2, 0, array, _saltSize, array2.Length);
-		return Convert.ToBase64String(array);
+		byte[] cipherBytes = memoryStream.ToArray();
+		Array.Resize(ref saltAndCipher, saltAndCipher.Length + cipherBytes.Length);
+		Array.Copy(cipherBytes, 0, saltAndCipher, _saltSize, cipherBytes.Length);
+		return Convert.ToBase64String(saltAndCipher);
 	}
 
 	public async Task<string> Decrypt(ConfigurationEncryptionType encryptionType, string cipherText)
@@ -73,10 +73,10 @@ public class EncryptionService : IEncryptionService
 		byte[] salt = decoded.Take(_saltSize).ToArray();
 		byte[] buffer = decoded.Skip(_saltSize).Take(decoded.Length - _saltSize).ToArray();
 		using Rfc2898DeriveBytes keyDerivationFunction = new Rfc2898DeriveBytes(_key, salt);
-		byte[] bytes = keyDerivationFunction.GetBytes(32);
-		byte[] bytes2 = keyDerivationFunction.GetBytes(16);
+		byte[] keyBytes = keyDerivationFunction.GetBytes(32);
+		byte[] ivBytes = keyDerivationFunction.GetBytes(16);
 		using AesManaged aesManaged = new AesManaged();
-		using ICryptoTransform decryptor = aesManaged.CreateDecryptor(bytes, bytes2);
+		using ICryptoTransform decryptor = aesManaged.CreateDecryptor(keyBytes, ivBytes);
 		using MemoryStream memoryStream = new MemoryStream(buffer);
 		using CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
 		using StreamReader streamReader = new StreamReader(cryptoStream);

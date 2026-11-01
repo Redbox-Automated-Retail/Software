@@ -169,22 +169,22 @@ public abstract class DatabaseCommand : IDisposable
 
 	public override string ToString()
 	{
-		string text = string.Empty;
-		string text2 = string.Empty;
+		string parameters = string.Empty;
+		string invalidParameters = string.Empty;
 		foreach (SqlParameter parameter in Parameters)
 		{
-			text += $"{parameter.ParameterName}={parameter.Value}, ";
+			parameters += $"{parameter.ParameterName}={parameter.Value}, ";
 		}
 		if (_invalidCommand != null)
 		{
 			foreach (SqlParameter parameter2 in _invalidCommand.Parameters)
 			{
-				text2 += $"{parameter2.ParameterName}={parameter2.Value}, ";
+				invalidParameters += $"{parameter2.ParameterName}={parameter2.Value}, ";
 			}
 		}
-		string text3 = $"\n{CommandText}:{text}";
-		string text4 = $"\n{_invalidCommand.CommandText}:{text2}";
-		return text3 + text4;
+		string command = $"\n{CommandText}:{parameters}";
+		string invalidCommand = $"\n{_invalidCommand.CommandText}:{invalidParameters}";
+		return command + invalidCommand;
 	}
 
 	public void Dispose()

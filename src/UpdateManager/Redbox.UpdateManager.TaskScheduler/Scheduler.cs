@@ -59,27 +59,27 @@ public class Scheduler : ITaskScheduler
 
 		public Task Task()
 		{
-			Task result = new Task();
+			Task task = new Task();
 			ParsePayload(PayloadType, out var parsed);
 			TimeSpan? startOffset = null;
-			if (TimeSpan.TryParse(StartOffset, out var result2))
+			if (TimeSpan.TryParse(StartOffset, out var parsedOffset))
 			{
-				startOffset = result2;
+				startOffset = parsedOffset;
 			}
 			DateTime? startTime;
 			if (!string.IsNullOrEmpty(StartDate))
 			{
-				if (!DateTime.TryParse(StartDate, out var result3))
+				if (!DateTime.TryParse(StartDate, out var parsedStartDate))
 				{
 					LogHelper.Instance.Log("Could not parse startDate, skipping task " + Name, LogEntryType.Error);
-					return result;
+					return task;
 				}
-				if (!DateTime.TryParse(StartTime, out var result4))
+				if (!DateTime.TryParse(StartTime, out var parsedStartTime))
 				{
 					LogHelper.Instance.Log("Could not parse startDate, skipping task " + Name, LogEntryType.Error);
-					return result;
+					return task;
 				}
-				startTime = new DateTime(result3.Year, result3.Month, result3.Day, result4.Hour, result4.Minute, result4.Second);
+				startTime = new DateTime(parsedStartDate.Year, parsedStartDate.Month, parsedStartDate.Day, parsedStartTime.Hour, parsedStartTime.Minute, parsedStartTime.Second);
 			}
 			else
 			{
@@ -88,17 +88,17 @@ public class Scheduler : ITaskScheduler
 			DateTime? endTime;
 			if (!string.IsNullOrEmpty(EndDate))
 			{
-				if (!DateTime.TryParse(EndDate, out var result5))
+				if (!DateTime.TryParse(EndDate, out var parsedEndDate))
 				{
 					LogHelper.Instance.Log("Could not parse endDate, skipping task " + Name, LogEntryType.Error);
-					return result;
+					return task;
 				}
-				if (!DateTime.TryParse(EndTime, out var result6))
+				if (!DateTime.TryParse(EndTime, out var parsedEndTime))
 				{
 					LogHelper.Instance.Log("Could not parse endTime, skipping task " + Name, LogEntryType.Error);
-					return result;
+					return task;
 				}
-				endTime = new DateTime(result5.Year, result5.Month, result5.Day, result6.Hour, result6.Minute, result6.Second);
+				endTime = new DateTime(parsedEndDate.Year, parsedEndDate.Month, parsedEndDate.Day, parsedEndTime.Hour, parsedEndTime.Minute, parsedEndTime.Second);
 			}
 			else
 			{
@@ -107,22 +107,22 @@ public class Scheduler : ITaskScheduler
 			switch (Enum<Redbox.UpdateManager.ComponentModel.ScheduleType>.ParseIgnoringCase(ScheduleType, Redbox.UpdateManager.ComponentModel.ScheduleType.Unknown))
 			{
 			case Redbox.UpdateManager.ComponentModel.ScheduleType.Cron:
-				result = new Task(Name, Payload, parsed, startOffset, startTime, endTime, CronExpression);
+				task = new Task(Name, Payload, parsed, startOffset, startTime, endTime, CronExpression);
 				break;
 			case Redbox.UpdateManager.ComponentModel.ScheduleType.Simple:
 			{
-				if (!TimeSpan.TryParse(RepeatInterval, out var result7))
+				if (!TimeSpan.TryParse(RepeatInterval, out var parsedRepeatInterval))
 				{
 					LogHelper.Instance.Log("Could not parse RepeatInterval, skipping task " + Name, LogEntryType.Error);
 				}
 				else
 				{
-					result = new Task(Name, Payload, parsed, startOffset, startTime, endTime, result7);
+					task = new Task(Name, Payload, parsed, startOffset, startTime, endTime, parsedRepeatInterval);
 				}
 				break;
 			}
 			}
-			return result;
+			return task;
 		}
 	}
 
@@ -306,8 +306,8 @@ public class Scheduler : ITaskScheduler
 				try
 				{
 					LogHelper.Instance.Log("Scheduling task: " + task.ToString());
-					IJobDetail val = JobBuilder.Create<Task>().WithIdentity(task.Name, "updatemanager").Build();
-					((DirtyFlagMap<string, object>)(object)val.JobDataMap)["Task"] = task;
+					IJobDetail jobDetail = JobBuilder.Create<Task>().WithIdentity(task.Name, "updatemanager").Build();
+					((DirtyFlagMap<string, object>)(object)jobDetail.JobDataMap)["Task"] = task;
 					DateTime dateTime = (task.StartTime.HasValue ? task.StartTime.Value.ToUniversalTime() : DateTime.UtcNow);
 					if (task.StartOffset.HasValue)
 					{
@@ -315,19 +315,19 @@ public class Scheduler : ITaskScheduler
 					}
 					if (task.ScheduleType == ScheduleType.Cron)
 					{
-						ITrigger val2 = CronScheduleTriggerBuilderExtensions.WithCronSchedule(TriggerBuilder.Create().WithIdentity(task.Name, "updatemanager").ForJob(val), task.CronExpression, (Action<CronScheduleBuilder>)delegate(CronScheduleBuilder x)
+						ITrigger cronTrigger = CronScheduleTriggerBuilderExtensions.WithCronSchedule(TriggerBuilder.Create().WithIdentity(task.Name, "updatemanager").ForJob(jobDetail), task.CronExpression, (Action<CronScheduleBuilder>)delegate(CronScheduleBuilder x)
 						{
 							x.WithMisfireHandlingInstructionDoNothing();
 						}).StartAt((DateTimeOffset)dateTime).Build();
-						scheduler.ScheduleJob(val, val2);
+						scheduler.ScheduleJob(jobDetail, cronTrigger);
 					}
 					if (task.ScheduleType == ScheduleType.Simple && task.RepeatInterval.HasValue)
 					{
-						ITrigger val3 = SimpleScheduleTriggerBuilderExtensions.WithSimpleSchedule(TriggerBuilder.Create().WithIdentity(task.Name, "updatemanager").ForJob(val), (Action<SimpleScheduleBuilder>)delegate(SimpleScheduleBuilder x)
+						ITrigger simpleTrigger = SimpleScheduleTriggerBuilderExtensions.WithSimpleSchedule(TriggerBuilder.Create().WithIdentity(task.Name, "updatemanager").ForJob(jobDetail), (Action<SimpleScheduleBuilder>)delegate(SimpleScheduleBuilder x)
 						{
 							x.WithIntervalInSeconds(Convert.ToInt32(task.RepeatInterval.Value.TotalSeconds)).RepeatForever();
 						}).StartAt((DateTimeOffset)dateTime).Build();
-						scheduler.ScheduleJob(val, val3);
+						scheduler.ScheduleJob(jobDetail, simpleTrigger);
 					}
 				}
 				catch (Exception e)
@@ -465,9 +465,9 @@ public class Scheduler : ITaskScheduler
 				{
 					persistTasks = raw.ToObject<List<PersistTask>>();
 				}
-				List<Task> arg = PersistTasksToTasks(persistTasks);
-				arg = operation(arg);
-				persistTasks = TasksToPersistTasks(arg);
+				List<Task> tasks = PersistTasksToTasks(persistTasks);
+				tasks = operation(tasks);
+				persistTasks = TasksToPersistTasks(tasks);
 				dataStoreService.Set("config-schedule", persistTasks);
 			}
 		}

@@ -312,12 +312,12 @@ internal class StateFile
 		list = new List<StateFile>();
 		try
 		{
-			errorList.AddRange(GetAll(out var list2));
+			errorList.AddRange(GetAll(out var allStateFiles));
 			if (errorList.ContainsError())
 			{
 				return errorList;
 			}
-			list = list2.Where((StateFile item) => item.HasInProgress()).ToList();
+			list = allStateFiles.Where((StateFile item) => item.HasInProgress()).ToList();
 		}
 		catch (Exception e)
 		{
@@ -340,9 +340,9 @@ internal class StateFile
 				{
 					return errorList;
 				}
-				List<long> list2 = stateFiles.Select((ClientFileSetState a) => a.FileSetId).Distinct().ToList();
+				List<long> fileSetIds = stateFiles.Select((ClientFileSetState a) => a.FileSetId).Distinct().ToList();
 				List<StateFile> tempList = list;
-				list2.ForEach(delegate(long fileSetId)
+				fileSetIds.ForEach(delegate(long fileSetId)
 				{
 					StateFile stateFile = new StateFile(fileSetId);
 					if (stateFile.Load().ContainsError())
@@ -375,23 +375,23 @@ internal class StateFile
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("StateManager.GetAllFiles", "No directory found at " + FileSetService.Instance.RootPath, "No fileset state will be sent to the server"));
 				return errorList;
 			}
-			string[] files = Directory.GetFiles(FileSetService.Instance.RootPath, '*' + ".active", SearchOption.TopDirectoryOnly);
-			string[] files2 = Directory.GetFiles(FileSetService.Instance.RootPath, '*' + ".inprogress", SearchOption.TopDirectoryOnly);
-			List<string> list = new List<string>();
-			files.ForEach(list.Add);
-			files2.ForEach(list.Add);
-			LogHelper.Instance.Log($"StateManager.GetAllFiles json: {list.ToJson()} ", LogEntryType.Debug);
-			foreach (string item2 in list)
+			string[] activeFiles = Directory.GetFiles(FileSetService.Instance.RootPath, '*' + ".active", SearchOption.TopDirectoryOnly);
+			string[] inProgressFiles = Directory.GetFiles(FileSetService.Instance.RootPath, '*' + ".inprogress", SearchOption.TopDirectoryOnly);
+			List<string> paths = new List<string>();
+			activeFiles.ForEach(paths.Add);
+			inProgressFiles.ForEach(paths.Add);
+			LogHelper.Instance.Log($"StateManager.GetAllFiles json: {paths.ToJson()} ", LogEntryType.Debug);
+			foreach (string path in paths)
 			{
 				try
 				{
-					ClientFileSetState item = File.ReadAllText(item2).ToObject<ClientFileSetState>();
-					stateFiles.Add(item);
+					ClientFileSetState fileSetState = File.ReadAllText(path).ToObject<ClientFileSetState>();
+					stateFiles.Add(fileSetState);
 				}
 				catch (Exception e)
 				{
-					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("StateManager.GetAllFiles", $"Error parsing state file deleting {item2} ", e));
-					Shared.SafeDelete(item2);
+					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("StateManager.GetAllFiles", $"Error parsing state file deleting {path} ", e));
+					Shared.SafeDelete(path);
 				}
 			}
 		}

@@ -119,7 +119,7 @@ public static class TimeZoneFunctions
 		try
 		{
 			TimeZoneInfo.AdjustmentRule currentAdjustmentRule = timeZoneInfo.GetAdjustmentRules().FirstOrDefault((TimeZoneInfo.AdjustmentRule ar) => ar.DateStart < DateTime.UtcNow && ar.DateEnd > DateTime.UtcNow);
-			bool flag = false;
+			bool changed = false;
 			LogHelper.Instance.Log("Attempting to change timezone from " + TimeZoneInfo.Local.DisplayName + " to " + timeZoneInfo.DisplayName, LogEntryType.Debug);
 			if (IsOsVistaOrGreater)
 			{
@@ -134,24 +134,24 @@ public static class TimeZoneFunctions
 				};
 				SetAdjustmentRules(ref info, currentAdjustmentRule);
 				TokenPrivilegesAccess.EnablePrivilege("SeTimeZonePrivilege");
-				flag = SetDynamicTimeZoneInformation(ref info);
+				changed = SetDynamicTimeZoneInformation(ref info);
 				TokenPrivilegesAccess.DisablePrivilege("SeTimeZonePrivilege");
 			}
 			else
 			{
-				TimeZoneInformation info2 = new TimeZoneInformation
+				TimeZoneInformation legacyInfo = new TimeZoneInformation
 				{
 					StandardName = timeZoneInfo.StandardName,
 					DaylightName = timeZoneInfo.DaylightName,
 					StandardBias = 0,
 					Bias = (int)timeZoneInfo.BaseUtcOffset.Negate().TotalMinutes
 				};
-				SetAdjustmentRules(ref info2, currentAdjustmentRule);
-				flag = SetTimeZoneInformation(ref info2);
+				SetAdjustmentRules(ref legacyInfo, currentAdjustmentRule);
+				changed = SetTimeZoneInformation(ref legacyInfo);
 				DeleteDisableAutoDaylightTimeSet();
 			}
-			LogHelper.Instance.Log("TimeZone change success: " + flag, LogEntryType.Debug);
-			return flag;
+			LogHelper.Instance.Log("TimeZone change success: " + changed, LogEntryType.Debug);
+			return changed;
 		}
 		catch (Exception e)
 		{

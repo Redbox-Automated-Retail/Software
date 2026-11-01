@@ -518,8 +518,8 @@ public class PlayerDevice : IVideoSource
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
 			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
-			int num = iAMCameraControl.Set(property, value, controlFlags);
-			ret = num >= 0;
+			int hr = iAMCameraControl.Set(property, value, controlFlags);
+			ret = hr >= 0;
 			Marshal.ReleaseComObject(tempSourceObject);
 			return ret;
 		}
@@ -548,8 +548,8 @@ public class PlayerDevice : IVideoSource
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
 			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
-			int num = iAMCameraControl.Get(property, out value, out controlFlags);
-			ret = num >= 0;
+			int hr = iAMCameraControl.Get(property, out value, out controlFlags);
+			ret = hr >= 0;
 			Marshal.ReleaseComObject(tempSourceObject);
 			return ret;
 		}

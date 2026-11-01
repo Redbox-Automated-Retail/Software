@@ -12,14 +12,14 @@ public class CRC
 	static CRC()
 	{
 		Table = new uint[256];
-		for (uint num = 0u; num < 256; num++)
+		for (uint index = 0u; index < 256; index++)
 		{
-			uint num2 = num;
+			uint crc = index;
 			for (int i = 0; i < 8; i++)
 			{
-				num2 = (((num2 & 1) == 0) ? (num2 >> 1) : ((num2 >> 1) ^ 0xEDB88320u));
+				crc = (((crc & 1) == 0) ? (crc >> 1) : ((crc >> 1) ^ 0xEDB88320u));
 			}
-			Table[num] = num2;
+			Table[index] = crc;
 		}
 	}
 
@@ -35,9 +35,9 @@ public class CRC
 
 	public void Update(byte[] data, uint offset, uint size)
 	{
-		for (uint num = 0u; num < size; num++)
+		for (uint i = 0u; i < size; i++)
 		{
-			_value = Table[(byte)_value ^ data[offset + num]] ^ (_value >> 8);
+			_value = Table[(byte)_value ^ data[offset + i]] ^ (_value >> 8);
 		}
 	}
 

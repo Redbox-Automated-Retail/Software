@@ -21,24 +21,24 @@ public static class IpcFunctions
 				luaTable["success"] = clientCommandResult.Success;
 				luaTable["execution_time"] = clientCommandResult.ExecutionTime.ToString();
 				luaTable["command_text"] = clientCommandResult.CommandText;
-				LuaTable luaTable2 = (LuaTable)(luaTable["command_messages"] = new LuaTable(KernelService.Instance.LuaRuntime));
-				int num = 1;
+				LuaTable messagesTable = (LuaTable)(luaTable["command_messages"] = new LuaTable(KernelService.Instance.LuaRuntime));
+				int index = 1;
 				foreach (string commandMessage in clientCommandResult.CommandMessages)
 				{
-					luaTable2[num++] = commandMessage;
+					messagesTable[index++] = commandMessage;
 				}
-				num = 1;
-				LuaTable luaTable4 = new LuaTable(KernelService.Instance.LuaRuntime);
+				index = 1;
+				LuaTable errorsTable = new LuaTable(KernelService.Instance.LuaRuntime);
 				foreach (Redbox.IPC.Framework.Error error in clientCommandResult.Errors)
 				{
-					LuaTable luaTable5 = new LuaTable(KernelService.Instance.LuaRuntime);
-					luaTable5["code"] = error.Code;
-					luaTable5["description"] = error.Description;
-					luaTable5["is_warning"] = error.IsWarning;
-					luaTable5["details"] = error.Details;
-					luaTable4[num++] = luaTable5;
+					LuaTable errorEntry = new LuaTable(KernelService.Instance.LuaRuntime);
+					errorEntry["code"] = error.Code;
+					errorEntry["description"] = error.Description;
+					errorEntry["is_warning"] = error.IsWarning;
+					errorEntry["details"] = error.Details;
+					errorsTable[index++] = errorEntry;
 				}
-				luaTable["errors"] = luaTable4;
+				luaTable["errors"] = errorsTable;
 			}
 			return luaTable;
 		}

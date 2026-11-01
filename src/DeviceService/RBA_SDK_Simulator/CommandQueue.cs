@@ -38,14 +38,14 @@ public class CommandQueue : ICommandQueue
 	{
 		lock (_commands)
 		{
-			int num = _commands.FindIndex(canRun);
-			if (num < 0)
+			int index = _commands.FindIndex(canRun);
+			if (index < 0)
 			{
 				command = null;
 				return false;
 			}
-			command = _commands[num];
-			_commands.RemoveAt(num);
+			command = _commands[index];
+			_commands.RemoveAt(index);
 			return true;
 		}
 	}

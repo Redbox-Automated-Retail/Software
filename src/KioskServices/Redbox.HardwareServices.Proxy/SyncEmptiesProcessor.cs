@@ -28,21 +28,21 @@ public class SyncEmptiesProcessor : LocationSyncJobProcessorBase, ISyncEmptiesPr
 			LogHelper.Instance.Log("SyncEmptiesProcessor: Unable to locate Hardware Service.");
 			return;
 		}
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (!service.TryGetValue<bool>("system", "General", "SyncEmptyEnabled", out _isEnabled))
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (!configurationService.TryGetValue<bool>("system", "General", "SyncEmptyEnabled", out _isEnabled))
 		{
 			_isEnabled = true;
 		}
-		if (!service.TryGetValue<string>("system", "General", "SyncEmptyStartTimeRangeBegin", out var value))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncEmptyStartTimeRangeBegin", out var rangeBeginText))
 		{
-			value = "1:00";
+			rangeBeginText = "1:00";
 		}
-		if (!service.TryGetValue<string>("system", "General", "SyncEmptyStartTimeRangeEnd", out var value2))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncEmptyStartTimeRangeEnd", out var rangeEndText))
 		{
-			value2 = "3:00";
+			rangeEndText = "3:00";
 		}
-		_timespanBegin = TimeSpan.Parse(value);
-		_timespanEnd = TimeSpan.Parse(value2);
+		_timespanBegin = TimeSpan.Parse(rangeBeginText);
+		_timespanEnd = TimeSpan.Parse(rangeEndText);
 		_timer = new Timer(60000.0);
 		_timer.Elapsed += _timer_Elapsed;
 		_timer.Enabled = true;
@@ -61,17 +61,17 @@ public class SyncEmptiesProcessor : LocationSyncJobProcessorBase, ISyncEmptiesPr
 	{
 		if (_isEnabled)
 		{
-			DateTime value = ScheduleSyncTime(_timespanBegin, _timespanEnd, startIfInwindow: false, 20);
-			bool flag = true;
+			DateTime syncTime = ScheduleSyncTime(_timespanBegin, _timespanEnd, startIfInwindow: false, 20);
+			bool startSync = true;
 			if (IsJobAlreadyScheduled(new List<string> { "SyncEmpty", "SyncEmptyLocations" }))
 			{
-				LogHelper.Instance.Log("HardwareFunctions.SyncEmpties: Sync Empty Locations already scheduled. This run would have been scheduled for " + value.ToString() + ".");
-				flag = false;
+				LogHelper.Instance.Log("HardwareFunctions.SyncEmpties: Sync Empty Locations already scheduled. This run would have been scheduled for " + syncTime.ToString() + ".");
+				startSync = false;
 			}
-			if (flag)
+			if (startSync)
 			{
-				LogHelper.Instance.Log("Scheduling Sync Empty job for " + value.ToString());
-				StartSync("SyncEmpty", value);
+				LogHelper.Instance.Log("Scheduling Sync Empty job for " + syncTime.ToString());
+				StartSync("SyncEmpty", syncTime);
 			}
 		}
 	}

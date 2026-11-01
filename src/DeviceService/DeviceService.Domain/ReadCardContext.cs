@@ -28,12 +28,12 @@ public class ReadCardContext
 	{
 		get
 		{
-			int? num = Request?.Timeout;
+			int? timeout = Request?.Timeout;
 			if (_sentCardProcessing)
 			{
-				num = UserInteractionTimeout;
+				timeout = UserInteractionTimeout;
 			}
-			return Math.Max(0, (int)((num ?? 30000) - (Watch?.ElapsedMilliseconds ?? 0)));
+			return Math.Max(0, (int)((timeout ?? 30000) - (Watch?.ElapsedMilliseconds ?? 0)));
 		}
 	}
 
@@ -287,24 +287,24 @@ public class ReadCardContext
 		{
 			return false;
 		}
-		bool flag = false;
+		bool isDeactivated = false;
 		CardBrandAndSource? cardBrandAndSource = null;
-		foreach (CardBrandAndSource item in Request.ExcludeCardBrandBySource)
+		foreach (CardBrandAndSource excluded in Request.ExcludeCardBrandBySource)
 		{
-			GeneralSourceType generalSourceType = item.GetGeneralSourceType();
-			GeneralSourceType generalSourceType2 = CardSource.GetGeneralSourceType();
-			if (generalSourceType == generalSourceType2 && generalSourceType != GeneralSourceType.None && item.GetBrand() == CardBrand)
+			GeneralSourceType generalSourceType = excluded.GetGeneralSourceType();
+			GeneralSourceType cardSourceType = CardSource.GetGeneralSourceType();
+			if (generalSourceType == cardSourceType && generalSourceType != GeneralSourceType.None && excluded.GetBrand() == CardBrand)
 			{
-				flag = true;
-				cardBrandAndSource = item;
+				isDeactivated = true;
+				cardBrandAndSource = excluded;
 				break;
 			}
 		}
-		if (flag)
+		if (isDeactivated)
 		{
 			State = ReadCardContextState.Blocked;
 			_logger?.LogInformation($"{cardBrandAndSource} is deactivated in system.config");
 		}
-		return flag;
+		return isDeactivated;
 	}
 }

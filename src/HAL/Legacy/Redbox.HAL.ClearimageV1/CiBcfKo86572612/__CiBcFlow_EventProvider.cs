@@ -59,17 +59,17 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[num];
+				__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[index];
 				if (_CiBcFlow_SinkHelper.m_BarcodeFoundDelegate != null && ((_CiBcFlow_SinkHelper.m_BarcodeFoundDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(_CiBcFlow_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -79,9 +79,9 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -104,16 +104,16 @@ internal sealed class __CiBcFlow_EventProvider : __CiBcFlow_Event, IDisposable
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 < count)
 			{
 				do
 				{
-					__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[num];
+					__CiBcFlow_SinkHelper _CiBcFlow_SinkHelper = (__CiBcFlow_SinkHelper)m_aEventSinkHelpers[index];
 					m_ConnectionPoint.Unadvise(_CiBcFlow_SinkHelper.m_dwCookie);
-					num++;
+					index++;
 				}
-				while (num < count);
+				while (index < count);
 			}
 			Marshal.ReleaseComObject(m_ConnectionPoint);
 		}

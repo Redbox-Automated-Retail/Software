@@ -63,11 +63,11 @@ public static class TransferFunctions
 			return null;
 		}
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
-		foreach (string item in inTransit)
+		int index = 1;
+		foreach (string repository in inTransit)
 		{
-			luaTable[num] = item;
-			num++;
+			luaTable[index] = repository;
+			index++;
 		}
 		return luaTable;
 	}
@@ -93,12 +93,12 @@ public static class TransferFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
+		LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (Redbox.UpdateManager.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
+		luaTable["errors"] = errorTable;
 		return luaTable;
 	}
 }

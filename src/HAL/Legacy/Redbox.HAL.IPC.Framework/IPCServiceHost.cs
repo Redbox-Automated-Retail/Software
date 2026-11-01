@@ -62,29 +62,29 @@ public abstract class IPCServiceHost
 
 	public virtual void UnregisterSession(ISession session)
 	{
-		int num = 0;
+		int activeSessions = 0;
 		lock (m_sessionLockObject)
 		{
 			m_sessions.Remove(session);
-			num = m_sessions.Count;
+			activeSessions = m_sessions.Count;
 		}
 		if (LogDetailedMessages)
 		{
-			LogHelper.Instance.Log($"Unregister server session - there are {num} active server sessions.", LogEntryType.Debug);
+			LogHelper.Instance.Log($"Unregister server session - there are {activeSessions} active server sessions.", LogEntryType.Debug);
 		}
 	}
 
 	public virtual void RegiserSession(ISession session)
 	{
-		int num = 0;
+		int activeSessions = 0;
 		lock (m_sessionLockObject)
 		{
 			m_sessions.Add(session);
-			num = m_sessions.Count;
+			activeSessions = m_sessions.Count;
 		}
 		if (LogDetailedMessages)
 		{
-			LogHelper.Instance.Log($"Register server session - there are {num} active server sessions.", LogEntryType.Debug);
+			LogHelper.Instance.Log($"Register server session - there are {activeSessions} active server sessions.", LogEntryType.Debug);
 		}
 	}
 

@@ -20,7 +20,6 @@ public class BZip2CompressionAlgorithm : CompressionAlgorithm
 				using BZip2OutputStream bZip2OutputStream = new BZip2OutputStream(memoryStream);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -49,7 +48,6 @@ public class BZip2CompressionAlgorithm : CompressionAlgorithm
 				using BZip2InputStream bZip2InputStream = new BZip2InputStream(stream);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = bZip2InputStream.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -72,7 +70,6 @@ public class BZip2CompressionAlgorithm : CompressionAlgorithm
 		using BZip2OutputStream bZip2OutputStream = new BZip2OutputStream(target);
 		while (true)
 		{
-			bool flag = true;
 			int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
 			if (bytesRead == 0)
 			{
@@ -89,7 +86,6 @@ public class BZip2CompressionAlgorithm : CompressionAlgorithm
 		using BZip2InputStream bZip2InputStream = new BZip2InputStream(source);
 		while (true)
 		{
-			bool flag = true;
 			int bytesRead = bZip2InputStream.Read(buffer, 0, buffer.Length);
 			if (bytesRead == 0)
 			{

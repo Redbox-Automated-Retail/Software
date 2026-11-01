@@ -27,13 +27,13 @@ internal static class Redbox_002EMacros1309_002EStreamExtensions
 		{
 			stream.Seek(0L, SeekOrigin.Begin);
 		}
-		byte[] array = new byte[stream.Length];
-		int num = 0;
-		int num2;
-		while ((num2 = stream.Read(array, num, array.Length - num)) > 0)
+		byte[] buffer = new byte[stream.Length];
+		int offset = 0;
+		int bytesRead;
+		while ((bytesRead = stream.Read(buffer, offset, buffer.Length - offset)) > 0)
 		{
-			num += num2;
+			offset += bytesRead;
 		}
-		return array;
+		return buffer;
 	}
 }

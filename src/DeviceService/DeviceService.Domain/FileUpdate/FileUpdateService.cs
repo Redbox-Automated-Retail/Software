@@ -311,60 +311,60 @@ public class FileUpdateService : IFileUpdateService
 		{
 			if (fileUpdateResults?.ZipFileUpdateResultCollection != null)
 			{
-				bool flag = false;
+				bool updateFailed = false;
 				Log("Preparing to update files");
 				FileUpdater?.PrepareToUpdateFiles();
 				try
 				{
 					foreach (IZipFileUpdateResult activeZipFileUpdateResult in activeZipFileUpdateResults)
 					{
-						if (!flag)
+						if (!updateFailed)
 						{
 							Log("Processing zip file updates in " + Path.GetFileName(activeZipFileUpdateResult.FileName));
 							using (ZipArchive zipArchive = ZipFile.OpenRead(activeZipFileUpdateResult.FileName))
 							{
-								int num = activeZipFileUpdateResult.FileUpdateResultCollection.Max((IFileUpdateResult x) => x.UpdateFileModel.Order);
-								foreach (IFileUpdateResult item in activeZipFileUpdateResult.FileUpdateResultCollection.OrderBy((IFileUpdateResult x) => x.UpdateFileModel.Order))
+								int lastOrder = activeZipFileUpdateResult.FileUpdateResultCollection.Max((IFileUpdateResult x) => x.UpdateFileModel.Order);
+								foreach (IFileUpdateResult fileUpdateResult in activeZipFileUpdateResult.FileUpdateResultCollection.OrderBy((IFileUpdateResult x) => x.UpdateFileModel.Order))
 								{
-									bool flag2 = item.UpdateFileModel.Order == num;
-									string text = (flag2 ? "  - Forcing device reboot because this is the last file in the update." : null);
-									Log("    Processing file: " + item.UpdateFileModel.Path + text);
-									bool flag3 = false;
-									ZipArchiveEntry zipArchiveEntry = zipArchive?.GetEntry(item.UpdateFileModel.Path);
+									bool isLastFile = fileUpdateResult.UpdateFileModel.Order == lastOrder;
+									string rebootNote = (isLastFile ? "  - Forcing device reboot because this is the last file in the update." : null);
+									Log("    Processing file: " + fileUpdateResult.UpdateFileModel.Path + rebootNote);
+									bool written = false;
+									ZipArchiveEntry zipArchiveEntry = zipArchive?.GetEntry(fileUpdateResult.UpdateFileModel.Path);
 									if (zipArchiveEntry != null)
 									{
 										try
 										{
 											Stream stream = zipArchiveEntry.Open();
-											bool rebootRequired = flag2 || item.UpdateFileModel.RebootRequired;
-											Task<bool> task = FileUpdater.WriteStream(stream, item.UpdateFileModel.Path, rebootRequired, waitForReconnect: true);
+											bool rebootRequired = isLastFile || fileUpdateResult.UpdateFileModel.RebootRequired;
+											Task<bool> task = FileUpdater.WriteStream(stream, fileUpdateResult.UpdateFileModel.Path, rebootRequired, waitForReconnect: true);
 											task.Wait();
-											flag3 = task.Result;
+											written = task.Result;
 										}
-										catch (Exception arg)
+										catch (Exception ex)
 										{
-											Log($"Exception while opening/reading stream.  {arg}");
+											Log($"Exception while opening/reading stream.  {ex}");
 										}
-										Log($"    file update for {item.UpdateFileModel.Path} success = {flag3}");
-										if (!flag3)
+										Log($"    file update for {fileUpdateResult.UpdateFileModel.Path} success = {written}");
+										if (!written)
 										{
-											flag = true;
-											item.FileUpdateStatus = FileUpdateStatus.Errored;
+											updateFailed = true;
+											fileUpdateResult.FileUpdateStatus = FileUpdateStatus.Errored;
 											activeZipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
-											activeZipFileUpdateResult.StatusMessage = "Update of " + item.UpdateFileModel.Path + " failed.";
+											activeZipFileUpdateResult.StatusMessage = "Update of " + fileUpdateResult.UpdateFileModel.Path + " failed.";
 											break;
 										}
-										item.FileUpdateStatus = FileUpdateStatus.Updated;
+										fileUpdateResult.FileUpdateStatus = FileUpdateStatus.Updated;
 										continue;
 									}
-									flag = true;
-									item.FileUpdateStatus = FileUpdateStatus.Errored;
+									updateFailed = true;
+									fileUpdateResult.FileUpdateStatus = FileUpdateStatus.Errored;
 									activeZipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
-									activeZipFileUpdateResult.StatusMessage = "    Unable to find zip archive entry " + item.UpdateFileModel.Path;
+									activeZipFileUpdateResult.StatusMessage = "    Unable to find zip archive entry " + fileUpdateResult.UpdateFileModel.Path;
 									break;
 								}
 							}
-							if (!flag)
+							if (!updateFailed)
 							{
 								Log($"Updating IUC285 file update revision number to {(activeZipFileUpdateResult?.UpdateFileManifestProperties?.Revision).GetValueOrDefault()}");
 								if (activeZipFileUpdateResult?.UpdateFileManifestProperties != null && FileUpdater.SetFileUpdateRevisionNumber(activeZipFileUpdateResult.UpdateFileManifestProperties.Revision.ToString()))
@@ -429,8 +429,8 @@ public class FileUpdateService : IFileUpdateService
 		if (zipFileUpdateResult != null && (zipFileUpdateResult.UpdateFileManifestProperties?.StartDate).HasValue)
 		{
 			DateTime now = DateTime.Now;
-			DateTime? obj = zipFileUpdateResult?.UpdateFileManifestProperties?.StartDate;
-			return now >= obj;
+			DateTime? startDate = zipFileUpdateResult?.UpdateFileManifestProperties?.StartDate;
+			return now >= startDate;
 		}
 		return true;
 	}
@@ -440,12 +440,12 @@ public class FileUpdateService : IFileUpdateService
 		if (zipFileUpdateResult != null && (zipFileUpdateResult.UpdateFileManifestProperties?.UpdateRangeStart).HasValue && zipFileUpdateResult != null && (zipFileUpdateResult.UpdateFileManifestProperties?.UpdateRangeEnd).HasValue)
 		{
 			TimeSpan timeOfDay = DateTime.Now.TimeOfDay;
-			TimeSpan? obj = zipFileUpdateResult?.UpdateFileManifestProperties?.UpdateRangeStart;
-			if (timeOfDay >= obj)
+			TimeSpan? rangeStart = zipFileUpdateResult?.UpdateFileManifestProperties?.UpdateRangeStart;
+			if (timeOfDay >= rangeStart)
 			{
 				timeOfDay = DateTime.Now.TimeOfDay;
-				TimeSpan? obj2 = zipFileUpdateResult?.UpdateFileManifestProperties?.UpdateRangeEnd;
-				return timeOfDay <= obj2;
+				TimeSpan? rangeEnd = zipFileUpdateResult?.UpdateFileManifestProperties?.UpdateRangeEnd;
+				return timeOfDay <= rangeEnd;
 			}
 			return false;
 		}
@@ -475,19 +475,19 @@ public class FileUpdateService : IFileUpdateService
 		Log("Looking for update zip files in: " + UpdateFolderPath);
 		if (Directory.Exists(UpdateFolderPath))
 		{
-			bool flag = false;
-			foreach (string item in Directory.EnumerateFiles(UpdateFolderPath, "*.zip"))
+			bool foundAny = false;
+			foreach (string zipFileName in Directory.EnumerateFiles(UpdateFolderPath, "*.zip"))
 			{
-				Log("Found update file: " + Path.GetFileName(item));
-				flag = true;
+				Log("Found update file: " + Path.GetFileName(zipFileName));
+				foundAny = true;
 				fileUpdateResults.ZipFileUpdateResultCollection.Add(new ZipFileUpdateResult
 				{
-					FileName = item,
+					FileName = zipFileName,
 					Status = ZipFileUpdateStatus.NotProcessed,
 					StatusMessage = "Not Processed"
 				});
 			}
-			if (!flag)
+			if (!foundAny)
 			{
 				fileUpdateResults.StatusMessage = "No files found to update.";
 				Log("No files found to update.");
@@ -501,40 +501,40 @@ public class FileUpdateService : IFileUpdateService
 
 	private void ReadManifestFiles(IFileUpdateResults fileUpdateResults)
 	{
-		foreach (IZipFileUpdateResult item in fileUpdateResults.ZipFileUpdateResultCollection)
+		foreach (IZipFileUpdateResult zipFileUpdateResult in fileUpdateResults.ZipFileUpdateResultCollection)
 		{
-			ReadManifestFile(item.FileName, out var fileModels, out var manifestData);
-			item.UpdateFileManifestProperties = manifestData;
-			if (item.UpdateFileManifestProperties.Status != ManifestPropertiesStatus.Normal)
+			ReadManifestFile(zipFileUpdateResult.FileName, out var fileModels, out var manifestData);
+			zipFileUpdateResult.UpdateFileManifestProperties = manifestData;
+			if (zipFileUpdateResult.UpdateFileManifestProperties.Status != ManifestPropertiesStatus.Normal)
 			{
-				item.StatusMessage = $"Error in Manifest file.  Manifest Status: {item.UpdateFileManifestProperties.Status}";
-				item.Status = ZipFileUpdateStatus.Errored;
+				zipFileUpdateResult.StatusMessage = $"Error in Manifest file.  Manifest Status: {zipFileUpdateResult.UpdateFileManifestProperties.Status}";
+				zipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
 			}
 			if (fileModels == null)
 			{
 				continue;
 			}
-			foreach (IFileModel item2 in fileModels.OrderBy((IFileModel x) => x.Order))
+			foreach (IFileModel fileModel in fileModels.OrderBy((IFileModel x) => x.Order))
 			{
-				if (item2 != null)
+				if (fileModel != null)
 				{
 					IFileUpdateResult fileUpdateResult = new FileUpdateResult
 					{
 						FileUpdateStatus = FileUpdateStatus.NotProcessed,
 						UpdateFileModel = new FileModel
 						{
-							Order = item2.Order,
-							Path = item2.Path,
-							RebootRequired = item2.RebootRequired
+							Order = fileModel.Order,
+							Path = fileModel.Path,
+							RebootRequired = fileModel.RebootRequired
 						}
 					};
 					if (Path.GetFileName(fileUpdateResult?.UpdateFileModel?.Path).Length > 15)
 					{
 						fileUpdateResult.FileUpdateStatus = FileUpdateStatus.FileNameTooLong;
-						item.Status = ZipFileUpdateStatus.Errored;
-						item.StatusMessage = "Error in Manifest file.  File Name is too long " + Path.GetFileName(fileUpdateResult.UpdateFileModel.Path);
+						zipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
+						zipFileUpdateResult.StatusMessage = "Error in Manifest file.  File Name is too long " + Path.GetFileName(fileUpdateResult.UpdateFileModel.Path);
 					}
-					item.FileUpdateResultCollection.Add(fileUpdateResult);
+					zipFileUpdateResult.FileUpdateResultCollection.Add(fileUpdateResult);
 				}
 			}
 		}
@@ -549,8 +549,8 @@ public class FileUpdateService : IFileUpdateService
 				}
 				return result;
 			});
-			string[] value = fileUpdateResults.ZipFileUpdateResultCollection.Select((IZipFileUpdateResult eachZipFileUpdate) => $"{Path.GetFileName(eachZipFileUpdate?.FileName)} revision: {eachZipFileUpdate?.UpdateFileManifestProperties.Revision ?? (-1)}").ToArray();
-			Log("Sorted update files by revision: " + string.Join(", ", value));
+			string[] revisionSummaries = fileUpdateResults.ZipFileUpdateResultCollection.Select((IZipFileUpdateResult eachZipFileUpdate) => $"{Path.GetFileName(eachZipFileUpdate?.FileName)} revision: {eachZipFileUpdate?.UpdateFileManifestProperties.Revision ?? (-1)}").ToArray();
+			Log("Sorted update files by revision: " + string.Join(", ", revisionSummaries));
 		}
 		UpdateFileUpdateResultStatus(fileUpdateResults);
 	}
@@ -564,9 +564,9 @@ public class FileUpdateService : IFileUpdateService
 				Log("Creating FileUpdateService CompletedFolderPath: " + CompletedFolderPath);
 				Directory.CreateDirectory(CompletedFolderPath);
 			}
-			catch (Exception arg)
+			catch (Exception ex)
 			{
-				Log($"Unable to create FileUpdateService CompletedFolderPath: {CompletedFolderPath}.  {arg}");
+				Log($"Unable to create FileUpdateService CompletedFolderPath: {CompletedFolderPath}.  {ex}");
 				fileUpdateResults.Success = false;
 				fileUpdateResults.Status = FileUpdateHighLevelStatus.UnableToCreateCompletedFolder;
 			}
@@ -578,9 +578,9 @@ public class FileUpdateService : IFileUpdateService
 				Log("Creating FileUpdateService NotProcessedFolderPath: " + NotProcessedFolderPath);
 				Directory.CreateDirectory(NotProcessedFolderPath);
 			}
-			catch (Exception arg2)
+			catch (Exception ex)
 			{
-				Log($"Unable to create FileUpdateService NotProcessedFolderPath: {NotProcessedFolderPath}.  {arg2}");
+				Log($"Unable to create FileUpdateService NotProcessedFolderPath: {NotProcessedFolderPath}.  {ex}");
 				fileUpdateResults.Success = false;
 				fileUpdateResults.Status = FileUpdateHighLevelStatus.UnableToCreateNotProcessedFolder;
 			}
@@ -625,23 +625,23 @@ public class FileUpdateService : IFileUpdateService
 					}
 					else
 					{
-						int num = FileUpdater?.GetFileUpdateRevisionNumber() ?? (-1);
-						if (updateFileManifest != null && num.CompareTo(updateFileManifest.Revision) >= 0)
+						int currentRevision = FileUpdater?.GetFileUpdateRevisionNumber() ?? (-1);
+						if (updateFileManifest != null && currentRevision.CompareTo(updateFileManifest.Revision) >= 0)
 						{
 							manifestData.Status = ManifestPropertiesStatus.RevisionDowngrade;
-							Log(string.Format("{0}  Current revision: {1}  Manifest revision: {2}", "Current manifest file revision is greater than or equal to the incoming manifest file. Erroring update.", num, updateFileManifest.Revision));
+							Log(string.Format("{0}  Current revision: {1}  Manifest revision: {2}", "Current manifest file revision is greater than or equal to the incoming manifest file. Erroring update.", currentRevision, updateFileManifest.Revision));
 						}
 						else
 						{
-							Log($"Device current revision: {num}");
+							Log($"Device current revision: {currentRevision}");
 						}
 					}
 				}
 			}
-			catch (Exception arg)
+			catch (Exception ex)
 			{
 				manifestData.Status = ManifestPropertiesStatus.CorruptedManifestFile;
-				LogError($"Error deserializing manifest file in zip file: {zipFileName}{Environment.NewLine} Exception: {arg}");
+				LogError($"Error deserializing manifest file in zip file: {zipFileName}{Environment.NewLine} Exception: {ex}");
 			}
 			if (updateFileManifest != null)
 			{
@@ -678,10 +678,10 @@ public class FileUpdateService : IFileUpdateService
 				Log("Error: Unable to deserialize manifest file from file update " + zipFileName);
 			}
 		}
-		catch (Exception arg2)
+		catch (Exception ex)
 		{
 			manifestData.Status = ManifestPropertiesStatus.ExceptionWhileReading;
-			LogError($"Error Reading Zip Update File: {zipFileName}{Environment.NewLine}Exception: {arg2}");
+			LogError($"Error Reading Zip Update File: {zipFileName}{Environment.NewLine}Exception: {ex}");
 		}
 	}
 
@@ -723,13 +723,13 @@ public class FileUpdateService : IFileUpdateService
 		string? directoryName = Path.GetDirectoryName(destPath);
 		string extension = Path.GetExtension(destPath);
 		string format = Path.Combine(directoryName, fileNameWithoutExtension + "{0}" + extension);
-		int num = 1;
-		string text = string.Format(format, "");
-		while (File.Exists(text))
+		int suffix = 1;
+		string candidate = string.Format(format, "");
+		while (File.Exists(candidate))
 		{
-			text = string.Format(format, "(" + num++ + ")");
+			candidate = string.Format(format, "(" + suffix++ + ")");
 		}
-		destPath = text;
+		destPath = candidate;
 		return destPath;
 	}
 

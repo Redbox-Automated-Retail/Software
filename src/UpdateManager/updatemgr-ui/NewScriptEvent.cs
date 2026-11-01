@@ -72,7 +72,7 @@ public class NewScriptEvent : Form
 		m_errors.SetError(m_advanced_cronExpression, string.Empty);
 		m_errors.SetError(m_advanced_path, string.Empty);
 		m_errors.SetError(m_advanced_name, string.Empty);
-		bool flag = false;
+		bool hasErrors = false;
 		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		ErrorList errorList = new ErrorList();
 		if (m_newScriptTabControl.SelectedTab == BasicPage)
@@ -80,32 +80,32 @@ public class NewScriptEvent : Form
 			if (string.IsNullOrEmpty(m_basic_path.Text))
 			{
 				m_errors.SetError(m_basic_path, "Path is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
 			if (string.IsNullOrEmpty(m_basic_name.Text))
 			{
 				m_errors.SetError(m_basic_name, "Name is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
 			TimeSpan? startOffset = null;
 			if (!string.IsNullOrEmpty(m_basic_initial.Text))
 			{
-				if (int.TryParse(m_basic_initial.Text, out var result))
+				if (int.TryParse(m_basic_initial.Text, out var offsetSeconds))
 				{
-					startOffset = new TimeSpan(0, 0, result);
+					startOffset = new TimeSpan(0, 0, offsetSeconds);
 				}
 				else
 				{
 					m_errors.SetError(m_basic_initial, "Initial Offset is not a valid integer value.");
-					flag = true;
+					hasErrors = true;
 				}
 			}
 			if (string.IsNullOrEmpty(m_basic_recurrence.Text))
 			{
 				m_errors.SetError(m_basic_recurrence, "Recurrance is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
-			if (flag)
+			if (hasErrors)
 			{
 				return;
 			}
@@ -116,36 +116,36 @@ public class NewScriptEvent : Form
 			if (string.IsNullOrEmpty(m_advanced_cronExpression.Text))
 			{
 				m_errors.SetError(m_advanced_cronExpression, "Expression is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
-			TimeSpan? startOffset2 = null;
+			TimeSpan? startOffset = null;
 			if (!string.IsNullOrEmpty(m_advanced_initial.Text))
 			{
-				if (int.TryParse(m_advanced_initial.Text, out var result2))
+				if (int.TryParse(m_advanced_initial.Text, out var offsetSeconds))
 				{
-					startOffset2 = new TimeSpan(0, 0, result2);
+					startOffset = new TimeSpan(0, 0, offsetSeconds);
 				}
 				else
 				{
 					m_errors.SetError(m_advanced_initial, "Initial Offset is not a valid integer value.");
-					flag = true;
+					hasErrors = true;
 				}
 			}
 			if (string.IsNullOrEmpty(m_advanced_path.Text))
 			{
 				m_errors.SetError(m_advanced_path, "Path is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
 			if (string.IsNullOrEmpty(m_advanced_name.Text))
 			{
 				m_errors.SetError(m_advanced_name, "Name is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
-			if (flag)
+			if (hasErrors)
 			{
 				return;
 			}
-			errorList.AddRange(taskScheduler.ScheduleCronJob(m_advanced_name.Text, m_advanced_path.Text.Escaped(), PayloadType.Script, startOffset2, null, null, m_advanced_cronExpression.Text));
+			errorList.AddRange(taskScheduler.ScheduleCronJob(m_advanced_name.Text, m_advanced_path.Text.Escaped(), PayloadType.Script, startOffset, null, null, m_advanced_cronExpression.Text));
 		}
 		if (errorList.ContainsError())
 		{

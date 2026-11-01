@@ -46,26 +46,26 @@ internal class KioskDataServicesProxy
 	private IDictionary<string, object> ExecuteMessage(string messageType, string apiUri, byte[] payload)
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
-		Dictionary<string, object> dictionary = new Dictionary<string, object> { { "success", false } };
+		Dictionary<string, object> responseData = new Dictionary<string, object> { { "success", false } };
 		try
 		{
-			string text = Encoding.ASCII.GetString(payload);
-			string text2 = text.ToPrettyJson();
-			LogHelper.Instance.Log("KioskDataServicesProxy JSON request: type " + messageType + "; body: " + ((text2.Length <= 10000) ? text2 : text));
-			string text3 = PerformRemoteMessage(apiUri, text, KioskDataServicesKey);
-			LogHelper.Instance.Log("KioskDataServicesProxy JSON response: type " + messageType + "; response: " + text3.ToPrettyJson());
+			string json = Encoding.ASCII.GetString(payload);
+			string prettyJson = json.ToPrettyJson();
+			LogHelper.Instance.Log("KioskDataServicesProxy JSON request: type " + messageType + "; body: " + ((prettyJson.Length <= 10000) ? prettyJson : json));
+			string responseJson = PerformRemoteMessage(apiUri, json, KioskDataServicesKey);
+			LogHelper.Instance.Log("KioskDataServicesProxy JSON response: type " + messageType + "; response: " + responseJson.ToPrettyJson());
 			LogHelper.Instance.Log($"KioskDataServicesProxy call execution time: {executionTimer.Elapsed}");
-			if (!string.IsNullOrEmpty(text3))
+			if (!string.IsNullOrEmpty(responseJson))
 			{
-				dictionary = text3.ToDictionary();
+				responseData = responseJson.ToDictionary();
 			}
 		}
 		catch (Exception e)
 		{
 			LogHelper.Instance.Log("An unhandled exception was raised in KioskDataServicesProxy.ExecuteMessage.", e);
-			dictionary["ExceptionRaised"] = true;
+			responseData["ExceptionRaised"] = true;
 		}
-		return dictionary;
+		return responseData;
 	}
 
 	private string PerformRemoteMessage(string apiUri, string jsonRequest, string authorizationKey)

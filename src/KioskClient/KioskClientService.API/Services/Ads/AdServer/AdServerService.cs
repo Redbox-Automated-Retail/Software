@@ -148,10 +148,10 @@ public class AdServerService : IAdService
 				advertisements = GetAdvertisements(locationsToCache, isPreload);
 				foreach (AdLocation item in locationsToCache)
 				{
-					if (advertisements.TryGetValue(item, out var value2))
+					if (advertisements.TryGetValue(item, out var advertisement))
 					{
-						value2.Requested = !isPreload;
-						result.GetAdResponses.Add(new GetAdResponse().CopyFrom(value2));
+						advertisement.Requested = !isPreload;
+						result.GetAdResponses.Add(new GetAdResponse().CopyFrom(advertisement));
 					}
 				}
 			}

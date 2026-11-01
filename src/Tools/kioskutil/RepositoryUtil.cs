@@ -40,16 +40,16 @@ public static class RepositoryUtil
 			Console.WriteLine("Current revision is not set. No need to trim.");
 			return;
 		}
-		int num = revLogList.FindIndex((RevLog r) => r.Hash == current);
-		if (num == -1)
+		int currentIndex = revLogList.FindIndex((RevLog r) => r.Hash == current);
+		if (currentIndex == -1)
 		{
 			Console.WriteLine("Current revision index was not found. No need to trim.");
 			return;
 		}
-		List<int> list = new List<int>();
-		for (int num2 = 1; num2 < num; num2++)
+		List<int> indicesToDelete = new List<int>();
+		for (int i = 1; i < currentIndex; i++)
 		{
-			RevLog revLog = revLogList[num2];
+			RevLog revLog = revLogList[i];
 			bool keep = false;
 			revLog.Changes.ForEach(delegate(ChangeItem ci)
 			{
@@ -60,17 +60,17 @@ public static class RepositoryUtil
 			});
 			if (!keep)
 			{
-				list.Add(num2);
+				indicesToDelete.Add(i);
 			}
 		}
-		Console.WriteLine($"Current Hash: {current} Index:{num}");
-		if (list.Count > 0)
+		Console.WriteLine($"Current Hash: {current} Index:{currentIndex}");
+		if (indicesToDelete.Count > 0)
 		{
-			list.ForEach(delegate(int item)
+			indicesToDelete.ForEach(delegate(int item)
 			{
 				Console.WriteLine($"Deleting index: {item} ");
 			});
-			GetRevLog(repositoryName).RemoveAllAt(list);
+			GetRevLog(repositoryName).RemoveAllAt(indicesToDelete);
 		}
 	}
 

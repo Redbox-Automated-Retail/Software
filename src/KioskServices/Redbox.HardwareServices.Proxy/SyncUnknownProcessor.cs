@@ -45,13 +45,13 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 			LogHelper.Instance.Log("SyncUnknownProcessor: Unable to locate Hardware Service.");
 			return;
 		}
-		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
-		if (service == null)
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
+		if (hardwareState == null)
 		{
 			LogHelper.Instance.Log("SyncUnknownProcessor: Unable to locate Hardware State.");
 			return;
 		}
-		_qlmDeck = service.QlmDeckAsNumber;
+		_qlmDeck = hardwareState.QlmDeckAsNumber;
 		IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
 		_dataPath = Path.Combine(engineApplication.DataPath, "SyncUnknowns");
 		_fileService = new DataFileStoreService();
@@ -66,16 +66,16 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 		{
 			_maxSyncCount = 3;
 		}
-		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeBegin", out var value))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeBegin", out var rangeBeginText))
 		{
-			value = "1:00";
+			rangeBeginText = "1:00";
 		}
-		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeEnd", out var value2))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeEnd", out var rangeEndText))
 		{
-			value2 = "3:00";
+			rangeEndText = "3:00";
 		}
-		_timespanBegin = TimeSpan.Parse(value);
-		_timespanEnd = TimeSpan.Parse(value2);
+		_timespanBegin = TimeSpan.Parse(rangeBeginText);
+		_timespanEnd = TimeSpan.Parse(rangeEndText);
 		_timer = new Timer(60000.0);
 		_timer.Elapsed += TimerElapsed;
 		_timer.Enabled = true;
@@ -96,8 +96,8 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 		{
 			return;
 		}
-		bool flag = forceSync;
-		DateTime value = ScheduleSyncTime(_timespanBegin, _timespanEnd, startIfInwindow: true, 0);
+		bool runSync = forceSync;
+		DateTime syncTime = ScheduleSyncTime(_timespanBegin, _timespanEnd, startIfInwindow: true, 0);
 		if (!forceSync)
 		{
 			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
@@ -106,34 +106,34 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 				_ = storeManager.KioskId;
 				if (0 == 0 && storeManager.KioskId != 0L)
 				{
-					DateTime result;
+					DateTime lastSyncDate;
 					if (IsJobAlreadyScheduled(new List<string> { "SyncUnknowns", "SyncUnknownLocations" }))
 					{
-						LogHelper.Instance.Log($"HardwareFunctions.SyncUnknowns: Uknown Sync already scheduled. This run would have been scheduled for {value.ToString()}. Run Sync = {flag}");
-						flag = false;
+						LogHelper.Instance.Log($"HardwareFunctions.SyncUnknowns: Uknown Sync already scheduled. This run would have been scheduled for {syncTime.ToString()}. Run Sync = {runSync}");
+						runSync = false;
 					}
-					else if (DateTime.TryParse(_machineSettings.GetValue("Local Services\\Hardware Services", "LastUknownSyncDate", string.Empty), out result))
+					else if (DateTime.TryParse(_machineSettings.GetValue("Local Services\\Hardware Services", "LastUknownSyncDate", string.Empty), out lastSyncDate))
 					{
-						flag = value.Date > result.Date;
-						LogHelper.Instance.Log($"HardwareFunctions.SyncUnknowns: Previous Uknown Sync run was {result.ToString()}. Next run scheduled for {value.ToString()}. Run Sync = {flag}");
+						runSync = syncTime.Date > lastSyncDate.Date;
+						LogHelper.Instance.Log($"HardwareFunctions.SyncUnknowns: Previous Uknown Sync run was {lastSyncDate.ToString()}. Next run scheduled for {syncTime.ToString()}. Run Sync = {runSync}");
 					}
 					else
 					{
-						flag = true;
+						runSync = true;
 						LogHelper.Instance.Log("HardwareFunctions.SyncUnknowns: No previous Unknown Sync run found. Running Sync");
 					}
 					goto IL_0134;
 				}
 			}
-			flag = false;
+			runSync = false;
 			LogHelper.Instance.Log("No Kiosk ID was found. SyncUnknowns will not be run today.");
 			UpdateLastUnknownSyncDate();
 		}
 		goto IL_0134;
 		IL_0134:
-		if (flag)
+		if (runSync)
 		{
-			StartSync("SyncUnknowns", value);
+			StartSync("SyncUnknowns", syncTime);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 
 	private List<int> GetLocationsToSync(ReadOnlyCollection<IHardwareResult> hardwareResults, Dictionary<int, SyncCount> locationCounts)
 	{
-		List<int> list = new List<int>();
+		List<int> locations = new List<int>();
 		foreach (IHardwareResult hardwareResult in hardwareResults)
 		{
 			if (!(hardwareResult.Code == "SoftSync"))
@@ -177,12 +177,12 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 			int key = LocationKey(hardwareResult.Deck, hardwareResult.Slot);
 			if (hardwareResult.ItemID == "UNKNOWN" && (!_qlmDeck.HasValue || hardwareResult.Deck != _qlmDeck))
 			{
-				bool flag = true;
+				bool shouldSync = true;
 				if (locationCounts.ContainsKey(key))
 				{
 					if (locationCounts[key].TimesSyncedUnknown >= _maxSyncCount)
 					{
-						flag = false;
+						shouldSync = false;
 					}
 					else
 					{
@@ -198,10 +198,10 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 						TimesSyncedUnknown = 1
 					});
 				}
-				if (flag)
+				if (shouldSync)
 				{
-					list.Add(hardwareResult.Slot);
-					list.Add(hardwareResult.Deck);
+					locations.Add(hardwareResult.Slot);
+					locations.Add(hardwareResult.Deck);
 				}
 			}
 			else if (locationCounts.ContainsKey(key))
@@ -209,16 +209,16 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 				locationCounts.Remove(key);
 			}
 		}
-		return list;
+		return locations;
 	}
 
 	private bool QueueSyncLocations(string jobId, List<int> syncLocations)
 	{
-		ErrorList source = _hardwareService.SyncLocations(null, null, "SyncUnknownLocations", null, syncLocations, out var jobId2);
-		bool flag = !string.IsNullOrEmpty(jobId) && !source.Any();
-		string text = (flag ? "Successfully" : "Unsuccessfully");
-		LogHelper.Instance.Log(string.Format("{0} scheduled job: {1} - {2} with {3} locations.", text, jobId2 ?? string.Empty, "SyncUnknownLocations", syncLocations.Count() / 2));
-		return flag;
+		ErrorList source = _hardwareService.SyncLocations(null, null, "SyncUnknownLocations", null, syncLocations, out var queuedJobId);
+		bool success = !string.IsNullOrEmpty(jobId) && !source.Any();
+		string outcome = (success ? "Successfully" : "Unsuccessfully");
+		LogHelper.Instance.Log(string.Format("{0} scheduled job: {1} - {2} with {3} locations.", outcome, queuedJobId ?? string.Empty, "SyncUnknownLocations", syncLocations.Count() / 2));
+		return success;
 	}
 
 	public void ProcessSyncLocationsComplete(string jobId)

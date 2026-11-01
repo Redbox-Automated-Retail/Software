@@ -126,14 +126,14 @@ public class SignalRClient
 				bool timedout = false;
 				Task task = Task.Run(delegate
 				{
-					int num = connectionTimeout ?? 5000;
-					int num2 = 0;
-					while (!cancellationToken.IsCancellationRequested && num2 < num)
+					int timeoutMs = connectionTimeout ?? 5000;
+					int elapsedMs = 0;
+					while (!cancellationToken.IsCancellationRequested && elapsedMs < timeoutMs)
 					{
 						Thread.Sleep(1000);
-						num2 += 1000;
+						elapsedMs += 1000;
 					}
-					if (num2 >= num && !cancellationToken.IsCancellationRequested)
+					if (elapsedMs >= timeoutMs && !cancellationToken.IsCancellationRequested)
 					{
 						timedout = true;
 					}

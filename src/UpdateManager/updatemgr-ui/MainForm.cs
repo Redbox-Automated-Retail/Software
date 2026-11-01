@@ -628,23 +628,11 @@ public class MainForm : Form
 	{
 		if (m_changes.SelectedItems.Count > 0)
 		{
-			Button activateTo = m_activateTo;
-			Button rebuild = m_rebuild;
-			Button updateTo = m_updateTo;
-			bool flag = (m_details.Enabled = true);
-			bool flag3 = (updateTo.Enabled = flag);
-			bool enabled = (rebuild.Enabled = flag3);
-			activateTo.Enabled = enabled;
+			m_activateTo.Enabled = m_rebuild.Enabled = m_updateTo.Enabled = m_details.Enabled = true;
 		}
 		else
 		{
-			Button activateTo2 = m_activateTo;
-			Button rebuild2 = m_rebuild;
-			Button updateTo2 = m_updateTo;
-			bool flag = (m_details.Enabled = false);
-			bool flag3 = (updateTo2.Enabled = flag);
-			bool enabled = (rebuild2.Enabled = flag3);
-			activateTo2.Enabled = enabled;
+			m_activateTo.Enabled = m_rebuild.Enabled = m_updateTo.Enabled = m_details.Enabled = false;
 		}
 	}
 

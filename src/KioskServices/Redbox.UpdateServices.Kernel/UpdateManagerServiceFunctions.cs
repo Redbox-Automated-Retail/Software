@@ -53,15 +53,15 @@ public static class UpdateManagerServiceFunctions
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(updateManagerService.ExecuteCommand(command, out var messages));
-		LuaTable luaTable2 = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
-		int num = 1;
-		foreach (string item in messages)
+		LuaTable resultTable = CreateResultTable(updateManagerService.ExecuteCommand(command, out var messages));
+		LuaTable messageTable = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
+		int index = 1;
+		foreach (string message in messages)
 		{
-			luaTable2[num++] = item;
+			messageTable[index++] = message;
 		}
-		luaTable["messages"] = luaTable2;
-		return luaTable;
+		resultTable["messages"] = messageTable;
+		return resultTable;
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_getdownloads")]
@@ -72,40 +72,40 @@ public static class UpdateManagerServiceFunctions
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(updateManagerService.GetDownloadState(out var downloads));
+		LuaTable resultTable = CreateResultTable(updateManagerService.GetDownloadState(out var downloads));
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
-		int num = 1;
-		foreach (IDownloadData item in downloads)
+		LuaTable downloadsTable = (LuaTable)kernelService.NewTable();
+		int index = 1;
+		foreach (IDownloadData download in downloads)
 		{
-			LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
-			luaTable3["id"] = item.Id.ToString();
-			luaTable3["name"] = item.Name;
-			luaTable3["owner"] = item.Owner;
-			luaTable3["status"] = item.Status;
-			luaTable3["job_type"] = item.JobType;
-			luaTable3["total_bytes"] = item.TotalBytes;
-			luaTable3["start_time"] = item.StartTime.ToString();
-			luaTable3["finish_time"] = (item.FinishTime.HasValue ? item.FinishTime.ToString() : null);
-			luaTable3["modified_time"] = item.ModifiedTime.ToString();
-			luaTable3["total_bytes_transferred"] = item.TotalBytesTransferred;
-			luaTable2[num++] = luaTable3;
+			LuaTable downloadTable = (LuaTable)kernelService.NewTable();
+			downloadTable["id"] = download.Id.ToString();
+			downloadTable["name"] = download.Name;
+			downloadTable["owner"] = download.Owner;
+			downloadTable["status"] = download.Status;
+			downloadTable["job_type"] = download.JobType;
+			downloadTable["total_bytes"] = download.TotalBytes;
+			downloadTable["start_time"] = download.StartTime.ToString();
+			downloadTable["finish_time"] = (download.FinishTime.HasValue ? download.FinishTime.ToString() : null);
+			downloadTable["modified_time"] = download.ModifiedTime.ToString();
+			downloadTable["total_bytes_transferred"] = download.TotalBytesTransferred;
+			downloadsTable[index++] = downloadTable;
 		}
-		luaTable["downloads"] = luaTable2;
-		return luaTable;
+		resultTable["downloads"] = downloadsTable;
+		return resultTable;
 	}
 
 	private static LuaTable CreateResultTable(ErrorList errors)
 	{
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)kernelService.NewTable();
-		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
+		LuaTable resultTable = (LuaTable)kernelService.NewTable();
+		resultTable["success"] = !errors.ContainsError();
+		LuaTable errorTable = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
-		return luaTable;
+		resultTable["errors"] = errorTable;
+		return resultTable;
 	}
 }

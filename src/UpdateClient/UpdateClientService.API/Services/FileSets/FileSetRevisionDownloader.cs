@@ -56,8 +56,8 @@ public class FileSetRevisionDownloader : IFileSetRevisionDownloader
 
 	public async Task<DownloadData> AddDownload(RevisionChangeSetKey revisionChangeSetKey, string hash, string path, DownloadPriority downloadPriority)
 	{
-		var (flag, downloadData) = await AddDownload(DownloadData.GetRevisionKey(revisionChangeSetKey), hash, GetRevisionUrl(path), downloadPriority);
-		return flag ? downloadData : null;
+		var (added, downloadData) = await AddDownload(DownloadData.GetRevisionKey(revisionChangeSetKey), hash, GetRevisionUrl(path), downloadPriority);
+		return added ? downloadData : null;
 	}
 
 	private async Task<(bool success, DownloadData downloadData)> AddDownload(string key, string hash, string url, DownloadPriority downloadPriority)
@@ -67,12 +67,12 @@ public class FileSetRevisionDownloader : IFileSetRevisionDownloader
 
 	public bool CompleteDownload(RevisionChangeSetKey revisionChangeSetKey, DownloadData downloadData)
 	{
-		bool flag = _zipHelper.Extract(downloadData.Path, revisionChangeSetKey);
-		if (flag)
+		bool extracted = _zipHelper.Extract(downloadData.Path, revisionChangeSetKey);
+		if (extracted)
 		{
 			_downloader.Complete(downloadData);
 		}
-		return flag;
+		return extracted;
 	}
 
 	private string GetRevisionUrl(string path)

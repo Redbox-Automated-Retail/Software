@@ -26,7 +26,7 @@ public class UploadFilesV2 : ICommandIoTController
 	public async Task Execute(IoTCommandModel ioTCommand)
 	{
 		KioskUploadFileRequest kioskFileRequest = JsonConvert.DeserializeObject<KioskUploadFileRequest>(ioTCommand.Payload.ToJson());
-		MqttResponse<string> obj = await _kioskFilesService.UploadFilesAsync(kioskFileRequest);
+		MqttResponse<string> response = await _kioskFilesService.UploadFilesAsync(kioskFileRequest);
 		await _mqttRepo.PublishIoTCommandAsync("redbox/updateservice-instance/" + ioTCommand.SourceId + "/request", new IoTCommandModel
 		{
 			RequestId = ioTCommand.RequestId,
@@ -34,7 +34,7 @@ public class UploadFilesV2 : ICommandIoTController
 			Version = Version,
 			SourceId = _store.KioskId.ToString(),
 			MessageType = MessageTypeEnum.Response,
-			Payload = obj.ToJson()
+			Payload = response.ToJson()
 		});
 	}
 }

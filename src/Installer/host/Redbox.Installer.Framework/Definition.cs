@@ -51,16 +51,16 @@ public class Definition
 			}
 			DisplayNameAttribute displayNameAttribute = (DisplayNameAttribute)Attribute.GetCustomAttribute(type, typeof(DisplayNameAttribute));
 			PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty);
-			XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes(elementAttribute.XPath);
-			if (xmlNodeList == null)
+			XmlNodeList nodes = xmlDocument.DocumentElement.SelectNodes(elementAttribute.XPath);
+			if (nodes == null)
 			{
 				continue;
 			}
-			if (xmlNodeList.Count > 0)
+			if (nodes.Count > 0)
 			{
 				console.WriteLine("\nParsing {0}:", (displayNameAttribute != null) ? displayNameAttribute.DisplayName : "Unknown Definition");
 			}
-			foreach (XmlNode item in xmlNodeList)
+			foreach (XmlNode node in nodes)
 			{
 				if (!(Activator.CreateInstance(type) is Definition definition))
 				{
@@ -73,19 +73,19 @@ public class Definition
 					{
 						continue;
 					}
-					object obj = null;
+					object propertyValue = null;
 					if (elementPropertyAttribute.UseNodeText)
 					{
-						if (string.IsNullOrEmpty(item.InnerText) && elementPropertyAttribute.IsRequired)
+						if (string.IsNullOrEmpty(node.InnerText) && elementPropertyAttribute.IsRequired)
 						{
 							errors.Add(Error.NewError("C004", string.Format("The '{0}' element requires valid inner text.", (displayNameAttribute != null) ? displayNameAttribute.DisplayName : "Unknown Definition"), "Correct the RIX script file and recompile."));
 							continue;
 						}
-						obj = MacroContainer.Instance.ExpandConstantMacros(item.InnerText);
+						propertyValue = MacroContainer.Instance.ExpandConstantMacros(node.InnerText);
 					}
 					else
 					{
-						XmlAttribute xmlAttribute = item.Attributes[elementPropertyAttribute.Name];
+						XmlAttribute xmlAttribute = node.Attributes[elementPropertyAttribute.Name];
 						if (xmlAttribute == null && elementPropertyAttribute.IsRequired)
 						{
 							errors.Add(Error.NewError("C004", string.Format("The '{0}' element requires a valid '{1}' attribute.", (displayNameAttribute != null) ? displayNameAttribute.DisplayName : "Unknown Definition", elementPropertyAttribute.Name), "Correct the RIX script file and recompile."));
@@ -93,32 +93,32 @@ public class Definition
 						}
 						if (xmlAttribute != null)
 						{
-							obj = MacroContainer.Instance.ExpandConstantMacros(xmlAttribute.Value);
+							propertyValue = MacroContainer.Instance.ExpandConstantMacros(xmlAttribute.Value);
 						}
 					}
-					if (obj == null)
+					if (propertyValue == null)
 					{
 						DefaultValueAttribute defaultValueAttribute = (DefaultValueAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(DefaultValueAttribute));
 						if (defaultValueAttribute != null)
 						{
-							obj = defaultValueAttribute.Value;
+							propertyValue = defaultValueAttribute.Value;
 						}
 					}
-					if (obj != null)
+					if (propertyValue != null)
 					{
-						obj = ConversionHelper.ChangeType(obj, propertyInfo.PropertyType);
+						propertyValue = ConversionHelper.ChangeType(propertyValue, propertyInfo.PropertyType);
 					}
-					if (propertyInfo.Name == "ID" && definitionList.GetByID(obj as string) != null)
+					if (propertyInfo.Name == "ID" && definitionList.GetByID(propertyValue as string) != null)
 					{
-						errors.Add(Error.NewError("C004", string.Format("The id attribute '{0}' on the '{1}' element is not unique.", obj, (displayNameAttribute != null) ? displayNameAttribute.DisplayName : "Unknown Definition"), "Correct the RIX script file and recompile."));
+						errors.Add(Error.NewError("C004", string.Format("The id attribute '{0}' on the '{1}' element is not unique.", propertyValue, (displayNameAttribute != null) ? displayNameAttribute.DisplayName : "Unknown Definition"), "Correct the RIX script file and recompile."));
 					}
 					else
 					{
-						propertyInfo.SetValue(definition, obj, null);
+						propertyInfo.SetValue(definition, propertyValue, null);
 					}
 				}
 				console.Write("\tAdd '" + definition.ID + "'...");
-				definition.OnCustomParse(item, console, errors);
+				definition.OnCustomParse(node, console, errors);
 				definitionList.Add(definition);
 				console.WriteLine("done.");
 			}

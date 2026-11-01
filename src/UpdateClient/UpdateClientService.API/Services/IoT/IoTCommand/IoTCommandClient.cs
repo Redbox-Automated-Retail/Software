@@ -86,14 +86,14 @@ public class IoTCommandClient : IIoTCommandClient
 
 	private async Task<IoTCommandModel> PublishIoTCommandAndReturn(IoTCommandModel request, PerformIoTCommandParameters parameters)
 	{
-		bool flag = await PublishIoTCommandAsync(request, parameters);
+		bool published = await PublishIoTCommandAsync(request, parameters);
 		return new IoTCommandModel
 		{
 			RequestId = request.RequestId,
 			MessageType = MessageTypeEnum.Response,
 			Command = request.Command,
 			Version = request.Version,
-			Payload = flag.ToString(),
+			Payload = published.ToString(),
 			SourceId = _store.KioskId.ToString()
 		};
 	}

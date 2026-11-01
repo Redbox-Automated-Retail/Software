@@ -51,14 +51,14 @@ public class PropertyGridView : UserControl
 			NameValueProperty nameValueProperty = m_properties[key];
 			if (!InstallerProject.Instance.Values.ContainsKey(nameValueProperty.TargetMacro))
 			{
-				object obj = nameValueProperty.DefaultValue;
-				if (obj != null)
+				object defaultValue = nameValueProperty.DefaultValue;
+				if (defaultValue != null)
 				{
-					obj = MacroContainer.Instance.ExpandRuntimeMacros(obj.ToString());
+					defaultValue = MacroContainer.Instance.ExpandRuntimeMacros(defaultValue.ToString());
 				}
-				if (obj != null)
+				if (defaultValue != null)
 				{
-					InstallerProject.Instance.Values[nameValueProperty.TargetMacro] = obj.ToString();
+					InstallerProject.Instance.Values[nameValueProperty.TargetMacro] = defaultValue.ToString();
 				}
 			}
 		}

@@ -14,8 +14,8 @@ public static class TaskSchedulerFunctions
 		RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 		byte[] buffer = new byte[4];
 		rNGCryptoServiceProvider.GetBytes(buffer);
-		int num = BitConverter.ToInt32(buffer, 0);
-		return (min + Math.Abs(num % (max - min))).ToString();
+		int randomValue = BitConverter.ToInt32(buffer, 0);
+		return (min + Math.Abs(randomValue % (max - min))).ToString();
 	}
 
 	[KernelFunction(Name = "kernel.schedulecronjob")]
@@ -106,15 +106,15 @@ public static class TaskSchedulerFunctions
 			});
 		}
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
-		foreach (ITask item in tasks)
+		int index = 1;
+		foreach (ITask task in tasks)
 		{
-			luaTable[num] = $"{item.Name} {item.Payload}";
-			num++;
+			luaTable[index] = $"{task.Name} {task.Payload}";
+			index++;
 		}
-		LuaTable luaTable2 = CreateResultTable(errorList);
-		luaTable2["events"] = luaTable;
-		return luaTable2;
+		LuaTable resultTable = CreateResultTable(errorList);
+		resultTable["events"] = luaTable;
+		return resultTable;
 	}
 
 	[KernelFunction(Name = "kernel.scheduleeventdelete")]
@@ -223,12 +223,12 @@ public static class TaskSchedulerFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
+		LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (Redbox.UpdateManager.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
+		luaTable["errors"] = errorTable;
 		return luaTable;
 	}
 }

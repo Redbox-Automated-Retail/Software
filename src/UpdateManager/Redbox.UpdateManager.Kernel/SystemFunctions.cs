@@ -341,14 +341,14 @@ public static class SystemFunctions
 	private static void MoveLockedFileSystemEntry(string source, string destination)
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-		string expanded = macroService.ExpandProperties(source);
-		string text2 = macroService.ExpandProperties(destination);
+		string sourcePath = macroService.ExpandProperties(source);
+		string destinationPath = macroService.ExpandProperties(destination);
 		MoveFileFlags moveFileFlags = MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT;
-		if (!Directory.Exists(expanded) && !Directory.Exists(text2))
+		if (!Directory.Exists(sourcePath) && !Directory.Exists(destinationPath))
 		{
 			moveFileFlags |= MoveFileFlags.MOVEFILE_REPLACE_EXISTING;
 		}
-		MoveFileEx(expanded, text2, moveFileFlags);
+		MoveFileEx(sourcePath, destinationPath, moveFileFlags);
 	}
 
 	private static void DeleteLockedFileSystemEntry(string target)

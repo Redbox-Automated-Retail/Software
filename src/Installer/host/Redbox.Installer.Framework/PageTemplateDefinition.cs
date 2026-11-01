@@ -302,39 +302,39 @@ public class PageTemplateDefinition : Definition, IDisposable
 			if (node.Properties.ContainsKey("UseConstructor") && string.Compare(node.Properties["UseConstructor"], true.ToString(), ignoreCase: true) == 0)
 			{
 				ConstructorInfo constructorInfo = null;
-				List<ConstructorInfo> list = new List<ConstructorInfo>(type.GetConstructors());
-				list.Sort((ConstructorInfo x, ConstructorInfo y) => y.GetParameters().Length.CompareTo(x.GetParameters().Length));
-				foreach (ConstructorInfo item2 in list)
+				List<ConstructorInfo> constructors = new List<ConstructorInfo>(type.GetConstructors());
+				constructors.Sort((ConstructorInfo x, ConstructorInfo y) => y.GetParameters().Length.CompareTo(x.GetParameters().Length));
+				foreach (ConstructorInfo candidate in constructors)
 				{
-					int num = 0;
-					List<ParameterInfo> parameterInfoList = new List<ParameterInfo>(item2.GetParameters());
+					int matchedCount = 0;
+					List<ParameterInfo> parameterInfoList = new List<ParameterInfo>(candidate.GetParameters());
 					foreach (string property2 in node.GetProperties())
 					{
 						string candidateParameterName = property2;
 						ParameterInfo parameterInfo = parameterInfoList.Find((ParameterInfo eachParam) => string.Compare(candidateParameterName, eachParam.Name, ignoreCase: true) == 0);
 						if (parameterInfo != null)
 						{
-							num++;
+							matchedCount++;
 						}
 					}
-					if (num == parameterInfoList.Count)
+					if (matchedCount == parameterInfoList.Count)
 					{
-						constructorInfo = item2;
+						constructorInfo = candidate;
 						break;
 					}
 				}
 				if (constructorInfo != null)
 				{
-					List<object> list3 = new List<object>();
-					List<string> list4 = new List<string>(node.Properties.Keys);
+					List<object> constructorArguments = new List<object>();
+					List<string> propertyNames = new List<string>(node.Properties.Keys);
 					ParameterInfo[] parameters = constructorInfo.GetParameters();
 					foreach (ParameterInfo parameterInfo2 in parameters)
 					{
 						string targetParameterName = parameterInfo2.Name;
-						string key = list4.Find((string eachKey) => string.Compare(eachKey, targetParameterName, ignoreCase: true) == 0);
-						list3.Add(ConversionHelper.ChangeType(node.Properties[key], parameterInfo2.ParameterType));
+						string key = propertyNames.Find((string eachKey) => string.Compare(eachKey, targetParameterName, ignoreCase: true) == 0);
+						constructorArguments.Add(ConversionHelper.ChangeType(node.Properties[key], parameterInfo2.ParameterType));
 					}
-					node.Instance = constructorInfo.Invoke(list3.ToArray());
+					node.Instance = constructorInfo.Invoke(constructorArguments.ToArray());
 				}
 			}
 			else
@@ -356,55 +356,53 @@ public class PageTemplateDefinition : Definition, IDisposable
 				PropertyInfo propertyInfo = propertyInfoList.Find((PropertyInfo eachProp) => eachProp.Name == addTarget);
 				if (propertyInfo != null)
 				{
-					object value = propertyInfo.GetValue(parent, null);
-					if (value != null)
+					object target = propertyInfo.GetValue(parent, null);
+					if (target != null)
 					{
 						List<Type> types = new List<Type>();
 						types.Add(type);
-						List<Type> list7 = types;
-						List<object> list8 = new List<object>();
-						list8.Add(node.Instance);
-						List<object> list9 = list8;
-						List<MethodInfo> list10 = new List<MethodInfo>(propertyInfo.PropertyType.GetMethods()).FindAll((MethodInfo eachMethod) => eachMethod.Name == "Add");
+						List<object> arguments = new List<object>();
+						arguments.Add(node.Instance);
+						List<MethodInfo> addMethods = new List<MethodInfo>(propertyInfo.PropertyType.GetMethods()).FindAll((MethodInfo eachMethod) => eachMethod.Name == "Add");
 						MethodInfo methodInfo = null;
-						List<string> list11 = new List<string>(node.GetAddProperties());
-						foreach (MethodInfo item3 in list10)
+						List<string> addPropertyNames = new List<string>(node.GetAddProperties());
+						foreach (MethodInfo addMethod in addMethods)
 						{
-							int num3 = 0;
-							List<ParameterInfo> list12 = new List<ParameterInfo>(item3.GetParameters());
-							for (int num4 = 1; num4 < list12.Count; num4++)
+							int matchedAddCount = 0;
+							List<ParameterInfo> addParameters = new List<ParameterInfo>(addMethod.GetParameters());
+							for (int i = 1; i < addParameters.Count; i++)
 							{
-								ParameterInfo parameterInfo3 = list12[num4];
+								ParameterInfo parameterInfo3 = addParameters[i];
 								string testName = $"add-{parameterInfo3.Name}";
-								string text = list11.Find((string eachAddParam) => string.Compare(eachAddParam, testName, ignoreCase: true) == 0);
-								if (text != null)
+								string addPropertyName = addPropertyNames.Find((string eachAddParam) => string.Compare(eachAddParam, testName, ignoreCase: true) == 0);
+								if (addPropertyName != null)
 								{
-									list7.Add(parameterInfo3.ParameterType);
-									object item = ConversionHelper.ChangeType(node.Properties[text], parameterInfo3.ParameterType);
-									list9.Add(item);
-									num3++;
+									types.Add(parameterInfo3.ParameterType);
+									object argument = ConversionHelper.ChangeType(node.Properties[addPropertyName], parameterInfo3.ParameterType);
+									arguments.Add(argument);
+									matchedAddCount++;
 								}
 							}
-							if (num3 == list12.Count - 1)
+							if (matchedAddCount == addParameters.Count - 1)
 							{
-								methodInfo = item3;
+								methodInfo = addMethod;
 								break;
 							}
 						}
-						methodInfo?.Invoke(value, list9.ToArray());
+						methodInfo?.Invoke(target, arguments.ToArray());
 					}
 				}
 			}
 			if (node.Properties.ContainsKey("Name"))
 			{
-				string text2 = node.Properties["Name"];
-				if (node.Instance is Component value2)
+				string name = node.Properties["Name"];
+				if (node.Instance is Component component)
 				{
-					KernelObject[text2] = value2;
+					KernelObject[name] = component;
 				}
 				foreach (EventHandlerData eventHandler in node.EventHandlers)
 				{
-					m_classScriptBuilder.AppendFormat("\t\tpage.{0}.add_{1}( {2} );\n", text2, eventHandler.EventName, eventHandler.FunctionName);
+					m_classScriptBuilder.AppendFormat("\t\tpage.{0}.add_{1}( {2} );\n", name, eventHandler.EventName, eventHandler.FunctionName);
 					m_handlerScriptBuilder.AppendLine(eventHandler.SourceText);
 				}
 			}

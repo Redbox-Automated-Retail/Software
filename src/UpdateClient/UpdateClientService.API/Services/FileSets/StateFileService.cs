@@ -72,13 +72,13 @@ public class StateFileService : IStateFileService
 		try
 		{
 			(bool, StateFile) tuple = await _stateFileRepository.Get(fileSetId);
-			bool item = tuple.Item1;
-			StateFile item2 = tuple.Item2;
-			HttpStatusCode statusCode = ((item && item2 != null) ? HttpStatusCode.OK : ((item && item2 == null) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
+			bool success = tuple.Item1;
+			StateFile stateFile = tuple.Item2;
+			HttpStatusCode statusCode = ((success && stateFile != null) ? HttpStatusCode.OK : ((success && stateFile == null) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
 			return new StateFileResponse
 			{
 				StatusCode = statusCode,
-				StateFile = item2
+				StateFile = stateFile
 			};
 		}
 		catch (Exception ex)
@@ -96,13 +96,13 @@ public class StateFileService : IStateFileService
 		try
 		{
 			(bool, List<StateFile>) tuple = await _stateFileRepository.GetAll();
-			bool item = tuple.Item1;
-			List<StateFile> item2 = tuple.Item2;
-			HttpStatusCode statusCode = ((item && item2.Count > 0) ? HttpStatusCode.OK : ((item && item2.Count == 0) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
+			bool success = tuple.Item1;
+			List<StateFile> stateFiles = tuple.Item2;
+			HttpStatusCode statusCode = ((success && stateFiles.Count > 0) ? HttpStatusCode.OK : ((success && stateFiles.Count == 0) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
 			return new StateFilesResponse
 			{
 				StatusCode = statusCode,
-				StateFiles = item2
+				StateFiles = stateFiles
 			};
 		}
 		catch (Exception ex)
@@ -120,14 +120,14 @@ public class StateFileService : IStateFileService
 		try
 		{
 			(bool, List<StateFile>) tuple = await _stateFileRepository.GetAll();
-			bool item = tuple.Item1;
-			List<StateFile> item2 = tuple.Item2;
-			List<StateFile> list = item2.Where((StateFile x) => x.IsRevisionDownloadInProgress).ToList();
-			HttpStatusCode statusCode = ((item && list.Count > 0) ? HttpStatusCode.OK : ((item && list.Count == 0) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
+			bool success = tuple.Item1;
+			List<StateFile> stateFiles = tuple.Item2;
+			List<StateFile> inProgress = stateFiles.Where((StateFile x) => x.IsRevisionDownloadInProgress).ToList();
+			HttpStatusCode statusCode = ((success && inProgress.Count > 0) ? HttpStatusCode.OK : ((success && inProgress.Count == 0) ? HttpStatusCode.NotFound : HttpStatusCode.InternalServerError));
 			return new StateFilesResponse
 			{
 				StatusCode = statusCode,
-				StateFiles = list
+				StateFiles = inProgress
 			};
 		}
 		catch (Exception ex)

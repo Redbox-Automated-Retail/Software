@@ -230,17 +230,17 @@ public class DownloadFilesService : IDownloadFilesService
 					if (download.Key == DownloadKey("SCRIPT", job) && !string.IsNullOrWhiteSpace(job.Metadata?.ActivationScriptName))
 					{
 						DownloadFileMetadata metadata = job.Metadata;
-						int num;
+						int invalidExtension;
 						if (metadata == null)
 						{
-							num = 0;
+							invalidExtension = 0;
 						}
 						else
 						{
 							string activationScriptName = metadata.ActivationScriptName;
-							num = ((((activationScriptName != null) ? new bool?(!activationScriptName.EndsWith(".ps1")) : ((bool?)null)) == true) ? 1 : 0);
+							invalidExtension = ((((activationScriptName != null) ? new bool?(!activationScriptName.EndsWith(".ps1")) : ((bool?)null)) == true) ? 1 : 0);
 						}
-						if (num != 0)
+						if (invalidExtension != 0)
 						{
 							_logger.LogErrorWithSource("Script " + (job.Metadata.ActivationScriptName ?? "null") + " does not have a valid PowerShell extension of '.ps1'", "HandleExistingDownloads", "/sln/src/UpdateClientService.API/Services/IoT/DownloadFiles/DownloadFilesService.cs");
 							downloadFileJobExecution.Status = JobStatus.Error;

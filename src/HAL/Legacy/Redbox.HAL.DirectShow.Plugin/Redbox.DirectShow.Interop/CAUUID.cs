@@ -12,13 +12,13 @@ internal struct CAUUID
 
 	public Guid[] ToGuidArray()
 	{
-		Guid[] array = new Guid[cElems];
+		Guid[] guids = new Guid[cElems];
 		for (int i = 0; i < cElems; i++)
 		{
 			IntPtr ptr = new IntPtr(pElems.ToInt64() + i * Marshal.SizeOf(typeof(Guid)));
-			ref Guid reference = ref array[i];
+			ref Guid reference = ref guids[i];
 			reference = (Guid)Marshal.PtrToStructure(ptr, typeof(Guid));
 		}
-		return array;
+		return guids;
 	}
 }

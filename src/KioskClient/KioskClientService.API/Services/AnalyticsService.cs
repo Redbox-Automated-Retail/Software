@@ -224,16 +224,16 @@ public class AnalyticsService : IAnalyticsService
 	{
 		try
 		{
-			string text = serviceEvent.ToJson();
-			_logger.LogInfoWithSource("saving event " + text, "SaveServiceEvent");
-			string text2 = Path.Combine(_store.DataPath, "Analytics", AnalyticsType.ServiceEvent.ToString());
-			Directory.CreateDirectory(text2);
-			string path = Path.Combine(text2, serviceEvent.EventType.ToString() + ".json");
-			File.WriteAllText(path, text);
+			string json = serviceEvent.ToJson();
+			_logger.LogInfoWithSource("saving event " + json, "SaveServiceEvent");
+			string directory = Path.Combine(_store.DataPath, "Analytics", AnalyticsType.ServiceEvent.ToString());
+			Directory.CreateDirectory(directory);
+			string path = Path.Combine(directory, serviceEvent.EventType.ToString() + ".json");
+			File.WriteAllText(path, json);
 		}
-		catch (Exception arg)
+		catch (Exception ex)
 		{
-			_logger.LogErrorWithSource($"unhandled exception occurred. {arg}", "SaveServiceEvent");
+			_logger.LogErrorWithSource($"unhandled exception occurred. {ex}", "SaveServiceEvent");
 		}
 	}
 
@@ -452,20 +452,20 @@ public class AnalyticsService : IAnalyticsService
 
 	private VistarExpireSummary AggregateVistarExpire(string filePath)
 	{
-		List<ExpireAnalyticsRequest> list = FileToList<ExpireAnalyticsRequest>(filePath);
-		List<IGrouping<AdLocation, ExpireAnalyticsRequest>> source = (from d in list
+		List<ExpireAnalyticsRequest> requests = FileToList<ExpireAnalyticsRequest>(filePath);
+		List<IGrouping<AdLocation, ExpireAnalyticsRequest>> source = (from d in requests
 			group d by d.AdLocation).ToList();
-		List<ExpireAnalyticsRequest> list2 = list.Where((ExpireAnalyticsRequest d) => d.AdExpirationSource == AdExpirationSource.ClientService).ToList();
+		List<ExpireAnalyticsRequest> serviceExpired = requests.Where((ExpireAnalyticsRequest d) => d.AdExpirationSource == AdExpirationSource.ClientService).ToList();
 		VistarExpireSummary vistarExpireSummary = new VistarExpireSummary
 		{
 			Type = AnalyticsType.VistarExpire,
-			ExpiredByServiceCount = list2.Count,
-			ExpireHealth = Rate(list2.Count((ExpireAnalyticsRequest e) => e.Requested == true), list2.Count),
+			ExpiredByServiceCount = serviceExpired.Count,
+			ExpireHealth = Rate(serviceExpired.Count((ExpireAnalyticsRequest e) => e.Requested == true), serviceExpired.Count),
 			MedianResponseTimeByLocation = source.ToDictionary((IGrouping<AdLocation, ExpireAnalyticsRequest> group) => group.Key.ToString(), (IGrouping<AdLocation, ExpireAnalyticsRequest> group) => group.Median((ExpireAnalyticsRequest d) => d.ResponseTime)),
 			MaxResponseTimeByLocation = source.ToDictionary((IGrouping<AdLocation, ExpireAnalyticsRequest> group) => group.Key.ToString(), (IGrouping<AdLocation, ExpireAnalyticsRequest> group) => group.Max((ExpireAnalyticsRequest d) => d.ResponseTime)),
 			SuccessRateByLocation = source.ToDictionary((IGrouping<AdLocation, ExpireAnalyticsRequest> group) => group.Key.ToString(), (IGrouping<AdLocation, ExpireAnalyticsRequest> group) => Rate(group.Count((ExpireAnalyticsRequest d) => d.Success), group.Count()))
 		};
-		AggregateHttpSummary(list, vistarExpireSummary);
+		AggregateHttpSummary(requests, vistarExpireSummary);
 		return vistarExpireSummary;
 	}
 

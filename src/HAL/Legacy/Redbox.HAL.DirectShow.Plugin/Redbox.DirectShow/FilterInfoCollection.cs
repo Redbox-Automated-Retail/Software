@@ -33,10 +33,10 @@ public class FilterInfoCollection : CollectionBase
 
 	private void CollectFilters(Guid category)
 	{
-		object obj = null;
+		object comObj = null;
 		ICreateDevEnum createDevEnum = null;
 		IEnumMoniker enumMoniker = null;
-		IMoniker[] array = new IMoniker[1];
+		IMoniker[] devMon = new IMoniker[1];
 		try
 		{
 			Type typeFromCLSID = Type.GetTypeFromCLSID(Clsid.SystemDeviceEnum);
@@ -44,16 +44,16 @@ public class FilterInfoCollection : CollectionBase
 			{
 				throw new ApplicationException("Failed creating device enumerator");
 			}
-			obj = Activator.CreateInstance(typeFromCLSID);
-			createDevEnum = (ICreateDevEnum)obj;
+			comObj = Activator.CreateInstance(typeFromCLSID);
+			createDevEnum = (ICreateDevEnum)comObj;
 			if (createDevEnum.CreateClassEnumerator(ref category, out enumMoniker, 0) != 0)
 			{
 				throw new ApplicationException("No devices of the category");
 			}
-			IntPtr zero = IntPtr.Zero;
-			while (enumMoniker.Next(1, array, zero) == 0)
+			IntPtr fetched = IntPtr.Zero;
+			while (enumMoniker.Next(1, devMon, fetched) == 0)
 			{
-				if (array[0] == null)
+				if (devMon[0] == null)
 				{
 					if (UseOld)
 					{
@@ -62,10 +62,10 @@ public class FilterInfoCollection : CollectionBase
 				}
 				else
 				{
-					FilterInfo value = new FilterInfo(array[0]);
-					base.InnerList.Add(value);
-					Marshal.ReleaseComObject(array[0]);
-					array[0] = null;
+					FilterInfo filter = new FilterInfo(devMon[0]);
+					base.InnerList.Add(filter);
+					Marshal.ReleaseComObject(devMon[0]);
+					devMon[0] = null;
 				}
 			}
 			base.InnerList.Sort();
@@ -76,20 +76,20 @@ public class FilterInfoCollection : CollectionBase
 		finally
 		{
 			createDevEnum = null;
-			if (obj != null)
+			if (comObj != null)
 			{
-				Marshal.ReleaseComObject(obj);
-				obj = null;
+				Marshal.ReleaseComObject(comObj);
+				comObj = null;
 			}
 			if (enumMoniker != null)
 			{
 				Marshal.ReleaseComObject(enumMoniker);
 				enumMoniker = null;
 			}
-			if (array[0] != null)
+			if (devMon[0] != null)
 			{
-				Marshal.ReleaseComObject(array[0]);
-				array[0] = null;
+				Marshal.ReleaseComObject(devMon[0]);
+				devMon[0] = null;
 			}
 		}
 	}

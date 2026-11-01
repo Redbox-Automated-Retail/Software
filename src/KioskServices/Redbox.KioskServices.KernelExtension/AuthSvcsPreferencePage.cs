@@ -77,11 +77,11 @@ public class AuthSvcsPreferencePage : UserControl, IPreferencePageHost
 		names = authenticationServices.Users;
 		for (int i = 0; i < names.Length; i++)
 		{
-			string[] array = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length >= 2)
+			string[] fields = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+			if (fields.Length >= 2)
 			{
-				ListViewItem listViewItem = new ListViewItem(array[0]);
-				listViewItem.SubItems.Add(array[1]);
+				ListViewItem listViewItem = new ListViewItem(fields[0]);
+				listViewItem.SubItems.Add(fields[1]);
 				m_usersListView.Items.Add(listViewItem);
 			}
 		}

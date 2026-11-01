@@ -23,9 +23,9 @@ public class BitsDownloader : BaseDownloader
 		public async Task<bool> Update(DownloadState? downloadState = null, string errorMessage = null)
 		{
 			Success &= string.IsNullOrEmpty(errorMessage);
-			bool flag = await BitsDownloader.UpdateDownloadData(DownloadData, downloadState, errorMessage);
-			Success &= flag;
-			return flag;
+			bool updated = await BitsDownloader.UpdateDownloadData(DownloadData, downloadState, errorMessage);
+			Success &= updated;
+			return updated;
 		}
 	}
 
@@ -66,7 +66,7 @@ public class BitsDownloader : BaseDownloader
 
 	public override bool Cleanup(DownloadDataList downloadList)
 	{
-		bool flag = true;
+		bool success = true;
 		try
 		{
 			if (!GetDownloadFileBitsJobs(out var jobs))
@@ -83,14 +83,14 @@ public class BitsDownloader : BaseDownloader
 					errors.AddRange(item.Cancel());
 				}
 			}
-			flag = !errors.Any();
+			success = !errors.Any();
 		}
 		catch (Exception ex)
 		{
-			flag = false;
+			success = false;
 			_logger.LogErrorWithSource(ex, "Exception while cleaning up DownloadDataList", "Cleanup", "/sln/src/UpdateClientService.API/Services/DownloadService/BitsDownloader.cs");
 		}
-		return flag;
+		return success;
 	}
 
 	private void SetBitTransferStatus(DownloadData downloadData)
@@ -272,8 +272,8 @@ public class BitsDownloader : BaseDownloader
 			}
 			ITransferItem transferItem = items[0];
 			string downloadPath = Path.Combine(transferItem.Path, transferItem.Name);
-			bool flag = CheckHash(downloadPath, downloadData.Hash, out var fileHash);
-			if (!string.IsNullOrWhiteSpace(downloadData.Hash) && !flag)
+			bool hashValid = CheckHash(downloadPath, downloadData.Hash, out var fileHash);
+			if (!string.IsNullOrWhiteSpace(downloadData.Hash) && !hashValid)
 			{
 				await processDownloadDataInfo.Update(DownloadState.Error, "BitsDownloader -> Download file: " + downloadData.Key + " path: " + downloadPath + " should have hash " + downloadData.Hash + " but it has hash " + fileHash + ". This download failed and will need to be restarted.");
 				File.Delete(downloadPath);

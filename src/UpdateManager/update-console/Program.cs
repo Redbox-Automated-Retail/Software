@@ -70,10 +70,10 @@ public class Program
 				CommandLine.WriteUsage(includeHelp: true);
 				return 0;
 			}
-			string text = Opts.StoreNumber;
+			string storeNumber = Opts.StoreNumber;
 			if (Opts.ResetAll || Opts.ResetBITS || Opts.ResetManifest)
 			{
-				text = "0";
+				storeNumber = "0";
 			}
 			else if (string.IsNullOrEmpty(Opts.StoreNumber))
 			{
@@ -82,13 +82,13 @@ public class Program
 					CommandLine.WriteUsage(includeHelp: false);
 					return 1;
 				}
-				string text2 = Opts.KaseyaId.Substring(0, Opts.KaseyaId.IndexOf('.'));
-				text = (text2.StartsWith("redbox") ? text2.Substring(7) : text2);
+				string kaseyaMachineName = Opts.KaseyaId.Substring(0, Opts.KaseyaId.IndexOf('.'));
+				storeNumber = (kaseyaMachineName.StartsWith("redbox") ? kaseyaMachineName.Substring(7) : kaseyaMachineName);
 			}
-			LogHelper.Instance.Log("Starting store updater with store number: {0}", text);
+			LogHelper.Instance.Log("Starting store updater with store number: {0}", storeNumber);
 			Updater updater = new Updater
 			{
-				StoreNumber = text
+				StoreNumber = storeNumber
 			};
 			string updateServiceUrl = (string.IsNullOrEmpty(Opts.UpdateServiceUrl) ? Settings.Default.UpdateServiceUrl : Opts.UpdateServiceUrl);
 			errorList.AddRange(updater.Initialize(updateServiceUrl));
@@ -124,10 +124,10 @@ public class Program
 					return -1;
 				}
 				LogHelper.Instance.Log("Executing script {0}.", fullPath);
-				IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 				try
 				{
-					service.ExecuteChunk(File.ReadAllText(fullPath), reset: true);
+					kernelService.ExecuteChunk(File.ReadAllText(fullPath), reset: true);
 				}
 				catch (Exception e)
 				{
@@ -135,7 +135,7 @@ public class Program
 				}
 				finally
 				{
-					if (!service.ScriptCompleted)
+					if (!kernelService.ScriptCompleted)
 					{
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("S99", "Script failed to complete.", "Check logs."));
 					}
@@ -146,9 +146,9 @@ public class Program
 				if (Opts.PrintUnfinishedChanges)
 				{
 					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
-					foreach (string allRepository in repositoryService.GetAllRepositories())
+					foreach (string repositoryName in repositoryService.GetAllRepositories())
 					{
-						Console.Out.WriteLine(repositoryService.GetUnfinishedChanges(allRepository).ToJson());
+						Console.Out.WriteLine(repositoryService.GetUnfinishedChanges(repositoryName).ToJson());
 					}
 				}
 				if (Opts.Update)
@@ -168,10 +168,10 @@ public class Program
 					}
 					else
 					{
-						IRepositoryService service3 = ServiceLocator.Instance.GetService<IRepositoryService>();
-						foreach (string allRepository2 in service3.GetAllRepositories())
+						IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+						foreach (string repositoryName in repositoryService.GetAllRepositories())
 						{
-							service3.UpdateToHead(allRepository2);
+							repositoryService.UpdateToHead(repositoryName);
 						}
 					}
 				}
@@ -190,48 +190,48 @@ public class Program
 					}
 					else
 					{
-						IRepositoryService service4 = ServiceLocator.Instance.GetService<IRepositoryService>();
-						foreach (string allRepository3 in service4.GetAllRepositories())
+						IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+						foreach (string repositoryName in repositoryService.GetAllRepositories())
 						{
-							errorList.AddRange(service4.ActivateToHead(allRepository3, out var _));
+							errorList.AddRange(repositoryService.ActivateToHead(repositoryName, out var _));
 						}
 					}
 				}
 				if (Opts.Diff)
 				{
 					List<string> manifests = updater.GetManifests();
-					Dictionary<string, object> dictionary = new Dictionary<string, object>();
-					foreach (string item in manifests)
+					Dictionary<string, object> changeSetsByManifest = new Dictionary<string, object>();
+					foreach (string manifest in manifests)
 					{
-						List<IRevLog> pendingChangeSets2 = updater.GetPendingChangeSets(item);
-						pendingChangeSets2.Reverse();
-						dictionary.Add(item, pendingChangeSets2);
+						List<IRevLog> pendingChangeSets = updater.GetPendingChangeSets(manifest);
+						pendingChangeSets.Reverse();
+						changeSetsByManifest.Add(manifest, pendingChangeSets);
 					}
-					Console.Out.WriteLine(dictionary.ToJson());
+					Console.Out.WriteLine(changeSetsByManifest.ToJson());
 				}
 				if (Opts.List)
 				{
-					List<string> manifests2 = updater.GetManifests();
-					Dictionary<string, object> dictionary2 = new Dictionary<string, object>();
-					foreach (string item2 in manifests2)
+					List<string> manifests = updater.GetManifests();
+					Dictionary<string, object> changeSetsByManifest = new Dictionary<string, object>();
+					foreach (string manifest in manifests)
 					{
-						List<IRevLog> appliedChangeSets = updater.GetAppliedChangeSets(item2);
+						List<IRevLog> appliedChangeSets = updater.GetAppliedChangeSets(manifest);
 						appliedChangeSets.Reverse();
-						dictionary2.Add(item2, appliedChangeSets);
+						changeSetsByManifest.Add(manifest, appliedChangeSets);
 					}
-					Console.Out.WriteLine(dictionary2.ToJson());
+					Console.Out.WriteLine(changeSetsByManifest.ToJson());
 				}
 				if (Opts.ListAll)
 				{
-					List<string> manifests3 = updater.GetManifests();
-					Dictionary<string, object> dictionary3 = new Dictionary<string, object>();
-					foreach (string item3 in manifests3)
+					List<string> manifests = updater.GetManifests();
+					Dictionary<string, object> changeSetsByManifest = new Dictionary<string, object>();
+					foreach (string manifest in manifests)
 					{
-						List<IRevLog> appliedChangeSets2 = updater.GetAppliedChangeSets(item3);
-						appliedChangeSets2.Reverse();
-						dictionary3.Add(item3, appliedChangeSets2);
+						List<IRevLog> appliedChangeSets = updater.GetAppliedChangeSets(manifest);
+						appliedChangeSets.Reverse();
+						changeSetsByManifest.Add(manifest, appliedChangeSets);
 					}
-					Console.Out.WriteLine(dictionary3.ToJson());
+					Console.Out.WriteLine(changeSetsByManifest.ToJson());
 				}
 				if (Opts.StartDownload)
 				{
@@ -249,8 +249,8 @@ public class Program
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "repository-name is required.", "Specify repository-name."));
 						return 1;
 					}
-					IRepositoryService service5 = ServiceLocator.Instance.GetService<IRepositoryService>();
-					if (!service5.ContainsRepository(Opts.RepositoryName))
+					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+					if (!repositoryService.ContainsRepository(Opts.RepositoryName))
 					{
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "repository-name does not exist.", "Check Name."));
 						return 1;
@@ -258,16 +258,16 @@ public class Program
 					switch (Opts.Dump.ToLower())
 					{
 					case "active":
-						Console.Write(service5.GetActiveRevision(Opts.RepositoryName));
+						Console.Write(repositoryService.GetActiveRevision(Opts.RepositoryName));
 						break;
 					case "current":
-						Console.Write(service5.GetStagedRevision(Opts.RepositoryName));
+						Console.Write(repositoryService.GetStagedRevision(Opts.RepositoryName));
 						break;
 					case "label":
-						Console.Write(service5.GetActiveLabel(Opts.RepositoryName));
+						Console.Write(repositoryService.GetActiveLabel(Opts.RepositoryName));
 						break;
 					case "revlog":
-						Console.Write(PrettyPrinter.GetPrettyString(service5.GetAllChanges(Opts.RepositoryName).ToJson()));
+						Console.Write(PrettyPrinter.GetPrettyString(repositoryService.GetAllChanges(Opts.RepositoryName).ToJson()));
 						break;
 					default:
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "Dump file is invalid.", "Valid values: active, current, label, revlog"));

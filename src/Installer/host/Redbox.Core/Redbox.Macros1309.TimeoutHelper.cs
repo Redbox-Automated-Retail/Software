@@ -28,10 +28,10 @@ internal static class Redbox_002EMacros1309_002ETimeoutHelper
 	{
 		lock (typeof(Redbox_002EMacros1309_002ETimeoutHelper))
 		{
-			Redbox_002EMacros1309_002ETimeoutEntry obj = TimeoutEntries.Find((Redbox_002EMacros1309_002ETimeoutEntry each) => each.TimeoutSink == timeOutSink);
-			if (obj != null)
+			Redbox_002EMacros1309_002ETimeoutEntry entry = TimeoutEntries.Find((Redbox_002EMacros1309_002ETimeoutEntry each) => each.TimeoutSink == timeOutSink);
+			if (entry != null)
 			{
-				TimeoutEntries.Remove(obj);
+				TimeoutEntries.Remove(entry);
 			}
 		}
 	}
@@ -54,11 +54,11 @@ internal static class Redbox_002EMacros1309_002ETimeoutHelper
 					DateTime now = DateTime.Now;
 					for (int i = 0; i < TimeoutEntries.Count; i++)
 					{
-						Redbox_002EMacros1309_002ETimeoutEntry obj = TimeoutEntries[i];
-						if (!(now < obj.Timeout))
+						Redbox_002EMacros1309_002ETimeoutEntry entry = TimeoutEntries[i];
+						if (!(now < entry.Timeout))
 						{
 							TimeoutEntries.RemoveAt(i);
-							obj.TimeoutSink.RaiseTimeout();
+							entry.TimeoutSink.RaiseTimeout();
 						}
 					}
 				}

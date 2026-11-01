@@ -13,9 +13,9 @@ internal class Redbox_002EMacros1309_002EThreadExecutionTimer
 	{
 		get
 		{
-			long num = m_endTimeStamp ?? GetThreadTimes();
-			long num2 = num - m_startTimeStamp;
-			return TimeSpan.FromMilliseconds(num2 / 10000);
+			long endTimeStamp = m_endTimeStamp ?? GetThreadTimes();
+			long elapsedTicks = endTimeStamp - m_startTimeStamp;
+			return TimeSpan.FromMilliseconds(elapsedTicks / 10000);
 		}
 	}
 

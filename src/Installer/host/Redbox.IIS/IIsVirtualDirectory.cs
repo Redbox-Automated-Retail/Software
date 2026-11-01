@@ -166,23 +166,23 @@ public class IIsVirtualDirectory : IIsObject
 			foreach (IIsScriptMap item in value)
 			{
 				string currentExtension = item.Extension;
-				int num = scriptMaps.FindIndex((IIsScriptMap eachExistingMap) => string.Compare(eachExistingMap.Extension, currentExtension, ignoreCase: true) == 0);
-				if (num != -1)
+				int existingIndex = scriptMaps.FindIndex((IIsScriptMap eachExistingMap) => string.Compare(eachExistingMap.Extension, currentExtension, ignoreCase: true) == 0);
+				if (existingIndex != -1)
 				{
-					scriptMaps[num] = item;
+					scriptMaps[existingIndex] = item;
 				}
 				else
 				{
 					scriptMaps.Add(item);
 				}
 			}
-			string[] array = new string[scriptMaps.Count];
-			int num2 = 0;
-			foreach (IIsScriptMap item2 in scriptMaps)
+			string[] metabaseValues = new string[scriptMaps.Count];
+			int index = 0;
+			foreach (IIsScriptMap scriptMap in scriptMaps)
 			{
-				array[num2++] = item2.ToString();
+				metabaseValues[index++] = scriptMap.ToString();
 			}
-			base.Entry.Properties["ScriptMaps"].Value = array;
+			base.Entry.Properties["ScriptMaps"].Value = metabaseValues;
 		}
 	}
 

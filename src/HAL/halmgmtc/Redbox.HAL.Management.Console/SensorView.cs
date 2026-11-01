@@ -90,30 +90,30 @@ public class SensorView : UserControl
 	private void OnPaint(object sender, PaintEventArgs e)
 	{
 		e.Graphics.FillRectangle(SystemBrushes.ControlLightLight, 0, 0, m_panel.Width, m_panel.Height);
-		int num = 1;
-		int num2 = 28;
-		int num3 = Math.Max(m_panel.Width, 180) / Sensors.Length;
-		int num4 = (num3 - num2) / 2;
-		float num5 = (float)m_panel.Height / 2f;
-		if (m_panel.Width >= num2 * 6 + num3 * 6)
+		int sensorNumber = 1;
+		int boxSize = 28;
+		int columnWidth = Math.Max(m_panel.Width, 180) / Sensors.Length;
+		int x = (columnWidth - boxSize) / 2;
+		float y = (float)m_panel.Height / 2f;
+		if (m_panel.Width >= boxSize * 6 + columnWidth * 6)
 		{
 		}
 		bool[] sensors = Sensors;
-		foreach (bool num6 in sensors)
+		foreach (bool isOn in sensors)
 		{
-			e.Graphics.DrawString(num.ToString(), Font, Brushes.Black, num4 + 8, num5 - 19f);
-			e.Graphics.FillRectangle(Brushes.DarkGray, num4 + 2, num5 + 2f, num2, num2);
-			e.Graphics.FillRectangle(Brushes.Black, num4, num5, num2, num2);
-			if (num6)
+			e.Graphics.DrawString(sensorNumber.ToString(), Font, Brushes.Black, x + 8, y - 19f);
+			e.Graphics.FillRectangle(Brushes.DarkGray, x + 2, y + 2f, boxSize, boxSize);
+			e.Graphics.FillRectangle(Brushes.Black, x, y, boxSize, boxSize);
+			if (isOn)
 			{
-				e.Graphics.FillRectangle(Brushes.Green, num4, num5, num2, num2);
+				e.Graphics.FillRectangle(Brushes.Green, x, y, boxSize, boxSize);
 			}
 			else
 			{
-				e.Graphics.DrawRectangle(Pens.CornflowerBlue, num4, num5, num2, num2);
+				e.Graphics.DrawRectangle(Pens.CornflowerBlue, x, y, boxSize, boxSize);
 			}
-			num4 += num3;
-			num++;
+			x += columnWidth;
+			sensorNumber++;
 		}
 	}
 

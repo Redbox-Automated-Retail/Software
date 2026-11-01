@@ -108,10 +108,10 @@ internal class AuthenticationServices : IAuthenticationServices
 		string[] users = Users;
 		for (int i = 0; i < users.Length; i++)
 		{
-			string[] array = users[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length >= 2 && string.Compare(array[0], userName, ignoreCase: true) == 0)
+			string[] fields = users[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+			if (fields.Length >= 2 && string.Compare(fields[0], userName, ignoreCase: true) == 0)
 			{
-				response = Enum<Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse>.ParseIgnoringCase(array[1], Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse.Valid);
+				response = Enum<Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse>.ParseIgnoringCase(fields[1], Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse.Valid);
 				break;
 			}
 		}
@@ -306,9 +306,9 @@ internal class AuthenticationServices : IAuthenticationServices
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse?), (string)firstError["Code"]);
 								remoteServiceResult.Properties["response"] = ((fieldsForResponseCode != null) ? fieldsForResponseCode.ToString() : Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse.Error.ToString());
 							}
 						}
@@ -376,8 +376,8 @@ internal class AuthenticationServices : IAuthenticationServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				int num = new Random().Next(1, 5);
-				new AutoResetEvent(initialState: false).WaitOne(num * 1000);
+				int delaySeconds = new Random().Next(1, 5);
+				new AutoResetEvent(initialState: false).WaitOne(delaySeconds * 1000);
 				remoteServiceResult.Properties["store_number"] = storeNumber;
 				if (SimulateServerBusyError)
 				{

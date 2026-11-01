@@ -40,7 +40,7 @@ public class CleanupService : ICleanupService, IInvocable
 			_logger.LogInfoWithSource("No Files Defined For Cleanup.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 			return;
 		}
-		int num = 0;
+		int totalDeleted = 0;
 		foreach (CleanupFiles item in cleanUpFiles)
 		{
 			try
@@ -52,21 +52,21 @@ public class CleanupService : ICleanupService, IInvocable
 				}
 				string[] files = Directory.GetFiles(item.Path);
 				_logger.LogInfoWithSource($"Cleanup Folder {item.Path} with {files.Count()} files.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
-				int num2 = 0;
-				foreach (string text in files)
+				int deletedInFolder = 0;
+				foreach (string file in files)
 				{
 					try
 					{
-						DateTime lastWriteTime = File.GetLastWriteTime(text);
+						DateTime lastWriteTime = File.GetLastWriteTime(file);
 						if (lastWriteTime.Date < DateTime.Now.Date.AddDays(-1 * item.MaxAge))
 						{
-							_logger.LogInfoWithSource($"Deleting File: {text} - it is {(DateTime.Now.Date - lastWriteTime.Date).Days} days old.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
-							File.Delete(text);
-							num2++;
+							_logger.LogInfoWithSource($"Deleting File: {file} - it is {(DateTime.Now.Date - lastWriteTime.Date).Days} days old.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
+							File.Delete(file);
+							deletedInFolder++;
 						}
 						else
 						{
-							_logger.LogDebugWithSource($"Skipping File: {text} - it is {(DateTime.Now.Date - lastWriteTime.Date).Days} days old.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
+							_logger.LogDebugWithSource($"Skipping File: {file} - it is {(DateTime.Now.Date - lastWriteTime.Date).Days} days old.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 						}
 					}
 					catch (Exception ex)
@@ -74,15 +74,15 @@ public class CleanupService : ICleanupService, IInvocable
 						_logger.LogErrorWithSource(ex, $"Unhandled Exception when deleting files in folder {item.Path} with maxage {item.MaxAge}", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 					}
 				}
-				num += num2;
-				int num3 = Directory.GetFiles(item.Path).Count();
-				_logger.LogInfoWithSource($"Cleanup Folder {item.Path} Completed with {num3} files remaining. {num2} files were deleted.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
+				totalDeleted += deletedInFolder;
+				int remainingCount = Directory.GetFiles(item.Path).Count();
+				_logger.LogInfoWithSource($"Cleanup Folder {item.Path} Completed with {remainingCount} files remaining. {deletedInFolder} files were deleted.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 			}
 			catch (Exception ex2)
 			{
 				_logger.LogErrorWithSource(ex2, $"Unhandled Exception when deleting files in folder {item.Path} with maxage {item.MaxAge}", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 			}
 		}
-		_logger.LogInfoWithSource($"End Cleanup of Old Files. {num} files were deleted.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
+		_logger.LogInfoWithSource($"End Cleanup of Old Files. {totalDeleted} files were deleted.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 	}
 }

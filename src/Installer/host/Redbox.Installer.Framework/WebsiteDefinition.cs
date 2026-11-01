@@ -410,11 +410,11 @@ public class WebsiteDefinition : Definition
 	{
 		try
 		{
-			List<string> list = new List<string>();
-			string[] array = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
-			if (array != null)
+			List<string> iisObjects = new List<string>();
+			string[] existingObjects = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
+			if (existingObjects != null)
 			{
-				list.AddRange(array);
+				iisObjects.AddRange(existingObjects);
 			}
 			IIsVirtualDirectory isVirtualDirectory = null;
 			IIsWebsite isWebsite;
@@ -481,18 +481,18 @@ public class WebsiteDefinition : Definition
 							continue;
 						}
 						string currentExtension = scriptMap.Extension;
-						int num = scriptMaps.FindIndex((IIsScriptMap eachExistingMap) => string.Compare(eachExistingMap.Extension, currentExtension, ignoreCase: true) == 0);
-						if (num != -1)
+						int existingIndex = scriptMaps.FindIndex((IIsScriptMap eachExistingMap) => string.Compare(eachExistingMap.Extension, currentExtension, ignoreCase: true) == 0);
+						if (existingIndex != -1)
 						{
-							scriptMaps.RemoveAt(num);
+							scriptMaps.RemoveAt(existingIndex);
 						}
 					}
 					isVirtualDirectory.ScriptMaps = scriptMaps;
 				}
 				isVirtualDirectory.CreateApplication(AppPool, ApplicationIsolation.Outproc);
 				isVirtualDirectory.Save();
-				list.Add(string.Format("{0}|{1}", IsVirtualDirectory() ? "vdir" : "site", IsVirtualDirectory() ? (isWebsite.Name + "/" + Name) : isWebsite.Name));
-				Registry.SetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", list.ToArray(), RegistryValueKind.MultiString);
+				iisObjects.Add(string.Format("{0}|{1}", IsVirtualDirectory() ? "vdir" : "site", IsVirtualDirectory() ? (isWebsite.Name + "/" + Name) : isWebsite.Name));
+				Registry.SetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", iisObjects.ToArray(), RegistryValueKind.MultiString);
 			}
 		}
 		catch (Exception ex)
@@ -506,15 +506,15 @@ public class WebsiteDefinition : Definition
 	{
 		try
 		{
-			foreach (string text in (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]))
+			foreach (string iisObject in (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]))
 			{
 				try
 				{
-					string[] parts = text.Split('|');
+					string[] parts = iisObject.Split('|');
 					if (parts[0] == "vdir")
 					{
-						string[] array4 = parts[1].Split('/');
-						IIsWebsite.GetByID(int.Parse(array4[0]))?.GetVirtualDirectoryByName(array4[1])?.Delete();
+						string[] siteAndDirectory = parts[1].Split('/');
+						IIsWebsite.GetByID(int.Parse(siteAndDirectory[0]))?.GetVirtualDirectoryByName(siteAndDirectory[1])?.Delete();
 					}
 					else
 					{
@@ -535,20 +535,20 @@ public class WebsiteDefinition : Definition
 
 	protected override void OnCustomParse(XmlNode node, IConsole console, ErrorList errors)
 	{
-		XmlNodeList xmlNodeList = node.SelectNodes("bindings/*");
-		if (xmlNodeList != null)
+		XmlNodeList bindingNodes = node.SelectNodes("bindings/*");
+		if (bindingNodes != null)
 		{
-			foreach (XmlNode item2 in xmlNodeList)
+			foreach (XmlNode bindingNode in bindingNodes)
 			{
-				bool flag = string.Compare(item2.GetExpandedAttributeValue<string>("type"), "secure", ignoreCase: true) == 0;
-				IIsServerBinding item = new IIsServerBinding(item2.GetExpandedAttributeValue<string>("ip-address"), item2.GetExpandedAttributeValue("tcp-port", "80"), item2.GetExpandedAttributeValue<string>("host-header"));
-				if (!flag)
+				bool isSecure = string.Compare(bindingNode.GetExpandedAttributeValue<string>("type"), "secure", ignoreCase: true) == 0;
+				IIsServerBinding binding = new IIsServerBinding(bindingNode.GetExpandedAttributeValue<string>("ip-address"), bindingNode.GetExpandedAttributeValue("tcp-port", "80"), bindingNode.GetExpandedAttributeValue<string>("host-header"));
+				if (!isSecure)
 				{
-					Bindings.Add(item);
+					Bindings.Add(binding);
 				}
 				else
 				{
-					SecureBindings.Add(item);
+					SecureBindings.Add(binding);
 				}
 			}
 		}
@@ -556,43 +556,42 @@ public class WebsiteDefinition : Definition
 		{
 			Bindings.Add(new IIsServerBinding(null, "80", null));
 		}
-		XmlNodeList xmlNodeList2 = node.SelectNodes("script-maps/*");
-		if (xmlNodeList2 == null)
+		XmlNodeList scriptMapNodes = node.SelectNodes("script-maps/*");
+		if (scriptMapNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item3 in xmlNodeList2)
+		foreach (XmlNode scriptMapNode in scriptMapNodes)
 		{
-			IIsScriptMap isScriptMap = new IIsScriptMap();
-			isScriptMap.Action = ((!(item3.Name == "set")) ? IIsScriptMapAction.Remove : IIsScriptMapAction.Set);
-			isScriptMap.Extension = item3.GetExpandedAttributeValue<string>("extension");
-			isScriptMap.ExecutablePath = item3.GetExpandedAttributeValue<string>("executable-path");
-			IIsScriptMap isScriptMap2 = isScriptMap;
-			if (string.IsNullOrEmpty(isScriptMap2.Extension) || !isScriptMap2.Extension.StartsWith("."))
+			IIsScriptMap scriptMap = new IIsScriptMap();
+			scriptMap.Action = ((!(scriptMapNode.Name == "set")) ? IIsScriptMapAction.Remove : IIsScriptMapAction.Set);
+			scriptMap.Extension = scriptMapNode.GetExpandedAttributeValue<string>("extension");
+			scriptMap.ExecutablePath = scriptMapNode.GetExpandedAttributeValue<string>("executable-path");
+			if (string.IsNullOrEmpty(scriptMap.Extension) || !scriptMap.Extension.StartsWith("."))
 			{
 				errors.Add(Error.NewError("C004", "The website/script-maps set or remove node requires a valid extension attribute.", "Specify a valid extension attribute."));
 				continue;
 			}
-			if (string.IsNullOrEmpty(isScriptMap2.ExecutablePath))
+			if (string.IsNullOrEmpty(scriptMap.ExecutablePath))
 			{
-				IIsScriptMapAction? action = isScriptMap2.Action;
+				IIsScriptMapAction? action = scriptMap.Action;
 				if (action.GetValueOrDefault() == IIsScriptMapAction.Set && action.HasValue)
 				{
 					errors.Add(Error.NewError("C004", "The website/script-maps set node requires a valid executable-path attribute.", "Specify a valid executable-path attribute."));
 					continue;
 				}
 			}
-			string expandedAttributeValue = item3.GetExpandedAttributeValue<string>("options");
-			if (expandedAttributeValue != null)
+			string optionsText = scriptMapNode.GetExpandedAttributeValue<string>("options");
+			if (optionsText != null)
 			{
-				isScriptMap2.Options = (IIsScriptMapOption)ConversionHelper.ChangeType(expandedAttributeValue, typeof(IIsScriptMapOption));
+				scriptMap.Options = (IIsScriptMapOption)ConversionHelper.ChangeType(optionsText, typeof(IIsScriptMapOption));
 			}
-			string expandedAttributeValue2 = item3.GetExpandedAttributeValue<string>("verbs");
-			if (expandedAttributeValue2 != null)
+			string verbsText = scriptMapNode.GetExpandedAttributeValue<string>("verbs");
+			if (verbsText != null)
 			{
-				isScriptMap2.Verbs.AddRange(expandedAttributeValue2.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+				scriptMap.Verbs.AddRange(verbsText.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
 			}
-			ScriptMaps.Add(isScriptMap2);
+			ScriptMaps.Add(scriptMap);
 		}
 	}
 

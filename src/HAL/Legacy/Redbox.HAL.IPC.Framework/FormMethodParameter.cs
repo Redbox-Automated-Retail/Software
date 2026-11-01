@@ -37,17 +37,17 @@ internal class FormMethodParameter
 		{
 			return ConversionHelper.ChangeType(value, Parameter.ParameterType);
 		}
-		byte[] array = MetaData.BinaryEncoding switch
+		byte[] data = MetaData.BinaryEncoding switch
 		{
 			BinaryEncoding.Hex => StringExtensions.HexToBytes(value), 
 			BinaryEncoding.Base64 => StringExtensions.Base64ToBytes(value), 
 			BinaryEncoding.Ascii95 => throw new NotImplementedException("Ascii95 support is not implemented."), 
 			_ => throw new ArgumentException("The named paramete accepts binary data and the command form method doesn't specify a valid BinaryEncoding."), 
 		};
-		if (array != null && MetaData.CompressionType != CompressionType.None)
+		if (data != null && MetaData.CompressionType != CompressionType.None)
 		{
-			array = CompressionAlgorithm.GetAlgorithm(MetaData.CompressionType).Decompress(array);
+			data = CompressionAlgorithm.GetAlgorithm(MetaData.CompressionType).Decompress(data);
 		}
-		return array;
+		return data;
 	}
 }

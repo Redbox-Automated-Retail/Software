@@ -112,7 +112,7 @@ public class PromotionService : IPromotionService
 				PromotionValidationResponse = PromotionValidationResponse.CodeNotValid
 			};
 		}
-		bool flag = testPromoCode != null && testPromoCode.PromotionValidationResponse == PromotionValidationResponse.Valid;
+		bool isValid = testPromoCode != null && testPromoCode.PromotionValidationResponse == PromotionValidationResponse.Valid;
 		if (testPromoCode != null)
 		{
 			promotionCodeValidationResponse.Amount = testPromoCode.Amount;
@@ -121,7 +121,7 @@ public class PromotionService : IPromotionService
 			promotionCodeValidationResponse.Error = ResponseCodeAttribute.GetCodeFromEnum<PromotionValidationResponse>(testPromoCode.PromotionValidationResponse);
 		}
 		response.Response = promotionCodeValidationResponse;
-		response.StatusCode = (flag ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+		response.StatusCode = (isValid ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
 		return response;
 	}
 }

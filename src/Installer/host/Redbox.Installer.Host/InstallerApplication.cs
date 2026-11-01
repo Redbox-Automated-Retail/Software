@@ -70,9 +70,9 @@ public class InstallerApplication : ApplicationContext
 		Version version = new Version(Environment.OSVersion.Version.Major, Environment.OSVersion.Version.Minor);
 		if (!oSRequired.Contains(version))
 		{
-			string arg = Constants.OperatingSystems[oSRequired[0]];
-			string arg2 = (Constants.OperatingSystems.Keys.Contains(version) ? Constants.OperatingSystems[version] : Environment.OSVersion.VersionString);
-			errorList.Add(Redbox.Installer.Framework.Error.NewError("I020", string.Format("This installer requires {0}{1}.", arg, (oSRequired.Count > 1) ? " or above." : string.Empty), $"This installer is incompatible with {arg2}. Locate the correct installer or run this installer on a different operating system."));
+			string requiredName = Constants.OperatingSystems[oSRequired[0]];
+			string currentName = (Constants.OperatingSystems.Keys.Contains(version) ? Constants.OperatingSystems[version] : Environment.OSVersion.VersionString);
+			errorList.Add(Redbox.Installer.Framework.Error.NewError("I020", string.Format("This installer requires {0}{1}.", requiredName, (oSRequired.Count > 1) ? " or above." : string.Empty), $"This installer is incompatible with {currentName}. Locate the correct installer or run this installer on a different operating system."));
 		}
 		if (errorList.Count > 0)
 		{
@@ -157,29 +157,29 @@ public class InstallerApplication : ApplicationContext
 	private static string CreateApplicationId(string path)
 	{
 		SHA256Managed sHA256Managed = new SHA256Managed();
-		List<byte> list = new List<byte>();
+		List<byte> hashInput = new List<byte>();
 		using FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 		byte[] buffer = new byte[1048576];
-		int num = ReadChunk(fileStream, buffer);
-		list.AddRange(buffer);
-		if (num == buffer.Length)
+		int bytesRead = ReadChunk(fileStream, buffer);
+		hashInput.AddRange(buffer);
+		if (bytesRead == buffer.Length)
 		{
-			byte[] array2 = new byte[1048576];
-			fileStream.Seek(fileStream.Length - array2.Length, SeekOrigin.Begin);
-			ReadChunk(fileStream, array2);
-			list.AddRange(array2);
+			byte[] tail = new byte[1048576];
+			fileStream.Seek(fileStream.Length - tail.Length, SeekOrigin.Begin);
+			ReadChunk(fileStream, tail);
+			hashInput.AddRange(tail);
 		}
-		return Convert.ToBase64String(sHA256Managed.ComputeHash(list.ToArray()));
+		return Convert.ToBase64String(sHA256Managed.ComputeHash(hashInput.ToArray()));
 	}
 
 	private static int ReadChunk(Stream file, byte[] buffer)
 	{
 		int i;
-		int num;
-		for (i = 0; i < buffer.Length; i += num)
+		int bytesRead;
+		for (i = 0; i < buffer.Length; i += bytesRead)
 		{
-			num = file.Read(buffer, i, buffer.Length - i);
-			if (num == 0)
+			bytesRead = file.Read(buffer, i, buffer.Length - i);
+			if (bytesRead == 0)
 			{
 				break;
 			}

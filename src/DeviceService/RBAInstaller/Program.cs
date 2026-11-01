@@ -51,9 +51,9 @@ internal class Program
 	private static void Main(string[] args)
 	{
 		IConfiguration configuration = GetConfiguration();
-		Serilog.ILogger obj = (Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).Enrich.WithThreadId().Enrich.FromLogContext().WriteTo.Console().CreateLogger());
-		((Logger)obj).Information("-------------- Begin RBA Installer --------------");
-		((Logger)obj).Information($"Version: {DeviceService.Domain.DeviceService.AssemblyVersion}");
+		Serilog.ILogger logger = (Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).Enrich.WithThreadId().Enrich.FromLogContext().WriteTo.Console().CreateLogger());
+		((Logger)logger).Information("-------------- Begin RBA Installer --------------");
+		((Logger)logger).Information($"Version: {DeviceService.Domain.DeviceService.AssemblyVersion}");
 		try
 		{
 			CreateHostBuilder(args).RunConsoleAsync();

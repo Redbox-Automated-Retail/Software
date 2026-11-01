@@ -93,30 +93,30 @@ internal class DownloadFileBase : IDownloadFile
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(DownloadFileData.StartTime, out var result))
+		if (!TimeSpan.TryParse(DownloadFileData.StartTime, out var startTime))
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(DownloadFileData.EndTime, out var result2))
+		if (!TimeSpan.TryParse(DownloadFileData.EndTime, out var endTime))
 		{
 			return true;
 		}
-		if (result == result2)
+		if (startTime == endTime)
 		{
 			return true;
 		}
 		DateTime now = DateTime.Now;
-		if (result2 < result)
+		if (endTime < startTime)
 		{
-			if (!(now.TimeOfDay <= result2))
+			if (!(now.TimeOfDay <= endTime))
 			{
-				return now.TimeOfDay >= result;
+				return now.TimeOfDay >= startTime;
 			}
 			return true;
 		}
-		if (now.TimeOfDay >= result)
+		if (now.TimeOfDay >= startTime)
 		{
-			return now.TimeOfDay <= result2;
+			return now.TimeOfDay <= endTime;
 		}
 		return false;
 	}
@@ -130,16 +130,16 @@ internal class DownloadFileBase : IDownloadFile
 			return errorList;
 		}
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-		string text = string.Empty;
-		string text2 = Encoding.Unicode.GetString(DownloadFileData.ActivateScript.Base64ToBytes());
+		string resultJson = string.Empty;
+		string scriptText = Encoding.Unicode.GetString(DownloadFileData.ActivateScript.Base64ToBytes());
 		LogHelper.Instance.Log("DownloadFileBase.RunScript: DownloadFile Id {0} Name {1} running attached script", DownloadFileData.Id, DownloadFileData.Name);
 		Exception ex = null;
 		try
 		{
-			kernelService.ExecuteChunkNoLock(text2, reset: true, "Results", out var result, out scriptCompleted);
+			kernelService.ExecuteChunkNoLock(scriptText, reset: true, "Results", out var result, out scriptCompleted);
 			if (result != null)
 			{
-				text = result.ToJson();
+				resultJson = result.ToJson();
 			}
 		}
 		catch (Exception ex2)
@@ -149,22 +149,22 @@ internal class DownloadFileBase : IDownloadFile
 		}
 		if (ex != null)
 		{
-			var instance = new
+			var failure = new
 			{
 				Result = false,
 				Exception = true,
 				Message = ex.Message
 			};
-			errorList.AddRange(SendResult(StatusMessage.StatusMessageType.Error, instance.ToJson()));
+			errorList.AddRange(SendResult(StatusMessage.StatusMessageType.Error, failure.ToJson()));
 			return errorList;
 		}
-		bool flag = text2.IndexOf("kernel.markscriptcomplete", StringComparison.CurrentCultureIgnoreCase) > -1;
-		if (kernelService.ScriptCompleted || !flag)
+		bool marksScriptComplete = scriptText.IndexOf("kernel.markscriptcomplete", StringComparison.CurrentCultureIgnoreCase) > -1;
+		if (kernelService.ScriptCompleted || !marksScriptComplete)
 		{
 			scriptCompleted = true;
-			if (!string.IsNullOrEmpty(text))
+			if (!string.IsNullOrEmpty(resultJson))
 			{
-				errorList.AddRange(SendResult(StatusMessage.StatusMessageType.Info, text));
+				errorList.AddRange(SendResult(StatusMessage.StatusMessageType.Info, resultJson));
 			}
 		}
 		else

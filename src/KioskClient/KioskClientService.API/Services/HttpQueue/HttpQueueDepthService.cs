@@ -26,8 +26,8 @@ internal class HttpQueueDepthService : HttpQueueAlertingService
 		{
 			try
 			{
-				int num = HttpQueueInternals.Depth();
-				if (num > _depthToAlert)
+				int depth = HttpQueueInternals.Depth();
+				if (depth > _depthToAlert)
 				{
 					Log.Information($"HttpQueueDepthService.ExecuteAsync() - queue depth is over {_depthToAlert}, sending alert");
 					await SendAlert("HttpQueueDepth", $"KCS http queue depth for kiosk: {_kioskId} is over threshold of {_depthToAlert}");

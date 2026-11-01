@@ -41,16 +41,16 @@ public static class CompositeFunctions
 		using GetAndCenterResult getAndCenterResult = new GetAndCenterResult(service, deck, slot, center: false);
 		getAndCenterResult.Run();
 		box.Write("GetDVD ended with status {0}", getAndCenterResult.EndStatus.ToString());
-		int num = 0;
+		int errorCount = 0;
 		foreach (ProgramResult result in getAndCenterResult.Results)
 		{
 			if (result.Code == "ErrorMessage")
 			{
-				num++;
+				errorCount++;
 			}
 			box.Write(result.Message);
 		}
-		return num == 0;
+		return errorCount == 0;
 	}
 
 	public static bool PutItem(object sender, ButtonAspectsManager manager, HardwareService service, int deck, int slot, OutputBox box)
@@ -65,15 +65,15 @@ public static class CompositeFunctions
 	{
 		using PutInLocationResult putInLocationResult = new PutInLocationResult(service, deck, slot);
 		putInLocationResult.Run();
-		int num = 0;
+		int errorCount = 0;
 		foreach (ProgramResult result in putInLocationResult.Results)
 		{
 			if (result.Code == "JobError")
 			{
-				num++;
+				errorCount++;
 			}
 			box.Write(result.Message);
 		}
-		return num == 0;
+		return errorCount == 0;
 	}
 }

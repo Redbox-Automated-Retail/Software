@@ -79,13 +79,13 @@ public class VasResult
 			{
 				continue;
 			}
-			string text2 = parts[5];
-			if (!string.IsNullOrEmpty(text2) && text2 != "0")
+			string hexData = parts[5];
+			if (!string.IsNullOrEmpty(hexData) && hexData != "0")
 			{
-				string text3 = ParseTags.ConvertHexToString(text2, context?.Errors);
-				if (!string.IsNullOrEmpty(text3))
+				string decodedData = ParseTags.ConvertHexToString(hexData, context?.Errors);
+				if (!string.IsNullOrEmpty(decodedData))
 				{
-					result = text3;
+					result = decodedData;
 					break;
 				}
 			}
@@ -95,30 +95,30 @@ public class VasResult
 
 	private string ParseGoogle()
 	{
-		string text = null;
-		string[] array = Data[0].Split(VasStringSeperator);
-		string text2 = array[0];
-		string text3 = array[1];
-		if (text2 != 0.ToString() || text3 != 0.ToString())
+		string vasData = null;
+		string[] headerParts = Data[0].Split(VasStringSeperator);
+		string headerResult = headerParts[0];
+		string headerStatus = headerParts[1];
+		if (headerResult != 0.ToString() || headerStatus != 0.ToString())
 		{
 			return null;
 		}
-		_ = array[2];
-		_ = array[3];
-		_ = array[4];
-		foreach (string item in Data.Skip(1))
+		_ = headerParts[2];
+		_ = headerParts[3];
+		_ = headerParts[4];
+		foreach (string line in Data.Skip(1))
 		{
-			string[] parts = item.Split(VasStringSeperator);
+			string[] parts = line.Split(VasStringSeperator);
 			if (!(parts[0] != 0.ToString()) && !(parts[1] != 0.ToString()))
 			{
-				text = parts[2];
-				if (!string.IsNullOrWhiteSpace(text))
+				vasData = parts[2];
+				if (!string.IsNullOrWhiteSpace(vasData))
 				{
 					Enum.TryParse<VasCardType>(parts[3], out var _);
 				}
 			}
 		}
-		return text;
+		return vasData;
 	}
 
 	public override string ToString()

@@ -105,13 +105,13 @@ public class ChangeSetFileService : IChangeSetFileService
 				await AttemptRetryAfterError("Revision does not exist", revisionChangeSet);
 				return;
 			}
-			bool flag = _fileSetTransition.CheckMeetsDependency(clientFileSetRevision, dependencyStates);
-			if (!flag)
+			bool dependenciesMet = _fileSetTransition.CheckMeetsDependency(clientFileSetRevision, dependencyStates);
+			if (!dependenciesMet)
 			{
 				await AttemptRetryAfterError(FileSetState.NeedsDependency.ToString(), revisionChangeSet);
 				return;
 			}
-			if (flag)
+			if (dependenciesMet)
 			{
 				await SetState(ChangesetState.ActivationPending, revisionChangeSet);
 			}
@@ -167,13 +167,13 @@ public class ChangeSetFileService : IChangeSetFileService
 				await AttemptRetryAfterError("Revision does not exist", revisionChangeSet);
 				return;
 			}
-			bool flag = _fileSetTransition.BeforeActivate(clientFileSetRevision);
-			if (!flag)
+			bool success = _fileSetTransition.BeforeActivate(clientFileSetRevision);
+			if (!success)
 			{
 				await AttemptRetryAfterError("Error while running ActivationBeforeActions.", revisionChangeSet);
 				return;
 			}
-			if (flag)
+			if (success)
 			{
 				await SetState(ChangesetState.Activating, revisionChangeSet);
 			}
@@ -229,10 +229,10 @@ public class ChangeSetFileService : IChangeSetFileService
 				await AttemptRetryAfterError("Revision does not exist", revisionChangeSet);
 				return;
 			}
-			bool flag = _fileSetTransition.AfterActivate(clientFileSetRevision);
-			if (!flag)
+			bool success = _fileSetTransition.AfterActivate(clientFileSetRevision);
+			if (!success)
 			{
-				_logger.LogWarningWithSource("Errors activating RevisionChangeSet for " + revisionChangeSet?.IdentifyingText() + ": " + flag.ToJson(), "ProcessActivationAfterActions", "/sln/src/UpdateClientService.API/Services/FileSets/ChangeSetFileService.cs");
+				_logger.LogWarningWithSource("Errors activating RevisionChangeSet for " + revisionChangeSet?.IdentifyingText() + ": " + success.ToJson(), "ProcessActivationAfterActions", "/sln/src/UpdateClientService.API/Services/FileSets/ChangeSetFileService.cs");
 			}
 			await SetState(ChangesetState.Activated, revisionChangeSet);
 		}
@@ -487,30 +487,30 @@ public class ChangeSetFileService : IChangeSetFileService
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(revisionChangeSet.ActivateStartTime, out var result))
+		if (!TimeSpan.TryParse(revisionChangeSet.ActivateStartTime, out var startTime))
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(revisionChangeSet.ActivateEndTime, out var result2))
+		if (!TimeSpan.TryParse(revisionChangeSet.ActivateEndTime, out var endTime))
 		{
 			return true;
 		}
-		if (result == result2)
+		if (startTime == endTime)
 		{
 			return true;
 		}
 		DateTime now = DateTime.Now;
-		if (result2 < result)
+		if (endTime < startTime)
 		{
-			if (!(now.TimeOfDay <= result2))
+			if (!(now.TimeOfDay <= endTime))
 			{
-				return now.TimeOfDay >= result;
+				return now.TimeOfDay >= startTime;
 			}
 			return true;
 		}
-		if (now.TimeOfDay >= result)
+		if (now.TimeOfDay >= startTime)
 		{
-			return now.TimeOfDay <= result2;
+			return now.TimeOfDay <= endTime;
 		}
 		return false;
 	}

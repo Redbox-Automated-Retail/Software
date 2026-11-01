@@ -12,7 +12,6 @@ internal class Redbox_002EMacros1309_002ERandomExponentialSleepEvaluator : Redbo
 	public Redbox_002EMacros1309_002ERandomExponentialSleepEvaluator(int minimumDelay)
 		: base((int retryCount, Exception exception) => SleepMilliseconds(retryCount, minimumDelay))
 	{
-		Redbox_002EMacros1309_002ERandomExponentialSleepEvaluator obj = this;
 	}
 
 	private static int SleepMilliseconds(int retryCount, int minimumDelay)

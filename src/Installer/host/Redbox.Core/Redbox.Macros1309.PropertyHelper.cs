@@ -27,40 +27,40 @@ internal static class Redbox_002EMacros1309_002EPropertyHelper
 		{
 			return;
 		}
-		XmlNodeList xmlNodeList = parentNode.SelectNodes("property");
-		if (xmlNodeList == null)
+		XmlNodeList propertyNodes = parentNode.SelectNodes("property");
+		if (propertyNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item in xmlNodeList)
+		foreach (XmlNode propertyNode in propertyNodes)
 		{
-			if (item.Attributes["read-only"] != null && string.Compare(item.Attributes["read-only"].Value, bool.TrueString, ignoreCase: true) == 0)
+			if (propertyNode.Attributes["read-only"] != null && string.Compare(propertyNode.Attributes["read-only"].Value, bool.TrueString, ignoreCase: true) == 0)
 			{
 				continue;
 			}
 			PropertyInfo propertyInfo = null;
-			if (item.Attributes["name"] != null)
+			if (propertyNode.Attributes["name"] != null)
 			{
-				propertyInfo = instance.GetType().GetProperty(item.Attributes["name"].Value, BindingFlags.Instance | BindingFlags.Public);
+				propertyInfo = instance.GetType().GetProperty(propertyNode.Attributes["name"].Value, BindingFlags.Instance | BindingFlags.Public);
 			}
 			if (propertyInfo == null)
 			{
 				continue;
 			}
-			XmlNodeList xmlNodeList2 = item.SelectNodes("property");
-			if (xmlNodeList2 != null && xmlNodeList2.Count > 0)
+			XmlNodeList childPropertyNodes = propertyNode.SelectNodes("property");
+			if (childPropertyNodes != null && childPropertyNodes.Count > 0)
 			{
-				UpdateObjectFromXml(propertyInfo.GetValue(instance, new object[0]), item);
+				UpdateObjectFromXml(propertyInfo.GetValue(instance, new object[0]), propertyNode);
 				continue;
 			}
-			Redbox_002EMacros1309_002ECustomEditorAttribute obj = (Redbox_002EMacros1309_002ECustomEditorAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002ECustomEditorAttribute));
-			if (item.ChildNodes.Count > 0 && obj != null && obj.SetMethodName != null)
+			Redbox_002EMacros1309_002ECustomEditorAttribute customEditor = (Redbox_002EMacros1309_002ECustomEditorAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002ECustomEditorAttribute));
+			if (propertyNode.ChildNodes.Count > 0 && customEditor != null && customEditor.SetMethodName != null)
 			{
-				instance.GetType().GetMethod(obj.SetMethodName, BindingFlags.Instance | BindingFlags.Public)?.Invoke(instance, new object[1] { item });
+				instance.GetType().GetMethod(customEditor.SetMethodName, BindingFlags.Instance | BindingFlags.Public)?.Invoke(instance, new object[1] { propertyNode });
 			}
-			else if (item.Attributes["value"] != null)
+			else if (propertyNode.Attributes["value"] != null)
 			{
-				string value = item.Attributes["value"].Value;
+				string value = propertyNode.Attributes["value"].Value;
 				propertyInfo.SetValue(instance, Redbox_002EMacros1309_002EConversionHelper.ChangeType(value, propertyInfo.PropertyType), null);
 			}
 		}
@@ -102,25 +102,25 @@ internal static class Redbox_002EMacros1309_002EPropertyHelper
 			{
 				xmlWriter.WriteAttributeString("read-only", XmlConvert.ToString(readOnlyAttribute.IsReadOnly));
 			}
-			Redbox_002EMacros1309_002ECustomEditorAttribute obj = (Redbox_002EMacros1309_002ECustomEditorAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002ECustomEditorAttribute));
-			if (obj != null)
+			Redbox_002EMacros1309_002ECustomEditorAttribute customEditor = (Redbox_002EMacros1309_002ECustomEditorAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002ECustomEditorAttribute));
+			if (customEditor != null)
 			{
-				xmlWriter.WriteAttributeString("custom-editor", obj.Text);
-				if (obj.GetMethodName != null)
+				xmlWriter.WriteAttributeString("custom-editor", customEditor.Text);
+				if (customEditor.GetMethodName != null)
 				{
-					instance.GetType().GetMethod(obj.GetMethodName, BindingFlags.Instance | BindingFlags.Public)?.Invoke(instance, new object[1] { xmlWriter });
+					instance.GetType().GetMethod(customEditor.GetMethodName, BindingFlags.Instance | BindingFlags.Public)?.Invoke(instance, new object[1] { xmlWriter });
 				}
 			}
 			else
 			{
-				object obj2 = null;
+				object propertyValue = null;
 				try
 				{
-					obj2 = propertyInfo.GetValue(instance, new object[0]);
-					if (obj2 != null)
+					propertyValue = propertyInfo.GetValue(instance, new object[0]);
+					if (propertyValue != null)
 					{
-						TypeConverter converter = TypeDescriptor.GetConverter(obj2);
-						string value = ((converter == null || !converter.CanConvertTo(typeof(string))) ? obj2.ToString() : converter.ConvertToString(obj2));
+						TypeConverter converter = TypeDescriptor.GetConverter(propertyValue);
+						string value = ((converter == null || !converter.CanConvertTo(typeof(string))) ? propertyValue.ToString() : converter.ConvertToString(propertyValue));
 						xmlWriter.WriteAttributeString("value", value);
 						xmlWriter.WriteAttributeString("default-value", value);
 					}
@@ -132,23 +132,23 @@ internal static class Redbox_002EMacros1309_002EPropertyHelper
 				{
 					xmlWriter.WriteAttributeString("type", propertyInfo.PropertyType.AssemblyQualifiedName);
 				}
-				if (Attribute.IsDefined(propertyInfo, typeof(Redbox_002EMacros1309_002ERecurseAttribute)) && obj2 != null)
+				if (Attribute.IsDefined(propertyInfo, typeof(Redbox_002EMacros1309_002ERecurseAttribute)) && propertyValue != null)
 				{
-					WalkObjectTree(obj2, xmlWriter);
+					WalkObjectTree(propertyValue, xmlWriter);
 				}
 				else
 				{
-					Redbox_002EMacros1309_002EValidValueListProviderAttribute obj3 = (Redbox_002EMacros1309_002EValidValueListProviderAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002EValidValueListProviderAttribute));
-					if (obj3 != null)
+					Redbox_002EMacros1309_002EValidValueListProviderAttribute validValueListProvider = (Redbox_002EMacros1309_002EValidValueListProviderAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(Redbox_002EMacros1309_002EValidValueListProviderAttribute));
+					if (validValueListProvider != null)
 					{
-						MethodInfo method = instance.GetType().GetMethod(obj3.MethodName, BindingFlags.Instance | BindingFlags.Public);
-						if (method != null && method.Invoke(instance, null) is string[] array)
+						MethodInfo method = instance.GetType().GetMethod(validValueListProvider.MethodName, BindingFlags.Instance | BindingFlags.Public);
+						if (method != null && method.Invoke(instance, null) is string[] validValues)
 						{
-							xmlWriter.WriteAttributeString("valid-value-count", array.Length.ToString());
-							foreach (string value2 in array)
+							xmlWriter.WriteAttributeString("valid-value-count", validValues.Length.ToString());
+							foreach (string validValue in validValues)
 							{
 								xmlWriter.WriteStartElement("valid");
-								xmlWriter.WriteAttributeString("value", value2);
+								xmlWriter.WriteAttributeString("value", validValue);
 								xmlWriter.WriteEndElement();
 							}
 						}

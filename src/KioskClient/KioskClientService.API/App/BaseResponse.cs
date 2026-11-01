@@ -59,25 +59,25 @@ public abstract class BaseResponse : IMessageScrub
 			logger?.LogInformation("BaseResponse.CheckAndReplay - messageId is not set; not replaying");
 			return;
 		}
-		bool flag;
+		bool replay;
 		if (StatusCode == 200)
 		{
-			flag = false;
+			replay = false;
 		}
 		else if (StatusCode == 400)
 		{
-			flag = false;
+			replay = false;
 		}
 		else
 		{
-			flag = this is IReplayableApiCall replayableApiCall && replayableApiCall.Replayable;
+			replay = this is IReplayableApiCall replayableApiCall && replayableApiCall.Replayable;
 		}
 		HttpQueueServiceRequest request = new HttpQueueServiceRequest
 		{
 			Id = messageId,
 			Request = HttpRequestMetadata.FromHttpRequest(source)
 		};
-		if (flag)
+		if (replay)
 		{
 			if (!queueService.Enqueue(request))
 			{

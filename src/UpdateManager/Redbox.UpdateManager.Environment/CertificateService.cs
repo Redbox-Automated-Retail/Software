@@ -109,28 +109,28 @@ public class CertificateService
 			return;
 		}
 		string[] files = Directory.GetFiles(_certDataPath, "*.staged");
-		foreach (string text in files)
+		foreach (string stagedPath in files)
 		{
 			try
 			{
-				Path.GetFileNameWithoutExtension(text);
-				byte[] data = File.ReadAllBytes(text);
+				Path.GetFileNameWithoutExtension(stagedPath);
+				byte[] data = File.ReadAllBytes(stagedPath);
 				if (!CertificateHelper.Exists(StoreName.My, StoreLocation.LocalMachine, data))
 				{
-					LogHelper.Instance.Log("CertificateService.LookForCerts - Adding Cert Name: {0} to the capi store", text);
+					LogHelper.Instance.Log("CertificateService.LookForCerts - Adding Cert Name: {0} to the capi store", stagedPath);
 					CertificateHelper.Add(StoreName.My, StoreLocation.LocalMachine, data);
-					LogHelper.Instance.Log("CertificateService.LookForCerts - Added Cert Name: {0} to the capi store", text);
+					LogHelper.Instance.Log("CertificateService.LookForCerts - Added Cert Name: {0} to the capi store", stagedPath);
 				}
 				else
 				{
-					LogHelper.Instance.Log("CertificateService.LookForCerts - Cert Name: {0} already exists in capi store", text);
+					LogHelper.Instance.Log("CertificateService.LookForCerts - Cert Name: {0} already exists in capi store", stagedPath);
 				}
-				string text2 = text.Replace(".staged", "");
-				if (File.Exists(text2))
+				string installedPath = stagedPath.Replace(".staged", "");
+				if (File.Exists(installedPath))
 				{
-					File.Delete(text2);
+					File.Delete(installedPath);
 				}
-				File.Move(text, text2);
+				File.Move(stagedPath, installedPath);
 			}
 			catch (Exception e)
 			{

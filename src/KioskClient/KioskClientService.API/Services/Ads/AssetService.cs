@@ -118,27 +118,27 @@ public class AssetService : IAssetService
 		IEnumerable<FileInfo> enumerable = from f in directoryInfo.GetFiles("*.json")
 			where f.LastWriteTime < DateTime.Now.Date.AddDays(-14.0)
 			select f;
-		foreach (FileInfo item in enumerable)
+		foreach (FileInfo jsonFile in enumerable)
 		{
-			string assetId = Asset.GetAssetIdFromFileName(item.Name);
+			string assetId = Asset.GetAssetIdFromFileName(jsonFile.Name);
 			if (!currentAssets.Any((BaseAsset a) => a.AssetId == assetId))
 			{
-				_logger?.LogInfoWithSource($"Asset id {assetId} is {(DateTime.Now.Date - item.LastWriteTime.Date).Days} days old.  Deleting the asset files.", "PurgeOldAssets");
-				foreach (FileInfo item2 in directoryInfo.EnumerateFiles(assetId + ".*"))
+				_logger?.LogInfoWithSource($"Asset id {assetId} is {(DateTime.Now.Date - jsonFile.LastWriteTime.Date).Days} days old.  Deleting the asset files.", "PurgeOldAssets");
+				foreach (FileInfo assetFile in directoryInfo.EnumerateFiles(assetId + ".*"))
 				{
 					try
 					{
-						item2.Delete();
+						assetFile.Delete();
 					}
 					catch (Exception ex)
 					{
-						_logger?.LogErrorWithSource("Unable delete file " + item2.Name + " : " + ex.Message, "PurgeOldAssets");
+						_logger?.LogErrorWithSource("Unable delete file " + assetFile.Name + " : " + ex.Message, "PurgeOldAssets");
 					}
 				}
 			}
 			else
 			{
-				_logger?.LogInfoWithSource($"Asset id {assetId} is {(DateTime.Now.Date - item.LastWriteTime.Date).Days} days old.  In current, not deleting.", "PurgeOldAssets");
+				_logger?.LogInfoWithSource($"Asset id {assetId} is {(DateTime.Now.Date - jsonFile.LastWriteTime.Date).Days} days old.  In current, not deleting.", "PurgeOldAssets");
 			}
 		}
 	}

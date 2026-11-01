@@ -262,18 +262,18 @@ public class RepositoryService : IRepositoryService, IDisposable
 		}
 		string[] directories = Directory.GetDirectories(Root);
 		List<string> list = new List<string>();
-		DirectoryInfo directoryInfo = new DirectoryInfo(StagingDirectory);
+		DirectoryInfo stagingInfo = new DirectoryInfo(StagingDirectory);
 		if (!Directory.Exists(StagingDirectory))
 		{
 			Directory.CreateDirectory(StagingDirectory);
 		}
-		string[] array = directories;
-		for (int i = 0; i < array.Length; i++)
+		string[] directoryPaths = directories;
+		for (int i = 0; i < directoryPaths.Length; i++)
 		{
-			DirectoryInfo directoryInfo2 = new DirectoryInfo(array[i]);
-			if (directoryInfo2.FullName != directoryInfo.FullName)
+			DirectoryInfo repositoryInfo = new DirectoryInfo(directoryPaths[i]);
+			if (repositoryInfo.FullName != stagingInfo.FullName)
 			{
-				list.Add(directoryInfo2.Name);
+				list.Add(repositoryInfo.Name);
 			}
 		}
 		return list;
@@ -350,14 +350,14 @@ public class RepositoryService : IRepositoryService, IDisposable
 				LogHelper.Instance.Log("Current revision is not set. No need to trim.");
 				return;
 			}
-			int num = revLogList.FindIndex((RevLog r) => r.Hash == current);
-			if (num == -1)
+			int currentIndex = revLogList.FindIndex((RevLog r) => r.Hash == current);
+			if (currentIndex == -1)
 			{
 				LogHelper.Instance.Log("Current revision index was not found. No need to trim.");
 				return;
 			}
-			List<int> list = new List<int>();
-			for (int i = 1; i < num; i++)
+			List<int> trimIndexes = new List<int>();
+			for (int i = 1; i < currentIndex; i++)
 			{
 				RevLog revLog = revLogList[i];
 				bool keep = false;
@@ -370,17 +370,17 @@ public class RepositoryService : IRepositoryService, IDisposable
 				});
 				if (!keep)
 				{
-					list.Add(i);
+					trimIndexes.Add(i);
 				}
 			}
-			LogHelper.Instance.Log("Current Hash: {0} Index:{1}", current, num);
-			if (list.Count > 0)
+			LogHelper.Instance.Log("Current Hash: {0} Index:{1}", current, currentIndex);
+			if (trimIndexes.Count > 0)
 			{
-				list.ForEach(delegate(int item)
+				trimIndexes.ForEach(delegate(int item)
 				{
 					LogHelper.Instance.Log("Deleting index: {0} ", item);
 				});
-				GetRevLog(name).RemoveAllAt(list);
+				GetRevLog(name).RemoveAllAt(trimIndexes);
 			}
 		}
 		finally
@@ -793,16 +793,16 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			PersistentList<RevLog> revLog = GetRevLog(name);
 			List<RevLog> list = revLog.AsList();
-			int num = list.FindIndex((RevLog l) => l.Hash == revision);
-			if (num == -1)
+			int index = list.FindIndex((RevLog l) => l.Hash == revision);
+			if (index == -1)
 			{
 				throw new ApplicationException($"No revsion with hash: {revision} found in repository name: {name}");
 			}
-			RevLog revLog2 = list[num];
+			RevLog labeledRevLog = list[index];
 			if (!string.IsNullOrEmpty(label))
 			{
-				revLog2.Label = label;
-				revLog[num] = revLog2;
+				labeledRevLog.Label = label;
+				revLog[index] = labeledRevLog;
 			}
 		}
 		finally
@@ -829,12 +829,12 @@ public class RepositoryService : IRepositoryService, IDisposable
 			foreach (DeltaItem deltaItem in deltaItemList)
 			{
 				DeltaItem item = deltaItem;
-				int num = list.FindIndex((RevLog l) => l.Hash == item.Revision);
-				if (num == -1)
+				int index = list.FindIndex((RevLog l) => l.Hash == item.Revision);
+				if (index == -1)
 				{
 					throw new ApplicationException($"No revision with hash: {deltaItem.Revision} found in repository name: {name}");
 				}
-				RevLog revLog2 = list[num];
+				RevLog targetRevLog = list[index];
 				ChangeItem changeItem = new ChangeItem
 				{
 					IsSeed = deltaItem.IsSeed,
@@ -844,18 +844,18 @@ public class RepositoryService : IRepositoryService, IDisposable
 					TargetPath = deltaItem.TargetPath,
 					VersionHash = deltaItem.VersionHash
 				};
-				revLog2.Changes.Add(changeItem);
-				revLog[num] = revLog2;
-				string path = Path.Combine(FormatRepositoryLocationInternal(name), revLog2.HashFileName(changeItem.FormatFileName()));
+				targetRevLog.Changes.Add(changeItem);
+				revLog[index] = targetRevLog;
+				string path = Path.Combine(FormatRepositoryLocationInternal(name), targetRevLog.HashFileName(changeItem.FormatFileName()));
 				LogHelper.Instance.Log("Add patch from Revision: {0} with the following properties.\r\nComposite: {1}\r\n ContentHash: {2}\r\n TargetName: {3}\r\n TargetPath: {4}\r\n VersionHash: {5}\r\n IsSeed: {6}\r\n", deltaItem.Revision, changeItem.Composite, changeItem.ContentHash, changeItem.TargetName, changeItem.TargetPath, changeItem.VersionHash, changeItem.IsSeed);
 				if (!deltaItem.IsPlaceHolder)
 				{
-					string arg = Encoding.ASCII.GetBytes(deltaItem.FormatFileName()).ToASCIISHA1Hash();
+					string patchHash = Encoding.ASCII.GetBytes(deltaItem.FormatFileName()).ToASCIISHA1Hash();
 					if (!Directory.Exists(StagingDirectory))
 					{
 						Directory.CreateDirectory(StagingDirectory);
 					}
-					string patchFile = Path.Combine(StagingDirectory, $"{deltaItem.Revision}-{arg}.patch");
+					string patchFile = Path.Combine(StagingDirectory, $"{deltaItem.Revision}-{patchHash}.patch");
 					if (!File.Exists(patchFile))
 					{
 						throw new FileNotFoundException($"Could not find staged file: {patchFile}");
@@ -1572,13 +1572,13 @@ public class RepositoryService : IRepositoryService, IDisposable
 	{
 		string activeRevision = ReadActiveRevisionInternal(name);
 		List<RevLog> revLogList = GetRevLogList(name);
-		int num = revLogList.FindIndex((RevLog l) => l.Hash == activeRevision);
-		List<IRevLog> list = new List<IRevLog>();
-		for (int i = num + 1; i < revLogList.Count; i++)
+		int activeIndex = revLogList.FindIndex((RevLog l) => l.Hash == activeRevision);
+		List<IRevLog> pending = new List<IRevLog>();
+		for (int i = activeIndex + 1; i < revLogList.Count; i++)
 		{
-			list.Add(revLogList[i]);
+			pending.Add(revLogList[i]);
 		}
-		return list;
+		return pending;
 	}
 
 	private static Redbox.UpdateManager.ComponentModel.ErrorList ConvertFromXDeltaErrors(List<Redbox.DeltaCompression.Error> xDeltaErrors)

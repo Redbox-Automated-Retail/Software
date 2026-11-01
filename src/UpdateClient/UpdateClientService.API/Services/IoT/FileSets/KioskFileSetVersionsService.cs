@@ -52,8 +52,8 @@ public class KioskFileSetVersionsService : IKioskFileSetVersionsService
 	private async Task<ReportFileSetVersionsResponse> InnerReportFileSetVersions(FileSetPollRequest fileSetPollRequest = null)
 	{
 		ReportFileSetVersionsResponse response = new ReportFileSetVersionsResponse();
-		var (flag, fileSetPollRequestList) = await GetPollRequest();
-		if (!flag)
+		var (success, fileSetPollRequestList) = await GetPollRequest();
+		if (!success)
 		{
 			_logger.LogErrorWithSource("Couldn't report file set versions", "InnerReportFileSetVersions", "/sln/src/UpdateClientService.API/Services/IoT/FileSets/KioskFileSetVersionsService.cs");
 		}

@@ -30,9 +30,9 @@ public class PricingJob : IInvocable
 			_logger.LogInfoWithSource("Pricing is not active", "Invoke");
 			return;
 		}
-		int num = new Random().Next(300000);
-		_logger.LogInfoWithSource("Waiting random time of " + TimeSpan.FromMilliseconds(num).ToString("mm\\:ss") + " before calling RefreshIfNeeded", "Invoke");
-		await Task.Delay(num);
+		int delayMs = new Random().Next(300000);
+		_logger.LogInfoWithSource("Waiting random time of " + TimeSpan.FromMilliseconds(delayMs).ToString("mm\\:ss") + " before calling RefreshIfNeeded", "Invoke");
+		await Task.Delay(delayMs);
 		_logger.LogInfoWithSource("Invoking pricing Job to see if updates are needed", "Invoke");
 		await _pricingService.RefreshIfNeeded();
 		_logger.LogInfoWithSource("Finished", "Invoke");

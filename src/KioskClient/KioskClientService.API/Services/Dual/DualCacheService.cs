@@ -37,16 +37,16 @@ internal class DualCacheService : IDualCacheService
 			try
 			{
 				List<long> newKeys = source.Keys.ToList();
-				List<long> list = _keys.ToList();
-				list.RemoveAll((long k) => newKeys.Contains(k));
-				foreach (long item in list)
+				List<long> removedKeys = _keys.ToList();
+				removedKeys.RemoveAll((long k) => newKeys.Contains(k));
+				foreach (long removedKey in removedKeys)
 				{
-					_keys.Remove(item);
-					_cache.Remove(item);
+					_keys.Remove(removedKey);
+					_cache.Remove(removedKey);
 				}
-				foreach (long item2 in newKeys)
+				foreach (long key in newKeys)
 				{
-					_cache.Set(item2, source[item2]);
+					_cache.Set(key, source[key]);
 				}
 				_keys.AddRange(newKeys);
 				_logger.LogInfoWithSource("dual cache updated", "Refresh");

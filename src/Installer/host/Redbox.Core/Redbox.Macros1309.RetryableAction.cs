@@ -21,7 +21,7 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 
 	public static void Execute(Action action, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -31,19 +31,19 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 
 	public static TResult Execute<TResult>(Func<TResult> function, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -52,19 +52,19 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 
 	public static TResult Execute<T1, TResult>(Func<T1, TResult> function, T1 argument1, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -73,19 +73,19 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 
 	public static TResult Execute<T1, T2, TResult>(Func<T1, T2, TResult> function, T1 argument1, T2 argument2, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -94,19 +94,19 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 
 	public static TResult Execute<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> function, T1 argument1, T2 argument2, T3 argument3, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -115,19 +115,19 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 
 	public static TResult Execute<T1, T2, T3, T4, T5, TResult>(Redbox_002EMacros1309_002EFunc<T1, T2, T3, T4, T5, TResult> function, T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, Redbox_002EMacros1309_002EIRethrowEvaluator rethrowEvaluator, Redbox_002EMacros1309_002EISleepEvaluator sleepEvaluator)
 	{
-		int num = 0;
+		int attempt = 0;
 		while (true)
 		{
 			try
@@ -136,13 +136,13 @@ internal static class Redbox_002EMacros1309_002ERetryableAction
 			}
 			catch (Exception exception)
 			{
-				if (rethrowEvaluator.Rethrow(num, exception))
+				if (rethrowEvaluator.Rethrow(attempt, exception))
 				{
 					throw;
 				}
-				Thread.Sleep(sleepEvaluator.SleepMilliseconds(num, exception));
+				Thread.Sleep(sleepEvaluator.SleepMilliseconds(attempt, exception));
 			}
-			num++;
+			attempt++;
 		}
 	}
 

@@ -72,63 +72,63 @@ public class OptionValue
 
 	public override string ToString()
 	{
-		int num = 80;
+		int windowWidth = 80;
 		try
 		{
-			num = Console.WindowWidth;
+			windowWidth = Console.WindowWidth;
 		}
 		catch
 		{
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		string text = string.Empty;
+		string names = string.Empty;
 		if (m_definition.LongName != null)
 		{
-			text = $"--{m_definition.LongName}";
+			names = $"--{m_definition.LongName}";
 		}
 		if (m_definition.ShortName != null)
 		{
 			if (m_definition.LongName != null)
 			{
-				text += ", ";
+				names += ", ";
 			}
-			text += $"-{m_definition.ShortName}";
+			names += $"-{m_definition.ShortName}";
 		}
 		if (m_definition.LongName == null && m_definition.ShortName == null)
 		{
-			text += $"--{m_member.Name.ToLowerInvariant()}";
+			names += $"--{m_member.Name.ToLowerInvariant()}";
 		}
 		if (IsFlag())
 		{
-			text += "[+|-]";
+			names += "[+|-]";
 		}
 		else if (IsDictionary())
 		{
-			text += ":key=value";
+			names += ":key=value";
 		}
-		stringBuilder.AppendFormat("  {0,-15}", text);
-		int num2 = 15;
+		stringBuilder.AppendFormat("  {0,-15}", names);
+		int column = 15;
 		if (m_definition.Required)
 		{
 			stringBuilder.Append("Required. ");
-			num2 += 10;
+			column += 10;
 		}
 		if (m_defaultValue != null)
 		{
-			string text2 = $"Default value is '{m_defaultValue.Value}'. ";
-			num2 += text2.Length;
-			stringBuilder.Append(text2);
+			string defaultText = $"Default value is '{m_defaultValue.Value}'. ";
+			column += defaultText.Length;
+			stringBuilder.Append(defaultText);
 		}
 		if (m_description != null)
 		{
-			foreach (string text3 in m_description.Description.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+			foreach (string word in m_description.Description.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 			{
-				stringBuilder.AppendFormat("{0} ", text3);
-				num2 += text3.Length + 1;
-				if (num2 > num - 15)
+				stringBuilder.AppendFormat("{0} ", word);
+				column += word.Length + 1;
+				if (column > windowWidth - 15)
 				{
 					stringBuilder.Append("\n                 ");
-					num2 = 15;
+					column = 15;
 				}
 			}
 		}

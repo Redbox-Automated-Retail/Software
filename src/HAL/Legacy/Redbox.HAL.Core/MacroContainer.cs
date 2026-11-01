@@ -38,17 +38,17 @@ public class MacroContainer
 		}
 		while (true)
 		{
-			string text = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
-			if (string.IsNullOrEmpty(text))
+			string macroName = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
+			if (string.IsNullOrEmpty(macroName))
 			{
 				break;
 			}
-			string text2 = Values[text];
-			if (text2 == null)
+			string expansion = Values[macroName];
+			if (expansion == null)
 			{
-				text2 = string.Empty;
+				expansion = string.Empty;
 			}
-			value = value.Replace($"{preamble}{text}{postamble}", text2);
+			value = value.Replace($"{preamble}{macroName}{postamble}", expansion);
 		}
 		return value;
 	}

@@ -42,33 +42,33 @@ public class NamedPipeClientCommand<T> where T : ClientCommandResult, new()
 		{
 			CommandText = CommandText
 		};
-		NamedPipeClientSession namedPipeClientSession = ((Session != null) ? Session : NamedPipeClientSession.MakeSession(m_protocol));
+		NamedPipeClientSession session = ((Session != null) ? Session : NamedPipeClientSession.MakeSession(m_protocol));
 		try
 		{
 			if (Timeout.HasValue)
 			{
-				namedPipeClientSession.Timeout = Timeout.Value;
+				session.Timeout = Timeout.Value;
 			}
-			if (!namedPipeClientSession.IsConnected)
+			if (!session.IsConnected)
 			{
-				namedPipeClientSession.ConnectThrowOnError();
+				session.ConnectThrowOnError();
 			}
-			List<string> list = namedPipeClientSession.ExecuteCommand(CommandText);
-			bool success = namedPipeClientSession.IsStatusOK(list);
+			List<string> responses = session.ExecuteCommand(CommandText);
+			bool success = session.IsStatusOK(responses);
 			result.Success = success;
-			if (list.Count > 0)
+			if (responses.Count > 0)
 			{
-				string statusMessage = list[list.Count - 1];
+				string statusMessage = responses[responses.Count - 1];
 				result.StatusMessage = statusMessage;
-				list.RemoveAt(list.Count - 1);
+				responses.RemoveAt(responses.Count - 1);
 			}
-			result.CommandMessages.AddRange(list);
-			List<int> list2 = ConvertMessages(result);
-			foreach (int item in list2)
+			result.CommandMessages.AddRange(responses);
+			List<int> consumedIndexes = ConvertMessages(result);
+			foreach (int index in consumedIndexes)
 			{
-				if (item < result.CommandMessages.Count)
+				if (index < result.CommandMessages.Count)
 				{
-					result.CommandMessages.RemoveAt(item);
+					result.CommandMessages.RemoveAt(index);
 				}
 			}
 		}
@@ -89,7 +89,7 @@ public class NamedPipeClientCommand<T> where T : ClientCommandResult, new()
 			{
 				if (Session == null || DisposeWhenDone)
 				{
-					namedPipeClientSession.Dispose();
+					session.Dispose();
 				}
 			}
 			catch (Exception e3)
@@ -108,17 +108,17 @@ public class NamedPipeClientCommand<T> where T : ClientCommandResult, new()
 
 	internal static List<int> ConvertMessages(T result)
 	{
-		List<int> list = new List<int>();
+		List<int> consumedIndexes = new List<int>();
 		for (int i = 0; i < result.CommandMessages.Count; i++)
 		{
 			if (result.CommandMessages[i].StartsWith("|*"))
 			{
-				list.Add(i);
+				consumedIndexes.Add(i);
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.AppendLine(result.CommandMessages[i]);
 				for (int j = i + 1; j < result.CommandMessages.Count; j++)
 				{
-					list.Add(j);
+					consumedIndexes.Add(j);
 					stringBuilder.AppendLine(result.CommandMessages[j]);
 					if (result.CommandMessages[j].EndsWith("*|"))
 					{
@@ -127,18 +127,18 @@ public class NamedPipeClientCommand<T> where T : ClientCommandResult, new()
 				}
 				stringBuilder.Replace("|*", string.Empty);
 				stringBuilder.Replace("*|", string.Empty);
-				string text = stringBuilder.ToString();
-				string text2 = StringExtensions.ExtractCodeFromBrackets(text, "[", "]");
-				if (text2 != null)
+				string errorText = stringBuilder.ToString();
+				string code = StringExtensions.ExtractCodeFromBrackets(errorText, "[", "]");
+				if (code != null)
 				{
-					string[] array = text.Substring(text2.Length + 2).Split("|".ToCharArray());
-					if (array[0].IndexOf("WARNING") != -1)
+					string[] parts = errorText.Substring(code.Length + 2).Split("|".ToCharArray());
+					if (parts[0].IndexOf("WARNING") != -1)
 					{
-						result.Errors.Add(Error.NewWarning(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewWarning(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 					else
 					{
-						result.Errors.Add(Error.NewError(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewError(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 				}
 			}
@@ -153,7 +153,7 @@ public class NamedPipeClientCommand<T> where T : ClientCommandResult, new()
 				result.CommandMessages[i] = Encoding.ASCII.GetString(algorithm2.Decompress(StringExtensions.Base64ToBytes(result.CommandMessages[i].Substring(5))));
 			}
 		}
-		return list;
+		return consumedIndexes;
 	}
 
 	private NamedPipeClientCommand()

@@ -13,8 +13,8 @@ internal static class Redbox_002EMacros1309_002ESelfRegistrationTool
 
 	public static void Register(string fileName)
 	{
-		using Redbox_002EMacros1309_002ELibraryModule obj = new Redbox_002EMacros1309_002ELibraryModule(fileName);
-		IntPtr procAddress = obj.GetProcAddress("DllRegisterServer");
+		using Redbox_002EMacros1309_002ELibraryModule module = new Redbox_002EMacros1309_002ELibraryModule(fileName);
+		IntPtr procAddress = module.GetProcAddress("DllRegisterServer");
 		if (!(procAddress == IntPtr.Zero))
 		{
 			Marshal.GetDelegateForFunctionPointer(procAddress, typeof(DllRegisterDelegate))?.DynamicInvoke(null);
@@ -23,8 +23,8 @@ internal static class Redbox_002EMacros1309_002ESelfRegistrationTool
 
 	public static void Unregister(string fileName)
 	{
-		using Redbox_002EMacros1309_002ELibraryModule obj = new Redbox_002EMacros1309_002ELibraryModule(fileName);
-		IntPtr procAddress = obj.GetProcAddress("DllUnregisterServer");
+		using Redbox_002EMacros1309_002ELibraryModule module = new Redbox_002EMacros1309_002ELibraryModule(fileName);
+		IntPtr procAddress = module.GetProcAddress("DllUnregisterServer");
 		if (!(procAddress == IntPtr.Zero))
 		{
 			Marshal.GetDelegateForFunctionPointer(procAddress, typeof(DllUnregisterDelegate))?.DynamicInvoke(null);

@@ -251,15 +251,15 @@ public class VideoSourcePlayer : Control
 					Bitmap bitmap = ((convertedFrame != null) ? convertedFrame : currentFrame);
 					if (keepRatio)
 					{
-						double num = (double)bitmap.Width / (double)bitmap.Height;
+						double ratio = (double)bitmap.Width / (double)bitmap.Height;
 						Rectangle rectangle = clientRectangle;
-						if ((double)clientRectangle.Width < (double)clientRectangle.Height * num)
+						if ((double)clientRectangle.Width < (double)clientRectangle.Height * ratio)
 						{
-							rectangle.Height = (int)((double)clientRectangle.Width / num);
+							rectangle.Height = (int)((double)clientRectangle.Width / ratio);
 						}
 						else
 						{
-							rectangle.Width = (int)((double)clientRectangle.Height * num);
+							rectangle.Width = (int)((double)clientRectangle.Height * ratio);
 						}
 						rectangle.X = (clientRectangle.Width - rectangle.Width) / 2;
 						rectangle.Y = (clientRectangle.Height - rectangle.Height) / 2;
@@ -287,11 +287,11 @@ public class VideoSourcePlayer : Control
 		if (autosize && Dock != DockStyle.Fill && base.Parent != null)
 		{
 			Rectangle clientRectangle = base.Parent.ClientRectangle;
-			int num = frameSize.Width;
-			int num2 = frameSize.Height;
+			int width = frameSize.Width;
+			int height = frameSize.Height;
 			SuspendLayout();
-			base.Location = new Point((clientRectangle.Width - num - 2) / 2, (clientRectangle.Height - num2 - 2) / 2);
-			base.Size = new Size(num + 2, num2 + 2);
+			base.Location = new Point((clientRectangle.Width - width - 2) / 2, (clientRectangle.Height - height - 2) / 2);
+			base.Size = new Size(width + 2, height + 2);
 			ResumeLayout();
 		}
 	}

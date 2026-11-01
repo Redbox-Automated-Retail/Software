@@ -22,19 +22,19 @@ internal static class Redbox_002EMacros1309_002ELuhnHelper
 		{
 			stringBuilder.Insert(0, "0");
 		}
-		int num = 0;
-		string text = stringBuilder.ToString();
+		int sum = 0;
+		string digits = stringBuilder.ToString();
 		for (int k = 1; k <= 16; k++)
 		{
-			int num2 = 1 + k % 2;
-			int number = int.Parse(text.Substring(k - 1, 1));
-			int num4 = number * num2;
-			if (num4 > 9)
+			int weight = 1 + k % 2;
+			int number = int.Parse(digits.Substring(k - 1, 1));
+			int product = number * weight;
+			if (product > 9)
 			{
-				num4 -= 9;
+				product -= 9;
 			}
-			num += num4;
+			sum += product;
 		}
-		return num % 10 == 0;
+		return sum % 10 == 0;
 	}
 }

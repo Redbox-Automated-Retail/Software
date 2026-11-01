@@ -316,7 +316,6 @@ public class DeviceServiceClient : IDeviceServiceClient
 
 	public bool ConnectToDeviceService(string url, int connectionTimeout)
 	{
-		bool flag = false;
 		lock (_lockConnectionObject)
 		{
 			_connectionAutoResetEvent = new AutoResetEvent(initialState: false);
@@ -525,10 +524,10 @@ public class DeviceServiceClient : IDeviceServiceClient
 		{
 			_reconnectionAttemptInterval *= 2;
 		}
-		int num = 300000;
-		if (_reconnectionAttemptInterval > num)
+		int maxInterval = 300000;
+		if (_reconnectionAttemptInterval > maxInterval)
 		{
-			_reconnectionAttemptInterval = num;
+			_reconnectionAttemptInterval = maxInterval;
 		}
 		return _reconnectionAttemptInterval;
 	}
@@ -594,7 +593,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 
 	private void LogResponseEvent(BaseResponseEvent responseEvent)
 	{
-		Log(string.Concat(str3: (!(responseEvent is EMVCardReadResponseEvent responseEvent2)) ? ((!(responseEvent is EncryptedCardReadResponseEvent responseEvent3)) ? ((!(responseEvent is UnencryptedCardReadResponseEvent responseEvent4)) ? JsonConvert.SerializeObject(responseEvent) : ObfuscateUnencryptedCardReadResponseEvent(responseEvent4)) : ObfuscateEncryptedCardReadResponseEvent(responseEvent3)) : ObfuscateEMVCardReadResponseEvent(responseEvent2), str0: "<<< ", str1: responseEvent.EventName, str2: ": "));
+		Log(string.Concat(str3: (!(responseEvent is EMVCardReadResponseEvent emvEvent)) ? ((!(responseEvent is EncryptedCardReadResponseEvent encryptedEvent)) ? ((!(responseEvent is UnencryptedCardReadResponseEvent unencryptedEvent)) ? JsonConvert.SerializeObject(responseEvent) : ObfuscateUnencryptedCardReadResponseEvent(unencryptedEvent)) : ObfuscateEncryptedCardReadResponseEvent(encryptedEvent)) : ObfuscateEMVCardReadResponseEvent(emvEvent), str0: "<<< ", str1: responseEvent.EventName, str2: ": "));
 	}
 
 	private void LogEvent(BaseEvent baseEvent)
@@ -664,12 +663,12 @@ public class DeviceServiceClient : IDeviceServiceClient
 		string result = null;
 		try
 		{
-			string arg = JsonConvert.SerializeObject(responseEvent);
-			result = JsonConvert.SerializeObject(ObfuscateJsonAction(arg));
+			string json = JsonConvert.SerializeObject(responseEvent);
+			result = JsonConvert.SerializeObject(ObfuscateJsonAction(json));
 		}
-		catch (Exception arg2)
+		catch (Exception ex)
 		{
-			Log($"Unhandled exception in DeviceServiceClient.CreateResponseEventLogText while deserializing a CardReadResponseEvent: {arg2}");
+			Log($"Unhandled exception in DeviceServiceClient.CreateResponseEventLogText while deserializing a CardReadResponseEvent: {ex}");
 		}
 		return result;
 	}
@@ -781,17 +780,17 @@ public class DeviceServiceClient : IDeviceServiceClient
 	{
 		try
 		{
-			int num = 0;
+			int activeAsyncCount = 0;
 			foreach (KeyValuePair<Guid, CommandData> activeCommand in _activeCommands)
 			{
-				CommandData value = activeCommand.Value;
-				if (value == null || !value.IsAsync)
+				CommandData commandData = activeCommand.Value;
+				if (commandData == null || !commandData.IsAsync)
 				{
 					continue;
 				}
-				if (value.IsTimedOut)
+				if (commandData.IsTimedOut)
 				{
-					if (_activeCommands.TryRemove(value.CommandRequest.RequestId, out var removedCommandData))
+					if (_activeCommands.TryRemove(commandData.CommandRequest.RequestId, out var removedCommandData))
 					{
 						TimeoutResponseEvent timeoutResponseEvent = new TimeoutResponseEvent(removedCommandData.CommandRequest)
 						{
@@ -807,22 +806,22 @@ public class DeviceServiceClient : IDeviceServiceClient
 				}
 				else
 				{
-					num++;
+					activeAsyncCount++;
 				}
 			}
-			if (num == 0)
+			if (activeAsyncCount == 0)
 			{
 				Log("DeviceServiceClient no active aysnc commands.  Stopping timeout timer");
 				_asyncCommandTimeoutTimer.Enabled = false;
 			}
 			else
 			{
-				Log($"DeviceServiceClient active aysnc commands: {num}");
+				Log($"DeviceServiceClient active aysnc commands: {activeAsyncCount}");
 			}
 		}
-		catch (Exception arg)
+		catch (Exception ex)
 		{
-			Log($"Unhandled exception in DeviceServiceClient.AsyncCommandTimeoutTimer_Elapsed. {arg}");
+			Log($"Unhandled exception in DeviceServiceClient.AsyncCommandTimeoutTimer_Elapsed. {ex}");
 		}
 	}
 }

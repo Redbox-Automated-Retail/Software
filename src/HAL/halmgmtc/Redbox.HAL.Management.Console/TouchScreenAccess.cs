@@ -356,9 +356,9 @@ public class TouchScreenAccess : UserControl
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			int num = 1;
-			int num2 = 6;
-			string instruction = $"SENSOR READ PICKER-SENSOR={num}..{num2}";
+			int firstSensor = 1;
+			int lastSensor = 6;
+			string instruction = $"SENSOR READ PICKER-SENSOR={firstSensor}..{lastSensor}";
 			HardwareJob hardwareJob = ExecuteInstruction(instruction);
 			if (hardwareJob == null || !hardwareJob.GetStack(out var stack).Success)
 			{
@@ -368,13 +368,13 @@ public class TouchScreenAccess : UserControl
 			if (stack.Count != 0)
 			{
 				stack.Pop();
-				for (int num3 = num2; num3 >= num; num3--)
+				for (int sensor = lastSensor; sensor >= firstSensor; sensor--)
 				{
-					string text = stack.Pop();
-					SensorView.Instance.Sensors[num3 - 1] = text.Contains("BLOCKED");
+					string reading = stack.Pop();
+					SensorView.Instance.Sensors[sensor - 1] = reading.Contains("BLOCKED");
 				}
-				string instruction2 = "SENSOR PICKER-OFF";
-				ExecuteInstruction(instruction2);
+				string offInstruction = "SENSOR PICKER-OFF";
+				ExecuteInstruction(offInstruction);
 			}
 		}
 	}
@@ -452,8 +452,8 @@ public class TouchScreenAccess : UserControl
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = CommonFunctions.SyncSlot();
-			string instruction = string.Format("PUSH \"{0}\"", flag ? "SYNC OK" : "SYNC ERRORED");
+			bool synced = CommonFunctions.SyncSlot();
+			string instruction = string.Format("PUSH \"{0}\"", synced ? "SYNC OK" : "SYNC ERRORED");
 			ExecuteInstruction(instruction);
 		}
 	}

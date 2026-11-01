@@ -18,13 +18,13 @@ public static class DataFileHelper
 				result = (T)new JsonSerializer().Deserialize(reader, typeof(T));
 				return result;
 			}
-			catch (JsonSerializationException arg)
+			catch (JsonSerializationException ex)
 			{
-				exceptionLogger("DataFileHelper.GetFileData - JSsonSerializationException", arg);
+				exceptionLogger("DataFileHelper.GetFileData - JSsonSerializationException", ex);
 			}
-			catch (Exception arg2)
+			catch (Exception ex)
 			{
-				exceptionLogger("DataFileHelper.GetFileData - Exception", arg2);
+				exceptionLogger("DataFileHelper.GetFileData - Exception", ex);
 			}
 		}
 		return result;

@@ -408,22 +408,22 @@ public class DeviceHelper : IDisposable
 				LogHelper.Instance.Log("The HWID '{0}' is malformed.", hardwareId);
 				return ProcessDeviceInfoResult.Continue;
 			}
-			string text2 = parts[0].Substring(4);
-			string s = parts[1].Substring(4);
-			if (text2 == vid)
+			string deviceVid = parts[0].Substring(4);
+			string devicePid = parts[1].Substring(4);
+			if (deviceVid == vid)
 			{
-				int number = int.Parse(s);
-				int num3 = int.Parse(pid);
+				int number = int.Parse(devicePid);
+				int wantedPid = int.Parse(pid);
 				switch (matcher)
 				{
 				case MatchType.GTEPid:
-					if (number >= num3)
+					if (number >= wantedPid)
 					{
 						devMatches.Add(hardwareId);
 					}
 					break;
 				case MatchType.ExactPID:
-					if (number == num3)
+					if (number == wantedPid)
 					{
 						devMatches.Add(hardwareId);
 					}
@@ -449,14 +449,14 @@ public class DeviceHelper : IDisposable
 			}
 			if (clazz == DeviceClass.None)
 			{
-				List<string> list2 = null;
-				list2 = (deviceMap.ContainsKey(clazzNameBuffer.ToString()) ? deviceMap[clazzNameBuffer.ToString()] : (deviceMap[clazzNameBuffer.ToString()] = new List<string>()));
-				list2.Add(QueryHardwareId(devInfo, ref did, out lastError));
+				List<string> hardwareIds = null;
+				hardwareIds = (deviceMap.ContainsKey(clazzNameBuffer.ToString()) ? deviceMap[clazzNameBuffer.ToString()] : (deviceMap[clazzNameBuffer.ToString()] = new List<string>()));
+				hardwareIds.Add(QueryHardwareId(devInfo, ref did, out lastError));
 			}
 			else if (deviceClass == clazzNameBuffer.ToString())
 			{
-				string arg = QueryHardwareId(devInfo, ref did, out lastError);
-				writer.WriteLine("Class {0} hwid {1}", clazzNameBuffer.ToString(), arg);
+				string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+				writer.WriteLine("Class {0} hwid {1}", clazzNameBuffer.ToString(), hardwareId);
 			}
 			return ProcessDeviceInfoResult.Continue;
 		});
@@ -466,11 +466,11 @@ public class DeviceHelper : IDisposable
 		}
 		foreach (string key in deviceMap.Keys)
 		{
-			List<string> list = deviceMap[key];
+			List<string> classHardwareIds = deviceMap[key];
 			writer.WriteLine("Devices for class {0}", key);
-			foreach (string item in list)
+			foreach (string hardwareId in classHardwareIds)
 			{
-				writer.WriteLine("  HWID: {0}", item);
+				writer.WriteLine("  HWID: {0}", hardwareId);
 			}
 		}
 	}
@@ -558,12 +558,12 @@ public class DeviceHelper : IDisposable
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			string text = ((match == MatchType.HardwareId) ? QueryHardwareId(devInfo, ref did, out lastError) : QueryDeviceDescription(devInfo, ref did, out lastError));
-			if (text.Equals(queryData, StringComparison.CurrentCultureIgnoreCase))
+			string deviceValue = ((match == MatchType.HardwareId) ? QueryHardwareId(devInfo, ref did, out lastError) : QueryDeviceDescription(devInfo, ref did, out lastError));
+			if (deviceValue.Equals(queryData, StringComparison.CurrentCultureIgnoreCase))
 			{
-				bool flag = ChangeState(devInfo, ref did, devState);
-				LogHelper.Instance.Log($"Change state on class {devClass.ToString()} ({devState.ToString()}) returned {flag}");
-				if (!flag)
+				bool changed = ChangeState(devInfo, ref did, devState);
+				LogHelper.Instance.Log($"Change state on class {devClass.ToString()} ({devState.ToString()}) returned {changed}");
+				if (!changed)
 				{
 					return ProcessDeviceInfoResult.Error;
 				}
@@ -591,9 +591,9 @@ public class DeviceHelper : IDisposable
 				return ProcessDeviceInfoResult.Continue;
 			}
 			LogHelper.Instance.Log("Found HWID {0} on class {1}", hardwareId, clazzNameBuffer);
-			bool flag = ChangeState(devInfo, ref did, state);
-			LogHelper.Instance.Log("Change state {0} returned {1}", state.ToString(), flag ? "OK" : "FAIL");
-			if (!flag)
+			bool changed = ChangeState(devInfo, ref did, state);
+			LogHelper.Instance.Log("Change state {0} returned {1}", state.ToString(), changed ? "OK" : "FAIL");
+			if (!changed)
 			{
 				failures++;
 			}
@@ -663,7 +663,7 @@ public class DeviceHelper : IDisposable
 		{
 			DriverInfoData driverInfoData = default(DriverInfoData);
 			driverInfoData.Size = Marshal.SizeOf(driverInfoData);
-			for (uint num = 0u; SetupDiEnumDriverInfo(hDevInfo, ref did, DriverType.SPDIT_COMPATDRIVER, num, ref driverInfoData); num++)
+			for (uint driverIndex = 0u; SetupDiEnumDriverInfo(hDevInfo, ref did, DriverType.SPDIT_COMPATDRIVER, driverIndex, ref driverInfoData); driverIndex++)
 			{
 				if (Debug)
 				{
@@ -698,19 +698,19 @@ public class DeviceHelper : IDisposable
 
 	private bool EnumerateDevices(Guid deviceClass, uint searchFlags, ProcessDeviceInfo callback)
 	{
-		IntPtr intPtr = IntPtr.Zero;
+		IntPtr deviceInfoSet = IntPtr.Zero;
 		try
 		{
-			intPtr = SetupDiGetClassDevs(ref deviceClass, 0u, IntPtr.Zero, searchFlags);
-			if (intPtr.ToInt32() == -1)
+			deviceInfoSet = SetupDiGetClassDevs(ref deviceClass, 0u, IntPtr.Zero, searchFlags);
+			if (deviceInfoSet.ToInt32() == -1)
 			{
 				return false;
 			}
 			SP_DEVINFO_DATA data = default(SP_DEVINFO_DATA);
 			data.cbSize = Marshal.SizeOf(data);
-			for (uint num = 0u; SetupDiEnumDeviceInfo(intPtr, num, ref data); num++)
+			for (uint deviceIndex = 0u; SetupDiEnumDeviceInfo(deviceInfoSet, deviceIndex, ref data); deviceIndex++)
 			{
-				ProcessDeviceInfoResult processDeviceInfoResult = callback(intPtr, ref data);
+				ProcessDeviceInfoResult processDeviceInfoResult = callback(deviceInfoSet, ref data);
 				if (ProcessDeviceInfoResult.Error == processDeviceInfoResult)
 				{
 					return false;
@@ -731,9 +731,9 @@ public class DeviceHelper : IDisposable
 		{
 			try
 			{
-				if (intPtr != IntPtr.Zero && intPtr.ToInt32() != -1)
+				if (deviceInfoSet != IntPtr.Zero && deviceInfoSet.ToInt32() != -1)
 				{
-					SetupDiDestroyDeviceInfoList(intPtr);
+					SetupDiDestroyDeviceInfoList(deviceInfoSet);
 				}
 			}
 			catch (Exception e)

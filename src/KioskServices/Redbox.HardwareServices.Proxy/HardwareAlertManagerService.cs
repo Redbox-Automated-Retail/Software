@@ -116,13 +116,13 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 			return;
 		}
 		hardwareService.GetProgramResults(jobId, out var hardwareResults);
-		bool flag = hardwareResults?.All((IHardwareResult x) => x.Code == "InventoryState" || x.Code == "ItemReturned" || x.Code == "ExcludedSlotSkipped" || x.Code == "BadIdRead" || x.Code == "ServiceNotConfigured" || x.Code == "NoFraudMarkersDetected" || x.Code == "FraudMarkersRead" || x.Code == "FraudScanError" || x.Code == "Read-ID" || x.Code == "PeeledImageFile" || x.Code == "ReadTime" || x.Code == "DeviceStatus" || x.Code == "NumBarcodes" || x.Code == "ReadAttempts" || x.Code == "CameraStatsJson") ?? false;
+		bool allResultsNormal = hardwareResults?.All((IHardwareResult x) => x.Code == "InventoryState" || x.Code == "ItemReturned" || x.Code == "ExcludedSlotSkipped" || x.Code == "BadIdRead" || x.Code == "ServiceNotConfigured" || x.Code == "NoFraudMarkersDetected" || x.Code == "FraudMarkersRead" || x.Code == "FraudScanError" || x.Code == "Read-ID" || x.Code == "PeeledImageFile" || x.Code == "ReadTime" || x.Code == "DeviceStatus" || x.Code == "NumBarcodes" || x.Code == "ReadAttempts" || x.Code == "CameraStatsJson") ?? false;
 		LogHelper.Instance.Log(FormatJobResults(jobId));
 		ErrorList errors = new ErrorList();
 		ErrorList jobErrors = hardwareService.GetJobErrors(jobId, out errors);
 		LogHelper.Instance.Log(FormatErrors(jobId));
 		StringBuilder stringBuilder = new StringBuilder("<h2>" + typeOfSync);
-		if ((jobErrors != null && jobErrors.Count != 0) || !flag)
+		if ((jobErrors != null && jobErrors.Count != 0) || !allResultsNormal)
 		{
 			LogHelper.Instance.Log("Errored");
 			stringBuilder.Append(" Errored</h2>");
@@ -291,24 +291,24 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 
 	private string GetJobResultItem(IHardwareResult jobResult)
 	{
-		string text = jobResult?.ItemID;
-		if (text == null)
+		string itemId = jobResult?.ItemID;
+		if (itemId == null)
 		{
-			int num = jobResult?.MetaData.IndexOf(',') ?? (-1);
-			if (num == 0)
+			int commaIndex = jobResult?.MetaData.IndexOf(',') ?? (-1);
+			if (commaIndex == 0)
 			{
-				text = ((jobResult == null || jobResult.MetaData.Length != 1) ? jobResult?.MetaData.Substring(1) : "UNKNOWN");
+				itemId = ((jobResult == null || jobResult.MetaData.Length != 1) ? jobResult?.MetaData.Substring(1) : "UNKNOWN");
 			}
-			else if (num < 0)
+			else if (commaIndex < 0)
 			{
-				text = jobResult?.MetaData;
+				itemId = jobResult?.MetaData;
 			}
-			else if (num > 0)
+			else if (commaIndex > 0)
 			{
-				text = jobResult?.MetaData.Substring(0, num);
+				itemId = jobResult?.MetaData.Substring(0, commaIndex);
 			}
 		}
-		return text;
+		return itemId;
 	}
 
 	private static void Validate(object value, string name, Func<object, bool> validator)

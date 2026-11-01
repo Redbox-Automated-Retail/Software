@@ -31,10 +31,10 @@ public class Shell : Form
 	{
 		get
 		{
-			CreateParams obj = base.CreateParams;
-			obj.ExStyle |= 32;
-			obj.ExStyle |= 128;
-			return obj;
+			CreateParams createParams = base.CreateParams;
+			createParams.ExStyle |= 32;
+			createParams.ExStyle |= 128;
+			return createParams;
 		}
 	}
 

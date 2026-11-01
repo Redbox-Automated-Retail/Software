@@ -105,10 +105,10 @@ public class PromotionServices : IPromotionServices
 				Interlocked.Increment(ref m_working);
 				IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 				bool sendPromoCodeValidationToKioskClientService = configuration.SendPromoCodeValidationToKioskClientService;
-				string arg = (sendPromoCodeValidationToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+				string serviceUrl = (sendPromoCodeValidationToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
-					LogHelper.Instance.Log($"Live call to remote IPromotionServices.ValidatePromotionCode, URL: {arg}");
+					LogHelper.Instance.Log($"Live call to remote IPromotionServices.ValidatePromotionCode, URL: {serviceUrl}");
 					if (!int.TryParse(storeNumber, out var kioskId))
 					{
 						LogHelper.Instance.Log($"The passed storeNumber '{storeNumber}' cannot be converted into an Int32.", LogEntryType.Error);
@@ -119,7 +119,7 @@ public class PromotionServices : IPromotionServices
 					{
 						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 						Guid messageId = Guid.NewGuid();
-						IDictionary<string, object> dictionary = ((!sendPromoCodeValidationToKioskClientService) ? KioskServicesProxy.Instance.ExecuteMessage(new
+						IDictionary<string, object> responseData = ((!sendPromoCodeValidationToKioskClientService) ? KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							KioskId = kioskId,
 							Code = promotionCode,
@@ -128,43 +128,43 @@ public class PromotionServices : IPromotionServices
 							EngineVersion = macroService["EngineVersion"],
 							BundleVersion = macroService["ProductVersion"]
 						}) : (await ServiceLocator.Instance.GetService<IKioskClientService>().Promotion.ValidatePromotionCode(messageId, promotionCode, kioskId)));
-						HealthServicesProxy.Instance.UpdateOnlineStatus(dictionary);
-						result.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
+						HealthServicesProxy.Instance.UpdateOnlineStatus(responseData);
+						result.Success = responseData.ContainsKey("Success") && (bool)responseData["Success"];
 						result.Properties["response"] = PromotionValidationResponse.Valid.ToString();
-						result.Properties["amount"] = (dictionary.ContainsKey("Amount") ? dictionary["Amount"] : ((object)1));
-						result.Properties["promotion_intent"] = (dictionary.ContainsKey("PromotionIntentCode") ? dictionary["PromotionIntentCode"] : PromotionIntentCode.FixedValue.ToString());
-						result.Properties["rent_qty"] = (dictionary.ContainsKey("RentQty") ? dictionary["RentQty"] : ((object)0));
-						result.Properties["rent_format"] = (dictionary.ContainsKey("RentFormat") ? dictionary["RentFormat"] : null);
-						result.Properties["get_qty"] = (dictionary.ContainsKey("GetQty") ? dictionary["GetQty"] : ((object)0));
-						result.Properties["get_format"] = (dictionary.ContainsKey("GetFormat") ? dictionary["GetFormat"] : null);
-						Dictionary<string, object> dictionary2 = (dictionary.ContainsKey("CampaignTitles") ? (dictionary["CampaignTitles"] as Dictionary<string, object>) : null);
-						if (dictionary2 != null)
+						result.Properties["amount"] = (responseData.ContainsKey("Amount") ? responseData["Amount"] : ((object)1));
+						result.Properties["promotion_intent"] = (responseData.ContainsKey("PromotionIntentCode") ? responseData["PromotionIntentCode"] : PromotionIntentCode.FixedValue.ToString());
+						result.Properties["rent_qty"] = (responseData.ContainsKey("RentQty") ? responseData["RentQty"] : ((object)0));
+						result.Properties["rent_format"] = (responseData.ContainsKey("RentFormat") ? responseData["RentFormat"] : null);
+						result.Properties["get_qty"] = (responseData.ContainsKey("GetQty") ? responseData["GetQty"] : ((object)0));
+						result.Properties["get_format"] = (responseData.ContainsKey("GetFormat") ? responseData["GetFormat"] : null);
+						Dictionary<string, object> campaignTitles = (responseData.ContainsKey("CampaignTitles") ? (responseData["CampaignTitles"] as Dictionary<string, object>) : null);
+						if (campaignTitles != null)
 						{
-							ArrayList value = dictionary2["Titles"] as ArrayList;
-							Dictionary<string, object> value2 = new Dictionary<string, object>
+							ArrayList campaignTitleList = campaignTitles["Titles"] as ArrayList;
+							Dictionary<string, object> campaignTitlesData = new Dictionary<string, object>
 							{
-								["include"] = (bool)dictionary2["Include"],
-								["titles"] = value
+								["include"] = (bool)campaignTitles["Include"],
+								["titles"] = campaignTitleList
 							};
-							result.Properties["campaign_titles"] = value2;
+							result.Properties["campaign_titles"] = campaignTitlesData;
 						}
-						if (dictionary.ContainsKey("ServerName"))
+						if (responseData.ContainsKey("ServerName"))
 						{
-							result.Properties["server_name"] = dictionary["ServerName"];
+							result.Properties["server_name"] = responseData["ServerName"];
 						}
-						result.Properties["product_type_id"] = (dictionary.ContainsKey("ProductTypeId") ? dictionary["ProductTypeId"] : null);
-						result.Properties["format_ids"] = (dictionary.ContainsKey("FormatIds") ? (dictionary["FormatIds"] as ArrayList) : null);
-						result.Properties["action_code"] = (dictionary.ContainsKey("ActionType") ? dictionary["ActionType"] : PromotionActionCode.Rental.ToString());
-						result.Properties["allow_full_discount"] = (dictionary.ContainsKey("AllowFullDiscount") ? dictionary["AllowFullDiscount"] : ((object)true));
-						result.Properties["default_promo"] = (dictionary.ContainsKey("DefaultPromo") ? dictionary["DefaultPromo"] : null);
+						result.Properties["product_type_id"] = (responseData.ContainsKey("ProductTypeId") ? responseData["ProductTypeId"] : null);
+						result.Properties["format_ids"] = (responseData.ContainsKey("FormatIds") ? (responseData["FormatIds"] as ArrayList) : null);
+						result.Properties["action_code"] = (responseData.ContainsKey("ActionType") ? responseData["ActionType"] : PromotionActionCode.Rental.ToString());
+						result.Properties["allow_full_discount"] = (responseData.ContainsKey("AllowFullDiscount") ? responseData["AllowFullDiscount"] : ((object)true));
+						result.Properties["default_promo"] = (responseData.ContainsKey("DefaultPromo") ? responseData["DefaultPromo"] : null);
 						if (!result.Success)
 						{
-							ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
+							ArrayList arrayList = (responseData.ContainsKey("Errors") ? (responseData["Errors"] as ArrayList) : null);
 							if (arrayList != null && arrayList.Count > 0)
 							{
-								if (arrayList[0] is Dictionary<string, object> dictionary3)
+								if (arrayList[0] is Dictionary<string, object> firstError)
 								{
-									object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(PromotionValidationResponse?), (string)dictionary3["Code"]);
+									object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(PromotionValidationResponse?), (string)firstError["Code"]);
 									result.Properties["response"] = ((fieldsForResponseCode != null) ? fieldsForResponseCode.ToString() : PromotionValidationResponse.Error.ToString());
 								}
 							}
@@ -221,8 +221,8 @@ public class PromotionServices : IPromotionServices
 				Interlocked.Increment(ref m_working);
 				remoteServiceResult.Properties["store"] = storeNumber;
 				remoteServiceResult.Properties["code"] = promotionCode;
-				int num = new Random().Next(1, 5);
-				new AutoResetEvent(initialState: false).WaitOne(num * 1000);
+				int delaySeconds = new Random().Next(1, 5);
+				new AutoResetEvent(initialState: false).WaitOne(delaySeconds * 1000);
 				PromotionValidationResponse response;
 				PromotionIntentCode intent;
 				decimal amount;
@@ -240,11 +240,11 @@ public class PromotionServices : IPromotionServices
 				else if (SimulateCommunicationsFailure)
 				{
 					remoteServiceResult.Success = false;
-					RemoteServiceProviderInstruction item = new RemoteServiceProviderInstruction
+					RemoteServiceProviderInstruction instruction = new RemoteServiceProviderInstruction
 					{
 						Type = InstructionType.WaitForSuccessfulPing
 					};
-					remoteServiceResult.InnerInstructions.Add(item);
+					remoteServiceResult.InnerInstructions.Add(instruction);
 					remoteServiceResult.Properties["response"] = "Communications Failure";
 				}
 				else if (DoesCodeMatch(promotionCode, out response, out intent, out amount))
@@ -320,12 +320,12 @@ public class PromotionServices : IPromotionServices
 		string[] promoCodes = PromoCodes;
 		for (int i = 0; i < promoCodes.Length; i++)
 		{
-			string[] array = promoCodes[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length >= 4 && string.Compare(array[0], promotionCode, ignoreCase: true) == 0)
+			string[] fields = promoCodes[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+			if (fields.Length >= 4 && string.Compare(fields[0], promotionCode, ignoreCase: true) == 0)
 			{
-				decimal.TryParse(array[1], out amount);
-				intent = Enum<PromotionIntentCode>.ParseIgnoringCase(array[2], PromotionIntentCode.FixedValue);
-				response = Enum<PromotionValidationResponse>.ParseIgnoringCase(array[3], PromotionValidationResponse.Valid);
+				decimal.TryParse(fields[1], out amount);
+				intent = Enum<PromotionIntentCode>.ParseIgnoringCase(fields[2], PromotionIntentCode.FixedValue);
+				response = Enum<PromotionValidationResponse>.ParseIgnoringCase(fields[3], PromotionValidationResponse.Valid);
 				return true;
 			}
 		}

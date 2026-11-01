@@ -74,10 +74,10 @@ public sealed class ResultItem
 			Barcode = parts[0].TrimEnd();
 			if (parts.Length > 1)
 			{
-				int num = parts[1].IndexOf(')');
-				if (num != -1)
+				int closeIndex = parts[1].IndexOf(')');
+				if (closeIndex != -1)
 				{
-					Metadata = parts[1].Substring(0, num);
+					Metadata = parts[1].Substring(0, closeIndex);
 				}
 				else
 				{

@@ -55,7 +55,7 @@ public class ProhibitedProcessDefinition : Definition
 
 	public bool KillProcess()
 	{
-		int num = 0;
+		int stillRunningCount = 0;
 		Process[] processesByName = Process.GetProcessesByName(Name);
 		if (processesByName.Length > 0)
 		{
@@ -64,11 +64,11 @@ public class ProhibitedProcessDefinition : Definition
 				process.Kill();
 				if (!process.HasExited)
 				{
-					num++;
+					stillRunningCount++;
 				}
 			}
 		}
-		return num == processesByName.Length;
+		return stillRunningCount == processesByName.Length;
 	}
 
 	public bool IsProcessRunning()

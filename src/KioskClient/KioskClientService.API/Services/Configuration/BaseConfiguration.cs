@@ -63,31 +63,31 @@ public abstract class BaseConfiguration
 	private bool isSettingIncluded(object categoryClassInstance, PropertyInfo settingProperty, ConfigLogParameters loggingParameters)
 	{
 		string categoryName = GetCategoryName(categoryClassInstance);
-		string name = categoryClassInstance.GetType().Name;
-		string name2 = settingProperty.Name;
+		string categoryTypeName = categoryClassInstance.GetType().Name;
+		string propertyName = settingProperty.Name;
 		string settingName = GetSettingName(settingProperty);
-		bool flag = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
-		bool flag2 = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag3 = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag4 = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
+		bool includeAllCategories = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
+		bool categoryIncluded = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, categoryTypeName }).Any();
+		bool categoryExcluded = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, categoryTypeName }).Any();
+		bool settingIncluded = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(categoryTypeName, settingName),
+			(categoryTypeName, propertyName)
 		}).Any();
-		bool flag5 = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
+		bool settingExcluded = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(categoryTypeName, settingName),
+			(categoryTypeName, propertyName)
 		}).Any();
-		if (!flag4)
+		if (!settingIncluded)
 		{
-			if ((flag && !flag3) | flag2)
+			if ((includeAllCategories && !categoryExcluded) | categoryIncluded)
 			{
-				return !flag5;
+				return !settingExcluded;
 			}
 			return false;
 		}
@@ -110,45 +110,45 @@ public abstract class BaseConfiguration
 			}
 			string settingName = GetSettingName(propertyInfo);
 			object settingValue = null;
-			bool flag = false;
+			bool useDefault = false;
 			KioskSettingValue kioskSettingValue = _kioskConfigurationSettings.GetKioskSettingValue(categoryName, settingName);
 			if (kioskSettingValue != null)
 			{
 				try
 				{
-					string text = kioskSettingValue.Value;
-					bool flag2 = true;
+					string rawValue = kioskSettingValue.Value;
+					bool convertValue = true;
 					if (kioskSettingValue.EncryptionType.HasValue)
 					{
 						if (GetMaskLogValueAttribute(propertyInfo) != null)
 						{
-							text = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, text).Result;
+							rawValue = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, rawValue).Result;
 						}
 						else
 						{
-							flag2 = false;
-							text = "[Encrypted]";
+							convertValue = false;
+							rawValue = "[Encrypted]";
 						}
 					}
-					settingValue = (flag2 ? Convert.ChangeType(text, propertyInfo.PropertyType) : text);
+					settingValue = (convertValue ? Convert.ChangeType(rawValue, propertyInfo.PropertyType) : rawValue);
 				}
 				catch (Exception ex)
 				{
-					flag = true;
+					useDefault = true;
 					_logger.LogErrorWithSource(ex, "Unable to get " + categoryName + " property " + settingName, "LogCategorySettingValues");
 				}
 			}
 			else
 			{
-				flag = true;
+				useDefault = true;
 			}
-			if (flag)
+			if (useDefault)
 			{
 				try
 				{
-					if (_defaultValues.TryGetValue((categoryName, settingName), out var value))
+					if (_defaultValues.TryGetValue((categoryName, settingName), out var defaultValue))
 					{
-						settingValue = value;
+						settingValue = defaultValue;
 					}
 				}
 				catch (Exception ex2)
@@ -157,8 +157,8 @@ public abstract class BaseConfiguration
 				}
 			}
 			settingValue = MaskSettingValue(propertyInfo, settingValue);
-			string text2 = (flag ? " [Default value]" : null);
-			_logger.LogInformation($"KioskConfiguration.{categoryName}.{settingName} = {settingValue}{text2}");
+			string defaultSuffix = (useDefault ? " [Default value]" : null);
+			_logger.LogInformation($"KioskConfiguration.{categoryName}.{settingName} = {settingValue}{defaultSuffix}");
 		}
 	}
 
@@ -188,8 +188,8 @@ public abstract class BaseConfiguration
 			{
 				_kioskConfigurationSettings = _optionsMonitorKioskConfigurationSettings.CurrentValue;
 			}
-			bool flag = _defaultValues == null;
-			if (flag)
+			bool populateDefaultValues = _defaultValues == null;
+			if (populateDefaultValues)
 			{
 				_defaultValues = new Dictionary<(string, string), object>();
 			}
@@ -199,7 +199,7 @@ public abstract class BaseConfiguration
 				if (propertyInfo.PropertyType.IsSubclassOf(typeof(BaseCategorySetting)))
 				{
 					object categoryClassInstance = GetCategoryClassInstance(propertyInfo);
-					PopulateCategorySettingValues(categoryClassInstance, flag);
+					PopulateCategorySettingValues(categoryClassInstance, populateDefaultValues);
 				}
 			}
 		}
@@ -228,39 +228,39 @@ public abstract class BaseConfiguration
 			{
 				_defaultValues[(categoryName, settingName)] = propertyInfo.GetValue(categoryClassInstance, null);
 			}
-			bool flag = false;
+			bool useDefault = false;
 			KioskSettingValue kioskSettingValue = _kioskConfigurationSettings.GetKioskSettingValue(categoryName, settingName);
 			if (kioskSettingValue != null)
 			{
 				try
 				{
-					string text = kioskSettingValue.Value;
+					string rawValue = kioskSettingValue.Value;
 					if (kioskSettingValue.EncryptionType.HasValue)
 					{
-						text = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, text).Result;
+						rawValue = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, rawValue).Result;
 					}
-					object value = Convert.ChangeType(text, propertyInfo.PropertyType);
-					propertyInfo.SetValue(categoryClassInstance, value, null);
+					object settingValue = Convert.ChangeType(rawValue, propertyInfo.PropertyType);
+					propertyInfo.SetValue(categoryClassInstance, settingValue, null);
 				}
 				catch (Exception ex)
 				{
-					flag = true;
+					useDefault = true;
 					_logger.LogErrorWithSource(ex, "Unable to set " + categoryName + " property " + settingName, "PopulateCategorySettingValues");
 				}
 			}
 			else
 			{
-				flag = true;
+				useDefault = true;
 			}
-			if (!flag)
+			if (!useDefault)
 			{
 				continue;
 			}
 			try
 			{
-				if (_defaultValues.TryGetValue((categoryName, settingName), out var value2))
+				if (_defaultValues.TryGetValue((categoryName, settingName), out var defaultValue))
 				{
-					propertyInfo.SetValue(categoryClassInstance, value2, null);
+					propertyInfo.SetValue(categoryClassInstance, defaultValue, null);
 				}
 			}
 			catch (Exception ex2)
@@ -294,28 +294,28 @@ public abstract class BaseConfiguration
 
 	private object GetCategoryClassInstance(PropertyInfo categoryClassPropertyInfo)
 	{
-		object obj = categoryClassPropertyInfo?.GetValue(this, null);
-		if (obj == null)
+		object categoryClassInstance = categoryClassPropertyInfo?.GetValue(this, null);
+		if (categoryClassInstance == null)
 		{
 			try
 			{
-				obj = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
-				if (obj != null)
+				categoryClassInstance = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
+				if (categoryClassInstance != null)
 				{
-					categoryClassPropertyInfo.SetValue(this, obj);
+					categoryClassPropertyInfo.SetValue(this, categoryClassInstance);
 				}
 				else
 				{
 					_logger.LogErrorWithSource("Unable to instantiate configuration category class " + categoryClassPropertyInfo?.PropertyType?.Name, "GetCategoryClassInstance");
 				}
-				SetParentKioskConfiguration(obj);
+				SetParentKioskConfiguration(categoryClassInstance);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogErrorWithSource(ex, "Unable to instantiate configuration category class " + categoryClassPropertyInfo?.PropertyType?.Name, "GetCategoryClassInstance");
 			}
 		}
-		return obj;
+		return categoryClassInstance;
 	}
 
 	private void SetParentKioskConfiguration(object categoryClassInstance)

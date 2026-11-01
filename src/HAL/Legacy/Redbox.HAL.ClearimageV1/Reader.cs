@@ -22,23 +22,23 @@ public class Reader : IClearImageReader, IBarcodeReader
 		}
 		for (int i = 0; i < 2; i++)
 		{
-			bool flag = false;
+			bool failed = false;
 			try
 			{
 				TheReader.Image.Open(file);
-				int num = 0;
-				ExecutionTimer val2 = new ExecutionTimer();
+				int found = 0;
+				ExecutionTimer timer = new ExecutionTimer();
 				try
 				{
-					num = TheReader.Find(expectedCodes);
-					val2.Stop();
-					val.ExecutionTime = val2.Elapsed;
+					found = TheReader.Find(expectedCodes);
+					timer.Stop();
+					val.ExecutionTime = timer.Elapsed;
 				}
 				finally
 				{
-					((IDisposable)val2)?.Dispose();
+					((IDisposable)timer)?.Dispose();
 				}
-				if (num > 0)
+				if (found > 0)
 				{
 					foreach (CiBarcode barcode in TheReader.Barcodes)
 					{
@@ -48,7 +48,7 @@ public class Reader : IClearImageReader, IBarcodeReader
 			}
 			catch (Exception ex)
 			{
-				flag = true;
+				failed = true;
 				LogHelper.Instance.Log("ClearImageScanner: exception during scan.", ex);
 				ProcessHelper.DumpProcessMemoryMetrics();
 				val.ResetOnException();
@@ -61,7 +61,7 @@ public class Reader : IClearImageReader, IBarcodeReader
 			{
 				LogHelper.Instance.Log("Exception closing barcode image.", ex2);
 			}
-			if (!flag)
+			if (!failed)
 			{
 				return (IScanResult)(object)val;
 			}

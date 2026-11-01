@@ -14,32 +14,32 @@ public static class AssemblyFunctions
 	[KernelFunction(Name = "kernel.executeassemblyinstaller")]
 	internal static LuaTable ExecuteAssemblyInstaller(string fileName, string mode, params object[] options)
 	{
-		List<string> list = new List<string>();
+		List<string> arguments = new List<string>();
 		if (options != null)
 		{
-			foreach (object obj in options)
+			foreach (object option in options)
 			{
-				if (obj != null)
+				if (option != null)
 				{
-					list.Add(obj.ToString());
+					arguments.Add(option.ToString());
 				}
 			}
 		}
-		List<string> list2 = new List<string>();
+		List<string> installerErrors = new List<string>();
 #if NETFRAMEWORK
-		bool flag = AssemblyInstallerHelper.ExecuteInAppDomain(fileName, list.ToArray(), (string.Compare(mode, "install", ignoreCase: true) != 0) ? InstallMode.Uninstall : InstallMode.Install, list2);
+		bool rebootRequired = AssemblyInstallerHelper.ExecuteInAppDomain(fileName, arguments.ToArray(), (string.Compare(mode, "install", ignoreCase: true) != 0) ? InstallMode.Uninstall : InstallMode.Install, installerErrors);
 #else
-		bool flag = RunInstallUtil(fileName, list, string.Compare(mode, "install", ignoreCase: true) == 0, list2);
+		bool rebootRequired = RunInstallUtil(fileName, arguments, string.Compare(mode, "install", ignoreCase: true) == 0, installerErrors);
 #endif
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		luaTable["reboot_required"] = flag;
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
-		foreach (string item in list2)
+		luaTable["reboot_required"] = rebootRequired;
+		LuaTable errorsTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		int index = 1;
+		foreach (string error in installerErrors)
 		{
-			luaTable2[num++] = item;
+			errorsTable[index++] = error;
 		}
-		luaTable["errors"] = luaTable2;
+		luaTable["errors"] = errorsTable;
 		return luaTable;
 	}
 #if !NETFRAMEWORK

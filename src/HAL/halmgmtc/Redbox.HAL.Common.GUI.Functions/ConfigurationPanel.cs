@@ -78,19 +78,19 @@ public class ConfigurationPanel : UserControl
 		ConfigItem configItem = (ConfigItem)dataGridViewCell.Tag;
 		if (configItem != null)
 		{
-			object obj = dataGridViewCell.Value;
+			object newValue = dataGridViewCell.Value;
 			if (configItem.ItemType == typeof(bool))
 			{
-				obj = ((dataGridViewCell.Value.ToString() == "Yes") ? "True" : "False");
+				newValue = ((dataGridViewCell.Value.ToString() == "Yes") ? "True" : "False");
 			}
-			if (configItem.ItemType == typeof(int) && !int.TryParse(obj.ToString(), out var _))
+			if (configItem.ItemType == typeof(int) && !int.TryParse(newValue.ToString(), out var _))
 			{
 				MessageBox.Show("Data entered is not an integer");
 				dataGridViewCell.Value = configItem.Value;
 			}
 			else
 			{
-				configItem.Value = obj;
+				configItem.Value = newValue;
 				SetStyle(dataGridViewCell);
 				IsDirty = true;
 			}

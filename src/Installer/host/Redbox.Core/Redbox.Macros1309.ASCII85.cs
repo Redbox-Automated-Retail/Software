@@ -24,14 +24,14 @@ internal class Redbox_002EMacros1309_002EASCII85
 
 	public static byte[] Decode(string s)
 	{
-		Redbox_002EMacros1309_002EASCII85 obj = new Redbox_002EMacros1309_002EASCII85();
-		return obj.InternalDecode(s);
+		Redbox_002EMacros1309_002EASCII85 codec = new Redbox_002EMacros1309_002EASCII85();
+		return codec.InternalDecode(s);
 	}
 
 	public static string Encode(byte[] source)
 	{
-		Redbox_002EMacros1309_002EASCII85 obj = new Redbox_002EMacros1309_002EASCII85();
-		return obj.InternalEncode(source);
+		Redbox_002EMacros1309_002EASCII85 codec = new Redbox_002EMacros1309_002EASCII85();
+		return codec.InternalEncode(source);
 	}
 
 	private byte[] InternalDecode(string s)
@@ -49,15 +49,15 @@ internal class Redbox_002EMacros1309_002EASCII85
 			s = s.Substring(0, s.Length - "~>".Length);
 		}
 		MemoryStream memoryStream = new MemoryStream();
-		int num = 0;
-		bool flag = false;
-		string text = s;
-		foreach (char c in text)
+		int count = 0;
+		bool isDataChar = false;
+		string input = s;
+		foreach (char c in input)
 		{
 			switch (c)
 			{
 			case 'z':
-				if (num != 0)
+				if (count != 0)
 				{
 					throw new Exception("The character 'z' is invalid inside an ASCII85 block.");
 				}
@@ -66,7 +66,7 @@ internal class Redbox_002EMacros1309_002EASCII85
 				m_decodedBlock[2] = 0;
 				m_decodedBlock[3] = 0;
 				memoryStream.Write(m_decodedBlock, 0, m_decodedBlock.Length);
-				flag = false;
+				isDataChar = false;
 				break;
 			case '\0':
 			case '\b':
@@ -74,39 +74,39 @@ internal class Redbox_002EMacros1309_002EASCII85
 			case '\n':
 			case '\f':
 			case '\r':
-				flag = false;
+				isDataChar = false;
 				break;
 			default:
 				if (c < '!' || c > 'u')
 				{
 					throw new Exception("Bad character '" + c + "' found. ASCII85 only allows characters '!' to 'u'.");
 				}
-				flag = true;
+				isDataChar = true;
 				break;
 			}
-			if (flag)
+			if (isDataChar)
 			{
-				m_tuple += (uint)((c - 33) * (int)pow85[num]);
-				num++;
-				if (num == m_encodedBlock.Length)
+				m_tuple += (uint)((c - 33) * (int)pow85[count]);
+				count++;
+				if (count == m_encodedBlock.Length)
 				{
 					DecodeBlock();
 					memoryStream.Write(m_decodedBlock, 0, m_decodedBlock.Length);
 					m_tuple = 0u;
-					num = 0;
+					count = 0;
 				}
 			}
 		}
-		switch (num)
+		switch (count)
 		{
 		case 1:
 			throw new Exception("The last block of ASCII85 data cannot be a single byte.");
 		default:
 		{
-			num--;
-			m_tuple += pow85[num];
-			DecodeBlock(num);
-			for (int j = 0; j < num; j++)
+			count--;
+			m_tuple += pow85[count];
+			DecodeBlock(count);
+			for (int j = 0; j < count; j++)
 			{
 				memoryStream.WriteByte(m_decodedBlock[j]);
 			}
@@ -123,11 +123,11 @@ internal class Redbox_002EMacros1309_002EASCII85
 		StringBuilder stringBuilder = new StringBuilder(ba.Length * (m_encodedBlock.Length / m_decodedBlock.Length));
 		m_linePos = 0;
 		AppendString(stringBuilder, "<~");
-		int num = 0;
+		int count = 0;
 		m_tuple = 0u;
 		foreach (byte b in ba)
 		{
-			if (num >= m_decodedBlock.Length - 1)
+			if (count >= m_decodedBlock.Length - 1)
 			{
 				m_tuple |= b;
 				if (m_tuple == 0)
@@ -139,17 +139,17 @@ internal class Redbox_002EMacros1309_002EASCII85
 					EncodeBlock(stringBuilder);
 				}
 				m_tuple = 0u;
-				num = 0;
+				count = 0;
 			}
 			else
 			{
-				m_tuple |= (uint)(b << 24 - num * 8);
-				num++;
+				m_tuple |= (uint)(b << 24 - count * 8);
+				count++;
 			}
 		}
-		if (num > 0)
+		if (count > 0)
 		{
-			EncodeBlock(num + 1, stringBuilder);
+			EncodeBlock(count + 1, stringBuilder);
 		}
 		AppendString(stringBuilder, "~>");
 		return stringBuilder.ToString();
@@ -162,9 +162,9 @@ internal class Redbox_002EMacros1309_002EASCII85
 
 	private void EncodeBlock(int count, StringBuilder sb)
 	{
-		for (int num = m_encodedBlock.Length - 1; num >= 0; num--)
+		for (int i = m_encodedBlock.Length - 1; i >= 0; i--)
 		{
-			m_encodedBlock[num] = (byte)(m_tuple % 85 + 33);
+			m_encodedBlock[i] = (byte)(m_tuple % 85 + 33);
 			m_tuple /= 85u;
 		}
 		for (int i = 0; i < count; i++)

@@ -23,16 +23,16 @@ internal class KioskIdMiddleware
 
 	public async Task Invoke(HttpContext context)
 	{
-		string text = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, "x-redbox-kioskid", StringComparison.OrdinalIgnoreCase));
-		if (string.IsNullOrWhiteSpace(text))
+		string headerName = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, "x-redbox-kioskid", StringComparison.OrdinalIgnoreCase));
+		if (string.IsNullOrWhiteSpace(headerName))
 		{
 			_logger.LogDebug("KioskId header invalid or missing");
 			await _next(context);
 			return;
 		}
-		string text2 = context.Request.Headers[text];
-		_logger.LogDebug("KioskId header found: {kioskId}", text2);
-		using (LogContext.PushProperty("KioskId", text2))
+		string headerValue = context.Request.Headers[headerName];
+		_logger.LogDebug("KioskId header found: {kioskId}", headerValue);
+		using (LogContext.PushProperty("KioskId", headerValue))
 		{
 			await _next(context);
 		}

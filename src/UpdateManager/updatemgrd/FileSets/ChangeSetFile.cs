@@ -826,30 +826,30 @@ internal class ChangeSetFile
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(_changeSet.ActivateStartTime, out var result))
+		if (!TimeSpan.TryParse(_changeSet.ActivateStartTime, out var startTime))
 		{
 			return true;
 		}
-		if (!TimeSpan.TryParse(_changeSet.ActivateEndTime, out var result2))
+		if (!TimeSpan.TryParse(_changeSet.ActivateEndTime, out var endTime))
 		{
 			return true;
 		}
-		if (result == result2)
+		if (startTime == endTime)
 		{
 			return true;
 		}
 		DateTime now = DateTime.Now;
-		if (result2 < result)
+		if (endTime < startTime)
 		{
-			if (!(now.TimeOfDay <= result2))
+			if (!(now.TimeOfDay <= endTime))
 			{
-				return now.TimeOfDay >= result;
+				return now.TimeOfDay >= startTime;
 			}
 			return true;
 		}
-		if (now.TimeOfDay >= result)
+		if (now.TimeOfDay >= startTime)
 		{
-			return now.TimeOfDay <= result2;
+			return now.TimeOfDay <= endTime;
 		}
 		return false;
 	}

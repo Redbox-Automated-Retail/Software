@@ -33,41 +33,41 @@ public class StuDiscsTask : TaskBase
 		DataView dataView = new DataView(dataSet.Tables[0], null, "TitleID", DataViewRowState.CurrentRows);
 		using StreamWriter streamWriter = new StreamWriter("C:\\stuDiscs.txt", append: false);
 		streamWriter.WriteLine("KioskId,Title,ForSaleCount,OnHandCount");
-		int num = 0;
-		long num2 = -1L;
+		int titleCount = 0;
+		long currentTitleId = -1L;
 		string titleName = null;
-		int num3 = -1;
+		int onHandCount = -1;
 		foreach (DataRow row in dataView.Table.Rows)
 		{
-			long num4 = Convert.ToInt64(row["TitleID"]);
+			long titleId = Convert.ToInt64(row["TitleID"]);
 			if (row["OnHandCount"] != DBNull.Value)
 			{
-				num3 = Convert.ToInt32(row["OnHandCount"]);
-				Log(Level.Warning, $"Current On Hand Count for Title {num4}: {num3}");
+				onHandCount = Convert.ToInt32(row["OnHandCount"]);
+				Log(Level.Warning, $"Current On Hand Count for Title {titleId}: {onHandCount}");
 			}
 			else
 			{
-				Log(Level.Warning, $"Current On Hand Count is NULL for Title {num4}");
+				Log(Level.Warning, $"Current On Hand Count is NULL for Title {titleId}");
 			}
-			if (num2 == -1)
+			if (currentTitleId == -1)
 			{
-				num2 = num4;
-				titleName = clientDatabase.GetTitleName(num2).Replace(",", " ");
-				num = 1;
+				currentTitleId = titleId;
+				titleName = clientDatabase.GetTitleName(currentTitleId).Replace(",", " ");
+				titleCount = 1;
 			}
-			if (num4 != num2)
+			if (titleId != currentTitleId)
 			{
-				streamWriter.WriteLine(GetLine(titleName, num, num3));
-				num2 = num4;
-				titleName = clientDatabase.GetTitleName(num2).Replace(",", " ");
-				num = 1;
+				streamWriter.WriteLine(GetLine(titleName, titleCount, onHandCount));
+				currentTitleId = titleId;
+				titleName = clientDatabase.GetTitleName(currentTitleId).Replace(",", " ");
+				titleCount = 1;
 			}
 			else
 			{
-				num++;
+				titleCount++;
 			}
 		}
-		streamWriter.WriteLine(GetLine(titleName, num, num3));
+		streamWriter.WriteLine(GetLine(titleName, titleCount, onHandCount));
 	}
 
 	private string GetLine(string titleName, int titleCount, int onHandCount)

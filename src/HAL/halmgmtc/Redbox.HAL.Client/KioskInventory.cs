@@ -86,28 +86,28 @@ public sealed class KioskInventory : IDisposable
 		{
 			return;
 		}
-		XmlNodeList elementsByTagName = xmlDocument.GetElementsByTagName("item");
-		for (int i = 0; i < elementsByTagName.Count; i++)
+		XmlNodeList nodes = xmlDocument.GetElementsByTagName("item");
+		for (int i = 0; i < nodes.Count; i++)
 		{
-			string value = elementsByTagName[i].Attributes["id"].Value;
-			string value2 = elementsByTagName[i].Attributes["ReturnTime"].Value;
+			string id = nodes[i].Attributes["id"].Value;
+			string returnTimeText = nodes[i].Attributes["ReturnTime"].Value;
 			DateTime? returnTime = null;
-			if (value2 != "NONE")
+			if (returnTimeText != "NONE")
 			{
-				returnTime = DateTime.Parse(value2);
+				returnTime = DateTime.Parse(returnTimeText);
 			}
-			string value3 = elementsByTagName[i].Attributes["excluded"].Value;
-			string value4 = elementsByTagName[i].Attributes["emptyStuckCount"].Value;
-			string value5 = elementsByTagName[i].Attributes["merchFlags"].Value;
-			InventoryLocation item = new InventoryLocation(Convert.ToInt32(elementsByTagName[i].Attributes["deck"].Value), Convert.ToInt32(elementsByTagName[i].Attributes["slot"].Value), value, Convert.ToInt32(value4), returnTime, value5, Convert.ToBoolean(value3));
+			string excluded = nodes[i].Attributes["excluded"].Value;
+			string emptyStuckCount = nodes[i].Attributes["emptyStuckCount"].Value;
+			string merchFlags = nodes[i].Attributes["merchFlags"].Value;
+			InventoryLocation item = new InventoryLocation(Convert.ToInt32(nodes[i].Attributes["deck"].Value), Convert.ToInt32(nodes[i].Attributes["slot"].Value), id, Convert.ToInt32(emptyStuckCount), returnTime, merchFlags, Convert.ToBoolean(excluded));
 			DeckInfo.Add(item);
 		}
 		DeckInfo.Sort(new InventoryLocationSorter());
-		elementsByTagName = xmlDocument.GetElementsByTagName("bin-item");
-		for (int j = 0; j < elementsByTagName.Count; j++)
+		nodes = xmlDocument.GetElementsByTagName("bin-item");
+		for (int j = 0; j < nodes.Count; j++)
 		{
-			DateTime putTime = DateTime.Parse(elementsByTagName[j].Attributes["PutTime"].Value);
-			DumpbinInfo.Add(new DumpbinItem(elementsByTagName[j].Attributes["id"].Value, putTime));
+			DateTime putTime = DateTime.Parse(nodes[j].Attributes["PutTime"].Value);
+			DumpbinInfo.Add(new DumpbinItem(nodes[j].Attributes["id"].Value, putTime));
 		}
 	}
 }

@@ -20,10 +20,10 @@ public static class ObfuscationHelper
 			leading = 0;
 			trailing = 0;
 		}
-		string obj = ((leading > 0) ? msgText.Substring(0, leading) : string.Empty);
-		string text = ((trailing > 0) ? msgText.Substring(msgText.Length - trailing, trailing) : string.Empty);
-		string text2 = new string(newChar, msgText.Length - (leading + trailing));
-		return obj + text2 + text;
+		string head = ((leading > 0) ? msgText.Substring(0, leading) : string.Empty);
+		string tail = ((trailing > 0) ? msgText.Substring(msgText.Length - trailing, trailing) : string.Empty);
+		string mask = new string(newChar, msgText.Length - (leading + trailing));
+		return head + mask + tail;
 	}
 
 	public static string ObfuscateStringData(string value, int leading, int trailing)

@@ -141,10 +141,10 @@ internal class FileSetTransition
 			if (fileData != null)
 			{
 				errorList.AddRange(RunScript(fileData.StagePath, out var result));
-				bool flag = false;
+				bool scriptFailed = false;
 				if (result.ContainsKey("Failed"))
 				{
-					flag = Convert.ToBoolean(result["Failed"]);
+					scriptFailed = Convert.ToBoolean(result["Failed"]);
 				}
 				string details = string.Empty;
 				if (result.ContainsKey("Message"))
@@ -155,7 +155,7 @@ internal class FileSetTransition
 				{
 					success = Convert.ToBoolean(result["Success"]);
 				}
-				if (flag)
+				if (scriptFailed)
 				{
 					success = false;
 					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("FileSetTransition.BeforeActivate", "BeforeActivate script returned failed == true", details));
@@ -180,17 +180,17 @@ internal class FileSetTransition
 			if (fileData != null)
 			{
 				errorList.AddRange(RunScript(fileData.FileDestination, out var result));
-				bool flag = false;
+				bool scriptFailed = false;
 				if (result.ContainsKey("Failed"))
 				{
-					flag = Convert.ToBoolean(result["Failed"]);
+					scriptFailed = Convert.ToBoolean(result["Failed"]);
 				}
 				string details = string.Empty;
 				if (result.ContainsKey("Message"))
 				{
 					details = Convert.ToString(result["Message"]);
 				}
-				if (flag)
+				if (scriptFailed)
 				{
 					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("FileSetTransition.AfterActivate", "BeforeActivate script returned failed == true", details));
 				}
@@ -321,15 +321,15 @@ internal class FileSetTransition
 		LogHelper.Instance.Log("FileSetTransition.RunScript for FileSet: ", _revision.FileSetName);
 		try
 		{
-			kernelService.ExecuteChunkNoLock(script, reset: true, "Results", out var result2, out scriptCompleted);
-			if (result2 != null)
+			kernelService.ExecuteChunkNoLock(script, reset: true, "Results", out var results, out scriptCompleted);
+			if (results != null)
 			{
-				Dictionary<string, object> list = new Dictionary<string, object>();
-				result2.ForEach(delegate(KeyValuePair<object, object> item)
+				Dictionary<string, object> resultValues = new Dictionary<string, object>();
+				results.ForEach(delegate(KeyValuePair<object, object> item)
 				{
-					list[(string)item.Key] = item.Value;
+					resultValues[(string)item.Key] = item.Value;
 				});
-				result = list;
+				result = resultValues;
 			}
 		}
 		catch (Exception e)

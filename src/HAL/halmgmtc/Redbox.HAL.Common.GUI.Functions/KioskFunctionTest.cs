@@ -86,12 +86,12 @@ internal sealed class KioskFunctionTest : JobExecutor, IKioskFunctionCheckData
 		}
 		else
 		{
-			int num = (HasCortex ? 1 : 3);
+			int expectedCount = (HasCortex ? 1 : 3);
 			ReadBarcodeResult readBarcodeResult = ReadBarcodeResult.ReadBarcodeOfDiskInPicker(Service);
 			Box.Write(string.Format("Found {0} barcodes ({1}), time={2} {3}", readBarcodeResult.Count, readBarcodeResult.Barcode, readBarcodeResult.ScanTime, readBarcodeResult.IsDuplicate ? "DUPLICATE" : string.Empty));
-			int number = int.Parse(readBarcodeResult.ScanTime.Split('.')[0]);
-			int num3 = int.Parse(readBarcodeResult.Count);
-			SnapDecodeStatus = ((num3 >= num && number <= 0) ? TestState.Success : TestState.Failure);
+			int scanSeconds = int.Parse(readBarcodeResult.ScanTime.Split('.')[0]);
+			int foundCount = int.Parse(readBarcodeResult.Count);
+			SnapDecodeStatus = ((foundCount >= expectedCount && scanSeconds <= 0) ? TestState.Success : TestState.Failure);
 			CompositeFunctions.PutItem(Service, deck, slot, Box);
 		}
 		return SnapDecodeStatus;

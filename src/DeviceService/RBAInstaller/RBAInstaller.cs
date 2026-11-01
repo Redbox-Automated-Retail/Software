@@ -146,7 +146,6 @@ public class RBAInstaller : IHostedService
 			Log("Write File Failed - Unable to locate: " + filePath);
 			return false;
 		}
-		bool flag = true;
 		try
 		{
 			FileStream stream = File.OpenRead(filePath);
@@ -170,7 +169,7 @@ public class RBAInstaller : IHostedService
 				Log("Unable to load update files");
 				return false;
 			}
-			bool flag = true;
+			bool success = true;
 			foreach (UpdateFile file in updateJson.Files)
 			{
 				string extension = Path.GetExtension(file.Path).ToUpper();
@@ -179,28 +178,28 @@ public class RBAInstaller : IHostedService
 				switch (extension)
 				{
 				case ".OGZ":
-					flag = UpdateRBA(file);
+					success = UpdateRBA(file);
 					break;
 				case ".RKI":
-					flag = UpdateRKI(file);
+					success = UpdateRKI(file);
 					break;
 				}
-				if (!flag)
+				if (!success)
 				{
 					break;
 				}
 			}
-			Log($"Updates Complete Success: {flag}");
-			if (flag)
+			Log($"Updates Complete Success: {success}");
+			if (success)
 			{
 				WaitForConnection();
 				int fileUpdateRevisionNumber = _fileUpdater.GetFileUpdateRevisionNumber();
 				Log($"Update Revision to {updateJson.Revision} from {fileUpdateRevisionNumber}");
-				if (int.TryParse(updateJson.Revision, out var result) && result > fileUpdateRevisionNumber)
+				if (int.TryParse(updateJson.Revision, out var revision) && revision > fileUpdateRevisionNumber)
 				{
 					_fileUpdater.SetFileUpdateRevisionNumber(updateJson.Revision);
 				}
-				else if (result == fileUpdateRevisionNumber)
+				else if (revision == fileUpdateRevisionNumber)
 				{
 					Log("Revision Already Up To Date");
 				}
@@ -209,7 +208,7 @@ public class RBAInstaller : IHostedService
 					_logger.LogError("Failed to update revision.");
 				}
 			}
-			return flag;
+			return success;
 		}
 		catch (Exception ex)
 		{
@@ -220,8 +219,8 @@ public class RBAInstaller : IHostedService
 
 	public Task StartAsync(CancellationToken cancellationToken)
 	{
-		bool flag = WaitForConnection();
-		Log($"Connected = {flag}");
+		bool connected = WaitForConnection();
+		Log($"Connected = {connected}");
 		Log("Update Files");
 		BeginUpdates();
 		Log("Update Complete");

@@ -118,8 +118,8 @@ public class NamedPipeServer
 		{
 			return null;
 		}
-		int num = lastError;
-		if (num != 0 && num != 535)
+		int error = lastError;
+		if (error != 0 && error != 535)
 		{
 			return null;
 		}

@@ -20,9 +20,9 @@ public class MessageQueueCountTask : TaskBase
 		MessageQueue messageQueue = new MessageQueue(".\\private$\\server.message.in");
 		try
 		{
-			int num = messageQueue.GetAllMessages().Length;
-			Log(Level.Info, $"There are {num} items in the queue");
-			if (num <= 0)
+			int messageCount = messageQueue.GetAllMessages().Length;
+			Log(Level.Info, $"There are {messageCount} items in the queue");
+			if (messageCount <= 0)
 			{
 				return;
 			}

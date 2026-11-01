@@ -34,10 +34,10 @@ internal class ProductCatalogService : IProductCatalogService
 	{
 		try
 		{
-			bool flag = await RemoveProductCache(titleId);
+			bool removed = await RemoveProductCache(titleId);
 			return new ApiBaseResponse
 			{
-				StatusCode = (flag ? HttpStatusCode.OK : HttpStatusCode.NotFound)
+				StatusCode = (removed ? HttpStatusCode.OK : HttpStatusCode.NotFound)
 			};
 		}
 		catch (Exception ex)
@@ -93,11 +93,11 @@ internal class ProductCatalogService : IProductCatalogService
 	private async Task UpdateMissing(List<long> titleIds)
 	{
 		List<ProductWrapper> wrapperProducts = (await _persistentDataCacheService.Read<ProductData>(_cacheProductFileName, useCache: true))?.Data?.Products ?? new List<ProductWrapper>();
-		List<ProductWrapper> list = wrapperProducts.Where((ProductWrapper wp) => wp.DownloadedOn < DateTime.Now.AddDays(-7.0)).ToList();
-		if (list.Count > 0)
+		List<ProductWrapper> staleProducts = wrapperProducts.Where((ProductWrapper wp) => wp.DownloadedOn < DateTime.Now.AddDays(-7.0)).ToList();
+		if (staleProducts.Count > 0)
 		{
-			_logger.LogInfoWithSource($"Removing: {list.Count} products because they where downloaded more than 7 days ago.", "UpdateMissing");
-			list.ForEach(delegate(ProductWrapper wp)
+			_logger.LogInfoWithSource($"Removing: {staleProducts.Count} products because they where downloaded more than 7 days ago.", "UpdateMissing");
+			staleProducts.ForEach(delegate(ProductWrapper wp)
 			{
 				wrapperProducts.Remove(wp);
 			});
@@ -105,15 +105,15 @@ internal class ProductCatalogService : IProductCatalogService
 		List<long> second = (from p in wrapperProducts
 			join t in titleIds on p.Product.TitleId equals t
 			select t).ToList();
-		List<long> list2 = titleIds.Except(second).ToList();
-		_logger.LogInfoWithSource($"Found: {list2.Count} products", "UpdateMissing");
-		if (list2.Count != 0)
+		List<long> missingTitleIds = titleIds.Except(second).ToList();
+		_logger.LogInfoWithSource($"Found: {missingTitleIds.Count} products", "UpdateMissing");
+		if (missingTitleIds.Count != 0)
 		{
-			List<ProductWrapper> list3 = (await GetProductsByTitleIds(list2)).ToProductWraper();
-			list3.AddRange(wrapperProducts);
+			List<ProductWrapper> updatedProducts = (await GetProductsByTitleIds(missingTitleIds)).ToProductWraper();
+			updatedProducts.AddRange(wrapperProducts);
 			await _persistentDataCacheService.Write(new ProductData
 			{
-				Products = list3.OrderBy((ProductWrapper p) => p.Product.TitleId).ToList()
+				Products = updatedProducts.OrderBy((ProductWrapper p) => p.Product.TitleId).ToList()
 			}, _cacheProductFileName);
 		}
 	}

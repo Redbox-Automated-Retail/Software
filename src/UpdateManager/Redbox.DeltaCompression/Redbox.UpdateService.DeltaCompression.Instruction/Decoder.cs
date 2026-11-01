@@ -12,8 +12,8 @@ public class Decoder
 		BinaryReader binaryReader = new BinaryReader(source);
 		instructions = new List<Instruction>();
 		tableName = GetIntPrefixEncodedString(binaryReader);
-		int num = binaryReader.ReadInt32();
-		for (int i = 0; i < num; i++)
+		int instructionCount = binaryReader.ReadInt32();
+		for (int i = 0; i < instructionCount; i++)
 		{
 			InstructionType type = (InstructionType)binaryReader.ReadByte();
 			instructions.Add(Decode(binaryReader, type));

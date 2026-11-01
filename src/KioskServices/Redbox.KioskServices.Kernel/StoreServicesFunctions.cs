@@ -111,17 +111,17 @@ internal static class StoreServicesFunctions
 		try
 		{
 			string[] lines = File.ReadAllLines(path);
-			string text = Array.Find(lines, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
-			string text2 = Array.Find(lines, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
-			LogHelper.Instance.Log("KaseyaD.ini values: User_Name = {0}, Server_Name = {1}", text, text2);
+			string userName = Array.Find(lines, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
+			string serverName = Array.Find(lines, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
+			LogHelper.Instance.Log("KaseyaD.ini values: User_Name = {0}, Server_Name = {1}", userName, serverName);
 			char[] separator = new char[1] { '.' };
-			string text3 = text.Split(separator, 3, StringSplitOptions.None)[1];
-			string text4 = text2.Split(separator, 3, StringSplitOptions.None)[0].Substring(2, 1).Insert(0, "Kaseya");
-			LogHelper.Instance.Log("KaseyaD.ini parsed values: ops_market = {0}, kaseya_server = {1}", text3, text4);
-			LuaTable obj = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
-			obj["ops_market"] = text3;
-			obj["kaseya_server"] = text4;
-			return obj;
+			string opsMarket = userName.Split(separator, 3, StringSplitOptions.None)[1];
+			string kaseyaServer = serverName.Split(separator, 3, StringSplitOptions.None)[0].Substring(2, 1).Insert(0, "Kaseya");
+			LogHelper.Instance.Log("KaseyaD.ini parsed values: ops_market = {0}, kaseya_server = {1}", opsMarket, kaseyaServer);
+			LuaTable resultTable = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
+			resultTable["ops_market"] = opsMarket;
+			resultTable["kaseya_server"] = kaseyaServer;
+			return resultTable;
 		}
 		catch (Exception e)
 		{

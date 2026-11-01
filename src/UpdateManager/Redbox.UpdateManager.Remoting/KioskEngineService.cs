@@ -130,17 +130,17 @@ public class KioskEngineService : IKioskEngineService
 				return errorList;
 			}
 			KioskEngineProxy.Send("engine shutdown");
-			int num = 0;
-			ManualResetEvent manualResetEvent = new ManualResetEvent(initialState: false);
-			manualResetEvent.WaitOne(timeout);
-			manualResetEvent.Close();
+			int attempt = 0;
+			ManualResetEvent initialWait = new ManualResetEvent(initialState: false);
+			initialWait.WaitOne(timeout);
+			initialWait.Close();
 			errorList.AddRange(IsEngineRunning(out var isRunning));
-			while (isRunning && num < tries)
+			while (isRunning && attempt < tries)
 			{
-				ManualResetEvent manualResetEvent2 = new ManualResetEvent(initialState: false);
-				manualResetEvent2.WaitOne(timeout);
-				manualResetEvent2.Close();
-				num++;
+				ManualResetEvent retryWait = new ManualResetEvent(initialState: false);
+				retryWait.WaitOne(timeout);
+				retryWait.Close();
+				attempt++;
 			}
 			errorList.AddRange(IsEngineRunning(out isRunning));
 			if (isRunning)

@@ -26,7 +26,6 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 				zipOutputStream.PutNextEntry(entry);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -56,7 +55,6 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 				ZipInputStream zipInputStream = new ZipInputStream(baseInputStream);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = zipInputStream.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -92,7 +90,6 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 		using ZipInputStream zipInputStream = new ZipInputStream(source);
 		while (true)
 		{
-			bool flag = true;
 			int bytesRead = zipInputStream.Read(buffer, 0, buffer.Length);
 			if (bytesRead == 0)
 			{

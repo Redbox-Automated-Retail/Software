@@ -511,7 +511,7 @@ public class TransactionService : ITransactionService
 
 	private async Task AddMultiNightPriceInCartOffer(GetCustomerOffersResponse getCustomerOffersResponse)
 	{
-		if (!bool.TryParse(await GetTestDataValue("AfterSwipeCustomerOffers.IncludeMultiNightPriceInCartOffer"), out var result) || !result)
+		if (!bool.TryParse(await GetTestDataValue("AfterSwipeCustomerOffers.IncludeMultiNightPriceInCartOffer"), out var includeOffer) || !includeOffer)
 		{
 			return;
 		}
@@ -531,11 +531,11 @@ public class TransactionService : ITransactionService
 		};
 		foreach (string s in (await GetTestDataValue("AfterSwipeCustomerOffers.MultiNightPriceProductIds"))?.Replace(" ", null)?.Split(','))
 		{
-			if (long.TryParse(s, out var result2))
+			if (long.TryParse(s, out var productId))
 			{
 				offer.OfferProducts.Add(new OfferProduct
 				{
-					ProductId = result2,
+					ProductId = productId,
 					DiscountedPrice = 0.5m,
 					NumberOfNights = (byte)2
 				});
@@ -603,12 +603,12 @@ public class TransactionService : ITransactionService
 
 	private static Constants.TestData.AfterSwipeCustomerOffers.Offers ToOffer(string offer)
 	{
-		Constants.TestData.AfterSwipeCustomerOffers.Offers result = Constants.TestData.AfterSwipeCustomerOffers.Offers.NoOffer;
-		if (Enum.TryParse<Constants.TestData.AfterSwipeCustomerOffers.Offers>(offer, out var result2))
+		Constants.TestData.AfterSwipeCustomerOffers.Offers selectedOffer = Constants.TestData.AfterSwipeCustomerOffers.Offers.NoOffer;
+		if (Enum.TryParse<Constants.TestData.AfterSwipeCustomerOffers.Offers>(offer, out var parsedOffer))
 		{
-			result = result2;
+			selectedOffer = parsedOffer;
 		}
-		return result;
+		return selectedOffer;
 	}
 
 	public async Task<ReturnPromoCheckResponse> ReturnPromoCheck(string barcode)
@@ -717,17 +717,17 @@ public class TransactionService : ITransactionService
 
 	private async Task FillTestDataAuthorizeResponse(AuthorizeRequest authorizeRequest, AuthorizeResponse response)
 	{
-		bool flag = (authorizeRequest.ShoppingCart?.Groups?.FirstOrDefault((LineItemGroup x) => x.GroupType == LineItemGroupType.Subscription)?.Items?.Count).GetValueOrDefault() > 0;
-		bool flag2 = (authorizeRequest.ShoppingCart?.Groups?.FirstOrDefault((LineItemGroup x) => x.GroupType == LineItemGroupType.Rental || x.GroupType == LineItemGroupType.Purchase)?.Items?.Count).GetValueOrDefault() > 0;
-		bool flag3 = response.Errors.Any((Error x) => _subscriptionErrorCodes.Contains(x.Code));
-		response.KioskTransactionSuccess = flag2 && (response.Errors.Count() == 0 || response.Errors.All((Error x) => _subscriptionErrorCodes.Contains(x.Code)));
-		response.SubscriptionTransactionSuccess = flag && !flag3 && (!flag2 || response.KioskTransactionSuccess);
+		bool hasSubscriptionItems = (authorizeRequest.ShoppingCart?.Groups?.FirstOrDefault((LineItemGroup x) => x.GroupType == LineItemGroupType.Subscription)?.Items?.Count).GetValueOrDefault() > 0;
+		bool hasRentalOrPurchaseItems = (authorizeRequest.ShoppingCart?.Groups?.FirstOrDefault((LineItemGroup x) => x.GroupType == LineItemGroupType.Rental || x.GroupType == LineItemGroupType.Purchase)?.Items?.Count).GetValueOrDefault() > 0;
+		bool hasSubscriptionErrors = response.Errors.Any((Error x) => _subscriptionErrorCodes.Contains(x.Code));
+		response.KioskTransactionSuccess = hasRentalOrPurchaseItems && (response.Errors.Count() == 0 || response.Errors.All((Error x) => _subscriptionErrorCodes.Contains(x.Code)));
+		response.SubscriptionTransactionSuccess = hasSubscriptionItems && !hasSubscriptionErrors && (!hasRentalOrPurchaseItems || response.KioskTransactionSuccess);
 		response.Success = response.KioskTransactionSuccess || response.SubscriptionTransactionSuccess;
 		AuthorizeResponse authorizeResponse = response;
 		authorizeResponse.AccountNumber = await GetTestDataValue("Authorize.AccountNumber");
-		if (bool.TryParse(await GetTestDataValue("Authorize.HasCustomerProfile"), out var result))
+		if (bool.TryParse(await GetTestDataValue("Authorize.HasCustomerProfile"), out var hasProfile))
 		{
-			response.HasProfile = result;
+			response.HasProfile = hasProfile;
 		}
 		authorizeResponse = response;
 		authorizeResponse.CustomerProfileNumber = await GetTestDataValue("Authorize.CustomerProfileNumber");
@@ -737,20 +737,20 @@ public class TransactionService : ITransactionService
 		authorizeResponse.CustomerProfileLastName = await GetTestDataValue("Authorize.CustomerProfileLastName");
 		authorizeResponse = response;
 		authorizeResponse.Email = await GetTestDataValue("Authorize.Email");
-		if (long.TryParse(await GetTestDataValue("Authorize.ReferenceNumber"), out var result2))
+		if (long.TryParse(await GetTestDataValue("Authorize.ReferenceNumber"), out var referenceNumber))
 		{
-			response.ReferenceNumber = result2;
+			response.ReferenceNumber = referenceNumber;
 		}
-		if (Enum.TryParse<ConfirmationStatus>(await GetTestDataValue("Authorize.ConfirmationStatus"), out var result3))
+		if (Enum.TryParse<ConfirmationStatus>(await GetTestDataValue("Authorize.ConfirmationStatus"), out var confirmationStatus))
 		{
-			response.ConfirmationStatus = result3;
+			response.ConfirmationStatus = confirmationStatus;
 		}
 	}
 
 	private async Task<GCAuthResponse> GetTestDataGCAuthorizeResponse(GCAuthRequest request)
 	{
 		_logger?.LogInformation("TransactionService.GiftCardAuthorize returning test data result");
-		if (bool.TryParse(await GetTestDataValue("GCAuth.SimulateCommunicationFailure"), out var result) && result)
+		if (bool.TryParse(await GetTestDataValue("GCAuth.SimulateCommunicationFailure"), out var simulateFailure) && simulateFailure)
 		{
 			return null;
 		}
@@ -759,32 +759,32 @@ public class TransactionService : ITransactionService
 			MessageId = request.MessageId
 		};
 		response.Errors = new List<Error>();
-		string text = await GetTestDataValue("GCAuth.ErrorCode");
-		if (!string.IsNullOrEmpty(text))
+		string errorCode = await GetTestDataValue("GCAuth.ErrorCode");
+		if (!string.IsNullOrEmpty(errorCode))
 		{
 			response.Errors.Add(new Error
 			{
-				Code = text,
-				Message = "error code " + text
+				Code = errorCode,
+				Message = "error code " + errorCode
 			});
 		}
 		await FillTestDataAuthorizeResponse(request, response);
 		GiftCardSummary gcSummary = new GiftCardSummary();
-		if (decimal.TryParse(await GetTestDataValue("GCAuth.Balance"), out var result2))
+		if (decimal.TryParse(await GetTestDataValue("GCAuth.Balance"), out var balance))
 		{
-			gcSummary.Balance = result2;
+			gcSummary.Balance = balance;
 		}
-		if (bool.TryParse(await GetTestDataValue("GCAuth.Exists"), out var result3))
+		if (bool.TryParse(await GetTestDataValue("GCAuth.Exists"), out var exists))
 		{
-			gcSummary.Exists = result3;
+			gcSummary.Exists = exists;
 		}
-		if (int.TryParse(await GetTestDataValue("GCAuth.MaxDiscs"), out var result4))
+		if (int.TryParse(await GetTestDataValue("GCAuth.MaxDiscs"), out var maxDiscs))
 		{
-			gcSummary.MaxDiscs = result4;
+			gcSummary.MaxDiscs = maxDiscs;
 		}
-		if (Enum.TryParse<GiftCardStatus>(await GetTestDataValue("GCAuth.GCStatusType"), out var result5))
+		if (Enum.TryParse<GiftCardStatus>(await GetTestDataValue("GCAuth.GCStatusType"), out var giftCardStatus))
 		{
-			gcSummary.Status = result5;
+			gcSummary.Status = giftCardStatus;
 		}
 		return response;
 	}

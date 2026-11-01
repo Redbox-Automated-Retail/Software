@@ -77,9 +77,9 @@ internal class AssetsService : IAssetsService
 	{
 		DirectoryInfo directoryInfo = new DirectoryInfo(_assetsFolderPath);
 		FileInfo[] files = directoryInfo.GetFiles();
-		int num = files.Count();
-		_logger.LogInfoWithSource($"Found {num} assets to check for cleanup", "PerformAssetCleanup");
-		if (num > 0)
+		int fileCount = files.Count();
+		_logger.LogInfoWithSource($"Found {fileCount} assets to check for cleanup", "PerformAssetCleanup");
+		if (fileCount > 0)
 		{
 			DateTime threshold = DateTime.Now.AddDays(-1 * _configuration.LifespanDays);
 			List<Task<bool>> list = new List<Task<bool>>();

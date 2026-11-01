@@ -70,13 +70,13 @@ public class HardwareStatePage : UserControl, IPreferencePageHost
 		{
 			TestHardwareService.Instance.CameraReadStatsSecureBarcodesRead = result;
 		}
-		if (int.TryParse(textBoxBarcodesRead.Text, out var result2))
+		if (int.TryParse(textBoxBarcodesRead.Text, out var barcodesRead))
 		{
-			TestHardwareService.Instance.CameraReadStatsBarcodesRead = result2;
+			TestHardwareService.Instance.CameraReadStatsBarcodesRead = barcodesRead;
 		}
-		if (int.TryParse(textBoxReadAttempts.Text, out var result3))
+		if (int.TryParse(textBoxReadAttempts.Text, out var readAttempts))
 		{
-			TestHardwareService.Instance.CameraReadStatsReadAttemps = result3;
+			TestHardwareService.Instance.CameraReadStatsReadAttemps = readAttempts;
 		}
 		return true;
 	}

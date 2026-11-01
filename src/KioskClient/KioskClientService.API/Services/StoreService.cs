@@ -29,22 +29,22 @@ public class StoreService : IStoreService
 			{
 				if (_kioskId == 0L)
 				{
-					string text = "ID";
-					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object value = Registry.GetValue(text2, text, null);
-					if (value == null)
+					string valueName = "ID";
+					string keyName = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+					object registryValue = Registry.GetValue(keyName, valueName, null);
+					if (registryValue == null)
 					{
-						_logger.LogInformation("Kiosk ID is not set in the registry at {0}\\{1}", text2, text);
+						_logger.LogInformation("Kiosk ID is not set in the registry at {0}\\{1}", keyName, valueName);
 					}
 					else
 					{
 						try
 						{
-							_kioskId = Convert.ToInt32(value);
+							_kioskId = Convert.ToInt32(registryValue);
 						}
 						catch (FormatException)
 						{
-							_logger.LogError($"Store ID key value: '{value}' is not a valid number");
+							_logger.LogError($"Store ID key value: '{registryValue}' is not a valid number");
 						}
 					}
 				}
@@ -65,12 +65,12 @@ public class StoreService : IStoreService
 			{
 				if (string.IsNullOrWhiteSpace(_market))
 				{
-					string text = "Market";
-					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object registryValue = Registry.GetValue(text2, text, null);
+					string valueName = "Market";
+					string keyName = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+					object registryValue = Registry.GetValue(keyName, valueName, null);
 					if (registryValue == null)
 					{
-						_logger.LogInformation("Market is not set in the registry at {0}\\{1}", text2, text);
+						_logger.LogInformation("Market is not set in the registry at {0}\\{1}", keyName, valueName);
 						return null;
 					}
 					_market = ((string)registryValue).Trim();
@@ -92,12 +92,12 @@ public class StoreService : IStoreService
 			{
 				if (string.IsNullOrWhiteSpace(_banner))
 				{
-					string text = "Banner";
-					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object registryValue = Registry.GetValue(text2, text, null);
+					string valueName = "Banner";
+					string keyName = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+					object registryValue = Registry.GetValue(keyName, valueName, null);
 					if (registryValue == null)
 					{
-						_logger.LogInformation("Banner is not set in the registry at {0}\\{1}", text2, text);
+						_logger.LogInformation("Banner is not set in the registry at {0}\\{1}", keyName, valueName);
 						return null;
 					}
 					_banner = ((string)registryValue).Trim();

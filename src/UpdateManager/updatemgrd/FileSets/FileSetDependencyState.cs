@@ -99,9 +99,9 @@ internal class FileSetDependencyState
 
 	private bool IsLongDependencyMet(string sourceVersion, string minVersion, string maxVersion)
 	{
-		long num = Convert.ToInt64(sourceVersion);
-		long num2 = Convert.ToInt64(minVersion);
-		if (num < num2)
+		long source = Convert.ToInt64(sourceVersion);
+		long min = Convert.ToInt64(minVersion);
+		if (source < min)
 		{
 			return false;
 		}
@@ -109,8 +109,8 @@ internal class FileSetDependencyState
 		{
 			return true;
 		}
-		long num3 = Convert.ToInt64(maxVersion);
-		if (num > num3)
+		long max = Convert.ToInt64(maxVersion);
+		if (source > max)
 		{
 			return false;
 		}

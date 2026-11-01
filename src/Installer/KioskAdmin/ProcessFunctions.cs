@@ -49,20 +49,20 @@ internal static class ProcessFunctions
 			process2.StartInfo = startInfo;
 			Process process3 = process2;
 			process3.Start();
-			int? num = null;
+			int? timeoutMilliseconds = null;
 			if (timeout != null)
 			{
 				try
 				{
-					num = Convert.ToInt32(timeout);
+					timeoutMilliseconds = Convert.ToInt32(timeout);
 				}
 				catch
 				{
 				}
 			}
-			if (num.HasValue)
+			if (timeoutMilliseconds.HasValue)
 			{
-				process3.WaitForExit(num.Value);
+				process3.WaitForExit(timeoutMilliseconds.Value);
 			}
 			else
 			{

@@ -95,89 +95,89 @@ public sealed class GampHelper
 	public List<List<int>> ReadLegacySlotDataFile(bool removeZeroes)
 	{
 		string path = "C:\\gamp\\SlotData.dat";
-		List<List<int>> list = new List<List<int>>();
+		List<List<int>> rows = new List<List<int>>();
 		if (!File.Exists(path))
 		{
-			return list;
+			return rows;
 		}
-		int num = 1;
-		bool flag = false;
+		int lineNumber = 1;
+		bool hasInvalidValue = false;
 		StringBuilder stringBuilder = new StringBuilder();
 		string[] lines = File.ReadAllLines(path);
-		foreach (string text in lines)
+		foreach (string line in lines)
 		{
-			List<int> list2 = new List<int>();
-			int result;
-			for (int j = 0; j < text.Length; j++)
+			List<int> row = new List<int>();
+			int number;
+			for (int j = 0; j < line.Length; j++)
 			{
-				if (char.IsWhiteSpace(text[j]) || text[j] == ',')
+				if (char.IsWhiteSpace(line[j]) || line[j] == ',')
 				{
 					if (stringBuilder.Length > 0)
 					{
-						if (!int.TryParse(stringBuilder.ToString(), out result))
+						if (!int.TryParse(stringBuilder.ToString(), out number))
 						{
-							result = 0;
-							LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {num}) is invalid", LogEntryType.Error);
-							flag = true;
+							number = 0;
+							LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {lineNumber}) is invalid", LogEntryType.Error);
+							hasInvalidValue = true;
 						}
 						else
 						{
-							list2.Add(result);
+							row.Add(number);
 						}
 						stringBuilder.Remove(0, stringBuilder.Length);
 					}
 				}
 				else
 				{
-					stringBuilder.Append(text[j]);
+					stringBuilder.Append(line[j]);
 				}
 			}
 			if (stringBuilder.Length > 0)
 			{
-				if (!int.TryParse(stringBuilder.ToString(), out result))
+				if (!int.TryParse(stringBuilder.ToString(), out number))
 				{
-					result = 0;
-					LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {num}) is invalid", LogEntryType.Error);
-					flag = true;
+					number = 0;
+					LogHelper.Instance.Log($"The value {stringBuilder.ToString()} in slotdata.dat (line {lineNumber}) is invalid", LogEntryType.Error);
+					hasInvalidValue = true;
 				}
 				else
 				{
-					list2.Add(result);
+					row.Add(number);
 				}
 				stringBuilder.Remove(0, stringBuilder.Length);
 			}
-			num++;
-			if (list2.Count > 0)
+			lineNumber++;
+			if (row.Count > 0)
 			{
-				list.Add(list2);
+				rows.Add(row);
 			}
 		}
-		if (flag)
+		if (hasInvalidValue)
 		{
-			list.Clear();
+			rows.Clear();
 		}
 		else if (removeZeroes)
 		{
-			foreach (List<int> item in list)
+			foreach (List<int> slotRow in rows)
 			{
-				item.RemoveAll((int each) => each == 0);
+				slotRow.RemoveAll((int each) => each == 0);
 			}
 		}
-		return list;
+		return rows;
 	}
 
 	public List<int> ComputeDenseQuadrants(decimal? startOffset)
 	{
-		List<int> list = new List<int>();
-		decimal? num = startOffset;
-		list.Add((int)num.Value);
+		List<int> offsets = new List<int>();
+		decimal? offset = startOffset;
+		offsets.Add((int)offset.Value);
 		for (int i = 0; i < 5; i++)
 		{
-			decimal? num2 = 2666.6672m;
-			num += num2;
-			list.Add((int)num.Value);
+			decimal? quadrantWidth = 2666.6672m;
+			offset += quadrantWidth;
+			offsets.Add((int)offset.Value);
 		}
-		return list;
+		return offsets;
 	}
 
 	private GampHelper()

@@ -198,9 +198,9 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateAccrualErrors?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateAccrualErrors?), (string)firstError["Code"]);
 								result.Properties["response"] = fieldsForResponseCode ?? ((object)EstimateAccrualErrors.Error);
 							}
 						}
@@ -261,22 +261,22 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 				if (SimulateAccrualSuccess)
 				{
 					IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-					ArrayList list = new ArrayList();
+					ArrayList itemPoints = new ArrayList();
 					Items.ForEach(delegate(ItemAccrualRedemptions x)
 					{
-						bool flag = rentalShoppingCart?.Promotion?.PromotionItems?.FirstOrDefault((IPromotionItem y) => y.RentalShoppingCartItem.ProductId == x.ProductId) != null;
-						bool flag2 = rentalShoppingCart?.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem y) => y.ProductId == x.ProductId && (y?.IsRedboxPlusFreeOneNightRental ?? false)) != null;
-						Dictionary<string, object> value = new Dictionary<string, object>
+						bool isPromotionItem = rentalShoppingCart?.Promotion?.PromotionItems?.FirstOrDefault((IPromotionItem y) => y.RentalShoppingCartItem.ProductId == x.ProductId) != null;
+						bool isFreeRedboxPlusRental = rentalShoppingCart?.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem y) => y.ProductId == x.ProductId && (y?.IsRedboxPlusFreeOneNightRental ?? false)) != null;
+						Dictionary<string, object> itemEntry = new Dictionary<string, object>
 						{
 							{ "ProductId", x.ProductId },
 							{
 								"Points",
-								(!(flag | flag2)) ? x.AccrualPoints : 0
+								(!(isPromotionItem | isFreeRedboxPlusRental)) ? x.AccrualPoints : 0
 							}
 						};
-						list.Add(value);
+						itemPoints.Add(itemEntry);
 					});
-					remoteServiceResult.Properties["Items"] = list;
+					remoteServiceResult.Properties["Items"] = itemPoints;
 				}
 				else
 				{
@@ -362,9 +362,9 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateRedemptionErrors?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateRedemptionErrors?), (string)firstError["Code"]);
 								result.Properties["response"] = fieldsForResponseCode ?? ((object)EstimateRedemptionErrors.Error);
 							}
 						}
@@ -425,22 +425,22 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 				if (SimulateRedemptionSuccess)
 				{
 					IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-					ArrayList list = new ArrayList();
+					ArrayList itemPoints = new ArrayList();
 					Items.ForEach(delegate(ItemAccrualRedemptions x)
 					{
-						bool flag = rentalShoppingCart?.Promotion?.PromotionItems?.FirstOrDefault((IPromotionItem y) => y.RentalShoppingCartItem.ProductId == x.ProductId) != null;
-						bool flag2 = rentalShoppingCart?.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem y) => y.ProductId == x.ProductId && (y?.IsRedboxPlusFreeOneNightRental ?? false)) != null;
-						Dictionary<string, object> value = new Dictionary<string, object>
+						bool isPromotionItem = rentalShoppingCart?.Promotion?.PromotionItems?.FirstOrDefault((IPromotionItem y) => y.RentalShoppingCartItem.ProductId == x.ProductId) != null;
+						bool isFreeRedboxPlusRental = rentalShoppingCart?.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem y) => y.ProductId == x.ProductId && (y?.IsRedboxPlusFreeOneNightRental ?? false)) != null;
+						Dictionary<string, object> itemEntry = new Dictionary<string, object>
 						{
 							{ "ProductId", x.ProductId },
 							{
 								"Points",
-								(!(flag | flag2)) ? x.RedemptionPoints : 0
+								(!(isPromotionItem | isFreeRedboxPlusRental)) ? x.RedemptionPoints : 0
 							}
 						};
-						list.Add(value);
+						itemPoints.Add(itemEntry);
 					});
-					remoteServiceResult.Properties["Items"] = list;
+					remoteServiceResult.Properties["Items"] = itemPoints;
 				}
 				else
 				{

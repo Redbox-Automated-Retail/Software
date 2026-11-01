@@ -167,7 +167,7 @@ public class StoreInfoService : IStoreInfoService, IPollRequestReply
 
 	private string GetHash(ClientStoreInfo clientStoreInfo)
 	{
-		var obj = new
+		var hashSource = new
 		{
 			TimeZoneInfoString = clientStoreInfo.TimeZoneInfoString,
 			Version = clientStoreInfo.Version,
@@ -175,9 +175,9 @@ public class StoreInfoService : IStoreInfoService, IPollRequestReply
 		};
 		clientStoreInfo.Info.ForEach(delegate(KeyValuePair<string, string> info)
 		{
-			obj.Info.Add(info.Key, info.Value);
+			hashSource.Info.Add(info.Key, info.Value);
 		});
-		string s = obj.ToJson();
+		string s = hashSource.ToJson();
 		return Encoding.ASCII.GetBytes(s).ToASCIISHA1Hash();
 	}
 

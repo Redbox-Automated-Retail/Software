@@ -37,27 +37,27 @@ public class RepositoryPollService : IPollRequestReply
 			try
 			{
 				errorList.AddRange(GetClientRepositoryDataDTO(out var currentClientRepositoryDataDTO));
-				string text = RepositoryDiffMerge.Hash(currentClientRepositoryDataDTO);
+				string currentHash = RepositoryDiffMerge.Hash(currentClientRepositoryDataDTO);
 				if (m_syncId == 0 || string.IsNullOrEmpty(m_previousClientRepositoryDataDTOHash))
 				{
 					m_syncId = 1;
 					RepositoryDiffWrapper wrapper = new RepositoryDiffWrapper
 					{
-						O = text,
+						O = currentHash,
 						A = currentClientRepositoryDataDTO
 					};
-					PollRequest item = new PollRequest
+					PollRequest fullSyncRequest = new PollRequest
 					{
 						PollRequestType = PollRequestType.Repositories,
 						SyncId = 1,
 						Data = RepositoryDiffMerge.Minimize(wrapper)
 					};
-					pollRequestList.Add(item);
+					pollRequestList.Add(fullSyncRequest);
 					m_previousClientRepositoryDataDTO = currentClientRepositoryDataDTO;
-					m_previousClientRepositoryDataDTOHash = text;
+					m_previousClientRepositoryDataDTOHash = currentHash;
 					return errorList;
 				}
-				if (text != m_previousClientRepositoryDataDTOHash)
+				if (currentHash != m_previousClientRepositoryDataDTOHash)
 				{
 					if (!RepositoryDiffMerge.TryDiff(m_previousClientRepositoryDataDTO, currentClientRepositoryDataDTO, verify: true, out var rdw))
 					{
@@ -66,14 +66,14 @@ public class RepositoryPollService : IPollRequestReply
 						return errorList;
 					}
 					m_syncId++;
-					PollRequest item2 = new PollRequest
+					PollRequest diffRequest = new PollRequest
 					{
 						PollRequestType = PollRequestType.Repositories,
 						SyncId = m_syncId,
 						Data = RepositoryDiffMerge.Minimize(rdw)
 					};
-					pollRequestList.Add(item2);
-					m_previousClientRepositoryDataDTOHash = text;
+					pollRequestList.Add(diffRequest);
+					m_previousClientRepositoryDataDTOHash = currentHash;
 					m_previousClientRepositoryDataDTO = currentClientRepositoryDataDTO;
 				}
 			}

@@ -48,8 +48,8 @@ internal class CampaignService : ICampaignService
 		_assets = assets;
 		if (!_nextRefresh.HasValue)
 		{
-			int num = new Random().Next(60, Math.Max(2, _kioskConfiguration.Campaigns.RefreshInterval) * 60);
-			_nextRefresh = DateTime.Now.AddSeconds(num);
+			int delaySeconds = new Random().Next(60, Math.Max(2, _kioskConfiguration.Campaigns.RefreshInterval) * 60);
+			_nextRefresh = DateTime.Now.AddSeconds(delaySeconds);
 			_logger.LogInfoWithSource($"Next Campaign refresh at: {_nextRefresh}", ".ctor");
 		}
 	}
@@ -155,13 +155,13 @@ internal class CampaignService : ICampaignService
 
 	private async Task<bool> WriteCampaign(CampaignData campaignData)
 	{
-		bool flag = await _persistentDataCacheService.Write(campaignData, "Campaigns");
-		if (!flag)
+		bool written = await _persistentDataCacheService.Write(campaignData, "Campaigns");
+		if (!written)
 		{
 			_logger.LogInfoWithSource("Campaign data could not be written", "WriteCampaign");
 		}
 		_logger.LogInfoWithSource("Campaign data persisted", "WriteCampaign");
-		return flag;
+		return written;
 	}
 
 	public bool DeleteCampaignData()

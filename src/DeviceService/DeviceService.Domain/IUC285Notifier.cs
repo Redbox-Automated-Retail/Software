@@ -59,21 +59,21 @@ public class IUC285Notifier : IIUC285Notifier
 
 	private bool ConnectToDeviceServiceClient()
 	{
-		bool flag = false;
+		bool connected = false;
 		if (_deviceServiceClient != null)
 		{
-			flag = _deviceServiceClient.IsConnectedToDeviceService;
-			if (!flag)
+			connected = _deviceServiceClient.IsConnectedToDeviceService;
+			if (!connected)
 			{
 				int connectionTimeout = 5000;
-				flag = _deviceServiceClient.ConnectToDeviceService(_url, connectionTimeout);
+				connected = _deviceServiceClient.ConnectToDeviceService(_url, connectionTimeout);
 			}
 		}
-		if (!flag)
+		if (!connected)
 		{
 			Log("IUC285Notifier: device service client is null or not connected.  event not sent");
 		}
-		return flag;
+		return connected;
 	}
 
 	public void SendCardReaderConnectedEvent()

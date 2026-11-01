@@ -38,10 +38,10 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string expanded = macroService.ExpandProperties(source);
-			string text2 = macroService.ExpandProperties(target);
-			LogHelper.Instance.Log("TAR: source={0}, target={1}", expanded, text2);
-			TarHelper.Archive(expanded, text2);
+			string sourcePath = macroService.ExpandProperties(source);
+			string targetPath = macroService.ExpandProperties(target);
+			LogHelper.Instance.Log("TAR: source={0}, target={1}", sourcePath, targetPath);
+			TarHelper.Archive(sourcePath, targetPath);
 			return true;
 		}
 		catch (Exception e)
@@ -73,18 +73,18 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string expanded = macroService.ExpandProperties(source);
-			string text2 = macroService.ExpandProperties(target);
-			string text3 = macroService.ExpandProperties(fileFilter);
-			string text4 = macroService.ExpandProperties(dirFilter);
-			LogHelper.Instance.Log("ZIP: source={0}, target={1}, recurse={2}, fileFilter={3}, dirFilter={4}", expanded, text2, recurse, text3, text4);
+			string sourcePath = macroService.ExpandProperties(source);
+			string targetPath = macroService.ExpandProperties(target);
+			string expandedFileFilter = macroService.ExpandProperties(fileFilter);
+			string expandedDirFilter = macroService.ExpandProperties(dirFilter);
+			LogHelper.Instance.Log("ZIP: source={0}, target={1}, recurse={2}, fileFilter={3}, dirFilter={4}", sourcePath, targetPath, recurse, expandedFileFilter, expandedDirFilter);
 			if (string.IsNullOrEmpty(dirFilter))
 			{
-				ZipHelper.CreateZipFile(text2, expanded, recurse, text3);
+				ZipHelper.CreateZipFile(targetPath, sourcePath, recurse, expandedFileFilter);
 			}
 			else
 			{
-				ZipHelper.CreateZipFile(text2, expanded, recurse, text3, text4);
+				ZipHelper.CreateZipFile(targetPath, sourcePath, recurse, expandedFileFilter, expandedDirFilter);
 			}
 			return true;
 		}
@@ -101,10 +101,10 @@ public static class FileSystemFunctions
 		try
 		{
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-			string expanded = macroService.ExpandProperties(source);
-			string text2 = macroService.ExpandProperties(target);
-			LogHelper.Instance.Log("UNZIP: source={0}, target={1}", expanded, text2);
-			ZipHelper.ExtractAllFiles(expanded, text2);
+			string sourcePath = macroService.ExpandProperties(source);
+			string targetPath = macroService.ExpandProperties(target);
+			LogHelper.Instance.Log("UNZIP: source={0}, target={1}", sourcePath, targetPath);
+			ZipHelper.ExtractAllFiles(sourcePath, targetPath);
 			return true;
 		}
 		catch (Exception e)
@@ -359,12 +359,12 @@ public static class FileSystemFunctions
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		try
 		{
-			string[] array = File.ReadAllLines(macroService.ExpandProperties(file));
-			int num = 1;
-			foreach (string value in array)
+			string[] lines = File.ReadAllLines(macroService.ExpandProperties(file));
+			int index = 1;
+			foreach (string value in lines)
 			{
-				luaTable[num] = value;
-				num++;
+				luaTable[index] = value;
+				index++;
 			}
 		}
 		catch (Exception e)
@@ -395,10 +395,10 @@ public static class FileSystemFunctions
 		try
 		{
 			string[] files = Directory.GetFiles(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-			int num = 1;
+			int index = 1;
 			foreach (string value in files)
 			{
-				luaTable[num++] = value;
+				luaTable[index++] = value;
 			}
 		}
 		catch (Exception e)
@@ -416,10 +416,10 @@ public static class FileSystemFunctions
 		try
 		{
 			string[] directories = Directory.GetDirectories(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-			int num = 1;
+			int index = 1;
 			foreach (string value in directories)
 			{
-				luaTable[num++] = value;
+				luaTable[index++] = value;
 			}
 		}
 		catch (Exception e)
@@ -439,41 +439,41 @@ public static class FileSystemFunctions
 			EditAllMatches = editAllMatches,
 			RaiseErrors = raiseErrors
 		};
-		if (xmlNamespaces is LuaTable luaTable2)
+		if (xmlNamespaces is LuaTable namespaceTable)
 		{
-			foreach (object key in luaTable2.Keys)
+			foreach (object key in namespaceTable.Keys)
 			{
-				if (luaTable2[key] is LuaTable luaTable3)
+				if (namespaceTable[key] is LuaTable namespaceEntry)
 				{
-					xmlFileEditor.Namespaces.Add(new XmlNamespace((string)luaTable3["prefix"], (string)luaTable3["uri"]));
+					xmlFileEditor.Namespaces.Add(new XmlNamespace((string)namespaceEntry["prefix"], (string)namespaceEntry["uri"]));
 				}
 			}
 		}
-		if (xmlEdits is LuaTable luaTable4)
+		if (xmlEdits is LuaTable editTable)
 		{
-			foreach (object key2 in luaTable4.Keys)
+			foreach (object key2 in editTable.Keys)
 			{
-				if (luaTable4[key2] is LuaTable luaTable5)
+				if (editTable[key2] is LuaTable editEntry)
 				{
-					XmlEdit xmlEdit = new XmlEdit(macroService.ExpandProperties((string)luaTable5["xpath"]), macroService.ExpandProperties((string)luaTable5["value"]));
+					XmlEdit xmlEdit = new XmlEdit(macroService.ExpandProperties((string)editEntry["xpath"]), macroService.ExpandProperties((string)editEntry["value"]));
 					LogHelper.Instance.Log("xpath = {0}, value = {1}", xmlEdit.XPath, xmlEdit.Value);
 					xmlFileEditor.Edits.Add(xmlEdit);
 				}
 			}
 		}
-		ReadOnlyCollection<XmlEditorError> readOnlyCollection = xmlFileEditor.Apply();
-		luaTable["success"] = readOnlyCollection.Count == 0;
-		LuaTable luaTable6 = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
-		foreach (XmlEditorError item in readOnlyCollection)
+		ReadOnlyCollection<XmlEditorError> editorErrors = xmlFileEditor.Apply();
+		luaTable["success"] = editorErrors.Count == 0;
+		LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		int index = 1;
+		foreach (XmlEditorError editorError in editorErrors)
 		{
-			LuaTable luaTable7 = new LuaTable(KernelService.Instance.LuaRuntime);
-			luaTable7["code"] = item.Code;
-			luaTable7["details"] = item.Details;
-			luaTable7["description"] = item.Description;
-			luaTable6[num++] = luaTable7;
+			LuaTable errorEntry = new LuaTable(KernelService.Instance.LuaRuntime);
+			errorEntry["code"] = editorError.Code;
+			errorEntry["details"] = editorError.Details;
+			errorEntry["description"] = editorError.Description;
+			errorTable[index++] = errorEntry;
 		}
-		luaTable["errors"] = luaTable6;
+		luaTable["errors"] = errorTable;
 		return luaTable;
 	}
 

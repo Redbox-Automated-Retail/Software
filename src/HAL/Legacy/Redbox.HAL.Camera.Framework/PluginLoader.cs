@@ -79,8 +79,8 @@ internal sealed class PluginLoader
 				MethodInfo method = type.GetMethod(descriptor.PluginServiceProviderMethodName, BindingFlags.Static | BindingFlags.Public);
 				if (method != null)
 				{
-					object obj = method.Invoke(null, null);
-					plugin = (ICameraPlugin)obj;
+					object instance = method.Invoke(null, null);
+					plugin = (ICameraPlugin)instance;
 					return plugin != null;
 				}
 			}

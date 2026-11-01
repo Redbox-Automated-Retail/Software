@@ -43,28 +43,28 @@ public static class SevenZipHelper
 
 	public static byte[] Decompress(byte[] inputBytes)
 	{
-		MemoryStream memoryStream = new MemoryStream(inputBytes);
+		MemoryStream input = new MemoryStream(inputBytes);
 		Decoder decoder = new Decoder();
-		memoryStream.Seek(0L, SeekOrigin.Begin);
-		MemoryStream memoryStream2 = new MemoryStream();
-		byte[] buffer = new byte[5];
-		if (memoryStream.Read(buffer, 0, 5) != 5)
+		input.Seek(0L, SeekOrigin.Begin);
+		MemoryStream output = new MemoryStream();
+		byte[] properties = new byte[5];
+		if (input.Read(properties, 0, 5) != 5)
 		{
 			throw new Exception("input .lzma is too short");
 		}
-		long num = 0L;
+		long outSize = 0L;
 		for (int i = 0; i < 8; i++)
 		{
-			int num2 = memoryStream.ReadByte();
-			if (num2 < 0)
+			int sizeByte = input.ReadByte();
+			if (sizeByte < 0)
 			{
 				throw new Exception("Can't Read 1");
 			}
-			num |= (long)((ulong)(byte)num2 << 8 * i);
+			outSize |= (long)((ulong)(byte)sizeByte << 8 * i);
 		}
-		decoder.SetDecoderProperties(buffer);
-		long inSize = memoryStream.Length - memoryStream.Position;
-		decoder.Code(memoryStream, memoryStream2, inSize, num, null);
-		return memoryStream2.ToArray();
+		decoder.SetDecoderProperties(properties);
+		long inSize = input.Length - input.Position;
+		decoder.Code(input, output, inSize, outSize, null);
+		return output.ToArray();
 	}
 }

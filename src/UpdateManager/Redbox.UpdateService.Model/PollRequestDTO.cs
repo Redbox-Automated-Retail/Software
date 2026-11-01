@@ -12,29 +12,29 @@ public class PollRequestDTO
 
 	public static List<PollRequestDTO> GetPollReplyDTOList(List<PollRequest> list)
 	{
-		List<PollRequestDTO> list2 = new List<PollRequestDTO>();
+		List<PollRequestDTO> converted = new List<PollRequestDTO>();
 		foreach (PollRequest item in list)
 		{
 			PollRequestDTO pollRequestDTO = new PollRequestDTO();
-			list2.Add(pollRequestDTO);
+			converted.Add(pollRequestDTO);
 			pollRequestDTO.PRT = item.PollRequestType;
 			pollRequestDTO.SId = item.SyncId;
 			pollRequestDTO.D = item.Data;
 		}
-		return list2;
+		return converted;
 	}
 
 	public static List<PollRequest> GetPollRequestList(List<PollRequestDTO> list)
 	{
-		List<PollRequest> list2 = new List<PollRequest>();
+		List<PollRequest> converted = new List<PollRequest>();
 		foreach (PollRequestDTO item in list)
 		{
 			PollRequest pollRequest = new PollRequest();
-			list2.Add(pollRequest);
+			converted.Add(pollRequest);
 			pollRequest.PollRequestType = item.PRT;
 			pollRequest.SyncId = item.SId;
 			pollRequest.Data = item.D;
 		}
-		return list2;
+		return converted;
 	}
 }

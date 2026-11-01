@@ -264,71 +264,71 @@ public class ScheduleTaskDefinition : Definition
 
 	protected override void OnCustomParse(XmlNode node, IConsole console, ErrorList errors)
 	{
-		XmlNodeList xmlNodeList = node.SelectNodes("triggers/*");
-		if (xmlNodeList == null)
+		XmlNodeList triggerNodes = node.SelectNodes("triggers/*");
+		if (triggerNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item in xmlNodeList)
+		foreach (XmlNode triggerNode in triggerNodes)
 		{
 			Trigger trigger = null;
-			switch (item.Name)
+			switch (triggerNode.Name)
 			{
 			case "idle-trigger":
 				trigger = new OnIdleTrigger();
 				break;
 			case "daily-trigger":
 			{
-				short? num2 = null;
-				ParseHourAndMinutes(item, out var hour2, out var minutes2);
-				if (ParseInterval(item, out var interval2))
+				short? dailyInterval = null;
+				ParseHourAndMinutes(triggerNode, out var hour2, out var minutes2);
+				if (ParseInterval(triggerNode, out var interval2))
 				{
-					num2 = interval2;
+					dailyInterval = interval2;
 				}
-				trigger = (((int?)num2).HasValue ? new DailyTrigger(hour2, minutes2, num2.Value) : new DailyTrigger(hour2, minutes2));
+				trigger = (((int?)dailyInterval).HasValue ? new DailyTrigger(hour2, minutes2, dailyInterval.Value) : new DailyTrigger(hour2, minutes2));
 				break;
 			}
 			case "monthly-trigger":
 			{
-				List<int> list = new List<int>();
+				List<int> days = new List<int>();
 				MonthsOfTheYear? monthsOfTheYear = null;
-				ParseHourAndMinutes(item, out var hour4, out var minutes4);
-				if (!ParseDaysOfYear(item, list))
+				ParseHourAndMinutes(triggerNode, out var hour4, out var minutes4);
+				if (!ParseDaysOfYear(triggerNode, days))
 				{
-					list.Add(1);
+					days.Add(1);
 				}
-				if (ParseMonthsOfTheYear(item, out var monthsOfYear2))
+				if (ParseMonthsOfTheYear(triggerNode, out var monthsOfYear2))
 				{
 					monthsOfTheYear = monthsOfYear2;
 				}
-				trigger = (monthsOfTheYear.HasValue ? new MonthlyTrigger(hour4, minutes4, list.ToArray(), monthsOfTheYear.Value) : new MonthlyTrigger(hour4, minutes4, list.ToArray()));
+				trigger = (monthsOfTheYear.HasValue ? new MonthlyTrigger(hour4, minutes4, days.ToArray(), monthsOfTheYear.Value) : new MonthlyTrigger(hour4, minutes4, days.ToArray()));
 				break;
 			}
 			case "monthly-dow-trigger":
 			{
 				WhichWeek whichWeeks = WhichWeek.FirstWeek;
-				ParseHourAndMinutes(item, out var hour3, out var minutes3);
-				ParseDaysOfWeeK(item, out var daysOfWeek2);
-				if (item.Attributes["target-week"] != null)
+				ParseHourAndMinutes(triggerNode, out var hour3, out var minutes3);
+				ParseDaysOfWeeK(triggerNode, out var daysOfWeek2);
+				if (triggerNode.Attributes["target-week"] != null)
 				{
-					whichWeeks = Enum<WhichWeek>.ParseIgnoringCase(MacroContainer.Instance.ExpandConstantMacros(item.Attributes["target-week"].Value), WhichWeek.FirstWeek);
+					whichWeeks = Enum<WhichWeek>.ParseIgnoringCase(MacroContainer.Instance.ExpandConstantMacros(triggerNode.Attributes["target-week"].Value), WhichWeek.FirstWeek);
 				}
-				trigger = (ParseMonthsOfTheYear(item, out var monthsOfYear) ? new MonthlyDOWTrigger(hour3, minutes3, daysOfWeek2, whichWeeks, monthsOfYear) : new MonthlyDOWTrigger(hour3, minutes3, daysOfWeek2, whichWeeks));
+				trigger = (ParseMonthsOfTheYear(triggerNode, out var monthsOfYear) ? new MonthlyDOWTrigger(hour3, minutes3, daysOfWeek2, whichWeeks, monthsOfYear) : new MonthlyDOWTrigger(hour3, minutes3, daysOfWeek2, whichWeeks));
 				break;
 			}
 			case "run-once-trigger":
-				trigger = new RunOnceTrigger(item.GetExpandedAttributeValue("begin-date", DateTime.Now));
+				trigger = new RunOnceTrigger(triggerNode.GetExpandedAttributeValue("begin-date", DateTime.Now));
 				break;
 			case "weekly-trigger":
 			{
-				short? num = null;
-				ParseHourAndMinutes(item, out var hour, out var minutes);
-				if (ParseInterval(item, out var interval))
+				short? weeklyInterval = null;
+				ParseHourAndMinutes(triggerNode, out var hour, out var minutes);
+				if (ParseInterval(triggerNode, out var interval))
 				{
-					num = interval;
+					weeklyInterval = interval;
 				}
-				ParseDaysOfWeeK(item, out var daysOfWeek);
-				trigger = (((int?)num).HasValue ? new WeeklyTrigger(hour, minutes, daysOfWeek, num.Value) : new WeeklyTrigger(hour, minutes, daysOfWeek));
+				ParseDaysOfWeeK(triggerNode, out var daysOfWeek);
+				trigger = (((int?)weeklyInterval).HasValue ? new WeeklyTrigger(hour, minutes, daysOfWeek, weeklyInterval.Value) : new WeeklyTrigger(hour, minutes, daysOfWeek));
 				break;
 			}
 			case "logon-trigger":
@@ -338,12 +338,12 @@ public class ScheduleTaskDefinition : Definition
 				trigger = new OnSystemStartTrigger();
 				break;
 			default:
-				errors.Add(Error.NewError("C004", "The specified trigger node " + item.Name + " is not recognized.", "Specify a valid trigger node."));
+				errors.Add(Error.NewError("C004", "The specified trigger node " + triggerNode.Name + " is not recognized.", "Specify a valid trigger node."));
 				break;
 			}
 			if (trigger != null)
 			{
-				ParseCommonTriggerProperties(trigger, item, errors);
+				ParseCommonTriggerProperties(trigger, triggerNode, errors);
 				if (errors.Count > 0)
 				{
 					continue;

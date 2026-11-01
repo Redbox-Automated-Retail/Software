@@ -139,9 +139,9 @@ public class ConfigPropertyList : UserControl, IDisposable
 					SaveFailed();
 					return;
 				}
-				foreach (ConfigItem item2 in m_controllerConfig)
+				foreach (ConfigItem controllerItem in m_controllerConfig)
 				{
-					item2.DefaultValue = item2.Value;
+					controllerItem.DefaultValue = controllerItem.Value;
 				}
 			}
 		}
@@ -160,18 +160,10 @@ public class ConfigPropertyList : UserControl, IDisposable
 		ToolTip toolTip = new ToolTip();
 		ToolTip toolTip2 = new ToolTip();
 		ToolTip toolTip3 = new ToolTip();
-		int num = (toolTip3.AutoPopDelay = 5000);
-		int autoPopDelay = (toolTip2.AutoPopDelay = num);
-		toolTip.AutoPopDelay = autoPopDelay;
-		num = (toolTip3.InitialDelay = 1000);
-		autoPopDelay = (toolTip2.InitialDelay = num);
-		toolTip.InitialDelay = autoPopDelay;
-		num = (toolTip3.ReshowDelay = 500);
-		autoPopDelay = (toolTip2.ReshowDelay = num);
-		toolTip.ReshowDelay = autoPopDelay;
-		bool flag = (toolTip3.ShowAlways = true);
-		bool showAlways = (toolTip2.ShowAlways = flag);
-		toolTip.ShowAlways = showAlways;
+		toolTip.AutoPopDelay = toolTip2.AutoPopDelay = toolTip3.AutoPopDelay = 5000;
+		toolTip.InitialDelay = toolTip2.InitialDelay = toolTip3.InitialDelay = 1000;
+		toolTip.ReshowDelay = toolTip2.ReshowDelay = toolTip3.ReshowDelay = 500;
+		toolTip.ShowAlways = toolTip2.ShowAlways = toolTip3.ShowAlways = true;
 		toolTip.SetToolTip(m_alphSortButton, "Sort Ascending");
 		toolTip2.SetToolTip(m_alphDescSortButton, "Sort Descending");
 		toolTip3.SetToolTip(m_resetChangesButton, "Reset All Configuration to Defaults");
@@ -303,18 +295,18 @@ public class ConfigPropertyList : UserControl, IDisposable
 		{
 			return;
 		}
-		object obj = dataGridViewCell.Value;
+		object newValue = dataGridViewCell.Value;
 		if (configItem.ItemType == typeof(bool))
 		{
-			obj = ((dataGridViewCell.Value.ToString() == "Yes") ? "True" : "False");
+			newValue = ((dataGridViewCell.Value.ToString() == "Yes") ? "True" : "False");
 		}
-		if (configItem.ItemType == typeof(int) && !int.TryParse(obj.ToString(), out var _))
+		if (configItem.ItemType == typeof(int) && !int.TryParse(newValue.ToString(), out var _))
 		{
 			MessageBox.Show("Data entered is not an integer");
 			dataGridViewCell.Value = configItem.Value;
 			return;
 		}
-		configItem.Value = obj;
+		configItem.Value = newValue;
 		SetStyle(dataGridViewCell);
 		if (OnConfigItemChange != null)
 		{

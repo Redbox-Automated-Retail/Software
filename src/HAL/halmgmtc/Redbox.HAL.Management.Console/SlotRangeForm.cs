@@ -57,7 +57,7 @@ public class SlotRangeForm : Form
 
 	private void OnOK(object sender, EventArgs e)
 	{
-		bool flag = false;
+		bool hasError = false;
 		m_errorProvider.SetError(m_pickStartDeckButton, string.Empty);
 		m_errorProvider.SetError(m_pickStartSlotButton, string.Empty);
 		m_errorProvider.SetError(m_pickEndDeckButton, string.Empty);
@@ -65,39 +65,39 @@ public class SlotRangeForm : Form
 		if (string.IsNullOrEmpty(m_startDeckTextBox.Text))
 		{
 			m_errorProvider.SetError(m_pickStartDeckButton, "The Start Deck value is required.");
-			flag = true;
+			hasError = true;
 		}
 		if (string.IsNullOrEmpty(m_endDeckTextBox.Text))
 		{
 			m_errorProvider.SetError(m_pickEndDeckButton, "The End Deck value is required.");
-			flag = true;
+			hasError = true;
 		}
 		if (string.IsNullOrEmpty(m_startSlotTextBox.Text))
 		{
 			m_errorProvider.SetError(m_pickStartSlotButton, "The Start Slot value is required.");
-			flag = true;
+			hasError = true;
 		}
 		if (string.IsNullOrEmpty(m_endSlotTextBox.Text))
 		{
 			m_errorProvider.SetError(m_pickEndSlotButton, "The End Slot value is required.");
-			flag = true;
+			hasError = true;
 		}
-		if (!flag && Range.EndDeck < Range.StartDeck)
+		if (!hasError && Range.EndDeck < Range.StartDeck)
 		{
 			m_errorProvider.SetError(m_pickEndDeckButton, "The End Deck value must be greater than or equal to the Start Deck value.");
-			flag = true;
+			hasError = true;
 		}
-		if (skipSlotCheck && !flag && Range.EndDeck == Range.StartDeck && Range.Slots.End < Range.Slots.Start)
+		if (skipSlotCheck && !hasError && Range.EndDeck == Range.StartDeck && Range.Slots.End < Range.Slots.Start)
 		{
 			m_errorProvider.SetError(m_pickEndSlotButton, "The End Slot value must be greater than or equal to the Start Slot value.");
-			flag = true;
+			hasError = true;
 		}
-		else if (!skipSlotCheck && !flag && Range.Slots.End < Range.Slots.Start)
+		else if (!skipSlotCheck && !hasError && Range.Slots.End < Range.Slots.Start)
 		{
 			m_errorProvider.SetError(m_pickEndSlotButton, "The End Slot value must be greater than or equal to the Start Slot value.");
-			flag = true;
+			hasError = true;
 		}
-		if (!flag)
+		if (!hasError)
 		{
 			base.DialogResult = DialogResult.OK;
 			Close();

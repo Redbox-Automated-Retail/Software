@@ -124,14 +124,14 @@ public class Task : ITask, IJob
 				{
 				case PayloadType.Script:
 				{
-					string text3 = task.Payload;
-					if (!Path.IsPathRooted(text3))
+					string scriptPath = task.Payload;
+					if (!Path.IsPathRooted(scriptPath))
 					{
-						text3 = Path.Combine(macroService.ExpandProperties("${Scripts}"), task.Payload);
+						scriptPath = Path.Combine(macroService.ExpandProperties("${Scripts}"), task.Payload);
 					}
-					if (!File.Exists(text3))
+					if (!File.Exists(scriptPath))
 					{
-						LogHelper.Instance.Log("{0} not found.", text3);
+						LogHelper.Instance.Log("{0} not found.", scriptPath);
 						return;
 					}
 					try
@@ -146,35 +146,35 @@ public class Task : ITask, IJob
 						LogHelper.Instance.Log("(TASK0099) - An unhandled exception occurred updating health for watchdog.", e);
 					}
 					IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-					string chunk = File.ReadAllText(text3);
-					LogHelper.Instance.Log("Executing lua script at {0}", text3);
+					string chunk = File.ReadAllText(scriptPath);
+					LogHelper.Instance.Log("Executing lua script at {0}", scriptPath);
 					kernelService.ExecuteChunk(chunk);
 					break;
 				}
 				case PayloadType.Shell:
 				{
-					string text;
-					string text2;
+					string fileName;
+					string processArguments;
 					if (task.Payload.Contains(" "))
 					{
-						text = task.Payload.Substring(0, task.Payload.IndexOf(" "));
-						text2 = task.Payload.Substring(task.Payload.IndexOf(" ") + 1);
+						fileName = task.Payload.Substring(0, task.Payload.IndexOf(" "));
+						processArguments = task.Payload.Substring(task.Payload.IndexOf(" ") + 1);
 					}
 					else
 					{
-						text = task.Payload;
-						text2 = string.Empty;
+						fileName = task.Payload;
+						processArguments = string.Empty;
 					}
-					LogHelper.Instance.Log("Executing shell command process: {0} arguments: {1}", text, text2);
+					LogHelper.Instance.Log("Executing shell command process: {0} arguments: {1}", fileName, processArguments);
 					using (Process process = Process.Start(new ProcessStartInfo
 					{
 						WorkingDirectory = macroService.ExpandProperties("${RunningPath}"),
 						ErrorDialog = false,
 						UseShellExecute = false,
-						Arguments = text2,
+						Arguments = processArguments,
 						CreateNoWindow = true,
 						WindowStyle = ProcessWindowStyle.Hidden,
-						FileName = text
+						FileName = fileName
 					}))
 					{
 						LogHelper.Instance.Log("Process '{0}' started with PID '{1}'.", process.ProcessName, process.Id);

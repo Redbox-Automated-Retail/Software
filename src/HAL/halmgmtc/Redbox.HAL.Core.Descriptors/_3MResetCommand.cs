@@ -61,12 +61,12 @@ internal abstract class _3MResetCommand : Abstract3MCommand
 		for (int i = 0; i < 5; i++)
 		{
 			PerfFunctions.Wait(pause);
-			byte[] array = _3mStatusCommand2.SendReceive();
-			if (array.Length == 0)
+			byte[] status = _3mStatusCommand2.SendReceive();
+			if (status.Length == 0)
 			{
 				break;
 			}
-			if (array[3] == CompletionByte)
+			if (status[3] == CompletionByte)
 			{
 				result = true;
 				break;

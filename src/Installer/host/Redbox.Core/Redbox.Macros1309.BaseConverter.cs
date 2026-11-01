@@ -145,8 +145,8 @@ internal class Redbox_002EMacros1309_002EBaseConverter
 
 	public static string Convert(int fromRadix, Redbox_002EMacros1309_002ENumberingSchemes fromScheme, int toRadix, Redbox_002EMacros1309_002ENumberingSchemes toScheme, string value)
 	{
-		Redbox_002EMacros1309_002EBaseConverter obj = new Redbox_002EMacros1309_002EBaseConverter(fromRadix, fromScheme, toRadix, toScheme);
-		return obj.Convert(value);
+		Redbox_002EMacros1309_002EBaseConverter converter = new Redbox_002EMacros1309_002EBaseConverter(fromRadix, fromScheme, toRadix, toScheme);
+		return converter.Convert(value);
 	}
 
 	public string Convert(string value)
@@ -155,12 +155,12 @@ internal class Redbox_002EMacros1309_002EBaseConverter
 		{
 			throw new ArgumentNullException("value");
 		}
-		long value2 = ConvertToBase10(value, From, _fromNumberingScheme, _maxFromSchemeCharacter);
+		long base10Value = ConvertToBase10(value, From, _fromNumberingScheme, _maxFromSchemeCharacter);
 		if (To != 10)
 		{
-			return ConvertFromBase10(value2, To, _toNumberingScheme);
+			return ConvertFromBase10(base10Value, To, _toNumberingScheme);
 		}
-		return value2.ToString();
+		return base10Value.ToString();
 	}
 
 	private Redbox_002EMacros1309_002EBaseConverter(int fromRadix, Redbox_002EMacros1309_002ENumberingSchemes fromScheme, int toRadix, Redbox_002EMacros1309_002ENumberingSchemes toScheme)
@@ -201,8 +201,8 @@ internal class Redbox_002EMacros1309_002EBaseConverter
 	private static long ConvertToBase10(string value, int fromBase, string characters, int maxFromSchemeCharacter)
 	{
 		StringBuilder stringBuilder = new StringBuilder(value);
-		int num = 0;
-		long num2 = 0L;
+		int position = 0;
+		long result = 0L;
 		while (stringBuilder.Length > 0)
 		{
 			int index = Array.IndexOf(characters.ToCharArray(), stringBuilder[stringBuilder.Length - 1]);
@@ -214,15 +214,15 @@ internal class Redbox_002EMacros1309_002EBaseConverter
 			{
 				throw new FormatException("Value contains character not valid for number base");
 			}
-			num2 += index * (long)Math.Pow(fromBase, num);
-			if (num2 < 0)
+			result += index * (long)Math.Pow(fromBase, position);
+			if (result < 0)
 			{
 				throw new OverflowException();
 			}
 			stringBuilder.Length--;
-			num++;
+			position++;
 		}
-		return num2;
+		return result;
 	}
 
 	private static string ConvertFromBase10(long value, int toBase, string characters)

@@ -15,7 +15,7 @@ public class UpdateManagerServiceInstaller : Installer
 	public UpdateManagerServiceInstaller()
 	{
 		InitializeComponent();
-		ServiceInstaller value = new ServiceInstaller
+		ServiceInstaller serviceInstaller = new ServiceInstaller
 		{
 			StartType = ServiceStartMode.Automatic,
 			DisplayName = "Redbox Store Manager Service",
@@ -23,12 +23,12 @@ public class UpdateManagerServiceInstaller : Installer
 			Description = "Manage updates and run scheduled tasks.",
 			ServicesDependedOn = new string[1] { "Tcpip" }
 		};
-		ServiceProcessInstaller value2 = new ServiceProcessInstaller
+		ServiceProcessInstaller processInstaller = new ServiceProcessInstaller
 		{
 			Account = ServiceAccount.LocalSystem
 		};
-		base.Installers.Add(value);
-		base.Installers.Add(value2);
+		base.Installers.Add(serviceInstaller);
+		base.Installers.Add(processInstaller);
 	}
 
 	protected override void OnAfterInstall(IDictionary savedState)
@@ -36,9 +36,9 @@ public class UpdateManagerServiceInstaller : Installer
 		try
 		{
 			string keyName = string.Format("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\{0}", "updatemgrd$default");
-			int num = (int)Registry.GetValue(keyName, "Type", 0);
-			num |= 0x100;
-			Registry.SetValue(keyName, "Type", num);
+			int serviceType = (int)Registry.GetValue(keyName, "Type", 0);
+			serviceType |= 0x100;
+			Registry.SetValue(keyName, "Type", serviceType);
 			if (Options.Instance.ForceStart)
 			{
 				using ServiceController serviceController = new ServiceController("updatemgrd$default");

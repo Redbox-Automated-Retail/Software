@@ -41,16 +41,16 @@ public class FileSetPollRequestList
 		try
 		{
 			FileSetPollRequests.Clear();
-			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string item)
+			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string entry)
 			{
-				string[] parts = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
-				FileSetPollRequest item2 = new FileSetPollRequest
+				string[] parts = entry.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+				FileSetPollRequest request = new FileSetPollRequest
 				{
 					FileSetId = Convert.ToInt64(parts[0]),
 					FileSetRevisionId = Convert.ToInt64(parts[1]),
 					FileSetState = (FileSetState)Convert.ToInt32(parts[2])
 				};
-				FileSetPollRequests.Add(item2);
+				FileSetPollRequests.Add(request);
 			});
 		}
 		catch (Exception e)

@@ -14,18 +14,18 @@ public class DynamicPropertyGrid : VisualHint.SmartPropertyGrid.PropertyGrid
 		base.ShowDefaultValues = true;
 		base.ShowAdditionalIndentation = true;
 		base.ToolTipMode = ToolTipModes.ToolTipsOnValuesAndLabels;
-		ToolStripLabel value = new ToolStripLabel("Filter:");
+		ToolStripLabel filterLabel = new ToolStripLabel("Filter:");
 		ToolStripTextBox toolStripTextBox = new ToolStripTextBox("filter")
 		{
 			BorderStyle = BorderStyle.None
 		};
-		base.Toolbar.Items.Add(value);
+		base.Toolbar.Items.Add(filterLabel);
 		base.Toolbar.Items.Add(toolStripTextBox);
-		EventHandler value2 = delegate(object sender, EventArgs e)
+		EventHandler filterChanged = delegate(object sender, EventArgs e)
 		{
 			FilterProperties(((ToolStripTextBox)sender).Text);
 		};
-		toolStripTextBox.TextChanged += value2;
+		toolStripTextBox.TextChanged += filterChanged;
 	}
 
 	protected override void OnDisplayModeChanged(EventArgs e)

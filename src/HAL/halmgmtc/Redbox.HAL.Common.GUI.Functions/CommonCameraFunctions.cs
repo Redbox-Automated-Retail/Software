@@ -23,7 +23,7 @@ public static class CommonCameraFunctions
 	{
 		if (service != null)
 		{
-			bool flag = IRCameraConfigured(service);
+			bool secure = IRCameraConfigured(service);
 			string text = "c:\\Program Files\\Redbox\\halservice\\bin\\CameraTuner.exe";
 			if (File.Exists(text))
 			{
@@ -32,7 +32,7 @@ public static class CommonCameraFunctions
 				stringBuilder.Append("RINGLIGHT ON" + Environment.NewLine);
 				service.ExecuteImmediateProgram(Encoding.ASCII.GetBytes(stringBuilder.ToString()), out var job);
 				PerfFunctions.SpinWait(5000);
-				Process.Start(text, flag ? "-secure" : string.Empty).WaitForExit();
+				Process.Start(text, secure ? "-secure" : string.Empty).WaitForExit();
 				stringBuilder = new StringBuilder();
 				stringBuilder.Append("RINGLIGHT OFF" + Environment.NewLine);
 				stringBuilder.Append("CAMERA START" + Environment.NewLine);

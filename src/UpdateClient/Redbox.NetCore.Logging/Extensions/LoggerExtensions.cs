@@ -46,19 +46,19 @@ public static class LoggerExtensions
 	{
 		if (!callerLocation.Contains("\\"))
 		{
-			string text = callerLocation.Split('/').LastOrDefault();
-			if (text == null)
+			string unixFileName = callerLocation.Split('/').LastOrDefault();
+			if (unixFileName == null)
 			{
 				return null;
 			}
-			return text.TrimEnd(".cs");
+			return unixFileName.TrimEnd(".cs");
 		}
-		string text2 = callerLocation.Split("\\").LastOrDefault();
-		if (text2 == null)
+		string fileName = callerLocation.Split("\\").LastOrDefault();
+		if (fileName == null)
 		{
 			return null;
 		}
-		return text2.TrimEnd(".cs");
+		return fileName.TrimEnd(".cs");
 	}
 
 	private static string TrimEnd(this string value, string substring)

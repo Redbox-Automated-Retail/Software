@@ -49,18 +49,18 @@ public class Player : Form
 			return false;
 		}
 		VideoDevice = new VideoCaptureDevice(filterInfoCollection[0].MonikerString);
-		bool flag = false;
+		bool found = false;
 		VideoCapabilities[] videoCapabilities = VideoDevice.VideoCapabilities;
-		foreach (VideoCapabilities videoCapabilities2 in videoCapabilities)
+		foreach (VideoCapabilities capability in videoCapabilities)
 		{
-			if (videoCapabilities2.FrameSize == VideoSize)
+			if (capability.FrameSize == VideoSize)
 			{
-				flag = true;
-				VideoDevice.VideoResolution = videoCapabilities2;
+				found = true;
+				VideoDevice.VideoResolution = capability;
 				break;
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			LogHelper.Instance.Log("Unable to find video capability with size {0}w X {1}h", new object[2]
 			{
@@ -68,18 +68,18 @@ public class Player : Form
 				base.Size.Height
 			});
 		}
-		flag = false;
+		found = false;
 		VideoCapabilities[] snapshotCapabilities = VideoDevice.SnapshotCapabilities;
-		foreach (VideoCapabilities videoCapabilities3 in snapshotCapabilities)
+		foreach (VideoCapabilities snapshotCapability in snapshotCapabilities)
 		{
-			if (videoCapabilities3.FrameSize == VideoSize)
+			if (snapshotCapability.FrameSize == VideoSize)
 			{
-				flag = true;
-				VideoDevice.SnapshotResolution = videoCapabilities3;
+				found = true;
+				VideoDevice.SnapshotResolution = snapshotCapability;
 				break;
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			LogHelper.Instance.Log("Unable to find snapshot capability with size {0}w X {1}h", new object[2]
 			{
@@ -140,9 +140,7 @@ public class Player : Form
 				VideoDevice.SnapshotFrame -= SnapshotCallback;
 				VideoDevice.PlayingFinished -= videoSource_PlayingFinished;
 			}
-			VideoSourcePlayer obj = videoSourcePlayer;
-			VideoCaptureDevice videoSource = (VideoDevice = null);
-			obj.VideoSource = videoSource;
+			videoSourcePlayer.VideoSource = VideoDevice = null;
 			LogHelper.Instance.Log("Player.Disconnect() is finished.");
 		}
 		catch (Exception ex)

@@ -191,13 +191,13 @@ public class DownloadService : IDownloadService, IInvocable
 		try
 		{
 			DownloadData downloadData = await GetDownloadData(key);
-			bool flag = downloadData != null;
-			bool flag2 = flag;
-			if (flag2)
+			bool found = downloadData != null;
+			bool deleteFailed = found;
+			if (deleteFailed)
 			{
-				flag2 = !(await _downloader.DeleteDownload(downloadData));
+				deleteFailed = !(await _downloader.DeleteDownload(downloadData));
 			}
-			if (flag2)
+			if (deleteFailed)
 			{
 				response.StatusCode = HttpStatusCode.InternalServerError;
 			}
@@ -285,8 +285,8 @@ public class DownloadService : IDownloadService, IInvocable
 			}
 			foreach (DownloadData item in downloadDataList)
 			{
-				bool flag = result;
-				result = flag & await _downloader.ProcessDownload(item);
+				bool succeededSoFar = result;
+				result = succeededSoFar & await _downloader.ProcessDownload(item);
 			}
 			result &= _downloader.Cleanup(downloadDataList);
 			if (downloadDataList != null && downloadDataList.Count > 0)

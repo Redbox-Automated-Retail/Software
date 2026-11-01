@@ -31,22 +31,22 @@ public class LoggingActionFilter : IAsyncActionFilter, IFilterMetadata
 		if (context.ActionArguments.Any())
 		{
 			stringBuilder.Append(", ");
-			bool flag = false;
+			bool needsSeparator = false;
 			foreach (KeyValuePair<string, object> actionArgument in context.ActionArguments)
 			{
-				if (flag)
+				if (needsSeparator)
 				{
 					stringBuilder.Append(',');
 				}
 				stringBuilder.Append(actionArgument.Key).Append(':');
 				stringBuilder.Append((actionArgument.Value is IMessageScrub) ? (actionArgument.Value as IMessageScrub).Scrub() : actionArgument.Value);
-				flag = true;
+				needsSeparator = true;
 			}
 		}
 		_logger.LogInformation(stringBuilder.ToString());
 		Stopwatch requestTimer = Stopwatch.StartNew();
 		ActionExecutedContext actionExecutedContext = await next();
-		StringBuilder stringBuilder2 = new StringBuilder();
+		StringBuilder responseText = new StringBuilder();
 		if (actionExecutedContext != null && actionExecutedContext.Result != null)
 		{
 			if (actionExecutedContext.Result is ObjectResult)
@@ -54,25 +54,25 @@ public class LoggingActionFilter : IAsyncActionFilter, IFilterMetadata
 				ObjectResult objectResult = actionExecutedContext.Result as ObjectResult;
 				if (objectResult.Value != null && objectResult.Value is IMessageScrub)
 				{
-					stringBuilder2.Append($"{(objectResult.Value as IMessageScrub).Scrub()}");
+					responseText.Append($"{(objectResult.Value as IMessageScrub).Scrub()}");
 				}
 				else
 				{
-					stringBuilder2.Append($"{objectResult.StatusCode}");
+					responseText.Append($"{objectResult.StatusCode}");
 				}
 			}
 			else if (actionExecutedContext.Result is ContentResult)
 			{
 				ContentResult contentResult = actionExecutedContext.Result as ContentResult;
-				stringBuilder2.Append(contentResult.Content);
+				responseText.Append(contentResult.Content);
 			}
 		}
 		else
 		{
-			stringBuilder2.Append("none");
+			responseText.Append("none");
 		}
 		requestTimer.Stop();
-		_logger.LogInformation($"{controllerName}.{actionName}, response={stringBuilder2}");
+		_logger.LogInformation($"{controllerName}.{actionName}, response={responseText}");
 		_logger.LogInformation($"END: {controllerName}.{actionName}, statuscode={(HttpStatusCode)context.HttpContext.Response.StatusCode}, elapsed={requestTimer.ElapsedMilliseconds}");
 	}
 }

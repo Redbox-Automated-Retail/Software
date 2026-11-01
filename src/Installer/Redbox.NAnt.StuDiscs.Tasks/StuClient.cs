@@ -61,9 +61,9 @@ public class StuClient
 	private void InvokeRuleInitialize(object ruleObject, Type ruleType)
 	{
 		Type type = ruleType.Assembly.GetType("RuleExecutionMode");
-		object obj = Enum.Parse(type, "Client");
+		object clientMode = Enum.Parse(type, "Client");
 		MethodInfo method = ruleType.GetMethod("Initialize");
-		method.Invoke(ruleObject, new object[1] { obj });
+		method.Invoke(ruleObject, new object[1] { clientMode });
 	}
 
 	public DataSet ExecuteRule()
@@ -72,11 +72,11 @@ public class StuClient
 		{
 			Type type = RuleAssembly.GetType(GetRuleAlias());
 			MethodInfo method = type.GetMethod("Execute");
-			object[] array = new object[1];
-			object[] array2 = new object[0];
-			array[0] = array2;
+			object[] arguments = new object[1];
+			object[] executeArguments = new object[0];
+			arguments[0] = executeArguments;
 			Initialize();
-			return (DataSet)method.Invoke(_rule, array);
+			return (DataSet)method.Invoke(_rule, arguments);
 		}
 	}
 

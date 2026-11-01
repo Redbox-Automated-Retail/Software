@@ -95,9 +95,9 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(UpdateAccountResponseErrors?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(UpdateAccountResponseErrors?), (string)firstError["Code"]);
 								result.Properties["response"] = fieldsForResponseCode ?? ((object)UpdateAccountResponseErrors.Error);
 							}
 						}

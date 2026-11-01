@@ -158,30 +158,30 @@ public class ConfigurationService : IConfigurationService
 	{
 		startTime = null;
 		endTime = null;
-		string value = null;
-		bool flag = false;
-		if (ConfigurationClient.Instance.TryGetValue<string>(key, category, setting, out value))
+		string rangeText = null;
+		bool parsed = false;
+		if (ConfigurationClient.Instance.TryGetValue<string>(key, category, setting, out rangeText))
 		{
-			string[] parts = value.Split('-');
-			if (parts.Length == 2 && TimeSpan.TryParseExact(parts[0], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result) && TimeSpan.TryParseExact(parts[1], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result2))
+			string[] parts = rangeText.Split('-');
+			if (parts.Length == 2 && TimeSpan.TryParseExact(parts[0], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var parsedStart) && TimeSpan.TryParseExact(parts[1], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var parsedEnd))
 			{
-				if (result <= result2)
+				if (parsedStart <= parsedEnd)
 				{
-					startTime = result;
-					endTime = result2;
-					flag = true;
+					startTime = parsedStart;
+					endTime = parsedEnd;
+					parsed = true;
 				}
 				else
 				{
-					LogHelper.Instance.Log("Error in ConfigurationService.TryGetTimeSpanRangeValue: end time is less than start time : " + value + " for key: " + key + ", category: " + category + ", setting: " + setting);
+					LogHelper.Instance.Log("Error in ConfigurationService.TryGetTimeSpanRangeValue: end time is less than start time : " + rangeText + " for key: " + key + ", category: " + category + ", setting: " + setting);
 				}
 			}
-			if (!flag)
+			if (!parsed)
 			{
-				LogHelper.Instance.Log("Error in ConfigurationService.TryGetTimeSpanRangeValue: invalid time span range value : " + value + " for key: " + key + ", category: " + category + ", setting: " + setting);
+				LogHelper.Instance.Log("Error in ConfigurationService.TryGetTimeSpanRangeValue: invalid time span range value : " + rangeText + " for key: " + key + ", category: " + category + ", setting: " + setting);
 			}
 		}
-		return flag;
+		return parsed;
 	}
 
 	public bool TryGetValue<T>(string key, string setting, out T value)
@@ -202,34 +202,34 @@ public class ConfigurationService : IConfigurationService
 	public bool TryGetConfigurationData(string key, string category, string setting, out ConfigurationData value)
 	{
 		value = null;
-		bool num = ConfigurationClient.Instance.TryGetConfigurationData(key, category, setting, out var value2);
-		if (num)
+		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, category, setting, out var clientData);
+		if (found)
 		{
-			value = ToConfigurationData(value2);
+			value = ToConfigurationData(clientData);
 		}
-		return num;
+		return found;
 	}
 
 	public bool TryGetConfigurationData(string key, string setting, out ConfigurationData value)
 	{
 		value = null;
-		bool num = ConfigurationClient.Instance.TryGetConfigurationData(key, setting, out var value2);
-		if (num)
+		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, setting, out var clientData);
+		if (found)
 		{
-			value = ToConfigurationData(value2);
+			value = ToConfigurationData(clientData);
 		}
-		return num;
+		return found;
 	}
 
 	public bool GetAllConfigurationData(string key, out List<ConfigurationData> list)
 	{
 		list = new List<ConfigurationData>();
-		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, out var list2);
+		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, out var clientDataList);
 		if (allConfigurationData)
 		{
-			foreach (ClientConfigurationData item in list2)
+			foreach (ClientConfigurationData clientData in clientDataList)
 			{
-				list.Add(ToConfigurationData(item));
+				list.Add(ToConfigurationData(clientData));
 			}
 		}
 		return allConfigurationData;
@@ -238,12 +238,12 @@ public class ConfigurationService : IConfigurationService
 	public bool GetAllConfigurationData(string key, string category, string setting, out List<ConfigurationData> list)
 	{
 		list = new List<ConfigurationData>();
-		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, category, setting, out var list2);
+		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, category, setting, out var clientDataList);
 		if (allConfigurationData)
 		{
-			foreach (ClientConfigurationData item in list2)
+			foreach (ClientConfigurationData clientData in clientDataList)
 			{
-				list.Add(ToConfigurationData(item));
+				list.Add(ToConfigurationData(clientData));
 			}
 		}
 		return allConfigurationData;
@@ -252,12 +252,12 @@ public class ConfigurationService : IConfigurationService
 	public bool GetAllConfigurationData(string key, string setting, out List<ConfigurationData> list)
 	{
 		list = new List<ConfigurationData>();
-		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, setting, out var list2);
+		bool allConfigurationData = ConfigurationClient.Instance.GetAllConfigurationData(key, setting, out var clientDataList);
 		if (allConfigurationData)
 		{
-			foreach (ClientConfigurationData item in list2)
+			foreach (ClientConfigurationData clientData in clientDataList)
 			{
-				list.Add(ToConfigurationData(item));
+				list.Add(ToConfigurationData(clientData));
 			}
 		}
 		return allConfigurationData;

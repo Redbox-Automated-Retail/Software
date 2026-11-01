@@ -146,11 +146,11 @@ public static class RepositoryFunctions
 	{
 		List<string> allRepositories = ServiceLocator.Instance.GetService<IRepositoryService>().GetAllRepositories();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
-		foreach (string item in allRepositories)
+		int index = 1;
+		foreach (string repository in allRepositories)
 		{
-			luaTable[num] = item;
-			num++;
+			luaTable[index] = repository;
+			index++;
 		}
 		return luaTable;
 	}
@@ -189,12 +189,12 @@ public static class RepositoryFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
+		LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (Redbox.UpdateManager.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
+		luaTable["errors"] = errorTable;
 		return luaTable;
 	}
 
@@ -202,17 +202,17 @@ public static class RepositoryFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		HashSet<string> hashSet = new HashSet<string>();
-		int num = 1;
+		int index = 1;
 		foreach (IRevLog log in logs)
 		{
 			foreach (ChangeItem change in log.Changes)
 			{
-				string text = change.FormatFileName();
-				if (!hashSet.Contains(text))
+				string fileName = change.FormatFileName();
+				if (!hashSet.Contains(fileName))
 				{
-					hashSet.Add(text);
-					luaTable[num] = text;
-					num++;
+					hashSet.Add(fileName);
+					luaTable[index] = fileName;
+					index++;
 				}
 			}
 		}

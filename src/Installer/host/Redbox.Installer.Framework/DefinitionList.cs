@@ -46,14 +46,14 @@ public class DefinitionList : List<Definition>
 
 	public int GetTaskCount()
 	{
-		int num = 0;
+		int total = 0;
 		using Enumerator enumerator = GetEnumerator();
 		while (enumerator.MoveNext())
 		{
 			Definition current = enumerator.Current;
-			num += current.GetTaskCount();
+			total += current.GetTaskCount();
 		}
-		return num;
+		return total;
 	}
 
 	public Definition GetByID(string id)
@@ -63,14 +63,14 @@ public class DefinitionList : List<Definition>
 
 	public int GetNumberOfFiles()
 	{
-		int num = 0;
+		int total = 0;
 		using Enumerator enumerator = GetEnumerator();
 		while (enumerator.MoveNext())
 		{
 			Definition current = enumerator.Current;
-			num += current.GetCountValue();
+			total += current.GetCountValue();
 		}
-		return num;
+		return total;
 	}
 
 	public void DisposeAllPages()
@@ -88,14 +88,14 @@ public class DefinitionList : List<Definition>
 
 	public int GetSizeOfAllFiles()
 	{
-		int num = 0;
+		int total = 0;
 		using Enumerator enumerator = GetEnumerator();
 		while (enumerator.MoveNext())
 		{
 			Definition current = enumerator.Current;
-			num += current.Size;
+			total += current.Size;
 		}
-		return num;
+		return total;
 	}
 
 	public void LoadFromResources(string path)
@@ -122,12 +122,12 @@ public class DefinitionList : List<Definition>
 	public ErrorList SaveToResources(ResourceUpdateSession session, XmlDocument xmlDocument, string basePath)
 	{
 		ErrorList errorList = new ErrorList();
-		int num = 0;
+		int index = 0;
 		using Enumerator enumerator = GetEnumerator();
 		while (enumerator.MoveNext())
 		{
 			Definition current = enumerator.Current;
-			current.SaveToResource(session, num++, xmlDocument, basePath, errorList);
+			current.SaveToResource(session, index++, xmlDocument, basePath, errorList);
 		}
 		return errorList;
 	}

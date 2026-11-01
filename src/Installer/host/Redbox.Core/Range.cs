@@ -26,13 +26,13 @@ public class Range
 		}
 		End = 0;
 		Start = 0;
-		if (int.TryParse(parts[1], out var result))
+		if (int.TryParse(parts[1], out var end))
 		{
-			End = result;
+			End = end;
 		}
-		if (int.TryParse(parts[0], out var result2))
+		if (int.TryParse(parts[0], out var start))
 		{
-			Start = result2;
+			Start = start;
 		}
 	}
 

@@ -59,20 +59,20 @@ internal class FormMethod
 
 	public void Invoke(CommandResult result, CommandContext context, CommandTokenizer tokenizer, object commandInstance)
 	{
-		object[] array = new object[OrderedParameters.Count + 1];
-		array[0] = context;
-		int num = 1;
+		object[] arguments = new object[OrderedParameters.Count + 1];
+		arguments[0] = context;
+		int argumentIndex = 1;
 		foreach (FormMethodParameter orderedParameter in OrderedParameters)
 		{
 			KeyValuePair keyValuePair = tokenizer.Tokens.GetKeyValuePair(orderedParameter.KeyName);
 			if (keyValuePair == null)
 			{
-				array[num++] = null;
+				arguments[argumentIndex++] = null;
 				continue;
 			}
 			try
 			{
-				array[num++] = orderedParameter.ConvertValue(keyValuePair.Value);
+				arguments[argumentIndex++] = orderedParameter.ConvertValue(keyValuePair.Value);
 			}
 			catch (Exception e)
 			{
@@ -85,7 +85,7 @@ internal class FormMethod
 		}
 		try
 		{
-			InvokeMethod(commandInstance, array);
+			InvokeMethod(commandInstance, arguments);
 		}
 		catch (Exception e2)
 		{

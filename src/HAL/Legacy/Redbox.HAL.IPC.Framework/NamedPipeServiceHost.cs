@@ -60,15 +60,15 @@ public class NamedPipeServiceHost : IPCServiceHost
 	{
 		if (session != null)
 		{
-			int num = 0;
+			int activeSessions = 0;
 			lock (m_sessionsSyncObject)
 			{
 				m_sessions.Add(session);
-				num = m_sessions.Count;
+				activeSessions = m_sessions.Count;
 			}
 			if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
 			{
-				LogHelper.Instance.Log($"There are currently {num} active sessions.");
+				LogHelper.Instance.Log($"There are currently {activeSessions} active sessions.");
 			}
 		}
 	}

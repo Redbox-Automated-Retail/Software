@@ -119,16 +119,16 @@ public class UpdateManagerService : IDisposable
 		ClientCommandResult clientCommandResult = ExecuteCommandString("engine shutdown");
 		if (clientCommandResult.Success)
 		{
-			int num = 0;
-			ManualResetEvent manualResetEvent = new ManualResetEvent(initialState: false);
-			manualResetEvent.WaitOne(timeout);
-			manualResetEvent.Close();
-			while (IsEngineRunning() && num < tries)
+			int attempt = 0;
+			ManualResetEvent initialWait = new ManualResetEvent(initialState: false);
+			initialWait.WaitOne(timeout);
+			initialWait.Close();
+			while (IsEngineRunning() && attempt < tries)
 			{
-				ManualResetEvent manualResetEvent2 = new ManualResetEvent(initialState: false);
-				manualResetEvent2.WaitOne(timeout);
-				manualResetEvent2.Close();
-				num++;
+				ManualResetEvent retryWait = new ManualResetEvent(initialState: false);
+				retryWait.WaitOne(timeout);
+				retryWait.Close();
+				attempt++;
 			}
 			if (IsEngineRunning())
 			{

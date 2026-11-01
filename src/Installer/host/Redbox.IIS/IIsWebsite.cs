@@ -130,9 +130,9 @@ public class IIsWebsite : IIsObject
 		try
 		{
 			DirectoryEntry directoryEntry = new DirectoryEntry("IIS://localhost/w3svc");
-			object[] array = CreateVariantServerBindings(serverBindings);
-			object obj = directoryEntry.Invoke("CreateNewSite", name, array, path);
-			return GetByID((int)obj);
+			object[] bindings = CreateVariantServerBindings(serverBindings);
+			object siteId = directoryEntry.Invoke("CreateNewSite", name, bindings, path);
+			return GetByID((int)siteId);
 		}
 		catch
 		{
@@ -250,12 +250,12 @@ public class IIsWebsite : IIsObject
 
 	private static object[] CreateVariantServerBindings(ICollection<IIsServerBinding> serverBindings)
 	{
-		int num = 0;
-		object[] array = new object[serverBindings.Count];
+		int index = 0;
+		object[] bindings = new object[serverBindings.Count];
 		foreach (IIsServerBinding serverBinding in serverBindings)
 		{
-			array[num++] = serverBinding.ToMetabaseString();
+			bindings[index++] = serverBinding.ToMetabaseString();
 		}
-		return array;
+		return bindings;
 	}
 }

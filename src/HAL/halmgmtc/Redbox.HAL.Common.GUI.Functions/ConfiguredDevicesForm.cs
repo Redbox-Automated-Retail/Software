@@ -294,19 +294,19 @@ public class ConfiguredDevicesForm : Form
 		stringBuilder.AppendLine(" CLEAR");
 		CenterItemProgram = Encoding.ASCII.GetBytes(stringBuilder.ToString());
 		FormProperties = properties;
-		bool flag = false;
+		bool allowSessionDisplay = false;
 		if (FormProperties.ContainsKey("AllowSessionDisplay"))
 		{
 			try
 			{
-				flag = bool.Parse(FormProperties["AllowSessionDisplay"]);
+				allowSessionDisplay = bool.Parse(FormProperties["AllowSessionDisplay"]);
 			}
 			catch
 			{
-				flag = false;
+				allowSessionDisplay = false;
 			}
 		}
-		m_displaySessionsButton.Enabled = (m_displaySessionsButton.Visible = flag);
+		m_displaySessionsButton.Enabled = (m_displaySessionsButton.Visible = allowSessionDisplay);
 		listView1.Columns.Add("Component", 200);
 		listView1.Columns.Add("Value", 200);
 	}
@@ -350,17 +350,7 @@ public class ConfiguredDevicesForm : Form
 	{
 		ISessionUser currentSession = ServiceLocator.Instance.GetService<ISessionUserService>().GetCurrentSession();
 		FunctionTest = new KioskFunctionTest(Service, KioskTestOutput, HasCortexCamera, currentSession.User);
-		TextBox testVendDoorTB = m_testVendDoorTB;
-		TextBox checkDriversStatusTB = m_checkDriversStatusTB;
-		TextBox cameraSnapTB = m_cameraSnapTB;
-		TextBox initTB = m_initTB;
-		TextBox verticalTestTB = m_verticalTestTB;
-		string text = (m_unknownCountTB.Text = "Not Started");
-		string text3 = (verticalTestTB.Text = text);
-		string text5 = (initTB.Text = text3);
-		string text7 = (cameraSnapTB.Text = text5);
-		string text9 = (checkDriversStatusTB.Text = text7);
-		testVendDoorTB.Text = text9;
+		m_testVendDoorTB.Text = m_checkDriversStatusTB.Text = m_cameraSnapTB.Text = m_initTB.Text = m_verticalTestTB.Text = m_unknownCountTB.Text = "Not Started";
 		m_userName.Text = currentSession.User;
 	}
 
@@ -533,8 +523,8 @@ public class ConfiguredDevicesForm : Form
 		using (Manager.MakeAspect(sender))
 		{
 			WriteToBox("Waiting for camera to start - could take up to 15s.");
-			bool flag = bool.Parse(CommonFunctions.ExecuteInstruction(Service, "CAMERA START").GetTopOfStack());
-			WriteToBox(flag ? "Camera started." : "Camera DIDN'T START.");
+			bool started = bool.Parse(CommonFunctions.ExecuteInstruction(Service, "CAMERA START").GetTopOfStack());
+			WriteToBox(started ? "Camera started." : "Camera DIDN'T START.");
 		}
 	}
 
@@ -564,11 +554,11 @@ public class ConfiguredDevicesForm : Form
 	{
 		using (Manager.MakeAspect(sender))
 		{
-			bool flag = !HasFraudSensor;
+			bool enable = !HasFraudSensor;
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"SETCFG \"EnableSecureDiskValidator\" \"{flag.ToString()}\" TYPE=CONTROLLER");
-			stringBuilder.AppendLine($" SETCFG \"EnableFraudSensorCheck\" \"{flag.ToString()}\" TYPE=CONTROLLER");
-			stringBuilder.AppendLine($" SETCFG \"FraudScanJobBitmask2\" \"{(flag ? 32 : 0)}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($"SETCFG \"EnableSecureDiskValidator\" \"{enable.ToString()}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($" SETCFG \"EnableFraudSensorCheck\" \"{enable.ToString()}\" TYPE=CONTROLLER");
+			stringBuilder.AppendLine($" SETCFG \"FraudScanJobBitmask2\" \"{(enable ? 32 : 0)}\" TYPE=CONTROLLER");
 			stringBuilder.AppendLine(" CLEAR");
 			HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediateProgram(Encoding.ASCII.GetBytes(stringBuilder.ToString()), out var _);
 			if (!hardwareCommandResult.Success)
@@ -582,8 +572,8 @@ public class ConfiguredDevicesForm : Form
 					return;
 				}
 			}
-			FraudSensorOutput.Write("Fraud sensor is {0}.", flag ? "enabled" : "disabled");
-			HasFraudSensor = flag;
+			FraudSensorOutput.Write("Fraud sensor is {0}.", enable ? "enabled" : "disabled");
+			HasFraudSensor = enable;
 			OnConfigureFraudSensor();
 		}
 	}
@@ -905,10 +895,10 @@ public class ConfiguredDevicesForm : Form
 		{
 			return;
 		}
-		int num = 1;
+		int sessionNumber = 1;
 		foreach (IKioskFunctionCheckData item in sessions)
 		{
-			WriteSessionData(item, num++);
+			WriteSessionData(item, sessionNumber++);
 		}
 	}
 
@@ -939,8 +929,8 @@ public class ConfiguredDevicesForm : Form
 			try
 			{
 				Version version = new Version(hardwareSurveyExecutor.TouchscreenFirmware);
-				bool flag = version.Major == 4 && version.Minor == 30;
-				col = string.Format("{0} ( {1} CURRENT )", hardwareSurveyExecutor.TouchscreenFirmware, flag ? "MOST" : "NOT MOST");
+				bool isCurrent = version.Major == 4 && version.Minor == 30;
+				col = string.Format("{0} ( {1} CURRENT )", hardwareSurveyExecutor.TouchscreenFirmware, isCurrent ? "MOST" : "NOT MOST");
 			}
 			catch (Exception)
 			{

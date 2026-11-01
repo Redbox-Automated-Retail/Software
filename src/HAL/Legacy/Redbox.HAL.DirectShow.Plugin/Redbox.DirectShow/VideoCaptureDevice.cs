@@ -506,8 +506,8 @@ public class VideoCaptureDevice : IVideoSource
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
 			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
-			int num = iAMCameraControl.Set(property, value, controlFlags);
-			ret = num >= 0;
+			int hr = iAMCameraControl.Set(property, value, controlFlags);
+			ret = hr >= 0;
 			Marshal.ReleaseComObject(tempSourceObject);
 			return ret;
 		}
@@ -536,8 +536,8 @@ public class VideoCaptureDevice : IVideoSource
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
 			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
-			int num = iAMCameraControl.Get(property, out value, out controlFlags);
-			ret = num >= 0;
+			int hr = iAMCameraControl.Get(property, out value, out controlFlags);
+			ret = hr >= 0;
 			Marshal.ReleaseComObject(tempSourceObject);
 			return ret;
 		}
@@ -581,7 +581,7 @@ public class VideoCaptureDevice : IVideoSource
 	private void WorkerThread(bool runGraph)
 	{
 		ReasonToFinishPlaying reason = ReasonToFinishPlaying.StoppedByUser;
-		bool flag = false;
+		bool isSnapshotSupported = false;
 		SampleGrabber videoGrabberCallback = new SampleGrabber(OnNewFrame);
 		SampleGrabber snapshotGrabberCallback = new SampleGrabber(OnSnapshotFrame);
 		object captureGraphObject = null;
@@ -663,7 +663,7 @@ public class VideoCaptureDevice : IVideoSource
 				if (pin != null)
 				{
 					iAMVideoControl.GetCaps(pin, out var flags);
-					flag = (flags & VideoControlFlags.ExternalTriggerEnable) != 0;
+					isSnapshotSupported = (flags & VideoControlFlags.ExternalTriggerEnable) != 0;
 				}
 			}
 			videoSampleGrabber.SetBufferSamples(bufferThem: false);
@@ -673,7 +673,7 @@ public class VideoCaptureDevice : IVideoSource
 			snapshotSampleGrabber.SetOneShot(oneShot: false);
 			snapshotSampleGrabber.SetCallback(snapshotGrabberCallback, 1);
 			GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, sourceBase, PinCategory.Capture, videoResolution, ref videoCapabilities);
-			if (flag)
+			if (isSnapshotSupported)
 			{
 				GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, sourceBase, PinCategory.StillImage, snapshotResolution, ref snapshotCapabilities);
 			}
@@ -704,7 +704,7 @@ public class VideoCaptureDevice : IVideoSource
 					videoGrabberCallback.Size = new Size(videoInfoHeader.BmiHeader.Width, videoInfoHeader.BmiHeader.Height);
 					mediaType.Dispose();
 				}
-				if (flag && provideSnapshots)
+				if (isSnapshotSupported && provideSnapshots)
 				{
 					captureGraphBuilder.RenderStream(PinCategory.StillImage, MediaType.Video, sourceBase, null, snapshotGrabberBase);
 					if (snapshotSampleGrabber.GetConnectedMediaType(mediaType) == 0)
@@ -718,7 +718,7 @@ public class VideoCaptureDevice : IVideoSource
 				mediaEventEx = (IMediaEventEx)graphObject;
 				mediaControl.Run();
 				snapshotGrabberCallback.Grab = true;
-				if (flag && provideSnapshots)
+				if (isSnapshotSupported && provideSnapshots)
 				{
 					startTime = DateTime.Now;
 					iAMVideoControl.SetMode(pin, VideoControlFlags.ExternalTriggerEnable);
@@ -746,7 +746,7 @@ public class VideoCaptureDevice : IVideoSource
 					if (needToSimulateTrigger)
 					{
 						needToSimulateTrigger = false;
-						if (flag && provideSnapshots)
+						if (isSnapshotSupported && provideSnapshots)
 						{
 							iAMVideoControl.SetMode(pin, VideoControlFlags.Trigger);
 						}

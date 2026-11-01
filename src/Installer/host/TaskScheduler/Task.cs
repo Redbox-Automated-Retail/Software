@@ -461,41 +461,41 @@ public class Task : IDisposable
 	{
 		PropSheetHeader psh = default(PropSheetHeader);
 		IProvideTaskPage provideTaskPage = (IProvideTaskPage)iTask;
-		IntPtr[] array = new IntPtr[3];
-		int num = 0;
+		IntPtr[] pageHandles = new IntPtr[3];
+		int pageCount = 0;
 		IntPtr phPage;
 		if ((pages & PropPages.Task) != 0)
 		{
 			provideTaskPage.GetPage(0, fPersistChanges: false, out phPage);
-			array[num++] = phPage;
+			pageHandles[pageCount++] = phPage;
 		}
 		if ((pages & PropPages.Schedule) != 0)
 		{
 			provideTaskPage.GetPage(1, fPersistChanges: false, out phPage);
-			array[num++] = phPage;
+			pageHandles[pageCount++] = phPage;
 		}
 		if ((pages & PropPages.Settings) != 0)
 		{
 			provideTaskPage.GetPage(2, fPersistChanges: false, out phPage);
-			array[num++] = phPage;
+			pageHandles[pageCount++] = phPage;
 		}
-		if (num == 0)
+		if (pageCount == 0)
 		{
 			throw new ArgumentException("No Property Pages to display");
 		}
 		psh.dwSize = (uint)Marshal.SizeOf(psh);
 		psh.dwFlags = 128u;
 		psh.pszCaption = Name;
-		psh.nPages = (uint)num;
-		GCHandle gCHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
+		psh.nPages = (uint)pageCount;
+		GCHandle gCHandle = GCHandle.Alloc(pageHandles, GCHandleType.Pinned);
 		psh.phpage = gCHandle.AddrOfPinnedObject();
-		int num2 = PropertySheetDisplay.PropertySheet(ref psh);
+		int sheetResult = PropertySheetDisplay.PropertySheet(ref psh);
 		gCHandle.Free();
-		if (num2 < 0)
+		if (sheetResult < 0)
 		{
 			throw new Exception("Property Sheet failed to display");
 		}
-		return num2 > 0;
+		return sheetResult > 0;
 	}
 
 	public void SetAccountInformation(string accountName, string password)

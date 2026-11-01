@@ -85,11 +85,11 @@ public class PricingService : IPricingService
 	{
 		if (!_defaultPricingNextRefresh.HasValue)
 		{
-			int num = new Random().Next(1, Math.Max(2, _kioskConfiguration.Pricing.RefreshIntervalMinutes));
-			DateTime value = DateTime.Now.AddMinutes(num);
-			_defaultPricingNextRefresh = value;
-			_rentalPricingNextRefresh = value;
-			_purchasePricingNextRefresh = value;
+			int offsetMinutes = new Random().Next(1, Math.Max(2, _kioskConfiguration.Pricing.RefreshIntervalMinutes));
+			DateTime nextRefresh = DateTime.Now.AddMinutes(offsetMinutes);
+			_defaultPricingNextRefresh = nextRefresh;
+			_rentalPricingNextRefresh = nextRefresh;
+			_purchasePricingNextRefresh = nextRefresh;
 		}
 	}
 
@@ -110,12 +110,12 @@ public class PricingService : IPricingService
 	public async Task RefreshDefaultPricingIfNeeded()
 	{
 		PersistentDataWrapper<DefaultPricingData> persistentDataWrapper = await _persistentDataCacheService.Read<DefaultPricingData>(_cachePricingDefaultFileName, useCache: true);
-		bool flag = persistentDataWrapper == null || persistentDataWrapper.Data == null;
-		string text = (flag ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
-		TimeSpan? cacheAge = (flag ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
+		bool cacheMissing = persistentDataWrapper == null || persistentDataWrapper.Data == null;
+		string cacheState = (cacheMissing ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
+		TimeSpan? cacheAge = (cacheMissing ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
 		if (NeedsUpdate(cacheAge, _defaultPricingNextRefresh))
 		{
-			_logger?.LogInfoWithSource("Cache is " + text + " - refreshing", "RefreshDefaultPricingIfNeeded");
+			_logger?.LogInfoWithSource("Cache is " + cacheState + " - refreshing", "RefreshDefaultPricingIfNeeded");
 			await RefreshDefaultPricing();
 		}
 	}
@@ -123,12 +123,12 @@ public class PricingService : IPricingService
 	public async Task RefreshRentalPricingByPriceIfNeeded()
 	{
 		PersistentDataWrapper<RentalPricingByPriceData> persistentDataWrapper = await _persistentDataCacheService.Read<RentalPricingByPriceData>(_cachePricingRentalByPriceFileName, useCache: true);
-		bool flag = persistentDataWrapper == null || persistentDataWrapper.Data == null;
-		string text = (flag ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
-		TimeSpan? cacheAge = (flag ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
+		bool cacheMissing = persistentDataWrapper == null || persistentDataWrapper.Data == null;
+		string cacheState = (cacheMissing ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
+		TimeSpan? cacheAge = (cacheMissing ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
 		if (NeedsUpdate(cacheAge, _rentalPricingNextRefresh))
 		{
-			_logger?.LogInfoWithSource("Cache is " + text + " - refreshing", "RefreshRentalPricingByPriceIfNeeded");
+			_logger?.LogInfoWithSource("Cache is " + cacheState + " - refreshing", "RefreshRentalPricingByPriceIfNeeded");
 			await RefreshRentalPricingByPrice();
 		}
 	}
@@ -136,12 +136,12 @@ public class PricingService : IPricingService
 	public async Task RefreshPurchasdePricingByPriceIfNeeded()
 	{
 		PersistentDataWrapper<PurchasePricingByPriceData> persistentDataWrapper = await _persistentDataCacheService.Read<PurchasePricingByPriceData>(_cachePricingPurchaseByPriceFileName, useCache: true);
-		bool flag = persistentDataWrapper == null || persistentDataWrapper.Data == null;
-		string text = (flag ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
-		TimeSpan? cacheAge = (flag ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
+		bool cacheMissing = persistentDataWrapper == null || persistentDataWrapper.Data == null;
+		string cacheState = (cacheMissing ? "not set" : $"from ealier than today {persistentDataWrapper.Modified}");
+		TimeSpan? cacheAge = (cacheMissing ? ((TimeSpan?)null) : new TimeSpan?(DateTime.Now - persistentDataWrapper.Modified));
 		if (NeedsUpdate(cacheAge, _purchasePricingNextRefresh))
 		{
-			_logger?.LogInfoWithSource("Cache is " + text + " - refreshing", "RefreshPurchasdePricingByPriceIfNeeded");
+			_logger?.LogInfoWithSource("Cache is " + cacheState + " - refreshing", "RefreshPurchasdePricingByPriceIfNeeded");
 			await RefreshPurchasePricingByPrice();
 		}
 	}

@@ -72,34 +72,34 @@ public class GenericMetrics : ICommonMetrics
 
 	private (bool Found, MetricType MetricType) GetMetricTypeFromMetricTags(Dictionary<string, string> metricTagCollection)
 	{
-		bool item = false;
-		MetricType item2 = MetricType.Gauge;
+		bool found = false;
+		MetricType metricType = MetricType.Gauge;
 		if (metricTagCollection != null && metricTagCollection.TryGetValue("MetricType", out var value))
 		{
 			metricTagCollection.Remove("MetricType");
 			if (Enum.TryParse<MetricType>(value, out var result))
 			{
-				item2 = result;
-				item = true;
+				metricType = result;
+				found = true;
 			}
 		}
-		return (Found: item, MetricType: item2);
+		return (Found: found, MetricType: metricType);
 	}
 
 	private void CaptureGaugeMetric(Dictionary<string, string> metricTagCollection)
 	{
-		double num = 0.0;
+		double metricValue = 0.0;
 		if (metricTagCollection.TryGetValue("Value", out var value))
 		{
 			if (double.TryParse(value, out var result))
 			{
-				num = result;
+				metricValue = result;
 			}
 			metricTagCollection.Remove("Value");
 		}
 		MetricTags metricTags = new MetricTags(metricTagCollection.Keys.ToArray(), metricTagCollection.Values.ToArray());
-		_logger.LogInfoWithSource($"{metricTags.ToJson()} value: {num}", "CaptureGaugeMetric", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
-		_metrics.Measure.Gauge.SetValue(MetricsRegistry.GenericGauge, metricTags, num);
+		_logger.LogInfoWithSource($"{metricTags.ToJson()} value: {metricValue}", "CaptureGaugeMetric", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
+		_metrics.Measure.Gauge.SetValue(MetricsRegistry.GenericGauge, metricTags, metricValue);
 	}
 
 	private void CaptureCounterMetric(Dictionary<string, string> metricTagCollection)

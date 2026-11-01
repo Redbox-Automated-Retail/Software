@@ -176,18 +176,18 @@ public static class Win32ServiceFunctions
 	internal static LuaTable GetServices()
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		int num = 1;
+		int index = 1;
 		try
 		{
 			ServiceController[] services = ServiceController.GetServices();
 			foreach (ServiceController serviceController in services)
 			{
-				LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-				luaTable2["name"] = serviceController.ServiceName;
-				luaTable2["display_name"] = serviceController.DisplayName;
-				luaTable2["state"] = serviceController.Status.ToString();
-				luaTable[num] = luaTable2;
-				num++;
+				LuaTable serviceEntry = new LuaTable(KernelService.Instance.LuaRuntime);
+				serviceEntry["name"] = serviceController.ServiceName;
+				serviceEntry["display_name"] = serviceController.DisplayName;
+				serviceEntry["state"] = serviceController.Status.ToString();
+				luaTable[index] = serviceEntry;
+				index++;
 			}
 		}
 		catch (Exception e)

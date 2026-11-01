@@ -39,8 +39,8 @@ public class ExecuteHttpRequestV2 : ICommandIoTController
 		APIResponse<object> aPIResponse = await _httpService.SendRequestAsync<object>(request, null, "Execute", "/sln/src/UpdateClientService.API/Services/IoT/Commands/Controller/ExecuteHttpRequestV2.cs", null, ioTCommandRequest != null && ioTCommandRequest.LogRequest == true, ioTCommandRequest != null && ioTCommandRequest.LogResponse == true);
 		MqttResponse<string> mqttResponse = new MqttResponse<string>();
 		mqttResponse.Data = aPIResponse?.Response?.ToJson();
-		string text;
-		string text2;
+		string responseLog;
+		string requestLog;
 		if (aPIResponse == null || aPIResponse.Response == null)
 		{
 			mqttResponse.Data = aPIResponse?.ResponseContent;
@@ -50,28 +50,28 @@ public class ExecuteHttpRequestV2 : ICommandIoTController
 				{
 					mqttResponse.Error = "Errors: " + string.Join(',', aPIResponse.Errors.Select((Error x) => x.Message));
 				}
-				text = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? ("HttpResponse: " + aPIResponse?.HttpResponse?.ToJson()) : string.Empty);
+				responseLog = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? ("HttpResponse: " + aPIResponse?.HttpResponse?.ToJson()) : string.Empty);
 				if (ioTCommandRequest != null && ioTCommandRequest.LogResponse == true)
 				{
 					if (ioTCommandRequest != null && ioTCommandRequest.LogRequest == true)
 					{
-						text2 = "Received ioTCommand: " + ioTCommandRequest.ToJson() + ".";
+						requestLog = "Received ioTCommand: " + ioTCommandRequest.ToJson() + ".";
 						goto IL_02f9;
 					}
 				}
-				text2 = string.Empty;
+				requestLog = string.Empty;
 				goto IL_02f9;
 			}
 		}
 		goto IL_037b;
 		IL_02f9:
-		string text3 = text2;
-		string text4 = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? $"{mqttResponse}" : string.Empty);
-		_logger.LogErrorWithSource("ExecuteHttpRequestV2 has failed. Result: " + text4 + "." + text + text3, "Execute", "/sln/src/UpdateClientService.API/Services/IoT/Commands/Controller/ExecuteHttpRequestV2.cs");
+		string requestLogText = requestLog;
+		string resultLog = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? $"{mqttResponse}" : string.Empty);
+		_logger.LogErrorWithSource("ExecuteHttpRequestV2 has failed. Result: " + resultLog + "." + responseLog + requestLogText, "Execute", "/sln/src/UpdateClientService.API/Services/IoT/Commands/Controller/ExecuteHttpRequestV2.cs");
 		goto IL_037b;
 		IL_037b:
-		string text5 = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? $"Received response: {aPIResponse?.Response}" : string.Empty);
-		_logger.LogInfoWithSource("Executed http v2 request." + text5, "Execute", "/sln/src/UpdateClientService.API/Services/IoT/Commands/Controller/ExecuteHttpRequestV2.cs");
+		string responseSuffix = ((ioTCommandRequest != null && ioTCommandRequest.LogResponse == true) ? $"Received response: {aPIResponse?.Response}" : string.Empty);
+		_logger.LogInfoWithSource("Executed http v2 request." + responseSuffix, "Execute", "/sln/src/UpdateClientService.API/Services/IoT/Commands/Controller/ExecuteHttpRequestV2.cs");
 		await _mqttProxy.PublishIoTCommandAsync("redbox/updateservice-instance/" + ioTCommandRequest.SourceId + "/request", new IoTCommandModel
 		{
 			RequestId = ioTCommandRequest.RequestId,

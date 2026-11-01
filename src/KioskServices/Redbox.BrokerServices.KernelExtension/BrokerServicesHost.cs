@@ -18,9 +18,9 @@ public class BrokerServicesHost : IKernelExtensionHost, IDisposable
 	public bool CanSwitch(out ErrorList errors)
 	{
 		errors = new ErrorList();
-		bool flag = ReservationServicesProxy.Instance.CanSwitch();
-		LogHelper.Instance.Log("BrokerService CanSwitch: {0}", flag);
-		if (!flag)
+		bool canSwitch = ReservationServicesProxy.Instance.CanSwitch();
+		LogHelper.Instance.Log("BrokerService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("BSH666", "Bundle Switch Error", "Can not switch while reservation service is performing work."));
 			return false;

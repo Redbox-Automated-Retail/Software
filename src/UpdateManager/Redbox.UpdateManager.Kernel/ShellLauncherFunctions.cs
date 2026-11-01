@@ -27,9 +27,9 @@ public static class ShellLauncherFunctions
 	{
 		try
 		{
-			uint num = SLGetWindowsInformationDWORD("EmbeddedFeature-ShellLauncher-Enabled", out var value);
-			LogHelper.Instance.Log("ShellLauncherWindowsFeatureInstalled() - SLGetWindowsInformationDWORD returned: " + num);
-			if (num == S_OK)
+			uint status = SLGetWindowsInformationDWORD("EmbeddedFeature-ShellLauncher-Enabled", out var value);
+			LogHelper.Instance.Log("ShellLauncherWindowsFeatureInstalled() - SLGetWindowsInformationDWORD returned: " + status);
+			if (status == S_OK)
 			{
 				LogHelper.Instance.Log("ShellLauncherWindowsFeatureInstalled() - enabled: " + value);
 				return value != 0;

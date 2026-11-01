@@ -184,12 +184,12 @@ public class FileSetService : IFileSetService
 				if (eachClientFileSetRevisionChangeSet.Action == FileSetAction.Delete)
 				{
 					_logger.LogInfoWithSource("Deleting " + eachClientFileSetRevisionChangeSet?.IdentifyingText(), "StartRevisionChangeSetProcessing", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetService.cs");
-					bool flag = result;
-					if (flag)
+					bool deleted = result;
+					if (deleted)
 					{
-						flag = await _changeSetFileService.Delete(RevisionChangeSet.Create(eachClientFileSetRevisionChangeSet));
+						deleted = await _changeSetFileService.Delete(RevisionChangeSet.Create(eachClientFileSetRevisionChangeSet));
 					}
-					result = flag;
+					result = deleted;
 					if (!(await _stateFileService.Delete(eachClientFileSetRevisionChangeSet.FileSetId)))
 					{
 						result = false;
@@ -198,12 +198,12 @@ public class FileSetService : IFileSetService
 				}
 				else if (eachClientFileSetRevisionChangeSet.Action == FileSetAction.Update)
 				{
-					bool flag2 = result;
-					if (flag2)
+					bool started = result;
+					if (started)
 					{
-						flag2 = await StartRevisionChangeSetProcessing(eachClientFileSetRevisionChangeSet);
+						started = await StartRevisionChangeSetProcessing(eachClientFileSetRevisionChangeSet);
 					}
-					result = flag2;
+					result = started;
 				}
 			}
 		}
@@ -335,13 +335,13 @@ public class FileSetService : IFileSetService
 					stateFile.InProgressFileSetState = FileSetState.Error;
 					await _stateFileService.Save(stateFile);
 				}
-				bool flag = CreateFileSetPollRequest(eachRevisionChangeSet, stateFile.InProgressFileSetState, out var fileSetPollRequest);
-				bool flag2 = flag;
-				if (flag2)
+				bool hasPollRequest = CreateFileSetPollRequest(eachRevisionChangeSet, stateFile.InProgressFileSetState, out var fileSetPollRequest);
+				bool reported = hasPollRequest;
+				if (reported)
 				{
-					flag2 = (await _versionsService.ReportFileSetVersion(fileSetPollRequest)).StatusCode == HttpStatusCode.OK;
+					reported = (await _versionsService.ReportFileSetVersion(fileSetPollRequest)).StatusCode == HttpStatusCode.OK;
 				}
-				if (flag2)
+				if (reported)
 				{
 					await _changeSetFileService.Delete(eachRevisionChangeSet);
 					await _stateFileService.DeleteInProgress(stateFile.FileSetId);
@@ -472,16 +472,16 @@ public class FileSetService : IFileSetService
 		{
 			return;
 		}
-		List<RevisionChangeSet> list = revisionChangeSetsProcessingData.RevisionChangeSets.Where((RevisionChangeSet revisionChangeSet) => !revisionChangeSetsProcessingData.InProgressStateFiles.Any((StateFile stateFile) => stateFile.FileSetId == revisionChangeSet.FileSetId && stateFile.InProgressRevisionId == revisionChangeSet.RevisionId)).ToList();
+		List<RevisionChangeSet> orphanedChangeSets = revisionChangeSetsProcessingData.RevisionChangeSets.Where((RevisionChangeSet revisionChangeSet) => !revisionChangeSetsProcessingData.InProgressStateFiles.Any((StateFile stateFile) => stateFile.FileSetId == revisionChangeSet.FileSetId && stateFile.InProgressRevisionId == revisionChangeSet.RevisionId)).ToList();
 		List<StateFile> badStateFiles = revisionChangeSetsProcessingData.InProgressStateFiles.Where((StateFile stateFile) => !revisionChangeSetsProcessingData.RevisionChangeSets.Any((RevisionChangeSet revisionChangeSet) => stateFile.FileSetId == revisionChangeSet.FileSetId && stateFile.InProgressRevisionId == revisionChangeSet.RevisionId)).ToList();
-		foreach (RevisionChangeSet item in list)
+		foreach (RevisionChangeSet orphanedChangeSet in orphanedChangeSets)
 		{
-			revisionChangeSetsProcessingData.RevisionChangeSets.Remove(item);
-			await _changeSetFileService.Delete(item);
+			revisionChangeSetsProcessingData.RevisionChangeSets.Remove(orphanedChangeSet);
+			await _changeSetFileService.Delete(orphanedChangeSet);
 		}
-		foreach (StateFile item2 in badStateFiles)
+		foreach (StateFile badStateFile in badStateFiles)
 		{
-			await _stateFileService.DeleteInProgress(item2.FileSetId);
+			await _stateFileService.DeleteInProgress(badStateFile.FileSetId);
 		}
 	}
 

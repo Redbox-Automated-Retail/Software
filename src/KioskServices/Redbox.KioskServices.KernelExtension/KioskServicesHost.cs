@@ -24,37 +24,37 @@ public class KioskServicesHost : IKernelExtensionHost, IDisposable
 	public bool CanSwitch(out ErrorList errors)
 	{
 		errors = new ErrorList();
-		bool flag = ServiceLocator.Instance.GetService<IMarketingServices>().CanSwitch();
-		LogHelper.Instance.Log("KioskService -> MarketingService CanSwitch: {0}", flag);
-		if (!flag)
+		bool canSwitch = ServiceLocator.Instance.GetService<IMarketingServices>().CanSwitch();
+		LogHelper.Instance.Log("KioskService -> MarketingService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("KSH669", "Bundle Switch Error", "Can not switch while marketing service is performing work."));
 			return false;
 		}
-		flag = ServiceLocator.Instance.GetService<IStoreServices>().CanSwitch();
-		LogHelper.Instance.Log("KioskService -> StoreService CanSwitch: {0}", flag);
-		if (!flag)
+		canSwitch = ServiceLocator.Instance.GetService<IStoreServices>().CanSwitch();
+		LogHelper.Instance.Log("KioskService -> StoreService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("KSH666", "Bundle Switch Error", "Can not switch while store service is performing work."));
 			return false;
 		}
-		flag = ServiceLocator.Instance.GetService<IPromotionServices>().CanSwitch();
-		LogHelper.Instance.Log("KioskService -> PromotionService CanSwitch: {0}", flag);
-		if (!flag)
+		canSwitch = ServiceLocator.Instance.GetService<IPromotionServices>().CanSwitch();
+		LogHelper.Instance.Log("KioskService -> PromotionService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("KSH665", "Bundle Switch Error", "Can not switch while promotion service is performing work."));
 			return false;
 		}
-		flag = ServiceLocator.Instance.GetService<IHealthServices>().CanSwitch();
-		LogHelper.Instance.Log("KioskService -> HealthService CanSwitch: {0}", flag);
-		if (!flag)
+		canSwitch = ServiceLocator.Instance.GetService<IHealthServices>().CanSwitch();
+		LogHelper.Instance.Log("KioskService -> HealthService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("KSH664", "Bundle Switch Error", "Can not switch while health service is performing work."));
 			return false;
 		}
-		flag = ServiceLocator.Instance.GetService<IAuthenticationServices>().CanSwitch();
-		LogHelper.Instance.Log("KioskService -> AuthenticationService CanSwitch: {0}", flag);
-		if (!flag)
+		canSwitch = ServiceLocator.Instance.GetService<IAuthenticationServices>().CanSwitch();
+		LogHelper.Instance.Log("KioskService -> AuthenticationService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("KSH663", "Bundle Switch Error", "Can not switch while authentication service is performing work."));
 			return false;

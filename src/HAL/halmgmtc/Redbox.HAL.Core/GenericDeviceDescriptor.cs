@@ -63,19 +63,19 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 			return null;
 		}
 		_ = parts[0];
-		string text = parts[1];
-		int index = text.IndexOf("vid");
+		string deviceId = parts[1];
+		int index = deviceId.IndexOf("vid");
 		if (-1 == index)
 		{
-			return Create(string.Empty, text, clazz);
+			return Create(string.Empty, deviceId, clazz);
 		}
-		text = text.Substring(index);
-		string[] array2 = text.Split(HwidSeparator, StringSplitOptions.RemoveEmptyEntries);
-		if (array2.Length < 2)
+		deviceId = deviceId.Substring(index);
+		string[] ids = deviceId.Split(HwidSeparator, StringSplitOptions.RemoveEmptyEntries);
+		if (ids.Length < 2)
 		{
 			return null;
 		}
-		return Create(array2[0].Substring(4).ToLower(), array2[1].Substring(4).ToLower(), clazz);
+		return Create(ids[0].Substring(4).ToLower(), ids[1].Substring(4).ToLower(), clazz);
 	}
 
 	internal static GenericDeviceDescriptor Create(string v, string p, DeviceClass clazz)

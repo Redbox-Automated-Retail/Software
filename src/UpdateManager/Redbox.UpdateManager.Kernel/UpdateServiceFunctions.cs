@@ -207,12 +207,12 @@ public static class UpdateServiceFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
+		LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (Redbox.UpdateManager.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
+		luaTable["errors"] = errorTable;
 		return luaTable;
 	}
 

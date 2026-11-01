@@ -20,7 +20,6 @@ public class GZipCompressionAlgorithm : CompressionAlgorithm
 				using GZipOutputStream gZipOutputStream = new GZipOutputStream(memoryStream);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -49,7 +48,6 @@ public class GZipCompressionAlgorithm : CompressionAlgorithm
 				using GZipInputStream gZipInputStream = new GZipInputStream(baseInputStream, buffer.Length);
 				while (true)
 				{
-					bool flag = true;
 					int bytesRead = gZipInputStream.Read(buffer, 0, buffer.Length);
 					if (bytesRead == 0)
 					{
@@ -72,7 +70,6 @@ public class GZipCompressionAlgorithm : CompressionAlgorithm
 		using GZipOutputStream gZipOutputStream = new GZipOutputStream(target);
 		while (true)
 		{
-			bool flag = true;
 			int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
 			if (bytesRead == 0)
 			{
@@ -89,7 +86,6 @@ public class GZipCompressionAlgorithm : CompressionAlgorithm
 		using GZipInputStream gZipInputStream = new GZipInputStream(source, buffer.Length);
 		while (true)
 		{
-			bool flag = true;
 			int bytesRead = gZipInputStream.Read(buffer, 0, buffer.Length);
 			if (bytesRead == 0)
 			{

@@ -35,15 +35,15 @@ public class IoTCommandService : IIoTCommandService
 		_ = 1;
 		try
 		{
-			string text = Encoding.UTF8.GetString(mqttMessage);
-			IoTCommandModel ioTCommandModel = JsonConvert.DeserializeObject<IoTCommandModel>(text);
+			string messageJson = Encoding.UTF8.GetString(mqttMessage);
+			IoTCommandModel ioTCommandModel = JsonConvert.DeserializeObject<IoTCommandModel>(messageJson);
 			if (ioTCommandModel == null)
 			{
-				_logger.LogErrorWithSource("Error occured in callback from topic " + mqttTopic + ", message failed deserialization: " + text, "IoTCommandCallbackMethodAsync", "/sln/src/UpdateClientService.API/Services/IoT/Commands/IoTCommandService.cs");
+				_logger.LogErrorWithSource("Error occured in callback from topic " + mqttTopic + ", message failed deserialization: " + messageJson, "IoTCommandCallbackMethodAsync", "/sln/src/UpdateClientService.API/Services/IoT/Commands/IoTCommandService.cs");
 				return;
 			}
-			string text2 = (ioTCommandModel.LogPayload ? (", message: " + text) : $", command: {ioTCommandModel.Command}, MessageType: {ioTCommandModel.MessageType}, RequestId: {ioTCommandModel.RequestId}, Payload length: {(ioTCommandModel.Payload?.ToString()?.Length).GetValueOrDefault()}");
-			_logger.LogInfoWithSource("message received topic: " + mqttTopic + text2, "IoTCommandCallbackMethodAsync", "/sln/src/UpdateClientService.API/Services/IoT/Commands/IoTCommandService.cs");
+			string messageSummary = (ioTCommandModel.LogPayload ? (", message: " + messageJson) : $", command: {ioTCommandModel.Command}, MessageType: {ioTCommandModel.MessageType}, RequestId: {ioTCommandModel.RequestId}, Payload length: {(ioTCommandModel.Payload?.ToString()?.Length).GetValueOrDefault()}");
+			_logger.LogInfoWithSource("message received topic: " + mqttTopic + messageSummary, "IoTCommandCallbackMethodAsync", "/sln/src/UpdateClientService.API/Services/IoT/Commands/IoTCommandService.cs");
 			if (ioTCommandModel.MessageType == MessageTypeEnum.Request)
 			{
 				await ExecuteRequest(ioTCommandModel);

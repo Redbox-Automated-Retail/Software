@@ -38,13 +38,13 @@ public class ReservationServicesProxy : IReservationServices
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService != null)
 		{
-			if (configurationService.TryGetValue<bool>("system", "General", "GiftCardsEnabled", out var value))
+			if (configurationService.TryGetValue<bool>("system", "General", "GiftCardsEnabled", out var giftCardsEnabled))
 			{
-				dictionary["GiftCardsEnabled"] = value;
+				dictionary["GiftCardsEnabled"] = giftCardsEnabled;
 			}
-			if (configurationService.TryGetValue<bool>("system", "General", "RecommendationOnPickup", out var value2))
+			if (configurationService.TryGetValue<bool>("system", "General", "RecommendationOnPickup", out var recommendationOnPickup))
 			{
-				dictionary["RecoOnPickup"] = value2;
+				dictionary["RecoOnPickup"] = recommendationOnPickup;
 			}
 		}
 		dictionary["AuthorizeAtPickup"] = Configuration.Instance.AuthorizeAtPickup;

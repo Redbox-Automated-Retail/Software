@@ -92,29 +92,29 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 				XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes(edit.XPath);
 				if (xmlNodeList != null && xmlNodeList.Count > 0)
 				{
-					List<XmlNode> list2 = new List<XmlNode>();
+					List<XmlNode> targetNodes = new List<XmlNode>();
 					if (EditAllMatches)
 					{
-						foreach (XmlNode item in xmlNodeList)
+						foreach (XmlNode matchedNode in xmlNodeList)
 						{
-							list2.Add(item);
+							targetNodes.Add(matchedNode);
 						}
 					}
 					else
 					{
-						list2.Add(xmlNodeList[0]);
+						targetNodes.Add(xmlNodeList[0]);
 					}
-					foreach (XmlNode item2 in list2)
+					foreach (XmlNode targetNode in targetNodes)
 					{
-						if (item2 != null)
+						if (targetNode != null)
 						{
-							switch (item2.NodeType)
+							switch (targetNode.NodeType)
 							{
 							case XmlNodeType.Attribute:
-								item2.Value = edit.Value;
+								targetNode.Value = edit.Value;
 								continue;
 							case XmlNodeType.Element:
-								item2.InnerText = edit.Value;
+								targetNode.InnerText = edit.Value;
 								continue;
 							}
 							redbox_002EMacros1309_002EXmlEditorErrors.Add(new Redbox_002EMacros1309_002EXmlEditorError
@@ -138,8 +138,8 @@ internal class Redbox_002EMacros1309_002EXmlFileEditor
 			}
 			XmlTextWriter xmlTextWriter = new XmlTextWriter(FileName, null);
 			xmlTextWriter.Formatting = Formatting.Indented;
-			XmlTextWriter w = xmlTextWriter;
-			xmlDocument.Save(w);
+			XmlTextWriter writer = xmlTextWriter;
+			xmlDocument.Save(writer);
 		}
 		catch (Exception ex2)
 		{

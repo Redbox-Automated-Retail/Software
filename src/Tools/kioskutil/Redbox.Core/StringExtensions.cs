@@ -50,15 +50,15 @@ public static class StringExtensions
 	{
 		IDictionary<string, string> dictionary = new Dictionary<string, string>();
 		MatchCollection matchCollection = Regex.Matches(source, "(?n:((?<name>[\\w-_]*)=(?<val>[\\w-_\\\\\\/\\(\\)\\,'\\.\\s]*)))");
-		foreach (Match item in matchCollection)
+		foreach (Match match in matchCollection)
 		{
-			Group obj = item.Groups["name"];
-			Group obj2 = item.Groups["val"];
-			if (obj.Captures.Count == obj2.Captures.Count)
+			Group nameGroup = match.Groups["name"];
+			Group valueGroup = match.Groups["val"];
+			if (nameGroup.Captures.Count == valueGroup.Captures.Count)
 			{
-				for (int i = 0; i < obj.Captures.Count; i++)
+				for (int i = 0; i < nameGroup.Captures.Count; i++)
 				{
-					dictionary[obj.Captures[i].Value] = obj2.Captures[i].Value;
+					dictionary[nameGroup.Captures[i].Value] = valueGroup.Captures[i].Value;
 				}
 			}
 		}
@@ -215,13 +215,13 @@ public static class StringExtensions
 		{
 			return cardNumber;
 		}
-		int num = cardNumber.Length - 4;
+		int maskedLength = cardNumber.Length - 4;
 		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < num; i++)
+		for (int i = 0; i < maskedLength; i++)
 		{
 			stringBuilder.Append("X");
 		}
-		stringBuilder.Append(cardNumber.Substring(num));
+		stringBuilder.Append(cardNumber.Substring(maskedLength));
 		return stringBuilder.ToString();
 	}
 
@@ -290,8 +290,8 @@ public static class StringExtensions
 			}
 			try
 			{
-				object obj3 = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
-				current = obj3;
+				object memberValue = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				current = memberValue;
 				if (current == null)
 				{
 					break;

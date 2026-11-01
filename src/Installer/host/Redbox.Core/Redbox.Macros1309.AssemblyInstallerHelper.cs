@@ -20,8 +20,8 @@ internal class Redbox_002EMacros1309_002EAssemblyInstallerHelper : MarshalByRefO
 		try
 		{
 			appDomain = AppDomain.CreateDomain("AssemblyInstallerDomain");
-			Redbox_002EMacros1309_002EAssemblyInstallerHelper obj = (Redbox_002EMacros1309_002EAssemblyInstallerHelper)appDomain.CreateInstanceFromAndUnwrap(location, typeof(Redbox_002EMacros1309_002EAssemblyInstallerHelper).FullName);
-			return obj.Execute(targetPath, args, mode.ToString(), errorList);
+			Redbox_002EMacros1309_002EAssemblyInstallerHelper helper = (Redbox_002EMacros1309_002EAssemblyInstallerHelper)appDomain.CreateInstanceFromAndUnwrap(location, typeof(Redbox_002EMacros1309_002EAssemblyInstallerHelper).FullName);
+			return helper.Execute(targetPath, args, mode.ToString(), errorList);
 		}
 		finally
 		{

@@ -25,8 +25,8 @@ public static class PasswordHelper
 		tripleDESCryptoServiceProvider.Padding = Padding;
 		using TripleDESCryptoServiceProvider tripleDESCryptoServiceProvider2 = tripleDESCryptoServiceProvider;
 		ICryptoTransform cryptoTransform = tripleDESCryptoServiceProvider2.CreateEncryptor();
-		byte[] array = cryptoTransform.TransformFinalBlock(bytes, 0, bytes.Length);
-		return Convert.ToBase64String(array, 0, array.Length);
+		byte[] encrypted = cryptoTransform.TransformFinalBlock(bytes, 0, bytes.Length);
+		return Convert.ToBase64String(encrypted, 0, encrypted.Length);
 	}
 
 	public static string Decrypt(string base64encrypted)

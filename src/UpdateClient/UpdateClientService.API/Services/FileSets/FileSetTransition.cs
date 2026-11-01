@@ -172,14 +172,14 @@ public class FileSetTransition : IFileSetTransition
 
 	public bool BeforeActivate(ClientFileSetRevision clientFileSetRevision)
 	{
-		bool flag = true;
+		bool success = true;
 		try
 		{
 			FileSetJsonModel fileSetJsonModel = GetFileSetJsonModel(clientFileSetRevision, beforeActivations: true);
 			if (fileSetJsonModel == null)
 			{
 				_logger.LogWarningWithSource("FileSetJson was null skipping BeforeActivate.", "BeforeActivate", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
-				return flag;
+				return success;
 			}
 			if (fileSetJsonModel?.WindowsServiceName == "updateclient$service")
 			{
@@ -194,11 +194,11 @@ public class FileSetTransition : IFileSetTransition
 				_winServiceFunctions.StopService(fileSetJsonModel.WindowsServiceName);
 			}
 			List<FileData> fileData = GetFileData(clientFileSetRevision);
-			FileData fileData2 = fileData.Where((FileData f) => string.Equals(Path.GetFileName(f.FileDestination), "beforeactivate.ps1", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-			if (fileData2 != null)
+			FileData scriptFile = fileData.Where((FileData f) => string.Equals(Path.GetFileName(f.FileDestination), "beforeactivate.ps1", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+			if (scriptFile != null)
 			{
-				flag = RunScript(clientFileSetRevision, fileData2.StagePath);
-				if (!flag)
+				success = RunScript(clientFileSetRevision, scriptFile.StagePath);
+				if (!success)
 				{
 					_logger.LogErrorWithSource("Error running BeforeActivate script for " + clientFileSetRevision?.IdentifyingText(), "BeforeActivate", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
 				}
@@ -207,30 +207,30 @@ public class FileSetTransition : IFileSetTransition
 		catch (Exception ex)
 		{
 			_logger.LogErrorWithSource(ex, "Exception while processing BeforeActivate for " + clientFileSetRevision?.IdentifyingText(), "BeforeActivate", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
-			flag = false;
+			success = false;
 		}
-		return flag;
+		return success;
 	}
 
 	private FileSetJsonModel GetFileSetJsonModel(ClientFileSetRevision clientFileSetRevision, bool beforeActivations)
 	{
 		FileSetJsonModel result = null;
 		List<FileData> fileData = GetFileData(clientFileSetRevision);
-		FileData fileData2 = fileData.FirstOrDefault((FileData x) => Path.GetFileName(x.FileDestination).ToLower() == "fileset.json");
-		if (fileData2 == null)
+		FileData fileSetJsonFile = fileData.FirstOrDefault((FileData x) => Path.GetFileName(x.FileDestination).ToLower() == "fileset.json");
+		if (fileSetJsonFile == null)
 		{
 			_logger.LogWarningWithSource("fileset.json does not exist for revision: " + clientFileSetRevision.IdentifyingText(), "GetFileSetJsonModel", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
 			return null;
 		}
-		string text = (beforeActivations ? fileData2.StagePath : fileData2.FileDestination);
+		string jsonPath = (beforeActivations ? fileSetJsonFile.StagePath : fileSetJsonFile.FileDestination);
 		try
 		{
-			string obj = File.ReadAllText(text);
-			result = obj.ToObject<FileSetJsonModel>();
+			string jsonText = File.ReadAllText(jsonPath);
+			result = jsonText.ToObject<FileSetJsonModel>();
 		}
 		catch (Exception ex)
 		{
-			_logger.LogErrorWithSource(ex, "Exception while getting fileset.json from " + text + ".", "GetFileSetJsonModel", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
+			_logger.LogErrorWithSource(ex, "Exception while getting fileset.json from " + jsonPath + ".", "GetFileSetJsonModel", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
 		}
 		return result;
 	}
@@ -251,8 +251,8 @@ public class FileSetTransition : IFileSetTransition
 				result = InstallAndStartWindowsService(fileSetJsonModel);
 			}
 			List<FileData> fileData = GetFileData(clientFileSetRevision);
-			FileData fileData2 = fileData.Where((FileData f) => string.Equals(Path.GetFileName(f.FileDestination), "afteractivate.ps1", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-			if (fileData2 != null && !RunScript(clientFileSetRevision, fileData2.FileDestination))
+			FileData scriptFile = fileData.Where((FileData f) => string.Equals(Path.GetFileName(f.FileDestination), "afteractivate.ps1", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+			if (scriptFile != null && !RunScript(clientFileSetRevision, scriptFile.FileDestination))
 			{
 				_logger.LogErrorWithSource("Error while running afteractivate script for " + clientFileSetRevision?.IdentifyingText(), "AfterActivate", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
 				result = false;
@@ -289,14 +289,14 @@ public class FileSetTransition : IFileSetTransition
 
 	public bool Activate(ClientFileSetRevision clientFileSetRevision)
 	{
-		bool flag = true;
+		bool success = true;
 		try
 		{
 			List<FileData> fileData = GetFileData(clientFileSetRevision);
-			flag = StagedFilesExist(clientFileSetRevision, fileData);
-			if (!flag)
+			success = StagedFilesExist(clientFileSetRevision, fileData);
+			if (!success)
 			{
-				return flag;
+				return success;
 			}
 			Action<string, string> action = delegate(string sourceFilePath, string destinationfilePath)
 			{
@@ -308,10 +308,10 @@ public class FileSetTransition : IFileSetTransition
 			};
 			foreach (FileData item in fileData)
 			{
-				flag = CreateFileDestinationDirectory(item);
-				if (!flag)
+				success = CreateFileDestinationDirectory(item);
+				if (!success)
 				{
-					return flag;
+					return success;
 				}
 				try
 				{
@@ -341,9 +341,9 @@ public class FileSetTransition : IFileSetTransition
 		catch (Exception ex3)
 		{
 			_logger.LogErrorWithSource(ex3, "Exception while activing revision with " + clientFileSetRevision?.IdentifyingText(), "Activate", "/sln/src/UpdateClientService.API/Services/FileSets/FileSetTransition.cs");
-			flag = false;
+			success = false;
 		}
-		return flag;
+		return success;
 	}
 
 	private bool StagedFilesExist(ClientFileSetRevision clientFileSetRevision, List<FileData> fileDataList)
@@ -394,7 +394,7 @@ public class FileSetTransition : IFileSetTransition
 
 	private List<FileData> GetFileData(ClientFileSetRevision clientFileSetRevision)
 	{
-		List<FileData> list = new List<FileData>();
+		List<FileData> fileDataList = new List<FileData>();
 		string stagingFileSetRevisionPath = GetStagingFileSetRevisionPath(clientFileSetRevision);
 		foreach (ClientFileSetFile file in clientFileSetRevision.Files)
 		{
@@ -407,9 +407,9 @@ public class FileSetTransition : IFileSetTransition
 				StagePath = Path.Combine(stagingFileSetRevisionPath, _fileCacheService.GetRevisionFileName(file.FileId, file.FileRevisionId)),
 				FileDestination = file.FileDestination
 			};
-			list.Add(item);
+			fileDataList.Add(item);
 		}
-		return list;
+		return fileDataList;
 	}
 
 	private bool RunScript(ClientFileSetRevision clientFileSetRevision, string scriptPath)
@@ -423,10 +423,10 @@ public class FileSetTransition : IFileSetTransition
 			}
 			if (Path.GetExtension(scriptPath) == ".file")
 			{
-				string text = Path.GetTempFileName().Replace(".tmp", ".ps1");
-				File.Copy(scriptPath, text);
-				bool result = _commandLineService.TryExecutePowerShellScriptFromFile(text);
-				File.Delete(text);
+				string tempScriptPath = Path.GetTempFileName().Replace(".tmp", ".ps1");
+				File.Copy(scriptPath, tempScriptPath);
+				bool result = _commandLineService.TryExecutePowerShellScriptFromFile(tempScriptPath);
+				File.Delete(tempScriptPath);
 				return result;
 			}
 			return _commandLineService.TryExecutePowerShellScriptFromFile(scriptPath);

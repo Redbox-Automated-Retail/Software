@@ -19,8 +19,8 @@ public class ActiveResponsesService : IActiveResponseService
 
 	public void AddResponseListener(string requestId, Action<IoTCommandModel> model)
 	{
-		bool flag = _activeResponses.TryAdd(requestId, model);
-		_logger.LogInfoWithSource($"Adding {requestId} to Active Listeners - success = {flag}", "AddResponseListener", "/sln/src/UpdateClientService.API/Services/ActiveResponsesService.cs");
+		bool added = _activeResponses.TryAdd(requestId, model);
+		_logger.LogInfoWithSource($"Adding {requestId} to Active Listeners - success = {added}", "AddResponseListener", "/sln/src/UpdateClientService.API/Services/ActiveResponsesService.cs");
 	}
 
 	public Action<IoTCommandModel> GetResponseListenerAction(string requestId)
@@ -35,7 +35,7 @@ public class ActiveResponsesService : IActiveResponseService
 
 	public void RemoveResponseListener(string requestId)
 	{
-		bool flag = _activeResponses.TryRemove(requestId, out var _);
-		_logger.LogInfoWithSource($"Removing {requestId} from Active Listeners - success = {flag}", "RemoveResponseListener", "/sln/src/UpdateClientService.API/Services/ActiveResponsesService.cs");
+		bool removed = _activeResponses.TryRemove(requestId, out var _);
+		_logger.LogInfoWithSource($"Removing {requestId} from Active Listeners - success = {removed}", "RemoveResponseListener", "/sln/src/UpdateClientService.API/Services/ActiveResponsesService.cs");
 	}
 }

@@ -613,13 +613,13 @@ public class RBA_API : IRBA_API
 			SetLogCallBackNative(vsUnmanagedTraceLog);
 			m_SetUnmanagedLogCalBackOnce = false;
 		}
-		int num = RBA_SDK_InitializeNative();
-		if (num == 0 && m_SetUnmanagedPinpadCalBackOnce)
+		int initResult = RBA_SDK_InitializeNative();
+		if (initResult == 0 && m_SetUnmanagedPinpadCalBackOnce)
 		{
 			m_SetUnmanagedPinpadCalBackOnce = false;
 			SetMessageCallBackNative(vsUnmanagedPinpadCallBack);
 		}
-		return NumToEnum<ERROR_ID>(num);
+		return NumToEnum<ERROR_ID>(initResult);
 	}
 
 	public ERROR_ID Shutdown()

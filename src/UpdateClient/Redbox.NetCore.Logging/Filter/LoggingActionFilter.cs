@@ -74,10 +74,10 @@ internal class LoggingActionFilter : IAsyncActionFilter, IFilterMetadata
 					stringBuilder.Append($"{objectResult.StatusCode}");
 				}
 			}
-			int? num = (int?)actionExecutedContext.Result.GetType().GetProperty("StatusCode")?.GetValue(actionExecutedContext.Result);
-			if (num.HasValue)
+			int? statusCode = (int?)actionExecutedContext.Result.GetType().GetProperty("StatusCode")?.GetValue(actionExecutedContext.Result);
+			if (statusCode.HasValue)
 			{
-				context.HttpContext.Response.StatusCode = num.Value;
+				context.HttpContext.Response.StatusCode = statusCode.Value;
 			}
 		}
 		else

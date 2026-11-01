@@ -83,23 +83,23 @@ public static class RixFunctions
 		{
 			return -1;
 		}
-		string text = (string)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null);
-		if (string.IsNullOrEmpty(text))
+		string uninstallString = (string)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null);
+		if (string.IsNullOrEmpty(uninstallString))
 		{
 			return -1;
 		}
-		int index = text.IndexOf(".exe");
-		string text2 = text.Substring(0, index + 5);
-		string arguments = text.Substring(index + 5);
-		if (!File.Exists(text2))
+		int index = uninstallString.IndexOf(".exe");
+		string uninstaller = uninstallString.Substring(0, index + 5);
+		string arguments = uninstallString.Substring(index + 5);
+		if (!File.Exists(uninstaller))
 		{
-			LogHelper.Instance.Log("In rixuninstallproduct, {0} does not exists from product {1}.", text2, productGuid);
+			LogHelper.Instance.Log("In rixuninstallproduct, {0} does not exists from product {1}.", uninstaller, productGuid);
 			return -1;
 		}
 		Process process = new Process();
 		process.StartInfo = new ProcessStartInfo
 		{
-			FileName = text2,
+			FileName = uninstaller,
 			Arguments = arguments,
 			CreateNoWindow = true,
 			UseShellExecute = false,

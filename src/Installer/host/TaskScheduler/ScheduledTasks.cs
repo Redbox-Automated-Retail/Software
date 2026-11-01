@@ -26,33 +26,33 @@ public class ScheduledTasks : IDisposable
 
 	private string[] GrowStringArray(string[] s, uint n)
 	{
-		string[] array = new string[s.Length + n];
+		string[] grown = new string[s.Length + n];
 		for (int i = 0; i < s.Length; i++)
 		{
-			array[i] = s[i];
+			grown[i] = s[i];
 		}
-		return array;
+		return grown;
 	}
 
 	public string[] GetTaskNames()
 	{
-		string[] array = new string[0];
-		int num = 0;
+		string[] names = new string[0];
+		int count = 0;
 		its.Enum(out var EnumWorkItems);
 		IntPtr Names;
 		uint Fetched;
 		while (EnumWorkItems.Next(10u, out Names, out Fetched) >= 0 && Fetched != 0)
 		{
-			array = GrowStringArray(array, Fetched);
+			names = GrowStringArray(names, Fetched);
 			while (Fetched != 0)
 			{
 				IntPtr ptr = Marshal.ReadIntPtr(Names, (int)(--Fetched) * IntPtr.Size);
-				array[num++] = Marshal.PtrToStringUni(ptr);
+				names[count++] = Marshal.PtrToStringUni(ptr);
 				Marshal.FreeCoTaskMem(ptr);
 			}
 			Marshal.FreeCoTaskMem(Names);
 		}
-		return array;
+		return names;
 	}
 
 	public Task CreateTask(string name)
@@ -65,8 +65,8 @@ public class ScheduledTasks : IDisposable
 		}
 		try
 		{
-			its.NewWorkItem(name, ref CTaskGuid, ref ITaskGuid, out var obj);
-			ITask iTask = (ITask)obj;
+			its.NewWorkItem(name, ref CTaskGuid, ref ITaskGuid, out var workItem);
+			ITask iTask = (ITask)workItem;
 			return new Task(iTask, name);
 		}
 		catch
@@ -92,8 +92,8 @@ public class ScheduledTasks : IDisposable
 	{
 		try
 		{
-			its.Activate(name, ref ITaskGuid, out var obj);
-			ITask iTask = (ITask)obj;
+			its.Activate(name, ref ITaskGuid, out var workItem);
+			ITask iTask = (ITask)workItem;
 			return new Task(iTask, name);
 		}
 		catch

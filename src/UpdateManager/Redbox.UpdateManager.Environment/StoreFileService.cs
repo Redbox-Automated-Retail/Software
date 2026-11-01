@@ -125,27 +125,27 @@ public class StoreFileService : IPollRequestReply
 			else
 			{
 				FileState state;
-				bool flag;
+				bool canRetry;
 				switch (storeFileState.State)
 				{
 				case FileState.Staged:
 					state = FileState.ActivationFailedOnce;
-					flag = true;
+					canRetry = true;
 					break;
 				case FileState.ActivationFailedOnce:
 					state = FileState.ActivationFailedTwice;
-					flag = true;
+					canRetry = true;
 					break;
 				case FileState.ActivationFailedTwice:
 					state = FileState.ActivationFailedNoRetry;
-					flag = true;
+					canRetry = true;
 					break;
 				default:
 					state = FileState.Unknown;
-					flag = false;
+					canRetry = false;
 					break;
 				}
-				if (flag)
+				if (canRetry)
 				{
 					try
 					{
@@ -220,27 +220,27 @@ public class StoreFileService : IPollRequestReply
 				return errorList;
 			}
 			string path = Path.Combine(m_root, changeSet.StoreFile.ToString());
-			string text = Path.ChangeExtension(path, ".state");
-			string text2 = Path.ChangeExtension(path, ".staged");
+			string statePath = Path.ChangeExtension(path, ".state");
+			string stagedPath = Path.ChangeExtension(path, ".staged");
 			switch (changeSet.Action)
 			{
 			case StoreFileAction.Update:
-				errorList.AddRange(UpdateStoreFile(changeSet, text, text2));
+				errorList.AddRange(UpdateStoreFile(changeSet, statePath, stagedPath));
 				break;
 			case StoreFileAction.Delete:
 			{
 				string destinationPath = string.Empty;
 				try
 				{
-					destinationPath = File.ReadAllText(text).ToObject<StoreFileState>().Destination;
+					destinationPath = File.ReadAllText(statePath).ToObject<StoreFileState>().Destination;
 				}
 				catch (Exception e)
 				{
-					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("PCS02", "An exception occurred in parsing the state file at: " + text, e));
+					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("PCS02", "An exception occurred in parsing the state file at: " + statePath, e));
 				}
 				finally
 				{
-					errorList.AddRange(DeleteStoreFile(destinationPath, text, text2));
+					errorList.AddRange(DeleteStoreFile(destinationPath, statePath, stagedPath));
 				}
 				break;
 			}

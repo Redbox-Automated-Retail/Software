@@ -84,14 +84,14 @@ internal class Redbox_002EMacros1309_002EMostRecentlyUsedDictionary<K, V>
 
 	public bool Contains(K key)
 	{
-		bool flag = m_dictionary.ContainsKey(key);
-		if (flag)
+		bool found = m_dictionary.ContainsKey(key);
+		if (found)
 		{
 			LinkedListNode<V> node = m_dictionary[key];
 			m_list.Remove(node);
 			m_list.AddFirst(node);
 		}
-		return flag;
+		return found;
 	}
 
 	public void Remove(K key)

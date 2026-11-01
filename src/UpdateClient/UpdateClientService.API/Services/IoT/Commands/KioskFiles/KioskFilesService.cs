@@ -170,20 +170,20 @@ public class KioskFilesService : IKioskFilesService
 		CancellationTokenSource cancellationTokenSource = (timeout.HasValue ? new CancellationTokenSource(timeout.Value) : new CancellationTokenSource(TimeSpan.FromSeconds(90.0)));
 		return await Task.Run(delegate
 		{
-			List<FileInfo> item = new List<FileInfo>();
-			string item2 = null;
+			List<FileInfo> files = new List<FileInfo>();
+			string errorMessage = null;
 			try
 			{
 				FileQuery fileQuery = logRequestModel.FileQuery;
 				DirectoryInfo directoryInfo = new DirectoryInfo(fileQuery.Path);
-				item = directoryInfo.GetFiles((!string.IsNullOrWhiteSpace(fileQuery.SearchPattern)) ? fileQuery.SearchPattern : "*", fileQuery.SearchOptions ?? new EnumerationOptions()).ToList() ?? new List<FileInfo>();
+				files = directoryInfo.GetFiles((!string.IsNullOrWhiteSpace(fileQuery.SearchPattern)) ? fileQuery.SearchPattern : "*", fileQuery.SearchOptions ?? new EnumerationOptions()).ToList() ?? new List<FileInfo>();
 			}
 			catch (Exception ex)
 			{
 				_logger.LogErrorWithSource(ex, "Exception while getting FileInfos", "GetFilesByQuery", "/sln/src/UpdateClientService.API/Services/IoT/Commands/KioskFiles/KioskFilesService.cs");
-				item2 = ex.Message;
+				errorMessage = ex.Message;
 			}
-			return (files: item, error: item2);
+			return (files: files, error: errorMessage);
 		}, cancellationTokenSource.Token);
 	}
 

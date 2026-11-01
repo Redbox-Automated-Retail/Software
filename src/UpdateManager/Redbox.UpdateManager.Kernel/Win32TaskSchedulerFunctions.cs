@@ -22,10 +22,10 @@ public static class Win32TaskSchedulerFunctions
 		{
 			return luaTable;
 		}
-		int num = 1;
+		int index = 1;
 		foreach (string scheduledTask in windowsTaskScheduler.GetScheduledTasks())
 		{
-			luaTable[num++] = scheduledTask;
+			luaTable[index++] = scheduledTask;
 		}
 		return luaTable;
 	}
@@ -44,24 +44,24 @@ public static class Win32TaskSchedulerFunctions
 		{
 			return;
 		}
-		DateTime? dateTime = null;
-		if (beginDate is LuaTable luaTable)
+		DateTime? begin = null;
+		if (beginDate is LuaTable beginTable)
 		{
-			dateTime = luaTable.ToDateTime();
+			begin = beginTable.ToDateTime();
 		}
-		if (dateTime.HasValue)
+		if (begin.HasValue)
 		{
-			DateTime? endDate2 = null;
-			if (endDate is LuaTable luaTable2)
+			DateTime? end = null;
+			if (endDate is LuaTable endTable)
 			{
-				endDate2 = luaTable2.ToDateTime();
+				end = endTable.ToDateTime();
 			}
-			short? idleWaitMinutes2 = null;
+			short? idleWait = null;
 			if (idleWaitMinutes != null)
 			{
-				idleWaitMinutes2 = Convert.ToInt16(idleWaitMinutes);
+				idleWait = Convert.ToInt16(idleWaitMinutes);
 			}
-			windowsTaskScheduler.AddOnIdleTrigger(name, dateTime.Value, endDate2, idleWaitMinutes2);
+			windowsTaskScheduler.AddOnIdleTrigger(name, begin.Value, end, idleWait);
 		}
 	}
 
@@ -73,39 +73,39 @@ public static class Win32TaskSchedulerFunctions
 		{
 			return;
 		}
-		DateTime? dateTime = null;
-		if (beginDate is LuaTable luaTable)
+		DateTime? begin = null;
+		if (beginDate is LuaTable beginTable)
 		{
-			dateTime = luaTable.ToDateTime();
+			begin = beginTable.ToDateTime();
 		}
-		if (dateTime.HasValue)
+		if (begin.HasValue)
 		{
-			DateTime? endDate2 = null;
-			if (endDate is LuaTable luaTable2)
+			DateTime? end = null;
+			if (endDate is LuaTable endTable)
 			{
-				endDate2 = luaTable2.ToDateTime();
+				end = endTable.ToDateTime();
 			}
-			int num = DateTime.Now.Hour;
+			int startHour = DateTime.Now.Hour;
 			if (hours != null)
 			{
-				num = Convert.ToInt16(hours);
+				startHour = Convert.ToInt16(hours);
 			}
-			int num2 = DateTime.Now.Minute;
+			int startMinute = DateTime.Now.Minute;
 			if (minutes != null)
 			{
-				num2 = Convert.ToInt16(minutes);
+				startMinute = Convert.ToInt16(minutes);
 			}
-			int num3 = 1;
+			int dayInterval = 1;
 			if (daysInterval != null)
 			{
-				num3 = Convert.ToInt16(daysInterval);
+				dayInterval = Convert.ToInt16(daysInterval);
 			}
-			int? minutesInterval2 = null;
+			int? repeatMinutes = null;
 			if (minutesInterval != null)
 			{
-				minutesInterval2 = Convert.ToInt32(minutesInterval);
+				repeatMinutes = Convert.ToInt32(minutesInterval);
 			}
-			windowsTaskScheduler.AddDailyTrigger(name, dateTime.Value, endDate2, (short)num, (short)num2, (short)num3, minutesInterval2);
+			windowsTaskScheduler.AddDailyTrigger(name, begin.Value, end, (short)startHour, (short)startMinute, (short)dayInterval, repeatMinutes);
 		}
 	}
 
@@ -117,19 +117,19 @@ public static class Win32TaskSchedulerFunctions
 		{
 			return;
 		}
-		DateTime? dateTime = null;
-		if (beginDate is LuaTable luaTable)
+		DateTime? begin = null;
+		if (beginDate is LuaTable beginTable)
 		{
-			dateTime = luaTable.ToDateTime();
+			begin = beginTable.ToDateTime();
 		}
-		if (dateTime.HasValue)
+		if (begin.HasValue)
 		{
-			DateTime? endDate2 = null;
-			if (endDate is LuaTable luaTable2)
+			DateTime? end = null;
+			if (endDate is LuaTable endTable)
 			{
-				endDate2 = luaTable2.ToDateTime();
+				end = endTable.ToDateTime();
 			}
-			windowsTaskScheduler.AddSystemStartupTrigger(name, dateTime.Value, endDate2);
+			windowsTaskScheduler.AddSystemStartupTrigger(name, begin.Value, end);
 		}
 	}
 }

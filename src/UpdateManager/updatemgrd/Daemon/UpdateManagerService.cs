@@ -266,13 +266,13 @@ public class UpdateManagerService : ServiceBase
 			{
 				try
 				{
-					bool flag = true;
+					bool enabled = true;
 					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "HealthServiceScriptCheck", "true");
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{
-						flag = result;
+						enabled = result;
 					}
-					if (flag)
+					if (enabled)
 					{
 						ServiceLocator.Instance.GetService<IKernelService>().ExecuteChunkLockCheck("kernel.log(\"Heath Check Script - locked check\")", out var locked);
 						if (locked)
@@ -296,12 +296,12 @@ public class UpdateManagerService : ServiceBase
 								{
 									LogHelper.Instance.Log("Health Check Script - attempting reboot");
 									object registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RunInitialSync", "false");
-									bool flag2 = false;
-									if (registryValue != null && registryValue is string && bool.TryParse(registryValue as string, out var result2))
+									bool runInitialSync = false;
+									if (registryValue != null && registryValue is string && bool.TryParse(registryValue as string, out var parsedRunInitialSync))
 									{
-										flag2 = result2;
+										runInitialSync = parsedRunInitialSync;
 									}
-									if (flag2)
+									if (runInitialSync)
 									{
 										LogHelper.Instance.Log("Health Check Script - Service Watchdog: shouldreboot is true; initial_sync_flag is true; exiting");
 									}
@@ -345,13 +345,13 @@ public class UpdateManagerService : ServiceBase
 				{
 					LogHelper.Instance.Log("Running Health Entry for serverpoll.");
 					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunServerPoll", "true");
-					bool flag = true;
+					bool enabled = true;
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{
-						flag = result;
+						enabled = result;
 					}
-					LogHelper.Instance.Log("Running Health Entry for ServerPoll: {0}.", flag);
-					if (flag)
+					LogHelper.Instance.Log("Running Health Entry for ServerPoll: {0}.", enabled);
+					if (enabled)
 					{
 						IPollService service = ServiceLocator.Instance.GetService<IPollService>();
 						if (service != null)
@@ -375,13 +375,13 @@ public class UpdateManagerService : ServiceBase
 				{
 					LogHelper.Instance.Log("Running Health Entry for Watchdog.");
 					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunWatchdog", "true");
-					bool flag = true;
+					bool enabled = true;
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{
-						flag = result;
+						enabled = result;
 					}
-					LogHelper.Instance.Log("Running Health Entry for watchdog: {0}.", flag);
-					if (flag)
+					LogHelper.Instance.Log("Running Health Entry for watchdog: {0}.", enabled);
+					if (enabled)
 					{
 						string path = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "watchdog.lua");
 						if (!File.Exists(path))

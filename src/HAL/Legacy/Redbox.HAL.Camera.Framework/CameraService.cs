@@ -127,10 +127,10 @@ public sealed class CameraService : IDisposable
 		PerfFunctions.SpinWait(500);
 		if (cycleDriver)
 		{
-			DeviceHelper val = new DeviceHelper(false);
+			DeviceHelper deviceHelper = new DeviceHelper(false);
 			try
 			{
-				CameraInfo cameraInfo = new CameraInfo(val);
+				CameraInfo cameraInfo = new CameraInfo(deviceHelper);
 				if (cameraInfo.FindActiveCamera())
 				{
 					LogHelper.Instance.Log("Found camera {0}", new object[1] { cameraInfo.Revision.ToString() });
@@ -140,14 +140,14 @@ public sealed class CameraService : IDisposable
 					}
 					if (1 == (int)cameraInfo.Status)
 					{
-						bool flag = cameraInfo.ResetDriver();
-						LogHelper.Instance.Log(" RESET camera returned {0}", new object[1] { flag ? "OK" : "FAILURE" });
+						bool reset = cameraInfo.ResetDriver();
+						LogHelper.Instance.Log(" RESET camera returned {0}", new object[1] { reset ? "OK" : "FAILURE" });
 					}
 				}
 			}
 			finally
 			{
-				((IDisposable)val)?.Dispose();
+				((IDisposable)deviceHelper)?.Dispose();
 			}
 		}
 		return Start();
@@ -193,22 +193,22 @@ public sealed class CameraService : IDisposable
 							{
 								continue;
 							}
-							string value = childNode.Attributes["name"].Value;
-							string value2 = childNode.Attributes["value"].Value;
+							string name = childNode.Attributes["name"].Value;
+							string propertyValue = childNode.Attributes["value"].Value;
 							XmlAttribute xmlAttribute = childNode.Attributes["type"];
 							if (xmlAttribute == null)
 							{
-								CameraConfiguration.Instance.Properties[value] = value2;
+								CameraConfiguration.Instance.Properties[name] = propertyValue;
 								continue;
 							}
 							try
 							{
 								Type type = Type.GetType(xmlAttribute.Value);
-								CameraConfiguration.Instance.Properties[value] = Convert.ChangeType(value2, type);
+								CameraConfiguration.Instance.Properties[name] = Convert.ChangeType(propertyValue, type);
 							}
 							catch
 							{
-								CameraConfiguration.Instance.Properties[value] = value2;
+								CameraConfiguration.Instance.Properties[name] = propertyValue;
 							}
 						}
 					}

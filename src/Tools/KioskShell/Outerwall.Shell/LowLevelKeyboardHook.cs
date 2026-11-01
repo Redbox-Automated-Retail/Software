@@ -21,22 +21,22 @@ internal class LowLevelKeyboardHook : WindowsHook
 		if (eventHandler != null)
 		{
 			KBDLLHOOKSTRUCT kBDLLHOOKSTRUCT = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
-			int num;
+			int state;
 			switch (wParam.ToInt32())
 			{
 			default:
-				num = 0;
+				state = 0;
 				break;
 			case 257:
 			case 261:
-				num = 2;
+				state = 2;
 				break;
 			case 256:
 			case 260:
-				num = 1;
+				state = 1;
 				break;
 			}
-			KeyState keyState = (KeyState)num;
+			KeyState keyState = (KeyState)state;
 			if (keyState != KeyState.Unknown)
 			{
 				int scanCode = Convert.ToInt32(kBDLLHOOKSTRUCT.scanCode);

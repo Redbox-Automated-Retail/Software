@@ -269,20 +269,20 @@ internal static class NativeMethods
 	public static Icon GetAssociatedIcon(string strFilePath, bool bLargeIcon, bool extensionOnly)
 	{
 		SHFILEINFO psfi = default(SHFILEINFO);
-		int num = 0x100 | ((!bLargeIcon) ? 1 : 0);
+		int flags = 0x100 | ((!bLargeIcon) ? 1 : 0);
 		if (extensionOnly)
 		{
-			num |= 0x10;
+			flags |= 0x10;
 		}
 		Icon result = null;
-		if (SHGetFileInfo(strFilePath, 128, ref psfi, Marshal.SizeOf(psfi), num) != 0)
+		if (SHGetFileInfo(strFilePath, 128, ref psfi, Marshal.SizeOf(psfi), flags) != 0)
 		{
-			IntPtr intPtr = new IntPtr(psfi.hIcon);
-			if (!intPtr.Equals(0))
+			IntPtr iconHandle = new IntPtr(psfi.hIcon);
+			if (!iconHandle.Equals(0))
 			{
-				result = Icon.FromHandle(intPtr);
+				result = Icon.FromHandle(iconHandle);
 			}
-			DeleteObject(intPtr);
+			DeleteObject(iconHandle);
 		}
 		return result;
 	}

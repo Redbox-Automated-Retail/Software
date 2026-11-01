@@ -61,8 +61,8 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 			ErrorList cCFDTOList = GetCCFDTOList(out var clientConfigFileDataList);
 			errorList.AddRange(cCFDTOList);
 			string json = clientConfigFileDataList.ToJson();
-			string text2 = Encoding.ASCII.GetBytes(json).ToASCIISHA1Hash();
-			if (!string.IsNullOrEmpty(_clientConfigFileHash) && _clientConfigFileHash != text2)
+			string hash = Encoding.ASCII.GetBytes(json).ToASCIISHA1Hash();
+			if (!string.IsNullOrEmpty(_clientConfigFileHash) && _clientConfigFileHash != hash)
 			{
 				_syncID = 0;
 			}
@@ -236,21 +236,21 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 			}
 			string json = File.ReadAllText(configFilePath);
 			changeSet = json.ToObject<ConfigFileChangeSetData>();
-			string text = File.ReadAllText(stagedStatePath);
-			if (string.IsNullOrEmpty(text))
+			string stagedJson = File.ReadAllText(stagedStatePath);
+			if (string.IsNullOrEmpty(stagedJson))
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("CFS0091", $"Configuration staged date file number {configFileId} contents should not be empty.", ""));
 			}
 			else
 			{
-				stagedState = text.ToObject<ConfigFileStateLabel>();
+				stagedState = stagedJson.ToObject<ConfigFileStateLabel>();
 			}
 			if (File.Exists(activeStatePath))
 			{
-				string text2 = File.ReadAllText(activeStatePath);
-				if (!string.IsNullOrEmpty(text2))
+				string activeJson = File.ReadAllText(activeStatePath);
+				if (!string.IsNullOrEmpty(activeJson))
 				{
-					activeState = text2.ToObject<ConfigFileStateLabel>();
+					activeState = activeJson.ToObject<ConfigFileStateLabel>();
 				}
 			}
 		}

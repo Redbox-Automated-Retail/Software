@@ -63,47 +63,47 @@ internal class FileSetCleanup
 								allFileInfos.Add(FileSetService.Instance.GetFileInfo(path));
 							});
 							List<FileSetFileInfo> requiredFiles = new List<FileSetFileInfo>();
-							List<string> list = (from s in FileCacheService.Instance.GetAllRevisionFiles(fileSetId)
+							List<string> revisionFiles = (from s in FileCacheService.Instance.GetAllRevisionFiles(fileSetId)
 								orderby s descending
 								select s).ToList();
 							int pos = 1;
-							list.ForEach(delegate(string path)
+							revisionFiles.ForEach(delegate(string path)
 							{
 								ClientFileSetRevision revision = FileSetService.Instance.GetRevision(path);
 								if (revision != null)
 								{
-									bool flag = true;
+									bool keep = true;
 									try
 									{
 										if (revisions.Exists((ClientFileSetRevision r) => r.RevisionId == revision.RevisionId))
 										{
 											return;
 										}
-										bool? flag2 = null;
-										bool? flag3 = null;
+										bool? pastRetentionCount = null;
+										bool? pastRetentionDays = null;
 										if (retentionRevisions > 0 && pos > retentionRevisions)
 										{
-											flag2 = true;
+											pastRetentionCount = true;
 										}
-										int num = (int)(DateTime.Now - File.GetCreationTime(path)).TotalDays;
-										if (num <= 1)
+										int ageDays = (int)(DateTime.Now - File.GetCreationTime(path)).TotalDays;
+										if (ageDays <= 1)
 										{
 											return;
 										}
-										if (retentionDays > 0 && num > retentionDays)
+										if (retentionDays > 0 && ageDays > retentionDays)
 										{
-											flag3 = true;
+											pastRetentionDays = true;
 										}
-										if ((flag2 ?? true) && (flag3 ?? true))
+										if ((pastRetentionCount ?? true) && (pastRetentionDays ?? true))
 										{
-											flag = false;
+											keep = false;
 											LogHelper.Instance.Log($"Deleting FileSetId: {fileSetId} RevisionId {revision.RevisionId} PatchRevisionId {revision.PatchRevisionId}", LogEntryType.Debug);
 											FileCacheService.Instance.DeleteRevision(fileSetId, revision.RevisionId, revision.PatchRevisionId);
 										}
 									}
 									finally
 									{
-										if (flag)
+										if (keep)
 										{
 											AddRequiredFiles(allFileInfos, requiredFiles, revision);
 										}

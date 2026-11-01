@@ -451,15 +451,15 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M33_04_EMV_AUTHORIZATION_RESPONSE:
 		{
-			byte[] array = TakeTags(MESSAGE_ID.M33_04_EMV_AUTHORIZATION_RESPONSE).FirstOrDefault((KeyValuePair<int, byte[]> t) => t.Key == 0x8A).Value;
-			string text = array == null ? "00" : Encoding.ASCII.GetString(array);
+			byte[] responseCodeBytes = TakeTags(MESSAGE_ID.M33_04_EMV_AUTHORIZATION_RESPONSE).FirstOrDefault((KeyValuePair<int, byte[]> t) => t.Key == 0x8A).Value;
+			string responseCode = responseCodeBytes == null ? "00" : Encoding.ASCII.GetString(responseCodeBytes);
 			lock (_sync)
 			{
 				if (_emvState == EmvState.AwaitingAuthorization)
 				{
-					bool approved = text == "00" && _activeCard != null && !_activeCard.Decline;
+					bool approved = responseCode == "00" && _activeCard != null && !_activeCard.Decline;
 					_emvState = _cardInserted ? EmvState.CardRead : EmvState.None;
-					RaiseTerminalMessage(MESSAGE_ID.M33_05_EMV_AUTHORIZATION_CONFIRMATION, () => RespondEmv(MESSAGE_ID.M33_05_EMV_AUTHORIZATION_CONFIRMATION, PARAMETER_ID.P33_05_RES_STATUS, (byte)(approved ? 0x40 : 0x00), text));
+					RaiseTerminalMessage(MESSAGE_ID.M33_05_EMV_AUTHORIZATION_CONFIRMATION, () => RespondEmv(MESSAGE_ID.M33_05_EMV_AUTHORIZATION_CONFIRMATION, PARAMETER_ID.P33_05_RES_STATUS, (byte)(approved ? 0x40 : 0x00), responseCode));
 				}
 			}
 			break;
@@ -470,9 +470,9 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M61_CONFIGURATION_READ:
 		{
-			string text2 = _data.ReadConfig(Request(PARAMETER_ID.P61_REQ_GROUP_NUM), Request(PARAMETER_ID.P61_REQ_INDEX_NUM));
+			string configValue = _data.ReadConfig(Request(PARAMETER_ID.P61_REQ_GROUP_NUM), Request(PARAMETER_ID.P61_REQ_INDEX_NUM));
 			Respond(PARAMETER_ID.P61_RES_STATUS, "2");
-			Respond(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER, text2 ?? string.Empty);
+			Respond(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER, configValue ?? string.Empty);
 			break;
 		}
 		case MESSAGE_ID.M62_FILE_WRITE:
@@ -481,7 +481,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M65_RETRIEVE_FILE:
 		{
-			if (!_data.Files.TryGetValue(Request(PARAMETER_ID.P65_REQ_FILE_NAME), out string value))
+			if (!_data.Files.TryGetValue(Request(PARAMETER_ID.P65_REQ_FILE_NAME), out string fileData))
 			{
 				Respond(PARAMETER_ID.P65_RES_RESULT, "1");
 				break;
@@ -491,7 +491,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			Respond(PARAMETER_ID.P65_RES_BLOCK_NUMBER, "1");
 			Respond(PARAMETER_ID.P65_RES_DATA_TYPE, Request(PARAMETER_ID.P65_REQ_DATA_TYPE));
 			Respond(PARAMETER_ID.P65_RES_CRC, "0000");
-			Respond(PARAMETER_ID.P65_RES_DATA, value);
+			Respond(PARAMETER_ID.P65_RES_DATA, fileData);
 			break;
 		}
 		case MESSAGE_ID.M97_REBOOT:
@@ -503,34 +503,34 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	private void WriteFile(MESSAGE_ID messageId)
 	{
-		string text = Request(PARAMETER_ID.P62_REQ_FILE_NAME);
-		string text2 = Request(PARAMETER_ID.P62_REQ_FILE_DATA);
+		string fileName = Request(PARAMETER_ID.P62_REQ_FILE_NAME);
+		string fileData = Request(PARAMETER_ID.P62_REQ_FILE_DATA);
 		if (messageId == MESSAGE_ID.FILE_WRITE)
 		{
 			// Whole-file download from a path on the host.
-			string text3 = Request(PARAMETER_ID.P62_REQ_OS_FILE_NAME);
+			string osFileName = Request(PARAMETER_ID.P62_REQ_OS_FILE_NAME);
 			try
 			{
-				text2 = System.IO.File.Exists(text3) ? Convert.ToBase64String(System.IO.File.ReadAllBytes(text3)) : string.Empty;
+				fileData = System.IO.File.Exists(osFileName) ? Convert.ToBase64String(System.IO.File.ReadAllBytes(osFileName)) : string.Empty;
 			}
 			catch (Exception ex)
 			{
-				Trace("FILE_WRITE could not read " + text3 + ": " + ex.Message);
-				text2 = string.Empty;
+				Trace("FILE_WRITE could not read " + osFileName + ": " + ex.Message);
+				fileData = string.Empty;
 			}
 		}
-		string key = string.IsNullOrEmpty(text) ? "_lastFile" : text;
-		if (Request(PARAMETER_ID.P62_REQ_RECORD_TYPE) == "1" && _data.Files.TryGetValue(key, out string value))
+		string key = string.IsNullOrEmpty(fileName) ? "_lastFile" : fileName;
+		if (Request(PARAMETER_ID.P62_REQ_RECORD_TYPE) == "1" && _data.Files.TryGetValue(key, out string existingData))
 		{
-			text2 = value + text2;
+			fileData = existingData + fileData;
 		}
-		_data.Files[key] = text2;
-		if (!string.IsNullOrEmpty(text))
+		_data.Files[key] = fileData;
+		if (!string.IsNullOrEmpty(fileName))
 		{
-			_data.Files["_lastFile"] = text2;
+			_data.Files["_lastFile"] = fileData;
 		}
 		Respond(PARAMETER_ID.P62_RES_STATUS, "0");
-		Respond(PARAMETER_ID.P62_RES_FILE_LENGTH, text2.Length.ToString(CultureInfo.InvariantCulture));
+		Respond(PARAMETER_ID.P62_RES_FILE_LENGTH, fileData.Length.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void SimulateReboot()
@@ -701,8 +701,8 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		RaiseTerminalMessage(MESSAGE_ID.M33_03_EMV_AUTHORIZATION_REQUEST, delegate
 		{
-			bool flag = (_activeCard ?? _data.DefaultCard).Decline;
-			RespondEmv(MESSAGE_ID.M33_03_EMV_AUTHORIZATION_REQUEST, PARAMETER_ID.P33_03_REQ_STATUS, (byte)(flag ? 0x00 : 0x80));
+			bool decline = (_activeCard ?? _data.DefaultCard).Decline;
+			RespondEmv(MESSAGE_ID.M33_03_EMV_AUTHORIZATION_REQUEST, PARAMETER_ID.P33_03_REQ_STATUS, (byte)(decline ? 0x00 : 0x80));
 		});
 	}
 

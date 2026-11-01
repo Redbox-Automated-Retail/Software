@@ -99,14 +99,14 @@ public class Startup
 				try
 				{
 					ControllerActionDescriptor controllerActionDescriptor = (ControllerActionDescriptor)context.ActionDescriptor;
-					string text = controllerActionDescriptor.ControllerName.Trim();
-					string text2 = controllerActionDescriptor.ActionName.Trim();
-					requiredService.LogInformation("START: " + text + "." + text2);
-					string text3 = ((actionResult as BadRequestObjectResult)?.Value)?.ToJson();
-					string text4 = ((!string.IsNullOrEmpty(text3)) ? text3 : string.Join("; ", from x in context.ModelState.Values.SelectMany((ModelStateEntry x) => x.Errors)
+					string controllerName = controllerActionDescriptor.ControllerName.Trim();
+					string actionName = controllerActionDescriptor.ActionName.Trim();
+					requiredService.LogInformation("START: " + controllerName + "." + actionName);
+					string badRequestJson = ((actionResult as BadRequestObjectResult)?.Value)?.ToJson();
+					string validationDetails = ((!string.IsNullOrEmpty(badRequestJson)) ? badRequestJson : string.Join("; ", from x in context.ModelState.Values.SelectMany((ModelStateEntry x) => x.Errors)
 						select x.ErrorMessage));
-					requiredService.LogError(text + "." + text2 + ",ValidationProblemDetails=" + text4);
-					requiredService.LogInformation($"END: {text}.{text2},statuscode={HttpStatusCode.BadRequest}");
+					requiredService.LogError(controllerName + "." + actionName + ",ValidationProblemDetails=" + validationDetails);
+					requiredService.LogInformation($"END: {controllerName}.{actionName},statuscode={HttpStatusCode.BadRequest}");
 				}
 				catch (Exception exception)
 				{

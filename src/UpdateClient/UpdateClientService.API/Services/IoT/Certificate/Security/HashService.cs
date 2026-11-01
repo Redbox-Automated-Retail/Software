@@ -29,23 +29,23 @@ public class HashService : IHashService
 
 	private async Task<string> GetSaltOfTheCertificatePassword(string kioskId)
 	{
-		int num = 0;
-		char c = kioskId[kioskId.Length - 1];
-		string text = kioskId + kioskId;
-		foreach (char c2 in text)
+		int salt = 0;
+		char lastChar = kioskId[kioskId.Length - 1];
+		string doubledId = kioskId + kioskId;
+		foreach (char ch in doubledId)
 		{
-			num *= c2 * c;
+			salt *= ch * lastChar;
 		}
-		return num.ToString();
+		return salt.ToString();
 	}
 
 	private async Task<string> GetSaltOfTheKioskPassword(string kioskId)
 	{
-		int num = 0;
-		foreach (char c in kioskId)
+		int salt = 0;
+		foreach (char ch in kioskId)
 		{
-			num *= c;
+			salt *= ch;
 		}
-		return num.ToString();
+		return salt.ToString();
 	}
 }

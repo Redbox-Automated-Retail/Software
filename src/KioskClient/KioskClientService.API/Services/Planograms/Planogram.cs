@@ -33,25 +33,25 @@ public class Planogram
 			logger.LogErrorWithSource("Too many underscores for planogram: " + fileName, "Create");
 			return null;
 		}
-		string[] array2 = parts[1].Split('.');
-		if (array2.Length > 2)
+		string[] nameParts = parts[1].Split('.');
+		if (nameParts.Length > 2)
 		{
 			logger.LogErrorWithSource("Too many periods for planogram: " + fileName, "Create");
 			return null;
 		}
-		DateTime? dateTime = ParseStartDate(array2[0], logger);
+		DateTime? dateTime = ParseStartDate(nameParts[0], logger);
 		if (!dateTime.HasValue)
 		{
 			logger.LogErrorWithSource("Invalid start date for planogram: " + fileName, "Create");
 			return null;
 		}
-		string text = array2[1].ToLower();
-		if (text != "rtf" && text != "xps")
+		string extension = nameParts[1].ToLower();
+		if (extension != "rtf" && extension != "xps")
 		{
 			logger.LogErrorWithSource("Invalid file type for planogram: " + fileName, "Create");
 			return null;
 		}
-		return new Planogram(path, fileName, name, dateTime.Value, text);
+		return new Planogram(path, fileName, name, dateTime.Value, extension);
 	}
 
 	private static DateTime? ParseStartDate<T>(string dateString, ILogger<T> logger)
@@ -65,24 +65,24 @@ public class Planogram
 		{
 			return null;
 		}
-		if (!int.TryParse(dateString.Substring(3), out var result))
+		if (!int.TryParse(dateString.Substring(3), out var day))
 		{
 			return null;
 		}
-		int num = DateTime.Now.Year;
+		int year = DateTime.Now.Year;
 		if (abbreviatedMonthNumber == 1 && DateTime.Now.Month == 12)
 		{
-			num++;
+			year++;
 		}
 		else if (abbreviatedMonthNumber > 10 && DateTime.Now.Month < 3)
 		{
-			num--;
+			year--;
 		}
-		if (result < 1 || result > DateTime.DaysInMonth(num, abbreviatedMonthNumber))
+		if (day < 1 || day > DateTime.DaysInMonth(year, abbreviatedMonthNumber))
 		{
 			return null;
 		}
-		return new DateTime(num, abbreviatedMonthNumber, result);
+		return new DateTime(year, abbreviatedMonthNumber, day);
 	}
 
 	private Planogram(string path, string filename, string name, DateTime startDate, string type)

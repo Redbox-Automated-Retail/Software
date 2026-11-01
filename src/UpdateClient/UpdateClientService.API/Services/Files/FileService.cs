@@ -23,8 +23,8 @@ public class FileService : IFileService
 
 	public async Task ZipAndUploadToS3(List<FileInfo> fileToUpload, string presignedS3)
 	{
-		int num = new Random().Next();
-		string zipPath = Path.GetTempPath() + $"{num}.zip";
+		int randomNumber = new Random().Next();
+		string zipPath = Path.GetTempPath() + $"{randomNumber}.zip";
 		_logger.LogInfoWithSource("Created temporary zip path: " + zipPath, "ZipAndUploadToS3", "/sln/src/UpdateClientService.API/Services/Files/FileService.cs");
 		Exception exception = null;
 		try

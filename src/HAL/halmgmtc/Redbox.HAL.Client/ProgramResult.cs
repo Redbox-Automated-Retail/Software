@@ -45,14 +45,14 @@ public sealed class ProgramResult
 				TimeStamp = DateTime.Parse(parts[2]),
 				Code = parts[3].Trim()
 			};
-			string[] array2 = parts[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array2.Length == 2)
+			string[] location = parts[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (location.Length == 2)
 			{
-				if (int.TryParse(array2[0], out var result))
+				if (int.TryParse(location[0], out var result))
 				{
 					programResult.Deck = result;
 				}
-				if (int.TryParse(array2[1], out result))
+				if (int.TryParse(location[1], out result))
 				{
 					programResult.Slot = result;
 				}
@@ -65,15 +65,15 @@ public sealed class ProgramResult
 			programResult.Message = parts[6];
 			if (9 == parts.Length)
 			{
-				string text2 = parts[7].Trim();
-				if (text2 != "~")
+				string returnTime = parts[7].Trim();
+				if (returnTime != "~")
 				{
-					programResult.ReturnTime = DateTime.Parse(text2);
+					programResult.ReturnTime = DateTime.Parse(returnTime);
 				}
-				string text3 = parts[8].Trim();
-				if (text3 != "~")
+				string previousItem = parts[8].Trim();
+				if (previousItem != "~")
 				{
-					programResult.PreviousItem = new ResultItem(text3);
+					programResult.PreviousItem = new ResultItem(previousItem);
 				}
 			}
 			return programResult;

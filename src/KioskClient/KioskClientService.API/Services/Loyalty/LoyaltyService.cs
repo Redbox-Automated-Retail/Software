@@ -210,12 +210,12 @@ internal class LoyaltyService : ILoyaltyService
 		foreach (LoyaltyTestShoppingCartItem eachLoyaltyTestShoppingCartItem in list)
 		{
 			LoyaltyTestAccrualRedemption loyaltyTestAccrualRedemption = savedLoyaltyTestAccrualRedemptions.FirstOrDefault((LoyaltyTestAccrualRedemption x) => x.ProductId == eachLoyaltyTestShoppingCartItem.ProductId);
-			int num = loyaltyTestAccrualRedemption?.AccrualPoints ?? defaultAccrualValue;
-			int num2 = loyaltyTestAccrualRedemption?.RedemptionPoints ?? defaultRedemptionValue;
+			int accrualPoints = loyaltyTestAccrualRedemption?.AccrualPoints ?? defaultAccrualValue;
+			int redemptionPoints = loyaltyTestAccrualRedemption?.RedemptionPoints ?? defaultRedemptionValue;
 			response.Items.Add(new ItemEstimation
 			{
 				ProductId = eachLoyaltyTestShoppingCartItem.ProductId,
-				Points = ((loyaltyEstimateType == LoyaltyEstimateType.Accrual) ? num : num2)
+				Points = ((loyaltyEstimateType == LoyaltyEstimateType.Accrual) ? accrualPoints : redemptionPoints)
 			});
 		}
 	}

@@ -35,16 +35,16 @@ public class MacroContainer
 
 	public void Clear(params string[] exclusionList)
 	{
-		List<string> list = new List<string>();
+		List<string> keys = new List<string>();
 		foreach (string key in Values.Keys)
 		{
-			list.Add(key);
+			keys.Add(key);
 		}
-		List<string> list2 = new List<string>(exclusionList);
-		foreach (string item in list)
+		List<string> exclusions = new List<string>(exclusionList);
+		foreach (string key in keys)
 		{
-			string eachKey = item;
-			if (!list2.Exists((string eachExclusion) => eachKey.StartsWith(eachExclusion, StringComparison.CurrentCultureIgnoreCase)))
+			string eachKey = key;
+			if (!exclusions.Exists((string eachExclusion) => eachKey.StartsWith(eachExclusion, StringComparison.CurrentCultureIgnoreCase)))
 			{
 				Values.Remove(eachKey);
 			}
@@ -64,21 +64,21 @@ public class MacroContainer
 		}
 		while (true)
 		{
-			string text = Redbox_002EMacros1309_002EGlobalStringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
-			if (string.IsNullOrEmpty(text))
+			string code = Redbox_002EMacros1309_002EGlobalStringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
+			if (string.IsNullOrEmpty(code))
 			{
 				break;
 			}
-			string text2 = ScriptFunction.ExecuteScriptFunction(text, out var functionExecuted);
+			string replacement = ScriptFunction.ExecuteScriptFunction(code, out var functionExecuted);
 			if (!functionExecuted)
 			{
-				text2 = Values[text];
+				replacement = Values[code];
 			}
-			if (text2 == null)
+			if (replacement == null)
 			{
-				text2 = string.Empty;
+				replacement = string.Empty;
 			}
-			value = value.Replace($"{preamble}{text}{postamble}", text2);
+			value = value.Replace($"{preamble}{code}{postamble}", replacement);
 		}
 		return value;
 	}

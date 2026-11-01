@@ -137,12 +137,12 @@ public static class RegistryFunctions
 	internal static void SetKey(string path, string name, object value)
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-		object value2 = value;
+		object expandedValue = value;
 		if (value is string)
 		{
-			value2 = macroService.ExpandProperties((string)value);
+			expandedValue = macroService.ExpandProperties((string)value);
 		}
-		Registry.SetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), value2);
+		Registry.SetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), expandedValue);
 	}
 
 	[KernelFunction(Name = "kernel.setdwordregistrykey")]
@@ -156,28 +156,28 @@ public static class RegistryFunctions
 	internal static LuaTable GetDotNetVersions()
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
+		LuaTable versionsTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = false;
-		luaTable["versions"] = luaTable2;
+		luaTable["versions"] = versionsTable;
 		RegistryKey registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP");
 			if (registryKey != null)
 			{
-				int num = 1;
+				int index = 1;
 				string[] subKeyNames = registryKey.GetSubKeyNames();
 				foreach (string name in subKeyNames)
 				{
-					RegistryKey registryKey2 = registryKey.OpenSubKey(name);
-					if (registryKey2 != null)
+					RegistryKey versionKey = registryKey.OpenSubKey(name);
+					if (versionKey != null)
 					{
-						LuaTable luaTable3 = new LuaTable(KernelService.Instance.LuaRuntime);
-						luaTable3["version"] = registryKey2.GetValue("Version");
-						luaTable3["service_pack"] = (int)(registryKey2.GetValue("SP") ?? ((object)0));
-						luaTable3["install_path"] = registryKey2.GetValue("InstallPath");
-						luaTable2[num++] = luaTable3;
-						registryKey2.Close();
+						LuaTable versionEntry = new LuaTable(KernelService.Instance.LuaRuntime);
+						versionEntry["version"] = versionKey.GetValue("Version");
+						versionEntry["service_pack"] = (int)(versionKey.GetValue("SP") ?? ((object)0));
+						versionEntry["install_path"] = versionKey.GetValue("InstallPath");
+						versionsTable[index++] = versionEntry;
+						versionKey.Close();
 					}
 				}
 				luaTable["success"] = true;
@@ -198,9 +198,9 @@ public static class RegistryFunctions
 	internal static void ExportRegistryKey(string fileName, string key)
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-		string text = macroService.ExpandProperties(key);
-		string text2 = macroService.ExpandProperties(fileName);
-		if (!string.IsNullOrEmpty(text) && !string.IsNullOrEmpty(text2))
+		string expandedKey = macroService.ExpandProperties(key);
+		string expandedFileName = macroService.ExpandProperties(fileName);
+		if (!string.IsNullOrEmpty(expandedKey) && !string.IsNullOrEmpty(expandedFileName))
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
@@ -208,7 +208,7 @@ public static class RegistryFunctions
 				UseShellExecute = false,
 				FileName = "regedit.exe",
 				WindowStyle = ProcessWindowStyle.Hidden,
-				Arguments = $"/E \"{text2}\" {text}"
+				Arguments = $"/E \"{expandedFileName}\" {expandedKey}"
 			};
 			Process process = new Process();
 			process.StartInfo = startInfo;
@@ -220,8 +220,8 @@ public static class RegistryFunctions
 	[KernelFunction(Name = "kernel.importregistryfile")]
 	internal static void ImportRegistryFile(string fileName)
 	{
-		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(fileName);
-		if (!string.IsNullOrEmpty(text))
+		string expandedFileName = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(fileName);
+		if (!string.IsNullOrEmpty(expandedFileName))
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
@@ -229,7 +229,7 @@ public static class RegistryFunctions
 				UseShellExecute = false,
 				FileName = "regedit.exe",
 				WindowStyle = ProcessWindowStyle.Hidden,
-				Arguments = $"/S \"{text}\""
+				Arguments = $"/S \"{expandedFileName}\""
 			};
 			Process process = new Process();
 			process.StartInfo = startInfo;

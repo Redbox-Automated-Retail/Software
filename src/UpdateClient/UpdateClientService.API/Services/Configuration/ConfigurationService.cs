@@ -226,9 +226,9 @@ public class ConfigurationService : IConfigurationService
 				{
 					Task.Run(async delegate
 					{
-						int num = new Random().Next((int)triggerUpdateConfigStatusRequest.ExecutionTimeFrameMs.Value);
-						_logger.LogInfoWithSource($"waiting {num} ms before calling UpdateConfigurationStatus", "TriggerUpdateConfigurationStatus", "/sln/src/UpdateClientService.API/Services/Configuration/ConfigurationService.cs");
-						await Task.Delay(num);
+						int delayMs = new Random().Next((int)triggerUpdateConfigStatusRequest.ExecutionTimeFrameMs.Value);
+						_logger.LogInfoWithSource($"waiting {delayMs} ms before calling UpdateConfigurationStatus", "TriggerUpdateConfigurationStatus", "/sln/src/UpdateClientService.API/Services/Configuration/ConfigurationService.cs");
+						await Task.Delay(delayMs);
 						await UpdateConfigurationStatus();
 					});
 				}
@@ -776,20 +776,20 @@ public class ConfigurationService : IConfigurationService
 					{
 						foreach (KioskSetting eachSetting in eachCategory.Settings)
 						{
-							List<KioskSettingValue> list = eachSetting.SettingValues.Where((KioskSettingValue x) => configurationSettingChangesData.KioskConfigurationChangesResponse.RemovedConfigurationSettingValueIds.Contains(x.ConfigurationSettingValueId)).ToList();
-							list.ForEach(delegate(KioskSettingValue x)
+							List<KioskSettingValue> removedValues = eachSetting.SettingValues.Where((KioskSettingValue x) => configurationSettingChangesData.KioskConfigurationChangesResponse.RemovedConfigurationSettingValueIds.Contains(x.ConfigurationSettingValueId)).ToList();
+							removedValues.ForEach(delegate(KioskSettingValue x)
 							{
 								eachSetting.SettingValues.Remove(x);
 							});
 						}
-						List<KioskSetting> list2 = eachCategory.Settings.Where((KioskSetting x) => !x.SettingValues.Any()).ToList();
-						list2.ForEach(delegate(KioskSetting x)
+						List<KioskSetting> emptySettings = eachCategory.Settings.Where((KioskSetting x) => !x.SettingValues.Any()).ToList();
+						emptySettings.ForEach(delegate(KioskSetting x)
 						{
 							eachCategory.Settings.Remove(x);
 						});
 					}
-					List<KioskConfigurationCategory> list3 = configurationSettingChangesData.KioskConfigurationSettingValues.Categories.Where((KioskConfigurationCategory x) => !x.Settings.Any()).ToList();
-					list3.ForEach(delegate(KioskConfigurationCategory x)
+					List<KioskConfigurationCategory> emptyCategories = configurationSettingChangesData.KioskConfigurationSettingValues.Categories.Where((KioskConfigurationCategory x) => !x.Settings.Any()).ToList();
+					emptyCategories.ForEach(delegate(KioskConfigurationCategory x)
 					{
 						configurationSettingChangesData.KioskConfigurationSettingValues.Categories.Remove(x);
 					});

@@ -45,7 +45,7 @@ internal class ClientFileSetRevision
 
 	public ClientFileSetRevision Clone()
 	{
-		ClientFileSetRevision obj = new ClientFileSetRevision
+		ClientFileSetRevision clone = new ClientFileSetRevision
 		{
 			FileSetId = FileSetId,
 			FileSetName = FileSetName,
@@ -72,7 +72,7 @@ internal class ClientFileSetRevision
 				files.Add(item);
 			});
 		}
-		obj.Files = files;
+		clone.Files = files;
 		List<ClientPatchFileSetFile> patchFiles = new List<ClientPatchFileSetFile>();
 		if (PatchFiles != null)
 		{
@@ -81,7 +81,7 @@ internal class ClientFileSetRevision
 				patchFiles.Add(item);
 			});
 		}
-		obj.PatchFiles = patchFiles;
+		clone.PatchFiles = patchFiles;
 		List<ClientFileSetRevisionDependency> dependencies = new List<ClientFileSetRevisionDependency>();
 		if (Dependencies != null)
 		{
@@ -90,7 +90,7 @@ internal class ClientFileSetRevision
 				dependencies.Add(item);
 			});
 		}
-		obj.Dependencies = dependencies;
-		return obj;
+		clone.Dependencies = dependencies;
+		return clone;
 	}
 }

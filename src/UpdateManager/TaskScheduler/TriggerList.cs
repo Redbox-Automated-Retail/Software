@@ -110,10 +110,10 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 
 	public void Remove(Trigger trigger)
 	{
-		int num = IndexOf(trigger);
-		if (num != -1)
+		int index = IndexOf(trigger);
+		if (index != -1)
 		{
-			RemoveAt(num);
+			RemoveAt(index);
 		}
 	}
 
@@ -134,9 +134,9 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 
 	public void Clear()
 	{
-		for (int num = Count - 1; num >= 0; num--)
+		for (int index = Count - 1; index >= 0; index--)
 		{
-			RemoveAt(num);
+			RemoveAt(index);
 		}
 	}
 
@@ -165,8 +165,8 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 		iTask.CreateTrigger(out var NewTriggerIndex, out var Trigger);
 		trigger.Bind(Trigger);
-		int num = oTriggers.Add(trigger);
-		if (num != NewTriggerIndex)
+		int index = oTriggers.Add(trigger);
+		if (index != NewTriggerIndex)
 		{
 			throw new ApplicationException("Assertion Failure");
 		}

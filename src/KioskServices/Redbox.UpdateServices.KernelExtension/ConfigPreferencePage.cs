@@ -123,22 +123,22 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 				{
 					List<string> list = new List<string>();
 					configurationService.GetSettingNames(text, checkedItem, out list);
-					foreach (string item in list)
+					foreach (string settingName in list)
 					{
 						if (m_checkboxActiveOnly.Checked)
 						{
-							ConfigurationData value = new ConfigurationData();
-							if (configurationService.TryGetConfigurationData(text, checkedItem, item, out value))
+							ConfigurationData activeData = new ConfigurationData();
+							if (configurationService.TryGetConfigurationData(text, checkedItem, settingName, out activeData))
 							{
-								m_configValuesListView.Items.Add(CreateListItem(value));
+								m_configValuesListView.Items.Add(CreateListItem(activeData));
 							}
 							continue;
 						}
-						List<ConfigurationData> list2 = new List<ConfigurationData>();
-						configurationService.GetAllConfigurationData(text, checkedItem, item, out list2);
-						foreach (ConfigurationData item2 in list2)
+						List<ConfigurationData> allData = new List<ConfigurationData>();
+						configurationService.GetAllConfigurationData(text, checkedItem, settingName, out allData);
+						foreach (ConfigurationData configurationData in allData)
 						{
-							m_configValuesListView.Items.Add(CreateListItem(item2));
+							m_configValuesListView.Items.Add(CreateListItem(configurationData));
 						}
 					}
 				}

@@ -114,9 +114,9 @@ public class MainForm : Form, IWizardView, IShellConfiguration
 				wizardPageBases.Add(wizardPage);
 			}
 		}
-		WizardPageBase[] array = wizardPageBases.ToArray();
-		m_wizard.Controls.AddRange(array);
-		Wizard.SetPageOrder(array);
+		WizardPageBase[] pages = wizardPageBases.ToArray();
+		m_wizard.Controls.AddRange(pages);
+		Wizard.SetPageOrder(pages);
 		return errorList;
 	}
 

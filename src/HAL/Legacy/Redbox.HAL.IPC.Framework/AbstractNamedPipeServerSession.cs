@@ -80,16 +80,16 @@ public abstract class AbstractNamedPipeServerSession
 
 	protected void Read()
 	{
-		bool flag = true;
-		while (flag)
+		bool keepReading = true;
+		while (keepReading)
 		{
-			byte[] array = Channel.ReceiveMessage();
-			if (array == null)
+			byte[] message = Channel.ReceiveMessage();
+			if (message == null)
 			{
 				break;
 			}
-			ReadBuilder.Append(Encoding.ASCII.GetString(array, 0, array.Length));
-			flag = ProcessCommand();
+			ReadBuilder.Append(Encoding.ASCII.GetString(message, 0, message.Length));
+			keepReading = ProcessCommand();
 			ResetReadBuilder();
 		}
 		InternalClose();
@@ -109,28 +109,28 @@ public abstract class AbstractNamedPipeServerSession
 
 	private bool ProcessCommand()
 	{
-		string text = ReadBuilder.ToString();
+		string line = ReadBuilder.ToString();
 		if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
 		{
-			LogProxy("Server: received message {0}", text);
+			LogProxy("Server: received message {0}", line);
 		}
-		if (string.IsNullOrEmpty(text))
+		if (string.IsNullOrEmpty(line))
 		{
-			string text2 = $"ProcessCommand: invalid line '{text}'";
-			LogHelper.Instance.Log(text2, LogEntryType.Error);
-			Console.WriteLine(text2);
+			string error = $"ProcessCommand: invalid line '{line}'";
+			LogHelper.Instance.Log(error, LogEntryType.Error);
+			Console.WriteLine(error);
 			return false;
 		}
-		if (text.StartsWith("quit", StringComparison.CurrentCultureIgnoreCase))
-		{
-			return false;
-		}
-		string text3 = ProcessClientCommand(text);
-		if (string.IsNullOrEmpty(text3))
+		if (line.StartsWith("quit", StringComparison.CurrentCultureIgnoreCase))
 		{
 			return false;
 		}
-		Write(text3);
+		string response = ProcessClientCommand(line);
+		if (string.IsNullOrEmpty(response))
+		{
+			return false;
+		}
+		Write(response);
 		return true;
 	}
 

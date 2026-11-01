@@ -34,8 +34,8 @@ internal class RepositoryCommand
 	[Usage("repository subscribed name:")]
 	public void Subscribed(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		bool flag = ServiceLocator.Instance.GetService<IRepositoryService>().Subscribed(name);
-		context.Messages.Add(flag.ToJson());
+		bool subscribed = ServiceLocator.Instance.GetService<IRepositoryService>().Subscribed(name);
+		context.Messages.Add(subscribed.ToJson());
 	}
 
 	[CommandForm(Name = "activate-to")]
@@ -72,8 +72,8 @@ internal class RepositoryCommand
 	[Usage("repository contains-repository name:")]
 	public void ContainsRepository(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		bool flag = ServiceLocator.Instance.GetService<IRepositoryService>().ContainsRepository(name);
-		context.Messages.Add(flag.ToJson());
+		bool exists = ServiceLocator.Instance.GetService<IRepositoryService>().ContainsRepository(name);
+		context.Messages.Add(exists.ToJson());
 	}
 
 	[CommandForm(Name = "add-repository")]

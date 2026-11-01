@@ -84,15 +84,15 @@ public sealed class HardwareJob
 		session.ServerEvent += delegate(string message)
 		{
 			string[] parts = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			DateTime result2 = DateTime.Now;
+			DateTime eventTime = DateTime.Now;
 			if (parts.Length > 1)
 			{
-				DateTime.TryParse(parts[0], out result2);
+				DateTime.TryParse(parts[0], out eventTime);
 			}
-			string text = ((parts.Length > 1) ? parts[1] : parts[0]);
-			if (text.StartsWith(">STATUS CHANGE<"))
+			string eventMessage = ((parts.Length > 1) ? parts[1] : parts[0]);
+			if (eventMessage.StartsWith(">STATUS CHANGE<"))
 			{
-				HardwareJobStatus status = Enum<HardwareJobStatus>.ParseIgnoringCase(text.Substring(text.IndexOf("<") + 1).Trim(), HardwareJobStatus.Completed);
+				HardwareJobStatus status = Enum<HardwareJobStatus>.ParseIgnoringCase(eventMessage.Substring(eventMessage.IndexOf("<") + 1).Trim(), HardwareJobStatus.Completed);
 				if (StatusChanged != null)
 				{
 					StatusChanged(this, status);
@@ -100,7 +100,7 @@ public sealed class HardwareJob
 			}
 			if (EventRaised != null)
 			{
-				EventRaised(this, result2, text);
+				EventRaised(this, eventTime, eventMessage);
 			}
 		};
 		HardwareCommandResult result = ClientCommand<HardwareCommandResult>.ExecuteCommand(session, $"JOB connect job: '{ID}'");
@@ -191,9 +191,9 @@ public sealed class HardwareJob
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"STACK show job: '{ID}'");
 		if (hardwareCommandResult.Success)
 		{
-			for (int num = hardwareCommandResult.CommandMessages.Count - 1; num >= 0; num--)
+			for (int index = hardwareCommandResult.CommandMessages.Count - 1; index >= 0; index--)
 			{
-				stack.Push(hardwareCommandResult.CommandMessages[num].Substring(hardwareCommandResult.CommandMessages[num].IndexOf(":") + 1).Trim());
+				stack.Push(hardwareCommandResult.CommandMessages[index].Substring(hardwareCommandResult.CommandMessages[index].IndexOf(":") + 1).Trim());
 			}
 		}
 		return hardwareCommandResult;
@@ -235,14 +235,14 @@ public sealed class HardwareJob
 			};
 		}
 		HardwareCommandResult hardwareCommandResult = null;
-		foreach (object obj in values)
+		foreach (object value in values)
 		{
-			object obj2 = obj;
-			if (obj2 is string)
+			object formatted = value;
+			if (formatted is string)
 			{
-				obj2 = $"\"{obj}\"";
+				formatted = $"\"{value}\"";
 			}
-			hardwareCommandResult = ExecuteCommand($"STACK push value: '{obj2}' job: '{ID}'");
+			hardwareCommandResult = ExecuteCommand($"STACK push value: '{formatted}' job: '{ID}'");
 			if (!hardwareCommandResult.Success)
 			{
 				return hardwareCommandResult;
@@ -397,32 +397,32 @@ public sealed class HardwareJob
 
 	internal static HardwareJob Parse(HardwareService service, string jobData)
 	{
-		ReadOnlyCollection<string> readOnlyCollection = ProtocolHelper.ParseProperties(jobData);
-		if (readOnlyCollection.Count < 8)
+		ReadOnlyCollection<string> properties = ProtocolHelper.ParseProperties(jobData);
+		if (properties.Count < 8)
 		{
 			return null;
 		}
 		HardwareJob hardwareJob = new HardwareJob(service)
 		{
-			ID = readOnlyCollection[0],
-			Label = readOnlyCollection[1],
-			ProgramName = readOnlyCollection[2],
-			Priority = Enum<HardwareJobPriority>.ParseIgnoringCase(readOnlyCollection[3], HardwareJobPriority.Normal),
-			Status = Enum<HardwareJobStatus>.ParseIgnoringCase(readOnlyCollection[5], HardwareJobStatus.Suspended),
-			ConnectionState = Enum<HardwareJobConnectionState>.ParseIgnoringCase(readOnlyCollection[7], HardwareJobConnectionState.Disconnected)
+			ID = properties[0],
+			Label = properties[1],
+			ProgramName = properties[2],
+			Priority = Enum<HardwareJobPriority>.ParseIgnoringCase(properties[3], HardwareJobPriority.Normal),
+			Status = Enum<HardwareJobStatus>.ParseIgnoringCase(properties[5], HardwareJobStatus.Suspended),
+			ConnectionState = Enum<HardwareJobConnectionState>.ParseIgnoringCase(properties[7], HardwareJobConnectionState.Disconnected)
 		};
-		if (readOnlyCollection.Count == 10)
+		if (properties.Count == 10)
 		{
-			hardwareJob.EnableDebugging = readOnlyCollection[8] == "1";
-			hardwareJob.TraceExecution = readOnlyCollection[9] == "1";
+			hardwareJob.EnableDebugging = properties[8] == "1";
+			hardwareJob.TraceExecution = properties[9] == "1";
 		}
-		if (DateTime.TryParse(readOnlyCollection[4], out var result))
+		if (DateTime.TryParse(properties[4], out var startTime))
 		{
-			hardwareJob.StartTime = result;
+			hardwareJob.StartTime = startTime;
 		}
-		if (TimeSpan.TryParse(readOnlyCollection[6], out var result2))
+		if (TimeSpan.TryParse(properties[6], out var executionTime))
 		{
-			hardwareJob.ExecutionTime = result2;
+			hardwareJob.ExecutionTime = executionTime;
 		}
 		return hardwareJob;
 	}

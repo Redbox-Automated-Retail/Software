@@ -36,13 +36,13 @@ public class WizardPresenter
 		m_view.Text = string.Format("{0} {1} Setup {2}", InstallerProject.Instance.ProductName, InstallerProject.Instance.ProductVersion, (InstallerProject.Instance.Mode == Redbox.Installer.Framework.InstallMode.Uninstall) ? "(Remove)" : string.Empty);
 		int width = m_view.Size.Width;
 		int height = m_view.Size.Height;
-		if (InstallerProject.Instance.Values["width"] != null && int.TryParse(InstallerProject.Instance.Values["width"], out var result))
+		if (InstallerProject.Instance.Values["width"] != null && int.TryParse(InstallerProject.Instance.Values["width"], out var configuredWidth))
 		{
-			width = result;
+			width = configuredWidth;
 		}
-		if (InstallerProject.Instance.Values["height"] != null && int.TryParse(InstallerProject.Instance.Values["height"], out var result2))
+		if (InstallerProject.Instance.Values["height"] != null && int.TryParse(InstallerProject.Instance.Values["height"], out var configuredHeight))
 		{
-			height = result2;
+			height = configuredHeight;
 		}
 		if (InstallerProject.Instance.Values["marginimage"] != null)
 		{

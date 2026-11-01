@@ -79,12 +79,12 @@ internal class CertificateService : ICertificateService
 				_logger.LogErrorWithSource("IotData failed so we couldn't get certificate", "GetCertificateAsync", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
 				return null;
 			}
-			bool flag = IsExecutingAssemblyNewerThanCertificate();
-			if (flag)
+			bool assemblyIsNewer = IsExecutingAssemblyNewerThanCertificate();
+			if (assemblyIsNewer)
 			{
 				_logger.LogInfoWithSource("Executing Assembly is newer than IoT Certificate. Forcing creation of new certificate.", "GetCertificateAsync", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
 			}
-			if (forceNew | flag)
+			if (forceNew | assemblyIsNewer)
 			{
 				if (!(await WriteIoTCertificateDataFileAsync(await _iotCertApiClient.GenerateNewCertificates(_encryptedKioskId, _encryptedThingType, _ioTCertificateServicePassword))))
 				{
@@ -135,19 +135,19 @@ internal class CertificateService : ICertificateService
 
 	private bool IsExecutingAssemblyNewerThanCertificate()
 	{
-		bool flag = false;
+		bool assemblyIsNewer = false;
 		_logger.LogInfoWithSource("Attempting to check if Executing Assembly is newer than cert", "IsExecutingAssemblyNewerThanCertificate", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
 		try
 		{
 			if (File.Exists(IoTCertificateDataFilePath))
 			{
-				DateTime lastWriteTimeUtc = File.GetLastWriteTimeUtc(IoTCertificateDataFilePath);
+				DateTime certificateWriteTime = File.GetLastWriteTimeUtc(IoTCertificateDataFilePath);
 				string location = Assembly.GetExecutingAssembly().Location;
-				DateTime lastWriteTimeUtc2 = File.GetLastWriteTimeUtc(location);
-				flag = lastWriteTimeUtc2 > lastWriteTimeUtc;
-				if (flag)
+				DateTime assemblyWriteTime = File.GetLastWriteTimeUtc(location);
+				assemblyIsNewer = assemblyWriteTime > certificateWriteTime;
+				if (assemblyIsNewer)
 				{
-					_logger.LogInfoWithSource($"Assembly date {lastWriteTimeUtc2} is newer than certificate date {lastWriteTimeUtc}", "IsExecutingAssemblyNewerThanCertificate", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
+					_logger.LogInfoWithSource($"Assembly date {assemblyWriteTime} is newer than certificate date {certificateWriteTime}", "IsExecutingAssemblyNewerThanCertificate", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
 				}
 			}
 		}
@@ -155,7 +155,7 @@ internal class CertificateService : ICertificateService
 		{
 			_logger.LogErrorWithSource(ex, "Exception while comparing certificate date with assembly date.", "IsExecutingAssemblyNewerThanCertificate", "/sln/src/UpdateClientService.API/Services/IoT/Certificate/CertificateService.cs");
 		}
-		return flag;
+		return assemblyIsNewer;
 	}
 
 	private async Task<bool> UpdateIotData()

@@ -59,17 +59,17 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[num];
+				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[index];
 				if (dVideoCapEvents_SinkHelper.m_ClickDelegate != null && ((dVideoCapEvents_SinkHelper.m_ClickDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(dVideoCapEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -79,9 +79,9 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -121,17 +121,17 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[num];
+				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[index];
 				if (dVideoCapEvents_SinkHelper.m_MouseMoveDelegate != null && ((dVideoCapEvents_SinkHelper.m_MouseMoveDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(dVideoCapEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -141,9 +141,9 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -183,17 +183,17 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[num];
+				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[index];
 				if (dVideoCapEvents_SinkHelper.m_DblClickDelegate != null && ((dVideoCapEvents_SinkHelper.m_DblClickDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(dVideoCapEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -203,9 +203,9 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -245,17 +245,17 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 >= count)
 			{
 				return;
 			}
 			do
 			{
-				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[num];
+				_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[index];
 				if (dVideoCapEvents_SinkHelper.m_CapturingDelegate != null && ((dVideoCapEvents_SinkHelper.m_CapturingDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
-					m_aEventSinkHelpers.RemoveAt(num);
+					m_aEventSinkHelpers.RemoveAt(index);
 					m_ConnectionPoint.Unadvise(dVideoCapEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
@@ -265,9 +265,9 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 					}
 					break;
 				}
-				num++;
+				index++;
 			}
-			while (num < count);
+			while (index < count);
 		}
 		finally
 		{
@@ -290,16 +290,16 @@ internal sealed class _DVideoCapEvents_EventProvider : _DVideoCapEvents_Event, I
 				return;
 			}
 			int count = m_aEventSinkHelpers.Count;
-			int num = 0;
+			int index = 0;
 			if (0 < count)
 			{
 				do
 				{
-					_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[num];
+					_DVideoCapEvents_SinkHelper dVideoCapEvents_SinkHelper = (_DVideoCapEvents_SinkHelper)m_aEventSinkHelpers[index];
 					m_ConnectionPoint.Unadvise(dVideoCapEvents_SinkHelper.m_dwCookie);
-					num++;
+					index++;
 				}
-				while (num < count);
+				while (index < count);
 			}
 			Marshal.ReleaseComObject(m_ConnectionPoint);
 		}

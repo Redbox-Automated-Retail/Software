@@ -138,12 +138,12 @@ public class HealthServicesProxy : IHealthServices
 
 	public bool CanSwitch()
 	{
-		bool num = m_working == 0;
-		if (num)
+		bool canSwitch = m_working == 0;
+		if (canSwitch)
 		{
 			ResetMinutesInMaintenanceMode();
 		}
-		return num;
+		return canSwitch;
 	}
 
 	public void Ping(string storeNumber)
@@ -297,9 +297,9 @@ public class HealthServicesProxy : IHealthServices
 								};
 								if (errors != null)
 								{
-									foreach (Redbox.KioskEngine.ComponentModel.Error item in errors)
+									foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 									{
-										remoteServiceResult.AddError(item.Code, item.Description, item.Details);
+										remoteServiceResult.AddError(error.Code, error.Description, error.Details);
 									}
 									remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 								}
@@ -591,9 +591,9 @@ public class HealthServicesProxy : IHealthServices
 
 	public void UpdateOnlineStatus(IDictionary<string, object> response)
 	{
-		bool flag = response.ContainsKey("ServerBusy") && (bool)response["ServerBusy"];
-		IsServerBusy = flag;
-		RemoteServicesStatus = (flag ? "Busy" : "Normal");
+		bool serverBusy = response.ContainsKey("ServerBusy") && (bool)response["ServerBusy"];
+		IsServerBusy = serverBusy;
+		RemoteServicesStatus = (serverBusy ? "Busy" : "Normal");
 	}
 
 	public void UpdateOnlineStatus(bool isServerBusy)

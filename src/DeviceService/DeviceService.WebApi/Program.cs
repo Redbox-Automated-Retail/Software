@@ -19,12 +19,12 @@ public class Program
 
 	public static void Main(string[] args)
 	{
-		bool flag = !Debugger.IsAttached && !Enumerable.Contains(args, "--console");
-		if (flag)
+		bool runAsService = !Debugger.IsAttached && !Enumerable.Contains(args, "--console");
+		if (runAsService)
 		{
 			Directory.SetCurrentDirectory(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName));
 		}
-		ApplicationControl.IsService = flag;
+		ApplicationControl.IsService = runAsService;
 		IConfiguration configuration = Configuration;
 		Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).Enrich.WithThreadId().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
 		try
@@ -32,8 +32,8 @@ public class Program
 			Log.Information("------------------------------------ Starting web host -------------------------------------");
 			Log.Information("ASPNETCORE_ENVIRONMENT: " + Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 			Log.Information($"DeviceService version: {DeviceService.Domain.DeviceService.AssemblyVersion}");
-			Log.Information(flag ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
-			CreateHostBuilder(args, configuration, flag).Build().Run();
+			Log.Information(runAsService ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
+			CreateHostBuilder(args, configuration, runAsService).Build().Run();
 		}
 		catch (Exception exception)
 		{

@@ -66,10 +66,10 @@ public class KioskEngineService : IKioskEngineService
 			try
 			{
 				LogHelper.Instance.Log("Starting engine at location: {0}", _kioskEnginePath);
-				int num = ShellHelper.StartProcessAsAdministrator(_kioskEnginePath, "--bundle:\"Control Panel Application,*\"");
-				if (num < 0)
+				int launchResult = ShellHelper.StartProcessAsAdministrator(_kioskEnginePath, "--bundle:\"Control Panel Application,*\"");
+				if (launchResult < 0)
 				{
-					LogHelper.Instance.Log("Unable to launch Kiosk Engine using TaskScheduler! result={0:X}", num);
+					LogHelper.Instance.Log("Unable to launch Kiosk Engine using TaskScheduler! result={0:X}", launchResult);
 				}
 			}
 			catch (Exception e)

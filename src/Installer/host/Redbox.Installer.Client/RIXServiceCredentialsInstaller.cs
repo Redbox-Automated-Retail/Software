@@ -96,21 +96,21 @@ public abstract class RIXServiceCredentialsInstaller : System.Configuration.Inst
 
 	private KeyValuePair<string, string> DetermineStringValue(string suffix, string defaultvalue, IDictionary state)
 	{
-		string text = PageVariableName(suffix);
-		WriteToLog("DetermineStringValue - key: {0}", text);
-		string text2 = base.Context.Parameters[text];
-		if (string.IsNullOrEmpty(text2))
+		string key = PageVariableName(suffix);
+		WriteToLog("DetermineStringValue - key: {0}", key);
+		string value = base.Context.Parameters[key];
+		if (string.IsNullOrEmpty(value))
 		{
 			WriteToLog("DetermineStringValue - parameter not found; using default value: '{0}'...", defaultvalue);
-			text2 = defaultvalue;
+			value = defaultvalue;
 		}
 		else
 		{
-			text2 = text2.Trim('"');
+			value = value.Trim('"');
 		}
-		WriteToLog("DetermineStringValue - value: '{0}'", text2);
-		state[text] = text2;
-		return new KeyValuePair<string, string>(text, text2);
+		WriteToLog("DetermineStringValue - value: '{0}'", value);
+		state[key] = value;
+		return new KeyValuePair<string, string>(key, value);
 	}
 
 	private KeyValuePair<string, string[]> DetermineDelimitedStringValue(string suffix, string defaultvalue, IDictionary state)

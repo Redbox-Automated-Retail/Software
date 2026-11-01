@@ -36,8 +36,7 @@ internal static class CommonFunctions
 							}
 							if (text.EndsWith("\""))
 							{
-								string text2 = text;
-								text = text2.Remove(text2.Length - 1, 1);
+								text = text.Remove(text.Length - 1, 1);
 							}
 							m_servicePath = Path.GetDirectoryName(text);
 						}
@@ -63,20 +62,20 @@ internal static class CommonFunctions
 		{
 			return null;
 		}
-		if (!int.TryParse(stack.Pop(), out var result))
+		if (!int.TryParse(stack.Pop(), out var deck))
 		{
 			LogHelper.Instance.Log("Currently not at a deck, slot location", LogEntryType.Error);
 			return null;
 		}
-		if (!int.TryParse(stack.Pop(), out var result2))
+		if (!int.TryParse(stack.Pop(), out var slot))
 		{
 			LogHelper.Instance.Log("Currently not at a deck, slot location", LogEntryType.Error);
 			return null;
 		}
 		return new Location
 		{
-			Deck = result,
-			Slot = result2
+			Deck = deck,
+			Slot = slot
 		};
 	}
 
@@ -84,11 +83,11 @@ internal static class CommonFunctions
 	{
 		using (TouchScreenAccess.Instance.Manager.MakeAspect(sender))
 		{
-			int num = 1;
-			int num2 = 6;
-			string text = $"SENSOR READ PICKER-SENSOR={num}..{num2}";
-			OutputWindow.Instance.Append(text);
-			HardwareJob hardwareJob = ExecuteInstruction(text);
+			int firstSensor = 1;
+			int lastSensor = 6;
+			string readInstruction = $"SENSOR READ PICKER-SENSOR={firstSensor}..{lastSensor}";
+			OutputWindow.Instance.Append(readInstruction);
+			HardwareJob hardwareJob = ExecuteInstruction(readInstruction);
 			if (hardwareJob == null || !hardwareJob.GetStack(out var stack).Success)
 			{
 				return;
@@ -97,14 +96,14 @@ internal static class CommonFunctions
 			if (stack.Count != 0)
 			{
 				stack.Pop();
-				for (int num3 = num2; num3 >= num; num3--)
+				for (int sensor = lastSensor; sensor >= firstSensor; sensor--)
 				{
-					string text2 = stack.Pop();
-					SensorView.Instance.Sensors[num3 - 1] = text2.Contains("BLOCKED");
+					string reading = stack.Pop();
+					SensorView.Instance.Sensors[sensor - 1] = reading.Contains("BLOCKED");
 				}
-				string text3 = "SENSOR PICKER-OFF";
-				OutputWindow.Instance.Append(text3);
-				ExecuteInstruction(text3);
+				string offInstruction = "SENSOR PICKER-OFF";
+				OutputWindow.Instance.Append(offInstruction);
+				ExecuteInstruction(offInstruction);
 			}
 		}
 	}

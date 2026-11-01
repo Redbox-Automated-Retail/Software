@@ -78,30 +78,30 @@ public class NameValueProperty
 
 	public object GetTypedValue()
 	{
-		object obj = Value;
-		if (obj != null)
+		object typedValue = Value;
+		if (typedValue != null)
 		{
-			obj = MacroContainer.Instance.ExpandRuntimeMacros(obj.ToString());
+			typedValue = MacroContainer.Instance.ExpandRuntimeMacros(typedValue.ToString());
 		}
 		if (Type == null)
 		{
-			return obj;
+			return typedValue;
 		}
-		return ConversionHelper.ChangeType(obj, Type);
+		return ConversionHelper.ChangeType(typedValue, Type);
 	}
 
 	public object GetTypedDefaultValue()
 	{
-		object obj = DefaultValue;
-		if (obj != null)
+		object typedValue = DefaultValue;
+		if (typedValue != null)
 		{
-			obj = MacroContainer.Instance.ExpandRuntimeMacros(obj.ToString());
+			typedValue = MacroContainer.Instance.ExpandRuntimeMacros(typedValue.ToString());
 		}
 		if (Type == null)
 		{
-			return obj;
+			return typedValue;
 		}
-		return ConversionHelper.ChangeType(obj, Type);
+		return ConversionHelper.ChangeType(typedValue, Type);
 	}
 
 	internal static void WalkPropertyTree(XmlNodeList nodes, ErrorList errors, IDictionary<string, NameValueProperty> properties)

@@ -237,16 +237,16 @@ public class RegistryEntryDefinition : Definition
 		}
 		if (lpcSubKeys == 0 && lpcValues == 0)
 		{
-			int num;
+			int status;
 			try
 			{
-				num = NativeMethods.RegDeleteKeyEx(Root, KeyWithoutRoot, SAMValue, 0u);
+				status = NativeMethods.RegDeleteKeyEx(Root, KeyWithoutRoot, SAMValue, 0u);
 			}
 			catch (EntryPointNotFoundException)
 			{
-				num = NativeMethods.RegDeleteKey(Root, KeyWithoutRoot);
+				status = NativeMethods.RegDeleteKey(Root, KeyWithoutRoot);
 			}
-			if (num != 0)
+			if (status != 0)
 			{
 				throw new ApplicationException($"Unable to delete key: {Key}");
 			}
@@ -275,12 +275,12 @@ public class RegistryEntryDefinition : Definition
 
 	private static Architecture DetermineRIXArchitecture()
 	{
-		int num = IntPtr.Size * 8;
-		return num switch
+		int bits = IntPtr.Size * 8;
+		return bits switch
 		{
 			32 => Architecture.x86, 
 			64 => Architecture.x64, 
-			_ => throw new ApplicationException($"Unknown rix architecture ({num} bit) found!"), 
+			_ => throw new ApplicationException($"Unknown rix architecture ({bits} bit) found!"), 
 		};
 	}
 }

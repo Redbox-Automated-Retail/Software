@@ -64,18 +64,18 @@ public class PlanogramService : IPlanogramService
 
 	public List<Planogram> GetValidPlanograms(string filenameSearch = "*")
 	{
-		List<Planogram> list = new List<Planogram>();
+		List<Planogram> planograms = new List<Planogram>();
 		CheckPlanogramPath(_planogramPath);
-		List<string> list2 = Directory.GetFiles(_planogramPath, filenameSearch + ".xps").ToList();
-		foreach (string item in list2)
+		List<string> files = Directory.GetFiles(_planogramPath, filenameSearch + ".xps").ToList();
+		foreach (string file in files)
 		{
-			Planogram planogram = Planogram.Create(item, _logger);
+			Planogram planogram = Planogram.Create(file, _logger);
 			if (planogram != null)
 			{
-				list.Add(planogram);
+				planograms.Add(planogram);
 			}
 		}
-		return list;
+		return planograms;
 	}
 
 	public List<Planogram> GetActivePlanograms(string filenameSearch = "*")
@@ -138,9 +138,9 @@ public class PlanogramService : IPlanogramService
 		if (!aPIResponse.IsSuccessStatusCode || aPIResponse.Response == null || aPIResponse.Response.Planograms == null)
 		{
 			result.StatusCode = HttpStatusCode.InternalServerError;
-			string text = aPIResponse.Response?.Error ?? ((aPIResponse.Errors == null) ? null : aPIResponse.Errors.FirstOrDefault()?.Message) ?? "Error retreiving Planograms from server";
-			_logger.LogErrorWithSource($"Unable to retrieve plangoram list from the server, status code: {aPIResponse.StatusCode}, error: {text}", "SyncPlanograms");
-			result.Error = text;
+			string errorMessage = aPIResponse.Response?.Error ?? ((aPIResponse.Errors == null) ? null : aPIResponse.Errors.FirstOrDefault()?.Message) ?? "Error retreiving Planograms from server";
+			_logger.LogErrorWithSource($"Unable to retrieve plangoram list from the server, status code: {aPIResponse.StatusCode}, error: {errorMessage}", "SyncPlanograms");
+			result.Error = errorMessage;
 			return result;
 		}
 		SyncPlanogramInfo syncInfo = null;
@@ -163,19 +163,19 @@ public class PlanogramService : IPlanogramService
 		{
 			_lastSync = DateTime.Now;
 		}
-		bool flag = syncInfo == null && !lastResult.SyncComplete;
-		bool flag2 = flag;
-		if (!flag2)
+		bool pendingFromLastSync = syncInfo == null && !lastResult.SyncComplete;
+		bool startFileSync = pendingFromLastSync;
+		if (!startFileSync)
 		{
-			bool flag3 = syncInfo != null;
-			bool flag4 = flag3;
-			if (flag4)
+			bool hasSyncInfo = syncInfo != null;
+			bool stored = hasSyncInfo;
+			if (stored)
 			{
-				flag4 = await _persistentDataCacheService.Write(syncInfo, "CurrentPlanograms");
+				stored = await _persistentDataCacheService.Write(syncInfo, "CurrentPlanograms");
 			}
-			flag2 = flag4;
+			startFileSync = stored;
 		}
-		if (flag2)
+		if (startFileSync)
 		{
 			Task.Run(async delegate
 			{
@@ -209,10 +209,10 @@ public class PlanogramService : IPlanogramService
 			IEnumerable<FileInfo> deleteList = localFiles.Where((FileInfo f) => !serverPlanograms.Any((PlanogramInfo p) => p.Filename.ToUpper() == f.Name.ToUpper()));
 			if (await DownloadPlanograms(downloadList, _planogramPath))
 			{
-				foreach (FileInfo item in deleteList)
+				foreach (FileInfo file in deleteList)
 				{
-					_logger.LogInfoWithSource("Deleting planogram " + item.Name, "SyncFilesIfNeeded");
-					DeleteFile(_planogramPath, item.Name);
+					_logger.LogInfoWithSource("Deleting planogram " + file.Name, "SyncFilesIfNeeded");
+					DeleteFile(_planogramPath, file.Name);
 				}
 				syncInfo.SyncComplete = true;
 				await _persistentDataCacheService.Write(syncInfo, "CurrentPlanograms");
@@ -223,8 +223,8 @@ public class PlanogramService : IPlanogramService
 		{
 			_logger.LogErrorWithSource(ex, "Exception syncing planograms", "SyncFilesIfNeeded");
 		}
-		int num = _updatePeriod / 300;
-		if (++retryCount >= num)
+		int maxRetries = _updatePeriod / 300;
+		if (++retryCount >= maxRetries)
 		{
 			_logger.LogErrorWithSource("Sync files reached maximum retry count. Stopping the process.", "SyncFilesIfNeeded");
 			return;

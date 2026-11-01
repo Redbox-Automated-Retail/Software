@@ -10,7 +10,6 @@ public static class GlobalStringExtensions
 		int position = 0;
 		do
 		{
-			bool flag = true;
 			string candidatePrefix = string.Empty;
 			if (position + prefix.Length < value.Length)
 			{

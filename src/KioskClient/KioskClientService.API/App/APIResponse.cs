@@ -89,7 +89,7 @@ public class APIResponse<T>
 		Response = default(T);
 		StatusCode = HttpResponse?.StatusCode ?? HttpStatusCode.InternalServerError;
 		ResponseTime = requestTime;
-		ResponseLength = ((content is byte[] array) ? array.Length : 0);
+		ResponseLength = ((content is byte[] bytes) ? bytes.Length : 0);
 		try
 		{
 			if (ResponseLength != 0)
@@ -148,27 +148,27 @@ public class APIResponse<T>
 			_logger?.LogInformation("ApiResponse.CheckAndReplay - messageId is not set; not replaying");
 			return;
 		}
-		bool flag;
+		bool replay;
 		if (IsSuccessStatusCode)
 		{
-			flag = false;
+			replay = false;
 		}
 		else if (Response == null)
 		{
-			flag = true;
+			replay = true;
 		}
 		else
 		{
 			T response = Response;
-			flag = response is IReplayableApiCall replayableApiCall && replayableApiCall.Replayable;
+			replay = response is IReplayableApiCall replayableApiCall && replayableApiCall.Replayable;
 		}
-		_logger?.LogInformation($"APIResponse.CheckAndReplay - id: {messageId}, api: {source.GetDisplayUrl()}, replay: {flag}");
+		_logger?.LogInformation($"APIResponse.CheckAndReplay - id: {messageId}, api: {source.GetDisplayUrl()}, replay: {replay}");
 		HttpQueueServiceRequest request = new HttpQueueServiceRequest
 		{
 			Id = messageId,
 			Request = HttpRequestMetadata.FromHttpRequest(source)
 		};
-		if (flag)
+		if (replay)
 		{
 			if (!queueService.Enqueue(request))
 			{

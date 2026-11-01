@@ -56,13 +56,13 @@ internal class SimpleTokenList : List<SimpleToken>, Redbox_002EMacros1309_002EIC
 
 	public SimpleTokenList GetTokensAfterMnemonic()
 	{
-		int num = FindIndex((SimpleToken each) => each.Type == SimpleTokenType.Mnemonic);
-		if (num != -1)
+		int mnemonicIndex = FindIndex((SimpleToken each) => each.Type == SimpleTokenType.Mnemonic);
+		if (mnemonicIndex != -1)
 		{
 			SimpleTokenList simpleTokenList = new SimpleTokenList();
-			for (int num2 = num + 1; num2 < base.Count; num2++)
+			for (int i = mnemonicIndex + 1; i < base.Count; i++)
 			{
-				simpleTokenList.Add(base[num2]);
+				simpleTokenList.Add(base[i]);
 			}
 			return simpleTokenList;
 		}

@@ -241,10 +241,10 @@ public sealed class KernelService : IKernelService
 		{
 			InternalReset();
 		}
-		ReadOnlyCollection<object> result2 = LuaRuntime.DoString(chunk);
+		ReadOnlyCollection<object> returnValues = LuaRuntime.DoString(chunk);
 		result = GetTable(resultTableName);
 		scriptCompleted = ScriptCompleted;
-		return result2;
+		return returnValues;
 	}
 
 	internal void ConfigureKernelFunctions()

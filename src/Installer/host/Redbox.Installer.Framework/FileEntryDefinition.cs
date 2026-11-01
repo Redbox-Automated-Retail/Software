@@ -184,30 +184,30 @@ public class FileEntryDefinition : Definition
 		{
 			return;
 		}
-		string text = Path.Combine(basePath, SourcePath);
-		if (!File.Exists(text))
+		string sourceFile = Path.Combine(basePath, SourcePath);
+		if (!File.Exists(sourceFile))
 		{
-			errors.Add(Error.NewError("C006", $"The file '{text}' was not found.", "Correct the source-path attribute of the file element and recompile."));
+			errors.Add(Error.NewError("C006", $"The file '{sourceFile}' was not found.", "Correct the source-path attribute of the file element and recompile."));
 			return;
 		}
-		byte[] array = StringExtensions.ReadToBuffer(text);
-		int fileSize = array.Length;
-		int fileSize2 = 0;
+		byte[] contents = StringExtensions.ReadToBuffer(sourceFile);
+		int fileSize = contents.Length;
+		int compressedSize = 0;
 		if (CompressionType != CompressionType.None)
 		{
-			array = array.Compress(CompressionType);
-			fileSize2 = array.Length;
+			contents = contents.Compress(CompressionType);
+			compressedSize = contents.Length;
 		}
 		InstallerProject.Instance.ActiveConsole.Write("\tEmbedding file '" + SourcePath + "', size ");
 		InstallerProject.Instance.ActiveConsole.Write(Int32Extensions.FormatAsByteSize(fileSize));
 		if (CompressionType != CompressionType.None)
 		{
 			InstallerProject.Instance.ActiveConsole.Write(", compressed file size ");
-			InstallerProject.Instance.ActiveConsole.Write(Int32Extensions.FormatAsByteSize(fileSize2));
+			InstallerProject.Instance.ActiveConsole.Write(Int32Extensions.FormatAsByteSize(compressedSize));
 		}
 		InstallerProject.Instance.ActiveConsole.Write("...");
 		ResourceName = number.ToString("0000");
-		session.AddResource("FILE", ResourceName, array);
+		session.AddResource("FILE", ResourceName, contents);
 		XmlNode xmlNode = xmlDocument.DocumentElement.SelectSingleNode(string.Format("{0}[@id='{1}']", "file", base.ID));
 		if (xmlNode == null)
 		{
@@ -420,10 +420,10 @@ public class FileEntryDefinition : Definition
 			{
 				return null;
 			}
-			byte[] array = File.ReadAllBytes(path);
+			byte[] fontData = File.ReadAllBytes(path);
 			PrivateFontCollection privateFontCollection = new PrivateFontCollection();
-			GCHandle gCHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
-			privateFontCollection.AddMemoryFont(gCHandle.AddrOfPinnedObject(), array.Length);
+			GCHandle gCHandle = GCHandle.Alloc(fontData, GCHandleType.Pinned);
+			privateFontCollection.AddMemoryFont(gCHandle.AddrOfPinnedObject(), fontData.Length);
 			gCHandle.Free();
 			return privateFontCollection.Families;
 		}

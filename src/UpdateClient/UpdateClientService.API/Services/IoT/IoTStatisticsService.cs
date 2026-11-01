@@ -39,44 +39,44 @@ public class IoTStatisticsService : IIoTStatisticsService
 						connectionAttempt.Disconnected = DateTime.Now;
 					}
 				}
-				IEnumerable<IGrouping<DateTime, IoTConnectionAttempt>> enumerable = from x in ioTStatistics.ConnectionAttempts
+				IEnumerable<IGrouping<DateTime, IoTConnectionAttempt>> attemptsByDate = from x in ioTStatistics.ConnectionAttempts
 					group x by x.StartConnectionAttempt.Value.Date;
-				foreach (IGrouping<DateTime, IoTConnectionAttempt> item in enumerable)
+				foreach (IGrouping<DateTime, IoTConnectionAttempt> dayAttempts in attemptsByDate)
 				{
 					IoTStatisticsSummary ioTStatisticsSummary = new IoTStatisticsSummary
 					{
-						Date = item.Key.ToShortDateString()
+						Date = dayAttempts.Key.ToShortDateString()
 					};
-					Dictionary<string, int> dictionary = new Dictionary<string, int>();
-					ioTStatisticsSummary.ConnectionCount = item.Count((IoTConnectionAttempt x) => x.Connected.HasValue);
-					ioTStatisticsSummary.ConnectionAttemptsCount = item.Sum((IoTConnectionAttempt x) => x.ConnectionAttempts);
-					foreach (IoTConnectionAttempt item2 in item)
+					Dictionary<string, int> exceptionCounts = new Dictionary<string, int>();
+					ioTStatisticsSummary.ConnectionCount = dayAttempts.Count((IoTConnectionAttempt x) => x.Connected.HasValue);
+					ioTStatisticsSummary.ConnectionAttemptsCount = dayAttempts.Sum((IoTConnectionAttempt x) => x.ConnectionAttempts);
+					foreach (IoTConnectionAttempt attempt in dayAttempts)
 					{
-						if (item2.ConnectionAttemptsDuration.HasValue)
+						if (attempt.ConnectionAttemptsDuration.HasValue)
 						{
-							ioTStatisticsSummary.TotalConnectionAttemptsDuration += item2.ConnectionAttemptsDuration.Value;
+							ioTStatisticsSummary.TotalConnectionAttemptsDuration += attempt.ConnectionAttemptsDuration.Value;
 						}
-						if (!(item2.ConnectionExceptions?.Any() ?? false))
+						if (!(attempt.ConnectionExceptions?.Any() ?? false))
 						{
 							continue;
 						}
-						foreach (KeyValuePair<string, int> connectionException in item2.ConnectionExceptions)
+						foreach (KeyValuePair<string, int> connectionException in attempt.ConnectionExceptions)
 						{
 							int value = 0;
-							dictionary.TryGetValue(connectionException.Key, out value);
+							exceptionCounts.TryGetValue(connectionException.Key, out value);
 							value += connectionException.Value;
-							dictionary[connectionException.Key] = value;
+							exceptionCounts[connectionException.Key] = value;
 						}
 					}
-					if (dictionary.Count > 0)
+					if (exceptionCounts.Count > 0)
 					{
 						ioTStatisticsSummary.ConnectionExceptions = new List<ConnectionException>();
-						foreach (KeyValuePair<string, int> item3 in dictionary)
+						foreach (KeyValuePair<string, int> exceptionCount in exceptionCounts)
 						{
 							ioTStatisticsSummary.ConnectionExceptions.Add(new ConnectionException
 							{
-								ExceptionMessage = item3.Key,
-								Count = item3.Value
+								ExceptionMessage = exceptionCount.Key,
+								Count = exceptionCount.Value
 							});
 						}
 					}

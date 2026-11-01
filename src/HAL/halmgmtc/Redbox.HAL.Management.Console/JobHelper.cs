@@ -128,21 +128,21 @@ public static class JobHelper
 		{
 			return false;
 		}
-		if (int.TryParse(s, out var result))
+		if (int.TryParse(s, out var number))
 		{
-			HardwareCommandResult hardwareCommandResult = hardwareJobWrapper.Push<int>(new object[1] { result });
-			CommonFunctions.ProcessCommandResult(hardwareCommandResult);
-			if (!hardwareCommandResult.Success)
+			HardwareCommandResult pushResult = hardwareJobWrapper.Push<int>(new object[1] { number });
+			CommonFunctions.ProcessCommandResult(pushResult);
+			if (!pushResult.Success)
 			{
 				return false;
 			}
 			return true;
 		}
-		string text = s.Replace("\"", string.Empty);
-		text = text.Replace("'", "\\'");
-		HardwareCommandResult hardwareCommandResult2 = hardwareJobWrapper.Push<string>(new object[1] { text });
-		CommonFunctions.ProcessCommandResult(hardwareCommandResult2);
-		if (!hardwareCommandResult2.Success)
+		string quoted = s.Replace("\"", string.Empty);
+		quoted = quoted.Replace("'", "\\'");
+		HardwareCommandResult pushStringResult = hardwareJobWrapper.Push<string>(new object[1] { quoted });
+		CommonFunctions.ProcessCommandResult(pushStringResult);
+		if (!pushStringResult.Success)
 		{
 			return false;
 		}
@@ -170,15 +170,15 @@ public static class JobHelper
 
 	public static void ClearJobComboList()
 	{
-		List<HardwareJobWrapper> list = new List<HardwareJobWrapper>();
+		List<HardwareJobWrapper> displayable = new List<HardwareJobWrapper>();
 		foreach (HardwareJobWrapper jobCombo in JobComboList)
 		{
 			if (jobCombo.IsDisplayable())
 			{
-				list.Add(jobCombo);
+				displayable.Add(jobCombo);
 			}
 		}
-		foreach (HardwareJobWrapper item in list)
+		foreach (HardwareJobWrapper item in displayable)
 		{
 			JobComboList.Remove(item);
 		}
@@ -210,27 +210,27 @@ public static class JobHelper
 		}
 		try
 		{
-			HardwareCommandResult jobs = ProfileManager.Instance.Service.GetJobs(out var jobs2);
-			if (!jobs.Success)
+			HardwareCommandResult getJobsResult = ProfileManager.Instance.Service.GetJobs(out var jobs);
+			if (!getJobsResult.Success)
 			{
-				CommonFunctions.ProcessCommandResultError(jobs);
+				CommonFunctions.ProcessCommandResultError(getJobsResult);
 				return false;
 			}
-			HardwareJob[] array;
+			HardwareJob[] serverJobs;
 			for (int i = 0; i < JobList.Count; i++)
 			{
-				bool flag = true;
-				array = jobs2;
-				foreach (HardwareJob hardwareJob in array)
+				bool gone = true;
+				serverJobs = jobs;
+				foreach (HardwareJob hardwareJob in serverJobs)
 				{
 					if (hardwareJob.ID == JobList[i].ID)
 					{
-						flag = false;
+						gone = false;
 						JobList[i].Merge(hardwareJob);
 						break;
 					}
 				}
-				if (flag)
+				if (gone)
 				{
 					if (JobList[i].ConnectionState == HardwareJobConnectionState.Connected)
 					{
@@ -240,21 +240,21 @@ public static class JobHelper
 					JobList.RemoveAt(i);
 				}
 			}
-			array = jobs2;
-			foreach (HardwareJob hardwareJob2 in array)
+			serverJobs = jobs;
+			foreach (HardwareJob serverJob in serverJobs)
 			{
-				bool flag2 = true;
+				bool isNew = true;
 				for (int k = 0; k < JobList.Count; k++)
 				{
-					if (hardwareJob2.ID == JobList[k].ID)
+					if (serverJob.ID == JobList[k].ID)
 					{
-						flag2 = false;
+						isNew = false;
 						break;
 					}
 				}
-				if (flag2)
+				if (isNew)
 				{
-					HardwareJobWrapper item = new HardwareJobWrapper(hardwareJob2);
+					HardwareJobWrapper item = new HardwareJobWrapper(serverJob);
 					JobList.Add(item);
 					JobComboList.Add(item);
 				}
@@ -288,9 +288,9 @@ public static class JobHelper
 			{
 				continue;
 			}
-			ProgramEvent[] array = new ProgramEvent[newEvent.Value.Count];
-			newEvent.Value.CopyTo(array);
-			foreach (ProgramEvent item in array.OrderBy((ProgramEvent x) => x.EventTime))
+			ProgramEvent[] events = new ProgramEvent[newEvent.Value.Count];
+			newEvent.Value.CopyTo(events);
+			foreach (ProgramEvent item in events.OrderBy((ProgramEvent x) => x.EventTime))
 			{
 				hardwareJobWrapper.Events.Add(item);
 				newEvent.Value.Remove(item);
@@ -305,43 +305,43 @@ public static class JobHelper
 		{
 			return false;
 		}
-		HardwareCommandResult results = hardwareJobWrapper.GetResults(out var results2);
-		if (!results.Success)
+		HardwareCommandResult getResultsResult = hardwareJobWrapper.GetResults(out var results);
+		if (!getResultsResult.Success)
 		{
-			CommonFunctions.ProcessCommandResultError(results);
+			CommonFunctions.ProcessCommandResultError(getResultsResult);
 			return false;
 		}
-		ProgramResult[] array;
+		ProgramResult[] serverResults;
 		for (int i = 0; i < ResultList.Count; i++)
 		{
-			bool flag = true;
-			array = results2;
-			for (int j = 0; j < array.Length; j++)
+			bool gone = true;
+			serverResults = results;
+			for (int j = 0; j < serverResults.Length; j++)
 			{
-				if (array[j].ToString().Equals(m_resultList[i].Value))
+				if (serverResults[j].ToString().Equals(m_resultList[i].Value))
 				{
-					flag = false;
+					gone = false;
 					break;
 				}
 			}
-			if (flag)
+			if (gone)
 			{
 				ResultList.RemoveAt(i);
 			}
 		}
-		array = results2;
-		foreach (ProgramResult programResult in array)
+		serverResults = results;
+		foreach (ProgramResult programResult in serverResults)
 		{
-			bool flag2 = true;
+			bool isNew = true;
 			for (int k = 0; k < ResultList.Count; k++)
 			{
 				if (programResult.ToString().Equals(ResultList[k].Value))
 				{
-					flag2 = false;
+					isNew = false;
 					break;
 				}
 			}
-			if (flag2)
+			if (isNew)
 			{
 				ResultList.Add(new StringWrapper(programResult.ToString()));
 			}
@@ -358,46 +358,46 @@ public static class JobHelper
 		}
 		HardwareJob job = null;
 		ProfileManager.Instance.Service.GetJob(jobID, out job);
-		HardwareCommandResult symbols = job.GetSymbols(out var symbols2);
-		if (!symbols.Success)
+		HardwareCommandResult getSymbolsResult = job.GetSymbols(out var symbols);
+		if (!getSymbolsResult.Success)
 		{
-			CommonFunctions.ProcessCommandResultError(symbols);
+			CommonFunctions.ProcessCommandResultError(getSymbolsResult);
 			return;
 		}
 		for (int i = 0; i < SymbolList.Count; i++)
 		{
-			bool flag = true;
-			foreach (KeyValuePair<string, string> item in symbols2)
+			bool gone = true;
+			foreach (KeyValuePair<string, string> symbol in symbols)
 			{
-				if (item.Key.Equals(SymbolList[i].Name))
+				if (symbol.Key.Equals(SymbolList[i].Name))
 				{
-					if (!item.Value.Equals(SymbolList[i].Value))
+					if (!symbol.Value.Equals(SymbolList[i].Value))
 					{
-						SymbolList[i].Value = item.Value;
+						SymbolList[i].Value = symbol.Value;
 					}
-					flag = false;
+					gone = false;
 					break;
 				}
 			}
-			if (flag)
+			if (gone)
 			{
 				m_symbolList.RemoveAt(i);
 			}
 		}
-		foreach (KeyValuePair<string, string> item2 in symbols2)
+		foreach (KeyValuePair<string, string> serverSymbol in symbols)
 		{
-			bool flag2 = true;
+			bool isNew = true;
 			for (int j = 0; j < SymbolList.Count; j++)
 			{
-				if (item2.Key.Equals(SymbolList[j].Name))
+				if (serverSymbol.Key.Equals(SymbolList[j].Name))
 				{
-					flag2 = false;
+					isNew = false;
 					break;
 				}
 			}
-			if (flag2)
+			if (isNew)
 			{
-				SymbolList.Add(new Symbol(item2.Key, item2.Value));
+				SymbolList.Add(new Symbol(serverSymbol.Key, serverSymbol.Value));
 			}
 		}
 	}
@@ -409,10 +409,10 @@ public static class JobHelper
 			return false;
 		}
 		Stack<string> stack = new Stack<string>();
-		HardwareCommandResult stack2 = hardwareJobWrapper.GetStack(out stack);
-		if (!stack2.Success)
+		HardwareCommandResult getStackResult = hardwareJobWrapper.GetStack(out stack);
+		if (!getStackResult.Success)
 		{
-			CommonFunctions.ProcessCommandResultError(stack2);
+			CommonFunctions.ProcessCommandResultError(getStackResult);
 			OutputWindow.Instance.Append("ERROR: Unable to get stack");
 			return false;
 		}
@@ -422,16 +422,16 @@ public static class JobHelper
 		}
 		for (int i = 0; i < StackList.Count; i++)
 		{
-			string text = stack.Pop();
-			if (StackList[i].Value != text)
+			string entry = stack.Pop();
+			if (StackList[i].Value != entry)
 			{
-				StackList[i].Value = text;
+				StackList[i].Value = entry;
 			}
 		}
 		while (stack.Count > 0)
 		{
-			string value = stack.Pop();
-			StackList.Add(new StringWrapper(value));
+			string remaining = stack.Pop();
+			StackList.Add(new StringWrapper(remaining));
 		}
 		return true;
 	}
@@ -443,24 +443,24 @@ public static class JobHelper
 			return;
 		}
 		ErrorListView.Instance.Clear();
-		int num = 0;
+		int errorCount = 0;
 		foreach (HardwareJobWrapper job in jobs)
 		{
 			if (job != null && job.IsDisplayable())
 			{
-				HardwareCommandResult errors = job.GetErrors(out var errors2);
-				if (!errors.Success)
+				HardwareCommandResult getErrorsResult = job.GetErrors(out var errors);
+				if (!getErrorsResult.Success)
 				{
-					CommonFunctions.ProcessCommandResultError(errors);
+					CommonFunctions.ProcessCommandResultError(getErrorsResult);
 				}
-				else if (errors2 != null && errors2.Count > 0)
+				else if (errors != null && errors.Count > 0)
 				{
-					EnvironmentHelper.DisplayErrors(errors2, clearPrevious: false, keepOpenOnSuccessfulInstruction: false);
-					num += errors2.Count;
+					EnvironmentHelper.DisplayErrors(errors, clearPrevious: false, keepOpenOnSuccessfulInstruction: false);
+					errorCount += errors.Count;
 				}
 			}
 		}
-		if (num == 0)
+		if (errorCount == 0)
 		{
 			MessageBox.Show("No Errors To Display", "Hal Management Console", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
@@ -637,94 +637,94 @@ public static class JobHelper
 
 	public static void UpdateButtons(ToolStripItemCollection collection, List<HardwareJobWrapper> list)
 	{
-		ToolStripItem toolStripItem = collection[JobItems.Garbage.ToString()];
-		ToolStripItem toolStripItem2 = collection[JobItems.ViewErrors.ToString()];
-		ToolStripItem toolStripItem3 = collection[JobItems.Connect.ToString()];
-		ToolStripItem toolStripItem4 = collection[JobItems.Disconnect.ToString()];
-		ToolStripItem toolStripItem5 = collection[JobItems.SetLabel.ToString()];
-		ToolStripItem toolStripItem6 = collection[JobItems.SetStartTime.ToString()];
-		ToolStripItem toolStripItem7 = collection[JobItems.Resume.ToString()];
-		ToolStripItem toolStripItem8 = collection[JobItems.Suspend.ToString()];
-		ToolStripItem toolStripItem9 = collection[JobItems.Stop.ToString()];
-		ToolStripItem toolStripItem10 = collection[JobItems.Trash.ToString()];
-		ToolStripItem toolStripItem11 = collection[JobItems.TrashLocked.ToString()];
-		ToolStripItem toolStripItem12 = collection[JobItems.Priority.ToString()];
-		toolStripItem.Enabled = false;
-		toolStripItem2.Enabled = false;
-		toolStripItem3.Enabled = false;
-		toolStripItem4.Enabled = false;
-		toolStripItem5.Enabled = false;
-		toolStripItem6.Enabled = false;
-		toolStripItem7.Enabled = false;
-		toolStripItem8.Enabled = false;
-		toolStripItem9.Enabled = false;
-		if (toolStripItem12 != null)
+		ToolStripItem garbageItem = collection[JobItems.Garbage.ToString()];
+		ToolStripItem viewErrorsItem = collection[JobItems.ViewErrors.ToString()];
+		ToolStripItem connectItem = collection[JobItems.Connect.ToString()];
+		ToolStripItem disconnectItem = collection[JobItems.Disconnect.ToString()];
+		ToolStripItem setLabelItem = collection[JobItems.SetLabel.ToString()];
+		ToolStripItem setStartTimeItem = collection[JobItems.SetStartTime.ToString()];
+		ToolStripItem resumeItem = collection[JobItems.Resume.ToString()];
+		ToolStripItem suspendItem = collection[JobItems.Suspend.ToString()];
+		ToolStripItem stopItem = collection[JobItems.Stop.ToString()];
+		ToolStripItem trashItem = collection[JobItems.Trash.ToString()];
+		ToolStripItem trashLockedItem = collection[JobItems.TrashLocked.ToString()];
+		ToolStripItem priorityItem = collection[JobItems.Priority.ToString()];
+		garbageItem.Enabled = false;
+		viewErrorsItem.Enabled = false;
+		connectItem.Enabled = false;
+		disconnectItem.Enabled = false;
+		setLabelItem.Enabled = false;
+		setStartTimeItem.Enabled = false;
+		resumeItem.Enabled = false;
+		suspendItem.Enabled = false;
+		stopItem.Enabled = false;
+		if (priorityItem != null)
 		{
-			toolStripItem12.Enabled = false;
+			priorityItem.Enabled = false;
 		}
-		if (toolStripItem10 != null)
+		if (trashItem != null)
 		{
-			toolStripItem10.Enabled = false;
+			trashItem.Enabled = false;
 		}
-		if (toolStripItem11 != null)
+		if (trashLockedItem != null)
 		{
-			toolStripItem11.Enabled = false;
+			trashLockedItem.Enabled = false;
 		}
 		if (!ProfileManager.Instance.IsConnected)
 		{
 			return;
 		}
-		toolStripItem.Enabled = true;
+		garbageItem.Enabled = true;
 		if (list == null || list.Count < 1)
 		{
 			return;
 		}
-		foreach (HardwareJobWrapper item in list)
+		foreach (HardwareJobWrapper job in list)
 		{
-			if (item == null || !item.IsDisplayable())
+			if (job == null || !job.IsDisplayable())
 			{
 				continue;
 			}
-			if (toolStripItem12 != null)
+			if (priorityItem != null)
 			{
-				toolStripItem12.Enabled = true;
+				priorityItem.Enabled = true;
 			}
-			toolStripItem2.Enabled = true;
-			if (item.ConnectionState == HardwareJobConnectionState.Disconnected)
+			viewErrorsItem.Enabled = true;
+			if (job.ConnectionState == HardwareJobConnectionState.Disconnected)
 			{
-				toolStripItem3.Enabled = true;
+				connectItem.Enabled = true;
 			}
-			if (item.ConnectionState == HardwareJobConnectionState.Connected)
+			if (job.ConnectionState == HardwareJobConnectionState.Connected)
 			{
-				toolStripItem4.Enabled = true;
+				disconnectItem.Enabled = true;
 			}
-			if (item.Status == HardwareJobStatus.Pending || item.Status == HardwareJobStatus.Running || item.Status == HardwareJobStatus.Suspended)
+			if (job.Status == HardwareJobStatus.Pending || job.Status == HardwareJobStatus.Running || job.Status == HardwareJobStatus.Suspended)
 			{
-				toolStripItem5.Enabled = true;
-				toolStripItem9.Enabled = true;
-				if (item.Status != HardwareJobStatus.Running)
+				setLabelItem.Enabled = true;
+				stopItem.Enabled = true;
+				if (job.Status != HardwareJobStatus.Running)
 				{
-					toolStripItem6.Enabled = true;
+					setStartTimeItem.Enabled = true;
 				}
 			}
-			if (item.Status != HardwareJobStatus.Garbage && item.ID != "IMMEDIATE" && !IsSecureJob(item))
+			if (job.Status != HardwareJobStatus.Garbage && job.ID != "IMMEDIATE" && !IsSecureJob(job))
 			{
-				if (toolStripItem10 != null)
+				if (trashItem != null)
 				{
-					toolStripItem10.Enabled = true;
+					trashItem.Enabled = true;
 				}
-				if (toolStripItem11 != null && !EnvironmentHelper.IsLocked)
+				if (trashLockedItem != null && !EnvironmentHelper.IsLocked)
 				{
-					toolStripItem11.Enabled = true;
+					trashLockedItem.Enabled = true;
 				}
 			}
-			if (item.Status == HardwareJobStatus.Suspended)
+			if (job.Status == HardwareJobStatus.Suspended)
 			{
-				toolStripItem7.Enabled = true;
+				resumeItem.Enabled = true;
 			}
-			if (item.Status == HardwareJobStatus.Running || item.Status == HardwareJobStatus.Pending)
+			if (job.Status == HardwareJobStatus.Running || job.Status == HardwareJobStatus.Pending)
 			{
-				toolStripItem8.Enabled = true;
+				suspendItem.Enabled = true;
 			}
 		}
 	}

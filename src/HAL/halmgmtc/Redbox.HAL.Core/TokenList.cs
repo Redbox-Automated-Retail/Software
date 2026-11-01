@@ -56,13 +56,13 @@ public class TokenList : List<Token>, ICloneable<TokenList>
 
 	public TokenList GetTokensAfterMnemonic()
 	{
-		int num = FindIndex((Token each) => each.Type == TokenType.Mnemonic);
-		if (num != -1)
+		int mnemonicIndex = FindIndex((Token each) => each.Type == TokenType.Mnemonic);
+		if (mnemonicIndex != -1)
 		{
 			TokenList tokenList = new TokenList();
-			for (int num2 = num + 1; num2 < base.Count; num2++)
+			for (int i = mnemonicIndex + 1; i < base.Count; i++)
 			{
-				tokenList.Add(base[num2]);
+				tokenList.Add(base[i]);
 			}
 			return tokenList;
 		}

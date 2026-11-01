@@ -27,9 +27,9 @@ public class PowerShellController
 		{
 			await file.CopyToAsync(s);
 		}
-		bool flag = _cmd.TryExecutePowerShellScriptFromFile(temp);
+		bool succeeded = _cmd.TryExecutePowerShellScriptFromFile(temp);
 		File.Delete(temp);
-		return flag ? new OkResult() : new StatusCodeResult(500);
+		return succeeded ? new OkResult() : new StatusCodeResult(500);
 	}
 
 	[HttpPost("script")]

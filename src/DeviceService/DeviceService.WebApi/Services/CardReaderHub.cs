@@ -189,25 +189,25 @@ public class CardReaderHub : Hub
 	private void ProcessQueuedCommands()
 	{
 		ActiveCommand = null;
-		int num = 0;
+		int queuedCount = 0;
 		lock (_syncObject)
 		{
 			if (!_commandQueuePaused)
 			{
-				num = _commandQueue.Count;
-				if (num > 0)
+				queuedCount = _commandQueue.Count;
+				if (queuedCount > 0)
 				{
 					_commandQueue.TryDequeue(out ActiveCommand);
 				}
 			}
 		}
-		while (num > 0 && ActiveCommand != null)
+		while (queuedCount > 0 && ActiveCommand != null)
 		{
 			_logger?.LogInformation($"Begining processing for queued command {ActiveCommand?.Command?.CommandName} with ID {ActiveCommand?.Command.RequestId}");
-			if (_commandProcessors.TryGetValue(ActiveCommand?.Command?.CommandName, out var value))
+			if (_commandProcessors.TryGetValue(ActiveCommand?.Command?.CommandName, out var processor))
 			{
 				_proxy.StopHealthTimer();
-				value(ActiveCommand);
+				processor(ActiveCommand);
 			}
 			else
 			{
@@ -220,18 +220,18 @@ public class CardReaderHub : Hub
 				{
 					continue;
 				}
-				num = _commandQueue.Count;
-				if (num <= 0)
+				queuedCount = _commandQueue.Count;
+				if (queuedCount <= 0)
 				{
 					continue;
 				}
-				List<string> list = new List<string>();
-				foreach (QueuedCommand item in _commandQueue)
+				List<string> commandNames = new List<string>();
+				foreach (QueuedCommand queuedCommand in _commandQueue)
 				{
-					list.Add(item?.Command?.CommandName);
+					commandNames.Add(queuedCommand?.Command?.CommandName);
 				}
-				string arg = string.Join(", ", list.ToArray());
-				_logger?.LogInformation($"Queued Command count: {num}   Commands: {arg}");
+				string commandList = string.Join(", ", commandNames.ToArray());
+				_logger?.LogInformation($"Queued Command count: {queuedCount}   Commands: {commandList}");
 				_commandQueue.TryDequeue(out ActiveCommand);
 			}
 		}

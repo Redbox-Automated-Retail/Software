@@ -242,19 +242,19 @@ public class SecurityService
 
 	public List<string> GetAllAdministrators()
 	{
-		List<string> list = new List<string>();
-		DirectoryEntry directoryEntry = new DirectoryEntry("WinNT://" + Environment.MachineName);
-		DirectoryEntry directoryEntry2 = directoryEntry.Children.Find("administrators", "group");
-		object obj = directoryEntry2.Invoke("members", null);
-		foreach (object item in (IEnumerable)obj)
+		List<string> userNames = new List<string>();
+		DirectoryEntry machine = new DirectoryEntry("WinNT://" + Environment.MachineName);
+		DirectoryEntry groupEntry = machine.Children.Find("administrators", "group");
+		object members = groupEntry.Invoke("members", null);
+		foreach (object member in (IEnumerable)members)
 		{
-			DirectoryEntry directoryEntry3 = new DirectoryEntry(item);
-			if (directoryEntry3.SchemaClassName == "User")
+			DirectoryEntry memberEntry = new DirectoryEntry(member);
+			if (memberEntry.SchemaClassName == "User")
 			{
-				list.Add(directoryEntry3.Name);
+				userNames.Add(memberEntry.Name);
 			}
 		}
-		return list.Distinct().ToList();
+		return userNames.Distinct().ToList();
 	}
 
 	public bool IsMember(string userName, string groupName)
@@ -265,19 +265,19 @@ public class SecurityService
 
 	public List<string> GetAllMembers(string groupName)
 	{
-		List<string> list = new List<string>();
-		DirectoryEntry directoryEntry = new DirectoryEntry("WinNT://" + Environment.MachineName);
-		DirectoryEntry directoryEntry2 = directoryEntry.Children.Find(groupName, "group");
-		object obj = directoryEntry2.Invoke("members", null);
-		foreach (object item in (IEnumerable)obj)
+		List<string> userNames = new List<string>();
+		DirectoryEntry machine = new DirectoryEntry("WinNT://" + Environment.MachineName);
+		DirectoryEntry groupEntry = machine.Children.Find(groupName, "group");
+		object members = groupEntry.Invoke("members", null);
+		foreach (object member in (IEnumerable)members)
 		{
-			DirectoryEntry directoryEntry3 = new DirectoryEntry(item);
-			if (directoryEntry3.SchemaClassName == "User")
+			DirectoryEntry memberEntry = new DirectoryEntry(member);
+			if (memberEntry.SchemaClassName == "User")
 			{
-				list.Add(directoryEntry3.Name);
+				userNames.Add(memberEntry.Name);
 			}
 		}
-		return list.Distinct().ToList();
+		return userNames.Distinct().ToList();
 	}
 
 	public List<string> GetAllUsers()

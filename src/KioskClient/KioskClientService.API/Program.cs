@@ -21,14 +21,14 @@ public class Program
 
 	public static void Main(string[] args)
 	{
-		bool flag = !Debugger.IsAttached && !Enumerable.Contains(args, "--console");
-		if (flag)
+		bool runAsService = !Debugger.IsAttached && !Enumerable.Contains(args, "--console");
+		if (runAsService)
 		{
 			string fileName = Process.GetCurrentProcess().MainModule.FileName;
 			string directoryName = Path.GetDirectoryName(fileName);
 			Directory.SetCurrentDirectory(directoryName);
 		}
-		ApplicationControl.IsService = flag;
+		ApplicationControl.IsService = runAsService;
 		try
 		{
 			Logger logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).Enrich.WithThreadId().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
@@ -46,8 +46,8 @@ public class Program
 			Log.Information($"Service version: {Assembly.GetExecutingAssembly().GetName().Version}");
 			// Which build runs: release builds stamp "<version>+<commit>" (build/Release.targets).
 			Log.Information("Service build: " + Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
-			Log.Information(flag ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
-			CreateHostBuilder(args, flag).Build().Run();
+			Log.Information(runAsService ? "Program.Main - Starting as a Windows Service" : "Program.Main - Starting as a console application");
+			CreateHostBuilder(args, runAsService).Build().Run();
 		}
 		catch (Exception exception)
 		{

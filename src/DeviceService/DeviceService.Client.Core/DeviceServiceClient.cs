@@ -59,7 +59,6 @@ public class DeviceServiceClient : IDeviceServiceClientCore
 
 	public bool ConnectToDeviceService(string url, int connectionTimeout)
 	{
-		bool flag = false;
 		lock (_lockConnectionObject)
 		{
 			_connectionAutoResetEvent = new AutoResetEvent(initialState: false);

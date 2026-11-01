@@ -19,11 +19,11 @@ public sealed class ZipFileManager
 		{
 			return false;
 		}
-		int num = 0;
+		int extracted = 0;
 		using ZipFile zipFile = new ZipFile(ZipFile);
 		foreach (ZipEntry item in zipFile)
 		{
-			num++;
+			extracted++;
 			if (item.IsDirectory)
 			{
 				if (!SafeCreateDirectory(item.Name))
@@ -43,7 +43,7 @@ public sealed class ZipFileManager
 			using FileStream destination = File.Create(path);
 			StreamUtils.Copy(inputStream, destination, buffer);
 		}
-		return num == zipFile.Count;
+		return extracted == zipFile.Count;
 	}
 
 	private bool SafeCreateDirectory(string directory)

@@ -262,8 +262,8 @@ public class FileCacheService : IFileCacheService
 		FileSetFileInfo result = null;
 		try
 		{
-			var (flag, bytes) = await ReadFileBytes(filePath);
-			if (flag)
+			var (read, bytes) = await ReadFileBytes(filePath);
+			if (read)
 			{
 				result = Encoding.ASCII.GetString(bytes).ToObject<FileSetFileInfo>();
 			}
@@ -329,8 +329,8 @@ public class FileCacheService : IFileCacheService
 		ClientFileSetRevision result = null;
 		try
 		{
-			var (flag, bytes) = await ReadFileBytes(filePath);
-			if (flag)
+			var (read, bytes) = await ReadFileBytes(filePath);
+			if (read)
 			{
 				result = Encoding.ASCII.GetString(bytes).ToObject<ClientFileSetRevision>();
 			}
@@ -396,18 +396,18 @@ public class FileCacheService : IFileCacheService
 
 	public List<long> GetFileSetRevisionIds(long fileSetId)
 	{
-		List<long> list = new List<long>();
+		List<long> revisionIds = new List<long>();
 		List<string> clientFileSetRevisionFilePaths = GetClientFileSetRevisionFilePaths(fileSetId);
-		foreach (string item2 in clientFileSetRevisionFilePaths)
+		foreach (string filePath in clientFileSetRevisionFilePaths)
 		{
-			string fileName = Path.GetFileName(item2);
-			var (flag, item) = ParseRevisionIdFromRevisionFileName(fileName);
-			if (flag)
+			string fileName = Path.GetFileName(filePath);
+			var (parsed, revisionId) = ParseRevisionIdFromRevisionFileName(fileName);
+			if (parsed)
 			{
-				list.Add(item);
+				revisionIds.Add(revisionId);
 			}
 		}
-		return list.Distinct().ToList();
+		return revisionIds.Distinct().ToList();
 	}
 
 	private (bool success, long revisionId) ParseRevisionIdFromRevisionFileName(string revisionFileName)

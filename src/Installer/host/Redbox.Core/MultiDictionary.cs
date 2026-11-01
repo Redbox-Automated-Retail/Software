@@ -100,11 +100,11 @@ public class MultiDictionary<K, V> : IDictionary<K, ICollection<V>>, ICollection
 		{
 			throw new ArgumentException("array.Length is too small.", "array");
 		}
-		int num = arrayIndex;
+		int index = arrayIndex;
 		foreach (KeyValuePair<K, ICollection<V>> item in m_dict)
 		{
-			array[num] = item;
-			num++;
+			array[index] = item;
+			index++;
 		}
 	}
 

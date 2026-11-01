@@ -214,8 +214,8 @@ public class CustomerOfferProxy : ICustomerOfferService
 		}
 		set
 		{
-			string value2 = value.Join(",");
-			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Customer Offer Services", "MnpProductIds", value2);
+			string joinedIds = value.Join(",");
+			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Remote Services\\Customer Offer Services", "MnpProductIds", joinedIds);
 		}
 	}
 
@@ -862,13 +862,13 @@ public class CustomerOfferProxy : ICustomerOfferService
 
 	private DateTime GetDateTime(IDictionary<string, object> dateInfo)
 	{
-		object obj = dateInfo["theDate"];
+		object theDate = dateInfo["theDate"];
 		DateTime result;
-		if (obj.GetType() == typeof(int) && (int)obj != 0)
+		if (theDate.GetType() == typeof(int) && (int)theDate != 0)
 		{
 			result = new DateTime((int)dateInfo["theDate"]);
 		}
-		else if (obj.GetType() == typeof(long) && (long)obj != 0L)
+		else if (theDate.GetType() == typeof(long) && (long)theDate != 0L)
 		{
 			result = new DateTime((long)dateInfo["theDate"]);
 		}
@@ -886,12 +886,12 @@ public class CustomerOfferProxy : ICustomerOfferService
 	private TimeSpan? GetTimeSpan(IDictionary<string, object> tsInfo)
 	{
 		TimeSpan? result = null;
-		object obj = tsInfo["theTimeSpan"];
-		if (obj.GetType() == typeof(int) && (int)obj != 0)
+		object theTimeSpan = tsInfo["theTimeSpan"];
+		if (theTimeSpan.GetType() == typeof(int) && (int)theTimeSpan != 0)
 		{
 			result = new TimeSpan((int)tsInfo["theTimeSpan"]);
 		}
-		else if (obj.GetType() == typeof(long) && (long)obj != 0L)
+		else if (theTimeSpan.GetType() == typeof(long) && (long)theTimeSpan != 0L)
 		{
 			result = new TimeSpan((long)tsInfo["theTimeSpan"]);
 		}

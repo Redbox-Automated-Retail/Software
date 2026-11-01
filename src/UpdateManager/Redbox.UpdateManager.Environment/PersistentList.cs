@@ -195,11 +195,11 @@ public class PersistentList<T> : IEnumerable<T>, IEnumerable
 			List<string> source = Directory.GetFiles(m_path).ToList();
 			source = source.Select((string f, int i) => Path.GetFileName(f)).ToList();
 			source = source.OrderBy((string s) => Convert.ToInt32(s)).ToList();
-			for (int num = 0; num < source.Count(); num++)
+			for (int index = 0; index < source.Count(); index++)
 			{
-				if (source[num] != num.ToString())
+				if (source[index] != index.ToString())
 				{
-					File.Move(Path.Combine(m_path, source[num]), Path.Combine(m_path, num.ToString()));
+					File.Move(Path.Combine(m_path, source[index]), Path.Combine(m_path, index.ToString()));
 				}
 			}
 		}

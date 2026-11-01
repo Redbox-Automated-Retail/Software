@@ -60,11 +60,11 @@ public static class OnGuardCardData
 
 	private static byte[] DummyBytes(string seed, int length)
 	{
-		byte[] array = new byte[length];
-		int num = seed.Aggregate(17, (int h, char c) => h * 31 + c);
-		Random random = new Random(num);
-		random.NextBytes(array);
-		return array;
+		byte[] bytes = new byte[length];
+		int seedHash = seed.Aggregate(17, (int h, char c) => h * 31 + c);
+		Random random = new Random(seedHash);
+		random.NextBytes(bytes);
+		return bytes;
 	}
 
 	private static string DummyHex(string seed, int length)
@@ -80,26 +80,26 @@ public static class OnGuardCardData
 
 	private static bool LuhnValid(string pan)
 	{
-		int num = 0;
-		bool flag = false;
-		for (int num2 = pan.Length - 1; num2 >= 0; num2--)
+		int sum = 0;
+		bool doubleDigit = false;
+		for (int i = pan.Length - 1; i >= 0; i--)
 		{
-			if (!char.IsDigit(pan[num2]))
+			if (!char.IsDigit(pan[i]))
 			{
 				return false;
 			}
-			int num3 = pan[num2] - 48;
-			if (flag)
+			int digit = pan[i] - 48;
+			if (doubleDigit)
 			{
-				num3 *= 2;
-				if (num3 > 9)
+				digit *= 2;
+				if (digit > 9)
 				{
-					num3 -= 9;
+					digit -= 9;
 				}
 			}
-			num += num3;
-			flag = !flag;
+			sum += digit;
+			doubleDigit = !doubleDigit;
 		}
-		return num % 10 == 0;
+		return sum % 10 == 0;
 	}
 }

@@ -164,15 +164,15 @@ public class HttpService : IHttpService
 				result = await _httpClient.SendAsync(request, cancellationTokenSource.Token);
 				sw.Stop();
 				_ = sw.ElapsedMilliseconds;
-				string text = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
-				string text2 = text;
+				string requestContent = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
+				string loggedRequest = requestContent;
 				if (originalRequestObject != null && originalRequestObject is IMessageScrub)
 				{
-					text2 = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
+					loggedRequest = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
 				}
 				if (logRequest)
 				{
-					_logger.LogInfoWithSource("request: " + text2, "SendRequestAsync", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Http/HttpService.cs");
+					_logger.LogInfoWithSource("request: " + loggedRequest, "SendRequestAsync", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Http/HttpService.cs");
 				}
 				if (logResponse)
 				{

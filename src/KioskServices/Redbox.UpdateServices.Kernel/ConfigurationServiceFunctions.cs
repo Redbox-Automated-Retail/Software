@@ -54,41 +54,41 @@ public static class ConfigurationServiceFunctions
 			return null;
 		}
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)kernelService.NewTable();
-		configurationService.GetSettingNames(configFile, categoryName, out var list);
-		if (list == null)
+		LuaTable resultTable = (LuaTable)kernelService.NewTable();
+		configurationService.GetSettingNames(configFile, categoryName, out var settingNames);
+		if (settingNames == null)
 		{
 			return null;
 		}
-		for (int i = 0; i < list.Count; i++)
+		for (int i = 0; i < settingNames.Count; i++)
 		{
-			if (configurationService.TryGetConfigurationData(configFile, categoryName, list[i], out var value))
+			if (configurationService.TryGetConfigurationData(configFile, categoryName, settingNames[i], out var configurationData))
 			{
-				_ = value.EffectiveTime;
-				if (!(value.EffectiveTime > DateTime.Now) && (value == null || !(value.ExpireTime < DateTime.Now)))
+				_ = configurationData.EffectiveTime;
+				if (!(configurationData.EffectiveTime > DateTime.Now) && (configurationData == null || !(configurationData.ExpireTime < DateTime.Now)))
 				{
-					LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
-					luaTable2["category_name"] = value.CategoryName;
-					luaTable2["setting_name"] = value.SettingName;
-					luaTable2["value"] = value.Value;
-					luaTable[i + 1] = luaTable2;
+					LuaTable settingTable = (LuaTable)kernelService.NewTable();
+					settingTable["category_name"] = configurationData.CategoryName;
+					settingTable["setting_name"] = configurationData.SettingName;
+					settingTable["value"] = configurationData.Value;
+					resultTable[i + 1] = settingTable;
 				}
 			}
 		}
-		return luaTable;
+		return resultTable;
 	}
 
 	private static LuaTable CreateResultTable(ErrorList errors)
 	{
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)kernelService.NewTable();
-		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
+		LuaTable resultTable = (LuaTable)kernelService.NewTable();
+		resultTable["success"] = !errors.ContainsError();
+		LuaTable errorTable = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 		{
-			luaTable2[error.Code] = error.Description;
+			errorTable[error.Code] = error.Description;
 		}
-		luaTable["errors"] = luaTable2;
-		return luaTable;
+		resultTable["errors"] = errorTable;
+		return resultTable;
 	}
 }

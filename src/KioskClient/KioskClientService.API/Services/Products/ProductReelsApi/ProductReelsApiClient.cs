@@ -32,14 +32,14 @@ public class ProductReelsApiClient : IProductReelsApiClient
 	public async Task<ConcurrentDictionary<long, List<long>>> MoreLikeThisBulkAsync(List<long> productGroupIds)
 	{
 		ConcurrentDictionary<long, List<long>> result = new ConcurrentDictionary<long, List<long>>();
-		List<string> list = new List<string>();
+		List<string> productIdStrings = new List<string>();
 		foreach (long productGroupId in productGroupIds)
 		{
-			list.Add(productGroupId.ToString());
+			productIdStrings.Add(productGroupId.ToString());
 		}
 		var requestObject = new
 		{
-			productIds = list
+			productIds = productIdStrings
 		};
 		HttpResponseMessage response = await _httpService.SendRequest(_kioskConfiguration.KioskClientDefault.ProductReelsApiUrl, "products/reels/bulkmorelikethis", requestObject, HttpMethod.Post, null, logResponseContent: false);
 		if (response == null)
@@ -48,43 +48,43 @@ public class ProductReelsApiClient : IProductReelsApiClient
 		}
 		else
 		{
-			string text = ((response.Content != null) ? (await response.Content.ReadAsStringAsync()) : string.Empty);
-			string text2 = text;
+			string rawContent = ((response.Content != null) ? (await response.Content.ReadAsStringAsync()) : string.Empty);
+			string responseContent = rawContent;
 			if (response.IsSuccessStatusCode)
 			{
-				List<BulkMoreLikeThisResponse> list2;
+				List<BulkMoreLikeThisResponse> bulkResponses;
 				try
 				{
-					list2 = JsonConvert.DeserializeObject<List<BulkMoreLikeThisResponse>>(text2);
+					bulkResponses = JsonConvert.DeserializeObject<List<BulkMoreLikeThisResponse>>(responseContent);
 				}
 				catch (JsonReaderException ex)
 				{
 					_logger.LogCriticalWithSource(ex, "Exception deserializing bulkmorelikethis list!", "MoreLikeThisBulkAsync");
-					list2 = new List<BulkMoreLikeThisResponse>();
+					bulkResponses = new List<BulkMoreLikeThisResponse>();
 				}
-				foreach (BulkMoreLikeThisResponse item in list2)
+				foreach (BulkMoreLikeThisResponse bulkResponse in bulkResponses)
 				{
-					if (item.MoreLikeThisTitles == null || !item.MoreLikeThisTitles.Any())
+					if (bulkResponse.MoreLikeThisTitles == null || !bulkResponse.MoreLikeThisTitles.Any())
 					{
 						continue;
 					}
-					List<long> list3 = new List<long>();
-					foreach (string moreLikeThisTitle in item.MoreLikeThisTitles)
+					List<long> similarProductIds = new List<long>();
+					foreach (string moreLikeThisTitle in bulkResponse.MoreLikeThisTitles)
 					{
-						if (long.TryParse(moreLikeThisTitle, out var result2) && result2 > 0)
+						if (long.TryParse(moreLikeThisTitle, out var similarProductId) && similarProductId > 0)
 						{
-							list3.Add(result2);
+							similarProductIds.Add(similarProductId);
 						}
 					}
-					if (long.TryParse(item.ProductGroupId, out var result3))
+					if (long.TryParse(bulkResponse.ProductGroupId, out var groupId))
 					{
-						result.TryAdd(result3, list3);
+						result.TryAdd(groupId, similarProductIds);
 					}
 				}
 			}
 			else
 			{
-				_logger.LogErrorWithSource($"Call to bulkMoreLikeThis returned status: {response.StatusCode}, content: {text2}", "MoreLikeThisBulkAsync");
+				_logger.LogErrorWithSource($"Call to bulkMoreLikeThis returned status: {response.StatusCode}, content: {responseContent}", "MoreLikeThisBulkAsync");
 			}
 		}
 		return result;

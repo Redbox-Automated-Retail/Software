@@ -170,12 +170,12 @@ public class ConfigurationClient
 					}
 					if (TypeMap.GetType(clientConfigurationData.SettingDataType) == typeof(byte[]))
 					{
-						byte[] value2 = new byte[0];
+						byte[] bytes = new byte[0];
 						if (clientConfigurationData.Value.Length > 0)
 						{
-							value2 = Convert.FromBase64String(clientConfigurationData.Value);
+							bytes = Convert.FromBase64String(clientConfigurationData.Value);
 						}
-						value = (T)Convert.ChangeType(value2, typeof(T));
+						value = (T)Convert.ChangeType(bytes, typeof(T));
 						return true;
 					}
 					value = (T)Convert.ChangeType(clientConfigurationData.Value, typeof(T));
@@ -321,8 +321,8 @@ public class ConfigurationClient
 					{
 						return false;
 					}
-					List<string> list2 = _clientConfigFile.ConfigurationData.Select((ClientConfigurationData cd) => cd.CategoryName).Distinct().ToList();
-					list = list2;
+					List<string> categoryNames = _clientConfigFile.ConfigurationData.Select((ClientConfigurationData cd) => cd.CategoryName).Distinct().ToList();
+					list = categoryNames;
 					return true;
 				}
 				catch (Exception e)
@@ -349,10 +349,10 @@ public class ConfigurationClient
 					{
 						return false;
 					}
-					List<string> list2 = (from cd in _clientConfigFile.ConfigurationData
+					List<string> settingNames = (from cd in _clientConfigFile.ConfigurationData
 						where cd.CategoryName.Equals(category, StringComparison.CurrentCultureIgnoreCase)
 						select cd.SettingName).Distinct().ToList();
-					list = list2;
+					list = settingNames;
 					return true;
 				}
 				catch (Exception e)
@@ -588,11 +588,11 @@ public class ConfigurationClient
 		value = default(T);
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetValue<T>(setting, out value);
+			return configFile.TryGetValue<T>(setting, out value);
 		}
 	}
 
@@ -601,11 +601,11 @@ public class ConfigurationClient
 		value = default(T);
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetValue<T>(category, setting, out value);
+			return configFile.TryGetValue<T>(category, setting, out value);
 		}
 	}
 
@@ -614,11 +614,11 @@ public class ConfigurationClient
 		value = null;
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetObject(setting, out value);
+			return configFile.TryGetObject(setting, out value);
 		}
 	}
 
@@ -627,11 +627,11 @@ public class ConfigurationClient
 		value = null;
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetObject(category, setting, out value);
+			return configFile.TryGetObject(category, setting, out value);
 		}
 	}
 
@@ -640,11 +640,11 @@ public class ConfigurationClient
 		value = null;
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetConfigurationData(setting, out value);
+			return configFile.TryGetConfigurationData(setting, out value);
 		}
 	}
 
@@ -653,11 +653,11 @@ public class ConfigurationClient
 		value = null;
 		lock (_lock)
 		{
-			if (!_clientConfigFileList.TryGetValue(key, out var value2))
+			if (!_clientConfigFileList.TryGetValue(key, out var configFile))
 			{
 				return false;
 			}
-			return value2.TryGetConfigurationData(category, setting, out value);
+			return configFile.TryGetConfigurationData(category, setting, out value);
 		}
 	}
 

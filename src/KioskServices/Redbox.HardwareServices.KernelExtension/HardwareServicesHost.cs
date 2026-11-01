@@ -25,9 +25,9 @@ public class HardwareServicesHost : IKernelExtensionHost, IDisposable
 	public bool CanSwitch(out ErrorList errors)
 	{
 		errors = new ErrorList();
-		bool flag = _hardwareService.CanSwitch();
-		LogHelper.Instance.Log("HardwareService CanSwitch: {0}", flag);
-		if (!flag)
+		bool canSwitch = _hardwareService.CanSwitch();
+		LogHelper.Instance.Log("HardwareService CanSwitch: {0}", canSwitch);
+		if (!canSwitch)
 		{
 			errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("E246", "Bundle Switch Error", "Can not switch bundles while a return is running, try again after the return has finished."));
 			return false;

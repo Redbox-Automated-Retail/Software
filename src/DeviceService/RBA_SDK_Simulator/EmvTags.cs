@@ -43,11 +43,11 @@ public static class EmvTags
 
 	public static byte[] FromHex(string hex)
 	{
-		byte[] array = new byte[hex.Length / 2];
-		for (int i = 0; i < array.Length; i++)
+		byte[] bytes = new byte[hex.Length / 2];
+		for (int i = 0; i < bytes.Length; i++)
 		{
-			array[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+			bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
 		}
-		return array;
+		return bytes;
 	}
 }

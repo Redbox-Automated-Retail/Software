@@ -94,23 +94,23 @@ public class SensorRangeForm : Form
 	{
 		m_errorProvider.SetError(m_startSensorTextBox, string.Empty);
 		m_errorProvider.SetError(m_endSensorTextBox, string.Empty);
-		bool flag = false;
+		bool hasError = false;
 		if (Start.HasValue && (Start < MinimumValue || Start > MaximumValue))
 		{
 			m_errorProvider.SetError(m_startSensorTextBox, $"The Start Sensor value must be equal to or greater than {MinimumValue} and less than or equal to {MaximumValue}.");
-			flag = true;
+			hasError = true;
 		}
 		if (End.HasValue && (End < MinimumValue || End > MaximumValue))
 		{
 			m_errorProvider.SetError(m_endSensorTextBox, $"The End Sensor value must be equal to or greater than {MinimumValue} and less than or equal to {MaximumValue}.");
-			flag = true;
+			hasError = true;
 		}
 		if (Start.HasValue && End.HasValue && End < Start)
 		{
 			m_errorProvider.SetError(m_endSensorTextBox, "The End Sensor value must be equal to or greater than Start Sensor value.");
-			flag = true;
+			hasError = true;
 		}
-		if (!flag)
+		if (!hasError)
 		{
 			base.DialogResult = DialogResult.OK;
 			Close();

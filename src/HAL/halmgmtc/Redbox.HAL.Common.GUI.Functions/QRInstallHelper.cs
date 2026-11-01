@@ -137,8 +137,8 @@ public class QRInstallHelper : UserControl
 			throw new ArgumentNullException("Hardware service");
 		}
 		m_hardwareService = service;
-		bool flag = (status & DeviceStatus.Configured) != 0;
-		State = ((!flag) ? InstallState.NotInstalled : InstallState.Installed);
+		bool configured = (status & DeviceStatus.Configured) != 0;
+		State = ((!configured) ? InstallState.NotInstalled : InstallState.Installed);
 		InstalledComPortNumber = LocatePortViaRegistry();
 	}
 

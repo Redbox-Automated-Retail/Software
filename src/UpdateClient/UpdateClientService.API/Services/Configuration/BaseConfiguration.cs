@@ -49,14 +49,14 @@ public abstract class BaseConfiguration
 
 	public void Log(ConfigLogParameters loggingParameters = null)
 	{
-		string text = $"KioskConfiguration Settings for configuration version: {_kioskConfigurationSettings.ConfigurationVersion}";
+		string header = $"KioskConfiguration Settings for configuration version: {_kioskConfigurationSettings.ConfigurationVersion}";
 		if (_kioskConfigurationSettings.ConfigurationVersion == 0L)
 		{
-			_logger.LogWarning(text + "  KioskConfiguration is not current.");
+			_logger.LogWarning(header + "  KioskConfiguration is not current.");
 		}
 		else
 		{
-			_logger.LogInformation(text);
+			_logger.LogInformation(header);
 		}
 		PropertyInfo[] properties = GetType().GetProperties();
 		foreach (PropertyInfo propertyInfo in properties)
@@ -72,31 +72,31 @@ public abstract class BaseConfiguration
 	private bool isSettingIncluded(object categoryClassInstance, PropertyInfo settingProperty, ConfigLogParameters loggingParameters)
 	{
 		string categoryName = GetCategoryName(categoryClassInstance);
-		string name = categoryClassInstance.GetType().Name;
-		string name2 = settingProperty.Name;
+		string className = categoryClassInstance.GetType().Name;
+		string propertyName = settingProperty.Name;
 		string settingName = GetSettingName(settingProperty);
-		bool flag = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
-		bool flag2 = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag3 = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag4 = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
+		bool noCategoryFilter = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
+		bool categoryIncluded = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, className }).Any();
+		bool categoryExcluded = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, className }).Any();
+		bool settingIncluded = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(className, settingName),
+			(className, propertyName)
 		}).Any();
-		bool flag5 = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
+		bool settingExcluded = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(className, settingName),
+			(className, propertyName)
 		}).Any();
-		if (!flag4)
+		if (!settingIncluded)
 		{
-			if ((flag && !flag3) | flag2)
+			if ((noCategoryFilter && !categoryExcluded) | categoryIncluded)
 			{
-				return !flag5;
+				return !settingExcluded;
 			}
 			return false;
 		}
@@ -119,45 +119,45 @@ public abstract class BaseConfiguration
 			}
 			string settingName = GetSettingName(propertyInfo);
 			object settingValue = null;
-			bool flag = false;
+			bool useDefault = false;
 			KioskSettingValue kioskSettingValue = _kioskConfigurationSettings.GetKioskSettingValue(categoryName, settingName);
 			if (kioskSettingValue != null)
 			{
 				try
 				{
-					string text = kioskSettingValue.Value;
-					bool flag2 = true;
+					string rawValue = kioskSettingValue.Value;
+					bool convertValue = true;
 					if (kioskSettingValue.EncryptionType.HasValue)
 					{
 						if (GetMaskLogValueAttribute(propertyInfo) != null)
 						{
-							text = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, text).Result;
+							rawValue = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, rawValue).Result;
 						}
 						else
 						{
-							flag2 = false;
-							text = "[Encrypted]";
+							convertValue = false;
+							rawValue = "[Encrypted]";
 						}
 					}
-					settingValue = (flag2 ? Convert.ChangeType(text, propertyInfo.PropertyType) : text);
+					settingValue = (convertValue ? Convert.ChangeType(rawValue, propertyInfo.PropertyType) : rawValue);
 				}
 				catch (Exception ex)
 				{
-					flag = true;
+					useDefault = true;
 					_logger.LogErrorWithSource(ex, "Unable to get " + categoryName + " property " + settingName, "LogCategorySettingValues", "/sln/src/UpdateClientService.API/Services/Configuration/BaseConfiguration.cs");
 				}
 			}
 			else
 			{
-				flag = true;
+				useDefault = true;
 			}
-			if (flag)
+			if (useDefault)
 			{
 				try
 				{
-					if (_defaultValues.TryGetValue((categoryName, settingName), out var value))
+					if (_defaultValues.TryGetValue((categoryName, settingName), out var defaultValue))
 					{
-						settingValue = value;
+						settingValue = defaultValue;
 					}
 				}
 				catch (Exception ex2)
@@ -166,22 +166,22 @@ public abstract class BaseConfiguration
 				}
 			}
 			settingValue = MaskSettingValue(propertyInfo, settingValue);
-			string text2 = (flag ? " [Default value]" : null);
-			_logger.LogInformation($"KioskConfiguration.{categoryName}.{settingName} = {settingValue}{text2}");
+			string defaultSuffix = (useDefault ? " [Default value]" : null);
+			_logger.LogInformation($"KioskConfiguration.{categoryName}.{settingName} = {settingValue}{defaultSuffix}");
 		}
 	}
 
 	private string MaskSettingValue(PropertyInfo settingPropertyInfo, object settingValue)
 	{
-		string text = $"{settingValue}";
+		string valueText = $"{settingValue}";
 		MaskLogValue maskLogValueAttribute = GetMaskLogValueAttribute(settingPropertyInfo);
-		if (maskLogValueAttribute != null && !string.IsNullOrEmpty(text))
+		if (maskLogValueAttribute != null && !string.IsNullOrEmpty(valueText))
 		{
-			int count = Math.Max(0, text.Length - maskLogValueAttribute.VisibleChars);
-			int startIndex = Math.Max(0, text.Length - maskLogValueAttribute.VisibleChars);
-			text = new string('X', count) + text.Substring(startIndex);
+			int count = Math.Max(0, valueText.Length - maskLogValueAttribute.VisibleChars);
+			int startIndex = Math.Max(0, valueText.Length - maskLogValueAttribute.VisibleChars);
+			valueText = new string('X', count) + valueText.Substring(startIndex);
 		}
-		return text;
+		return valueText;
 	}
 
 	private MaskLogValue GetMaskLogValueAttribute(PropertyInfo propertyInfo)
@@ -197,8 +197,8 @@ public abstract class BaseConfiguration
 			{
 				_kioskConfigurationSettings = _optionsMonitorKioskConfigurationSettings.CurrentValue;
 			}
-			bool flag = _defaultValues == null;
-			if (flag)
+			bool populateDefaults = _defaultValues == null;
+			if (populateDefaults)
 			{
 				_defaultValues = new Dictionary<(string, string), object>();
 			}
@@ -208,7 +208,7 @@ public abstract class BaseConfiguration
 				if (propertyInfo.PropertyType.IsSubclassOf(typeof(BaseCategorySetting)))
 				{
 					object categoryClassInstance = GetCategoryClassInstance(propertyInfo);
-					PopulateCategorySettingValues(categoryClassInstance, flag);
+					PopulateCategorySettingValues(categoryClassInstance, populateDefaults);
 				}
 			}
 		}
@@ -237,39 +237,39 @@ public abstract class BaseConfiguration
 			{
 				_defaultValues[(categoryName, settingName)] = propertyInfo.GetValue(categoryClassInstance, null);
 			}
-			bool flag = false;
+			bool useDefault = false;
 			KioskSettingValue kioskSettingValue = _kioskConfigurationSettings.GetKioskSettingValue(categoryName, settingName);
 			if (kioskSettingValue != null)
 			{
 				try
 				{
-					string text = kioskSettingValue.Value;
+					string rawValue = kioskSettingValue.Value;
 					if (kioskSettingValue.EncryptionType.HasValue)
 					{
-						text = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, text).Result;
+						rawValue = _encryptionService.Decrypt(kioskSettingValue.EncryptionType.Value, rawValue).Result;
 					}
-					object value = Convert.ChangeType(text, propertyInfo.PropertyType);
-					propertyInfo.SetValue(categoryClassInstance, value, null);
+					object convertedValue = Convert.ChangeType(rawValue, propertyInfo.PropertyType);
+					propertyInfo.SetValue(categoryClassInstance, convertedValue, null);
 				}
 				catch (Exception ex)
 				{
-					flag = true;
+					useDefault = true;
 					_logger.LogErrorWithSource(ex, "Unable to set " + categoryName + " property " + settingName, "PopulateCategorySettingValues", "/sln/src/UpdateClientService.API/Services/Configuration/BaseConfiguration.cs");
 				}
 			}
 			else
 			{
-				flag = true;
+				useDefault = true;
 			}
-			if (!flag)
+			if (!useDefault)
 			{
 				continue;
 			}
 			try
 			{
-				if (_defaultValues.TryGetValue((categoryName, settingName), out var value2))
+				if (_defaultValues.TryGetValue((categoryName, settingName), out var defaultValue))
 				{
-					propertyInfo.SetValue(categoryClassInstance, value2, null);
+					propertyInfo.SetValue(categoryClassInstance, defaultValue, null);
 				}
 			}
 			catch (Exception ex2)
@@ -303,28 +303,28 @@ public abstract class BaseConfiguration
 
 	private object GetCategoryClassInstance(PropertyInfo categoryClassPropertyInfo)
 	{
-		object obj = categoryClassPropertyInfo?.GetValue(this, null);
-		if (obj == null)
+		object categoryInstance = categoryClassPropertyInfo?.GetValue(this, null);
+		if (categoryInstance == null)
 		{
 			try
 			{
-				obj = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
-				if (obj != null)
+				categoryInstance = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
+				if (categoryInstance != null)
 				{
-					categoryClassPropertyInfo.SetValue(this, obj);
+					categoryClassPropertyInfo.SetValue(this, categoryInstance);
 				}
 				else
 				{
 					_logger.LogErrorWithSource("Unable to instantiate configuration category class " + categoryClassPropertyInfo?.PropertyType?.Name, "GetCategoryClassInstance", "/sln/src/UpdateClientService.API/Services/Configuration/BaseConfiguration.cs");
 				}
-				SetParentKioskConfiguration(obj);
+				SetParentKioskConfiguration(categoryInstance);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogErrorWithSource(ex, "Unable to instantiate configuration category class " + categoryClassPropertyInfo?.PropertyType?.Name, "GetCategoryClassInstance", "/sln/src/UpdateClientService.API/Services/Configuration/BaseConfiguration.cs");
 			}
 		}
-		return obj;
+		return categoryInstance;
 	}
 
 	private void SetParentKioskConfiguration(object categoryClassInstance)

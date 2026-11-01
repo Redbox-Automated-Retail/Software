@@ -58,9 +58,9 @@ public sealed class NamedPipeClientSession : AbstractPipeClientSession
 		int index = text.IndexOf(Environment.NewLine);
 		if (index != -1)
 		{
-			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			string line = text.Substring(0, index + Environment.NewLine.Length);
 			base.ReadBuilder.Remove(0, index + Environment.NewLine.Length);
-			return text2.Trim();
+			return line.Trim();
 		}
 		return string.Empty;
 	}

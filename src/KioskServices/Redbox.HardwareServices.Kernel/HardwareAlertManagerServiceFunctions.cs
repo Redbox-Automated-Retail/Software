@@ -54,13 +54,13 @@ public class HardwareAlertManagerServiceFunctions
 		{
 			hardwareResult = new HardwareResult();
 			hardwareResult.Code = GetLuaTableStringValue(jobResult, "code");
-			if (GetIntegerValue(jobResult, "deck", out var value))
+			if (GetIntegerValue(jobResult, "deck", out var deck))
 			{
-				hardwareResult.Deck = value;
+				hardwareResult.Deck = deck;
 			}
-			if (GetIntegerValue(jobResult, "slot", out var value2))
+			if (GetIntegerValue(jobResult, "slot", out var slot))
 			{
-				hardwareResult.Deck = value2;
+				hardwareResult.Deck = slot;
 			}
 			hardwareResult.ItemID = GetLuaTableStringValue(jobResult, "item_id");
 			hardwareResult.Message = GetLuaTableStringValue(jobResult, "message");
@@ -84,17 +84,17 @@ public class HardwareAlertManagerServiceFunctions
 
 	private static bool GetIntegerValue(LuaTable luaTable, string propertyName, out int value)
 	{
-		bool result = false;
+		bool found = false;
 		value = 0;
 		if (luaTable != null)
 		{
-			object obj = luaTable[propertyName];
-			if (obj != null && int.TryParse(obj.ToString(), out var result2))
+			object rawValue = luaTable[propertyName];
+			if (rawValue != null && int.TryParse(rawValue.ToString(), out var parsed))
 			{
-				value = result2;
-				result = true;
+				value = parsed;
+				found = true;
 			}
 		}
-		return result;
+		return found;
 	}
 }

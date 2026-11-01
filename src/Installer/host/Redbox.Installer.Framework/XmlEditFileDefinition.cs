@@ -154,32 +154,32 @@ public class XmlEditFileDefinition : Definition
 			}
 			foreach (XmlEdit edit in Edits)
 			{
-				XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes(edit.XPath);
-				if (xmlNodeList != null && xmlNodeList.Count > 0)
+				XmlNodeList matches = xmlDocument.DocumentElement.SelectNodes(edit.XPath);
+				if (matches != null && matches.Count > 0)
 				{
-					List<XmlNode> list = new List<XmlNode>();
+					List<XmlNode> targetNodes = new List<XmlNode>();
 					if (EditAllMatches)
 					{
-						foreach (XmlNode item in xmlNodeList)
+						foreach (XmlNode matchedNode in matches)
 						{
-							list.Add(item);
+							targetNodes.Add(matchedNode);
 						}
 					}
 					else
 					{
-						list.Add(xmlNodeList[0]);
+						targetNodes.Add(matches[0]);
 					}
-					foreach (XmlNode item2 in list)
+					foreach (XmlNode targetNode in targetNodes)
 					{
-						if (item2 != null)
+						if (targetNode != null)
 						{
-							switch (item2.NodeType)
+							switch (targetNode.NodeType)
 							{
 							case XmlNodeType.Attribute:
-								item2.Value = MacroContainer.Instance.ExpandRuntimeMacros(edit.Value);
+								targetNode.Value = MacroContainer.Instance.ExpandRuntimeMacros(edit.Value);
 								break;
 							case XmlNodeType.Element:
-								item2.InnerText = MacroContainer.Instance.ExpandRuntimeMacros(edit.Value);
+								targetNode.InnerText = MacroContainer.Instance.ExpandRuntimeMacros(edit.Value);
 								break;
 							default:
 								errors.Add(Error.NewError("I015", $"XPath expression '{edit.XPath}' yielded an XML node type RIX cannot process.", "Review your XPath expression, correct, and recompile your setup.  RIX supports editing XML attributes and element nodes."));
@@ -208,49 +208,49 @@ public class XmlEditFileDefinition : Definition
 
 	protected override void OnCustomParse(XmlNode node, IConsole console, ErrorList errors)
 	{
-		XmlNodeList xmlNodeList = node.SelectNodes("namespace");
-		if (xmlNodeList != null)
+		XmlNodeList namespaceNodes = node.SelectNodes("namespace");
+		if (namespaceNodes != null)
 		{
-			foreach (XmlNode item in xmlNodeList)
+			foreach (XmlNode namespaceNode in namespaceNodes)
 			{
-				string expandedAttributeValue = item.GetExpandedAttributeValue<string>("prefix");
-				if (string.IsNullOrEmpty(expandedAttributeValue))
+				string prefix = namespaceNode.GetExpandedAttributeValue<string>("prefix");
+				if (string.IsNullOrEmpty(prefix))
 				{
 					errors.Add(Error.NewError("C004", "The namespace node requires a vald prefix attribute.", "Specify a valid prefix attribute."));
 					continue;
 				}
-				string expandedAttributeValue2 = item.GetExpandedAttributeValue<string>("uri");
-				if (string.IsNullOrEmpty(expandedAttributeValue2))
+				string uri = namespaceNode.GetExpandedAttributeValue<string>("uri");
+				if (string.IsNullOrEmpty(uri))
 				{
 					errors.Add(Error.NewError("C004", "The namespace node requires a vald uri attribute.", "Specify a valid uri attribute."));
 				}
 				else
 				{
-					Namespaces.Add(new XmlNamespace(expandedAttributeValue, expandedAttributeValue2));
+					Namespaces.Add(new XmlNamespace(prefix, uri));
 				}
 			}
 		}
-		XmlNodeList xmlNodeList2 = node.SelectNodes("edit");
-		if (xmlNodeList2 == null)
+		XmlNodeList editNodes = node.SelectNodes("edit");
+		if (editNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item2 in xmlNodeList2)
+		foreach (XmlNode editNode in editNodes)
 		{
-			string expandedAttributeValue3 = item2.GetExpandedAttributeValue<string>("xpath");
-			if (string.IsNullOrEmpty(expandedAttributeValue3))
+			string xpath = editNode.GetExpandedAttributeValue<string>("xpath");
+			if (string.IsNullOrEmpty(xpath))
 			{
 				errors.Add(Error.NewError("C004", "The edit node requires a vald xpath attribute.", "Specify a valid xpath attribute."));
 				continue;
 			}
-			string expandedAttributeValue4 = item2.GetExpandedAttributeValue<string>("value");
-			if (string.IsNullOrEmpty(expandedAttributeValue4))
+			string value = editNode.GetExpandedAttributeValue<string>("value");
+			if (string.IsNullOrEmpty(value))
 			{
 				errors.Add(Error.NewError("C004", "The edit node requires a vald value attribute.", "Specify a valid value attribute."));
 			}
 			else
 			{
-				Edits.Add(new XmlEdit(expandedAttributeValue3, expandedAttributeValue4));
+				Edits.Add(new XmlEdit(xpath, value));
 			}
 		}
 	}

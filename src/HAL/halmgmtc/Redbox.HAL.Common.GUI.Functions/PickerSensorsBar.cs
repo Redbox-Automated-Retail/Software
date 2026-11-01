@@ -119,13 +119,13 @@ public class PickerSensorsBar : UserControl
 				readError = true;
 				return;
 			}
-			bool[] array = new bool[6];
-			for (int num = 5; num >= 0; num--)
+			bool[] sensors = new bool[6];
+			for (int sensor = 5; sensor >= 0; sensor--)
 			{
-				string text = stack.Pop();
-				array[num] = (text.Contains("BLOCKED") ? true : false);
+				string reading = stack.Pop();
+				sensors[sensor] = (reading.Contains("BLOCKED") ? true : false);
 			}
-			DisplaySensors(array);
+			DisplaySensors(sensors);
 		}
 		finally
 		{

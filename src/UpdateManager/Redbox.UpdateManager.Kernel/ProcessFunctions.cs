@@ -130,35 +130,35 @@ public static class ProcessFunctions
 			Arguments = macroService.ExpandProperties(arguments),
 			WorkingDirectory = macroService.ExpandProperties(workingDirectory)
 		};
-		Process process2 = new Process
+		Process childProcess = new Process
 		{
 			StartInfo = startInfo
 		};
-		process2.Start();
-		int? num = null;
+		childProcess.Start();
+		int? timeoutMs = null;
 		if (timeout != null)
 		{
 			try
 			{
-				num = Convert.ToInt32(timeout);
+				timeoutMs = Convert.ToInt32(timeout);
 			}
 			catch
 			{
 			}
 		}
-		if (num.HasValue)
+		if (timeoutMs.HasValue)
 		{
-			LogHelper.Instance.Log("Entering bounded WaitForExit in ProcessFunctions.Execute with a timeout of {0}.", num.Value);
-			process2.WaitForExit(num.Value);
+			LogHelper.Instance.Log("Entering bounded WaitForExit in ProcessFunctions.Execute with a timeout of {0}.", timeoutMs.Value);
+			childProcess.WaitForExit(timeoutMs.Value);
 		}
 		else
 		{
 			LogHelper.Instance.Log("Entering unbounded WaitForExit in ProcessFunctions.Execute.");
-			process2.WaitForExit();
+			childProcess.WaitForExit();
 		}
-		if (process2.HasExited)
+		if (childProcess.HasExited)
 		{
-			return process2.ExitCode;
+			return childProcess.ExitCode;
 		}
 		return -1;
 	}

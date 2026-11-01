@@ -76,8 +76,8 @@ public class ExecuteScriptForm : Form
 			m_scriptDropDownList.BeginUpdate();
 			for (int i = 0; i < programs.CommandMessages.Count; i++)
 			{
-				string[] array = programs.CommandMessages[i].Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-				m_scriptDropDownList.Items.Add(array[0]);
+				string[] fields = programs.CommandMessages[i].Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+				m_scriptDropDownList.Items.Add(fields[0]);
 			}
 			m_scriptDropDownList.EndUpdate();
 			if (m_scriptDropDownList.Items.Count > 0)

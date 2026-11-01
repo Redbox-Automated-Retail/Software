@@ -103,9 +103,9 @@ public class VideoCapabilities
 			{
 			}
 		}
-		VideoCapabilities[] array = new VideoCapabilities[dictionary.Count];
-		dictionary.Values.CopyTo(array, 0);
-		return array;
+		VideoCapabilities[] capabilities = new VideoCapabilities[dictionary.Count];
+		dictionary.Values.CopyTo(capabilities, 0);
+		return capabilities;
 	}
 
 	internal VideoCapabilities(IAMStreamConfig videoStreamConfig, int index)

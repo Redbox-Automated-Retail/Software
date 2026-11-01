@@ -53,71 +53,71 @@ public class NewServerpollEvent : Form
 		m_errors.SetError(m_cron, string.Empty);
 		m_errors.SetError(m_initial_sec, string.Empty);
 		m_errors.SetError(m_initial_sec_adv, string.Empty);
-		bool flag = false;
+		bool hasErrors = false;
 		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		ErrorList errorList = new ErrorList();
 		if (tabControl1.SelectedTab == BasicPage)
 		{
 			TimeSpan? startOffset = null;
-			TimeSpan? timeSpan = null;
+			TimeSpan? repeatInterval = null;
 			if (!string.IsNullOrEmpty(m_initial_sec.Text))
 			{
-				if (int.TryParse(m_initial_sec.Text, out var result))
+				if (int.TryParse(m_initial_sec.Text, out var offsetSeconds))
 				{
-					startOffset = TimeSpan.FromSeconds(result);
+					startOffset = TimeSpan.FromSeconds(offsetSeconds);
 				}
 				else
 				{
 					m_errors.SetError(m_initial_sec, "Initial Offset is not a valid integer value.");
-					flag = true;
+					hasErrors = true;
 				}
 			}
-			int result2;
+			int recurrenceSeconds;
 			if (string.IsNullOrEmpty(m_recurrance_sec.Text))
 			{
 				m_errors.SetError(m_recurrance_sec, "Recurrence is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
-			else if (int.TryParse(m_recurrance_sec.Text, out result2))
+			else if (int.TryParse(m_recurrance_sec.Text, out recurrenceSeconds))
 			{
-				timeSpan = TimeSpan.FromSeconds(result2);
+				repeatInterval = TimeSpan.FromSeconds(recurrenceSeconds);
 			}
 			else
 			{
 				m_errors.SetError(m_initial_sec, "Initial Offset is not a valid integer value.");
-				flag = true;
+				hasErrors = true;
 			}
-			if (flag)
+			if (hasErrors)
 			{
 				return;
 			}
-			errorList.AddRange(taskScheduler.ScheduleSimpleJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset, null, null, timeSpan.GetValueOrDefault()));
+			errorList.AddRange(taskScheduler.ScheduleSimpleJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset, null, null, repeatInterval.GetValueOrDefault()));
 		}
 		else
 		{
-			TimeSpan? startOffset2 = null;
+			TimeSpan? startOffset = null;
 			if (!string.IsNullOrEmpty(m_initial_sec_adv.Text))
 			{
-				if (int.TryParse(m_initial_sec_adv.Text, out var result3))
+				if (int.TryParse(m_initial_sec_adv.Text, out var offsetSeconds))
 				{
-					startOffset2 = TimeSpan.FromSeconds(result3);
+					startOffset = TimeSpan.FromSeconds(offsetSeconds);
 				}
 				else
 				{
 					m_errors.SetError(m_initial_sec_adv, "Initial Offset is not a valid integer value.");
-					flag = true;
+					hasErrors = true;
 				}
 			}
 			if (string.IsNullOrEmpty(m_cron.Text))
 			{
 				m_errors.SetError(m_cron, "Expression is a required field.");
-				flag = true;
+				hasErrors = true;
 			}
-			if (flag)
+			if (hasErrors)
 			{
 				return;
 			}
-			errorList.AddRange(taskScheduler.ScheduleCronJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset2, null, null, m_cron.Text));
+			errorList.AddRange(taskScheduler.ScheduleCronJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset, null, null, m_cron.Text));
 		}
 		if (errorList.ContainsError())
 		{

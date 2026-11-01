@@ -211,12 +211,12 @@ public class StoreCacheData
 				clientRepositoryData2.Active = clientRepositoryDatum.Active;
 				clientRepositoryData2.Head = clientRepositoryDatum.Head;
 			}
-			foreach (ClientRepositoryData item in ClientRepositoryData.Where((ClientRepositoryData crd1) => !clientRepositoryData.Any((ClientRepositoryData clientRepositoryData3) => string.Equals(crd1.RepositoryName, clientRepositoryData3.RepositoryName, StringComparison.CurrentCultureIgnoreCase))))
+			foreach (ClientRepositoryData repositoryData in ClientRepositoryData.Where((ClientRepositoryData crd1) => !clientRepositoryData.Any((ClientRepositoryData clientRepositoryData3) => string.Equals(crd1.RepositoryName, clientRepositoryData3.RepositoryName, StringComparison.CurrentCultureIgnoreCase))))
 			{
-				item.InTransit = new ClientRepositoryData.Revlog();
-				item.Staged = new ClientRepositoryData.Revlog();
-				item.Active = new ClientRepositoryData.Revlog();
-				item.Head = new ClientRepositoryData.Revlog();
+				repositoryData.InTransit = new ClientRepositoryData.Revlog();
+				repositoryData.Staged = new ClientRepositoryData.Revlog();
+				repositoryData.Active = new ClientRepositoryData.Revlog();
+				repositoryData.Head = new ClientRepositoryData.Revlog();
 			}
 			ClientRepositoryDataSyncID = syncId;
 		}
@@ -235,26 +235,26 @@ public class StoreCacheData
 			{
 				ClientRepositoryData = new List<ClientRepositoryData>();
 			}
-			foreach (KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> item2 in assigned)
+			foreach (KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> assignment in assigned)
 			{
-				KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> repository1 = item2;
+				KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> repository1 = assignment;
 				ClientRepositoryData clientRepositoryData = ClientRepositoryData.FirstOrDefault((ClientRepositoryData c) => string.Equals(repository1.Key.Name, c.RepositoryName, StringComparison.CurrentCultureIgnoreCase));
 				if (clientRepositoryData != null)
 				{
-					clientRepositoryData.Assigned = item2.Value;
+					clientRepositoryData.Assigned = assignment.Value;
 					continue;
 				}
-				ClientRepositoryData item = new ClientRepositoryData
+				ClientRepositoryData repositoryData = new ClientRepositoryData
 				{
-					RepositoryName = item2.Key.Name,
-					RepositoryOID = item2.Key.OID,
-					Assigned = item2.Value,
+					RepositoryName = assignment.Key.Name,
+					RepositoryOID = assignment.Key.OID,
+					Assigned = assignment.Value,
 					InTransit = new ClientRepositoryData.Revlog(),
 					Staged = new ClientRepositoryData.Revlog(),
 					Active = new ClientRepositoryData.Revlog(),
 					Head = new ClientRepositoryData.Revlog()
 				};
-				ClientRepositoryData.Add(item);
+				ClientRepositoryData.Add(repositoryData);
 			}
 			ClientRepositoryData.RemoveAll((ClientRepositoryData crd) => !assigned.Any((KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> a) => string.Equals(crd.RepositoryName, a.Key.Name, StringComparison.CurrentCultureIgnoreCase)));
 		}

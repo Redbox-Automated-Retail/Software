@@ -162,13 +162,13 @@ public class DataUpdateService : IDataUpdateService
 		{
 			try
 			{
-				bool flag = !string.IsNullOrEmpty(filePath);
-				bool flag2 = flag;
-				if (flag2)
+				bool hasPath = !string.IsNullOrEmpty(filePath);
+				bool pathReady = hasPath;
+				if (pathReady)
 				{
-					flag2 = await CreateFilePathIfNeeded(filePath);
+					pathReady = await CreateFilePathIfNeeded(filePath);
 				}
-				if (flag2 && recordChangesData?.DataUpdateResponse != null)
+				if (pathReady && recordChangesData?.DataUpdateResponse != null)
 				{
 					json = recordChangesData.DataUpdateResponse.ToJsonIndented();
 					File.WriteAllText(filePath, json);

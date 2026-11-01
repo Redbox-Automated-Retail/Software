@@ -135,11 +135,11 @@ public class ApplicationPoolDefinition : Definition
 	{
 		try
 		{
-			List<string> list = new List<string>();
-			string[] array = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
-			if (array != null)
+			List<string> iisObjects = new List<string>();
+			string[] existingObjects = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
+			if (existingObjects != null)
 			{
-				list.AddRange(array);
+				iisObjects.AddRange(existingObjects);
 			}
 			IIsApplicationPool isApplicationPool = IIsApplicationPool.GetByName(Name) ?? IIsApplicationPool.CreateAppPool(Name);
 			if (isApplicationPool != null)
@@ -154,9 +154,9 @@ public class ApplicationPoolDefinition : Definition
 				isApplicationPool.ManagedRuntimeVersion = Enum<AspNetVersion>.ParseIgnoringCase(ManagedRuntimeVersion, AspNetVersion.AspNet20);
 				isApplicationPool.AutoStart = Convert.ToBoolean(AutoStart);
 				isApplicationPool.Save();
-				list.Add($"pool|{Name}");
+				iisObjects.Add($"pool|{Name}");
 			}
-			Registry.SetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", list.ToArray(), RegistryValueKind.MultiString);
+			Registry.SetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", iisObjects.ToArray(), RegistryValueKind.MultiString);
 		}
 		catch (Exception ex)
 		{

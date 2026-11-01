@@ -126,14 +126,14 @@ public class TestDataService : ITestDataService
 				{
 					testDataCategory.KeyValuePairs.TryRemove(propertyName, out var _);
 				}
-				string value2 = JsonConvert.SerializeObject(testDataCategory.KeyValuePairs, Formatting.Indented, new JsonSerializerSettings
+				string json = JsonConvert.SerializeObject(testDataCategory.KeyValuePairs, Formatting.Indented, new JsonSerializerSettings
 				{
 					NullValueHandling = NullValueHandling.Ignore
 				});
 				try
 				{
 					using StreamWriter outputFile = new StreamWriter(GetCategoryFileName(category));
-					await outputFile.WriteAsync(value2);
+					await outputFile.WriteAsync(json);
 				}
 				catch (Exception exception)
 				{

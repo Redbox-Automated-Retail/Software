@@ -28,11 +28,11 @@ public sealed class LegacyVersionJsonConverter : JsonConverter
 			return Version.Parse((string)reader.Value);
 		case JsonToken.StartObject:
 		{
-			JObject obj = JObject.Load(reader);
-			int major = Component(obj, "major");
-			int minor = Component(obj, "minor");
-			int build = Component(obj, "build");
-			int revision = Component(obj, "revision");
+			JObject versionObject = JObject.Load(reader);
+			int major = Component(versionObject, "major");
+			int minor = Component(versionObject, "minor");
+			int build = Component(versionObject, "build");
+			int revision = Component(versionObject, "revision");
 			// The Version constructors reject -1 (an unset component), so pick the one that matches what is set.
 			if (build < 0)
 			{

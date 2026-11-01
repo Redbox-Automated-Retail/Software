@@ -30,7 +30,6 @@ public static class FileHelper
 
 	public static bool SafeDeleteFile(string path)
 	{
-		bool flag = false;
 		try
 		{
 			File.Delete(path);
@@ -93,11 +92,11 @@ public static class FileHelper
 		{
 			return null;
 		}
-		byte[] array = null;
+		byte[] buffer = null;
 		using FileStream fileStream = StreamBase.OpenFile(fileName);
-		array = new byte[fileStream.Length];
-		fileStream.Read(array, 0, (int)fileStream.Length);
-		return array;
+		buffer = new byte[fileStream.Length];
+		fileStream.Read(buffer, 0, (int)fileStream.Length);
+		return buffer;
 	}
 
 	[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

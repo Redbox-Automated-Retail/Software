@@ -126,105 +126,105 @@ public static class Image
 
 	public unsafe static Bitmap Convert16bppTo8bpp(Bitmap bimap)
 	{
-		Bitmap bitmap = null;
-		int num = 0;
+		Bitmap newImage = null;
+		int layers = 0;
 		int width = bimap.Width;
 		int height = bimap.Height;
 		switch (bimap.PixelFormat)
 		{
 		case PixelFormat.Format16bppGrayScale:
-			bitmap = CreateGrayscaleImage(width, height);
-			num = 1;
+			newImage = CreateGrayscaleImage(width, height);
+			layers = 1;
 			break;
 		case PixelFormat.Format48bppRgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-			num = 3;
+			newImage = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+			layers = 3;
 			break;
 		case PixelFormat.Format64bppArgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-			num = 4;
+			newImage = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+			layers = 4;
 			break;
 		case PixelFormat.Format64bppPArgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
-			num = 4;
+			newImage = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
+			layers = 4;
 			break;
 		default:
 			throw new UnsupportedImageFormatException("Invalid pixel format of the source image.");
 		}
-		BitmapData bitmapData = bimap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, bimap.PixelFormat);
-		BitmapData bitmapData2 = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-		byte* ptr = (byte*)bitmapData.Scan0.ToPointer();
-		byte* ptr2 = (byte*)bitmapData2.Scan0.ToPointer();
-		int stride = bitmapData.Stride;
-		int stride2 = bitmapData2.Stride;
+		BitmapData sourceData = bimap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, bimap.PixelFormat);
+		BitmapData newData = newImage.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, newImage.PixelFormat);
+		byte* basePtr = (byte*)sourceData.Scan0.ToPointer();
+		byte* newBasePtr = (byte*)newData.Scan0.ToPointer();
+		int srcStride = sourceData.Stride;
+		int dstStride = newData.Stride;
 		for (int i = 0; i < height; i++)
 		{
-			ushort* ptr3 = (ushort*)(ptr + (nint)i * (nint)stride);
-			byte* ptr4 = ptr2 + (nint)i * (nint)stride2;
-			int num2 = 0;
-			int num3 = width * num;
-			while (num2 < num3)
+			ushort* src = (ushort*)(basePtr + (nint)i * (nint)srcStride);
+			byte* dst = newBasePtr + (nint)i * (nint)dstStride;
+			int x = 0;
+			int lineSize = width * layers;
+			while (x < lineSize)
 			{
-				*ptr4 = (byte)(*ptr3 >> 8);
-				num2++;
-				ptr3++;
-				ptr4++;
+				*dst = (byte)(*src >> 8);
+				x++;
+				src++;
+				dst++;
 			}
 		}
-		bimap.UnlockBits(bitmapData);
-		bitmap.UnlockBits(bitmapData2);
-		return bitmap;
+		bimap.UnlockBits(sourceData);
+		newImage.UnlockBits(newData);
+		return newImage;
 	}
 
 	public unsafe static Bitmap Convert8bppTo16bpp(Bitmap bimap)
 	{
-		Bitmap bitmap = null;
-		int num = 0;
+		Bitmap newImage = null;
+		int layers = 0;
 		int width = bimap.Width;
 		int height = bimap.Height;
 		switch (bimap.PixelFormat)
 		{
 		case PixelFormat.Format8bppIndexed:
-			bitmap = new Bitmap(width, height, PixelFormat.Format16bppGrayScale);
-			num = 1;
+			newImage = new Bitmap(width, height, PixelFormat.Format16bppGrayScale);
+			layers = 1;
 			break;
 		case PixelFormat.Format24bppRgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format48bppRgb);
-			num = 3;
+			newImage = new Bitmap(width, height, PixelFormat.Format48bppRgb);
+			layers = 3;
 			break;
 		case PixelFormat.Format32bppArgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format64bppArgb);
-			num = 4;
+			newImage = new Bitmap(width, height, PixelFormat.Format64bppArgb);
+			layers = 4;
 			break;
 		case PixelFormat.Format32bppPArgb:
-			bitmap = new Bitmap(width, height, PixelFormat.Format64bppPArgb);
-			num = 4;
+			newImage = new Bitmap(width, height, PixelFormat.Format64bppPArgb);
+			layers = 4;
 			break;
 		default:
 			throw new UnsupportedImageFormatException("Invalid pixel format of the source image.");
 		}
-		BitmapData bitmapData = bimap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, bimap.PixelFormat);
-		BitmapData bitmapData2 = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-		byte* ptr = (byte*)bitmapData.Scan0.ToPointer();
-		byte* ptr2 = (byte*)bitmapData2.Scan0.ToPointer();
-		int stride = bitmapData.Stride;
-		int stride2 = bitmapData2.Stride;
+		BitmapData sourceData = bimap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, bimap.PixelFormat);
+		BitmapData newData = newImage.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, newImage.PixelFormat);
+		byte* basePtr = (byte*)sourceData.Scan0.ToPointer();
+		byte* newBasePtr = (byte*)newData.Scan0.ToPointer();
+		int srcStride = sourceData.Stride;
+		int dstStride = newData.Stride;
 		for (int i = 0; i < height; i++)
 		{
-			byte* ptr3 = ptr + (nint)i * (nint)stride;
-			ushort* ptr4 = (ushort*)(ptr2 + (nint)i * (nint)stride2);
-			int num2 = 0;
-			int num3 = width * num;
-			while (num2 < num3)
+			byte* src = basePtr + (nint)i * (nint)srcStride;
+			ushort* dst = (ushort*)(newBasePtr + (nint)i * (nint)dstStride);
+			int x = 0;
+			int lineSize = width * layers;
+			while (x < lineSize)
 			{
-				*ptr4 = (ushort)(*ptr3 << 8);
-				num2++;
-				ptr3++;
-				ptr4++;
+				*dst = (ushort)(*src << 8);
+				x++;
+				src++;
+				dst++;
 			}
 		}
-		bimap.UnlockBits(bitmapData);
-		bitmap.UnlockBits(bitmapData2);
-		return bitmap;
+		bimap.UnlockBits(sourceData);
+		newImage.UnlockBits(newData);
+		return newImage;
 	}
 }

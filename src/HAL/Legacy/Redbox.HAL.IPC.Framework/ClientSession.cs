@@ -205,9 +205,9 @@ public abstract class ClientSession : IDisposable
 		int index = text.IndexOf(Environment.NewLine);
 		if (index != -1)
 		{
-			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			string line = text.Substring(0, index + Environment.NewLine.Length);
 			ReadBuilder.Remove(0, index + Environment.NewLine.Length);
-			return text2.Trim();
+			return line.Trim();
 		}
 		return string.Empty;
 	}

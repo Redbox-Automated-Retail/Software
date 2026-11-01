@@ -194,7 +194,7 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 		{
 			return false;
 		}
-		bool flag = false;
+		bool registered = false;
 		try
 		{
 			m_isConnecting = true;
@@ -207,7 +207,7 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 			LogHelper.Instance.Log("Register with Broker Services, store number: {0}, version data: {1}", m_kioskId, m_versionPricingDictionary);
 			m_broker.Register(m_kioskId.Value, this, m_versionPricingDictionary);
 			LogHelper.Instance.Log("...Registration with Broker Services successful.");
-			flag = true;
+			registered = true;
 		}
 		catch (Exception e)
 		{
@@ -216,7 +216,7 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 		finally
 		{
 			m_isConnecting = false;
-			if (flag && m_reconnectTimer != null)
+			if (registered && m_reconnectTimer != null)
 			{
 				LogHelper.Instance.Log("...Stop and dispose reconnect timer.");
 				try
@@ -233,6 +233,6 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 				}
 			}
 		}
-		return flag;
+		return registered;
 	}
 }

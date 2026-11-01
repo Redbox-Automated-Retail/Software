@@ -67,20 +67,20 @@ public class CommandLineService : ICommandLineService
 		process.StartInfo.RedirectStandardOutput = true;
 		process.StartInfo.RedirectStandardError = true;
 		process.Start();
-		string text = process.StandardOutput.ReadToEnd();
-		string text2 = process.StandardError.ReadToEnd();
+		string output = process.StandardOutput.ReadToEnd();
+		string errorOutput = process.StandardError.ReadToEnd();
 		if (!process.WaitForExit((int)(timeout?.TotalMilliseconds ?? TimeSpan.FromMinutes(5.0).TotalMilliseconds)))
 		{
-			text2 += $"Process did not complete within {timeout}.";
+			errorOutput += $"Process did not complete within {timeout}.";
 		}
-		if (!string.IsNullOrWhiteSpace(text))
+		if (!string.IsNullOrWhiteSpace(output))
 		{
-			_logger.LogInfoWithSource(text, "Execute", "/sln/src/UpdateClientService.API/Services/Utilities/CommandLineService.cs");
+			_logger.LogInfoWithSource(output, "Execute", "/sln/src/UpdateClientService.API/Services/Utilities/CommandLineService.cs");
 		}
-		if (!string.IsNullOrWhiteSpace(text2))
+		if (!string.IsNullOrWhiteSpace(errorOutput))
 		{
-			_logger.LogErrorWithSource("An error occurred while running a command. Error: " + text2, "Execute", "/sln/src/UpdateClientService.API/Services/Utilities/CommandLineService.cs");
+			_logger.LogErrorWithSource("An error occurred while running a command. Error: " + errorOutput, "Execute", "/sln/src/UpdateClientService.API/Services/Utilities/CommandLineService.cs");
 		}
-		return string.IsNullOrWhiteSpace(text2);
+		return string.IsNullOrWhiteSpace(errorOutput);
 	}
 }

@@ -33,15 +33,15 @@ internal static class Utils
 
 	internal static FILETIME DateTime2FileTime(DateTime dateTime)
 	{
-		long num = 0L;
+		long fileTime = 0L;
 		if (dateTime != DateTime.MinValue)
 		{
-			num = dateTime.ToFileTime();
+			fileTime = dateTime.ToFileTime();
 		}
 		return new FILETIME
 		{
-			dwLowDateTime = (uint)(num & 0xFFFFFFFFu),
-			dwHighDateTime = (uint)(num >> 32)
+			dwLowDateTime = (uint)(fileTime & 0xFFFFFFFFu),
+			dwHighDateTime = (uint)(fileTime >> 32)
 		};
 	}
 
@@ -75,23 +75,23 @@ internal static class Utils
 			{
 				return BitsVersion.Bits0_0;
 			}
-			int num = Marshal.ReadInt16(pValue);
-			int num2 = Marshal.ReadInt16((IntPtr)((int)pValue + 2));
-			string pSubBlock = $"\\StringFileInfo\\{num:X4}{num2:X4}\\ProductVersion";
-			if (!NativeMethods.VerQueryValue(buffer, pSubBlock, out string pValue2, out len))
+			int language = Marshal.ReadInt16(pValue);
+			int codePage = Marshal.ReadInt16((IntPtr)((int)pValue + 2));
+			string pSubBlock = $"\\StringFileInfo\\{language:X4}{codePage:X4}\\ProductVersion";
+			if (!NativeMethods.VerQueryValue(buffer, pSubBlock, out string productVersion, out len))
 			{
 				return BitsVersion.Bits0_0;
 			}
-			string[] parts = pValue2.Split('.');
+			string[] parts = productVersion.Split('.');
 			if (parts == null || parts.Length < 2)
 			{
 				return BitsVersion.Bits0_0;
 			}
-			int number = int.Parse(parts[0]);
-			int num4 = int.Parse(parts[1]);
-			return number switch
+			int major = int.Parse(parts[0]);
+			int minor = int.Parse(parts[1]);
+			return major switch
 			{
-				6 => num4 switch
+				6 => minor switch
 				{
 					0 => BitsVersion.Bits1_0, 
 					2 => BitsVersion.Bits1_2, 

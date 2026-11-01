@@ -11,8 +11,8 @@ public class DownloadFileJobComparer : IEqualityComparer<DownloadFileJob>
 
 	public int GetHashCode(DownloadFileJob key)
 	{
-		long num = 17L;
-		num = (num * 23 + key?.DownloadFileJobId.ToUpper().GetHashCode()) ?? 0.GetHashCode();
-		return (int)num;
+		long hash = 17L;
+		hash = (hash * 23 + key?.DownloadFileJobId.ToUpper().GetHashCode()) ?? 0.GetHashCode();
+		return (int)hash;
 	}
 }

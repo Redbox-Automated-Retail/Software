@@ -36,11 +36,11 @@ public class CCFDTO
 
 	public static List<CCFDTO> GetCCFDTOList(List<ClientConfigFile> list)
 	{
-		List<CCFDTO> list2 = new List<CCFDTO>();
+		List<CCFDTO> converted = new List<CCFDTO>();
 		foreach (ClientConfigFile item in list)
 		{
 			CCFDTO cCFDTO = new CCFDTO();
-			list2.Add(cCFDTO);
+			converted.Add(cCFDTO);
 			cCFDTO.Id = item.ConfigFileOID;
 			cCFDTO.Name = item.Name;
 			cCFDTO.SGId = item.StagedGenerationId;
@@ -48,6 +48,6 @@ public class CCFDTO
 			cCFDTO.AGId = item.ActiveGenerationId;
 			cCFDTO.AGD = item.ActiveGenerationDate;
 		}
-		return list2;
+		return converted;
 	}
 }

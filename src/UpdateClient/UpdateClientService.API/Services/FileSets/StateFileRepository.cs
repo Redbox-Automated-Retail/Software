@@ -77,22 +77,22 @@ public class StateFileRepository : IStateFileRepository
 		{
 			try
 			{
-				bool flag = await SaveClientFileSetState(new ClientFileSetState
+				bool saved = await SaveClientFileSetState(new ClientFileSetState
 				{
 					FileSetId = stateFile.FileSetId,
 					RevisionId = stateFile.ActiveRevisionId,
 					FileSetState = FileSetState.Active
 				});
-				if (flag)
+				if (saved)
 				{
-					flag = await SaveClientFileSetState(new ClientFileSetState
+					saved = await SaveClientFileSetState(new ClientFileSetState
 					{
 						FileSetId = stateFile.FileSetId,
 						RevisionId = stateFile.InProgressRevisionId,
 						FileSetState = ((stateFile.InProgressRevisionId != 0L) ? stateFile.InProgressFileSetState : FileSetState.Error)
 					});
 				}
-				return flag;
+				return saved;
 			}
 			catch (Exception ex)
 			{
@@ -136,25 +136,25 @@ public class StateFileRepository : IStateFileRepository
 	public async Task<(bool, StateFile)> Get(long fileSetId)
 	{
 		(bool, List<ClientFileSetState>) tuple = await GetClientFileSetStates(fileSetId);
-		bool item = tuple.Item1;
-		List<ClientFileSetState> item2 = tuple.Item2;
-		StateFile item3 = (item ? CreateStateFile(item2, fileSetId) : null);
-		return (item, item3);
+		bool success = tuple.Item1;
+		List<ClientFileSetState> states = tuple.Item2;
+		StateFile stateFile = (success ? CreateStateFile(states, fileSetId) : null);
+		return (success, stateFile);
 	}
 
 	public async Task<(bool, List<StateFile>)> GetAll()
 	{
 		List<StateFile> stateFiles = new List<StateFile>();
-		var (item, list) = await GetClientFileSetStates();
-		foreach (long item2 in list.Select((ClientFileSetState x) => x.FileSetId).Distinct())
+		var (success, states) = await GetClientFileSetStates();
+		foreach (long fileSetId in states.Select((ClientFileSetState x) => x.FileSetId).Distinct())
 		{
-			StateFile stateFile = CreateStateFile(list, item2);
+			StateFile stateFile = CreateStateFile(states, fileSetId);
 			if (stateFile != null)
 			{
 				stateFiles.Add(stateFile);
 			}
 		}
-		return (item, stateFiles);
+		return (success, stateFiles);
 	}
 
 	private StateFile CreateStateFile(List<ClientFileSetState> clientFileSetStates, long fileSetId)

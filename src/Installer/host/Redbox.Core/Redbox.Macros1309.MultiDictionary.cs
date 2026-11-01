@@ -100,11 +100,11 @@ internal class Redbox_002EMacros1309_002EMultiDictionary<K, V> : IDictionary<K, 
 		{
 			throw new ArgumentException("array.Length is too small.", "array");
 		}
-		int num = arrayIndex;
+		int index = arrayIndex;
 		foreach (KeyValuePair<K, ICollection<V>> item in m_dict)
 		{
-			array[num] = item;
-			num++;
+			array[index] = item;
+			index++;
 		}
 	}
 

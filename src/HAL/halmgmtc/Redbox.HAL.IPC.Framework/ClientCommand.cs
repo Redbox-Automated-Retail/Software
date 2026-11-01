@@ -80,7 +80,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 	public T Execute(IIpcClientSession session)
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
-		T val = new T
+		T result = new T
 		{
 			CommandText = CommandText
 		};
@@ -94,19 +94,19 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 			{
 				session.ConnectThrowOnError();
 			}
-			List<string> list = session.ExecuteCommand(CommandText);
-			val.Success = session.IsStatusOK(list);
-			if (list.Count > 0)
+			List<string> responses = session.ExecuteCommand(CommandText);
+			result.Success = session.IsStatusOK(responses);
+			if (responses.Count > 0)
 			{
-				val.StatusMessage = list[list.Count - 1];
-				list.RemoveAt(list.Count - 1);
+				result.StatusMessage = responses[responses.Count - 1];
+				responses.RemoveAt(responses.Count - 1);
 			}
-			val.CommandMessages.AddRange(list);
-			foreach (int item in ConvertMessages(val))
+			result.CommandMessages.AddRange(responses);
+			foreach (int index in ConvertMessages(result))
 			{
-				if (item < val.CommandMessages.Count)
+				if (index < result.CommandMessages.Count)
 				{
-					val.CommandMessages.RemoveAt(item);
+					result.CommandMessages.RemoveAt(index);
 				}
 			}
 		}
@@ -114,24 +114,24 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 		{
 			ErrorLogFile.WriteLine("ClientCommand.Execute() caught a socket exception; SocketErrorCode = {0}, Native = {1}", ex.SocketErrorCode, ex.NativeErrorCode);
 			ErrorLogFile.Flush();
-			OnConnectionFailure(ex, val);
+			OnConnectionFailure(ex, result);
 		}
 		catch (TimeoutException ex2)
 		{
 			ErrorLogFile.WriteLine("ClientCommand.Execute() caught a Timeout exception ( exception Message = {0} )", ex2.Message);
 			ErrorLogFile.Flush();
-			OnConnectionFailure(ex2, val);
+			OnConnectionFailure(ex2, result);
 		}
 		catch (Exception e)
 		{
-			OnUnhandledException(e, val);
+			OnUnhandledException(e, result);
 		}
 		finally
 		{
-			val.ExecutionTime = executionTimer.Elapsed;
-			ExecutionTime = val.ExecutionTime;
+			result.ExecutionTime = executionTimer.Elapsed;
+			ExecutionTime = result.ExecutionTime;
 		}
-		return val;
+		return result;
 	}
 
 	public override string ToString()
@@ -170,17 +170,17 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 
 	internal static List<int> ConvertMessages(T result)
 	{
-		List<int> list = new List<int>();
+		List<int> consumedIndexes = new List<int>();
 		for (int i = 0; i < result.CommandMessages.Count; i++)
 		{
 			if (result.CommandMessages[i].StartsWith("|*"))
 			{
-				list.Add(i);
+				consumedIndexes.Add(i);
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.AppendLine(result.CommandMessages[i]);
 				for (int j = i + 1; j < result.CommandMessages.Count; j++)
 				{
-					list.Add(j);
+					consumedIndexes.Add(j);
 					stringBuilder.AppendLine(result.CommandMessages[j]);
 					if (result.CommandMessages[j].EndsWith("*|"))
 					{
@@ -189,18 +189,18 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 				}
 				stringBuilder.Replace("|*", string.Empty);
 				stringBuilder.Replace("*|", string.Empty);
-				string text = stringBuilder.ToString();
-				string text2 = StringExtensions.ExtractCodeFromBrackets(text, "[", "]");
-				if (text2 != null)
+				string errorText = stringBuilder.ToString();
+				string code = StringExtensions.ExtractCodeFromBrackets(errorText, "[", "]");
+				if (code != null)
 				{
-					string[] array = text.Substring(text2.Length + 2).Split("|".ToCharArray());
-					if (array[0].IndexOf("WARNING") != -1)
+					string[] parts = errorText.Substring(code.Length + 2).Split("|".ToCharArray());
+					if (parts[0].IndexOf("WARNING") != -1)
 					{
-						result.Errors.Add(Error.NewWarning(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewWarning(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 					else
 					{
-						result.Errors.Add(Error.NewError(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewError(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 				}
 			}
@@ -215,6 +215,6 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 				result.CommandMessages[i] = Encoding.ASCII.GetString(algorithm2.Decompress(StringExtensions.Base64ToBytes(result.CommandMessages[i].Substring(5))));
 			}
 		}
-		return list;
+		return consumedIndexes;
 	}
 }

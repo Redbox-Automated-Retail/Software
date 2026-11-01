@@ -33,14 +33,14 @@ public class UpdateServiceCredentials
 		{
 			string directoryName = Path.GetDirectoryName(typeof(UpdateService).Assembly.Location);
 			string path = Path.Combine(directoryName, "usdata.active");
-			string text2 = Path.Combine(directoryName, "usdata.staged");
-			if (File.Exists(text2))
+			string stagedPath = Path.Combine(directoryName, "usdata.staged");
+			if (File.Exists(stagedPath))
 			{
 				if (File.Exists(path))
 				{
 					File.Delete(path);
 				}
-				File.Move(text2, path);
+				File.Move(stagedPath, path);
 				_credentials = null;
 			}
 			if (_credentials != null)

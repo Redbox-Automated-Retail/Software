@@ -280,29 +280,29 @@ public class InstallerProject
 		{
 			if (m_osVersions == null)
 			{
-				List<Version> list = Constants.OperatingSystems.Keys.ToList();
-				list.Sort();
-				string text = Values["OSRequired"];
-				if (!string.IsNullOrEmpty(text))
+				List<Version> knownVersions = Constants.OperatingSystems.Keys.ToList();
+				knownVersions.Sort();
+				string required = Values["OSRequired"];
+				if (!string.IsNullOrEmpty(required))
 				{
 					bool above = false;
-					text = text.Replace(" ", string.Empty);
-					if (text.EndsWith("+"))
+					required = required.Replace(" ", string.Empty);
+					if (required.EndsWith("+"))
 					{
 						above = true;
-						text = text.Replace("+", string.Empty);
+						required = required.Replace("+", string.Empty);
 					}
-					if (decimal.TryParse(text, out var result))
+					if (decimal.TryParse(required, out var versionNumber))
 					{
-						int num = Convert.ToInt32(result);
-						int minor = Convert.ToInt32((result - (decimal)num) * 10m);
-						Version version = new Version(num, minor);
-						m_osVersions = list.SkipWhile((Version v) => v != version).TakeWhile((Version v) => v == version || above).ToList();
+						int major = Convert.ToInt32(versionNumber);
+						int minor = Convert.ToInt32((versionNumber - (decimal)major) * 10m);
+						Version version = new Version(major, minor);
+						m_osVersions = knownVersions.SkipWhile((Version v) => v != version).TakeWhile((Version v) => v == version || above).ToList();
 					}
 				}
 				if (m_osVersions == null)
 				{
-					m_osVersions = list;
+					m_osVersions = knownVersions;
 				}
 			}
 			return m_osVersions;

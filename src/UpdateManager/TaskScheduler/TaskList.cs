@@ -26,12 +26,12 @@ public class TaskList : IEnumerable, IDisposable
 
 		public bool MoveNext()
 		{
-			bool flag = ++curIndex < nameTask.Length;
-			if (flag)
+			bool hasNext = ++curIndex < nameTask.Length;
+			if (hasNext)
 			{
 				curTask = outer.OpenTask(nameTask[curIndex]);
 			}
-			return flag;
+			return hasNext;
 		}
 
 		public void Reset()

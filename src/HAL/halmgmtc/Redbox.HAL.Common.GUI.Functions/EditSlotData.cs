@@ -205,47 +205,47 @@ public class EditSlotData : Form
 		{
 			return false;
 		}
-		string text = m_encoderUnitsTextBox.Text;
-		int result = 0;
-		if (int.TryParse(text, out result))
+		string unitsText = m_encoderUnitsTextBox.Text;
+		int units = 0;
+		if (int.TryParse(unitsText, out units))
 		{
-			if ((direction == Direction.Up || direction == Direction.Down) && Math.Abs(result) > 1000)
+			if ((direction == Direction.Up || direction == Direction.Down) && Math.Abs(units) > 1000)
 			{
 				m_errorProvider.SetError(m_encoderUnitsTextBox, "Units exceeds threshold for axis.");
 				return false;
 			}
-			if ((direction == Direction.Left || direction == Direction.Right) && Math.Abs(result) > 100)
+			if ((direction == Direction.Left || direction == Direction.Right) && Math.Abs(units) > 100)
 			{
 				m_errorProvider.SetError(m_encoderUnitsTextBox, "Units exceeds threshold for axis.");
 				return false;
 			}
 			if (direction == Direction.Left || direction == Direction.Down)
 			{
-				result = -result;
+				units = -units;
 			}
-			bool flag = direction == Direction.Up || direction == Direction.Down;
-			int num = (flag ? (CurrentEY + result) : (CurrentEX + result));
+			bool isVertical = direction == Direction.Up || direction == Direction.Down;
+			int target = (isVertical ? (CurrentEY + units) : (CurrentEX + units));
 			MoveHelper moveHelper = new MoveHelper(Service);
-			MoveHelperResult moveHelperResult = moveHelper.MoveAbs(flag ? MoveAxis.Y : MoveAxis.X, num);
-			OutputBox.Write("MOVE {0} {1} UNITS - New Location {2} ...", direction.ToString().ToUpper(), text, num);
+			MoveHelperResult moveHelperResult = moveHelper.MoveAbs(isVertical ? MoveAxis.Y : MoveAxis.X, target);
+			OutputBox.Write("MOVE {0} {1} UNITS - New Location {2} ...", direction.ToString().ToUpper(), unitsText, target);
 			if (!moveHelperResult.MoveOk)
 			{
 				OutputBox.Write(moveHelperResult.Status);
 				return false;
 			}
-			if (flag)
+			if (isVertical)
 			{
-				CurrentEY = num;
+				CurrentEY = target;
 			}
 			else
 			{
-				CurrentEX = num;
+				CurrentEX = target;
 			}
 			OutputBox.Write(moveHelperResult.Status);
-			MotorPosition position = new MotorPosition(MoveAxis.X);
-			MotorPosition position2 = new MotorPosition(MoveAxis.Y);
-			moveHelper.GetPosition(ref position);
-			moveHelper.GetPosition(ref position2);
+			MotorPosition positionX = new MotorPosition(MoveAxis.X);
+			MotorPosition positionY = new MotorPosition(MoveAxis.Y);
+			moveHelper.GetPosition(ref positionX);
+			moveHelper.GetPosition(ref positionY);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append(RinglightActive ? "RINGLIGHT ON" : ("RINGLIGHT OFF" + Environment.NewLine));
 			stringBuilder.Append(SensorbarActive ? "SENSOR PICKER-ON" : ("SENSOR PICKER-OFF" + Environment.NewLine));
@@ -274,25 +274,25 @@ public class EditSlotData : Form
 
 	private void SavePositionalState()
 	{
-		int num = 0;
-		MotorPosition position = new MotorPosition(MoveAxis.Y);
+		int readCount = 0;
+		MotorPosition positionY = new MotorPosition(MoveAxis.Y);
 		MoveHelper moveHelper = new MoveHelper(Service);
-		moveHelper.GetPosition(ref position);
-		if (position.ReadOk)
+		moveHelper.GetPosition(ref positionY);
+		if (positionY.ReadOk)
 		{
-			int originalEY = (CurrentEY = position.Position);
+			int originalEY = (CurrentEY = positionY.Position);
 			OriginalEY = originalEY;
-			num++;
+			readCount++;
 		}
-		MotorPosition position3 = new MotorPosition(MoveAxis.X);
-		moveHelper.GetPosition(ref position3);
-		if (position3.ReadOk)
+		MotorPosition positionX = new MotorPosition(MoveAxis.X);
+		moveHelper.GetPosition(ref positionX);
+		if (positionX.ReadOk)
 		{
-			int originalEY = (CurrentEX = position3.Position);
-			OriginalEX = originalEY;
-			num++;
+			int originalEX = (CurrentEX = positionX.Position);
+			OriginalEX = originalEX;
+			readCount++;
 		}
-		PositionsRecorded = num == 2;
+		PositionsRecorded = readCount == 2;
 	}
 
 	private void m_moveButton_Click(object sender, EventArgs e)
@@ -450,18 +450,18 @@ public class EditSlotData : Form
 		}
 		if (Deck == 1 && m_applyToAllDecksCheckBox.Checked)
 		{
-			int num = 0;
+			int updated = 0;
 			foreach (XmlNode item in Manager.FindAllDeckNodes())
 			{
 				if (UpdateDeckNode(item, deltaX, deltaY, applyBlind: true))
 				{
-					num++;
+					updated++;
 				}
 			}
-			return num > 0;
+			return updated > 0;
 		}
-		XmlNode node2 = Manager.FindDeckNode(Deck);
-		return UpdateDeckNode(node2, deltaX, deltaY, applyBlind: false);
+		XmlNode deckNode = Manager.FindDeckNode(Deck);
+		return UpdateDeckNode(deckNode, deltaX, deltaY, applyBlind: false);
 	}
 
 	private bool UpdateDeckNode(XmlNode node, int deltaX, int deltaY, bool applyBlind)
@@ -474,46 +474,46 @@ public class EditSlotData : Form
 		{
 			return false;
 		}
-		int attributeValue = node.GetAttributeValue<int>("Number");
+		int deckNumber = node.GetAttributeValue<int>("Number");
 		if (deltaY != 0)
 		{
-			int attributeValue2 = node.GetAttributeValue<int>("Offset");
-			attributeValue2 += deltaY;
-			node.SetAttributeValue("Offset", attributeValue2);
+			int offset = node.GetAttributeValue<int>("Offset");
+			offset += deltaY;
+			node.SetAttributeValue("Offset", offset);
 		}
 		if (deltaX != 0)
 		{
-			XmlNode node2 = node.ChildNodes[0];
-			decimal? attributeValue3 = node.GetAttributeValue<decimal?>("SlotWidth");
-			decimal num = 0m;
-			if (attributeValue == 8 && !applyBlind)
+			XmlNode firstQuadrant = node.ChildNodes[0];
+			decimal? slotWidth = node.GetAttributeValue<decimal?>("SlotWidth");
+			decimal startOffset = 0m;
+			if (deckNumber == 8 && !applyBlind)
 			{
-				num = (decimal)StartXPosition + (decimal)deltaX - attributeValue3.Value;
+				startOffset = (decimal)StartXPosition + (decimal)deltaX - slotWidth.Value;
 			}
 			else
 			{
-				num = node2.GetAttributeValue<int>("Offset");
-				num += (decimal)deltaX;
+				startOffset = firstQuadrant.GetAttributeValue<int>("Offset");
+				startOffset += (decimal)deltaX;
 			}
-			int attributeValue4 = node.GetAttributeValue<int>("Offset");
-			int? attributeValue5 = node.GetAttributeValue<int?>("NumberOfSlots");
-			int? attributeValue6 = node.GetAttributeValue<int?>("SellThruSlots");
-			int? attributeValue7 = node.GetAttributeValue<int?>("SellThruOffset");
-			int? attributeValue8 = node.GetAttributeValue<int?>("ApproachOffset");
-			bool attributeValue9 = node.GetAttributeValue<bool>("IsQlm");
-			int? num2 = (attributeValue6.HasValue ? 6 : 15);
+			int deckOffset = node.GetAttributeValue<int>("Offset");
+			int? numberOfSlots = node.GetAttributeValue<int?>("NumberOfSlots");
+			int? sellThruSlots = node.GetAttributeValue<int?>("SellThruSlots");
+			int? sellThruOffset = node.GetAttributeValue<int?>("SellThruOffset");
+			int? approachOffset = node.GetAttributeValue<int?>("ApproachOffset");
+			bool isQlm = node.GetAttributeValue<bool>("IsQlm");
+			int? slotsPerQuadrant = (sellThruSlots.HasValue ? 6 : 15);
 			int count = node.ChildNodes.Count;
 			node.Attributes.RemoveAll();
-			CommonFunctions.ComputeQuadrants(num, count, attributeValue6, attributeValue7, num2, attributeValue3, node);
-			node.SetAttributeValue("Number", attributeValue);
-			node.SetAttributeValue("Offset", attributeValue4);
-			node.SetAttributeValue("NumberOfSlots", attributeValue5);
-			node.SetAttributeValue("SlotWidth", attributeValue3);
-			node.SetAttributeValue("IsQlm", attributeValue9);
-			node.SetAttributeValue("SellThruSlots", attributeValue6);
-			node.SetAttributeValue("SellThruOffset", attributeValue7);
-			node.SetAttributeValue("ApproachOffset", attributeValue8);
-			node.SetAttributeValue("SlotsPerQuadrant", num2);
+			CommonFunctions.ComputeQuadrants(startOffset, count, sellThruSlots, sellThruOffset, slotsPerQuadrant, slotWidth, node);
+			node.SetAttributeValue("Number", deckNumber);
+			node.SetAttributeValue("Offset", deckOffset);
+			node.SetAttributeValue("NumberOfSlots", numberOfSlots);
+			node.SetAttributeValue("SlotWidth", slotWidth);
+			node.SetAttributeValue("IsQlm", isQlm);
+			node.SetAttributeValue("SellThruSlots", sellThruSlots);
+			node.SetAttributeValue("SellThruOffset", sellThruOffset);
+			node.SetAttributeValue("ApproachOffset", approachOffset);
+			node.SetAttributeValue("SlotsPerQuadrant", slotsPerQuadrant);
 		}
 		return true;
 	}

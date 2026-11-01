@@ -19,12 +19,12 @@ public static class AnalyticsExtensions
 		{
 			return null;
 		}
-		ImmutableSortedSet<int?> source2 = source.ToImmutableSortedSet();
-		int num = source2.Count() / 2;
-		if (source2.Count() % 2 == 0)
+		ImmutableSortedSet<int?> sorted = source.ToImmutableSortedSet();
+		int middle = sorted.Count() / 2;
+		if (sorted.Count() % 2 == 0)
 		{
-			return (double?)(source2.ElementAt(num) + source2.ElementAt(num - 1)) / 2.0;
+			return (double?)(sorted.ElementAt(middle) + sorted.ElementAt(middle - 1)) / 2.0;
 		}
-		return source2.ElementAt(num);
+		return sorted.ElementAt(middle);
 	}
 }

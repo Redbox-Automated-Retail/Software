@@ -37,11 +37,11 @@ internal class VidcapService : global::Redbox.HAL.Core.ICameraPlugin
 			m_vidcapForm = new Vidcapform();
 			m_vidcapForm.Visible = false;
 			m_vidcapForm.Videocap.LicenseKey = "1121 special developer license";
-			short num = m_vidcapForm.Videocap.Start();
-			IsRunning = num == 0;
+			short startResult = m_vidcapForm.Videocap.Start();
+			IsRunning = startResult == 0;
 			if (!IsRunning)
 			{
-				LogHelper.Instance.Log($"Videocap.Start() returned {num}.", (LogEntryType)2);
+				LogHelper.Instance.Log($"Videocap.Start() returned {startResult}.", (LogEntryType)2);
 			}
 			return IsRunning;
 		}
@@ -60,17 +60,17 @@ internal class VidcapService : global::Redbox.HAL.Core.ICameraPlugin
 			return null;
 		}
 		DateTime now = DateTime.Now;
-		string path = $"m{now.Month}d{now.Day}y{now.Year}_h{now.Hour}m{now.Minute}s{now.Second}t{now.Millisecond}.jpg";
-		string text = Path.Combine(ImagesDirectory, path);
+		string fileName = $"m{now.Month}d{now.Day}y{now.Year}_h{now.Hour}m{now.Minute}s{now.Second}t{now.Millisecond}.jpg";
+		string path = Path.Combine(ImagesDirectory, fileName);
 		try
 		{
-			bool flag = m_vidcapForm.Videocap.SnapShotJPEG(text, 100);
-			if (!flag)
+			bool saved = m_vidcapForm.Videocap.SnapShotJPEG(path, 100);
+			if (!saved)
 			{
-				LogHelper.Instance.Log($"Snapshot returned {flag} for {text}", (LogEntryType)2);
+				LogHelper.Instance.Log($"Snapshot returned {saved} for {path}", (LogEntryType)2);
 				return null;
 			}
-			return text;
+			return path;
 		}
 		catch (Exception ex)
 		{

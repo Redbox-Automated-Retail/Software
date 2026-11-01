@@ -51,13 +51,13 @@ public class KioskEngineService : IKioskEngineService
 			int attempt = 0;
 			while (true)
 			{
-				bool flag = attempt++ < attempts;
-				bool flag2 = flag;
-				if (flag2)
+				bool hasAttemptsLeft = attempt++ < attempts;
+				bool keepWaiting = hasAttemptsLeft;
+				if (keepWaiting)
 				{
-					flag2 = await GetStatus() != KioskEngineStatus.Stopped;
+					keepWaiting = await GetStatus() != KioskEngineStatus.Stopped;
 				}
-				if (!flag2)
+				if (!keepWaiting)
 				{
 					break;
 				}

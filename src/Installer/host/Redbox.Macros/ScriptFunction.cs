@@ -21,17 +21,17 @@ public static class ScriptFunction
 		if (scriptFunction != null)
 		{
 			ParameterInfo[] parameters = scriptFunction.GetParameters();
-			List<object> list = new List<object>();
-			int num = 0;
+			List<object> arguments = new List<object>();
+			int index = 0;
 			foreach (SimpleToken symbol in scriptFunctionTokenizer.Tokens.GetSymbols())
 			{
-				list.Add(Convert.ChangeType(MacroContainer.Instance.ExpandRuntimeMacros(symbol.Value), parameters[num++].ParameterType));
+				arguments.Add(Convert.ChangeType(MacroContainer.Instance.ExpandRuntimeMacros(symbol.Value), parameters[index++].ParameterType));
 			}
-			if (list.Count < parameters.Length)
+			if (arguments.Count < parameters.Length)
 			{
 				return value;
 			}
-			value = scriptFunction.Invoke(null, list.ToArray()).ToString();
+			value = scriptFunction.Invoke(null, arguments.ToArray()).ToString();
 			functionExecuted = true;
 		}
 		return value;

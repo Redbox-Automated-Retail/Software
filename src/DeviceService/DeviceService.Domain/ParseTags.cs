@@ -593,8 +593,8 @@ public class ParseTags
 					string derivationKeyIndex = TagDataStr.Substring(offset, 2);
 					IUC285Proxy.Log("Byte 2 - Derivation Key Index = " + derivationKeyIndex);
 					offset += 2;
-					string text52 = TagDataStr.Substring(offset, 2);
-					IUC285Proxy.Log("Byte 3 - Cryptogram Version Number = " + text52.ToUpper());
+					string cryptogramVersion = TagDataStr.Substring(offset, 2);
+					IUC285Proxy.Log("Byte 3 - Cryptogram Version Number = " + cryptogramVersion.ToUpper());
 					offset += 2;
 					string cvrLength = TagDataStr.Substring(offset, 2);
 					IUC285Proxy.Log("CVR: " + TagDataStr.Substring(offset, 8).ToUpper());
@@ -2185,9 +2185,9 @@ public class ParseTags
 						IUC285Proxy.Log("  " + cvRuleBits[ruleIndex].Substring(2, 6) + " - Reserved");
 						break;
 					}
-					string text226 = TagDataByte[byteIndex + 1].ToString("X2");
-					IUC285Proxy.Log("CV Rule Byte 2: " + text226);
-					switch (text226)
+					string cvConditionCode = TagDataByte[byteIndex + 1].ToString("X2");
+					IUC285Proxy.Log("CV Rule Byte 2: " + cvConditionCode);
+					switch (cvConditionCode)
 					{
 					case "00":
 						IUC285Proxy.Log("  00     - Always");
@@ -2220,7 +2220,7 @@ public class ParseTags
 						IUC285Proxy.Log("  09     - If transaction is in the application currency and is over Y value");
 						break;
 					default:
-						IUC285Proxy.Log("  " + text226 + " - RFU");
+						IUC285Proxy.Log("  " + cvConditionCode + " - RFU");
 						break;
 					}
 					byteIndex += 2;
@@ -3151,8 +3151,8 @@ public class ParseTags
 			{
 				IUC285Proxy.Log("-----------------CVM Results(T9F34)-----------------");
 				string byte1Bits = Convert.ToString(TagDataByte[0], 2).PadLeft(8, '0');
-				string text256 = TagDataByte[1].ToString("X2");
-				string text257 = TagDataByte[2].ToString("X2");
+				string cvmCondition = TagDataByte[1].ToString("X2");
+				string cvmResult = TagDataByte[2].ToString("X2");
 				IUC285Proxy.Log("Byte 1 - CVM Performed: " + byte1Bits);
 				IUC285Proxy.Log("  " + byte1Bits.Substring(0, 1) + "      - RFU");
 				string byte1Bit7 = byte1Bits.Substring(1, 1);
@@ -3194,8 +3194,8 @@ public class ParseTags
 					IUC285Proxy.Log("  " + byte1Bits.Substring(2, 6) + " - Reserved");
 					break;
 				}
-				IUC285Proxy.Log("Byte 2 - CVM Condition: " + text256);
-				switch (text256)
+				IUC285Proxy.Log("Byte 2 - CVM Condition: " + cvmCondition);
+				switch (cvmCondition)
 				{
 				case "00":
 					IUC285Proxy.Log("  00     - Always");
@@ -3228,11 +3228,11 @@ public class ParseTags
 					IUC285Proxy.Log("  09     - If transaction is in the application currency and is over Y value");
 					break;
 				default:
-					IUC285Proxy.Log("  " + text256 + " - RFU");
+					IUC285Proxy.Log("  " + cvmCondition + " - RFU");
 					break;
 				}
-				IUC285Proxy.Log("Byte 3 - CVM Result: " + text257);
-				switch (text257)
+				IUC285Proxy.Log("Byte 3 - CVM Result: " + cvmResult);
+				switch (cvmResult)
 				{
 				case "00":
 					IUC285Proxy.Log("  00     - Unknown");
@@ -3244,7 +3244,7 @@ public class ParseTags
 					IUC285Proxy.Log("  02     - Successful");
 					break;
 				default:
-					IUC285Proxy.Log("  " + text257 + "     - Undefined");
+					IUC285Proxy.Log("  " + cvmResult + "     - Undefined");
 					break;
 				}
 				IUC285Proxy.Log("----------------------------------------------------");
@@ -3257,9 +3257,9 @@ public class ParseTags
 					IUC285Proxy.Log("---------Device Type (MasterCard) (9F6E)----------");
 					if (TagDataStr.Length > 12)
 					{
-						string text259 = ConvertHexToString(TagDataStr.Substring(8, 4), errors);
-						IUC285Proxy.Log("DeviceType: " + text259);
-						if (int.TryParse(text259, out var result) && result > 0 && result != 20)
+						string deviceType = ConvertHexToString(TagDataStr.Substring(8, 4), errors);
+						IUC285Proxy.Log("DeviceType: " + deviceType);
+						if (int.TryParse(deviceType, out var deviceTypeCode) && deviceTypeCode > 0 && deviceTypeCode != 20)
 						{
 							IsMobileWallet = true;
 							IUC285Proxy.Log("MobileWallet Transaction");
@@ -3311,16 +3311,15 @@ public class ParseTags
 				int length = TagDataStr.Length;
 				StringBuilder stringBuilder = new StringBuilder();
 				string[] hexBytes = new string[length / 2];
-				int num21 = 0;
+				int hexIndex = 0;
 				for (int offset = 0; offset < TagDataStr.Length; offset += 2)
 				{
-					hexBytes[num21] = TagDataStr.Substring(offset, 2);
-					num21++;
+					hexBytes[hexIndex] = TagDataStr.Substring(offset, 2);
+					hexIndex++;
 				}
-				string[] array24 = hexBytes;
-				for (int num23 = 0; num23 < array24.Length; num23++)
+				for (int hexByteIndex = 0; hexByteIndex < hexBytes.Length; hexByteIndex++)
 				{
-					int utf = Convert.ToInt32(array24[num23], 16);
+					int utf = Convert.ToInt32(hexBytes[hexByteIndex], 16);
 					stringBuilder.Append(char.ConvertFromUtf32(utf));
 				}
 				ErrorCode = stringBuilder.ToString();

@@ -168,16 +168,16 @@ public class CustomerProfileService : ICustomerProfileService
 			Response = new KioskLoginResponse(),
 			Errors = new List<Error>()
 		};
-		string text = await GetTestDataValue("Login.ErrorCode");
-		if (!string.IsNullOrEmpty(text))
+		string errorCode = await GetTestDataValue("Login.ErrorCode");
+		if (!string.IsNullOrEmpty(errorCode))
 		{
 			loginResponse.Errors.Add(new Error
 			{
-				Code = text,
-				Message = "error code " + text
+				Code = errorCode,
+				Message = "error code " + errorCode
 			});
 		}
-		loginResponse.Success = loginResponse.Errors.Count == 0 || text == "(KLI007)";
+		loginResponse.Success = loginResponse.Errors.Count == 0 || errorCode == "(KLI007)";
 		loginResponse.MessageId = request.MessageId;
 		KioskLoginResponse response = loginResponse.Response;
 		KioskCustomer kioskCustomer = new KioskCustomer();
@@ -190,21 +190,21 @@ public class CustomerProfileService : ICustomerProfileService
 		KioskCustomer kioskCustomer5 = kioskCustomer;
 		kioskCustomer5.MobilePhoneNumber = await GetTestDataValue("Login.MobilePhoneNumber");
 		response.Customer = kioskCustomer;
-		if (bool.TryParse(await GetTestDataValue("Login.PromptForPerks"), out var result))
+		if (bool.TryParse(await GetTestDataValue("Login.PromptForPerks"), out var promptForPerks))
 		{
-			loginResponse.Response.Customer.PromptForPerks = result;
+			loginResponse.Response.Customer.PromptForPerks = promptForPerks;
 		}
-		if (bool.TryParse(await GetTestDataValue("Login.PromptForEarlyId"), out var result2))
+		if (bool.TryParse(await GetTestDataValue("Login.PromptForEarlyId"), out var promptForEarlyId))
 		{
-			loginResponse.Response.Customer.PromptForEarlyId = result2;
+			loginResponse.Response.Customer.PromptForEarlyId = promptForEarlyId;
 		}
-		if (bool.TryParse(await GetTestDataValue("Login.TextClubEnabled"), out var result3))
+		if (bool.TryParse(await GetTestDataValue("Login.TextClubEnabled"), out var textClubEnabled))
 		{
-			loginResponse.Response.Customer.TextClubEnabled = result3;
+			loginResponse.Response.Customer.TextClubEnabled = textClubEnabled;
 		}
-		if (int.TryParse(await GetTestDataValue("Login.NumberOfSampleStoredPromos"), out var result4))
+		if (int.TryParse(await GetTestDataValue("Login.NumberOfSampleStoredPromos"), out var sampleStoredPromoCount))
 		{
-			if (result4 > 0)
+			if (sampleStoredPromoCount > 0)
 			{
 				AddStoredPromo(loginResponse.Response, new KioskStoredPromoCode
 				{
@@ -213,7 +213,7 @@ public class CustomerProfileService : ICustomerProfileService
 					ExpirationDate = DateTime.Today.AddDays(1.0)
 				});
 			}
-			if (result4 > 1)
+			if (sampleStoredPromoCount > 1)
 			{
 				AddStoredPromo(loginResponse.Response, new KioskStoredPromoCode
 				{
@@ -222,9 +222,9 @@ public class CustomerProfileService : ICustomerProfileService
 					ExpirationDate = DateTime.Today.AddDays(0.0)
 				});
 			}
-			if (result4 > 2)
+			if (sampleStoredPromoCount > 2)
 			{
-				for (int i = 2; i < result4; i++)
+				for (int i = 2; i < sampleStoredPromoCount; i++)
 				{
 					AddStoredPromo(loginResponse.Response, new KioskStoredPromoCode
 					{
@@ -240,19 +240,19 @@ public class CustomerProfileService : ICustomerProfileService
 			EligibleSubscriptionPlanIds = new List<string>(),
 			ExistingSubscriptions = new List<KioskSubscription>()
 		};
-		string text2 = await GetTestDataValue("Login.EligibleSubscriptionPlanIds");
-		if (!string.IsNullOrEmpty(text2))
+		string eligibleSubscriptionPlanIds = await GetTestDataValue("Login.EligibleSubscriptionPlanIds");
+		if (!string.IsNullOrEmpty(eligibleSubscriptionPlanIds))
 		{
-			string[] collection = text2.Split(',');
+			string[] collection = eligibleSubscriptionPlanIds.Split(',');
 			loginResponse.Response.Subscriptions.EligibleSubscriptionPlanIds.AddRange(collection);
 		}
-		string text3 = await GetTestDataValue("Login.ActiveStarzSubscriptionPlanId");
-		if (!string.IsNullOrEmpty(text3))
+		string activeStarzSubscriptionPlanId = await GetTestDataValue("Login.ActiveStarzSubscriptionPlanId");
+		if (!string.IsNullOrEmpty(activeStarzSubscriptionPlanId))
 		{
 			loginResponse.Response.Subscriptions.ExistingSubscriptions.Add(new KioskSubscription
 			{
 				status = CustomerSubscriptionPlanStatus.Active,
-				SubscriptionPlanId = text3,
+				SubscriptionPlanId = activeStarzSubscriptionPlanId,
 				SubscriptionId = "STARZ"
 			});
 		}
@@ -263,15 +263,15 @@ public class CustomerProfileService : ICustomerProfileService
 			string redboxPlusSubscriptionTier = await GetTestDataValue("Login.RedboxPlusSubscriptionTier");
 			string s = await GetTestDataValue("Login.RedboxPlusSubscriptionEndDate");
 			DateTime redboxPlusSubscriptionEndDate = DateTime.Now.AddDays(200.0);
-			if (DateTime.TryParse(s, out var result5))
+			if (DateTime.TryParse(s, out var parsedEndDate))
 			{
-				redboxPlusSubscriptionEndDate = result5;
+				redboxPlusSubscriptionEndDate = parsedEndDate;
 			}
 			CustomerSubscriptionPlanStatus customerSubscriptionPlanStatus = CustomerSubscriptionPlanStatus.Active;
-			string value = await GetTestDataValue("Login.RedboxPlusSubscriptionStatus");
-			if (Enum.TryParse(typeof(CustomerSubscriptionPlanStatus), value, out object result6))
+			string subscriptionStatusText = await GetTestDataValue("Login.RedboxPlusSubscriptionStatus");
+			if (Enum.TryParse(typeof(CustomerSubscriptionPlanStatus), subscriptionStatusText, out object parsedStatus))
 			{
-				customerSubscriptionPlanStatus = (CustomerSubscriptionPlanStatus)result6;
+				customerSubscriptionPlanStatus = (CustomerSubscriptionPlanStatus)parsedStatus;
 			}
 			loginResponse.Response.Subscriptions.ExistingSubscriptions.Add(new KioskSubscription
 			{
@@ -282,17 +282,17 @@ public class CustomerProfileService : ICustomerProfileService
 				EndDate = redboxPlusSubscriptionEndDate,
 				SubscriptionTier = redboxPlusSubscriptionTier
 			});
-			string value2 = await GetTestDataValue("Login.RedboxPlusFree1NightRentalAvailable");
-			bool result7 = false;
-			bool.TryParse(value2, out result7);
-			if (result7)
+			string free1NightRentalAvailableText = await GetTestDataValue("Login.RedboxPlusFree1NightRentalAvailable");
+			bool free1NightRentalAvailable = false;
+			bool.TryParse(free1NightRentalAvailableText, out free1NightRentalAvailable);
+			if (free1NightRentalAvailable)
 			{
 				string campaignName = ((redboxPlusSubscriptionTier == RedboxPlusSubscriptionTier.Tier1.ToString()) ? "RBPLUS 9.99" : "RBPLUS 19.99");
 				int campaignId = ((redboxPlusSubscriptionTier == RedboxPlusSubscriptionTier.Tier1.ToString()) ? 9979 : 9981);
 				DateTime dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1.0);
 				DateTime expirationDate = ((redboxPlusSubscriptionTier == "Tier1") ? dateTime : dateTime.AddMonths(11));
-				int num = ((redboxPlusSubscriptionTier == "Tier1") ? 1 : 24);
-				for (int j = 0; j < num; j++)
+				int promoCount = ((redboxPlusSubscriptionTier == "Tier1") ? 1 : 24);
+				for (int j = 0; j < promoCount; j++)
 				{
 					AddStoredPromo(loginResponse.Response, new KioskStoredPromoCode
 					{
@@ -305,31 +305,31 @@ public class CustomerProfileService : ICustomerProfileService
 			}
 		}
 		loginResponse.Response.Loyalty = new KioskLoyalty();
-		if (bool.TryParse(await GetTestDataValue("Login.LoyaltyIsEnrolled"), out var result8))
+		if (bool.TryParse(await GetTestDataValue("Login.LoyaltyIsEnrolled"), out var isEnrolled))
 		{
-			loginResponse.Response.Loyalty.IsEnrolled = result8;
+			loginResponse.Response.Loyalty.IsEnrolled = isEnrolled;
 		}
-		if (bool.TryParse(await GetTestDataValue("Login.LoyaltySystemOnline"), out var result9))
+		if (bool.TryParse(await GetTestDataValue("Login.LoyaltySystemOnline"), out var loyaltySystemOnline))
 		{
-			loginResponse.Response.Loyalty.LoyaltySystemOnline = result9;
+			loginResponse.Response.Loyalty.LoyaltySystemOnline = loyaltySystemOnline;
 		}
-		if (int.TryParse(await GetTestDataValue("Login.LoyaltyPointBalance"), out var result10))
+		if (int.TryParse(await GetTestDataValue("Login.LoyaltyPointBalance"), out var pointBalance))
 		{
-			loginResponse.Response.Loyalty.PointBalance = result10;
+			loginResponse.Response.Loyalty.PointBalance = pointBalance;
 		}
 		KioskLoyalty loyalty = loginResponse.Response.Loyalty;
 		loyalty.CurrentTier = await GetTestDataValue("Login.LoyaltyTier");
-		if (int.TryParse(await GetTestDataValue("Login.LoyaltyTierCounter"), out var result11))
+		if (int.TryParse(await GetTestDataValue("Login.LoyaltyTierCounter"), out var tierCounter))
 		{
-			loginResponse.Response.Loyalty.CurrentTierCounter = result11;
+			loginResponse.Response.Loyalty.CurrentTierCounter = tierCounter;
 		}
-		if (int.TryParse(await GetTestDataValue("Login.PointsExpiring"), out var result12))
+		if (int.TryParse(await GetTestDataValue("Login.PointsExpiring"), out var pointsExpiring))
 		{
-			loginResponse.Response.Loyalty.PointsExpiring = result12;
+			loginResponse.Response.Loyalty.PointsExpiring = pointsExpiring;
 		}
-		if (DateTime.TryParse(await GetTestDataValue("Login.PointsExpirationDate"), out var result13))
+		if (DateTime.TryParse(await GetTestDataValue("Login.PointsExpirationDate"), out var pointsExpirationDate))
 		{
-			loginResponse.Response.Loyalty.PointsExpirationDate = result13;
+			loginResponse.Response.Loyalty.PointsExpirationDate = pointsExpirationDate;
 		}
 		loginResponse.Response.Recommendations = new KioskRecommendedTitles();
 		KioskRecommendedTitles recommendations = loginResponse.Response.Recommendations;
@@ -338,38 +338,38 @@ public class CustomerProfileService : ICustomerProfileService
 		recommendations.OfferCode = await GetTestDataValue("Login.OfferCode");
 		loginResponse.Response.Recommendations.Products = new List<KioskTitleInfo>();
 		string recommendedTitleIdType = await GetTestDataValue("Login.RecommendedTitleIdType");
-		string text4 = await GetTestDataValue("Login.RecommendedTags");
+		string recommendedTags = await GetTestDataValue("Login.RecommendedTags");
 		List<string> tagList = new List<string>();
-		if (!string.IsNullOrEmpty(text4))
+		if (!string.IsNullOrEmpty(recommendedTags))
 		{
-			tagList = text4.Replace(" ", null).Replace("[", null).Split(']')?.ToList();
+			tagList = recommendedTags.Replace(" ", null).Replace("[", null).Split(']')?.ToList();
 		}
-		string text5 = await GetTestDataValue("Login.RecommendedIds");
-		if (!string.IsNullOrEmpty(text5))
+		string recommendedIds = await GetTestDataValue("Login.RecommendedIds");
+		if (!string.IsNullOrEmpty(recommendedIds))
 		{
-			List<string> list = text5.Replace(" ", null).Split(',')?.ToList();
-			if (list != null)
+			List<string> recommendedIdList = recommendedIds.Replace(" ", null).Split(',')?.ToList();
+			if (recommendedIdList != null)
 			{
-				int num2 = 0;
-				foreach (string item in list)
+				int titleIndex = 0;
+				foreach (string titleId in recommendedIdList)
 				{
 					KioskTitleInfo kioskTitleInfo = new KioskTitleInfo
 					{
-						Id = item,
+						Id = titleId,
 						Type = recommendedTitleIdType,
 						Tags = new List<string>()
 					};
-					string text6 = ((tagList != null && tagList.Count > num2) ? tagList[num2] : null);
-					if (!string.IsNullOrEmpty(text6))
+					string titleTags = ((tagList != null && tagList.Count > titleIndex) ? tagList[titleIndex] : null);
+					if (!string.IsNullOrEmpty(titleTags))
 					{
-						List<string> list2 = text6.Split(',')?.ToList();
-						if (list2 != null)
+						List<string> titleTagList = titleTags.Split(',')?.ToList();
+						if (titleTagList != null)
 						{
-							kioskTitleInfo.Tags.AddRange(list2);
+							kioskTitleInfo.Tags.AddRange(titleTagList);
 						}
 					}
 					loginResponse.Response.Recommendations.Products.Add(kioskTitleInfo);
-					num2++;
+					titleIndex++;
 				}
 			}
 		}

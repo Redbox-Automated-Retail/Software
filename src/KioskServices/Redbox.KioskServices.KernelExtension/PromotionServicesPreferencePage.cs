@@ -72,15 +72,15 @@ public class PromotionServicesPreferencePage : UserControl, IPreferencePageHost
 		m_isLoaded = false;
 		m_responseTypeComboBox.Items.Clear();
 		string[] names = Enum.GetNames(typeof(PromotionValidationResponse));
-		foreach (string item in names)
+		foreach (string responseName in names)
 		{
-			m_responseTypeComboBox.Items.Add(item);
+			m_responseTypeComboBox.Items.Add(responseName);
 		}
 		m_promoIntentComboBox.Items.Clear();
 		names = Enum.GetNames(typeof(PromotionIntentCode));
-		foreach (string item2 in names)
+		foreach (string intentName in names)
 		{
-			m_promoIntentComboBox.Items.Add(item2);
+			m_promoIntentComboBox.Items.Add(intentName);
 		}
 		IPromotionServices promotionServices = ServiceLocator.Instance.GetService<IPromotionServices>();
 		m_responseTypeComboBox.SelectedIndex = 0;
@@ -93,13 +93,13 @@ public class PromotionServicesPreferencePage : UserControl, IPreferencePageHost
 		names = promotionServices.PromoCodes;
 		for (int i = 0; i < names.Length; i++)
 		{
-			string[] array = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length >= 4)
+			string[] fields = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+			if (fields.Length >= 4)
 			{
-				ListViewItem listViewItem = new ListViewItem(array[0]);
-				listViewItem.SubItems.Add(array[1]);
-				listViewItem.SubItems.Add(array[2]);
-				listViewItem.SubItems.Add(array[3]);
+				ListViewItem listViewItem = new ListViewItem(fields[0]);
+				listViewItem.SubItems.Add(fields[1]);
+				listViewItem.SubItems.Add(fields[2]);
+				listViewItem.SubItems.Add(fields[3]);
 				m_promoCodeListView.Items.Add(listViewItem);
 			}
 		}

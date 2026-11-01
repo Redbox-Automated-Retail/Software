@@ -23,12 +23,12 @@ public class StoreService : IStoreService
 		{
 			try
 			{
-				string text = "ID";
-				string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-				string value = Registry.GetValue(text2, text, "")?.ToString();
+				string valueName = "ID";
+				string keyPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+				string value = Registry.GetValue(keyPath, valueName, "")?.ToString();
 				if (string.IsNullOrEmpty(value))
 				{
-					_logger.LogInformation("Kiosk ID is not set in the registry at {0}\\{1}", text2, text);
+					_logger.LogInformation("Kiosk ID is not set in the registry at {0}\\{1}", keyPath, valueName);
 					return 0L;
 				}
 				_kioskId = Convert.ToInt32(value);
@@ -49,12 +49,12 @@ public class StoreService : IStoreService
 			{
 				if (string.IsNullOrWhiteSpace(_market))
 				{
-					string text = "Market";
-					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object registryValue = Registry.GetValue(text2, text, null);
+					string valueName = "Market";
+					string keyPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+					object registryValue = Registry.GetValue(keyPath, valueName, null);
 					if (registryValue == null)
 					{
-						_logger.LogInformation("Market is not set in the registry at {0}\\{1}", text2, text);
+						_logger.LogInformation("Market is not set in the registry at {0}\\{1}", keyPath, valueName);
 						return null;
 					}
 					_market = ((string)registryValue).Trim();
@@ -76,12 +76,12 @@ public class StoreService : IStoreService
 			{
 				if (string.IsNullOrWhiteSpace(_banner))
 				{
-					string text = "Banner";
-					string text2 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
-					object registryValue = Registry.GetValue(text2, text, null);
+					string valueName = "Banner";
+					string keyPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store";
+					object registryValue = Registry.GetValue(keyPath, valueName, null);
 					if (registryValue == null)
 					{
-						_logger.LogInformation("Banner is not set in the registry at {0}\\{1}", text2, text);
+						_logger.LogInformation("Banner is not set in the registry at {0}\\{1}", keyPath, valueName);
 						return null;
 					}
 					_banner = ((string)registryValue).Trim();

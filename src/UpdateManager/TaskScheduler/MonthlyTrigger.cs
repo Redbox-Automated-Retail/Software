@@ -51,34 +51,34 @@ public class MonthlyTrigger : StartableTrigger
 
 	private static int[] MaskToIndices(int mask)
 	{
-		int num = 0;
+		int count = 0;
 		for (int i = 0; mask >> i > 0; i++)
 		{
-			num += 1 & (mask >> i);
+			count += 1 & (mask >> i);
 		}
-		int[] array = new int[num];
-		num = 0;
+		int[] indices = new int[count];
+		count = 0;
 		for (int j = 0; mask >> j > 0; j++)
 		{
 			if ((1 & (mask >> j)) == 1)
 			{
-				array[num++] = j + 1;
+				indices[count++] = j + 1;
 			}
 		}
-		return array;
+		return indices;
 	}
 
 	private static int IndicesToMask(int[] indices)
 	{
-		int num = 0;
-		foreach (int num2 in indices)
+		int mask = 0;
+		foreach (int day in indices)
 		{
-			if (num2 < 1 || num2 > 31)
+			if (day < 1 || day > 31)
 			{
 				throw new ArgumentException("Days must be in the range 1..31");
 			}
-			num |= 1 << num2 - 1;
+			mask |= 1 << day - 1;
 		}
-		return num;
+		return mask;
 	}
 }

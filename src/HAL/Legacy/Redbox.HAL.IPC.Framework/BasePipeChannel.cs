@@ -32,12 +32,12 @@ internal abstract class BasePipeChannel : IDisposable
 
 	internal byte[] ReceiveMessage()
 	{
-		byte[] array = ReadBytes(MessageHeaderSize);
-		if (array == null)
+		byte[] header = ReadBytes(MessageHeaderSize);
+		if (header == null)
 		{
 			return null;
 		}
-		uint count = (uint)BitConverter.ToInt32(array, 0);
+		uint count = (uint)BitConverter.ToInt32(header, 0);
 		return ReadBytes(count);
 	}
 
@@ -50,8 +50,8 @@ internal abstract class BasePipeChannel : IDisposable
 			return null;
 		}
 		uint lpNumberOfBytesRead = 0u;
-		byte[] array = new byte[count];
-		if (!ReadFile(PipeHandle, array, count, out lpNumberOfBytesRead, IntPtr.Zero))
+		byte[] buffer = new byte[count];
+		if (!ReadFile(PipeHandle, buffer, count, out lpNumberOfBytesRead, IntPtr.Zero))
 		{
 			int lastWin32Error = Marshal.GetLastWin32Error();
 			LogHelper.Instance.Log($"PipeClientSession.ReadFile() returned false; error code = {lastWin32Error}", LogEntryType.Error);
@@ -59,7 +59,7 @@ internal abstract class BasePipeChannel : IDisposable
 		}
 		if (lpNumberOfBytesRead == count)
 		{
-			return array;
+			return buffer;
 		}
 		return null;
 	}

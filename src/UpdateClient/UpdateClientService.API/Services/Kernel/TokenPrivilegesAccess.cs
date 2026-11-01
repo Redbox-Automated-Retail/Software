@@ -67,33 +67,33 @@ public class TokenPrivilegesAccess
 	public static void EnablePrivilege(string privilege)
 	{
 		int tokenhandle = 0;
-		int num = 0;
+		int status = 0;
 		TOKEN_PRIVILEGE Newstate = default(TOKEN_PRIVILEGE);
 		LUID lpLuid = default(LUID);
-		num = OpenProcessToken(GetCurrentProcess(), 40, ref tokenhandle);
-		num = LookupPrivilegeValue(null, privilege, ref lpLuid);
+		status = OpenProcessToken(GetCurrentProcess(), 40, ref tokenhandle);
+		status = LookupPrivilegeValue(null, privilege, ref lpLuid);
 		Newstate.PrivilegeCount = 1u;
 		Newstate.Privilege = new LUID_AND_ATTRIBUTES
 		{
 			Attributes = 2u,
 			Luid = lpLuid
 		};
-		num = AdjustTokenPrivileges(tokenhandle, 0, ref Newstate, 1024, 0, 0);
+		status = AdjustTokenPrivileges(tokenhandle, 0, ref Newstate, 1024, 0, 0);
 	}
 
 	public static void DisablePrivilege(string privilege)
 	{
 		int tokenhandle = 0;
-		int num = 0;
+		int status = 0;
 		TOKEN_PRIVILEGE Newstate = default(TOKEN_PRIVILEGE);
 		LUID lpLuid = default(LUID);
-		num = OpenProcessToken(GetCurrentProcess(), 40, ref tokenhandle);
-		num = LookupPrivilegeValue(null, privilege, ref lpLuid);
+		status = OpenProcessToken(GetCurrentProcess(), 40, ref tokenhandle);
+		status = LookupPrivilegeValue(null, privilege, ref lpLuid);
 		Newstate.PrivilegeCount = 1u;
 		Newstate.Privilege = new LUID_AND_ATTRIBUTES
 		{
 			Luid = lpLuid
 		};
-		num = AdjustTokenPrivileges(tokenhandle, 0, ref Newstate, 1024, 0, 0);
+		status = AdjustTokenPrivileges(tokenhandle, 0, ref Newstate, 1024, 0, 0);
 	}
 }
