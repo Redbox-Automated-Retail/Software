@@ -59,8 +59,7 @@ public class BatchCommandRunner : ISession, IMessageSink
 	{
 		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.txt");
 		ErrorList errorList = new ErrorList();
-		string[] array = files;
-		foreach (string fileName in array)
+		foreach (string fileName in files)
 		{
 			ExecuteFile(fileName, errorList);
 		}

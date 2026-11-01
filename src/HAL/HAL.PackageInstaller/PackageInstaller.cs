@@ -230,8 +230,7 @@ internal sealed class PackageInstaller : IDisposable
 		Writer.WriteLine("Register package handlers");
 		string[] files = Directory.GetFiles(RuntimeService.AssemblyDirectory, "*.dll");
 		string[] array = new string[4] { "CortexDecoder.dll", "Hasp_windows_110892.dll", "CortexDecoderHasp.dll", "CDHelper.dll" };
-		string[] array2 = files;
-		foreach (string text in array2)
+		foreach (string text in files)
 		{
 			string file = Path.GetFileName(text);
 			if (!string.IsNullOrEmpty(Array.Find(array, (string a) => a.Equals(file, StringComparison.CurrentCultureIgnoreCase))))

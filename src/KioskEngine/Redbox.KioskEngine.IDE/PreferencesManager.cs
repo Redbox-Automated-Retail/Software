@@ -129,8 +129,7 @@ public class PreferencesManager : Form
 		}
 		string[] array = value.Split(m_treeView.PathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		TreeNode treeNode = null;
-		string[] array2 = array;
-		foreach (string key in array2)
+		foreach (string key in array)
 		{
 			TreeNode[] array3 = ((treeNode == null) ? m_treeView.Nodes.Find(key, searchAllChildren: false) : treeNode.Nodes.Find(key, searchAllChildren: false));
 			if (array3.Length == 0)

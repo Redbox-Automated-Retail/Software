@@ -285,8 +285,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 					}
 				}
 			};
-			DataRow[] array = obj;
-			foreach (DataRow dataRow in array)
+			foreach (DataRow dataRow in obj)
 			{
 				dataTable2.Rows.Add(dataRow[0], dataRow[1]);
 			}

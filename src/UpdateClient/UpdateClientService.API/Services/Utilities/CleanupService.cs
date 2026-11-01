@@ -53,8 +53,7 @@ public class CleanupService : ICleanupService, IInvocable
 				string[] files = Directory.GetFiles(item.Path);
 				_logger.LogInfoWithSource($"Cleanup Folder {item.Path} with {files.Count()} files.", "DoWork", "/sln/src/UpdateClientService.API/Services/Utilities/CleanupService.cs");
 				int num2 = 0;
-				string[] array = files;
-				foreach (string text in array)
+				foreach (string text in files)
 				{
 					try
 					{

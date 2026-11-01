@@ -530,8 +530,7 @@ public class TransactionService : ITransactionService
 			CampaignId = 123L
 		};
 		string[] array = (await GetTestDataValue("AfterSwipeCustomerOffers.MultiNightPriceProductIds"))?.Replace(" ", null)?.Split(',');
-		string[] array2 = array;
-		foreach (string s in array2)
+		foreach (string s in array)
 		{
 			if (long.TryParse(s, out var result2))
 			{

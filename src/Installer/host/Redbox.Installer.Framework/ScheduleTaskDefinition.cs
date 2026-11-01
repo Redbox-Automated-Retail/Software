@@ -404,8 +404,7 @@ public class ScheduleTaskDefinition : Definition
 		if (node.Attributes["days-of-year"] != null)
 		{
 			string[] array = MacroContainer.Instance.ExpandConstantMacros(node.Attributes["days-of-year"].Value).Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			string[] array2 = array;
-			foreach (string text in array2)
+			foreach (string text in array)
 			{
 				if (int.TryParse(text.Trim(), out var result) && !daysOfYear.Contains(result))
 				{

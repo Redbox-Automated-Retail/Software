@@ -26,8 +26,7 @@ public static class ProcessHelper
 		{
 			return false;
 		}
-		Process[] array = processesByName;
-		foreach (Process process in array)
+		foreach (Process process in processesByName)
 		{
 			Console.WriteLine("process = {0}", process.ProcessName);
 			try

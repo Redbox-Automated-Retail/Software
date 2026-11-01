@@ -114,8 +114,7 @@ public class AdvancedMode : Form
 		});
 		if (Service.GetJobs(out var jobs).Success)
 		{
-			HardwareJob[] array = jobs;
-			foreach (HardwareJob nj in array)
+			foreach (HardwareJob nj in jobs)
 			{
 				HardwareJobAdapter hardwareJobAdapter = JobList.Find((HardwareJobAdapter each) => each.ID == nj.ID);
 				if (hardwareJobAdapter == null)

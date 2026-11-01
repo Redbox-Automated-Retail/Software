@@ -46,8 +46,7 @@ public class CallStackToolWindow : ToolWindow
 		CallStackEntry[] callStack = ((LuaDebugger)ServiceLocator.Instance.GetService<IDebugService>().DebuggerInstance).GetCallStack();
 		m_listView.BeginUpdate();
 		m_listView.Items.Clear();
-		CallStackEntry[] array = callStack;
-		foreach (CallStackEntry callStackEntry in array)
+		foreach (CallStackEntry callStackEntry in callStack)
 		{
 			ListViewItem listViewItem = new ListViewItem(callStackEntry.FunctionName);
 			listViewItem.SubItems.Add(callStackEntry.FileName);

@@ -224,8 +224,7 @@ public class EnvironmentManager : IEnvironmentNotificationService
 	{
 		ConfigurationCallback[] array = new ConfigurationCallback[m_configurationCallbacks.Count];
 		m_configurationCallbacks.Values.CopyTo(array, 0);
-		ConfigurationCallback[] array2 = array;
-		foreach (ConfigurationCallback function in array2)
+		foreach (ConfigurationCallback function in array)
 		{
 			CallbackService.Instance.EnqueueCallback(new ConfigurationCallbackEntry
 			{

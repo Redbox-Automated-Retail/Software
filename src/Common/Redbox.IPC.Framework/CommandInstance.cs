@@ -58,8 +58,7 @@ internal class CommandInstance
 					.ForEach(formMethod.Filters.Add);
 			}
 			int num = 0;
-			ParameterInfo[] array = parameters;
-			foreach (ParameterInfo parameterInfo in array)
+			foreach (ParameterInfo parameterInfo in parameters)
 			{
 				if (parameterInfo.ParameterType == typeof(CommandContext))
 				{

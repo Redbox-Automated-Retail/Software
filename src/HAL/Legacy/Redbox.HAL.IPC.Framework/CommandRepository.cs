@@ -140,8 +140,7 @@ public class CommandRepository
 		foreach (Type type in types)
 		{
 			CommandAttribute[] array = (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false);
-			CommandAttribute[] array2 = array;
-			foreach (CommandAttribute commandAttribute in array2)
+			foreach (CommandAttribute commandAttribute in array)
 			{
 				if (commandAttribute.Name != null)
 				{

@@ -123,8 +123,7 @@ public class OptionValue
 		if (m_description != null)
 		{
 			string[] array = m_description.Description.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			string[] array2 = array;
-			foreach (string text3 in array2)
+			foreach (string text3 in array)
 			{
 				stringBuilder.AppendFormat("{0} ", text3);
 				num2 += text3.Length + 1;

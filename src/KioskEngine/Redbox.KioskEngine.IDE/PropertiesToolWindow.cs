@@ -133,8 +133,7 @@ public class PropertiesToolWindow : ToolWindow
 			ParameterInfo[] parameters = kernelFunctionInfo.Method.GetParameters();
 			if (parameters != null)
 			{
-				ParameterInfo[] array = parameters;
-				foreach (ParameterInfo parameterInfo in array)
+				foreach (ParameterInfo parameterInfo in parameters)
 				{
 					StringBuilder stringBuilder = new StringBuilder();
 					stringBuilder.Append("(" + (parameterInfo.IsOut ? "out" : "in") + ") ");

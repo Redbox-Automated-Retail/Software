@@ -278,8 +278,7 @@ public class ProjectExplorerToolWindow : ToolWindow
 					int num = 0;
 					if (parameters != null)
 					{
-						ParameterInfo[] array = parameters;
-						foreach (ParameterInfo parameterInfo in array)
+						foreach (ParameterInfo parameterInfo in parameters)
 						{
 							num++;
 							stringBuilder.Append("<font color=\"blue\">" + parameterInfo.ParameterType.Name + " <font color=\"black\">" + parameterInfo.Name);

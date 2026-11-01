@@ -145,8 +145,7 @@ internal static class Redbox_002EMacros1309_002EPropertyHelper
 						if (method != null && method.Invoke(instance, null) is string[] array)
 						{
 							xmlWriter.WriteAttributeString("valid-value-count", array.Length.ToString());
-							string[] array2 = array;
-							foreach (string value2 in array2)
+							foreach (string value2 in array)
 							{
 								xmlWriter.WriteStartElement("valid");
 								xmlWriter.WriteAttributeString("value", value2);

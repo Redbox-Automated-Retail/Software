@@ -186,8 +186,7 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 	{
 		string[] array = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		XmlNode xmlNode = node;
-		string[] array2 = array;
-		foreach (string text in array2)
+		foreach (string text in array)
 		{
 			XmlNode xmlNode2 = xmlNode.SelectSingleNode(text);
 			if (xmlNode2 == null)

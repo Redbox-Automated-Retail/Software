@@ -24,8 +24,7 @@ public class LuaParse
 	{
 		string text = string.Format("({0}[^{0}]*{0})", "\"");
 		string[] array = Regex.Split(s, text + "|(=)|(,)|(\\[)|(\\])|(\\{)|(\\})|(--[^\\n\\r]*)");
-		string[] array2 = array;
-		foreach (string text2 in array2)
+		foreach (string text2 in array)
 		{
 			if (text2.Trim().Length != 0 && !text2.StartsWith("--"))
 			{

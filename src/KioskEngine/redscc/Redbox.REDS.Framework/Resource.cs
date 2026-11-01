@@ -130,8 +130,7 @@ public class Resource : IResource
 			if (!string.IsNullOrEmpty(attributeValue3))
 			{
 				string[] array = attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-				string[] array2 = array;
-				foreach (string text in array2)
+				foreach (string text in array)
 				{
 					string text2 = text.Trim();
 					if (!(text2 == resource.Name))

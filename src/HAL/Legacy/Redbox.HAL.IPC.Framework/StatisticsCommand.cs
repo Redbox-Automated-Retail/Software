@@ -13,15 +13,13 @@ public class StatisticsCommand
 	{
 		BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Public;
 		FieldInfo[] fields = typeof(Statistics).GetFields(bindingAttr);
-		FieldInfo[] array = fields;
-		foreach (FieldInfo fieldInfo in array)
+		foreach (FieldInfo fieldInfo in fields)
 		{
 			string item = $"{fieldInfo.Name} = {fieldInfo.GetValue(Statistics.Instance)}";
 			context.Messages.Add(item);
 		}
 		PropertyInfo[] properties = typeof(Statistics).GetProperties(bindingAttr);
-		PropertyInfo[] array2 = properties;
-		foreach (PropertyInfo propertyInfo in array2)
+		foreach (PropertyInfo propertyInfo in properties)
 		{
 			string item2 = $"{propertyInfo.Name} = {propertyInfo.GetValue(Statistics.Instance, null)}";
 			context.Messages.Add(item2);

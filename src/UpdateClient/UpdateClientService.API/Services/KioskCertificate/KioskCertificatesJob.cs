@@ -42,8 +42,7 @@ internal class KioskCertificatesJob : IKioskCertificatesJob, IInvocable
 				return;
 			}
 			_logger.LogInfoWithSource("Found following certs to process: " + string.Join(';', files), "LookForCerts", "/sln/src/UpdateClientService.API/Services/KioskCertificate/KioskCertificatesJob.cs");
-			string[] array = files;
-			foreach (string file in array)
+			foreach (string file in files)
 			{
 				try
 				{

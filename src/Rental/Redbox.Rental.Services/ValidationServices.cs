@@ -106,8 +106,7 @@ public static class ValidationServices
 		string[] array = text2.Substring(0, text2.LastIndexOf(".")).Split('.');
 		if (array != null)
 		{
-			string[] array2 = array;
-			foreach (string text3 in array2)
+			foreach (string text3 in array)
 			{
 				if (!ValidateDomain(text3))
 				{

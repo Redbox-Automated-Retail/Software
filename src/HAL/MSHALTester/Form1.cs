@@ -889,8 +889,7 @@ public class Form1 : Form, IDisposable, IClientOutputSink, ILogger
 			OutputBox.Write("Unable to read job list - JOBS MAY BE ACTIVE!");
 			return;
 		}
-		HardwareJob[] array = jobs;
-		foreach (HardwareJob hardwareJob in array)
+		foreach (HardwareJob hardwareJob in jobs)
 		{
 			if ((hardwareJob.Status == HardwareJobStatus.Pending || hardwareJob.Status == HardwareJobStatus.Running) && !hardwareJob.ProgramName.Equals("job-watchdog"))
 			{

@@ -83,8 +83,7 @@ internal class AssetsService : IAssetsService
 		{
 			DateTime threshold = DateTime.Now.AddDays(-1 * _configuration.LifespanDays);
 			List<Task<bool>> list = new List<Task<bool>>();
-			FileInfo[] array = files;
-			foreach (FileInfo fileInfo in array)
+			foreach (FileInfo fileInfo in files)
 			{
 				list.Add(CheckAndDeleteAsset(fileInfo.FullName, threshold));
 			}

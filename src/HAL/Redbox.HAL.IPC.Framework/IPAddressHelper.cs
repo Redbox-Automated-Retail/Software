@@ -25,8 +25,7 @@ internal static class IPAddressHelper
 		}
 		IPAddress result = null;
 		IPAddress bindableAddress = GetBindableAddress();
-		IPAddress[] array = hostAddresses;
-		foreach (IPAddress iPAddress in array)
+		foreach (IPAddress iPAddress in hostAddresses)
 		{
 			if (!(iPAddress.ToString() != bindableAddress.ToString()))
 			{

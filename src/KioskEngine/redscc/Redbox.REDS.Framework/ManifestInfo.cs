@@ -34,8 +34,7 @@ internal class ManifestInfo : IManifestInfo
 		if (resource["requires"] is string text)
 		{
 			string[] array = text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			string[] array2 = array;
-			foreach (string specifier in array2)
+			foreach (string specifier in array)
 			{
 				InnerRequires.Add(new BundleSpecifier(specifier));
 			}

@@ -31,8 +31,7 @@ public static class ConversionHelper
 					int num = 0;
 					string text = (string)value;
 					string[] array2 = text.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-					string[] array3 = array2;
-					foreach (string text2 in array3)
+					foreach (string text2 in array2)
 					{
 						object value2 = Enum.Parse(convertToType, text2.Trim(), ignoreCase: true);
 						num |= Convert.ToInt32(value2);

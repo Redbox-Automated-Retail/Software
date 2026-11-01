@@ -361,8 +361,7 @@ public static class FileSystemFunctions
 		{
 			string[] array = File.ReadAllLines(service.ExpandProperties(file));
 			int num = 1;
-			string[] array2 = array;
-			foreach (string value in array2)
+			foreach (string value in array)
 			{
 				luaTable[num] = value;
 				num++;

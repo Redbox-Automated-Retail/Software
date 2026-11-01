@@ -270,8 +270,7 @@ public sealed class KernelService : IKernelService
 		{
 			Exception[] loaderExceptions = ex.LoaderExceptions;
 			LogHelper.Instance.Log("There was a ReflectionTypeLoadException in ConfigureKernelFunctions", ex);
-			Exception[] array = loaderExceptions;
-			foreach (Exception e in array)
+			foreach (Exception e in loaderExceptions)
 			{
 				LogHelper.Instance.Log("Loader Exception: ", e);
 			}

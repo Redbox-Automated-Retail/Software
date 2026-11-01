@@ -66,8 +66,7 @@ public class Definition
 				{
 					continue;
 				}
-				PropertyInfo[] array = properties;
-				foreach (PropertyInfo propertyInfo in array)
+				foreach (PropertyInfo propertyInfo in properties)
 				{
 					ElementPropertyAttribute elementPropertyAttribute = (ElementPropertyAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(ElementPropertyAttribute));
 					if (elementPropertyAttribute == null)
