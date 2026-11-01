@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Alsing.SourceCode;
-using Alsing.Windows.Forms;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
 using Redbox.KioskEngine.IDE.Properties;
@@ -51,9 +49,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private ToolStripButton m_cleanToolStripButton;
 
-	private SyntaxBoxControl m_syntaxBoxControl;
-
-	private SyntaxDocument m_syntaxDocument;
+	private CodeEditor m_codeEditor;
 
 	private ToolStripButton m_saveToolStripButton;
 
@@ -68,7 +64,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 	public QueuePreferencePage()
 	{
 		InitializeComponent();
-		m_syntaxDocument.SetSyntaxFromEmbeddedResource(typeof(QueuePreferencePage).Assembly, "Redbox.KioskEngine.IDE.JavaScript.syn");
+		m_codeEditor.SetSyntaxResource("JavaScript");
 	}
 
 	public bool SaveValues(IPreferencePage preferencePage)
@@ -94,11 +90,11 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 			{
 				text = string.Empty;
 			}
-			m_syntaxDocument.Text = text.ToPrettyJson();
+			m_codeEditor.Text = text.ToPrettyJson();
 		}
 		else
 		{
-			m_syntaxDocument.Clear();
+			m_codeEditor.ClearText();
 		}
 	}
 
@@ -215,7 +211,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		m_queueListView.SuspendLayout();
 		m_queueListView.BeginUpdate();
 		m_queueListView.Items.Clear();
-		m_syntaxDocument.Clear();
+		m_codeEditor.ClearText();
 		service.ForEach(delegate(IMessage m)
 		{
 			ListViewItem listViewItem = new ListViewItem(m.ID.ToString());
@@ -248,7 +244,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnDocumentChanged(object sender, EventArgs e)
 	{
-		m_saveToolStripButton.Enabled = m_syntaxDocument.UndoBuffer.Count > 0 && m_queueListView.SelectedItems.Count == 1;
+		m_saveToolStripButton.Enabled = m_codeEditor.CanUndo && m_queueListView.SelectedItems.Count == 1;
 	}
 
 	private void OnSave(object sender, EventArgs e)
@@ -257,7 +253,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		{
 			IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
 			string s = m_queueListView.SelectedItems[0].SubItems[0].Text;
-			service.Update(int.Parse(s), m_syntaxDocument.Text);
+			service.Update(int.Parse(s), m_codeEditor.Text);
 			RefreshList();
 		}
 	}
@@ -296,8 +292,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 		this.m_exportToolStripButton = new System.Windows.Forms.ToolStripButton();
 		this.m_cleanToolStripButton = new System.Windows.Forms.ToolStripButton();
-		this.m_syntaxBoxControl = new Alsing.Windows.Forms.SyntaxBoxControl();
-		this.m_syntaxDocument = new Alsing.SourceCode.SyntaxDocument(this.components);
+		this.m_codeEditor = new Redbox.KioskEngine.IDE.CodeEditor();
 		this.m_headerLabel = new System.Windows.Forms.Label();
 		((System.ComponentModel.ISupportInitialize)this.m_errorProvider).BeginInit();
 		this.m_toolStrip.SuspendLayout();
@@ -409,44 +404,18 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		this.m_cleanToolStripButton.Text = "Clear";
 		this.m_cleanToolStripButton.Visible = false;
 		this.m_cleanToolStripButton.Click += new System.EventHandler(OnClear);
-		this.m_syntaxBoxControl.ActiveView = Alsing.Windows.Forms.ActiveView.BottomRight;
-		this.m_syntaxBoxControl.AllowBreakPoints = false;
-		this.m_syntaxBoxControl.AutoListPosition = null;
-		this.m_syntaxBoxControl.AutoListSelectedText = "a123";
-		this.m_syntaxBoxControl.AutoListVisible = false;
-		this.m_syntaxBoxControl.BackColor = System.Drawing.Color.White;
-		this.m_syntaxBoxControl.BorderStyle = Alsing.Windows.Forms.BorderStyle.None;
-		this.m_syntaxBoxControl.CopyAsRTF = false;
-		this.m_syntaxBoxControl.Document = this.m_syntaxDocument;
-		this.m_syntaxBoxControl.FontName = "Courier new";
-		this.m_syntaxBoxControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-		this.m_syntaxBoxControl.InfoTipCount = 1;
-		this.m_syntaxBoxControl.InfoTipPosition = null;
-		this.m_syntaxBoxControl.InfoTipSelectedIndex = 1;
-		this.m_syntaxBoxControl.InfoTipVisible = false;
-		this.m_syntaxBoxControl.Location = new System.Drawing.Point(-1, 470);
-		this.m_syntaxBoxControl.LockCursorUpdate = false;
-		this.m_syntaxBoxControl.Margin = new System.Windows.Forms.Padding(4);
-		this.m_syntaxBoxControl.Name = "m_syntaxBoxControl";
-		this.m_syntaxBoxControl.ShowEOLMarker = true;
-		this.m_syntaxBoxControl.ShowGutterMargin = false;
-		this.m_syntaxBoxControl.ShowScopeIndicator = false;
-		this.m_syntaxBoxControl.ShowTabGuides = true;
-		this.m_syntaxBoxControl.ShowWhitespace = true;
-		this.m_syntaxBoxControl.Size = new System.Drawing.Size(723, 153);
-		this.m_syntaxBoxControl.SmoothScroll = false;
-		this.m_syntaxBoxControl.SplitView = false;
-		this.m_syntaxBoxControl.SplitviewH = -4;
-		this.m_syntaxBoxControl.SplitviewV = -4;
-		this.m_syntaxBoxControl.TabGuideColor = System.Drawing.Color.FromArgb(222, 219, 214);
-		this.m_syntaxBoxControl.TabIndex = 22;
-		this.m_syntaxBoxControl.TabsToSpaces = true;
-		this.m_syntaxBoxControl.WhitespaceColor = System.Drawing.SystemColors.ControlDark;
-		this.m_syntaxDocument.Lines = new string[1] { "" };
-		this.m_syntaxDocument.MaxUndoBufferSize = 1000;
-		this.m_syntaxDocument.Modified = false;
-		this.m_syntaxDocument.UndoStep = 0;
-		this.m_syntaxDocument.Change += new System.EventHandler(OnDocumentChanged);
+		this.m_codeEditor.AllowBreakPoints = false;
+		this.m_codeEditor.BorderStyle = ScintillaNET.BorderStyle.None;
+		this.m_codeEditor.Location = new System.Drawing.Point(-1, 470);
+		this.m_codeEditor.Margin = new System.Windows.Forms.Padding(4);
+		this.m_codeEditor.Name = "m_codeEditor";
+		this.m_codeEditor.ShowEOLMarker = true;
+		this.m_codeEditor.ShowGutterMargin = false;
+		this.m_codeEditor.ShowWhitespace = true;
+		this.m_codeEditor.Size = new System.Drawing.Size(723, 153);
+		this.m_codeEditor.TabIndex = 22;
+		this.m_codeEditor.TabsToSpaces = true;
+		this.m_codeEditor.TextChanged += new System.EventHandler(OnDocumentChanged);
 		this.m_headerLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
 		this.m_headerLabel.BackColor = System.Drawing.Color.MediumBlue;
 		this.m_headerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
@@ -461,7 +430,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		base.AutoScaleDimensions = new System.Drawing.SizeF(8f, 16f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.Controls.Add(this.m_headerLabel);
-		base.Controls.Add(this.m_syntaxBoxControl);
+		base.Controls.Add(this.m_codeEditor);
 		base.Controls.Add(this.m_queueListView);
 		base.Controls.Add(this.m_toolStrip);
 		base.Margin = new System.Windows.Forms.Padding(4);

@@ -76,7 +76,7 @@ Windows-only projects use `net10.0-windows`, and services that load x86 native c
 | VistaDB 3.5 (`VistaDB.NET20.dll`, 2008, commercial, no successor we can ship) | engine (`Redbox.KioskEngine.Environment`, `Redbox.Rental.Data`), HAL (`Redbox.HAL.DataStorage`) | spike: load it on .NET 10. If that fails, migrate to SQLite with a one-time importer, a larger change that needs sign-off |
 | ASP.NET Web API 5 self-host (WCF underneath) | engine (`Redbox.KioskEngine.API`, `:9002`) | Kestrel minimal host with the same routes and Newtonsoft settings |
 | Engine plug-ins compiled against the engine (kernel extensions, Rental bundles) and Lua scripts that call .NET types | engine | the plug-ins are built from this repo, so they move together; the Lua scripts in bundles have to keep finding the same types and members |
-| IDE-only WinForms controls (Puzzle.SyntaxBox, WeifenLuo 2.5, SmartPropertyGrid, VisualTips) | `Redbox.KioskEngine.IDE` (developer tool inside the engine) | newer WeifenLuo/DockPanelSuite exists; SyntaxBox does not. Option: build the IDE only for 4.8 and leave it out of the .NET 10 engine |
+| IDE-only WinForms controls (Puzzle.SyntaxBox, WeifenLuo 2.5, SmartPropertyGrid, VisualTips) | `Redbox.KioskEngine.IDE` (developer tool inside the engine) | newer WeifenLuo/DockPanelSuite exists; SyntaxBox does not. Option: build the IDE only for 4.8 and leave it out of the .NET 10 engine. **Done:** SyntaxBox replaced by Scintilla (`CodeEditor`); WeifenLuo 2.5, SmartPropertyGrid and VisualTips load on .NET 10 as they are |
 | `Microsoft.Vsa` / JScript page engine | setup host (RIX) | already solved for 4.8 in Backend PR #5 (`jsc` / `JScriptCodeProvider`); no .NET 10 equivalent, so the host stays on 4.8 |
 | `System.Web.Extensions` `JavaScriptSerializer` | `Redbox.Core` and everything on it | a compatible serializer for the .NET 10 builds, with golden tests against the 4.8 output |
 | Quartz.NET 1.0.2.3 / 2.3.3 | engine, Update Manager | Quartz 3.x has a different API; needed only for a .NET 10 move |
@@ -443,6 +443,7 @@ only in Windows Sandbox.
 | KioskServices (`Redbox.KioskServices.*`): also net10.0-windows; Remoting mode as a hand-written binary .NET Remoting call over HTTP (`Redbox.Remoting.Nrbf`) | done; `tests/KioskServicesRemoting.Check`: 4 messages give the same answer over Remoting (rb-remoting's real .NET Remoting host) and REST | `KioskServices on .NET 10: ...` |
 | **HAL on .NET 10**: `halsvc-win32`, `HAL.PackageInstaller`, `CameraTuner`, the camera plug-in and their libraries (self-contained win-x86); job contexts as JSON, 4.8 contexts imported | **runs in Windows Sandbox** with the .NET 10 engine (start view, its HAL jobs complete); `tests/HalContextStore.Check`: 35 of the kiosk's 4.8 contexts imported and round-tripped | `HAL on .NET 10: ...` |
 | HAL: clean stop on configuration errors (a `hal.xml` without decks) | done; Sandbox: P006, service ends Stopped | `HAL: stop cleanly when the configuration has errors ...` |
+| IDE: Scintilla (`Scintilla5.NET`, MIT) in place of Puzzle.SyntaxBox; the .NET 10 engine without BinaryFormatter | done; `tests/CodeEditor.Check`: 29 checks on net48 and .NET 10; Sandbox: the engine reaches its start view with `EnableUnsafeBinaryFormatterSerialization` false | `IDE: Scintilla in place of Puzzle.SyntaxBox ...` |
 | `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (324 files, `NewFiles` lists them all); not yet published to the backend or installed by the Update Manager | `release.ps1: -Framework ...` |
 
 Notes from the .NET 10 engine work:
@@ -461,8 +462,8 @@ Notes from the .NET 10 engine work:
   - `Encoding.Default` is UTF-8 (hash/encryption code uses the ANSI code page explicitly);
   - an `.exe` project's code is in `<name>.dll` (theme and IPC command scans);
   - `Assembly.LoadFile` makes a second copy of an already-loaded assembly (`AssemblyLoading.LoadFile`);
-  - the IDE's Puzzle.SyntaxBox resources need BinaryFormatter (unsupported compatibility package, until it is
-    replaced).
+  - the IDE's Puzzle.SyntaxBox resources needed BinaryFormatter; SyntaxBox is now replaced by Scintilla
+    (`CodeEditor`), and the engine runs without the BinaryFormatter compatibility package.
 
   Quartz 1.0 and VistaDB 3.5 load and work on .NET 10 as they are.
 

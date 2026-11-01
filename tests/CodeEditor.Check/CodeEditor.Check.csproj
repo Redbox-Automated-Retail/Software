@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Not part of the decompiled sources. Checks Redbox.KioskEngine.IDE.CodeEditor (Scintilla in place of Puzzle.SyntaxBox)
+    on both frameworks the engine builds for: what the IDE relies on from the editor (text and undo state, the
+    modified/changed events, breakpoints and line markers, go to line, find/replace), and that the IDE controls using
+    it can be created. Needs a desktop session (it creates a hidden form).
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KioskEngine\Redbox.KioskEngine.IDE\Redbox.KioskEngine.IDE.csproj" />
+  </ItemGroup>
+</Project>

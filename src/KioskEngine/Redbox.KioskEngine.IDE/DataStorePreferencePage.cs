@@ -7,8 +7,6 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Alsing.SourceCode;
-using Alsing.Windows.Forms;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
 using Redbox.KioskEngine.IDE.Properties;
@@ -43,9 +41,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 
 	private ToolStripButton m_propertiesToolStripButton;
 
-	private SyntaxBoxControl m_syntaxBoxControl;
-
-	private SyntaxDocument m_syntaxDocument;
+	private CodeEditor m_codeEditor;
 
 	private ToolStripButton m_saveToolStripButton;
 
@@ -60,7 +56,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 	public DataStorePreferencePage()
 	{
 		InitializeComponent();
-		m_syntaxDocument.SetSyntaxFromEmbeddedResource(typeof(QueuePreferencePage).Assembly, "Redbox.KioskEngine.IDE.Lua.syn");
+		m_codeEditor.SetSyntaxResource("Lua");
 	}
 
 	public bool SaveValues(IPreferencePage preferencePage)
@@ -183,7 +179,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		try
 		{
 			Cursor = Cursors.WaitCursor;
-			m_syntaxDocument.Clear();
+			m_codeEditor.ClearText();
 			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(m_storeToolStripComboBox.SelectedItem.ToString());
 			string tableName = m_tableToolStripComboBox.SelectedItem.ToString();
 			DataTable dataTable = new DataTable();
@@ -248,17 +244,17 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		if (e.RowIndex == -1)
 		{
 			m_currentRowIndex = null;
-			m_syntaxDocument.Clear();
+			m_codeEditor.ClearText();
 		}
 		if (m_currentRowIndex != e.RowIndex)
 		{
-			if (m_currentRowIndex.HasValue && m_currentRowIndex != e.RowIndex && m_dataGridView[1, m_currentRowIndex.Value].Value as string != m_syntaxDocument.Text)
+			if (m_currentRowIndex.HasValue && m_currentRowIndex != e.RowIndex && m_dataGridView[1, m_currentRowIndex.Value].Value as string != m_codeEditor.Text)
 			{
-				m_dataGridView[1, m_currentRowIndex.Value].Value = m_syntaxDocument.Text;
+				m_dataGridView[1, m_currentRowIndex.Value].Value = m_codeEditor.Text;
 				m_dataGridView.Rows[m_currentRowIndex.Value].HeaderCell.Value = "*";
 			}
 			m_currentRowIndex = e.RowIndex;
-			m_syntaxDocument.Text = m_dataGridView[1, e.RowIndex].FormattedValue as string;
+			m_codeEditor.Text = m_dataGridView[1, e.RowIndex].FormattedValue as string;
 		}
 	}
 
@@ -273,7 +269,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		FindKeyValueForm findKeyValueForm = new FindKeyValueForm();
 		if (findKeyValueForm.ShowDialog() == DialogResult.OK && m_dataGridView.DataSource is DataTable dataTable)
 		{
-			m_syntaxDocument.Clear();
+			m_codeEditor.ClearText();
 			DataRow[] obj = ((findKeyValueForm.SearchType == KeyValueSearchType.Key) ? dataTable.Select($"[Key] = '{findKeyValueForm.SearchFor}'") : dataTable.Select($"[Value] LIKE '%{findKeyValueForm.SearchFor}%'"));
 			DataTable dataTable2 = new DataTable
 			{
@@ -332,8 +328,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		this.m_deleteToolStripButton = new System.Windows.Forms.ToolStripButton();
 		this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 		this.m_saveToolStripButton = new System.Windows.Forms.ToolStripButton();
-		this.m_syntaxBoxControl = new Alsing.Windows.Forms.SyntaxBoxControl();
-		this.m_syntaxDocument = new Alsing.SourceCode.SyntaxDocument(this.components);
+		this.m_codeEditor = new Redbox.KioskEngine.IDE.CodeEditor();
 		this.m_headerLabel = new System.Windows.Forms.Label();
 		((System.ComponentModel.ISupportInitialize)this.m_dataGridView).BeginInit();
 		this.m_toolStrip.SuspendLayout();
@@ -431,44 +426,18 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		this.m_saveToolStripButton.Size = new System.Drawing.Size(23, 20);
 		this.m_saveToolStripButton.Text = "Save";
 		this.m_saveToolStripButton.Click += new System.EventHandler(OnSave);
-		this.m_syntaxBoxControl.ActiveView = Alsing.Windows.Forms.ActiveView.BottomRight;
-		this.m_syntaxBoxControl.AllowBreakPoints = false;
-		this.m_syntaxBoxControl.AutoListPosition = null;
-		this.m_syntaxBoxControl.AutoListSelectedText = "a123";
-		this.m_syntaxBoxControl.AutoListVisible = false;
-		this.m_syntaxBoxControl.BackColor = System.Drawing.Color.White;
-		this.m_syntaxBoxControl.BorderStyle = Alsing.Windows.Forms.BorderStyle.None;
-		this.m_syntaxBoxControl.CopyAsRTF = false;
-		this.m_syntaxBoxControl.Document = this.m_syntaxDocument;
-		this.m_syntaxBoxControl.FontName = "Courier new";
-		this.m_syntaxBoxControl.HighLightActiveLine = true;
-		this.m_syntaxBoxControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-		this.m_syntaxBoxControl.InfoTipCount = 1;
-		this.m_syntaxBoxControl.InfoTipPosition = null;
-		this.m_syntaxBoxControl.InfoTipSelectedIndex = 1;
-		this.m_syntaxBoxControl.InfoTipVisible = false;
-		this.m_syntaxBoxControl.Location = new System.Drawing.Point(0, 330);
-		this.m_syntaxBoxControl.LockCursorUpdate = false;
-		this.m_syntaxBoxControl.Name = "m_syntaxBoxControl";
-		this.m_syntaxBoxControl.ShowEOLMarker = true;
-		this.m_syntaxBoxControl.ShowGutterMargin = false;
-		this.m_syntaxBoxControl.ShowScopeIndicator = false;
-		this.m_syntaxBoxControl.ShowTabGuides = true;
-		this.m_syntaxBoxControl.ShowWhitespace = true;
-		this.m_syntaxBoxControl.Size = new System.Drawing.Size(542, 176);
-		this.m_syntaxBoxControl.SmoothScroll = false;
-		this.m_syntaxBoxControl.SplitView = false;
-		this.m_syntaxBoxControl.SplitviewH = -4;
-		this.m_syntaxBoxControl.SplitviewV = -4;
-		this.m_syntaxBoxControl.TabGuideColor = System.Drawing.Color.FromArgb(222, 219, 214);
-		this.m_syntaxBoxControl.TabIndex = 12;
-		this.m_syntaxBoxControl.TabsToSpaces = true;
-		this.m_syntaxBoxControl.WhitespaceColor = System.Drawing.SystemColors.ControlDark;
-		this.m_syntaxDocument.Lines = new string[1] { "" };
-		this.m_syntaxDocument.MaxUndoBufferSize = 1000;
-		this.m_syntaxDocument.Modified = false;
-		this.m_syntaxDocument.UndoStep = 0;
-		this.m_syntaxDocument.ModifiedChanged += new System.EventHandler(OnDocumentModified);
+		this.m_codeEditor.AllowBreakPoints = false;
+		this.m_codeEditor.BorderStyle = ScintillaNET.BorderStyle.None;
+		this.m_codeEditor.CaretLineVisible = true;
+		this.m_codeEditor.Location = new System.Drawing.Point(0, 330);
+		this.m_codeEditor.Name = "m_codeEditor";
+		this.m_codeEditor.ShowEOLMarker = true;
+		this.m_codeEditor.ShowGutterMargin = false;
+		this.m_codeEditor.ShowWhitespace = true;
+		this.m_codeEditor.Size = new System.Drawing.Size(542, 176);
+		this.m_codeEditor.TabIndex = 12;
+		this.m_codeEditor.TabsToSpaces = true;
+		this.m_codeEditor.ModifiedChanged += new System.EventHandler(OnDocumentModified);
 		this.m_headerLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
 		this.m_headerLabel.BackColor = System.Drawing.Color.MediumBlue;
 		this.m_headerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
@@ -482,7 +451,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.Controls.Add(this.m_headerLabel);
-		base.Controls.Add(this.m_syntaxBoxControl);
+		base.Controls.Add(this.m_codeEditor);
 		base.Controls.Add(this.m_dataGridView);
 		base.Controls.Add(this.m_toolStrip);
 		base.Name = "DataStorePreferencePage";

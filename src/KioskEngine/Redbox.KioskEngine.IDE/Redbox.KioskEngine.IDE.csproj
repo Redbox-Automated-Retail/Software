@@ -40,9 +40,10 @@
     <EmbeddedResource Update="ViewStackToolWindow.resx" LogicalName="Redbox.KioskEngine.IDE.ViewStackToolWindow.resources" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Puzzle.SyntaxBox.NET3.5">
-      <HintPath>..\..\..\lib\Puzzle.SyntaxBox\Puzzle.SyntaxBox.NET3.5.dll</HintPath>
-    </Reference>
+    <!-- The code editor (CodeEditor.cs); replaces Puzzle.SyntaxBox, whose resources needed the BinaryFormatter on .NET 10. -->
+    <PackageReference Include="Scintilla5.NET" Version="6.1.2" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Skybound.VisualTips">
       <HintPath>..\..\..\lib\Skybound.VisualTips\Skybound.VisualTips.dll</HintPath>
     </Reference>

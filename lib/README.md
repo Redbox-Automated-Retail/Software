@@ -13,7 +13,6 @@ binary shipped in the kiosk image. They are third-party software under their own
 | `Jayrock/Jayrock.Json.dll` | 0.9.8316.0 | `REDS/Kiosk Engine/bin` | Redbox.JSONPrettyPrinter, Redbox.KioskDataServices.Proxy, update-console |
 | `log4net/1.2.9/log4net.dll` | 1.2.9.0 | `halservice/bin` | HAL projects |
 | `PowerCollections/PowerCollections.dll` | 1.0.2141 | `REDS/Kiosk Engine/bin` | Redbox.REDS.Framework, HAL script framework, redscc, halmgmtc |
-| `Puzzle.SyntaxBox/Puzzle.SyntaxBox.NET3.5.dll` | 1.4.10.4496 | `REDS/Kiosk Engine/bin` | Redbox.KioskEngine.IDE |
 | `Quartz/1.0.2.3/Quartz.dll` | 1.0.2.3 | `REDS/Kiosk Engine/bin` | Redbox.KioskEngine.Environment |
 | `SevenZip/SevenZip.dll` | 1.0.0.0 | `REDS/Kiosk Engine/bin` | Redbox.Compression, update manager (LZMA SDK) |
 | `SharpZipLib/0.85.5/ICSharpCode.SharpZipLib.dll` | 0.85.5.452 | `REDS/Kiosk Engine/bin` | many |

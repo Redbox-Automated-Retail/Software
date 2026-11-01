@@ -17,18 +17,9 @@
     <SelfContained>true</SelfContained>
     <!-- Redbox.ControlPanel.UI and Redbox.Rental.UI are WinExe projects that the engine loads as libraries. -->
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
-    <!--
-      The IDE's Puzzle.SyntaxBox (a .NET 3.5 WinForms control) stores its images as BinaryFormatter-serialized resources,
-      and the engine creates IDE preference pages at start-up. .NET 9+ removed BinaryFormatter; Microsoft's unsupported
-      compatibility package brings it back for reading those resources. To be dropped when SyntaxBox is replaced.
-    -->
-    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <!-- The data stores are SQLite on .NET 10; existing VistaDB files are converted by this tool (build\VistaDbToSqlite.targets). -->
     <ShipVistaDbToSqlite>true</ShipVistaDbToSqlite>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.14" />
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="HostForm.resx" LogicalName="Redbox.KioskEngine.Bootstrap.HostForm.resources" />
   </ItemGroup>

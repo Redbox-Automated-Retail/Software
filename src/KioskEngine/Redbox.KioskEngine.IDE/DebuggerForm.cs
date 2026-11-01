@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
-using Alsing.SourceCode;
-using Alsing.Windows.Forms;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
 using Redbox.KioskEngine.IDE.Properties;
@@ -40,9 +38,7 @@ public class DebuggerForm : Form
 
 	private Splitter m_mainSplitter;
 
-	private SyntaxBoxControl m_syntaxBoxControl;
-
-	private SyntaxDocument m_syntaxDocument;
+	private CodeEditor m_codeEditor;
 
 	private Splitter m_sourceSplitter;
 
@@ -146,8 +142,6 @@ public class DebuggerForm : Form
 
 	private ToolStripMenuItem m_breakpointsToolStripMenuItem;
 
-	private ImageList m_gutterImageList;
-
 	public static DebuggerForm Instance => m_instance;
 
 	public IResourceBundleFilter Filter { get; set; }
@@ -179,8 +173,7 @@ public class DebuggerForm : Form
 	public DebuggerForm()
 	{
 		InitializeComponent();
-		m_syntaxDocument.SetSyntaxFromEmbeddedResource(typeof(DebuggerForm).Assembly, "Redbox.KioskEngine.IDE.Lua.syn");
-		m_syntaxBoxControl.GutterIcons.Images.Add(m_gutterImageList.Images[0]);
+		m_codeEditor.SetSyntaxResource("Lua");
 	}
 
 	public void ActivateDebugger()
@@ -209,7 +202,7 @@ public class DebuggerForm : Form
 			{
 				FooterText = $"The error occurred on or near line: {lineNumber}."
 			};
-			Point point = m_syntaxBoxControl.PointToScreen(m_syntaxBoxControl.Cursor.HotSpot);
+			Point point = m_codeEditor.PointToScreen(m_codeEditor.Cursor.HotSpot);
 			m_visualTipProvider.ShowTip(tip, new Rectangle(point.X + 250, point.Y, 100, 100));
 		}
 		RefreshTabs();
@@ -245,15 +238,15 @@ public class DebuggerForm : Form
 	{
 		if (string.IsNullOrEmpty(resourceName))
 		{
-			m_syntaxDocument.Text = null;
+			m_codeEditor.Text = null;
 			Text = "REDS Engine Debugger";
 			return;
 		}
 		string script = GetScript(resourceName);
 		if (!string.IsNullOrEmpty(script))
 		{
-			m_syntaxDocument.Text = script;
-			m_syntaxBoxControl.GotoLine(1);
+			m_codeEditor.Text = script;
+			m_codeEditor.GotoLine(1);
 			Text = $"{resourceName} - REDS Engine Debugger";
 			CurrentResourceName = resourceName;
 			RefreshBreakpoints();
@@ -267,7 +260,7 @@ public class DebuggerForm : Form
 
 	public void SetCurrentDebugLine(int lineNumber, string message)
 	{
-		if (lineNumber < m_syntaxDocument.Lines.Length)
+		if (lineNumber < m_codeEditor.LineCount)
 		{
 			ClearCurrentLineSymbol();
 			int num = lineNumber - 1;
@@ -275,13 +268,13 @@ public class DebuggerForm : Form
 			{
 				num = 0;
 			}
-			m_syntaxBoxControl.GotoLine(num);
+			m_codeEditor.GotoLine(num);
 			int num2 = num - 5;
 			if (num2 < 0)
 			{
 				num2 = 0;
 			}
-			m_syntaxBoxControl.ScrollIntoView(num2);
+			m_codeEditor.ScrollIntoView(num2);
 			ShowCurrentLineSymbol();
 		}
 		if (!string.IsNullOrEmpty(message))
@@ -421,7 +414,7 @@ public class DebuggerForm : Form
 
 	private void OnDeleteAllBreakpoints(object sender, EventArgs e)
 	{
-		m_syntaxDocument.ClearBreakpoints();
+		m_codeEditor.ClearBreakpoints();
 		if (Debugger != null)
 		{
 			Debugger.ClearAllBreakpoints();
@@ -496,20 +489,20 @@ public class DebuggerForm : Form
 		}
 	}
 
-	private void OnBreakpointAdded(object sender, RowEventArgs e)
+	private void OnBreakpointAdded(object sender, int line)
 	{
 		if (!m_refreshingBreakpoints)
 		{
-			Debugger.AddBreakpoint(CurrentResourceName, e.Row.Index + 1);
+			Debugger.AddBreakpoint(CurrentResourceName, line + 1);
 			SetBreakpointState();
 		}
 	}
 
-	private void OnBreakpointRemoved(object sender, RowEventArgs e)
+	private void OnBreakpointRemoved(object sender, int line)
 	{
 		if (!m_refreshingBreakpoints)
 		{
-			Debugger.RemoveBreakpoint(CurrentResourceName, e.Row.Index + 1);
+			Debugger.RemoveBreakpoint(CurrentResourceName, line + 1);
 			SetBreakpointState();
 		}
 	}
@@ -526,8 +519,8 @@ public class DebuggerForm : Form
 
 	private void ToggleBreakpoint()
 	{
-		int index = m_syntaxBoxControl.Caret.Position.Y;
-		m_syntaxDocument[index].Breakpoint = !m_syntaxDocument[index].Breakpoint;
+		int index = m_codeEditor.CaretLine;
+		m_codeEditor.SetBreakpoint(index, !m_codeEditor.HasBreakpoint(index));
 	}
 
 	private void RefreshBreakpoints()
@@ -539,23 +532,23 @@ public class DebuggerForm : Form
 		try
 		{
 			m_refreshingBreakpoints = true;
-			m_syntaxDocument.ClearBreakpoints();
+			m_codeEditor.ClearBreakpoints();
 			if (Debugger == null)
 			{
 				return;
 			}
 			LuaDebugBreakpointContainer breakpoints = Debugger.GetBreakpoints(CurrentResourceName);
-			m_syntaxBoxControl.AllowBreakPoints = breakpoints.Count > 0;
+			m_codeEditor.AllowBreakPoints = breakpoints.Count > 0;
 			foreach (LuaDebugBreakpoint item in breakpoints)
 			{
-				m_syntaxDocument[item.Line - 1].Breakpoint = item.Enabled;
+				m_codeEditor.SetBreakpoint(item.Line - 1, item.Enabled);
 				if (!item.Enabled)
 				{
-					m_syntaxDocument[item.Line - 1].Images.Add(13);
+					m_codeEditor.SetDisabledBreakpointMarker(item.Line - 1, on: true);
 				}
 				else
 				{
-					m_syntaxDocument[item.Line - 1].Images.Remove(13);
+					m_codeEditor.SetDisabledBreakpointMarker(item.Line - 1, on: false);
 				}
 			}
 		}
@@ -568,12 +561,12 @@ public class DebuggerForm : Form
 
 	private void ShowCurrentLineSymbol()
 	{
-		m_syntaxBoxControl.Document[m_syntaxBoxControl.Caret.Position.Y].Images.Add(2);
+		m_codeEditor.SetCurrentLineMarker(m_codeEditor.CaretLine, on: true);
 	}
 
 	private void ClearCurrentLineSymbol()
 	{
-		m_syntaxBoxControl.Document[m_syntaxBoxControl.Caret.Position.Y].Images.Remove(2);
+		m_codeEditor.SetCurrentLineMarker(m_codeEditor.CaretLine, on: false);
 	}
 
 	private void SelectNodePath(string path)
@@ -630,7 +623,7 @@ public class DebuggerForm : Form
 	private void SetBreakpointState()
 	{
 		IUserSettingsStore service = ServiceLocator.Instance.GetService<IUserSettingsStore>();
-		m_syntaxBoxControl.AllowBreakPoints = false;
+		m_codeEditor.AllowBreakPoints = false;
 		m_breakpointsToolStripMenuItem.Visible = false;
 		m_toggleBreakpointToolStripMenuItem.Enabled = false;
 		m_deleteAllBreakpointToolStripMenuItem.Enabled = false;
@@ -638,7 +631,7 @@ public class DebuggerForm : Form
 		{
 			return;
 		}
-		m_syntaxBoxControl.AllowBreakPoints = true;
+		m_codeEditor.AllowBreakPoints = true;
 		m_toggleBreakpointToolStripMenuItem.Enabled = !string.IsNullOrEmpty(CurrentResourceName);
 		LuaDebugFileContainer files = Debugger.GetFiles();
 		if (files.Count == 0)
@@ -663,14 +656,14 @@ public class DebuggerForm : Form
 						((ToolStripMenuItem)o).Checked = workingBreakpoint.Enabled;
 						if (CurrentResourceName == workingFile.FileName)
 						{
-							m_syntaxDocument[workingBreakpoint.Line - 1].Breakpoint = workingBreakpoint.Enabled;
+							m_codeEditor.SetBreakpoint(workingBreakpoint.Line - 1, workingBreakpoint.Enabled);
 							if (!workingBreakpoint.Enabled)
 							{
-								m_syntaxDocument[workingBreakpoint.Line - 1].Images.Add(13);
+								m_codeEditor.SetDisabledBreakpointMarker(workingBreakpoint.Line - 1, on: true);
 							}
 							else
 							{
-								m_syntaxDocument[workingBreakpoint.Line - 1].Images.Remove(13);
+								m_codeEditor.SetDisabledBreakpointMarker(workingBreakpoint.Line - 1, on: false);
 							}
 						}
 					}
@@ -710,28 +703,28 @@ public class DebuggerForm : Form
 
 	private void OnFind(object sender, EventArgs e)
 	{
-		m_syntaxBoxControl.ShowFind();
+		m_codeEditor.ShowFind();
 	}
 
 	private void OnReplace(object sender, EventArgs e)
 	{
-		m_syntaxBoxControl.ShowReplace();
+		m_codeEditor.ShowReplace();
 	}
 
 	private void OnGoTo(object sender, EventArgs e)
 	{
-		m_syntaxBoxControl.ShowGotoLine();
+		m_codeEditor.ShowGotoLine();
 	}
 
 	private void OnShowWhitespace(object sender, EventArgs e)
 	{
-		m_syntaxBoxControl.ShowWhitespace = !m_syntaxBoxControl.ShowWhitespace;
+		m_codeEditor.ShowWhitespace = !m_codeEditor.ShowWhitespace;
 		m_showWhitespaceToolStripMenuItem.Checked = !m_showWhitespaceToolStripMenuItem.Checked;
 	}
 
 	private void OnShowEOL(object sender, EventArgs e)
 	{
-		m_syntaxBoxControl.ShowEOLMarker = !m_syntaxBoxControl.ShowEOLMarker;
+		m_codeEditor.ShowEOLMarker = !m_codeEditor.ShowEOLMarker;
 		m_showEOLMarkerToolStripMenuItem.Checked = !m_showEOLMarkerToolStripMenuItem.Checked;
 	}
 
@@ -973,8 +966,7 @@ public class DebuggerForm : Form
 		this.m_deleteAllBreakpointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.m_breakpointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.m_mainSplitter = new System.Windows.Forms.Splitter();
-		this.m_syntaxBoxControl = new Alsing.Windows.Forms.SyntaxBoxControl();
-		this.m_syntaxDocument = new Alsing.SourceCode.SyntaxDocument(this.components);
+		this.m_codeEditor = new Redbox.KioskEngine.IDE.CodeEditor();
 		this.m_sourceSplitter = new System.Windows.Forms.Splitter();
 		this.m_toolStrip = new System.Windows.Forms.ToolStrip();
 		this.m_enableDebuggingToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -1001,7 +993,6 @@ public class DebuggerForm : Form
 		this.m_imageList = new System.Windows.Forms.ImageList(this.components);
 		this.m_treeView = new System.Windows.Forms.TreeView();
 		this.m_visualTipProvider = new Skybound.VisualTips.VisualTipProvider(this.components);
-		this.m_gutterImageList = new System.Windows.Forms.ImageList(this.components);
 		this.m_statusStrip.SuspendLayout();
 		this.m_menuStrip.SuspendLayout();
 		this.m_toolStrip.SuspendLayout();
@@ -1149,41 +1140,17 @@ public class DebuggerForm : Form
 		this.m_mainSplitter.Size = new System.Drawing.Size(3, 502);
 		this.m_mainSplitter.TabIndex = 3;
 		this.m_mainSplitter.TabStop = false;
-		this.m_syntaxBoxControl.ActiveView = Alsing.Windows.Forms.ActiveView.BottomRight;
-		this.m_syntaxBoxControl.AutoListPosition = null;
-		this.m_syntaxBoxControl.AutoListSelectedText = "a123";
-		this.m_syntaxBoxControl.AutoListVisible = false;
-		this.m_syntaxBoxControl.BackColor = System.Drawing.Color.White;
-		this.m_syntaxBoxControl.BorderStyle = Alsing.Windows.Forms.BorderStyle.None;
-		this.m_syntaxBoxControl.CopyAsRTF = false;
-		this.m_syntaxBoxControl.Dock = System.Windows.Forms.DockStyle.Top;
-		this.m_syntaxBoxControl.Document = this.m_syntaxDocument;
-		this.m_syntaxBoxControl.FontName = "Courier new";
-		this.m_syntaxBoxControl.HighLightActiveLine = true;
-		this.m_syntaxBoxControl.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-		this.m_syntaxBoxControl.InfoTipCount = 1;
-		this.m_syntaxBoxControl.InfoTipPosition = null;
-		this.m_syntaxBoxControl.InfoTipSelectedIndex = 1;
-		this.m_syntaxBoxControl.InfoTipVisible = false;
-		this.m_syntaxBoxControl.Location = new System.Drawing.Point(262, 49);
-		this.m_syntaxBoxControl.LockCursorUpdate = false;
-		this.m_syntaxBoxControl.Name = "m_syntaxBoxControl";
-		this.m_syntaxBoxControl.ReadOnly = true;
-		this.m_syntaxBoxControl.ShowScopeIndicator = false;
-		this.m_syntaxBoxControl.Size = new System.Drawing.Size(530, 328);
-		this.m_syntaxBoxControl.SmoothScroll = false;
-		this.m_syntaxBoxControl.SplitviewH = -4;
-		this.m_syntaxBoxControl.SplitviewV = -4;
-		this.m_syntaxBoxControl.TabGuideColor = System.Drawing.Color.FromArgb(222, 219, 214);
-		this.m_syntaxBoxControl.TabIndex = 4;
-		this.m_syntaxBoxControl.WhitespaceColor = System.Drawing.SystemColors.ControlDark;
-		this.m_syntaxBoxControl.CaretChange += new System.EventHandler(OnCaretChange);
-		this.m_syntaxDocument.Lines = new string[1] { "" };
-		this.m_syntaxDocument.MaxUndoBufferSize = 1000;
-		this.m_syntaxDocument.Modified = false;
-		this.m_syntaxDocument.UndoStep = 0;
-		this.m_syntaxDocument.BreakPointAdded += new Alsing.SourceCode.RowEventHandler(OnBreakpointAdded);
-		this.m_syntaxDocument.BreakPointRemoved += new Alsing.SourceCode.RowEventHandler(OnBreakpointRemoved);
+		this.m_codeEditor.BorderStyle = ScintillaNET.BorderStyle.None;
+		this.m_codeEditor.CaretLineVisible = true;
+		this.m_codeEditor.Dock = System.Windows.Forms.DockStyle.Top;
+		this.m_codeEditor.Location = new System.Drawing.Point(262, 49);
+		this.m_codeEditor.Name = "m_codeEditor";
+		this.m_codeEditor.ReadOnly = true;
+		this.m_codeEditor.Size = new System.Drawing.Size(530, 328);
+		this.m_codeEditor.TabIndex = 4;
+		this.m_codeEditor.CaretChange += new System.EventHandler(OnCaretChange);
+		this.m_codeEditor.BreakpointAdded += OnBreakpointAdded;
+		this.m_codeEditor.BreakpointRemoved += OnBreakpointRemoved;
 		this.m_sourceSplitter.Dock = System.Windows.Forms.DockStyle.Top;
 		this.m_sourceSplitter.Location = new System.Drawing.Point(262, 377);
 		this.m_sourceSplitter.Name = "m_sourceSplitter";
@@ -1385,15 +1352,12 @@ public class DebuggerForm : Form
 		this.m_visualTipProvider.DisplayAtMousePosition = false;
 		this.m_visualTipProvider.DisplayMode = Skybound.VisualTips.VisualTipDisplayMode.Manual;
 		this.m_visualTipProvider.Renderer = renderer;
-		this.m_gutterImageList.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("m_gutterImageList.ImageStream");
-		this.m_gutterImageList.TransparentColor = System.Drawing.Color.Transparent;
-		this.m_gutterImageList.Images.SetKeyName(0, "breakpoint-disabled.png");
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.ClientSize = new System.Drawing.Size(792, 573);
 		base.Controls.Add(this.m_tabControl);
 		base.Controls.Add(this.m_sourceSplitter);
-		base.Controls.Add(this.m_syntaxBoxControl);
+		base.Controls.Add(this.m_codeEditor);
 		base.Controls.Add(this.m_mainSplitter);
 		base.Controls.Add(this.m_treeView);
 		base.Controls.Add(this.m_statusStrip);
