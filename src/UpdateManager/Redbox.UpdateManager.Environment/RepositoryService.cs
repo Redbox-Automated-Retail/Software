@@ -115,72 +115,74 @@ public class RepositoryService : IRepositoryService, IDisposable
 				{
 					continue;
 				}
-				string text = Path.Combine(FormatRepositoryLocationInternal(name), revLogList[i].HashFileName(change.FormatFileName()));
-				if (new FileInfo(text).Length < 1)
+				string storedFile = Path.Combine(FormatRepositoryLocationInternal(name), revLogList[i].HashFileName(change.FormatFileName()));
+				if (new FileInfo(storedFile).Length < 1)
 				{
 					continue;
 				}
-				using FileStream inputStream = File.OpenRead(text);
-				string text2 = inputStream.ToASCIISHA1Hash();
-				if (change.IsSeed && change.VersionHash != text2)
+				using FileStream inputStream = File.OpenRead(storedFile);
+				string storedHash = inputStream.ToASCIISHA1Hash();
+				if (change.IsSeed && change.VersionHash != storedHash)
 				{
-					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"{text} should have hash {change.VersionHash} but has {text2}", "This store's repository is corrupted."));
+					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"{storedFile} should have hash {change.VersionHash} but has {storedHash}", "This store's repository is corrupted."));
 				}
-				else if (!change.IsSeed && change.ContentHash != text2)
+				else if (!change.IsSeed && change.ContentHash != storedHash)
 				{
-					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"{text} should have hash {change.ContentHash} but has {text2}", "This store's repository is corrupted."));
+					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"{storedFile} should have hash {change.ContentHash} but has {storedHash}", "This store's repository is corrupted."));
 				}
 			}
 		}
-		HashSet<string> hashSet = new HashSet<string>();
-		string current2 = ReadCurrentRevisionInternal(name);
-		if (current2 != "0000000000000000000000000000000000000000")
+		HashSet<string> checkedFiles = new HashSet<string>();
+		string currentHash = ReadCurrentRevisionInternal(name);
+		if (currentHash != "0000000000000000000000000000000000000000")
 		{
-			for (int num = revLogList.FindIndex((RevLog l) => l.Hash == current2); num > -1; num--)
+			for (int stagedIndex = revLogList.FindIndex((RevLog l) => l.Hash == currentHash); stagedIndex > -1; stagedIndex--)
 			{
-				foreach (ChangeItem change2 in revLogList[num].Changes)
+				foreach (ChangeItem stagedChange in revLogList[stagedIndex].Changes)
 				{
-					string text3 = Path.Combine(change2.TargetPath, change2.TargetName);
-					if (hashSet.Contains(text3))
+					string targetFile = Path.Combine(stagedChange.TargetPath, stagedChange.TargetName);
+					if (checkedFiles.Contains(targetFile))
 					{
 						continue;
 					}
-					hashSet.Add(text3);
-					string text4 = FormatStagedFileName(text3);
-					using FileStream inputStream2 = File.OpenRead(text4);
-					string text5 = inputStream2.ToASCIISHA1Hash();
-					if (change2.VersionHash != text5)
+					checkedFiles.Add(targetFile);
+					string stagedFile = FormatStagedFileName(targetFile);
+					using FileStream inputStream2 = File.OpenRead(stagedFile);
+					string stagedHash = inputStream2.ToASCIISHA1Hash();
+					if (stagedChange.VersionHash != stagedHash)
 					{
-						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"Staged file: {text4} should have hash {change2.VersionHash} but has {text5}", "This store's repository is corrupted."));
+						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"Staged file: {stagedFile} should have hash {stagedChange.VersionHash} but has {stagedHash}", "This store's repository is corrupted."));
 					}
 				}
 			}
-			hashSet.Clear();
+			checkedFiles.Clear();
 		}
 		if (ReadActiveRevisionInternal(name) != "0000000000000000000000000000000000000000")
 		{
-			for (int num2 = revLogList.FindIndex((RevLog l) => l.Hash == current2); num2 > -1; num2--)
+			// As in Redbox's code: the active files are checked from the current (staged) revision down, not from the
+			// active one.
+			for (int activeIndex = revLogList.FindIndex((RevLog l) => l.Hash == currentHash); activeIndex > -1; activeIndex--)
 			{
-				foreach (ChangeItem change3 in revLogList[num2].Changes)
+				foreach (ChangeItem activeChange in revLogList[activeIndex].Changes)
 				{
-					string text6 = Path.Combine(change3.TargetPath, change3.TargetName);
-					if (hashSet.Contains(text6))
+					string activeFile = Path.Combine(activeChange.TargetPath, activeChange.TargetName);
+					if (checkedFiles.Contains(activeFile))
 					{
 						continue;
 					}
-					hashSet.Add(text6);
+					checkedFiles.Add(activeFile);
 					try
 					{
-						using FileStream inputStream3 = File.OpenRead(text6);
-						string text7 = inputStream3.ToASCIISHA1Hash();
-						if (change3.VersionHash != text7)
+						using FileStream inputStream3 = File.OpenRead(activeFile);
+						string activeHash = inputStream3.ToASCIISHA1Hash();
+						if (activeChange.VersionHash != activeHash)
 						{
-							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"Active file: {text6} should have hash {change3.VersionHash} but has {text7}", "This store's repository is corrupted."));
+							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("V999", $"Active file: {activeFile} should have hash {activeChange.VersionHash} but has {activeHash}", "This store's repository is corrupted."));
 						}
 					}
 					catch (Exception e)
 					{
-						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("E999", $"Error hashing {text6}.", e));
+						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("E999", $"Error hashing {activeFile}.", e));
 					}
 				}
 			}
@@ -231,16 +233,16 @@ public class RepositoryService : IRepositoryService, IDisposable
 					dictionary.Add(revision, revLog);
 					list.Add(revLog);
 				}
-				foreach (ChangeSetItem item2 in changeSet.Items)
+				foreach (ChangeSetItem changeSetItem in changeSet.Items)
 				{
-					dictionary[item2.Revision].Changes.Add(new ChangeItem
+					dictionary[changeSetItem.Revision].Changes.Add(new ChangeItem
 					{
-						IsSeed = item2.IsFirst,
-						Composite = item2.Composite,
-						ContentHash = item2.ContentHash,
-						TargetName = Path.GetFileName(item2.TargetName),
-						TargetPath = Path.GetDirectoryName(item2.TargetPath),
-						VersionHash = item2.VersionHash
+						IsSeed = changeSetItem.IsFirst,
+						Composite = changeSetItem.Composite,
+						ContentHash = changeSetItem.ContentHash,
+						TargetName = Path.GetFileName(changeSetItem.TargetName),
+						TargetPath = Path.GetDirectoryName(changeSetItem.TargetPath),
+						VersionHash = changeSetItem.VersionHash
 					});
 				}
 			}
@@ -298,7 +300,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			List<int> list = new List<int>();
 			PersistentList<RevLog> revLog = GetRevLog(name);
-			List<RevLog> list2 = revLog.AsList();
+			List<RevLog> revLogs = revLog.AsList();
 			Predicate<RevLog> predicate2 = default(Predicate<RevLog>);
 			while (true)
 			{
@@ -307,12 +309,12 @@ public class RepositoryService : IRepositoryService, IDisposable
 				{
 					predicate = (predicate2 = (RevLog l) => l.Hash == hash);
 				}
-				int num = list2.FindIndex(predicate);
-				if (num == -1)
+				int hashIndex = revLogs.FindIndex(predicate);
+				if (hashIndex == -1)
 				{
 					break;
 				}
-				list.Add(num);
+				list.Add(hashIndex);
 			}
 			revLog.RemoveAllAt(list);
 		}
@@ -355,9 +357,9 @@ public class RepositoryService : IRepositoryService, IDisposable
 				return;
 			}
 			List<int> list = new List<int>();
-			for (int num2 = 1; num2 < num; num2++)
+			for (int i = 1; i < num; i++)
 			{
-				RevLog revLog = revLogList[num2];
+				RevLog revLog = revLogList[i];
 				bool keep = false;
 				revLog.Changes.ForEach(delegate(ChangeItem ci)
 				{
@@ -368,7 +370,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 				});
 				if (!keep)
 				{
-					list.Add(num2);
+					list.Add(i);
 				}
 			}
 			LogHelper.Instance.Log("Current Hash: {0} Index:{1}", current, num);
@@ -476,11 +478,11 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			string current = ReadCurrentRevisionInternal(name);
 			List<RevLog> revLogList = GetRevLogList(name);
-			int num = revLogList.FindIndex((RevLog l) => l.Hash == current);
+			int currentIndex = revLogList.FindIndex((RevLog l) => l.Hash == current);
 			List<IRevLog> list = new List<IRevLog>();
-			for (int num2 = num + 1; num2 < revLogList.Count; num2++)
+			for (int i = currentIndex + 1; i < revLogList.Count; i++)
 			{
-				list.Add(revLogList[num2]);
+				list.Add(revLogList[i]);
 			}
 			return list;
 		}
@@ -549,11 +551,11 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			string current = ReadCurrentRevisionInternal(name);
 			List<RevLog> revLogList = GetRevLogList(name);
-			int num = revLogList.FindIndex((RevLog l) => l.Hash == current);
+			int currentIndex = revLogList.FindIndex((RevLog l) => l.Hash == current);
 			List<IRevLog> list = new List<IRevLog>();
-			for (int num2 = 0; num2 <= num; num2++)
+			for (int i = 0; i <= currentIndex; i++)
 			{
-				list.Add(revLogList[num2]);
+				list.Add(revLogList[i]);
 			}
 			return list;
 		}
@@ -578,11 +580,11 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			string active = ReadActiveRevisionInternal(name);
 			List<RevLog> revLogList = GetRevLogList(name);
-			int num = revLogList.FindIndex((RevLog l) => l.Hash == active);
+			int activeIndex = revLogList.FindIndex((RevLog l) => l.Hash == active);
 			List<IRevLog> list = new List<IRevLog>();
-			for (int num2 = 0; num2 <= num; num2++)
+			for (int i = 0; i <= activeIndex; i++)
 			{
-				list.Add(revLogList[num2]);
+				list.Add(revLogList[i]);
 			}
 			return list;
 		}
@@ -853,16 +855,16 @@ public class RepositoryService : IRepositoryService, IDisposable
 					{
 						Directory.CreateDirectory(StagingDirectory);
 					}
-					string text2 = Path.Combine(StagingDirectory, $"{deltaItem.Revision}-{arg}.patch");
-					if (!File.Exists(text2))
+					string patchFile = Path.Combine(StagingDirectory, $"{deltaItem.Revision}-{arg}.patch");
+					if (!File.Exists(patchFile))
 					{
-						throw new FileNotFoundException($"Could not find staged file: {text2}");
+						throw new FileNotFoundException($"Could not find staged file: {patchFile}");
 					}
 					if (File.Exists(text))
 					{
 						File.Delete(text);
 					}
-					File.Move(text2, text);
+					File.Move(patchFile, text);
 				}
 			}
 		}
@@ -931,25 +933,25 @@ public class RepositoryService : IRepositoryService, IDisposable
 		List<RevLog> revLogList = GetRevLogList(name);
 		HashSet<string> hashSet = new HashSet<string>();
 		string current = ReadCurrentRevisionInternal(name);
-		int num = revLogList.FindIndex((RevLog l) => l.Hash == current);
-		if (num > -1)
+		int currentIndex = revLogList.FindIndex((RevLog l) => l.Hash == current);
+		if (currentIndex > -1)
 		{
-			for (int num2 = num; num2 < revLogList.Count; num2++)
+			for (int i = currentIndex; i < revLogList.Count; i++)
 			{
-				foreach (ChangeItem change in revLogList[num2].Changes)
+				foreach (ChangeItem change in revLogList[i].Changes)
 				{
-					string text = Path.Combine(change.TargetPath, change.TargetName);
-					if (!hashSet.Contains(text))
+					string targetFile = Path.Combine(change.TargetPath, change.TargetName);
+					if (!hashSet.Contains(targetFile))
 					{
-						hashSet.Add(text);
-						string text2 = FormatStagedFileName(text);
+						hashSet.Add(targetFile);
+						string stagedFile = FormatStagedFileName(targetFile);
 						try
 						{
-							File.Delete(text2);
+							File.Delete(stagedFile);
 						}
 						catch (Exception)
 						{
-							DeleteLockedFileSystemEntry(text2);
+							DeleteLockedFileSystemEntry(stagedFile);
 							defferedDelete = true;
 						}
 					}
@@ -1179,29 +1181,29 @@ public class RepositoryService : IRepositoryService, IDisposable
 					{
 						continue;
 					}
-					string text2 = change.FormatFileName();
-					if (!hashSet.Contains(text2))
+					string targetFile = change.FormatFileName();
+					if (!hashSet.Contains(targetFile))
 					{
-						LogHelper.Instance.Log("Activating file {0} to {1}{2}{2}", FormatStagedFileName(text2), text2, System.Environment.NewLine);
-						hashSet.Add(text2);
-						string text3 = FormatStagedFileName(text2);
-						if (!File.Exists(text3))
+						LogHelper.Instance.Log("Activating file {0} to {1}{2}{2}", FormatStagedFileName(targetFile), targetFile, System.Environment.NewLine);
+						hashSet.Add(targetFile);
+						string stagedFile = FormatStagedFileName(targetFile);
+						if (!File.Exists(stagedFile))
 						{
-							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", $"Error Activating staged files for repository: {name} to revision: {targetHash}", $"Staged file does not exist.File:{text3}"));
+							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", $"Error Activating staged files for repository: {name} to revision: {targetHash}", $"Staged file does not exist.File:{stagedFile}"));
 							Reset(name, out var _);
 							return errorList;
 						}
 						try
 						{
-							File.Copy(FormatStagedFileName(text2), text2, overwrite: true);
+							File.Copy(FormatStagedFileName(targetFile), targetFile, overwrite: true);
 						}
 						catch (Exception e)
 						{
-							LogHelper.Instance.Log("{0} is locked by anther process doing a deferred move.", text2);
+							LogHelper.Instance.Log("{0} is locked by anther process doing a deferred move.", targetFile);
 							LogHelper.Instance.Log("Error from activate copy.", e);
 							string tempFileName = Path.GetTempFileName();
-							File.Copy(FormatStagedFileName(text2), tempFileName, overwrite: true);
-							MoveLockedFileSystemEntry(tempFileName, text2);
+							File.Copy(FormatStagedFileName(targetFile), tempFileName, overwrite: true);
+							MoveLockedFileSystemEntry(tempFileName, targetFile);
 							deferredMove = true;
 						}
 					}
@@ -1239,8 +1241,8 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			return errorList;
 		}
-		int num = revLogList.FindIndex((RevLog r) => r.Hash == targetHash);
-		if (num == -1)
+		int targetIndex = revLogList.FindIndex((RevLog r) => r.Hash == targetHash);
+		if (targetIndex == -1)
 		{
 			errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("A999", $"No revision found for hash: {targetHash}", "Supply a revision repository"));
 			return errorList;
@@ -1250,21 +1252,21 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			return errorList;
 		}
-		int num2 = revLogList.FindIndex((RevLog r) => r.Hash == current);
-		if (num2 == -1)
+		int currentIndex = revLogList.FindIndex((RevLog r) => r.Hash == current);
+		if (currentIndex == -1)
 		{
-			LogHelper.Instance.Log("Moving to target log index {0}.", num);
+			LogHelper.Instance.Log("Moving to target log index {0}.", targetIndex);
 		}
 		else
 		{
-			LogHelper.Instance.Log("Moving from current log index {0} to target log index {1}.", num2, num);
+			LogHelper.Instance.Log("Moving from current log index {0} to target log index {1}.", currentIndex, targetIndex);
 		}
-		if (num < num2)
+		if (targetIndex < currentIndex)
 		{
 			errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("A999", "Moving to earlier version is not supported.", "Supply a revision repository"));
 			return errorList;
 		}
-		errorList.AddRange(MoveUpInternal(name, num2, num, revLogList));
+		errorList.AddRange(MoveUpInternal(name, currentIndex, targetIndex, revLogList));
 		if (errorList.ContainsError() && !rebuilding)
 		{
 			LogHelper.Instance.Log("Error Updating {0} from {1} to {2} attempting to rebuild.", name, current, targetHash);
@@ -1289,14 +1291,18 @@ public class RepositoryService : IRepositoryService, IDisposable
 		return errorList;
 	}
 
+	// Brings the staged files (<target path>\.staged_\<name>) from revision current up to target. For each file it finds the
+	// first revision to start from: a seed, or the revision whose version matches the staged file. It then applies that
+	// revision's seed or xdelta patches up to target in a temporary working copy, checks the SHA-1 of each result, and
+	// on success replaces the staged files with the working copies.
 	private Redbox.UpdateManager.ComponentModel.ErrorList MoveUpInternal(string name, int current, int target, IList<RevLog> logList)
 	{
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
-		Dictionary<string, string> dictionary = new Dictionary<string, string>();
+		Dictionary<string, string> workingCopies = new Dictionary<string, string>();
 		try
 		{
-			HashSet<string> hashSet = new HashSet<string>();
-			Dictionary<string, int> dictionary2 = new Dictionary<string, int>();
+			HashSet<string> stagedFiles = new HashSet<string>();
+			Dictionary<string, int> firstRevision = new Dictionary<string, int>();
 			for (int i = current + 1; i <= target; i++)
 			{
 				foreach (ChangeItem change in logList[i].Changes)
@@ -1309,26 +1315,26 @@ public class RepositoryService : IRepositoryService, IDisposable
 						}
 						continue;
 					}
-					string text = Path.Combine(change.TargetPath, $".staged_\\{change.TargetName}");
+					string stagedFile = Path.Combine(change.TargetPath, $".staged_\\{change.TargetName}");
 					string targetPath = change.TargetPath;
 					string targetName = change.TargetName;
-					if (dictionary2.ContainsKey(text))
+					if (firstRevision.ContainsKey(stagedFile))
 					{
 						continue;
 					}
-					hashSet.Add(text);
+					stagedFiles.Add(stagedFile);
 					if (change.IsSeed)
 					{
-						dictionary2[text] = i;
+						firstRevision[stagedFile] = i;
 						continue;
 					}
-					if (!File.Exists(text))
+					if (!File.Exists(stagedFile))
 					{
-						dictionary2[text] = 0;
+						firstRevision[stagedFile] = 0;
 						continue;
 					}
 					string stagedHash;
-					using (FileStream inputStream = new FileStream(text, FileMode.Open, FileAccess.ReadWrite))
+					using (FileStream inputStream = new FileStream(stagedFile, FileMode.Open, FileAccess.ReadWrite))
 					{
 						stagedHash = inputStream.ToASCIISHA1Hash();
 					}
@@ -1343,80 +1349,80 @@ public class RepositoryService : IRepositoryService, IDisposable
 						}
 						if (changes.FindIndex(predicate) > -1)
 						{
-							dictionary2[text] = j + 1;
+							firstRevision[stagedFile] = j + 1;
 							break;
 						}
 					}
 				}
 			}
-			foreach (string item in hashSet)
+			foreach (string item in stagedFiles)
 			{
-				if (!dictionary2.ContainsKey(item))
+				if (!firstRevision.ContainsKey(item))
 				{
 					errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("P999", $"{item} can not be patched becuase a source version was not found in the revlog.", "This repository will now be redownloaded."));
 					return errorList;
 				}
 			}
-			foreach (KeyValuePair<string, int> item2 in dictionary2)
+			foreach (KeyValuePair<string, int> staged in firstRevision)
 			{
-				for (int num = item2.Value; num <= target; num++)
+				for (int revision = staged.Value; revision <= target; revision++)
 				{
-					foreach (ChangeItem change2 in logList[num].Changes)
+					foreach (ChangeItem revisionChange in logList[revision].Changes)
 					{
-						if (change2.Composite)
+						if (revisionChange.Composite)
 						{
-							if (num == target)
+							if (revision == target)
 							{
 								throw new InvalidOperationException("The tree can not be upated to a version that has a placeholder patch.");
 							}
 							continue;
 						}
-						string text2 = Path.Combine(change2.TargetPath, $".staged_\\{change2.TargetName}");
-						if (text2 != item2.Key)
+						string changeStagedFile = Path.Combine(revisionChange.TargetPath, $".staged_\\{revisionChange.TargetName}");
+						if (changeStagedFile != staged.Key)
 						{
 							continue;
 						}
-						string text3 = Path.Combine(FormatRepositoryLocationInternal(name), logList[num].HashFileName(change2.FormatFileName()));
-						string path = Path.Combine(change2.TargetPath, ".staged_\\");
+						string deltaFile = Path.Combine(FormatRepositoryLocationInternal(name), logList[revision].HashFileName(revisionChange.FormatFileName()));
+						string path = Path.Combine(revisionChange.TargetPath, ".staged_\\");
 						if (!Directory.Exists(path))
 						{
 							Directory.CreateDirectory(path);
 						}
-						if (change2.IsSeed)
+						if (revisionChange.IsSeed)
 						{
-							if (!dictionary.ContainsKey(text2))
+							if (!workingCopies.ContainsKey(changeStagedFile))
 							{
-								dictionary[text2] = Path.GetTempFileName();
+								workingCopies[changeStagedFile] = Path.GetTempFileName();
 							}
-							LogHelper.Instance.Log("Moving seed from {0} to {1}", text3, text2);
-							File.Copy(text3, dictionary[text2], overwrite: true);
+							LogHelper.Instance.Log("Moving seed from {0} to {1}", deltaFile, changeStagedFile);
+							File.Copy(deltaFile, workingCopies[changeStagedFile], overwrite: true);
 						}
 						else
 						{
-							if (!dictionary.ContainsKey(text2))
+							if (!workingCopies.ContainsKey(changeStagedFile))
 							{
-								string destFileName = (dictionary[text2] = Path.GetTempFileName());
-								File.Copy(text2, destFileName, overwrite: true);
+								string destFileName = (workingCopies[changeStagedFile] = Path.GetTempFileName());
+								File.Copy(changeStagedFile, destFileName, overwrite: true);
 							}
-							LogHelper.Instance.Log("Patching file {0} with {1}", text2, text3);
-							string tempFileName2 = Path.GetTempFileName();
-							File.Delete(tempFileName2);
-							errorList.AddRange(ConvertFromXDeltaErrors(XDeltaHelper.Apply(dictionary[text2], text3, tempFileName2)));
+							LogHelper.Instance.Log("Patching file {0} with {1}", changeStagedFile, deltaFile);
+							string patchedFile = Path.GetTempFileName();
+							File.Delete(patchedFile);
+							errorList.AddRange(ConvertFromXDeltaErrors(XDeltaHelper.Apply(workingCopies[changeStagedFile], deltaFile, patchedFile)));
 							if (errorList.ContainsError())
 							{
 								return errorList;
 							}
-							File.Delete(dictionary[text2]);
-							File.Move(tempFileName2, dictionary[text2]);
+							File.Delete(workingCopies[changeStagedFile]);
+							File.Move(patchedFile, workingCopies[changeStagedFile]);
 						}
-						string text4;
-						using (FileStream inputStream2 = new FileStream(dictionary[text2], FileMode.Open, FileAccess.ReadWrite))
+						string resultHash;
+						using (FileStream inputStream2 = new FileStream(workingCopies[changeStagedFile], FileMode.Open, FileAccess.ReadWrite))
 						{
-							text4 = inputStream2.ToASCIISHA1Hash();
+							resultHash = inputStream2.ToASCIISHA1Hash();
 						}
-						if (text4 != change2.VersionHash)
+						if (resultHash != revisionChange.VersionHash)
 						{
-							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("H999", $"{text2} should have SHA1 hash of {change2.VersionHash} but it has {text4}.", "Reset the repository and rebuild it."));
+							errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("H999", $"{changeStagedFile} should have SHA1 hash of {revisionChange.VersionHash} but it has {resultHash}.", "Reset the repository and rebuild it."));
 							return errorList;
 						}
 					}
@@ -1429,15 +1435,15 @@ public class RepositoryService : IRepositoryService, IDisposable
 		}
 		finally
 		{
-			foreach (KeyValuePair<string, string> item3 in dictionary)
+			foreach (KeyValuePair<string, string> workingCopy in workingCopies)
 			{
 				if (errorList.ContainsError())
 				{
-					File.Delete(item3.Value);
+					File.Delete(workingCopy.Value);
 					continue;
 				}
-				File.Delete(item3.Key);
-				File.Move(item3.Value, item3.Key);
+				File.Delete(workingCopy.Key);
+				File.Move(workingCopy.Value, workingCopy.Key);
 			}
 		}
 		return errorList;
@@ -1568,9 +1574,9 @@ public class RepositoryService : IRepositoryService, IDisposable
 		List<RevLog> revLogList = GetRevLogList(name);
 		int num = revLogList.FindIndex((RevLog l) => l.Hash == activeRevision);
 		List<IRevLog> list = new List<IRevLog>();
-		for (int num2 = num + 1; num2 < revLogList.Count; num2++)
+		for (int i = num + 1; i < revLogList.Count; i++)
 		{
-			list.Add(revLogList[num2]);
+			list.Add(revLogList[i]);
 		}
 		return list;
 	}
@@ -1587,15 +1593,15 @@ public class RepositoryService : IRepositoryService, IDisposable
 
 	private static void MoveLockedFileSystemEntry(string source, string destination)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		string text = service.ExpandProperties(source);
-		string text2 = service.ExpandProperties(destination);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		string sourcePath = macroService.ExpandProperties(source);
+		string destinationPath = macroService.ExpandProperties(destination);
 		MoveFileFlags moveFileFlags = MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT;
-		if (!Directory.Exists(text) && !Directory.Exists(text2))
+		if (!Directory.Exists(sourcePath) && !Directory.Exists(destinationPath))
 		{
 			moveFileFlags |= MoveFileFlags.MOVEFILE_REPLACE_EXISTING;
 		}
-		MoveFileEx(text, text2, moveFileFlags);
+		MoveFileEx(sourcePath, destinationPath, moveFileFlags);
 	}
 
 	public void DeleteLockedFileSystemEntry(string target)
