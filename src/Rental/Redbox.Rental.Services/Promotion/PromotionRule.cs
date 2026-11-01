@@ -119,13 +119,9 @@ public class PromotionRule : IPromotionRule
 
 	public PromotionRule(Dictionary<string, object> rule)
 	{
-		if (rule.TryGetValue(Constants.AskOnlyOnce, out var value))
+		if (rule.TryGetValue(Constants.AskOnlyOnce, out var value) && bool.TryParse(value.ToString(), out var askOnlyOnce))
 		{
-			bool result = false;
-			if (bool.TryParse(value.ToString(), out result))
-			{
-				AskOnlyOnce = result;
-			}
+			AskOnlyOnce = askOnlyOnce;
 		}
 		if (rule.TryGetValue(Constants.InCartPromoHeaderMessage, out value))
 		{
@@ -175,96 +171,76 @@ public class PromotionRule : IPromotionRule
 		{
 			RedemptionAmount = value.ToString();
 		}
-		if (rule.TryGetValue(Constants.ItemAction, out value) && Enum.TryParse<RentalShoppingCartItemAction>(value.ToString(), out var result2))
+		if (rule.TryGetValue(Constants.ItemAction, out value) && Enum.TryParse<RentalShoppingCartItemAction>(value.ToString(), out var action))
 		{
-			Action = result2;
+			Action = action;
 		}
-		if (rule.TryGetValue(Constants.AddSequence, out value) && Enum.TryParse<RentalShoppingCartItemSequence>(value.ToString(), out var result3))
+		if (rule.TryGetValue(Constants.AddSequence, out value) && Enum.TryParse<RentalShoppingCartItemSequence>(value.ToString(), out var sequence))
 		{
-			Sequence = result3;
+			Sequence = sequence;
 		}
-		TitleType result4 = TitleType.All;
+		// A value that doesn't parse gives the enum's default, not All (TryParse clears its out parameter).
+		TitleType titleType = TitleType.All;
 		if (rule.TryGetValue(Constants.ProductType, out value))
 		{
-			Enum.TryParse<TitleType>(value.ToString(), out result4);
+			Enum.TryParse<TitleType>(value.ToString(), out titleType);
 		}
-		TitleType = result4;
-		TitleFamily result5 = TitleFamily.All;
+		TitleType = titleType;
+		TitleFamily titleFamily = TitleFamily.All;
 		if (rule.TryGetValue(Constants.ProductFamily, out value))
 		{
-			Enum.TryParse<TitleFamily>(value.ToString(), out result5);
+			Enum.TryParse<TitleFamily>(value.ToString(), out titleFamily);
 		}
-		TitleFamily = result5;
-		if (rule.TryGetValue(Constants.ProductIdList, out value))
+		TitleFamily = titleFamily;
+		if (rule.TryGetValue(Constants.ProductIdList, out value) && value?.ToString() is string includeIds)
 		{
-			string text = value?.ToString();
-			if (text != null)
-			{
-				List<string> list = new List<string>(text.Split(','));
-				IncludeProducts = new List<long>();
-				list.ForEach(delegate(string x)
-				{
-					long result8 = 0L;
-					if (long.TryParse(x, out result8))
-					{
-						IncludeProducts.Add(result8);
-					}
-				});
-			}
+			IncludeProducts = ParseIdList(includeIds);
 		}
-		if (rule.TryGetValue(Constants.ExcludeIdList, out value))
+		if (rule.TryGetValue(Constants.ExcludeIdList, out value) && value?.ToString() is string excludeIds)
 		{
-			string text2 = value?.ToString();
-			if (text2 != null)
-			{
-				List<string> list2 = new List<string>(text2.Split(','));
-				ExcludeProducts = new List<long>();
-				list2.ForEach(delegate(string x)
-				{
-					long result8 = 0L;
-					if (long.TryParse(x, out result8))
-					{
-						ExcludeProducts.Add(result8);
-					}
-				});
-			}
+			ExcludeProducts = ParseIdList(excludeIds);
 		}
 		if (rule.TryGetValue(Constants.ProductTypeList, out value))
 		{
-			string text3 = value?.ToString();
-			if (!string.IsNullOrEmpty(text3))
+			string productTypes = value?.ToString();
+			if (!string.IsNullOrEmpty(productTypes))
 			{
-				string[] array = text3.Split(',');
-				for (int num = 0; num < array.Length; num++)
+				foreach (string productType in productTypes.Split(','))
 				{
-					if (Enum.TryParse<TitleType>(array[num], out result4))
+					if (Enum.TryParse<TitleType>(productType, out var listedType))
 					{
 						if (ProductTypes == null)
 						{
 							ProductTypes = new List<TitleType>();
 						}
-						ProductTypes.Add(result4);
+						ProductTypes.Add(listedType);
 					}
 				}
 			}
 		}
 		MinimumQuantity = -1;
-		if (rule.TryGetValue(Constants.MinimumQuantity, out value))
+		if (rule.TryGetValue(Constants.MinimumQuantity, out value) && int.TryParse(value.ToString(), out var minimumQuantity))
 		{
-			int result6 = 0;
-			if (int.TryParse(value.ToString(), out result6))
-			{
-				MinimumQuantity = result6;
-			}
+			MinimumQuantity = minimumQuantity;
 		}
 		MaximumQuantity = 100000;
-		if (rule.TryGetValue(Constants.MaximumQuantity, out value))
+		if (rule.TryGetValue(Constants.MaximumQuantity, out value) && int.TryParse(value.ToString(), out var maximumQuantity))
 		{
-			int result7 = 0;
-			if (int.TryParse(value.ToString(), out result7))
+			MaximumQuantity = maximumQuantity;
+		}
+	}
+
+	// Comma-separated product ids; entries that aren't numbers are skipped.
+	private static List<long> ParseIdList(string ids)
+	{
+		List<long> productIds = new List<long>();
+		foreach (string id in ids.Split(','))
+		{
+			if (long.TryParse(id, out var productId))
 			{
-				MaximumQuantity = result7;
+				productIds.Add(productId);
 			}
 		}
+		return productIds;
 	}
 }
