@@ -130,8 +130,8 @@ public class HALService : ServiceBase, ILogger
 	{
 		LogHelper.Instance.Log("OnPowerEvent powerStatus = {0} State = {1}.", powerStatus.ToString(), State.ToString());
 		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		IControllerService service2 = ServiceLocator.Instance.GetService<IControllerService>();
-		IScannerDeviceService service3 = ServiceLocator.Instance.GetService<IScannerDeviceService>();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IScannerDeviceService scannerDeviceService = ServiceLocator.Instance.GetService<IScannerDeviceService>();
 		lock (PowerStateLock)
 		{
 			if (PowerBroadcastStatus.Suspend == powerStatus)
@@ -140,8 +140,8 @@ public class HALService : ServiceBase, ILogger
 				{
 					State = PowerState.Suspended;
 					service.Suspend();
-					service2.Shutdown();
-					service3.Shutdown();
+					controllerService.Shutdown();
+					scannerDeviceService.Shutdown();
 				}
 			}
 			else if (PowerBroadcastStatus.ResumeSuspend == powerStatus && PowerState.Suspended == State)

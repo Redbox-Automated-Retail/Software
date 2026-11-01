@@ -678,8 +678,8 @@ public static class HardwareFunctions
 		{
 			return null;
 		}
-		IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		return CreateResultTable(string.Empty, service.ExecuteImmediate(command, eventHandler, clearStack, service2?.CurrentBundleName));
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		return CreateResultTable(string.Empty, service.ExecuteImmediate(command, eventHandler, clearStack, resourceBundleService?.CurrentBundleName));
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetprogramresults")]
@@ -692,12 +692,12 @@ public static class HardwareFunctions
 		}
 		ErrorList programResults = service.GetProgramResults(jobId, out var hardwareResults);
 		LuaTable luaTable = CreateResultTable(jobId, programResults);
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)service2.NewTable());
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)kernelService.NewTable());
 		int num = 1;
 		foreach (IHardwareResult item in hardwareResults)
 		{
-			LuaTable luaTable3 = (LuaTable)service2.NewTable();
+			LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 			luaTable3["id"] = item.ID;
 			luaTable3["code"] = item.Code;
 			luaTable3["deck"] = item.Deck;
@@ -724,14 +724,14 @@ public static class HardwareFunctions
 			return null;
 		}
 		LuaTable luaTable = CreateResultTable(jobId, service.GetJobErrors(jobId, out var errors));
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)service2.NewTable());
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)kernelService.NewTable());
 		int num = 1;
 		if (errors != null)
 		{
 			foreach (Redbox.KioskEngine.ComponentModel.Error item in errors)
 			{
-				LuaTable luaTable3 = (LuaTable)service2.NewTable();
+				LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 				luaTable3["code"] = item.Code;
 				luaTable3["details"] = item.Details;
 				luaTable3["is_warning"] = item.IsWarning;
@@ -762,12 +762,12 @@ public static class HardwareFunctions
 			return null;
 		}
 		LuaTable luaTable = CreateResultTable(string.Empty, service.GetHardwareJobs(out var hardwareJobs));
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)service2.NewTable());
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)kernelService.NewTable());
 		int num = 1;
 		foreach (IHardwareJob item in hardwareJobs)
 		{
-			LuaTable luaTable3 = (LuaTable)service2.NewTable();
+			LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 			luaTable3["id"] = item.ID;
 			luaTable3["status"] = item.Status;
 			luaTable3["label"] = item.Label;
@@ -790,12 +790,12 @@ public static class HardwareFunctions
 		}
 		ErrorList suspendedMaintenanceModeJobs = service.GetSuspendedMaintenanceModeJobs(out var suspendedJobs);
 		LuaTable luaTable = CreateResultTable(string.Empty, suspendedMaintenanceModeJobs);
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)service2.NewTable());
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable2 = (LuaTable)(luaTable["results"] = (LuaTable)kernelService.NewTable());
 		int num = 1;
 		foreach (IHardwareJob item in suspendedJobs)
 		{
-			LuaTable luaTable3 = (LuaTable)service2.NewTable();
+			LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 			luaTable3["id"] = item.ID;
 			luaTable3["status"] = item.Status;
 			luaTable3["label"] = item.Label;

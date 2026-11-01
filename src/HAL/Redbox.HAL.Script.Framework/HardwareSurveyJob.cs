@@ -14,12 +14,12 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 	{
 		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
 		base.Context.CreateInfoResult("KioskId", service.KioskId);
-		IUsbDeviceService service2 = ServiceLocator.Instance.GetService<IUsbDeviceService>();
+		IUsbDeviceService usbDeviceService = ServiceLocator.Instance.GetService<IUsbDeviceService>();
 		base.Context.CreateInfoResult("AuxRelayBoard", "Not Configured");
 		base.Context.CreateInfoResult("QuickReturnStatus", DeviceStatus.None.ToString());
-		IAirExchangerService service3 = ServiceLocator.Instance.GetService<IAirExchangerService>();
+		IAirExchangerService airExchangerService = ServiceLocator.Instance.GetService<IAirExchangerService>();
 		DeviceStatus deviceStatus = DeviceStatus.None;
-		if (service3.Configured)
+		if (airExchangerService.Configured)
 		{
 			deviceStatus |= DeviceStatus.Configured;
 		}
@@ -30,20 +30,20 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 		base.Context.CreateInfoResult("PCModel", computerinfo.Model);
 		base.Context.CreateInfoResult("InstalledMemory", computerinfo.InstalledMemory.ToString());
 		base.Context.CreateInfoResult("FreeDiskSpace", computerinfo.DiskFreeSpace.ToString());
-		IDeviceDescriptor deviceDescriptor = service2.FindActiveCamera(matchDriver: false);
+		IDeviceDescriptor deviceDescriptor = usbDeviceService.FindActiveCamera(matchDriver: false);
 		base.Context.CreateInfoResult("CameraInfo", (deviceDescriptor == null) ? "NONE" : deviceDescriptor.Friendlyname);
 		DeviceStatus deviceStatus2 = DeviceStatus.None;
-		if (new AbeDeviceDescriptor(service2).Locate())
+		if (new AbeDeviceDescriptor(usbDeviceService).Locate())
 		{
 			deviceStatus2 = DeviceStatus.Found;
 		}
 		base.Context.CreateInfoResult("AbeDeviceStatus", deviceStatus2.ToString());
-		ITouchscreenDescriptor touchscreenDescriptor = service2.FindTouchScreen();
+		ITouchscreenDescriptor touchscreenDescriptor = usbDeviceService.FindTouchScreen();
 		base.Context.CreateInfoResult("TouchscreenDevice", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.Friendlyname);
 		base.Context.CreateInfoResult("TouchscreenFirmware", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.ReadFirmware());
 		IControlSystem service4 = ServiceLocator.Instance.GetService<IControlSystem>();
 		base.Context.CreateInfoResult("ControllerFirmware", service4.GetBoardVersion(ControlBoards.Serial).Version);
-		List<IDeviceDescriptor> list = service2.FindDevices(DeviceClass.Monitor);
+		List<IDeviceDescriptor> list = usbDeviceService.FindDevices(DeviceClass.Monitor);
 		string message = "UNKNOWN";
 		foreach (IDeviceDescriptor item in list)
 		{
@@ -55,7 +55,7 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 			}
 		}
 		base.Context.CreateInfoResult("MonitorInfo", message);
-		List<IDeviceDescriptor> list2 = service2.FindDevices(DeviceClass.Battery);
+		List<IDeviceDescriptor> list2 = usbDeviceService.FindDevices(DeviceClass.Battery);
 		string message2 = "NONE";
 		foreach (IDeviceDescriptor item2 in list2)
 		{

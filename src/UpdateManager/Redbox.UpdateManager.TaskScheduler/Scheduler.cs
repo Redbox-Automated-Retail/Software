@@ -490,10 +490,10 @@ public class Scheduler : ITaskScheduler
 				return;
 			}
 			service.Set("config-schedule", new object());
-			IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			string chunk = File.ReadAllText(text);
 			LogHelper.Instance.Log("RunDefaultSchedule: Executing lua script at {0}", text);
-			service2.ExecuteChunk(chunk);
+			kernelService.ExecuteChunk(chunk);
 		}
 		catch (Exception e)
 		{

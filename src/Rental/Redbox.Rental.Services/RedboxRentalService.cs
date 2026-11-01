@@ -105,9 +105,9 @@ public class RedboxRentalService : IRedboxRental
 			ServiceLocator.Instance.GetService<IEMVReaderHealth>()?.SessionWasInTechnicalFallback(cardReadAttemptCollection.IsInTrackableTechnicalFallback);
 		}
 		Redbox.Rental.Services.Session.Session.Instance?.ClearTrackData();
-		ITrackDataService service2 = ServiceLocator.Instance.GetService<ITrackDataService>();
-		service2?.StopAllSessionCardReads(rentalShoppingCart?.ShoppingSessionId ?? default(Guid), CancelReason.EndingSession);
-		if (service2 is IDeviceServiceTrackDataService)
+		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
+		trackDataService?.StopAllSessionCardReads(rentalShoppingCart?.ShoppingSessionId ?? default(Guid), CancelReason.EndingSession);
+		if (trackDataService is IDeviceServiceTrackDataService)
 		{
 			ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>()?.ReportAuthorizeResult(authorizeSuccessful: false);
 		}
@@ -150,8 +150,8 @@ public class RedboxRentalService : IRedboxRental
 			Redbox.Rental.Services.Configuration.Configuration.Instance.SessionReload();
 			ServiceLocator.Instance.GetService<ITrackDataEncryptionService>()?.RefreshCertificate();
 			OrchestrationService.ResetApplicationIdleTimerTimeout();
-			ITextToSpeechService service2 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			if ((service2 != null && service2.TTSEnabled) || ApplicationState.Instance.IsADAAccessible)
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			if ((textToSpeechService != null && textToSpeechService.TTSEnabled) || ApplicationState.Instance.IsADAAccessible)
 			{
 				ApplicationState.Instance.IsADAAccessible = true;
 			}
@@ -184,25 +184,25 @@ public class RedboxRentalService : IRedboxRental
 		{
 			service["DefaultCulture"] = defaultCulture;
 		}
-		ITextToSpeechService service2 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service2 != null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null)
 		{
-			service2.ClearOnAudioDeviceConnectionChanged();
-			service2.OnAudioDeviceConnectionChanged += HandleTextToSpeechAudioDeviceConnectionChanged;
+			textToSpeechService.ClearOnAudioDeviceConnectionChanged();
+			textToSpeechService.OnAudioDeviceConnectionChanged += HandleTextToSpeechAudioDeviceConnectionChanged;
 			RegisterTTSWithRentalShoppingCartService();
 		}
-		IThemeService service3 = ServiceLocator.Instance.GetService<IThemeService>();
-		if (service3 != null)
+		IThemeService themeService = ServiceLocator.Instance.GetService<IThemeService>();
+		if (themeService != null)
 		{
-			service3.RegisterThemedControls("Redbox.Rental.UI.exe");
-			service3.RegisterThemedControls("Redbox.ControlPanel.UI.exe");
-			service3.RegisterThemedControls("Redbox.FMA.UI.dll");
-			ITheme theme = service3.Themes.Find((ITheme x) => x.Name == "Redbox Classic");
+			themeService.RegisterThemedControls("Redbox.Rental.UI.exe");
+			themeService.RegisterThemedControls("Redbox.ControlPanel.UI.exe");
+			themeService.RegisterThemedControls("Redbox.FMA.UI.dll");
+			ITheme theme = themeService.Themes.Find((ITheme x) => x.Name == "Redbox Classic");
 			if (theme != null)
 			{
 				theme.IsDefault = true;
 				LogHelper.Instance.Log($"Set default theme to {theme.Name}", LogEntryType.Info);
-				service3.CurrentTheme = theme;
+				themeService.CurrentTheme = theme;
 				LogHelper.Instance.Log($"Set current theme to {theme.Name}", LogEntryType.Info);
 			}
 			else
@@ -563,7 +563,7 @@ public class RedboxRentalService : IRedboxRental
 	{
 		IDataService dataService = ServiceLocator.Instance.GetService(typeof(IDataService)) as IDataService;
 		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		IMacroService service2 = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		if (!service.TTSEnabled)
 		{
 			return;
@@ -587,13 +587,13 @@ public class RedboxRentalService : IRedboxRental
 			}
 			string macroName = $"TTS:CartTitle_{i}_Name";
 			string macroValue = text;
-			SetAndLogMacroValue(service2, macroName, macroValue);
+			SetAndLogMacroValue(macroService, macroName, macroValue);
 			macroName = $"TTS:CartTitle_{i}_Action";
 			macroValue = ((rentalShoppingCartTitleItem != null) ? rentalShoppingCartTitleItem.Action.ToString() : string.Empty);
-			SetAndLogMacroValue(service2, macroName, macroValue);
+			SetAndLogMacroValue(macroService, macroName, macroValue);
 		}
-		service2["TTS:NumberOfTitlesInCart"] = ((list.Count > 0) ? list.Count.ToString() : string.Empty);
-		service2["TTS:CartTitlePlurality"] = ((list.Count == 1) ? "Title" : "Titles");
+		macroService["TTS:NumberOfTitlesInCart"] = ((list.Count > 0) ? list.Count.ToString() : string.Empty);
+		macroService["TTS:CartTitlePlurality"] = ((list.Count == 1) ? "Title" : "Titles");
 		service.TTSRepeatSequence();
 	}
 

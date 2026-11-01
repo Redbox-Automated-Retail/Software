@@ -8,7 +8,7 @@ internal class QlmThinHelper : ThinHelper
 	{
 		int thinSlot = GetThinSlot();
 		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		IInventoryService service2 = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		try
 		{
 			MerchandizeResult merchandizeResult;
@@ -18,7 +18,7 @@ internal class QlmThinHelper : ThinHelper
 				{
 					return MerchandizeResult.QLMFull;
 				}
-				ILocation target = service2.Get(service.QlmDeck.Number, thinSlot++);
+				ILocation target = inventoryService.Get(service.QlmDeck.Number, thinSlot++);
 				merchandizeResult = ThinDiskToLocation(source, target, id, mf);
 			}
 			while (MerchandizeResult.SlotInUse == merchandizeResult);

@@ -16,13 +16,13 @@ public class UpdateClientServiceReservation : BaseUpdateClientService, IUpdateCl
 	{
 		LogHelper.Instance.Log("UpdateClientServiceReservation.RegisterWithBrokerService");
 		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		IHttpService service2 = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service2.GenerateRequest(base.UpdateClientServiceBaseUrl, "api/Broker/Register", registerWithBrokerServiceRequest, HttpMethod.Post, new List<Header>
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(base.UpdateClientServiceBaseUrl, "api/Broker/Register", registerWithBrokerServiceRequest, HttpMethod.Post, new List<Header>
 		{
 			new Header("app-name", service["ProductName"]),
 			new Header("x-redbox-activityid", registerWithBrokerServiceRequest?.MessageId.ToString())
 		});
-		APIResponse<HttpResponseMessage> aPIResponse = await service2.SendRequestAsync<HttpResponseMessage>(request, 20000, "RegisterWithBrokerService", "c:\\build\\Redbox.Rental.Services\\UpdateClientService\\Reservation\\UpdateClientServiceReservation.cs", registerWithBrokerServiceRequest);
+		APIResponse<HttpResponseMessage> aPIResponse = await httpService.SendRequestAsync<HttpResponseMessage>(request, 20000, "RegisterWithBrokerService", "c:\\build\\Redbox.Rental.Services\\UpdateClientService\\Reservation\\UpdateClientServiceReservation.cs", registerWithBrokerServiceRequest);
 		return new RegisterWithBrokerServiceResponse
 		{
 			StatusCode = (int)aPIResponse.StatusCode,

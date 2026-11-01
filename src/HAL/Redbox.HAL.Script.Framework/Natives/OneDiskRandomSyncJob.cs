@@ -13,8 +13,8 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 		int num = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
 		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
-		IControllerService service3 = ServiceLocator.Instance.GetService<IControllerService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, num);
 		base.Context.AppLog.Write("One disk random sync test start.");
 		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, base.InventoryService);
@@ -23,12 +23,12 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 		bool flag = false;
 		try
 		{
-			if (service2.MoveTo(1, 1, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
+			if (motionControlService.MoveTo(1, 1, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
 			{
 				flag = true;
 				return;
 			}
-			if (!service3.Get().Success)
+			if (!controllerService.Get().Success)
 			{
 				flag = true;
 				return;
@@ -78,33 +78,33 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 						flag = true;
 					}
 				}
-				if (service2.MoveTo(location, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
+				if (motionControlService.MoveTo(location, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
 				{
 					flag = true;
 					break;
 				}
-				if (!service3.Put(id).Success)
+				if (!controllerService.Put(id).Success)
 				{
 					flag = true;
 					break;
 				}
-				if (service2.MoveTo(location, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
+				if (motionControlService.MoveTo(location, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
 				{
 					flag = true;
 					break;
 				}
-				if (!service3.Get().Success || OnVendReceive(num2) != ErrorCodes.Success)
+				if (!controllerService.Get().Success || OnVendReceive(num2) != ErrorCodes.Success)
 				{
 					flag = true;
 				}
 			}
 			if (!flag)
 			{
-				if (service2.MoveTo(1, 1, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
+				if (motionControlService.MoveTo(1, 1, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
 				{
 					flag = true;
 				}
-				else if (!service3.Put("UNKNOWN").Success)
+				else if (!controllerService.Put("UNKNOWN").Success)
 				{
 					flag = true;
 				}

@@ -74,7 +74,7 @@ public class UpsellViewController : BaseLoyaltyController
 		List<IKioskProduct> list = new List<IKioskProduct>();
 		List<DisplayUpsellProductModel> list2 = new List<DisplayUpsellProductModel>();
 		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
-		IDataService service2 = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IUpsellItem> list3 = new List<IUpsellItem>();
 		list3.AddRange(BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.UpsellInfo.Items.Where((IUpsellItem x) => x.OfferResponse == UpsellItemOfferResponse.none));
 		foreach (IUpsellItem eachUpsellItem in list3)
@@ -89,7 +89,7 @@ public class UpsellViewController : BaseLoyaltyController
 				continue;
 			}
 			IKioskProduct kioskProduct = null;
-			service2.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
+			dataService.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
 			if (kioskProduct != null)
 			{
 				DisplayUpsellProductModel displayUpsellProductModel = new DisplayUpsellProductModel
@@ -100,7 +100,7 @@ public class UpsellViewController : BaseLoyaltyController
 				};
 				displayUpsellProductModel.ConfigureForUpsell();
 				IKioskProduct kioskProduct2 = null;
-				service2.GetProduct(eachUpsellItem.UpsellProductId, excludeTitleRollup: true, out kioskProduct2);
+				dataService.GetProduct(eachUpsellItem.UpsellProductId, excludeTitleRollup: true, out kioskProduct2);
 				if (kioskProduct2 != null)
 				{
 					list.Add(kioskProduct2);

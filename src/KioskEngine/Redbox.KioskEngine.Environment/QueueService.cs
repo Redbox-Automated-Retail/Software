@@ -533,7 +533,7 @@ public class QueueService : IQueueService, IDisposable
 	private void HandleCorruptDatabase()
 	{
 		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		bool num = ServiceLocator.Instance.GetService<IApplicationState>()?.HasMaintenanceModeReason(MaintenanceModeSource.Database, "SOFT-FILE01") ?? false;
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>()?.RaiseCorruptDb();
 		if (num)
@@ -546,7 +546,7 @@ public class QueueService : IQueueService, IDisposable
 			{
 				MessageType = "KioskAlert",
 				MessageId = Guid.NewGuid(),
-				KioskId = int.Parse(service2.Filter["store_number"]),
+				KioskId = int.Parse(resourceBundleService.Filter["store_number"]),
 				EngineVersion = service["EngineVersion"],
 				BundleVersion = service["ProductVersion"],
 				SubType = "mm:DataStoreError, SOFT-FILE01",

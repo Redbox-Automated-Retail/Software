@@ -32,11 +32,11 @@ internal static class SoundFunctions
 	internal static void PlaySoundAsync(string resourceName)
 	{
 		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		ISoundService service2 = ServiceLocator.Instance.GetService<ISoundService>();
+		ISoundService soundService = ServiceLocator.Instance.GetService<ISoundService>();
 		byte[] sound = service.GetSound(resourceName);
 		if (sound != null)
 		{
-			service2.PlayAsync(sound);
+			soundService.PlayAsync(sound);
 		}
 	}
 }

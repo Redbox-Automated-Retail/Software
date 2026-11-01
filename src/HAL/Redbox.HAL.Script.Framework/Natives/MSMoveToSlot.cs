@@ -24,8 +24,8 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 			int num3 = failures + 1;
 			failures = num3;
 		}
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
-		IMotionControlLimitResponse motionControlLimitResponse = service2.ReadLimits();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlLimitResponse motionControlLimitResponse = motionControlService.ReadLimits();
 		if (!motionControlLimitResponse.ReadOk)
 		{
 			base.Context.CreateInfoResult(ErrorCodes.ArcusNotResponsive.ToString().ToUpper(), "Unable to read limits.");
@@ -49,8 +49,8 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 			AddError("Job failure");
 			return;
 		}
-		IFormattedLogFactoryService service3 = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
-		ErrorCodes errorCodes = service2.MoveTo(num, num2, MoveMode.None, service3.NilLog);
+		IFormattedLogFactoryService formattedLogFactoryService = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
+		ErrorCodes errorCodes = motionControlService.MoveTo(num, num2, MoveMode.None, formattedLogFactoryService.NilLog);
 		base.Context.CreateInfoResult("MoveResult", $"MOVE DECK={num} SLOT={num2} {errorCodes.ToString().ToUpper()}");
 	}
 

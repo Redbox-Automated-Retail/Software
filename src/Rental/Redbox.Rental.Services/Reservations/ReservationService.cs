@@ -45,7 +45,7 @@ public class ReservationService : IReservationService
 			try
 			{
 				IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
-				IMacroService service3 = ServiceLocator.Instance.GetService<IMacroService>();
+				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 				response.Content = new ReservationServiceStatus
 				{
 					IsRegisteredWithBrokerService = IsRegisteredWithBrokerService,
@@ -53,7 +53,7 @@ public class ReservationService : IReservationService
 					AuthorizeAtPickup = (service2?.AuthorizeAtPickup ?? false),
 					GiftCardsEnabled = (service2?.GiftCardsEnabled ?? false),
 					RecommendationOnPickupEnabled = (service2?.RecommendationOnPickup ?? false),
-					KioskEngineVersion = service3["EngineVersion"]
+					KioskEngineVersion = macroService["EngineVersion"]
 				};
 				response.Success = true;
 				response.StatusCode = HttpStatusCode.OK;
@@ -345,7 +345,7 @@ public class ReservationService : IReservationService
 		else
 		{
 			IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
-			IMacroService service2 = ServiceLocator.Instance.GetService<IMacroService>();
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 			CancelRetryRegisterTimer();
 			if (IsRegisteredWithBrokerService)
 			{
@@ -353,7 +353,7 @@ public class ReservationService : IReservationService
 				{
 					MessageId = Guid.NewGuid(),
 					KioskId = (service?.KioskId ?? 0),
-					AppName = service2["ProductName"],
+					AppName = macroService["ProductName"],
 					Reason = reason.ToString()
 				};
 				result = await (ServiceLocator.Instance.GetService<IUpdateClientService>()?.Reservation?.UnregisterFromBrokerService(unregisterWithBrokerServiceRequest));

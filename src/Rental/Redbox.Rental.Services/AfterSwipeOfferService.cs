@@ -73,10 +73,10 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 			_newProduct = null;
 			Redbox.Rental.Services.Session.Session.Instance.PromoOfferState = new PromoOfferState();
 			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			IRentalShoppingCartService service3 = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 			int num = (int)(service2?.KioskId ?? 0);
 			string languageCode = OrchestrationService.GetCulture()?.Substring(0, 2);
-			GetOffers(num.ToString(), languageCode, StorefrontEventType.OnSwipe.ToString(), service3.CurrentRentalShoppingCart.ShoppingSessionId.ToString(), ProcessCustomerOffers);
+			GetOffers(num.ToString(), languageCode, StorefrontEventType.OnSwipe.ToString(), rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId.ToString(), ProcessCustomerOffers);
 		}
 		else
 		{

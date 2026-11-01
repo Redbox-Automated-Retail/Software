@@ -14,12 +14,12 @@ internal static class ImageFunctions
 		{
 			throw new SystemException("IDataCacheService is not registered.");
 		}
-		IBitmapCacheService service2 = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		if (service2 == null)
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		if (bitmapCacheService == null)
 		{
 			throw new SystemException("IBitmapCacheService is not registered.");
 		}
-		if (service2.GetImage(name) != null)
+		if (bitmapCacheService.GetImage(name) != null)
 		{
 			return true;
 		}
@@ -29,7 +29,7 @@ internal static class ImageFunctions
 			LogHelper.Instance.Log("*** IDataCacheService was not able to read any data for: '{0}'", cacheName);
 			return false;
 		}
-		return service2.RegisterImage(name, content) != null;
+		return bitmapCacheService.RegisterImage(name, content) != null;
 	}
 
 	[KernelFunction(Name = "kernel.createthumbnail")]

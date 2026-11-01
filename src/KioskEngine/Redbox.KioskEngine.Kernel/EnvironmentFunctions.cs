@@ -60,7 +60,7 @@ public static class EnvironmentFunctions
 	{
 		LogHelper.Instance.Log("Start CanSwitch Check");
 		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		IKernelExtensionService service2 = ServiceLocator.Instance.GetService<IKernelExtensionService>();
+		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
 		bool flag = ServiceLocator.Instance.GetService<IEngineApplication>()?.AppStarting ?? false;
 		LogHelper.Instance.Log("Performing Startup: {0}", flag);
 		bool flag2 = true;
@@ -75,7 +75,7 @@ public static class EnvironmentFunctions
 		}
 		if (flag2)
 		{
-			flag2 = !flag && service2.CanSwitch(out var _);
+			flag2 = !flag && kernelExtensionService.CanSwitch(out var _);
 		}
 		LogHelper.Instance.Log("CanSwitch: {0}", flag2);
 		return flag2;

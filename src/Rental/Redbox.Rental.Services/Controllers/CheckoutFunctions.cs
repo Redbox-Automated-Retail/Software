@@ -667,11 +667,11 @@ public class CheckoutFunctions
 		}
 		else
 		{
-			IDataService service2 = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			foreach (IRentalShoppingCartTitleItem titleItem in rentalShoppingCart.TitleItems)
 			{
 				IKioskProduct kioskProduct = null;
-				service2?.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
+				dataService?.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
 				if ((kioskProduct as ITitleProduct).SellThruNew)
 				{
 					response = "OfflineSellThruNewRefused";

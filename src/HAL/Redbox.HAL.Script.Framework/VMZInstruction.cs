@@ -160,7 +160,7 @@ public sealed class VMZInstruction : Instruction
 	private void FetchLast(MerchFlags flags, ExecutionContext context)
 	{
 		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		ErrorList errors = new ErrorList();
 		service.Wait(GetTimeOutValue(errors, context) ?? 8000);
 		ILocation location = VMZ.Instance.FindHighestLocation(flags);
@@ -170,7 +170,7 @@ public sealed class VMZInstruction : Instruction
 			context.PushTop("NONE");
 			return;
 		}
-		ErrorCodes errorCodes = service2.MoveTo(location, MoveMode.Get, context.AppLog);
+		ErrorCodes errorCodes = motionControlService.MoveTo(location, MoveMode.Get, context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			context.PushTop(errorCodes.ToString().ToUpper());

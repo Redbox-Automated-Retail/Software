@@ -127,8 +127,8 @@ public class UpdateService : IUpdateService
 		try
 		{
 			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-			IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
-			IRepositoryService service3 = ServiceLocator.Instance.GetService<IRepositoryService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
 			if (!changeSets.Any())
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("PCS303", "There were no changes in the changeset", "No changeset to process, exiting ProcessChangeSet"));
@@ -145,16 +145,16 @@ public class UpdateService : IUpdateService
 			service.GetRepositoriesInTransit(out var inTransit);
 			foreach (ChangeSet changeSet in changeSets)
 			{
-				if (inTransit.Contains(changeSet.Name) || !service3.Subscribed(changeSet.Name))
+				if (inTransit.Contains(changeSet.Name) || !repositoryService.Subscribed(changeSet.Name))
 				{
 					continue;
 				}
 				ITransferJob job = null;
 				try
 				{
-					if (!service3.ContainsRepository(changeSet.Name))
+					if (!repositoryService.ContainsRepository(changeSet.Name))
 					{
-						service3.AddRepository(changeSet.Name);
+						repositoryService.AddRepository(changeSet.Name);
 					}
 					string text = $"<~{changeSet.Name}-{changeSet.Head.Substring(0, 8)}~>";
 					errorList.AddRange(service.CreateDownloadJob(text, out job));
@@ -169,7 +169,7 @@ public class UpdateService : IUpdateService
 					errorList.AddRange(job.Resume());
 					if (!errorList.ContainsError())
 					{
-						service2.Set(job.ID, changeSet);
+						dataStoreService.Set(job.ID, changeSet);
 						LogHelper.Instance.Log("BITS job started with name: {0} and guid: {1}.", text, job.ID);
 					}
 				}
@@ -196,15 +196,15 @@ public class UpdateService : IUpdateService
 		try
 		{
 			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-			IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
-			IRepositoryService service3 = ServiceLocator.Instance.GetService<IRepositoryService>();
-			List<string> allRepositories = service3.GetAllRepositories();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+			List<string> allRepositories = repositoryService.GetAllRepositories();
 			Dictionary<string, string> dictionary = new Dictionary<string, string>();
 			foreach (string item in allRepositories)
 			{
-				if (!string.IsNullOrEmpty(service3.GetHeadRevision(item)))
+				if (!string.IsNullOrEmpty(repositoryService.GetHeadRevision(item)))
 				{
-					dictionary.Add(item, service3.GetHeadRevision(item));
+					dictionary.Add(item, repositoryService.GetHeadRevision(item));
 				}
 			}
 			Store store;
@@ -237,16 +237,16 @@ public class UpdateService : IUpdateService
 			service.GetRepositoriesInTransit(out var inTransit);
 			foreach (ChangeSet item2 in jobs)
 			{
-				if (inTransit.Contains(item2.Name) || !service3.Subscribed(item2.Name))
+				if (inTransit.Contains(item2.Name) || !repositoryService.Subscribed(item2.Name))
 				{
 					continue;
 				}
 				ITransferJob job = null;
 				try
 				{
-					if (!service3.ContainsRepository(item2.Name))
+					if (!repositoryService.ContainsRepository(item2.Name))
 					{
-						service3.AddRepository(item2.Name);
+						repositoryService.AddRepository(item2.Name);
 					}
 					string text = $"<~{item2.Name}-{item2.Head.Substring(0, 8)}~>";
 					errorList.AddRange(service.CreateDownloadJob(text, out job));
@@ -261,7 +261,7 @@ public class UpdateService : IUpdateService
 					errorList.AddRange(job.Resume());
 					if (!errorList.ContainsError())
 					{
-						service2.Set(job.ID, item2);
+						dataStoreService.Set(job.ID, item2);
 						LogHelper.Instance.Log("BITS job started with name: {0} and guid: {1}.", text, job.ID);
 					}
 				}
@@ -286,7 +286,7 @@ public class UpdateService : IUpdateService
 	{
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 		errorList.AddRange(service.GetJobs(out var jobs, allUsers: false));
 		if (errorList.ContainsError())
 		{
@@ -308,14 +308,14 @@ public class UpdateService : IUpdateService
 				errorList.AddRange(item.Cancel());
 				continue;
 			}
-			if (service2.Get<ChangeSet>(item.ID) == null)
+			if (dataStoreService.Get<ChangeSet>(item.ID) == null)
 			{
 				errorList.AddRange(item.Cancel());
 			}
 		}
 		if (jobs.Count == 0)
 		{
-			service2.CleanUp();
+			dataStoreService.CleanUp();
 		}
 		return errorList;
 	}
@@ -324,11 +324,11 @@ public class UpdateService : IUpdateService
 	{
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
-		IQueueService service3 = ServiceLocator.Instance.GetService<IQueueService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		try
 		{
-			Upload upload = service2.Get<Upload>(jobId);
+			Upload upload = dataStoreService.Get<Upload>(jobId);
 			if (upload == null)
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("M001", $"Job file for job: {jobId}", "Job file is missing the bits jobs will be canceled."));
@@ -373,8 +373,8 @@ public class UpdateService : IUpdateService
 				};
 				errorList.AddRange(job2.Complete());
 			}
-			service3.Enqueue("upload-report", entry);
-			service2.Delete(jobId);
+			queueService.Enqueue("upload-report", entry);
+			dataStoreService.Delete(jobId);
 			return errorList;
 		}
 		catch (Exception e)
@@ -388,14 +388,14 @@ public class UpdateService : IUpdateService
 	{
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		IRepositoryService service2 = ServiceLocator.Instance.GetService<IRepositoryService>();
-		IDataStoreService service3 = ServiceLocator.Instance.GetService<IDataStoreService>();
-		IQueueService service4 = ServiceLocator.Instance.GetService<IQueueService>();
+		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		ChangeSet changeSet;
 		ITransferJob job2;
 		try
 		{
-			changeSet = service3.Get<ChangeSet>(jobId);
+			changeSet = dataStoreService.Get<ChangeSet>(jobId);
 			if (changeSet == null)
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("M001", $"Job file for job: {jobId}", "Job file is missing the bits jobs will be canceled."));
@@ -423,7 +423,7 @@ public class UpdateService : IUpdateService
 					Success = false,
 					TotalBytesTransfered = job2.TotalBytesTransfered
 				};
-				service4.Enqueue("statistic", entry);
+				queueService.Enqueue("statistic", entry);
 				errorList.AddRange(job2.Cancel());
 				return errorList;
 			}
@@ -435,14 +435,14 @@ public class UpdateService : IUpdateService
 			if (items.Count != 1)
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("D999", $"Job {job2.ID} has {items.Count} items. It have 1 item.", "This download will be canceled."));
-				service3.Delete(jobId);
+				dataStoreService.Delete(jobId);
 				return errorList;
 			}
 			errorList.AddRange(job2.Complete());
 			if (errorList.ContainsError())
 			{
 				job2.Cancel();
-				service3.Delete(jobId);
+				dataStoreService.Delete(jobId);
 				return errorList;
 			}
 			ITransferItem transferItem = items[0];
@@ -459,22 +459,22 @@ public class UpdateService : IUpdateService
 				}
 				LogHelper.Instance.Log("{0} matched the server hash of {1}.", text2, changeSet.ContentHash);
 			}
-			service2.UnpackChangeSet(changeSet.Name, jobId, text);
+			repositoryService.UnpackChangeSet(changeSet.Name, jobId, text);
 		}
 		catch (Exception e)
 		{
 			errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("E999", "An unhandled exception occurred in Updater.FinishUpdate.", e));
-			service3.Delete(jobId);
+			dataStoreService.Delete(jobId);
 			return errorList;
 		}
 		DateTime dateTime = (job2.FinishTime.HasValue ? job2.FinishTime.Value : DateTime.UtcNow);
 		double averageSpeedInKPS = (double)job2.TotalBytesTransfered / (dateTime - job2.StartTime).TotalSeconds;
 		try
 		{
-			service2.AddRevisions(changeSet.Name, changeSet.Revisions);
+			repositoryService.AddRevisions(changeSet.Name, changeSet.Revisions);
 			if (!string.IsNullOrEmpty(changeSet.Label))
 			{
-				service2.SetLabel(changeSet.Name, changeSet.Revisions[changeSet.Revisions.Count - 1], changeSet.Label);
+				repositoryService.SetLabel(changeSet.Name, changeSet.Revisions[changeSet.Revisions.Count - 1], changeSet.Label);
 			}
 			List<DeltaItem> list = new List<DeltaItem>();
 			foreach (ChangeSetItem item2 in changeSet.Items)
@@ -491,7 +491,7 @@ public class UpdateService : IUpdateService
 				};
 				list.Add(item);
 			}
-			service2.AddDelta(changeSet.Name, list);
+			repositoryService.AddDelta(changeSet.Name, list);
 			LogHelper.Instance.Log("Finished Add patch for ChangeSetName: {0} TransferJobId: {1}", changeSet.Name, job2.ID);
 			TransferStatisticReport entry2 = new TransferStatisticReport
 			{
@@ -503,12 +503,12 @@ public class UpdateService : IUpdateService
 				Success = true,
 				TotalBytesTransfered = job2.TotalBytesTransfered
 			};
-			service4.Enqueue("statistic", entry2);
+			queueService.Enqueue("statistic", entry2);
 		}
 		catch (Exception e2)
 		{
 			errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("E999", "Error adding delta to repository.", e2));
-			service2.RemoveRevisions(changeSet.Name, changeSet.Revisions);
+			repositoryService.RemoveRevisions(changeSet.Name, changeSet.Revisions);
 			TransferStatisticReport entry3 = new TransferStatisticReport
 			{
 				Repository = changeSet.Name,
@@ -518,9 +518,9 @@ public class UpdateService : IUpdateService
 				StoreNumber = m_storeNumber,
 				TotalBytesTransfered = job2.TotalBytesTransfered
 			};
-			service4.Enqueue("statistic", entry3);
+			queueService.Enqueue("statistic", entry3);
 		}
-		service3.Delete(jobId);
+		dataStoreService.Delete(jobId);
 		return errorList;
 	}
 
@@ -679,16 +679,16 @@ public class UpdateService : IUpdateService
 		try
 		{
 			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			IQueueService service2 = ServiceLocator.Instance.GetService<IQueueService>();
+			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 			foreach (Guid id in ids)
 			{
 				Work work = service.Get<Work>(string.Concat(id, ".workdat"));
-				IKernelService service3 = ServiceLocator.Instance.GetService<IKernelService>();
+				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 				Exception ex = null;
 				try
 				{
 					LogHelper.Instance.Log("Executing incomplete work item with script id: {0}", work.ID);
-					service3.ExecuteChunk(work.GetScriptText(), reset: true);
+					kernelService.ExecuteChunk(work.GetScriptText(), reset: true);
 				}
 				catch (Exception ex2)
 				{
@@ -699,7 +699,7 @@ public class UpdateService : IUpdateService
 				{
 					LogHelper.Instance.Log("Script Id: {0} caused an exception.", work.ID);
 					Redbox_002EUpdateManager_002ERemoting_002E_003C_003Ef__AnonymousType0<bool, bool, string> instance = new Redbox_002EUpdateManager_002ERemoting_002E_003C_003Ef__AnonymousType0<bool, bool, string>(Result: false, Exception: true, ex.Message);
-					service2.Enqueue("script", new ResultEntry
+					queueService.Enqueue("script", new ResultEntry
 					{
 						ID = work.ID,
 						Entry = instance.ToJson()
@@ -716,7 +716,7 @@ public class UpdateService : IUpdateService
 					service.Delete(string.Concat(id, ".workdat"));
 					LogHelper.Instance.Log("Script id: {0} incomplete work removed", work.ID);
 				}
-				else if (service3.ScriptCompleted)
+				else if (kernelService.ScriptCompleted)
 				{
 					list.Remove(id);
 					if (list.Count == 0)
@@ -729,11 +729,11 @@ public class UpdateService : IUpdateService
 					}
 					service.Delete(string.Concat(id, ".workdat"));
 					LogHelper.Instance.Log("Script id: {0} completed", work.ID);
-					Dictionary<object, object> table = service3.GetTable("Results");
+					Dictionary<object, object> table = kernelService.GetTable("Results");
 					if (table != null)
 					{
 						string entry = table.ToJson();
-						service2.Enqueue("script", new ResultEntry
+						queueService.Enqueue("script", new ResultEntry
 						{
 							ID = work.ID,
 							Entry = entry

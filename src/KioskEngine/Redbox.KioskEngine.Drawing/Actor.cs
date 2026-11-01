@@ -1208,8 +1208,8 @@ public class Actor : IActor, IDisposable
 							}
 							else if (text != null)
 							{
-								IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-								Image = service2.GetBitmap(text);
+								IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+								Image = resourceBundleService.GetBitmap(text);
 							}
 						}
 						catch (Exception e)

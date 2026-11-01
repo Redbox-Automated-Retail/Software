@@ -136,16 +136,16 @@ public sealed class QlmInstruction : Instruction
 		}
 		else if (string.Compare(token.Value, "UNLOAD-DISK") == 0)
 		{
-			IInventoryService service3 = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			int num = CurrentSlot(result, context);
 			if (num != 0)
 			{
-				if (!service3.EmptyCountExceeds(0))
+				if (!inventoryService.EmptyCountExceeds(0))
 				{
 					context.PushTop(MerchandizeResult.MachineFull.ToString().ToUpper());
 				}
-				IDecksService service4 = ServiceLocator.Instance.GetService<IDecksService>();
-				MerchandizeResult merchandizeResult = new UnloadHelper(context, result).UnloadDisk(service4.QlmDeck.Number, num);
+				IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+				MerchandizeResult merchandizeResult = new UnloadHelper(context, result).UnloadDisk(decksService.QlmDeck.Number, num);
 				string text = merchandizeResult.ToString().ToUpper();
 				if (merchandizeResult != MerchandizeResult.Success)
 				{

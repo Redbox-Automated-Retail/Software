@@ -7,10 +7,10 @@ internal sealed class DumpbinPutObserver : IPutToObserver, IPutObserver
 	public void OnSuccessfulPut(IPutResult res, IFormattedLog log)
 	{
 		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		IInventoryService service2 = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		service.AddBinItem(res.StoredMatrix);
 		ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(service.RotationLocation, MoveMode.None, log);
-		service2.Reset(service.PutLocation);
+		inventoryService.Reset(service.PutLocation);
 	}
 
 	public void OnFailedPut(IPutResult res, IFormattedLog log)

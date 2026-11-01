@@ -42,7 +42,7 @@ public sealed class ControlSystemInstruction : Instruction
 		Ops ops = Enum<Ops>.ParseIgnoringCase(base.Operands[0].Value, Ops.None);
 		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
 		IControlResponse controlResponse = null;
-		IFormattedLogFactoryService service2 = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
+		IFormattedLogFactoryService formattedLogFactoryService = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
 		switch (ops)
 		{
 		case Ops.Center:
@@ -61,10 +61,10 @@ public sealed class ControlSystemInstruction : Instruction
 			controlResponse = service.SetSensors(on: false);
 			break;
 		case Ops.EngageQlm:
-			context.PushTop(service.EngageQlm(service2.NilLog).ToString().ToUpper());
+			context.PushTop(service.EngageQlm(formattedLogFactoryService.NilLog).ToString().ToUpper());
 			break;
 		case Ops.DisengageQlm:
-			context.PushTop(service.DisengageQlm(home: true, service2.NilLog).ToString().ToUpper());
+			context.PushTop(service.DisengageQlm(home: true, formattedLogFactoryService.NilLog).ToString().ToUpper());
 			break;
 		case Ops.DropQlm:
 			controlResponse = service.DropQlm();

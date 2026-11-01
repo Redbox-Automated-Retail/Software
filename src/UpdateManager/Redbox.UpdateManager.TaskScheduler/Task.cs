@@ -145,10 +145,10 @@ public class Task : ITask, IJob
 					{
 						LogHelper.Instance.Log("(TASK0099) - An unhandled exception occurred updating health for watchdog.", e);
 					}
-					IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
+					IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 					string chunk = File.ReadAllText(text3);
 					LogHelper.Instance.Log("Executing lua script at {0}", text3);
-					service2.ExecuteChunk(chunk);
+					kernelService.ExecuteChunk(chunk);
 					break;
 				}
 				case PayloadType.Shell:

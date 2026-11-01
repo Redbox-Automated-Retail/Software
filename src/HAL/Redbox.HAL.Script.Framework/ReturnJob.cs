@@ -195,8 +195,8 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 			{
 				IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
 				base.Context.CreateInfoResult("EmptySlotCount", service.GetMachineEmptyCount().ToString());
-				IDumpbinService service2 = ServiceLocator.Instance.GetService<IDumpbinService>();
-				base.Context.CreateInfoResult("DumpBinRemainingCapacity", service2.RemainingSpace().ToString());
+				IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+				base.Context.CreateInfoResult("DumpBinRemainingCapacity", dumpbinService.RemainingSpace().ToString());
 				base.Context.CreateInfoResult("ReturnSlotBufferValue", ControllerConfiguration.Instance.ReturnSlotBuffer.ToString());
 			}
 			if (CameraErrored && ControllerConfiguration.Instance.FixCameraAfterReturn)

@@ -202,10 +202,10 @@ public static class OrchestrationService
 			num = Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout;
 		}
 		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null && service2 != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (service != null && viewService != null)
 		{
-			num = TTSGetTimeout((service2.Peek() == "help_document_view") ? "help" : "long", num);
+			num = TTSGetTimeout((viewService.Peek() == "help_document_view") ? "help" : "long", num);
 		}
 		return num;
 	}
@@ -248,12 +248,12 @@ public static class OrchestrationService
 	{
 		IThemeService service = ServiceLocator.Instance.GetService<IThemeService>();
 		IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
-		IViewService service3 = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		if (service?.CurrentTheme != null && service2 != null)
 		{
 			service.CurrentTheme.IsAnimated = service2.ButtonAnimationEnabled;
 			RoundedButton.DefaultIsAnimated = service2.ButtonAnimationEnabled;
-			RoundedButton.UITaskScheduler = service3?.UITaskScheduler;
+			RoundedButton.UITaskScheduler = viewService?.UITaskScheduler;
 		}
 	}
 
@@ -661,10 +661,10 @@ public static class OrchestrationService
 				sessionType2 = AnalyticsConstants.SessionType.Return;
 				break;
 			}
-			IAnalyticsService service2 = ServiceLocator.Instance.GetService<IAnalyticsService>();
-			service2?.Start(currentSession.Id.ToString(), sessionType2);
-			service2?.AddView(ViewService?.GetCurrentViewAnalyticsName());
-			service2?.AddQueuedViewEvents();
+			IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
+			analyticsService?.Start(currentSession.Id.ToString(), sessionType2);
+			analyticsService?.AddView(ViewService?.GetCurrentViewAnalyticsName());
+			analyticsService?.AddQueuedViewEvents();
 		}
 		Redbox.Rental.Services.Session.Session.Instance.BrowseState.EnableBrowseMessagePopup = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.EnableBrowseMessagePopup;
 		Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseMessagePopupDuration = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.BrowseMessagePopupDuration;
@@ -672,8 +672,8 @@ public static class OrchestrationService
 		RentalRefreshIfNeeded();
 		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 		IConfiguration service3 = ServiceLocator.Instance.GetService<IConfiguration>();
-		IViewService service4 = ServiceLocator.Instance.GetService<IViewService>();
-		if (kioskClientService?.Kiosk?.HasDual == true && service3 != null && service3.KioskSession.Browse.ShowDualInStock && service4 != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (kioskClientService?.Kiosk?.HasDual == true && service3 != null && service3.KioskSession.Browse.ShowDualInStock && viewService != null)
 		{
 			Task.Run(delegate
 			{
@@ -681,7 +681,7 @@ public static class OrchestrationService
 			}).ContinueWith(delegate
 			{
 				BrowseViewController.UpdateTitles();
-			}, CancellationToken.None, TaskContinuationOptions.None, service4.UITaskScheduler);
+			}, CancellationToken.None, TaskContinuationOptions.None, viewService.UITaskScheduler);
 		}
 	}
 

@@ -10,7 +10,7 @@ internal static class SyncHelper
 	{
 		IDeck deck = ServiceLocator.Instance.GetService<IDecksService>().GetFrom(loc);
 		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		if (deck == null)
 		{
 			context.AppLog.Write($"The deck {loc.Deck} is not a valid deck.");
@@ -34,7 +34,7 @@ internal static class SyncHelper
 		int deck2 = loc.Deck;
 		int slot = loc.Slot;
 		context.Send($"SYNC {deck2},{slot}");
-		ErrorCodes errorCodes = service2.MoveTo(loc, MoveMode.Get, context.AppLog);
+		ErrorCodes errorCodes = motionControlService.MoveTo(loc, MoveMode.Get, context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			context.CreateResult("MachineError", "There was an error executing the MOVE instruction.", deck2, slot, null, null, null);
@@ -70,7 +70,7 @@ internal static class SyncHelper
 			{
 				return syncResult;
 			}
-			errorCodes = service2.MoveTo(loc, MoveMode.Put, context.AppLog);
+			errorCodes = motionControlService.MoveTo(loc, MoveMode.Put, context.AppLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				decorator.OnMoveError(errorCodes);

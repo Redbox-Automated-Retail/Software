@@ -203,7 +203,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 		{
 			List<IRevLog> list = new List<IRevLog>();
 			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-			IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			Redbox.UpdateManager.ComponentModel.ErrorList jobs = service.GetJobs(out var jobs2, allUsers: false);
 			if (jobs.ContainsError())
 			{
@@ -215,7 +215,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 			}
 			foreach (ITransferJob item in jobs2)
 			{
-				ChangeSet changeSet = service2.Get<ChangeSet>(item.ID);
+				ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
 				if (changeSet == null || changeSet.Name != name)
 				{
 					continue;

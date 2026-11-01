@@ -769,7 +769,7 @@ public class ReservationFunctions
 		LogHelper.Instance.Log(logHeaderText + " Begin");
 		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		IInventoryService service2 = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		Dictionary<string, List<IProductItem>> dictionary = new Dictionary<string, List<IProductItem>>();
 		List<string> list = new List<string>();
 		if (commitShoppingCart)
@@ -781,7 +781,7 @@ public class ReservationFunctions
 			dictionary.Clear();
 			foreach (IReservedTitle eachReservedTitle in accountReservation.ReservationDetails.ReservedTitles)
 			{
-				Inventory inventory = service2.GetInventory(eachReservedTitle.Barcode);
+				Inventory inventory = inventoryService.GetInventory(eachReservedTitle.Barcode);
 				IKioskProduct kioskProduct = null;
 				service?.GetProduct(inventory?.TitleId ?? 0, excludeTitleRollup: false, out kioskProduct);
 				MDVProduct mDVProduct = kioskProduct as MDVProduct;
@@ -837,9 +837,9 @@ public class ReservationFunctions
 				LogHelper.Instance.Log(logHeaderText + ": Calling PopulateShoppingCartWithReservationItems() for ref# " + accountReservation?.ReferenceNumber);
 				PopulateShoppingCartWithReservationItems(rentalShoppingCart, accountReservation?.ReferenceNumber);
 			}
-			IKioskClientService service3 = ServiceLocator.Instance.GetService<IKioskClientService>();
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			LogHelper.Instance.Log(logHeaderText + ": Calling KioskClientService.Transaction.ReservationPickup()");
-			service3.Transaction.ReservationPickup(rentalShoppingCart.ShoppingSessionId.ToString(), Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.CustomerProfileNumber, accountReservation.ReservationDetails?.EmailAddress, result2, dictionary2, null);
+			kioskClientService.Transaction.ReservationPickup(rentalShoppingCart.ShoppingSessionId.ToString(), Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.CustomerProfileNumber, accountReservation.ReservationDetails?.EmailAddress, result2, dictionary2, null);
 			LogHelper.Instance.Log(logHeaderText + ": Removing reservation for reference nuber... " + accountReservation.ReferenceNumber);
 			DeleteReservation(accountReservation.ReferenceNumber);
 		}

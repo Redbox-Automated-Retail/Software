@@ -48,7 +48,7 @@ internal sealed class TestQlmJob : NativeJobAdapter
 			base.Context.CreateInfoResult("SyncFailure", "There is no disk in the picker.");
 			return;
 		}
-		IRuntimeService service2 = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int number = service.QlmDeck.Number;
 		int[] targetSlots = TargetSlots;
 		foreach (int num in targetSlots)
@@ -59,14 +59,14 @@ internal sealed class TestQlmJob : NativeJobAdapter
 				AddError("Unable to PUT disk.");
 				return;
 			}
-			service2.Wait(1000);
+			runtimeService.Wait(1000);
 			if (!MoveAndGet(number, num))
 			{
 				base.Context.CreateResult("SyncFailure", "Filing the disk to the QLM failed.", number, num, null, null, null);
 				AddError("Failure to get disk.");
 				return;
 			}
-			service2.Wait(500);
+			runtimeService.Wait(500);
 		}
 		applicationLog.Write("The sync completed successfully.");
 		base.MotionService.MoveVend(MoveMode.Get, applicationLog);

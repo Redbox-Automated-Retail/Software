@@ -53,13 +53,13 @@ public class HardwareHelper
 			return;
 		}
 		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
-		IBarcodeTrackingService service2 = ServiceLocator.Instance.GetService<IBarcodeTrackingService>();
+		IBarcodeTrackingService barcodeTrackingService = ServiceLocator.Instance.GetService<IBarcodeTrackingService>();
 		BarcodeServices decoderUsed = (Enum.TryParse<BarcodeServices>(service?.BarcodeDecoder.ToString(), out var result) ? result : BarcodeServices.None);
 		CameraGeneration cameraType = (Enum.TryParse<CameraGeneration>(service?.CurrentCameraGeneration.ToString(), out var result2) ? result2 : CameraGeneration.Unknown);
 		string kioskId = ServiceLocator.Instance.GetService<IDataService>()?.GetStore().StoreId.ToString() ?? null;
-		IMacroService service3 = ServiceLocator.Instance.GetService<IMacroService>();
-		string kioskClientSoftwareVersion = service3["EngineVersion"] ?? "Not Found";
-		string hALSoftwareVersion = service3["HALVersion"] ?? "Not Found";
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		string kioskClientSoftwareVersion = macroService["EngineVersion"] ?? "Not Found";
+		string hALSoftwareVersion = macroService["HALVersion"] ?? "Not Found";
 		foreach (IHardwareResult item in results.Where((IHardwareResult x) => x.Code == "CameraStatsJson"))
 		{
 			IDictionary<string, object> messageData = item.MessageData;
@@ -69,7 +69,7 @@ public class HardwareHelper
 			int secureBarcodesRead = int.Parse((messageData?.FirstOrDefault((KeyValuePair<string, object> x) => x.Key == "SecureCodesRead").Value ?? ((object)0)).ToString());
 			DateTime result3 = DateTime.MinValue;
 			DateTime.TryParse(item.Timestamp, out result3);
-			service2.AddBarcodeTrackingInfoToQueue(new BarcodeTrackingInfo
+			barcodeTrackingService.AddBarcodeTrackingInfoToQueue(new BarcodeTrackingInfo
 			{
 				KioskId = kioskId,
 				Barcode = itemID,

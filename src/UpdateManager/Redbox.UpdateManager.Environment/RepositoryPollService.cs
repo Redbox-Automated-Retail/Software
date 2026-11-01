@@ -151,11 +151,11 @@ public class RepositoryPollService : IPollRequestReply
 			errorList.AddRange(service.AreJobsRunning(out var isRunning));
 			if (isRunning)
 			{
-				IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
+				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 				errorList.AddRange(service.GetJobs(out var jobs, allUsers: true));
 				foreach (ITransferJob item in jobs)
 				{
-					ChangeSet changeSet = service2.Get<ChangeSet>(item.ID);
+					ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
 					ClientRepositoryDataDTO clientRepositoryDataDTO = currentClientRepositoryDataDTO.FirstOrDefault((ClientRepositoryDataDTO crd) => crd.R == changeSet.Name);
 					if (clientRepositoryDataDTO != null)
 					{

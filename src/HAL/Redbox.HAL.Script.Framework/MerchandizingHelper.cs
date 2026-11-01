@@ -25,7 +25,7 @@ internal class MerchandizingHelper
 		}
 		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
 		IControlSystem service2 = ServiceLocator.Instance.GetService<IControlSystem>();
-		IMotionControlService service3 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IDeck qlmDeck = service.QlmDeck;
 		if (qlmDeck == null)
 		{
@@ -52,7 +52,7 @@ internal class MerchandizingHelper
 			context.CreateInfoResult("QlmDeckEmpty", "The QLM unload request failed because there is no QLM case in the QLM bay.");
 			return false;
 		}
-		if (service3.InitAxes() != ErrorCodes.Success)
+		if (motionControlService.InitAxes() != ErrorCodes.Success)
 		{
 			context.CreateInfoResult("MachineError", "There was an error homing the motors.");
 			AddError(result, "The homing operation failed.");
@@ -78,7 +78,7 @@ internal class MerchandizingHelper
 			}
 			ClearQlmInventory();
 			context.CreateInfoResult("QlmDeckEngageSuccess", "The QLM engaged successfully.");
-			service3.TestAndReset();
+			motionControlService.TestAndReset();
 		}
 		context.PushTop(qlmDeck.NumberOfSlots);
 		return true;

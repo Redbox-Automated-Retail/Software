@@ -56,21 +56,21 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 		_dataPath = Path.Combine(service2.DataPath, "SyncUnknowns");
 		_fileService = new DataFileStoreService();
 		_fileService.Initialize("SyncUnknownCounts", _dataPath, "json", "corrupt", useEncryption: false);
-		IConfigurationService service3 = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (!service3.TryGetValue<bool>("system", "General", "SyncUnknownEnabled", out _isEnabled))
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (!configurationService.TryGetValue<bool>("system", "General", "SyncUnknownEnabled", out _isEnabled))
 		{
 			_isEnabled = true;
 		}
-		service3.TryGetValue<int>("system", "General", "MaxUnknownSyncs", out _maxSyncCount);
+		configurationService.TryGetValue<int>("system", "General", "MaxUnknownSyncs", out _maxSyncCount);
 		if (_maxSyncCount == 0)
 		{
 			_maxSyncCount = 3;
 		}
-		if (!service3.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeBegin", out var value))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeBegin", out var value))
 		{
 			value = "1:00";
 		}
-		if (!service3.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeEnd", out var value2))
+		if (!configurationService.TryGetValue<string>("system", "General", "SyncUnknownStartTimeRangeEnd", out var value2))
 		{
 			value2 = "3:00";
 		}

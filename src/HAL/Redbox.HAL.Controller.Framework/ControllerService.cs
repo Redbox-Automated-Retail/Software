@@ -64,14 +64,14 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 		MotionControlService_v2 motionControlService_v = new MotionControlService_v2();
 		ServiceLocator.Instance.AddService<IMotionControlService>(motionControlService_v);
 		motionControlService_v.AddVeto(this);
-		IRuntimeService service2 = ServiceLocator.Instance.GetService<IRuntimeService>();
-		ControlSystemBridgeModern instance = new ControlSystemBridgeModern(service2, persistentCounterService);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		ControlSystemBridgeModern instance = new ControlSystemBridgeModern(runtimeService, persistentCounterService);
 		ServiceLocator.Instance.AddService<IControlSystemService>(instance);
 		ServiceLocator.Instance.AddService<IControlSystem>(instance);
 		ServiceLocator.Instance.AddService<IAirExchangerService>(new IceQubeAirExchangerService());
 		ServiceLocator.Instance.AddService<IDumpbinService>(new DumpbinServiceBridge());
 		ServiceLocator.Instance.AddService<IDoorSensorService>(new DoorSensorService());
-		ServiceLocator.Instance.AddService<IPowerCycleDeviceService>(new PowerCycleDeviceService(service2));
+		ServiceLocator.Instance.AddService<IPowerCycleDeviceService>(new PowerCycleDeviceService(runtimeService));
 	}
 
 	public void Shutdown()
@@ -115,13 +115,13 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 	public IPutResult Put(string id)
 	{
 		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IPutObserver observer = PutObserver;
-		if (service.IsBin(service2.CurrentLocation))
+		if (service.IsBin(motionControlService.CurrentLocation))
 		{
 			observer = DumpObserver;
 		}
-		return OnPut(observer, id, service2.CurrentLocation);
+		return OnPut(observer, id, motionControlService.CurrentLocation);
 	}
 
 	public IPutResult Put(IPutObserver observer, string id)

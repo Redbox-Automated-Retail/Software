@@ -96,7 +96,7 @@ internal struct UnloadHelper : IFileDiskHandler
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
 		ServiceLocator.Instance.GetService<IPersistentCounterService>();
 		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
-		IControllerService service2 = ServiceLocator.Instance.GetService<IControllerService>();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		ErrorCodes errorCodes = ErrorCodes.Success;
 		errorCodes = service.MoveTo(srcDeck, srcSlot, MoveMode.Get, Context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
@@ -106,7 +106,7 @@ internal struct UnloadHelper : IFileDiskHandler
 			MerchandizingHelper.Instance.AddError(Result, "The MOVE instruction failed.");
 			return MerchandizeResult.HardwareError;
 		}
-		IGetResult getResult = service2.Get();
+		IGetResult getResult = controllerService.Get();
 		if (getResult.IsSlotEmpty)
 		{
 			Context.CreateResult("QlmUnloadQlmSlotEmpty", "There was no item found at this location.", srcDeck, srcSlot, null, null, null);
@@ -116,16 +116,16 @@ internal struct UnloadHelper : IFileDiskHandler
 		{
 			if (isVMZMachine && getResult.ItemStuck)
 			{
-				IInventoryService service3 = ServiceLocator.Instance.GetService<IInventoryService>();
-				ILocation location = service3.Get(srcDeck, srcSlot);
+				IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+				ILocation location = inventoryService.Get(srcDeck, srcSlot);
 				location.Flags = MerchFlags.None;
-				service3.Save(location);
+				inventoryService.Save(location);
 				Context.CreateResult("UnloadEmptyStuck", "The disk at this location is stuck.", srcDeck, srcSlot, null, null, null);
 				return MerchandizeResult.EmptyStuck;
 			}
 			Context.CreateResult("MachineError", string.Format("A hardware error occurred in the get from {0}.", isVMZMachine ? "VMZ" : "QLM"), srcDeck, srcSlot, null, null, null);
 			MerchandizingHelper.Instance.AddError(Result, string.Format("An error occurred getting an item from the {0}.", isVMZMachine ? "VMZ" : "QLM"));
-			if (service2.ClearGripper() == ErrorCodes.Success)
+			if (controllerService.ClearGripper() == ErrorCodes.Success)
 			{
 				MerchandizingHelper.Instance.CleanupJob(Result, Context, ErrorCodes.Success);
 			}
@@ -157,7 +157,7 @@ internal struct UnloadHelper : IFileDiskHandler
 				MerchandizingHelper.Instance.ExitOnMoveError(Result, Context);
 				return MerchandizeResult.HardwareError;
 			}
-			IPutResult putResult = service2.Put(text);
+			IPutResult putResult = controllerService.Put(text);
 			if (putResult.Success)
 			{
 				DiskFiled(Result, putResult);

@@ -147,8 +147,8 @@ public class EnvironmentManager : IEnvironmentNotificationService
 			{
 				LogHelper.Instance.Log("...Valid credit card reader found.");
 				HasValidCardReader = true;
-				IClassicTrackDataService service2 = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
-				SetTrackDataService(service2);
+				IClassicTrackDataService classicTrackDataService = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
+				SetTrackDataService(classicTrackDataService);
 			}
 			else if (CheckCardReader)
 			{

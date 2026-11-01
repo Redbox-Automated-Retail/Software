@@ -62,7 +62,7 @@ public sealed class LocInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		if (base.Operands.Count >= 1)
 		{
 			ILocation location;
@@ -132,7 +132,7 @@ public sealed class LocInstruction : Instruction
 			}
 			else if (base.Operands[0].Value.Equals("AT-DRUM-LOC"))
 			{
-				if (service2.CurrentLocation != null)
+				if (motionControlService.CurrentLocation != null)
 				{
 					context.PushTop(true);
 				}
@@ -229,20 +229,20 @@ public sealed class LocInstruction : Instruction
 				result.Errors.Add(Error.NewError("E001", "Unrecognized LOC form.", $"The operand {base.Operands[0].Value} isn't recognized."));
 			}
 		}
-		else if (service2.AtVendDoor)
+		else if (motionControlService.AtVendDoor)
 		{
 			context.PushTop("VENDDOOR");
 			context.PushTop("VENDDOOR");
 		}
-		else if (service2.CurrentLocation == null)
+		else if (motionControlService.CurrentLocation == null)
 		{
 			context.PushTop("UNDEFINED");
 			context.PushTop("UNDEFINED");
 		}
 		else
 		{
-			context.PushTop(service2.CurrentLocation.Slot);
-			context.PushTop(service2.CurrentLocation.Deck);
+			context.PushTop(motionControlService.CurrentLocation.Slot);
+			context.PushTop(motionControlService.CurrentLocation.Deck);
 		}
 	}
 

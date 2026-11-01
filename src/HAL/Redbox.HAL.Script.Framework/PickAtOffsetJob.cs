@@ -13,8 +13,8 @@ internal sealed class PickAtOffsetJob : NativeJobAdapter
 		Axis axis = base.Context.PopTop<Axis>();
 		int value = base.Context.PopTop<int>();
 		IFormattedLogFactoryService service = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
-		IInventoryService service2 = ServiceLocator.Instance.GetService<IInventoryService>();
-		ILocation location = service2.Get(deck, slot);
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		ILocation location = inventoryService.Get(deck, slot);
 		OffsetMoveData data = ((axis == Axis.X) ? new OffsetMoveData(value, 0) : new OffsetMoveData(0, value));
 		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(location, MoveMode.None, service.NilLog, ref data);
 		if (errorCodes != ErrorCodes.Success)
@@ -77,7 +77,7 @@ internal sealed class PickAtOffsetJob : NativeJobAdapter
 			return;
 		}
 		base.Context.CreateInfoResult("PickSuccess", "Successfully picked the disk.");
-		service2.Reset(location);
+		inventoryService.Reset(location);
 	}
 
 	internal PickAtOffsetJob(ExecutionResult result, ExecutionContext ctx)

@@ -80,12 +80,12 @@ internal abstract class ThinHelper
 			{
 				return MerchandizeResult.VMZFull;
 			}
-			IDumpbinService service2 = ServiceLocator.Instance.GetService<IDumpbinService>();
-			if (service2.IsFull())
+			IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+			if (dumpbinService.IsFull())
 			{
 				return result;
 			}
-			location2 = service2.PutLocation;
+			location2 = dumpbinService.PutLocation;
 		}
 		location = service.Lookup(id);
 		if (location == null)

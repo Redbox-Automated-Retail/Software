@@ -307,14 +307,14 @@ public class TextToSpeechService : ITextToSpeechService
 		{
 			m_keySequenceDelay = 1000;
 		}
-		ITimerService service2 = ServiceLocator.Instance.GetService<ITimerService>();
-		if (service2 == null)
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		if (timerService == null)
 		{
 			LogHelper.Instance.Log("TTS((> no delay TimerService NULL - passing directly to SayTTs");
 			ProcessSpeechPart(speechPart);
 			return;
 		}
-		service2.RemoveTimer("TTSTimer");
+		timerService.RemoveTimer("TTSTimer");
 		_ = speechPart.Loop;
 		int startPause = speechPart.StartPause;
 		TimerCallback callback = delegate
@@ -329,7 +329,7 @@ public class TextToSpeechService : ITextToSpeechService
 		else
 		{
 			LogHelper.Instance.Log("TTS((> dueTime = " + startPause);
-			service2.CreateTimer("TTSTimer", startPause, null, callback).Start();
+			timerService.CreateTimer("TTSTimer", startPause, null, callback).Start();
 		}
 	}
 

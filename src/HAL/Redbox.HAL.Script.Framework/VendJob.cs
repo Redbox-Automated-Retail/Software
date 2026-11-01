@@ -191,15 +191,15 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 		{
 			if (ControllerConfiguration.Instance.EmptyStuckAlertThreshold > 0)
 			{
-				IPersistentCounterService service2 = ServiceLocator.Instance.GetService<IPersistentCounterService>();
-				IPersistentCounter persistentCounter = service2.Find("EmptyOrStuckCount");
+				IPersistentCounterService persistentCounterService = ServiceLocator.Instance.GetService<IPersistentCounterService>();
+				IPersistentCounter persistentCounter = persistentCounterService.Find("EmptyOrStuckCount");
 				if (persistentCounter != null && persistentCounter.Value > ControllerConfiguration.Instance.EmptyStuckAlertThreshold)
 				{
 					LogHelper.Instance.Log(LogEntryType.Error, "The Empty/Stuck counter for alert generation has exceeded its threshold (value = {0})", persistentCounter.Value);
 					if (ControllerConfiguration.Instance.AlertForEmptyStuck)
 					{
 						base.Context.CreateInfoResult("EmptyStuckThresholdExceeded", "There are too many empty/stuck failures transactions on this kiosk, please investigate.");
-						service2.Reset(persistentCounter);
+						persistentCounterService.Reset(persistentCounter);
 					}
 				}
 			}

@@ -12,14 +12,14 @@ internal class DumpBinThinHelper : ThinHelper
 	internal override MerchandizeResult ThinDisk(string id, MerchFlags flags)
 	{
 		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		IInventoryService service2 = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (service.IsFull())
 		{
 			base.Context.CreateInfoResult("DumpBinIsFull", "The dump bin is filled to capacity.");
 			return MerchandizeResult.DumpBinFull;
 		}
 		base.Context.AppLog.Write($"Attempt thin of item {id}");
-		ILocation location = service2.Lookup(id);
+		ILocation location = inventoryService.Lookup(id);
 		if (location == null)
 		{
 			base.Context.CreateLookupErrorResult("ThinLookupFailed", id);

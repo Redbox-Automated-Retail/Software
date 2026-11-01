@@ -207,14 +207,14 @@ public class SwipeViewController : BaseViewController
 		}
 		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		OrchestrationService.StopIdleTimer("idle_timer");
-		ITrackDataService service2 = ServiceLocator.Instance.GetService<ITrackDataService>();
-		if (service2 == null)
+		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
+		if (trackDataService == null)
 		{
 			LogHelper.Instance.Log("TrackDataService is null.  Attempting to detect card reader.");
 			service?.DetectCardReaderAndRegisterTrackDataService();
-			service2 = ServiceLocator.Instance.GetService<ITrackDataService>();
+			trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
 		}
-		if (service2 == null)
+		if (trackDataService == null)
 		{
 			LogHelper.Instance.Log("Error in ConfigureSwipeView.  TrackDataService is null.  Showing please_wait_view.");
 			Task.Run(delegate
@@ -265,10 +265,10 @@ public class SwipeViewController : BaseViewController
 		swipeViewUserControl.Timeout = num;
 		DeviceInputType deviceInputType;
 		int num2;
-		if (service2 != null)
+		if (trackDataService != null)
 		{
 			deviceInputType = DeviceInputType.M;
-			if (service2 is IDeviceServiceTrackDataService)
+			if (trackDataService is IDeviceServiceTrackDataService)
 			{
 				if (ChipEnabled && ContactlessEnabled && _reservationPickupTypes.Contains(_swipeViewType))
 				{
@@ -323,7 +323,7 @@ public class SwipeViewController : BaseViewController
 		};
 		if (vasMode != VasMode.VasOnly || !PersonalizationFunctions.IsLoyaltySignedIn)
 		{
-			service2.StartCardRead(request, delegate(IReadCardJob cardReadJob)
+			trackDataService.StartCardRead(request, delegate(IReadCardJob cardReadJob)
 			{
 				if (cardReadJob != null && swipeViewModel?.CardReadAttempt != null)
 				{

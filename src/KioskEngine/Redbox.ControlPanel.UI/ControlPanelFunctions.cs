@@ -31,9 +31,9 @@ public class ControlPanelFunctions
 		IAuthenticationServices service = ServiceLocator.Instance.GetService<IAuthenticationServices>();
 		if (service != null)
 		{
-			ICallbackService service2 = ServiceLocator.Instance.GetService<ICallbackService>();
+			ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 			IMachineSettingsStore service3 = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service2 != null && service3 != null)
+			if (callbackService != null && service3 != null)
 			{
 				userData.StoreNumber = service3.StoreNumberString();
 				service.Authenticate(userData.StoreNumber, userData.Id, userData.Password, useLdapAuthentication: true, remoteServiceCallback);

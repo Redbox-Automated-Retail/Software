@@ -52,20 +52,20 @@ internal static class HealthServicesFunctions
 			luaTable["Hal Service"] = service["HALServiceVersion"] ?? "Not Found";
 			luaTable["Hal Client"] = service["HALVersion"] ?? "Not Found";
 		}
-		IKernelExtensionService service2 = ServiceLocator.Instance.GetService<IKernelExtensionService>();
-		if (service2 != null)
+		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
+		if (kernelExtensionService != null)
 		{
-			foreach (IKernelExtension extension in service2.Extensions)
+			foreach (IKernelExtension extension in kernelExtensionService.Extensions)
 			{
 				int num = extension.Name.LastIndexOf('.');
 				string key = "[Extension] " + extension.Name.Substring(num + 1);
 				luaTable[key] = extension.Version;
 			}
 		}
-		IResourceBundleService service3 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service3 != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService != null)
 		{
-			foreach (IBundleSpecifier bundle in service3.Bundles)
+			foreach (IBundleSpecifier bundle in resourceBundleService.Bundles)
 			{
 				string key2 = "[" + bundle.Type.ToString() + " bundle] " + bundle.Name;
 				luaTable[key2] = bundle.Version.ToString();

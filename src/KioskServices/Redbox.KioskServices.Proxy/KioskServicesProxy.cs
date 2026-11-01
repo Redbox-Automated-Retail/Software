@@ -189,18 +189,18 @@ public class KioskServicesProxy
 		IDeviceServiceClientHelper service2 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		dictionary["Device Service"] = service2?.DeviceServiceVersion?.ToString() ?? "Not Found";
 		dictionary["Device Service Client"] = service2.DeviceServiceClientVersion?.ToString() ?? "Not Found";
-		IKernelExtensionService service3 = ServiceLocator.Instance.GetService<IKernelExtensionService>();
-		if (service3 != null)
+		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
+		if (kernelExtensionService != null)
 		{
-			foreach (IKernelExtension extension in service3.Extensions)
+			foreach (IKernelExtension extension in kernelExtensionService.Extensions)
 			{
 				dictionary[extension.Name] = extension.Version;
 			}
 		}
-		IResourceBundleService service4 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service4 != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService != null)
 		{
-			foreach (IBundleSpecifier bundle in service4.Bundles)
+			foreach (IBundleSpecifier bundle in resourceBundleService.Bundles)
 			{
 				dictionary[bundle.Name] = bundle.Version.ToString();
 			}

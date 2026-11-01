@@ -226,10 +226,10 @@ public class SelectBundleForm : Form
 					m_sharedBundlesListView.Items.Add(listViewItem);
 				}
 			}
-			IDebugService service2 = ServiceLocator.Instance.GetService<IDebugService>();
-			if (service2 != null)
+			IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+			if (debugService != null)
 			{
-				m_breakOnStartToolStripButton.Enabled = service2.IsEnabled;
+				m_breakOnStartToolStripButton.Enabled = debugService.IsEnabled;
 			}
 		}
 		finally

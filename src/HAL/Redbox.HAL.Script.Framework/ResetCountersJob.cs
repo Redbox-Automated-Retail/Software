@@ -56,8 +56,8 @@ internal sealed class ResetCountersJob : NativeJobAdapter
 				service.ResetWeekly();
 			}
 		}
-		IKioskFunctionCheckService service2 = ServiceLocator.Instance.GetService<IKioskFunctionCheckService>();
-		LogHelper.Instance.Log("[Watchdog] Kiosk function check cleaned {0} entries", service2.CleanOldEntries());
+		IKioskFunctionCheckService kioskFunctionCheckService = ServiceLocator.Instance.GetService<IKioskFunctionCheckService>();
+		LogHelper.Instance.Log("[Watchdog] Kiosk function check cleaned {0} entries", kioskFunctionCheckService.CleanOldEntries());
 	}
 
 	internal ResetCountersJob(ExecutionResult result, ExecutionContext ctx)

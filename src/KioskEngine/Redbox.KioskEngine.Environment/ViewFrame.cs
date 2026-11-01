@@ -245,8 +245,8 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 	{
 		base.Errors.Clear();
 		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		IStyleSheetService service2 = ServiceLocator.Instance.GetService<IStyleSheetService>();
-		IRenderingService service3 = ServiceLocator.Instance.GetService<IRenderingService>();
+		IStyleSheetService styleSheetService = ServiceLocator.Instance.GetService<IStyleSheetService>();
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		IResource viewResource = GetViewResource();
 		ViewVersion = viewResource["version"] as string;
 		base.ActiveFlag = viewResource["active_flag"] as string;
@@ -270,7 +270,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 		string attributeValue2 = xmlNode.GetAttributeValue<string>("stylesheet");
 		if (!string.IsNullOrEmpty(attributeValue2))
 		{
-			StyleSheet = service2.New(attributeValue2);
+			StyleSheet = styleSheetService.New(attributeValue2);
 		}
 		ViewWindow = xmlNode.GetAttributeValue<Rectangle?>("viewWindow");
 		OnEnterResourceName = xmlNode.GetAttributeValue<string>("onEnter");
@@ -295,7 +295,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 		{
 			return;
 		}
-		base.Scene = service3.GetScene(SceneName) ?? service3.GetScene("Default");
+		base.Scene = renderingService.GetScene(SceneName) ?? renderingService.GetScene("Default");
 		foreach (XmlNode item in xmlNodeList)
 		{
 			string attributeValue4 = item.GetAttributeValue<string>("name");

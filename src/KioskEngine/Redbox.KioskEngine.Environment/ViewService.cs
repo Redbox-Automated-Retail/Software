@@ -100,12 +100,12 @@ public class ViewService : IViewService
 		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
 		if ((service != null && service.IsInMaintenanceMode) || !m_isCriticalErrorViewShown)
 		{
-			IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 			IShoppingSession shoppingSession = null;
-			IShoppingSessionService service3 = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-			if (service3 != null)
+			IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+			if (shoppingSessionService != null)
 			{
-				shoppingSession = service3.GetCurrentSession();
+				shoppingSession = shoppingSessionService.GetCurrentSession();
 				if (shoppingSession != null)
 				{
 					shoppingSession.ViewsShown++;
@@ -115,19 +115,19 @@ public class ViewService : IViewService
 			{
 				m_lastShownView = null;
 			}
-			IRenderingService service4 = ServiceLocator.Instance.GetService<IRenderingService>();
+			IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 			if (InnerStack.Peek() == null)
 			{
 				LogHelper.Instance.Log("View stack is empty.");
-				service2.Filter["view_name"] = null;
-				service4.ActiveScene.SuspendDrawing();
-				service4.ActiveScene.Clear();
-				service4.ActiveScene.ResumeDrawing();
+				resourceBundleService.Filter["view_name"] = null;
+				renderingService.ActiveScene.SuspendDrawing();
+				renderingService.ActiveScene.Clear();
+				renderingService.ActiveScene.ResumeDrawing();
 				shoppingSession?.AddEvent(ShoppingSessionEventType.ShowView, "View stack empty.");
 				return;
 			}
 			IViewFrameInstance viewFrameInstance = InnerStack.Peek();
-			service2.Filter["view_name"] = viewFrameInstance?.ViewFrame?.ViewName;
+			resourceBundleService.Filter["view_name"] = viewFrameInstance?.ViewFrame?.ViewName;
 			LogShowViewFrameInstance(viewFrameInstance);
 			viewFrameInstance.ViewFrame.UpdateScene(viewFrameInstance);
 			if (shoppingSession != null)

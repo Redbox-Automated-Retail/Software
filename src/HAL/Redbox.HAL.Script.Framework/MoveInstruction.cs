@@ -98,8 +98,8 @@ public sealed class MoveInstruction : Instruction
 			AddError("E004", "Deck or slot are undefined, and no location specified; reissue the MOVE instruction specifying both deck and slot values or the location.", result.Errors);
 			return;
 		}
-		IDumpbinService service2 = ServiceLocator.Instance.GetService<IDumpbinService>();
-		if (context.IsImmediate && service2.IsBin(location))
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+		if (context.IsImmediate && dumpbinService.IsBin(location))
 		{
 			string instance = ErrorCodes.InvalidMoveToSecureLocation.ToString().ToUpper();
 			context.PushTop(instance);

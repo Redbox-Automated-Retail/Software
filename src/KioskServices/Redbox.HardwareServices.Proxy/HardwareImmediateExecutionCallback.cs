@@ -33,9 +33,9 @@ public class HardwareImmediateExecutionCallback : ICallbackEntry
 		}
 		catch (Exception e)
 		{
-			IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			string resourceName = $"HardwareImmediateExecutionCallback for command: {Command}";
-			if (!service2.RaiseDebuggerOrError(e, resourceName))
+			if (!kernelService.RaiseDebuggerOrError(e, resourceName))
 			{
 				LogHelper.Instance.Log("An unhandled exception was raised in  HardwareImmediateExecutionCallback handler.", e);
 			}

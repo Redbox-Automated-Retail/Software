@@ -33,7 +33,7 @@ public sealed class CounterInstruction : Instruction
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("NAME");
 		string keyValuePairValue = GetKeyValuePairValue<string>(keyValuePair, result.Errors, context);
 		IPersistentCounterService service = ServiceLocator.Instance.GetService<IPersistentCounterService>();
-		IDumpbinService service2 = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		string value = base.Operands[1].Value;
 		switch (Enum<Ops>.ParseIgnoringCase(value, Ops.None))
 		{
@@ -74,7 +74,7 @@ public sealed class CounterInstruction : Instruction
 		{
 			if (keyValuePairValue.Equals("DUMPBIN", StringComparison.CurrentCultureIgnoreCase))
 			{
-				context.PushTop(service2.CurrentCount());
+				context.PushTop(dumpbinService.CurrentCount());
 				context.PushTop(base.SuccessMessage);
 				break;
 			}

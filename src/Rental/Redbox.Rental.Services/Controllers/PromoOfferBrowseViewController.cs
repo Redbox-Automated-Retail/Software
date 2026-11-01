@@ -598,8 +598,8 @@ public class PromoOfferBrowseViewController : BaseViewController
 	private static void CreateAndStartTimer()
 	{
 		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		ITextToSpeechService service2 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		int timeOut = ((service2 != null && service2.TTSEnabled) ? 120000 : 25000);
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		int timeOut = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 120000 : 25000);
 		IIdleTimer obj = service?.CreateIdleTimer("PromoOfferBrowseViewTimer");
 		obj?.Initialize(timeOut, delegate
 		{

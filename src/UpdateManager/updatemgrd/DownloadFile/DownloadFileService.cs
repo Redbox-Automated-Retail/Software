@@ -201,8 +201,8 @@ internal class DownloadFileService : IPollRequestReply, IDownloadFileService
 	{
 		ErrorList errorList = new ErrorList();
 		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		IKioskEngineService service2 = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		errorList.AddRange(service2.Shutdown(15000, 2));
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		errorList.AddRange(kioskEngineService.Shutdown(15000, 2));
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.UpdateManager.ComponentModel.Error e)

@@ -82,7 +82,7 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 				{
 					if (Activator.CreateInstance(item) is IViewDefinition viewDefinition)
 					{
-						IRenderingService service2 = ServiceLocator.Instance.GetService<IRenderingService>();
+						IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 						IWPFViewFrame baseViewFrame = new WPFViewFrame
 						{
 							ViewName = viewDefinition.ViewName,
@@ -91,7 +91,7 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 							IsMaintenanceModeView = viewDefinition.IsMaintenanceModeView,
 							Clear = viewDefinition.Clear,
 							ViewDefinition = viewDefinition,
-							Scene = service2?.GetScene("Default")
+							Scene = renderingService?.GetScene("Default")
 						};
 						service.CacheViewFrame(baseViewFrame);
 					}

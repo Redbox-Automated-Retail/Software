@@ -57,9 +57,9 @@ public static class DataServiceFunctions
 				{
 					return null;
 				}
-				IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-				LuaTable keysTable = (LuaTable)service2.NewTable();
-				LuaTable cacheTable = (LuaTable)service2.NewTable();
+				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+				LuaTable keysTable = (LuaTable)kernelService.NewTable();
+				LuaTable cacheTable = (LuaTable)kernelService.NewTable();
 				int i = 1;
 				all.ForEach(delegate(KeyValuePair<string, object> r)
 				{

@@ -74,18 +74,18 @@ public sealed class GripperInstruction : Instruction
 			text = text2;
 		}
 		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
-		IControllerService service3 = ServiceLocator.Instance.GetService<IControllerService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		switch (text)
 		{
 		case "VEND-DISC-AT-DOOR":
-			context.PushTop(service3.VendItemInPicker().Status.ToString().ToUpper());
+			context.PushTop(controllerService.VendItemInPicker().Status.ToString().ToUpper());
 			break;
 		case "REJECT-DISC-AT-DOOR":
-			context.PushTop(service3.RejectDiskInPicker().ToString().ToUpper());
+			context.PushTop(controllerService.RejectDiskInPicker().ToString().ToUpper());
 			break;
 		case "ACCEPT-DISC-AT-DOOR":
-			context.PushTop(service3.AcceptDiskAtDoor().ToString().ToUpper());
+			context.PushTop(controllerService.AcceptDiskAtDoor().ToString().ToUpper());
 			break;
 		case "OPEN":
 			TestFingerOperation(GripperFingerState.Open, context);
@@ -137,7 +137,7 @@ public sealed class GripperInstruction : Instruction
 		}
 		case "PEEK":
 		{
-			ILocation currentLocation = service2.CurrentLocation;
+			ILocation currentLocation = motionControlService.CurrentLocation;
 			if (currentLocation == null)
 			{
 				context.PushTop("LOCATIONOUTOFRANGE");
@@ -155,7 +155,7 @@ public sealed class GripperInstruction : Instruction
 			break;
 		}
 		case "CLEAR":
-			context.PushTop(service3.ClearGripper() == ErrorCodes.Success);
+			context.PushTop(controllerService.ClearGripper() == ErrorCodes.Success);
 			break;
 		case "PUSH":
 		case "PUSH-IN":
@@ -165,7 +165,7 @@ public sealed class GripperInstruction : Instruction
 			break;
 		}
 		case "PUSH-OUT":
-			context.PushTop(service3.PushOut().ToString().ToUpper());
+			context.PushTop(controllerService.PushOut().ToString().ToUpper());
 			break;
 		case "CHECK-PICKER":
 		{

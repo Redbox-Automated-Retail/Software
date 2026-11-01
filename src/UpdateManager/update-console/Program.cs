@@ -145,10 +145,10 @@ public class Program
 			{
 				if (Opts.PrintUnfinishedChanges)
 				{
-					IRepositoryService service2 = ServiceLocator.Instance.GetService<IRepositoryService>();
-					foreach (string allRepository in service2.GetAllRepositories())
+					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+					foreach (string allRepository in repositoryService.GetAllRepositories())
 					{
-						Console.Out.WriteLine(service2.GetUnfinishedChanges(allRepository).ToJson());
+						Console.Out.WriteLine(repositoryService.GetUnfinishedChanges(allRepository).ToJson());
 					}
 				}
 				if (Opts.Update)
@@ -295,11 +295,11 @@ public class Program
 			{
 				LogHelper.Instance.Log("Exception in Program.Main.finally.", e3);
 			}
-			IKernelService service6 = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			LogHelper.Instance.Log("Lock Released for Process Id: {0} under user: {1}\\{2} at UTC: {3}", Process.GetCurrentProcess().Id, System.Environment.UserDomainName, System.Environment.UserName, DateTime.UtcNow);
-			if (service6 != null)
+			if (kernelService != null)
 			{
-				switch (service6.ShutdownType)
+				switch (kernelService.ShutdownType)
 				{
 				case ShutdownType.Reboot:
 					ShutdownTool.Shutdown(ShutdownFlags.Reboot | ShutdownFlags.Force, ShutdownReason.FlagPlanned);

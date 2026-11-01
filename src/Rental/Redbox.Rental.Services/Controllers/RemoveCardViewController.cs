@@ -77,13 +77,13 @@ public class RemoveCardViewController : BaseViewController
 								removeCardViewModel.CardHasBeenRemoved = true;
 								obj = true;
 								LogHelper.Instance.Log("Chip card has been removed from the card reader.  Proceeding with post card read functionality...");
-								IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
+								IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 								Task.Factory.StartNew(delegate
 								{
 									removeCardViewModel?.StopTimeOutTimerAction?.Invoke();
 									OrchestrationService.ViewGoBackSafe("chip_card_removed", popOnly: true);
 									removeCardViewModel.ContinueAction();
-								}, CancellationToken.None, TaskCreationOptions.None, service2?.UITaskScheduler);
+								}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 							}
 						}
 						removeCardViewModel?.ProcessCardRemovedCheckResult(obj);

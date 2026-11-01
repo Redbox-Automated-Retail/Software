@@ -1365,10 +1365,10 @@ public class StartViewController : BaseViewController
 			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
 			Redbox.Rental.Services.Session.Session.Instance.BrowseState.ProductDetailShownFromView = service.Peek();
 			PrepareToLeaveStartView();
-			IAnalyticsService service2 = ServiceLocator.Instance.GetService<IAnalyticsService>();
+			IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
 			if ((ITitleProduct)kioskProduct != null)
 			{
-				service2?.AddData(ProductData.ToProductData((ITitleProduct)kioskProduct));
+				analyticsService?.AddData(ProductData.ToProductData((ITitleProduct)kioskProduct));
 			}
 			OrchestrationService.ViewShow("product_detail_view");
 		}

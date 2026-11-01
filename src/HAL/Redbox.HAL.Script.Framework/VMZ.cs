@@ -21,8 +21,8 @@ internal sealed class VMZ
 		get
 		{
 			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-			IDecksService service2 = ServiceLocator.Instance.GetService<IDecksService>();
-			return service.Get(service2.Last.Number, m_slots.Start);
+			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+			return service.Get(decksService.Last.Number, m_slots.Start);
 		}
 	}
 
@@ -31,8 +31,8 @@ internal sealed class VMZ
 		get
 		{
 			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-			IDecksService service2 = ServiceLocator.Instance.GetService<IDecksService>();
-			return service.Get(service2.First.Number, m_slots.End);
+			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+			return service.Get(decksService.First.Number, m_slots.End);
 		}
 	}
 

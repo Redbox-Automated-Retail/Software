@@ -173,8 +173,8 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
 		ArcusDescriptor = new ArcusDeviceDescriptor(service);
 		SerialPort port = new SerialPort(ControllerConfiguration.Instance.MotionControllerPortName, 115200, Parity.None, 8, StopBits.One);
-		IPortManagerService service2 = ServiceLocator.Instance.GetService<IPortManagerService>();
-		Port = service2.Create(port);
+		IPortManagerService portManagerService = ServiceLocator.Instance.GetService<IPortManagerService>();
+		Port = portManagerService.Create(port);
 		Port.WriteTerminator = new byte[2] { 13, 0 };
 		Port.WritePause = ControllerConfiguration.Instance.ArcusWritePause;
 		Port.WriteTimeout = ControllerConfiguration.Instance.MotionControllerTimeout;
@@ -238,14 +238,14 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 	{
 		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
 		TimeSpan timespan = new TimeSpan(0, 0, 0, 0, ControllerConfiguration.Instance.ArcusMotorQueryPause);
-		IDoorSensorService service2 = ServiceLocator.Instance.GetService<IDoorSensorService>();
+		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		string command = "MST" + axis.ToString().ToUpper();
 		string text;
 		MotorWaitDecoder motorWaitDecoder;
 		do
 		{
-			DoorSensorResult doorSensorResult = service2.Query();
+			DoorSensorResult doorSensorResult = doorSensorService.Query();
 			if (doorSensorResult != DoorSensorResult.Ok)
 			{
 				WriteToLog($"Door sensor query returned {doorSensorResult.ToString()}: halting motion.");

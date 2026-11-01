@@ -46,12 +46,12 @@ internal struct FileDiskOperation : IDisposable
 		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
 		ServiceLocator.Instance.GetService<IInventoryService>().IsBarcodeDuplicate(idInPicker, out var _);
 		int num = ((emptySearchResult.FoundEmpty > 1) ? (emptySearchResult.FoundEmpty - 1) : 0);
-		IMotionControlService service2 = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		int num2 = 0;
 		foreach (ILocation emptyLocation in emptySearchResult.EmptyLocations)
 		{
 			LogHelper.Instance.WithContext("Moving to {0} to put item in picker away.", emptyLocation.ToString());
-			ErrorCodes errorCodes = service2.MoveTo(emptyLocation, MoveMode.Put, Context.AppLog);
+			ErrorCodes errorCodes = motionControlService.MoveTo(emptyLocation, MoveMode.Put, Context.AppLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				FileDiscIterationResult fileDiscIterationResult = Handler.MoveError(result, idInPicker, errorCodes, emptyLocation.Deck, emptyLocation.Slot);
@@ -73,7 +73,7 @@ internal struct FileDiskOperation : IDisposable
 			}
 			if (putResult.IsSlotInUse && ++num2 == num)
 			{
-				service2.InitAxes();
+				motionControlService.InitAxes();
 			}
 			if (FileDiscIterationResult.Halt == Handler.OnFailedPut(result, putResult))
 			{

@@ -164,14 +164,14 @@ public class ResourceEditorWindow : DockContent
 					{
 						TextEditor textEditor3 = new TextEditor();
 						textEditor3.SetSyntaxResource("XML");
-						IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
+						IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 						object obj = m_resource["product_name"];
 						textEditor3.Name = "text_editor_" + obj?.ToString() + m_resource.Name;
-						foreach (IBundleSpecifier bundle2 in service2.ActiveBundleSet.GetBundles())
+						foreach (IBundleSpecifier bundle2 in resourceBundleService.ActiveBundleSet.GetBundles())
 						{
 							if (bundle2.Name == (string)obj)
 							{
-								IResourceBundle bundle = service2.GetBundle(bundle2);
+								IResourceBundle bundle = resourceBundleService.GetBundle(bundle2);
 								IResourceBundleStorageEntry entry = bundle.Storage.GetEntry("manifest.resource");
 								string documentText = Encoding.UTF8.GetString(bundle.Storage.GetEntryContent(entry));
 								textEditor3.SetDocumentText(documentText);

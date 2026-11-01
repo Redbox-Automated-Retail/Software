@@ -160,8 +160,8 @@ internal sealed class DumpbinService : IDumpbinService
 		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
 		Deck = service.Last.Number;
 		Slots = new Range(82, 84);
-		IDataTableService service2 = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = service2.GetTable<IDumpBinInventoryItem>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
+		Table = dataTableService.GetTable<IDumpBinInventoryItem>();
 		m_itemCount = Table.GetRowCount();
 		LogHelper.Instance.Log("[DumpbinService] Loaded {0} items.", m_itemCount);
 	}

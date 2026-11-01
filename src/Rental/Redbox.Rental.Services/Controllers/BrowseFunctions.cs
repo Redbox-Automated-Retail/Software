@@ -522,7 +522,7 @@ public class BrowseFunctions
 				string title = string.Format(Resources.multi_disc_warning_title, addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count + 1);
 				string empty = string.Empty;
 				IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
-				IDataService service2 = ServiceLocator.Instance.GetService<IDataService>();
+				IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 				IPricingRecord oneDayProductPricingRecord = service.GetOneDayProductPricingRecord(addProductToCartParameters.TitleProduct.ProductId);
 				decimal initialNight = oneDayProductPricingRecord.InitialNight;
 				foreach (long requiredAdditionalTitle2 in addProductToCartParameters.TitleProduct.RequiredAdditionalTitles)
@@ -540,7 +540,7 @@ public class BrowseFunctions
 					for (int i = 0; i < addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1; i++)
 					{
 						kioskProduct = null;
-						service2.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[i], excludeTitleRollup: true, out kioskProduct);
+						dataService.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[i], excludeTitleRollup: true, out kioskProduct);
 						if (kioskProduct != null)
 						{
 							if (i > 0)
@@ -551,14 +551,14 @@ public class BrowseFunctions
 						}
 					}
 					kioskProduct = null;
-					service2.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1], excludeTitleRollup: true, out kioskProduct);
+					dataService.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1], excludeTitleRollup: true, out kioskProduct);
 					string arg = kioskProduct?.ProductName;
 					empty = string.Format(Resources.multi_disc_warning_multiple_disc_message, text, arg, initialNight.ToString("0.00"));
 				}
 				else
 				{
 					kioskProduct = null;
-					service2.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1], excludeTitleRollup: true, out kioskProduct);
+					dataService.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1], excludeTitleRollup: true, out kioskProduct);
 					string arg2 = kioskProduct?.ProductName;
 					empty = string.Format(Resources.multi_disc_warning_2_disc_message, arg2, initialNight.ToString("0.00"));
 				}
@@ -694,11 +694,11 @@ public class BrowseFunctions
 									.Replace("Eye Camera", "Playstation Eye Camera");
 								string arg2 = $"\n{arg}{Resources.subplatform_for} {productType?.ProductTypeName}";
 								result = false;
-								IMacroService service2 = ServiceLocator.Instance.GetService<IMacroService>();
-								if (service2 != null)
+								IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+								if (macroService != null)
 								{
-									service2["Subplatform:Header"] = Resources.subplatform_warning_title;
-									service2["Subplatform:Message"] = string.Format(Resources.subplatform_warning, arg2);
+									macroService["Subplatform:Header"] = Resources.subplatform_warning_title;
+									macroService["Subplatform:Message"] = string.Format(Resources.subplatform_warning, arg2);
 								}
 								MessagePopupViewController.ShowSubPlatformWarning(delegate
 								{

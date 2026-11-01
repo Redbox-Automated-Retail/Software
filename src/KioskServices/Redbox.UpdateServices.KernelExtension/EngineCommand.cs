@@ -57,10 +57,10 @@ public class EngineCommand
 				if (service.CanRestart())
 				{
 					LogHelper.Instance.Log("Loading Control Panel Bundle...");
-					IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-					if (service2 != null)
+					IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+					if (resourceBundleService != null)
 					{
-						service2.Activate("Control Panel Application", "*");
+						resourceBundleService.Activate("Control Panel Application", "*");
 					}
 					else
 					{
@@ -96,10 +96,10 @@ public class EngineCommand
 				if (service.CanRestart())
 				{
 					LogHelper.Instance.Log("Resetting Bundle...");
-					IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-					if (service2 != null)
+					IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+					if (resourceBundleService != null)
 					{
-						service2.Restart();
+						resourceBundleService.Restart();
 					}
 					else
 					{

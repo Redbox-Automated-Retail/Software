@@ -196,11 +196,11 @@ public class Program : IDisposable
 		{
 			return;
 		}
-		IConfigurationService service3 = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service3 != null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService != null)
 		{
 			bool flag = true;
-			if (service3.TryGetValue<bool>("system", "General", "SendAppCrashAlert", out var value))
+			if (configurationService.TryGetValue<bool>("system", "General", "SendAppCrashAlert", out var value))
 			{
 				flag = value;
 			}

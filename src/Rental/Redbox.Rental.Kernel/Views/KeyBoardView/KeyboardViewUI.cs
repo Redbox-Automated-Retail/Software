@@ -489,11 +489,11 @@ internal class KeyboardViewUI
 			_cancel();
 			return;
 		}
-		IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
-		if (service2.Stack.Count > 1)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService.Stack.Count > 1)
 		{
-			service2.Pop();
-			service2.Show();
+			viewService.Pop();
+			viewService.Show();
 		}
 	}
 

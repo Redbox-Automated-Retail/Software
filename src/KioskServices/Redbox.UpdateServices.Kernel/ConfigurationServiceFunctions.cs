@@ -53,8 +53,8 @@ public static class ConfigurationServiceFunctions
 		{
 			return null;
 		}
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)service2.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		service.GetSettingNames(configFile, categoryName, out var list);
 		if (list == null)
 		{
@@ -67,7 +67,7 @@ public static class ConfigurationServiceFunctions
 				_ = value.EffectiveTime;
 				if (!(value.EffectiveTime > DateTime.Now) && (value == null || !(value.ExpireTime < DateTime.Now)))
 				{
-					LuaTable luaTable2 = (LuaTable)service2.NewTable();
+					LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 					luaTable2["category_name"] = value.CategoryName;
 					luaTable2["setting_name"] = value.SettingName;
 					luaTable2["value"] = value.Value;

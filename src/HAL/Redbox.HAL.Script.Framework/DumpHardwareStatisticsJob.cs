@@ -19,11 +19,11 @@ internal sealed class DumpHardwareStatisticsJob : NativeJobAdapter
 		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
 		string path = Path.Combine(ServiceLocator.Instance.GetService<IFormattedLogFactoryService>().CreateSubpath("Service"), $"{hardwareCorrectionStatistic.ToString()}CorrectionStats.txt");
 		service.SafeDelete(path);
-		IHardwareCorrectionStatisticService service2 = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
+		IHardwareCorrectionStatisticService hardwareCorrectionStatisticService = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
 		StreamWriter writer = new StreamWriter(path);
 		try
 		{
-			List<IHardwareCorrectionStatistic> stats = service2.GetStats(hardwareCorrectionStatistic);
+			List<IHardwareCorrectionStatistic> stats = hardwareCorrectionStatisticService.GetStats(hardwareCorrectionStatistic);
 			stats.Sort((IHardwareCorrectionStatistic x, IHardwareCorrectionStatistic y) => x.CorrectionTime.CompareTo(y.CorrectionTime));
 			using (new DisposeableList<IHardwareCorrectionStatistic>(stats))
 			{

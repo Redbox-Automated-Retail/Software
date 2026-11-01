@@ -161,9 +161,9 @@ public class NewCartConfirmViewController : BaseViewController
 			text = $"{arg} | {arg2}";
 		}
 		displayCheckoutProductModel.ProductDescriptionLine2Text = text;
-		IPromotionService service2 = ServiceLocator.Instance.GetService<IPromotionService>();
-		bool flag = service2.GetPromotion()?.PromotionItems.Any((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachRentalShoppingCartItem.ProductId) ?? false;
-		decimal num = (service2.GetPromotion()?.PromotionItems.FirstOrDefault((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachRentalShoppingCartItem.ProductId))?.PromotionAmount ?? 0m;
+		IPromotionService promotionService = ServiceLocator.Instance.GetService<IPromotionService>();
+		bool flag = promotionService.GetPromotion()?.PromotionItems.Any((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachRentalShoppingCartItem.ProductId) ?? false;
+		decimal num = (promotionService.GetPromotion()?.PromotionItems.FirstOrDefault((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachRentalShoppingCartItem.ProductId))?.PromotionAmount ?? 0m;
 		if (isSelectedProduct && eachRentalShoppingCartItem.Action == RentalShoppingCartItemAction.purchase)
 		{
 			displayCheckoutProductModel.ProductDescriptionLine3Text = string.Format(Resources.discount_applied_text, eachRentalShoppingCartItem.PurchasePrice - eachRentalShoppingCartItem.Price);
@@ -379,8 +379,8 @@ public class NewCartConfirmViewController : BaseViewController
 	private static void CreateAndStartTimer()
 	{
 		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		ITextToSpeechService service2 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		int timeOut = ((service2 != null && service2.TTSEnabled) ? 90000 : OrchestrationService.TTSGetTimeout("medium", 15000));
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		int timeOut = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : OrchestrationService.TTSGetTimeout("medium", 15000));
 		IIdleTimer obj = service?.CreateIdleTimer("NewCartConfirmViewTimer");
 		obj?.Initialize(timeOut, delegate
 		{

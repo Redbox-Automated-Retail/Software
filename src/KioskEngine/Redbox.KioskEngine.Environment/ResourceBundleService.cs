@@ -208,13 +208,13 @@ public class ResourceBundleService : IResourceBundleService
 			Filter["runtime"] = "Client";
 			Filter["platform"] = ".NET/Windows";
 			Filter["environment"] = Environment;
-			IConfigurationService service2 = ServiceLocator.Instance.GetService<IConfigurationService>();
+			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 			List<string> list = new List<string>();
-			service2.GetSettingNames("system", "Filters", out list);
+			configurationService.GetSettingNames("system", "Filters", out list);
 			foreach (string item2 in list)
 			{
 				ConfigurationData value = new ConfigurationData();
-				if (service2.TryGetConfigurationData("system", "Filters", item2, out value) && value.Value.GetType() == typeof(string))
+				if (configurationService.TryGetConfigurationData("system", "Filters", item2, out value) && value.Value.GetType() == typeof(string))
 				{
 					Filter[item2] = value.Value;
 					LogHelper.Instance.Log("Added filter: {0} = {1}", item2, value.Value);
@@ -246,15 +246,15 @@ public class ResourceBundleService : IResourceBundleService
 			{
 				ActiveBundleSet = new ResourceBundleSet($"Bundle Set: {manifestInfo.ProductName}, {manifestInfo.ProductVersion}", ActiveBundle, list2);
 				CurrentBundleName = manifestInfo.ProductName;
-				IMacroService service3 = ServiceLocator.Instance.GetService<IMacroService>();
-				service3["ProductName"] = manifestInfo.ProductName;
-				service3["ProductVersion"] = manifestInfo.ProductVersion;
+				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+				macroService["ProductName"] = manifestInfo.ProductName;
+				macroService["ProductVersion"] = manifestInfo.ProductVersion;
 				errorList.AddRange(service.ResetAllExtensions());
 				ServiceLocator.Instance.GetService<IReservationService>().UnRegisterFromAWSBrokerService(UnRegisterFromBrokerServiceReason.BundleSwitch);
-				IKernelService service4 = ServiceLocator.Instance.GetService<IKernelService>();
+				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 				foreach (string item3 in list3)
 				{
-					if (!service4.LoadStartupScript(item3))
+					if (!kernelService.LoadStartupScript(item3))
 					{
 						errorList.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("B033", $"Unable to load the startup script resource: '{item3}'", "Review the startup script resource for syntax errors."));
 					}
@@ -269,16 +269,16 @@ public class ResourceBundleService : IResourceBundleService
 							kernelFunctionRegistryService.RegisterKernelFunctions(pair.Value, pair.Key);
 						});
 					}
-					service4.RegisterFunctions(kernelFunctionRegistryService.GetKernelFunctions());
+					kernelService.RegisterFunctions(kernelFunctionRegistryService.GetKernelFunctions());
 					ServiceLocator.Instance.GetService<ICallbackService>().Resume();
 					if (ShowDebugger)
 					{
 						ShowDebugger = false;
-						IDebugService service5 = ServiceLocator.Instance.GetService<IDebugService>();
-						if (service5 != null)
+						IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+						if (debugService != null)
 						{
-							service5.IsApplicationRunning = false;
-							service5.ActivateDebugger();
+							debugService.IsApplicationRunning = false;
+							debugService.ActivateDebugger();
 						}
 					}
 					else
@@ -286,14 +286,14 @@ public class ResourceBundleService : IResourceBundleService
 						string testControl = manifestInfo.TestControl;
 						if (testControl != null && MachineSettingsStore.Instance.GetValue<string>("Store", "Environment") == "Integration")
 						{
-							if (!service4.IsTestPlanExecuting)
+							if (!kernelService.IsTestPlanExecuting)
 							{
-								service4.ExecuteTestPlan(testControl);
+								kernelService.ExecuteTestPlan(testControl);
 							}
 						}
 						else
 						{
-							service4.ExecuteApplication();
+							kernelService.ExecuteApplication();
 						}
 					}
 				}
@@ -443,12 +443,12 @@ public class ResourceBundleService : IResourceBundleService
 			LogHelper.Instance.Log("Resetting tween service.");
 			service.Reset();
 		}
-		ICallbackService service2 = ServiceLocator.Instance.GetService<ICallbackService>();
-		service2.Flush();
-		service2.Suspend();
+		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+		callbackService.Flush();
+		callbackService.Suspend();
 		Filter = null;
-		IKernelExtensionService service3 = ServiceLocator.Instance.GetService<IKernelExtensionService>();
-		errorList.AddRange(service3.DeactivateAllExtensions());
+		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
+		errorList.AddRange(kernelExtensionService.DeactivateAllExtensions());
 		LogHelper.Instance.Log("Deactivate all kernel extensions", LogEntryType.Info);
 		ServiceLocator.Instance.GetService<IMacroService>().Clear(new string[2] { "RunningPath", "EngineVersion" });
 		ResetServices(errorList);
@@ -666,37 +666,37 @@ public class ResourceBundleService : IResourceBundleService
 	private static void ResetServices(List<Redbox.KioskEngine.ComponentModel.Error> errors)
 	{
 		ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-		IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
-		ITimerService service3 = ServiceLocator.Instance.GetService<ITimerService>();
-		IInputService service4 = ServiceLocator.Instance.GetService<IInputService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
 		ServiceLocator.Instance.GetService<ISoundService>();
-		IKernelService service5 = ServiceLocator.Instance.GetService<IKernelService>();
-		ISchedulerService service6 = ServiceLocator.Instance.GetService<ISchedulerService>();
-		IRenderingService service7 = ServiceLocator.Instance.GetService<IRenderingService>();
-		IDataStoreService service8 = ServiceLocator.Instance.GetService<IDataStoreService>();
-		IFontCacheService service9 = ServiceLocator.Instance.GetService<IFontCacheService>();
-		IStyleSheetService service10 = ServiceLocator.Instance.GetService<IStyleSheetService>();
-		IBitmapCacheService service11 = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		IShoppingSessionService service12 = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IEnvironmentNotificationService service13 = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		IKernelFunctionRegistryService service14 = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
-		service6?.Reset();
-		service3?.Reset();
-		if (service7.ActiveScene != null)
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		ISchedulerService schedulerService = ServiceLocator.Instance.GetService<ISchedulerService>();
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IFontCacheService fontCacheService = ServiceLocator.Instance.GetService<IFontCacheService>();
+		IStyleSheetService styleSheetService = ServiceLocator.Instance.GetService<IStyleSheetService>();
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IKernelFunctionRegistryService kernelFunctionRegistryService = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
+		schedulerService?.Reset();
+		timerService?.Reset();
+		if (renderingService.ActiveScene != null)
 		{
-			service7.ActiveScene.Clear();
+			renderingService.ActiveScene.Clear();
 		}
-		service2.Reset();
-		service10?.Reset();
-		service11.DropCache();
-		service9.DropCache();
-		service5.Reset();
-		service14.Reset();
-		service4.Reset();
-		service13.Reset();
-		service12.Reset();
+		viewService.Reset();
+		styleSheetService?.Reset();
+		bitmapCacheService.DropCache();
+		fontCacheService.DropCache();
+		kernelService.Reset();
+		kernelFunctionRegistryService.Reset();
+		inputService.Reset();
+		environmentNotificationService.Reset();
+		shoppingSessionService.Reset();
 		service.Reset();
-		service8.CloseAllStores();
+		dataStoreService.CloseAllStores();
 	}
 
 	public void RegisterAssemblyFunctions(string name, Assembly assembly)

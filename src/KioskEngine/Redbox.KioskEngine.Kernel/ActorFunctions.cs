@@ -22,10 +22,10 @@ public static class ActorFunctions
 		{
 			return;
 		}
-		IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		IActor actor = scene.CreateActor();
 		actor.Name = actorName;
-		if (service2.PeekViewFrame()?.ViewFrame is IViewFrame { ViewWindow: not null } viewFrame)
+		if (viewService.PeekViewFrame()?.ViewFrame is IViewFrame { ViewWindow: not null } viewFrame)
 		{
 			actor.X = x + viewFrame.ViewWindow.Value.X;
 			actor.Y = y + viewFrame.ViewWindow.Value.Y;
@@ -88,15 +88,15 @@ public static class ActorFunctions
 			if (image.StartsWith("cache:"))
 			{
 				string text2 = image.Substring(6);
-				IBitmapCacheService service3 = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-				if (service3 == null)
+				IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+				if (bitmapCacheService == null)
 				{
 					actor.OptionFlags |= RenderOptionFlags.DrawBorder;
 					actor.ErrorText = "IBitmapCacheService not available from ServiceLocator.";
 				}
 				else
 				{
-					Image image2 = service3.GetImage(text2);
+					Image image2 = bitmapCacheService.GetImage(text2);
 					if (image2 == null)
 					{
 						actor.OptionFlags |= RenderOptionFlags.DrawBorder;
@@ -265,8 +265,8 @@ public static class ActorFunctions
 			}
 			else
 			{
-				IResourceBundleService service2 = ServiceLocator.Instance.GetService<IResourceBundleService>();
-				actor.Image = service2.GetBitmap(resourceName);
+				IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+				actor.Image = resourceBundleService.GetBitmap(resourceName);
 			}
 		}
 	}

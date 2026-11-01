@@ -73,12 +73,12 @@ public static class UpdateManagerServiceFunctions
 			return null;
 		}
 		LuaTable luaTable = CreateResultTable(service.GetDownloadState(out var downloads));
-		IKernelService service2 = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable2 = (LuaTable)service2.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		int num = 1;
 		foreach (IDownloadData item in downloads)
 		{
-			LuaTable luaTable3 = (LuaTable)service2.NewTable();
+			LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 			luaTable3["id"] = item.Id.ToString();
 			luaTable3["name"] = item.Name;
 			luaTable3["owner"] = item.Owner;

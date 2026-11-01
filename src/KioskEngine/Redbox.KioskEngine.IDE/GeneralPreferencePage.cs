@@ -58,10 +58,10 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 		preferencePage.SetValue("Environment", m_environmentComboBox.Text);
 		preferencePage.SetValue("Application", m_applicationComboBox.Text);
 		preferencePage.SetValue("RebootTime", m_rebootTimeMaskedTextBox.Text);
-		IRenderingService service2 = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service2 != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService != null)
 		{
-			service2.BackgroundColor = m_colorPanel.BackColor;
+			renderingService.BackgroundColor = m_colorPanel.BackColor;
 		}
 		preferencePage.SetValue("EnableMouseCursor", m_enableMouseCursorCheckBox.Checked);
 		preferencePage.SetValue("SendAnalyticsOffPeak", m_sendAnalyticsOffPeakCheckbox.Checked);
@@ -87,10 +87,10 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 		m_enableMouseCursorCheckBox.Checked = preferencePage.GetValue("EnableMouseCursor", defaultValue: true);
 		m_sendAnalyticsOffPeakCheckbox.Checked = preferencePage.GetValue("SendAnalyticsOffPeak", defaultValue: true);
 		m_verboseLoggingCheckBox.Checked = preferencePage.GetValue("VerboseLogging", defaultValue: false);
-		IRenderingService service2 = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service2 != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService != null)
 		{
-			m_colorPanel.BackColor = service2.BackgroundColor;
+			m_colorPanel.BackColor = renderingService.BackgroundColor;
 		}
 		m_isLoaded = true;
 	}

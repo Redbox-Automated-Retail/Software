@@ -160,15 +160,15 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 				}
 				else
 				{
-					IMacroService service2 = ServiceLocator.Instance.GetService<IMacroService>();
-					IQueueService service3 = ServiceLocator.Instance.GetService<IQueueService>();
-					errors = service3.Enqueue(254, "UpdateAccount", new
+					IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+					IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+					errors = queueService.Enqueue(254, "UpdateAccount", new
 					{
 						KioskId = kioskId,
 						MessageId = messageId,
 						MessageType = "UpdateAccount",
-						EngineVersion = service2["EngineVersion"],
-						BundleVersion = service2["ProductVersion"],
+						EngineVersion = macroService["EngineVersion"],
+						BundleVersion = macroService["ProductVersion"],
 						CustomerProfileNumber = customerProfileNumber,
 						Email = emailAddress,
 						MobilePhoneNumber = phoneNumber,
@@ -187,8 +187,8 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 			{
 				try
 				{
-					ICallbackService service4 = ServiceLocator.Instance.GetService<ICallbackService>();
-					if (callback != null && service4 != null)
+					ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+					if (callback != null && callbackService != null)
 					{
 						RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 						{
@@ -199,7 +199,7 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 							remoteServiceResult.Errors.AddRange(errors);
 							remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 						}
-						service4.EnqueueCallback(new RemoteServiceCallbackEntry
+						callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 						{
 							Callback = callback,
 							Result = remoteServiceResult,

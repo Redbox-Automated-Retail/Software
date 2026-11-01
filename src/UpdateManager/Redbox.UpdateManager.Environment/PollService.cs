@@ -103,10 +103,10 @@ public class PollService : IPollService
 				{
 					errorList.AddRange(errorList4);
 				}
-				IDownloadFileService service2 = ServiceLocator.Instance.GetService<IDownloadFileService>();
-				if (service2 != null)
+				IDownloadFileService downloadFileService = ServiceLocator.Instance.GetService<IDownloadFileService>();
+				if (downloadFileService != null)
 				{
-					errorList.AddRange(service2.ProcessPollReply(pollReplyList.Where((PollReply pr) => pr.PollReplyType == PollReplyType.DownloadFile).ToList()));
+					errorList.AddRange(downloadFileService.ProcessPollReply(pollReplyList.Where((PollReply pr) => pr.PollReplyType == PollReplyType.DownloadFile).ToList()));
 				}
 				IEnumerable<PollReply> source = pollReplyList.Where((PollReply pr) => pr.PollReplyType == PollReplyType.StoreFileChangeSet);
 				errorList.AddRange(StoreFileService.Instance.ProcessPollReply(source.ToList()));
