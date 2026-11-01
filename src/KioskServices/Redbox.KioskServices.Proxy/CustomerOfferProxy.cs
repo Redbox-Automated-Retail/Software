@@ -307,39 +307,39 @@ public class CustomerOfferProxy : ICustomerOfferService
 				{
 					IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>().GetRentalShoppingCart(new Guid(sessionId));
 					IPromotion promo = rentalShoppingCart?.Promotion;
-					IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+					IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 					Dictionary<string, object> creditCardData = ProxyMessageHelper.GetCreditCardData(session, includeTrack2: true);
 					ShoppingCart shoppingCart = ProxyMessageHelper.CreateShoppingCart(rentalShoppingCart, promo);
 					string utcOffset = ProxyMessageHelper.CalcUtcOffset(DateTime.Now);
 					if (ServiceLocator.Instance.GetService<IConfiguration>().SendCustomerOffersToKioskClientService)
 					{
 						LogHelper.Instance.Log("Live call to remote KioskClientService");
-						IGetCustomerOffersResult result = ServiceLocator.Instance.GetService<IKioskClientService>().Transaction.GetCustomerOffersAsync(kioskId, creditCardData, shoppingCart.ToJson().ToObject<Dictionary<string, object>>(), utcOffset, languageCode, storefrontEventType).Result;
-						remoteServiceResult.Properties["CustomerProfileNumber"] = result.CustomerProfileNumber;
-						remoteServiceResult.Properties["AccountNumber"] = result.AccountNumber;
-						remoteServiceResult.Properties["EmailAddress"] = result.EmailAddress;
-						if (result.StoredOffers != null && result.StoredOffers.Count > 0)
+						IGetCustomerOffersResult offersResult = ServiceLocator.Instance.GetService<IKioskClientService>().Transaction.GetCustomerOffersAsync(kioskId, creditCardData, shoppingCart.ToJson().ToObject<Dictionary<string, object>>(), utcOffset, languageCode, storefrontEventType).Result;
+						remoteServiceResult.Properties["CustomerProfileNumber"] = offersResult.CustomerProfileNumber;
+						remoteServiceResult.Properties["AccountNumber"] = offersResult.AccountNumber;
+						remoteServiceResult.Properties["EmailAddress"] = offersResult.EmailAddress;
+						if (offersResult.StoredOffers != null && offersResult.StoredOffers.Count > 0)
 						{
-							List<CustomerOffer> list = new List<CustomerOffer>();
-							foreach (CustomerOfferResult storedOffer in result.StoredOffers)
+							List<CustomerOffer> storedOffers = new List<CustomerOffer>();
+							foreach (CustomerOfferResult storedOffer in offersResult.StoredOffers)
 							{
-								list.Add(CustomerOfferFromCustomerOfferResult(storedOffer));
+								storedOffers.Add(CustomerOfferFromCustomerOfferResult(storedOffer));
 							}
-							remoteServiceResult.Properties["StoredOffers"] = list;
+							remoteServiceResult.Properties["StoredOffers"] = storedOffers;
 						}
-						if (result.NewOffers != null && result.NewOffers.Count > 0)
+						if (offersResult.NewOffers != null && offersResult.NewOffers.Count > 0)
 						{
-							List<CustomerOffer> list2 = new List<CustomerOffer>();
-							foreach (CustomerOfferResult newOffer in result.NewOffers)
+							List<CustomerOffer> newOffers = new List<CustomerOffer>();
+							foreach (CustomerOfferResult newOffer in offersResult.NewOffers)
 							{
-								list2.Add(CustomerOfferFromCustomerOfferResult(newOffer));
+								newOffers.Add(CustomerOfferFromCustomerOfferResult(newOffer));
 							}
-							remoteServiceResult.Properties["NewOffers"] = list2;
+							remoteServiceResult.Properties["NewOffers"] = newOffers;
 						}
-						remoteServiceResult.Success = result.Success;
+						remoteServiceResult.Success = offersResult.Success;
 						if (!remoteServiceResult.Success)
 						{
-							Redbox.KioskEngine.ComponentModel.Error error = result.Errors.FirstOrDefault();
+							Redbox.KioskEngine.ComponentModel.Error error = offersResult.Errors.FirstOrDefault();
 							if (error != null)
 							{
 								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(KioskLoginResponseErrors?), error.Code);
@@ -354,59 +354,59 @@ public class CustomerOfferProxy : ICustomerOfferService
 					else
 					{
 						LogHelper.Instance.Log($"Live call to remote ICustomerOfferProxy, URL: {KioskServicesProxy.Instance.Url}");
-						IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
+						IDictionary<string, object> offersResponse = KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							KioskId = kioskId,
 							MessageId = Guid.NewGuid(),
 							MessageType = "GetCustomerOffers",
-							EngineVersion = service["EngineVersion"],
-							BundleVersion = service["ProductVersion"],
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"],
 							Lang = languageCode,
 							StorefrontEventType = storefrontEventType,
 							UtcOffset = utcOffset,
 							CreditCard = creditCardData,
 							ShoppingCart = shoppingCart
 						});
-						ServiceLocator.Instance.GetService<IHealthServices>().UpdateOnlineStatus(dictionary);
-						remoteServiceResult.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
-						remoteServiceResult.Properties["CustomerProfileNumber"] = GetResponseValue(dictionary, "CustomerProfileNumber", null)?.ToString();
-						remoteServiceResult.Properties["AccountNumber"] = GetResponseValue(dictionary, "AccountNumber", null)?.ToString();
-						remoteServiceResult.Properties["EmailAddress"] = GetResponseValue(dictionary, "EmailAddress", null)?.ToString();
-						if (dictionary.ContainsKey("StoredOffers") && dictionary["StoredOffers"] != null)
+						ServiceLocator.Instance.GetService<IHealthServices>().UpdateOnlineStatus(offersResponse);
+						remoteServiceResult.Success = offersResponse.ContainsKey("Success") && (bool)offersResponse["Success"];
+						remoteServiceResult.Properties["CustomerProfileNumber"] = GetResponseValue(offersResponse, "CustomerProfileNumber", null)?.ToString();
+						remoteServiceResult.Properties["AccountNumber"] = GetResponseValue(offersResponse, "AccountNumber", null)?.ToString();
+						remoteServiceResult.Properties["EmailAddress"] = GetResponseValue(offersResponse, "EmailAddress", null)?.ToString();
+						if (offersResponse.ContainsKey("StoredOffers") && offersResponse["StoredOffers"] != null)
 						{
-							ArrayList obj = (ArrayList)dictionary["StoredOffers"];
+							ArrayList storedOfferData = (ArrayList)offersResponse["StoredOffers"];
 							remoteServiceResult.Properties["StoredOffers"] = new List<CustomerOffer>();
-							List<CustomerOffer> list3 = new List<CustomerOffer>();
-							foreach (IDictionary<string, object> item in obj)
+							List<CustomerOffer> parsedStoredOffers = new List<CustomerOffer>();
+							foreach (IDictionary<string, object> storedOfferFields in storedOfferData)
 							{
-								CustomerOffer customerOffer = new CustomerOffer();
-								ParseOffer(item, customerOffer);
-								list3.Add(customerOffer);
+								CustomerOffer parsedStoredOffer = new CustomerOffer();
+								ParseOffer(storedOfferFields, parsedStoredOffer);
+								parsedStoredOffers.Add(parsedStoredOffer);
 							}
-							remoteServiceResult.Properties["StoredOffers"] = list3;
+							remoteServiceResult.Properties["StoredOffers"] = parsedStoredOffers;
 						}
-						if (dictionary.ContainsKey("NewOffers") && dictionary["NewOffers"] != null)
+						if (offersResponse.ContainsKey("NewOffers") && offersResponse["NewOffers"] != null)
 						{
-							ArrayList obj2 = (ArrayList)dictionary["NewOffers"];
+							ArrayList newOfferData = (ArrayList)offersResponse["NewOffers"];
 							remoteServiceResult.Properties["NewOffers"] = new List<CustomerOffer>();
-							List<CustomerOffer> list4 = new List<CustomerOffer>();
-							foreach (IDictionary<string, object> item2 in obj2)
+							List<CustomerOffer> parsedNewOffers = new List<CustomerOffer>();
+							foreach (IDictionary<string, object> newOfferFields in newOfferData)
 							{
-								CustomerOffer customerOffer2 = new CustomerOffer();
-								ParseOffer(item2, customerOffer2);
-								list4.Add(customerOffer2);
+								CustomerOffer parsedNewOffer = new CustomerOffer();
+								ParseOffer(newOfferFields, parsedNewOffer);
+								parsedNewOffers.Add(parsedNewOffer);
 							}
-							remoteServiceResult.Properties["NewOffers"] = list4;
+							remoteServiceResult.Properties["NewOffers"] = parsedNewOffers;
 						}
 						if (!remoteServiceResult.Success)
 						{
-							ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
-							if (arrayList != null && arrayList.Count > 0)
+							ArrayList errorList = (offersResponse.ContainsKey("Errors") ? (offersResponse["Errors"] as ArrayList) : null);
+							if (errorList != null && errorList.Count > 0)
 							{
-								if (arrayList[0] is Dictionary<string, object> dictionary2)
+								if (errorList[0] is Dictionary<string, object> firstError)
 								{
-									object fieldsForResponseCode2 = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(KioskLoginResponseErrors?), (string)dictionary2["Code"]);
-									remoteServiceResult.Properties["response"] = fieldsForResponseCode2 ?? ((object)KioskLoginResponseErrors.Error);
+									object errorResponse = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(KioskLoginResponseErrors?), (string)firstError["Code"]);
+									remoteServiceResult.Properties["response"] = errorResponse ?? ((object)KioskLoginResponseErrors.Error);
 								}
 							}
 							else
@@ -452,8 +452,8 @@ public class CustomerOfferProxy : ICustomerOfferService
 
 	private CustomerOffer CustomerOfferFromCustomerOfferResult(CustomerOfferResult offer)
 	{
-		bool flag = offer.IncludeFormatIds != null && offer.IncludeFormatIds.Count > 0;
-		bool flag2 = offer.IncludeTitleIds != null && offer.IncludeTitleIds.Count > 0;
+		bool includeFormats = offer.IncludeFormatIds != null && offer.IncludeFormatIds.Count > 0;
+		bool includeTitles = offer.IncludeTitleIds != null && offer.IncludeTitleIds.Count > 0;
 		CustomerOffer customerOffer = new CustomerOffer
 		{
 			OfferId = offer.OfferId,
@@ -467,10 +467,10 @@ public class CustomerOfferProxy : ICustomerOfferService
 			IncludeOlderThan = offer.ExcludeIfWithinRedboxReleaseDate,
 			Amount = offer.DiscountAmount,
 			ActionCode = ParseActionCode(offer.ActionCode),
-			IncludeFormats = flag,
-			FormatIds = (flag ? offer.IncludeFormatIds.ToList() : offer.ExcludeFormatIds.ToList()),
-			IncludeTitles = flag2,
-			TitleIds = (flag2 ? offer.IncludeTitleIds.ToList() : offer.ExcludeTitleIds.ToList()),
+			IncludeFormats = includeFormats,
+			FormatIds = (includeFormats ? offer.IncludeFormatIds.ToList() : offer.ExcludeFormatIds.ToList()),
+			IncludeTitles = includeTitles,
+			TitleIds = (includeTitles ? offer.IncludeTitleIds.ToList() : offer.ExcludeTitleIds.ToList()),
 			RedeemedDateTime = offer.RedeemedDateTime
 		};
 		if (!string.IsNullOrEmpty(offer.OfferScopeType))
@@ -493,31 +493,31 @@ public class CustomerOfferProxy : ICustomerOfferService
 
 	private void ParseOffer(IDictionary<string, object> promo, CustomerOffer resultOffer)
 	{
-		object responseValue = GetResponseValue(promo, "OfferId", 0);
-		resultOffer.OfferId = long.Parse(responseValue.ToString());
-		object responseValue2 = GetResponseValue(promo, "StoredOfferId", null);
-		if (responseValue2 != null)
+		object offerId = GetResponseValue(promo, "OfferId", 0);
+		resultOffer.OfferId = long.Parse(offerId.ToString());
+		object storedOfferId = GetResponseValue(promo, "StoredOfferId", null);
+		if (storedOfferId != null)
 		{
-			resultOffer.StoredOfferId = long.Parse(responseValue2.ToString());
+			resultOffer.StoredOfferId = long.Parse(storedOfferId.ToString());
 		}
 		resultOffer.OfferDiscountCode = GetResponseValue(promo, "OfferDiscountCode", null)?.ToString();
 		resultOffer.PromotionCode = GetResponseValue(promo, "PromotionCode", null)?.ToString();
-		string value = GetResponseValue(promo, "DiscountType", null)?.ToString();
-		resultOffer.DiscountType = (OfferDiscountType)Enum.Parse(typeof(OfferDiscountType), value);
-		string text = GetResponseValue(promo, "OfferScopeType", null)?.ToString();
-		if (text != null)
+		string discountType = GetResponseValue(promo, "DiscountType", null)?.ToString();
+		resultOffer.DiscountType = (OfferDiscountType)Enum.Parse(typeof(OfferDiscountType), discountType);
+		string offerScopeType = GetResponseValue(promo, "OfferScopeType", null)?.ToString();
+		if (offerScopeType != null)
 		{
-			resultOffer.OfferScopeType = (OfferScopeType)Enum.Parse(typeof(OfferScopeType), text);
+			resultOffer.OfferScopeType = (OfferScopeType)Enum.Parse(typeof(OfferScopeType), offerScopeType);
 		}
-		string text2 = GetResponseValue(promo, "CustomerSegmentType", null)?.ToString();
-		if (text2 != null)
+		string customerSegmentType = GetResponseValue(promo, "CustomerSegmentType", null)?.ToString();
+		if (customerSegmentType != null)
 		{
-			resultOffer.CustomerSegmentType = (CustomerSegmentType)Enum.Parse(typeof(CustomerSegmentType), text2);
+			resultOffer.CustomerSegmentType = (CustomerSegmentType)Enum.Parse(typeof(CustomerSegmentType), customerSegmentType);
 		}
-		string text3 = GetResponseValue(promo, "CampaignId", null)?.ToString();
-		if (text3 != null)
+		string campaignId = GetResponseValue(promo, "CampaignId", null)?.ToString();
+		if (campaignId != null)
 		{
-			resultOffer.CampaignId = long.Parse(text3.ToString());
+			resultOffer.CampaignId = long.Parse(campaignId.ToString());
 		}
 		resultOffer.TitleFamily = ParseTitleFamily(GetResponseValue(promo, "ProductType", null)?.ToString());
 		resultOffer.ExpirationDate = (DateTime)GetResponseValue(promo, "ExpirationDate", DateTime.Today);
@@ -525,59 +525,59 @@ public class CustomerOfferProxy : ICustomerOfferService
 		resultOffer.Amount = GetResponseDecimal(promo, "DiscountAmount", 0m);
 		resultOffer.ActionCode = ParseActionCode(GetResponseValue(promo, "ActionCode", null)?.ToString());
 		resultOffer.IncludeFormats = promo.ContainsKey("IncludeFormats") && ((ArrayList)promo["IncludeFormats"]).Count > 0;
-		string key = (resultOffer.IncludeFormats ? "IncludeFormats" : "ExcludeFormats");
-		ArrayList arrayList = (promo.ContainsKey(key) ? (promo[key] as ArrayList) : null);
-		if (arrayList != null)
+		string formatIdsKey = (resultOffer.IncludeFormats ? "IncludeFormats" : "ExcludeFormats");
+		ArrayList formatIdData = (promo.ContainsKey(formatIdsKey) ? (promo[formatIdsKey] as ArrayList) : null);
+		if (formatIdData != null)
 		{
-			List<int> list = new List<int>();
-			foreach (string item in arrayList)
+			List<int> formatIds = new List<int>();
+			foreach (string formatId in formatIdData)
 			{
-				if (int.TryParse(item, out var result))
+				if (int.TryParse(formatId, out var parsedFormatId))
 				{
-					list.Add(result);
+					formatIds.Add(parsedFormatId);
 				}
 			}
-			resultOffer.FormatIds = list;
+			resultOffer.FormatIds = formatIds;
 		}
 		resultOffer.IncludeTitles = promo.ContainsKey("IncludeTitleIds") && promo["IncludeTitleIds"] is ArrayList && ((ArrayList)promo["IncludeTitleIds"]).Count > 0;
-		string key2 = (resultOffer.IncludeTitles ? "IncludeTitleIds" : "ExcludeTitleIds");
-		ArrayList arrayList2 = (promo.ContainsKey(key2) ? (promo[key2] as ArrayList) : null);
-		if (arrayList2 != null)
+		string titleIdsKey = (resultOffer.IncludeTitles ? "IncludeTitleIds" : "ExcludeTitleIds");
+		ArrayList titleIdData = (promo.ContainsKey(titleIdsKey) ? (promo[titleIdsKey] as ArrayList) : null);
+		if (titleIdData != null)
 		{
-			List<long> list2 = new List<long>();
-			foreach (object item2 in arrayList2)
+			List<long> titleIds = new List<long>();
+			foreach (object titleId in titleIdData)
 			{
-				if (item2 is int)
+				if (titleId is int)
 				{
-					list2.Add((int)item2);
+					titleIds.Add((int)titleId);
 				}
-				else if (item2 is long)
+				else if (titleId is long)
 				{
-					list2.Add((long)item2);
+					titleIds.Add((long)titleId);
 				}
 			}
-			resultOffer.TitleIds = list2;
+			resultOffer.TitleIds = titleIds;
 		}
-		ArrayList arrayList3 = (promo.ContainsKey("OfferProducts") ? (promo["OfferProducts"] as ArrayList) : null);
-		if (arrayList3 == null)
+		ArrayList offerProductData = (promo.ContainsKey("OfferProducts") ? (promo["OfferProducts"] as ArrayList) : null);
+		if (offerProductData == null)
 		{
 			return;
 		}
-		List<OfferProduct> list3 = new List<OfferProduct>();
-		foreach (IDictionary<string, object> item3 in arrayList3)
+		List<OfferProduct> offerProducts = new List<OfferProduct>();
+		foreach (IDictionary<string, object> offerProductFields in offerProductData)
 		{
 			OfferProduct offerProduct = new OfferProduct();
-			string s = GetResponseValue(item3, "ProductId", "-1").ToString();
-			offerProduct.ProductId = long.Parse(s);
-			string text4 = GetResponseValue(item3, "NumberOfNights", null)?.ToString();
-			offerProduct.NumberOfNights = (string.IsNullOrWhiteSpace(text4) ? ((byte?)null) : new byte?(byte.Parse(text4)));
-			string text5 = GetResponseValue(item3, "DiscountedPrice", null)?.ToString();
-			offerProduct.DiscountedPrice = (string.IsNullOrWhiteSpace(text5) ? ((decimal?)null) : new decimal?(decimal.Parse(text5)));
-			string text6 = GetResponseValue(item3, "TotalDiscountAmount", null)?.ToString();
-			offerProduct.TotalDiscountAmount = (string.IsNullOrWhiteSpace(text6) ? ((decimal?)null) : new decimal?(decimal.Parse(text6)));
-			list3.Add(offerProduct);
+			string productId = GetResponseValue(offerProductFields, "ProductId", "-1").ToString();
+			offerProduct.ProductId = long.Parse(productId);
+			string numberOfNights = GetResponseValue(offerProductFields, "NumberOfNights", null)?.ToString();
+			offerProduct.NumberOfNights = (string.IsNullOrWhiteSpace(numberOfNights) ? ((byte?)null) : new byte?(byte.Parse(numberOfNights)));
+			string discountedPrice = GetResponseValue(offerProductFields, "DiscountedPrice", null)?.ToString();
+			offerProduct.DiscountedPrice = (string.IsNullOrWhiteSpace(discountedPrice) ? ((decimal?)null) : new decimal?(decimal.Parse(discountedPrice)));
+			string totalDiscountAmount = GetResponseValue(offerProductFields, "TotalDiscountAmount", null)?.ToString();
+			offerProduct.TotalDiscountAmount = (string.IsNullOrWhiteSpace(totalDiscountAmount) ? ((decimal?)null) : new decimal?(decimal.Parse(totalDiscountAmount)));
+			offerProducts.Add(offerProduct);
 		}
-		resultOffer.OfferProducts = list3;
+		resultOffer.OfferProducts = offerProducts;
 	}
 
 	private ActionCode ParseActionCode(string code)
@@ -612,10 +612,10 @@ public class CustomerOfferProxy : ICustomerOfferService
 				remoteServiceResult.Success = SimulateSuccess;
 				remoteServiceResult.Properties["server_name"] = "SimulatedCall";
 				remoteServiceResult.Properties["EmailAddress"] = PersonalizationServicesProxySimulator.Instance.LoginEmail;
-				List<CustomerOffer> list = new List<CustomerOffer>();
-				List<CustomerOffer> list2 = new List<CustomerOffer>();
-				remoteServiceResult.Properties["NewOffers"] = list;
-				remoteServiceResult.Properties["StoredOffers"] = list2;
+				List<CustomerOffer> newOffers = new List<CustomerOffer>();
+				List<CustomerOffer> storedOffers = new List<CustomerOffer>();
+				remoteServiceResult.Properties["NewOffers"] = newOffers;
+				remoteServiceResult.Properties["StoredOffers"] = storedOffers;
 				if (IncludeMNPInCartOffer)
 				{
 					CustomerOffer customerOffer = new CustomerOffer
@@ -641,11 +641,11 @@ public class CustomerOfferProxy : ICustomerOfferService
 							NumberOfNights = (byte)2
 						});
 					}
-					list.Add(customerOffer);
+					newOffers.Add(customerOffer);
 				}
 				if (IncludeMovieDiscountInCartOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 2L,
 						DiscountType = OfferDiscountType.AmountOff,
@@ -660,7 +660,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludePurchaseOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 9L,
 						DiscountType = OfferDiscountType.AmountOff,
@@ -676,7 +676,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludeFreeGameInCartOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						DiscountType = OfferDiscountType.Free,
 						Amount = 0m,
@@ -691,7 +691,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludeFracRedeemableFreeMovieOffer)
 				{
-					list2.Add(new CustomerOffer
+					storedOffers.Add(new CustomerOffer
 					{
 						OfferId = 1L,
 						StoredOfferId = 3L,
@@ -710,7 +710,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludeFracRedeemableDiscountedDiscOffer)
 				{
-					list2.Add(new CustomerOffer
+					storedOffers.Add(new CustomerOffer
 					{
 						OfferId = 2L,
 						StoredOfferId = 4L,
@@ -727,7 +727,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludeFracStorableFreeMovieOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 5L,
 						DiscountType = OfferDiscountType.Free,
@@ -743,7 +743,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludeFracStorableDiscountedDiscOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 6L,
 						DiscountType = OfferDiscountType.AmountOff,
@@ -760,7 +760,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludePerksFreeRentalOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 7L,
 						DiscountType = OfferDiscountType.Free,
@@ -777,7 +777,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludePerksAmountOffOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 7L,
 						DiscountType = OfferDiscountType.AmountOff,
@@ -794,7 +794,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludePerksExtraPointsOffer)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 7L,
 						DiscountType = OfferDiscountType.Loyalty,
@@ -811,7 +811,7 @@ public class CustomerOfferProxy : ICustomerOfferService
 				}
 				if (IncludePerksReminderMessage)
 				{
-					list.Add(new CustomerOffer
+					newOffers.Add(new CustomerOffer
 					{
 						OfferId = 0L,
 						DiscountType = OfferDiscountType.Treatment,
