@@ -448,7 +448,7 @@ only in Windows Sandbox.
 | halmgmtc, MSHALTester, HalUtilities: also .NET 10 | Sandbox against the .NET 10 HAL: halmgmtc opens; MSHALTester connects and shows inventory/hardware status; HalUtilities answers through HAL | `halmgmtc on .NET 10 ...`, `MSHALTester and HalUtilities on .NET 10 too` |
 | kioskutil, inventoryimport, redscc: net35 -> net48 + .NET 10; KioskShell: + .NET 10 (x64) | builds; same output on both frameworks; KioskShell starts in the Sandbox (not as the logon shell). inventoryimport is now x86: as AnyCPU it wrote HAL's deck keys into the 64-bit registry view, which the x86 HAL never reads | `kioskutil, inventoryimport, redscc off .NET 3.5 ...` |
 | Release zips without the assemblies ILRepack merged into an exe | done; `kop-update-manager` (net48) now has only files the kiosk install has (26 merged-away DLLs were shipped before) | `release.ps1: leave out merged-away assemblies` |
-| `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (324 files, `NewFiles` lists them all); not yet published to the backend or installed by the Update Manager | `release.ps1: -Framework ...` |
+| `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (328 files with `halmgmtc`, `NewFiles` lists them all). **Installed end to end** (2026-11-01): published to the backend (`admin release-publish`), rolled out to the Sandbox store, and an Update Manager round on the 4.8 HAL install staged (xdelta3, SHA-1 verified) and activated it; the .NET 10 HAL then converted its databases, imported the 4.8 jobs, listened on 7001 and served the .NET 10 engine. See the note on the backend's HAL scripts below | `release.ps1: -Framework ...` |
 
 Notes from the .NET 10 engine work:
 
@@ -543,6 +543,7 @@ Notes from HAL on .NET 10 (Sandbox, 2026-10-31):
   .NET Framework scans never saw the apps either, since those were `.exe` files.
 - **Threads.** `Thread.Abort` (DirectShow capture threads) does not exist on .NET; the threads already poll their
   stop event every 100 ms, so `Stop` sets it and waits.
+- **Scripts in the backend's `kop-hal-install` repository.** A release is published on top of the repository's head, and`n  the head carries five scripts the image had only staged (`Scripts\.staged_`: `clear-picker`, `quick-return-restart`,`n  `quick-return-setup`, and newer `return-unknown` and `vend-unknown`). They use instructions (`READ`, `FORM RESTART`) that`n  HAL 1.13.0.27 does not have: the original 1.13.0.27 DLL has no such instruction either. With them the HAL service`n  (4.8 or .NET 10) reports compile errors and stops. A HAL release from this repository should ship the 1.13.0.27`n  scripts (or the backend should drop the staged ones); for the Sandbox test they were moved to`n  `Scripts\.newer-than-1.13.0.27`.
 - **Stopping after start-up errors.** Any configuration error made the service call `Stop()`, whose first
   `NullReferenceException` (from parts that were never set up) escaped and left the service Running but not
   listening, on 4.8 too. It now stops each part on its own and ends Stopped.
