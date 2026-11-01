@@ -523,21 +523,21 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private Version GetXMLVersion(string fileName)
 	{
-		Version result = null;
+		Version version = null;
 		try
 		{
 			using Stream stream = RetrieveFile(RetrieveFileDataFormat.Text, Path.Combine("/HOST/", fileName));
 			if (stream != null)
 			{
 				StreamReader streamReader = new StreamReader(stream);
-				bool flag = false;
-				while (!flag && !streamReader.EndOfStream)
+				bool found = false;
+				while (!found && !streamReader.EndOfStream)
 				{
-					string text = streamReader?.ReadLine()?.Trim();
-					if (!string.IsNullOrEmpty(text) && text.StartsWith("<!--") && text.ToUpper().Contains("VERSION") && text.EndsWith("-->"))
+					string line = streamReader?.ReadLine()?.Trim();
+					if (!string.IsNullOrEmpty(line) && line.StartsWith("<!--") && line.ToUpper().Contains("VERSION") && line.EndsWith("-->"))
 					{
-						flag = true;
-						Version.TryParse(new Regex("\\d+(\\.\\d+)+").Match(text)?.Value, out result);
+						found = true;
+						Version.TryParse(new Regex("\\d+(\\.\\d+)+").Match(line)?.Value, out version);
 					}
 				}
 			}
@@ -546,12 +546,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				Log("Unable to read file " + fileName + " to extract version.");
 			}
 		}
-		catch (Exception arg)
+		catch (Exception ex)
 		{
-			Log($"Error in GetXMLVersion. {arg}");
+			Log($"Error in GetXMLVersion. {ex}");
 		}
-		Log($"Extracted version: {result} from XML file: {fileName}");
-		return result;
+		Log($"Extracted version: {version} from XML file: {fileName}");
+		return version;
 	}
 
 	private void OnReconnect(object s, EventArgs e)
@@ -657,7 +657,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	public bool Initialize()
 	{
-		ERROR_ID eRROR_ID = ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = ERROR_ID.RESULT_SUCCESS;
 		try
 		{
 			_rba_api.logHandler = delegate(string s)
@@ -669,9 +669,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				}
 			};
 			_rba_api.SetDefaultLogLevel(LOG_LEVEL.TRACE);
-			eRROR_ID = _rba_api.Initialize();
-			HandleAndLogResult(eRROR_ID, "Initialize RBA API");
-			if (eRROR_ID != ERROR_ID.RESULT_SUCCESS)
+			errorId = _rba_api.Initialize();
+			HandleAndLogResult(errorId, "Initialize RBA API");
+			if (errorId != ERROR_ID.RESULT_SUCCESS)
 			{
 				IsConnected = false;
 				_isInitialized = false;
@@ -692,15 +692,15 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				ReceiveTimeout = 5000u,
 				SendTimeout = 5000u
 			};
-			eRROR_ID = _rba_api.SetCommTimeouts(commTimeouts);
-			HandleAndLogResult(eRROR_ID, "Set Comm Timeouts");
+			errorId = _rba_api.SetCommTimeouts(commTimeouts);
+			HandleAndLogResult(errorId, "Set Comm Timeouts");
 		}
 		catch (Exception e)
 		{
 			LogException("Initialize RBA SDK", e);
-			eRROR_ID = ERROR_ID.RESULT_ERROR;
+			errorId = ERROR_ID.RESULT_ERROR;
 		}
-		return _isInitialized = eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		return _isInitialized = errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	public bool Connect()
@@ -712,8 +712,8 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		ConnectionState = ConnectionState.Connecting;
 		ErrorState = ErrorState.None;
 		_connectAttempts++;
-		ERROR_ID eRROR_ID = ERROR_ID.RESULT_ERROR;
-		string text = string.Empty;
+		ERROR_ID errorId = ERROR_ID.RESULT_ERROR;
+		string portName = string.Empty;
 		try
 		{
 			if (!_isInitialized && !Initialize())
@@ -722,11 +722,11 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				ErrorState = ErrorState.FailedToInitializeConnection;
 				return false;
 			}
-			foreach (string item in ComPortNames())
+			foreach (string candidatePort in ComPortNames())
 			{
-				text = item;
-				eRROR_ID = _rba_api.Connect(text);
-				if (eRROR_ID == ERROR_ID.RESULT_SUCCESS)
+				portName = candidatePort;
+				errorId = _rba_api.Connect(portName);
+				if (errorId == ERROR_ID.RESULT_SUCCESS)
 				{
 					break;
 				}
@@ -743,15 +743,15 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			if (ErrorState == ErrorState.None)
 			{
-				bool flag = eRROR_ID == ERROR_ID.RESULT_SUCCESS || eRROR_ID == ERROR_ID.RESULT_ERROR_ALREADY_CONNECTED;
-				bool flag2 = UpdateDeviceConfiguration();
-				IsConnected = flag & flag2;
+				bool connected = errorId == ERROR_ID.RESULT_SUCCESS || errorId == ERROR_ID.RESULT_ERROR_ALREADY_CONNECTED;
+				bool deviceUpdated = UpdateDeviceConfiguration();
+				IsConnected = connected & deviceUpdated;
 				if (IsConnected)
 				{
-					HandleAndLogResult(eRROR_ID, "Connect to " + text);
+					HandleAndLogResult(errorId, "Connect to " + portName);
 					_connectAttempts = 0;
 				}
-				else if (flag && !flag2)
+				else if (connected && !deviceUpdated)
 				{
 					ErrorState = ErrorState.FailedToUpdateDevice;
 					UnitDataModel unitData = GetUnitData();
@@ -761,12 +761,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 						_iuc285Notifier?.SendDeviceTamperedEvent();
 						IsConnected = true;
 					}
-					HandleAndLogResult(eRROR_ID, "Connect to " + text, includeResultLog: false);
+					HandleAndLogResult(errorId, "Connect to " + portName, includeResultLog: false);
 				}
 				else
 				{
 					ErrorState = ErrorState.ConnectionError;
-					HandleAndLogResult(eRROR_ID, "Connect to " + text, includeResultLog: false);
+					HandleAndLogResult(errorId, "Connect to " + portName, includeResultLog: false);
 				}
 				_connectInProgress = 0;
 			}
@@ -777,9 +777,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	public UnitHealthModel GetUnitHealth()
 	{
 		_rba_api.SetParam(PARAMETER_ID.P08_REQ_REQUEST_TYPE, "0");
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M08_HEALTH_STAT);
-		HandleAndLogResult(eRROR_ID, "08 Health Stat");
-		if (eRROR_ID != ERROR_ID.RESULT_SUCCESS)
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M08_HEALTH_STAT);
+		HandleAndLogResult(errorId, "08 Health Stat");
+		if (errorId != ERROR_ID.RESULT_SUCCESS)
 		{
 			return null;
 		}
@@ -833,9 +833,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private UnitDataModel GetUnitData()
 	{
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M07_UNIT_DATA);
-		HandleAndLogResult(eRROR_ID, "07 Unit Data");
-		if (eRROR_ID != ERROR_ID.RESULT_SUCCESS)
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M07_UNIT_DATA);
+		HandleAndLogResult(errorId, "07 Unit Data");
+		if (errorId != ERROR_ID.RESULT_SUCCESS)
 		{
 			return null;
 		}
@@ -1148,36 +1148,36 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	public bool UpdateDeviceConfiguration()
 	{
-		bool flag = false;
-		int num = 3;
+		bool success = false;
+		int attemptsLeft = 3;
 		foreach (ConfigDefault configDefault in _configDefaults)
 		{
 			string Data = null;
-			flag = false;
-			while (!flag && num > 0)
+			success = false;
+			while (!success && attemptsLeft > 0)
 			{
-				flag = ReadConfig(configDefault.Group, configDefault.Index, out Data, sendOffline: false) && Data != null;
-				if (!flag)
+				success = ReadConfig(configDefault.Group, configDefault.Index, out Data, sendOffline: false) && Data != null;
+				if (!success)
 				{
-					num--;
+					attemptsLeft--;
 				}
 			}
-			if (!flag || num <= 0)
+			if (!success || attemptsLeft <= 0)
 			{
 				break;
 			}
 			if (string.Compare(Data, configDefault.Value, ignoreCase: true) != 0)
 			{
-				flag = WriteConfig(configDefault.Group, configDefault.Index, configDefault.Value, sendOffline: false);
-				if (!flag)
+				success = WriteConfig(configDefault.Group, configDefault.Index, configDefault.Value, sendOffline: false);
+				if (!success)
 				{
 					break;
 				}
 			}
 		}
-		if (flag)
+		if (success)
 		{
-			flag = UpdateCardConfigurationData();
+			success = UpdateCardConfigurationData();
 		}
 		SetVariable_28("201", DateTime.Now.TimeOfDay.ToString("hhmmss"));
 		SetVariable_28("202", DateTime.Now.Date.ToString("MMddyy"));
@@ -1186,60 +1186,60 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			SetRebootTime();
 		}
 		Offline();
-		return flag;
+		return success;
 	}
 
 	private void SetRebootTime()
 	{
 		if (_settings != null)
 		{
-			int num = new Random().Next(0, 3600);
-			TimeSpan data = TimeSpan.FromSeconds(10800 + num);
-			DataFileHelper.TryUpdateFileData(_settings.DataFilePath, "RebootTime.json", data);
+			int jitterSeconds = new Random().Next(0, 3600);
+			TimeSpan rebootTime = TimeSpan.FromSeconds(10800 + jitterSeconds);
+			DataFileHelper.TryUpdateFileData(_settings.DataFilePath, "RebootTime.json", rebootTime);
 		}
 	}
 
 	public bool UpdateCardConfigurationData()
 	{
-		bool flag = true;
-		string text = "0011";
+		bool success = true;
+		string configGroup = "0011";
 		for (int i = 1; i <= 16; i++)
 		{
-			flag = ReadConfig(text, i.ToString(), out var Data, sendOffline: false);
-			if (!flag)
+			success = ReadConfig(configGroup, i.ToString(), out var Data, sendOffline: false);
+			if (!success)
 			{
 				break;
 			}
-			List<string> list = Data.Split(' ').ToList();
-			if (string.Compare(list[0], "1", ignoreCase: true) != 0)
+			List<string> fields = Data.Split(' ').ToList();
+			if (string.Compare(fields[0], "1", ignoreCase: true) != 0)
 			{
 				continue;
 			}
-			bool flag2 = false;
-			int num = 0;
-			for (int j = 0; j < list.Count; j++)
+			bool changed = false;
+			int fieldIndex = 0;
+			for (int j = 0; j < fields.Count; j++)
 			{
-				if (!string.IsNullOrWhiteSpace(list[j]))
+				if (!string.IsNullOrWhiteSpace(fields[j]))
 				{
-					if ((num == 6 && list[j] != "0") || (num == 8 && list[j] != "0"))
+					if ((fieldIndex == 6 && fields[j] != "0") || (fieldIndex == 8 && fields[j] != "0"))
 					{
-						list[j] = "0";
-						flag2 = true;
+						fields[j] = "0";
+						changed = true;
 					}
-					num++;
+					fieldIndex++;
 				}
 			}
-			string value = string.Join(" ", list);
-			if (flag2)
+			string updatedValue = string.Join(" ", fields);
+			if (changed)
 			{
-				flag = WriteConfig(text, i.ToString(), value, sendOffline: false);
-				if (!flag)
+				success = WriteConfig(configGroup, i.ToString(), updatedValue, sendOffline: false);
+				if (!success)
 				{
 					break;
 				}
 			}
 		}
-		return flag;
+		return success;
 	}
 
 	private Stream RetrieveFile(RetrieveFileDataFormat dataFormat, string filename)
@@ -1248,14 +1248,14 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		Log("Starting RetrieveFile for filename " + filename);
 		try
 		{
-			string text = "";
-			ERROR_ID eRROR_ID = _rba_api.SetParam(PARAMETER_ID.P65_REQ_RECORD_TYPE, "1");
+			string fileText = "";
+			ERROR_ID result = _rba_api.SetParam(PARAMETER_ID.P65_REQ_RECORD_TYPE, "1");
 			IRBA_API rba_api = _rba_api;
-			int num = (int)dataFormat;
-			eRROR_ID = rba_api.SetParam(PARAMETER_ID.P65_REQ_DATA_TYPE, num.ToString());
-			eRROR_ID = _rba_api.SetParam(PARAMETER_ID.P65_REQ_FILE_NAME, filename);
-			eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M65_RETRIEVE_FILE);
-			Log($"ProcessMessage 65. {eRROR_ID}");
+			int dataFormatValue = (int)dataFormat;
+			result = rba_api.SetParam(PARAMETER_ID.P65_REQ_DATA_TYPE, dataFormatValue.ToString());
+			result = _rba_api.SetParam(PARAMETER_ID.P65_REQ_FILE_NAME, filename);
+			result = _rba_api.ProcessMessage(MESSAGE_ID.M65_RETRIEVE_FILE);
+			Log($"ProcessMessage 65. {result}");
 			string param = _rba_api.GetParam(PARAMETER_ID.P65_RES_RESULT);
 			Log("P65_RES_RESULT: " + param);
 			switch (param)
@@ -1268,23 +1268,23 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				Log("Data type: " + _rba_api.GetParam(PARAMETER_ID.P65_RES_DATA_TYPE));
 				Log("# of blocks downloaded: " + _rba_api.GetParam(PARAMETER_ID.P65_RES_BLOCK_NUMBER));
 				string param2 = _rba_api.GetParam(PARAMETER_ID.P65_RES_DATA);
-				text += param2;
+				fileText += param2;
 				if (num2 > 1)
 				{
 					for (int i = 1; i < num2; i++)
 					{
-						eRROR_ID = _rba_api.SetParam(PARAMETER_ID.P65_REQ_RECORD_TYPE, "0");
+						result = _rba_api.SetParam(PARAMETER_ID.P65_REQ_RECORD_TYPE, "0");
 						IRBA_API rba_api2 = _rba_api;
-						num = (int)dataFormat;
-						eRROR_ID = rba_api2.SetParam(PARAMETER_ID.P65_REQ_DATA_TYPE, num.ToString());
-						eRROR_ID = _rba_api.SetParam(PARAMETER_ID.P65_REQ_FILE_NAME, filename);
-						eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M65_RETRIEVE_FILE);
+						dataFormatValue = (int)dataFormat;
+						result = rba_api2.SetParam(PARAMETER_ID.P65_REQ_DATA_TYPE, dataFormatValue.ToString());
+						result = _rba_api.SetParam(PARAMETER_ID.P65_REQ_FILE_NAME, filename);
+						result = _rba_api.ProcessMessage(MESSAGE_ID.M65_RETRIEVE_FILE);
 						param = _rba_api.GetParam(PARAMETER_ID.P65_RES_RESULT);
 						if (param == "0")
 						{
 							Log("# of blocks downloaded: " + _rba_api.GetParam(PARAMETER_ID.P65_RES_BLOCK_NUMBER));
 							param2 = _rba_api.GetParam(PARAMETER_ID.P65_RES_DATA);
-							text += param2;
+							fileText += param2;
 						}
 					}
 				}
@@ -1292,7 +1292,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				{
 					stream = new MemoryStream();
 					StreamWriter streamWriter = new StreamWriter(stream);
-					streamWriter.Write(text);
+					streamWriter.Write(fileText);
 					streamWriter.Flush();
 					stream.Position = 0L;
 					Log("File successfully read into memeory stream " + filename);
@@ -1390,40 +1390,40 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private static List<string> ComPortNames()
 	{
-		Regex regex = new Regex("^VID_0B00.PID_0057", RegexOptions.IgnoreCase);
-		List<string> list = new List<string>();
-		RegistryKey registryKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum");
-		string[] subKeyNames = registryKey.GetSubKeyNames();
-		foreach (string name in subKeyNames)
+		Regex ingenicoDeviceId = new Regex("^VID_0B00.PID_0057", RegexOptions.IgnoreCase);
+		List<string> portNames = new List<string>();
+		RegistryKey enumKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum");
+		string[] busNames = enumKey.GetSubKeyNames();
+		foreach (string busName in busNames)
 		{
-			RegistryKey registryKey2 = registryKey.OpenSubKey(name);
-			string[] subKeyNames2 = registryKey2.GetSubKeyNames();
-			foreach (string text in subKeyNames2)
+			RegistryKey busKey = enumKey.OpenSubKey(busName);
+			string[] deviceIds = busKey.GetSubKeyNames();
+			foreach (string deviceId in deviceIds)
 			{
-				if (!regex.Match(text).Success)
+				if (!ingenicoDeviceId.Match(deviceId).Success)
 				{
 					continue;
 				}
-				RegistryKey registryKey3 = registryKey2.OpenSubKey(text);
-				string[] subKeyNames3 = registryKey3.GetSubKeyNames();
-				foreach (string name2 in subKeyNames3)
+				RegistryKey deviceKey = busKey.OpenSubKey(deviceId);
+				string[] instanceNames = deviceKey.GetSubKeyNames();
+				foreach (string instanceName in instanceNames)
 				{
-					RegistryKey? obj = registryKey3?.OpenSubKey(name2);
-					_ = (string)obj?.GetValue("LocationInformation");
-					RegistryKey registryKey4 = obj.OpenSubKey("Device Parameters");
-					string value = (string)registryKey4?.GetValue("PortName");
-					if (!string.IsNullOrEmpty(value) && Enumerable.Contains(SerialPort.GetPortNames(), value))
+					RegistryKey? instanceKey = deviceKey?.OpenSubKey(instanceName);
+					_ = (string)instanceKey?.GetValue("LocationInformation");
+					RegistryKey parametersKey = instanceKey.OpenSubKey("Device Parameters");
+					string portName = (string)parametersKey?.GetValue("PortName");
+					if (!string.IsNullOrEmpty(portName) && Enumerable.Contains(SerialPort.GetPortNames(), portName))
 					{
-						list.Add((string)registryKey4.GetValue("PortName"));
+						portNames.Add((string)parametersKey.GetValue("PortName"));
 					}
 				}
 			}
 		}
-		if (!list.Any())
+		if (!portNames.Any())
 		{
-			list.Add("COM7");
+			portNames.Add("COM7");
 		}
-		return list;
+		return portNames;
 	}
 
 	private static string ByteArrayToString(byte[] data)
@@ -1458,9 +1458,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		};
 		_rba_api.ResetParam(PARAMETER_ID.P_ALL_PARAMS);
 		_rba_api.SetParam(PARAMETER_ID.P17_REQ_TYPE, "6");
-		int num = (int)vasCmd;
-		string text = num.ToString().PadLeft(3, '0');
-		_rba_api.SetParam(PARAMETER_ID.P17_REQ_VAS_CMD, text);
+		int vasCmdValue = (int)vasCmd;
+		string vasCmdText = vasCmdValue.ToString().PadLeft(3, '0');
+		_rba_api.SetParam(PARAMETER_ID.P17_REQ_VAS_CMD, vasCmdText);
 		if (vasParams.Length != 0)
 		{
 			foreach (string v in vasParams)
@@ -1473,43 +1473,43 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			return vasResult;
 		}
-		string param = _rba_api.GetParam(PARAMETER_ID.P17_RES_STATUS);
-		vasResult.Status = (Enum.TryParse(typeof(VasStatus), param, out object result) ? ((VasStatus)result) : VasStatus.Unknown);
+		string statusCode = _rba_api.GetParam(PARAMETER_ID.P17_RES_STATUS);
+		vasResult.Status = (Enum.TryParse(typeof(VasStatus), statusCode, out object parsedStatus) ? ((VasStatus)parsedStatus) : VasStatus.Unknown);
 		vasResult.AdditionalData = _rba_api.GetParam(PARAMETER_ID.P17_RES_IS_ADDITIONAL_DATA);
-		string param2 = _rba_api.GetParam(PARAMETER_ID.P17_RES_VAS_RESULT);
-		vasResult.VasDataResult = param2;
-		List<string> list = new List<string>();
+		string vasDataResult = _rba_api.GetParam(PARAMETER_ID.P17_RES_VAS_RESULT);
+		vasResult.VasDataResult = vasDataResult;
+		List<string> vasData = new List<string>();
 		int paramLen = _rba_api.GetParamLen(PARAMETER_ID.P17_RES_VAS_DATA);
 		while (vasResult.CommandResult == ERROR_ID.RESULT_SUCCESS && paramLen >= 0)
 		{
-			string param3 = _rba_api.GetParam(PARAMETER_ID.P17_RES_VAS_DATA);
-			if (!string.IsNullOrWhiteSpace(param3))
+			string vasDataItem = _rba_api.GetParam(PARAMETER_ID.P17_RES_VAS_DATA);
+			if (!string.IsNullOrWhiteSpace(vasDataItem))
 			{
-				list.Add(param3);
+				vasData.Add(vasDataItem);
 			}
 			paramLen = _rba_api.GetParamLen(PARAMETER_ID.P17_RES_VAS_DATA);
 		}
-		vasResult.Data = list;
-		HandleAndLogResult(vasResult.CommandResult, "M17_6SendVasMessage - VasCommand: " + text + "-(" + vasCmd.ToString() + ") - Params: " + string.Join(",", vasParams) + " - " + vasResult.ToString());
+		vasResult.Data = vasData;
+		HandleAndLogResult(vasResult.CommandResult, "M17_6SendVasMessage - VasCommand: " + vasCmdText + "-(" + vasCmd.ToString() + ") - Params: " + string.Join(",", vasParams) + " - " + vasResult.ToString());
 		return vasResult;
 	}
 
 	private void M09SetAllowedPayment()
 	{
-		string param = _rba_api.GetParam(PARAMETER_ID.P09_RES_CARD_TYPE);
-		string param2 = _rba_api.GetParam(PARAMETER_ID.P09_RES_CARD_STATUS);
-		if ((param == "02" || param == "99") && param2 == "I")
+		string cardType = _rba_api.GetParam(PARAMETER_ID.P09_RES_CARD_TYPE);
+		string cardStatus = _rba_api.GetParam(PARAMETER_ID.P09_RES_CARD_STATUS);
+		if ((cardType == "02" || cardType == "99") && cardStatus == "I")
 		{
 			Log("**Card inserted");
 			_mre09CardRemoved.Reset();
 		}
-		else if ((param == "02" || param == "99") && param2 == "R")
+		else if ((cardType == "02" || cardType == "99") && cardStatus == "R")
 		{
 			Log("**Card Removed");
 			ReadCardContextData?.SendCardRemoved();
 			_mre09CardRemoved.Set();
 		}
-		else if (param2 == "P")
+		else if (cardStatus == "P")
 		{
 			Log("**Unknown problem with Card Insertion / Removal");
 			_mre09CardRemoved.Set();
@@ -1592,17 +1592,17 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	{
 		try
 		{
-			string param = _rba_api.GetParam(parameter);
-			EMVCardReadModel eMVCardReadModel = new EMVCardReadModel
+			string statusCode = _rba_api.GetParam(parameter);
+			EMVCardReadModel emvCardReadModel = new EMVCardReadModel
 			{
 				CardSource = CardSource
 			};
 			byte[] data = new byte[1];
-			if (param == "E")
+			if (statusCode == "E")
 			{
-				string text = $"Error when retrieving status when Getting Parameter {parameter} from EMV Message {messageId}";
-				eMVCardReadModel.AddError("D001", text);
-				Log(text);
+				string message = $"Error when retrieving status when Getting Parameter {parameter} from EMV Message {messageId}";
+				emvCardReadModel.AddError("D001", message);
+				Log(message);
 				ReadCardContextData.UpdateStopStateFor(VasMode.PayOnly);
 			}
 			ParseTags parseTags = new ParseTags();
@@ -1614,13 +1614,13 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 					break;
 				}
 				int tagParam = _rba_api.GetTagParam(messageId, out data);
-				string text2 = ByteArrayToString(data);
-				string text3 = tagParam.ToString("X");
-				if (!_ingenicoTags.Contains(text3))
+				string tagValue = ByteArrayToString(data);
+				string tagId = tagParam.ToString("X");
+				if (!_ingenicoTags.Contains(tagId))
 				{
-					eMVCardReadModel.Tags.Add(text3, text2);
+					emvCardReadModel.Tags.Add(tagId, tagValue);
 				}
-				parseTags.ParseEMVTags(text3, tagParamLen, text2, data, CardSource, Log, ReadCardContextData?.Errors);
+				parseTags.ParseEMVTags(tagId, tagParamLen, tagValue, data, CardSource, Log, ReadCardContextData?.Errors);
 			}
 			if (parseTags.Tag9F27CryptogramDeclined)
 			{
@@ -1640,56 +1640,56 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				});
 				ReadCardContextData.UpdateStopStateFor(VasMode.PayOnly);
 			}
-			eMVCardReadModel.FirstSix = parseTags.First6;
-			eMVCardReadModel.LastFour = parseTags.Last4;
-			eMVCardReadModel.AID = parseTags.AID;
-			eMVCardReadModel.MfgSerialNumber = UnitData.ManufacturingSerialNumber;
+			emvCardReadModel.FirstSix = parseTags.First6;
+			emvCardReadModel.LastFour = parseTags.Last4;
+			emvCardReadModel.AID = parseTags.AID;
+			emvCardReadModel.MfgSerialNumber = UnitData.ManufacturingSerialNumber;
 			if (ReadCardContextData.CardSource == CardSourceType.EMVContactless && parseTags.IsMobileWallet)
 			{
 				ReadCardContext readCardContextData = ReadCardContextData;
-				CardSourceType cardSource = (eMVCardReadModel.CardSource = CardSourceType.Mobile);
+				CardSourceType cardSource = (emvCardReadModel.CardSource = CardSourceType.Mobile);
 				readCardContextData.CardSource = cardSource;
 			}
 			if (ParseOnGuardData(parseTags.FF1FOnGuardCardData) is EncryptedCardReadModel encryptedCardReadModel)
 			{
-				eMVCardReadModel.AESPAN = encryptedCardReadModel.AESPAN;
-				eMVCardReadModel.AESPANLength = encryptedCardReadModel.AESPANLength;
-				eMVCardReadModel.EncFormat = encryptedCardReadModel.EncFormat;
-				eMVCardReadModel.EncryptedFlag = encryptedCardReadModel.EncryptedFlag;
+				emvCardReadModel.AESPAN = encryptedCardReadModel.AESPAN;
+				emvCardReadModel.AESPANLength = encryptedCardReadModel.AESPANLength;
+				emvCardReadModel.EncFormat = encryptedCardReadModel.EncFormat;
+				emvCardReadModel.EncryptedFlag = encryptedCardReadModel.EncryptedFlag;
 				IEnumerable<Error> errors = encryptedCardReadModel.Errors;
 				if (errors != null && errors.Any())
 				{
-					eMVCardReadModel.AddErrors(encryptedCardReadModel.Errors);
+					emvCardReadModel.AddErrors(encryptedCardReadModel.Errors);
 				}
-				eMVCardReadModel.Expiry = encryptedCardReadModel.Expiry;
-				eMVCardReadModel.ExtLangCode = encryptedCardReadModel.ExtLangCode;
-				eMVCardReadModel.FirstSix = encryptedCardReadModel.FirstSix;
-				eMVCardReadModel.ICEncData = encryptedCardReadModel.ICEncData;
-				eMVCardReadModel.ICEncDataLength = encryptedCardReadModel.ICEncDataLength;
-				eMVCardReadModel.InjectedSerialNumber = encryptedCardReadModel.InjectedSerialNumber;
-				eMVCardReadModel.KSN = encryptedCardReadModel.KSN;
-				eMVCardReadModel.LanguageCode = encryptedCardReadModel.LanguageCode;
-				eMVCardReadModel.LastFour = encryptedCardReadModel.LastFour;
-				eMVCardReadModel.LSEncData = encryptedCardReadModel.LSEncData;
-				eMVCardReadModel.LSEncDataLength = encryptedCardReadModel.LSEncDataLength;
-				eMVCardReadModel.MfgSerialNumber = encryptedCardReadModel.MfgSerialNumber;
-				eMVCardReadModel.Mod10CheckFlag = encryptedCardReadModel.Mod10CheckFlag;
-				eMVCardReadModel.Name = encryptedCardReadModel.Name;
-				eMVCardReadModel.NameLength = encryptedCardReadModel.NameLength;
-				eMVCardReadModel.PANLength = encryptedCardReadModel.PANLength;
-				eMVCardReadModel.ServiceCode = encryptedCardReadModel.ServiceCode;
+				emvCardReadModel.Expiry = encryptedCardReadModel.Expiry;
+				emvCardReadModel.ExtLangCode = encryptedCardReadModel.ExtLangCode;
+				emvCardReadModel.FirstSix = encryptedCardReadModel.FirstSix;
+				emvCardReadModel.ICEncData = encryptedCardReadModel.ICEncData;
+				emvCardReadModel.ICEncDataLength = encryptedCardReadModel.ICEncDataLength;
+				emvCardReadModel.InjectedSerialNumber = encryptedCardReadModel.InjectedSerialNumber;
+				emvCardReadModel.KSN = encryptedCardReadModel.KSN;
+				emvCardReadModel.LanguageCode = encryptedCardReadModel.LanguageCode;
+				emvCardReadModel.LastFour = encryptedCardReadModel.LastFour;
+				emvCardReadModel.LSEncData = encryptedCardReadModel.LSEncData;
+				emvCardReadModel.LSEncDataLength = encryptedCardReadModel.LSEncDataLength;
+				emvCardReadModel.MfgSerialNumber = encryptedCardReadModel.MfgSerialNumber;
+				emvCardReadModel.Mod10CheckFlag = encryptedCardReadModel.Mod10CheckFlag;
+				emvCardReadModel.Name = encryptedCardReadModel.Name;
+				emvCardReadModel.NameLength = encryptedCardReadModel.NameLength;
+				emvCardReadModel.PANLength = encryptedCardReadModel.PANLength;
+				emvCardReadModel.ServiceCode = encryptedCardReadModel.ServiceCode;
 			}
-			eMVCardReadModel.Name = parseTags.CardHolderName;
-			eMVCardReadModel.NameLength = parseTags.CardHolderName?.Length ?? 0;
-			eMVCardReadModel.FallbackStatusAction = parseTags.Fallback;
-			eMVCardReadModel.FallbackReason = parseTags.FallbackReason;
-			eMVCardReadModel.ErrorCode = parseTags.ErrorCode;
+			emvCardReadModel.Name = parseTags.CardHolderName;
+			emvCardReadModel.NameLength = parseTags.CardHolderName?.Length ?? 0;
+			emvCardReadModel.FallbackStatusAction = parseTags.Fallback;
+			emvCardReadModel.FallbackReason = parseTags.FallbackReason;
+			emvCardReadModel.ErrorCode = parseTags.ErrorCode;
 			if (!string.IsNullOrWhiteSpace(ReadCardContextData.ResponseDataModel?.Name))
 			{
-				eMVCardReadModel.Name = ReadCardContextData.ResponseDataModel.Name;
-				eMVCardReadModel.NameLength = ReadCardContextData.ResponseDataModel.NameLength;
+				emvCardReadModel.Name = ReadCardContextData.ResponseDataModel.Name;
+				emvCardReadModel.NameLength = ReadCardContextData.ResponseDataModel.NameLength;
 			}
-			ReadCardContextData.ResponseDataModel = eMVCardReadModel;
+			ReadCardContextData.ResponseDataModel = emvCardReadModel;
 			ReadCardContextData.CardBrand = parseTags.CardBrand;
 			_rba_api.ResetParam(PARAMETER_ID.P_ALL_PARAMS);
 		}
@@ -1710,19 +1710,19 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		Log("87 E2EE Card Read Message Received");
 		try
 		{
-			char value = '\u001c';
-			string param = _rba_api.GetParam(PARAMETER_ID.P87_RES_EXIT_TYPE);
-			ReadCardContextData.ExitType = (int.TryParse(param, out var result) ? ((CardReadExitType)result) : CardReadExitType.InvalidExitCode);
-			Log("P87_RES_EXIT_TYPE: (" + param + ") - " + ExitCodeText(param));
-			string param2 = _rba_api.GetParam(PARAMETER_ID.P87_RES_CARD_SOURCE);
-			CardSourceType cardSource = (ReadCardContextData.CardSource = ParseCardSourceType(param2));
+			char fieldSeparator = '\u001c';
+			string exitType = _rba_api.GetParam(PARAMETER_ID.P87_RES_EXIT_TYPE);
+			ReadCardContextData.ExitType = (int.TryParse(exitType, out var exitTypeValue) ? ((CardReadExitType)exitTypeValue) : CardReadExitType.InvalidExitCode);
+			Log("P87_RES_EXIT_TYPE: (" + exitType + ") - " + ExitCodeText(exitType));
+			string cardSourceCode = _rba_api.GetParam(PARAMETER_ID.P87_RES_CARD_SOURCE);
+			CardSourceType cardSource = (ReadCardContextData.CardSource = ParseCardSourceType(cardSourceCode));
 			CardSource = cardSource;
-			Log($"P87_RES_CARD_SOURCE: ({param2}) - {ReadCardContextData.CardSource}");
-			if (param != "0")
+			Log($"P87_RES_CARD_SOURCE: ({cardSourceCode}) - {ReadCardContextData.CardSource}");
+			if (exitType != "0")
 			{
 				return false;
 			}
-			if (string.IsNullOrWhiteSpace(param2))
+			if (string.IsNullOrWhiteSpace(cardSourceCode))
 			{
 				Log("Could not detect card source, assuming source as MSD");
 			}
@@ -1771,13 +1771,13 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				}
 				_mre09CardRemoved.Set();
 			}
-			string text = _rba_api.GetParam(PARAMETER_ID.P87_RES_CARD_DATA);
-			if (!string.IsNullOrEmpty(text) && text.IndexOf(value) != -1)
+			string cardData = _rba_api.GetParam(PARAMETER_ID.P87_RES_CARD_DATA);
+			if (!string.IsNullOrEmpty(cardData) && cardData.IndexOf(fieldSeparator) != -1)
 			{
-				text = text.Replace(value.ToString(), "");
+				cardData = cardData.Replace(fieldSeparator.ToString(), "");
 			}
-			Log("P87_RES_CARD_DATA: " + text);
-			if (text.Length <= 0)
+			Log("P87_RES_CARD_DATA: " + cardData);
+			if (cardData.Length <= 0)
 			{
 				ReadCardContextData.Errors.Add(new Error
 				{
@@ -1787,7 +1787,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				ReadCardContextData.UpdateStopStateFor(VasMode.PayOnly);
 				return false;
 			}
-			Base87CardReadModel responseDataModel = ParseOnGuardData(text);
+			Base87CardReadModel responseDataModel = ParseOnGuardData(cardData);
 			ReadCardContextData.ResponseDataModel = responseDataModel;
 			return true;
 		}
@@ -1990,96 +1990,96 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			Log("**********************************************");
 			Log("Parsed OnGuard MSD Data");
 			Log("**********************************************");
-			int num = 0;
-			bool flag = false;
+			int offset = 0;
+			bool hasFormatPrefix = false;
 			if (cardData.StartsWith('B'))
 			{
-				flag = true;
+				hasFormatPrefix = true;
 				cardData = cardData.Substring(cardData.LastIndexOf(" ") + 1);
 			}
-			string text = cardData.Substring(num, 6);
-			if (cardData.IndexOf("=") > 20 && text != "601056" && !flag)
+			string firstSix = cardData.Substring(offset, 6);
+			if (cardData.IndexOf("=") > 20 && firstSix != "601056" && !hasFormatPrefix)
 			{
-				num += 6;
-				string text2 = cardData.Substring(num, 4);
-				num += 4;
-				int.TryParse(cardData.Substring(num, 2), out var result);
-				num += 2;
-				string text3 = cardData.Substring(num, 1);
-				num++;
-				string text4 = cardData.Substring(num, 4);
-				num += 4;
-				string text5 = cardData.Substring(num, 3);
-				num += 3;
-				string text6 = cardData.Substring(num, 1);
-				num++;
-				if (!int.TryParse(cardData.Substring(num, 2), out var result2))
+				offset += 6;
+				string lastFour = cardData.Substring(offset, 4);
+				offset += 4;
+				int.TryParse(cardData.Substring(offset, 2), out var panLength);
+				offset += 2;
+				string mod10CheckFlag = cardData.Substring(offset, 1);
+				offset++;
+				string expiry = cardData.Substring(offset, 4);
+				offset += 4;
+				string serviceCode = cardData.Substring(offset, 3);
+				offset += 3;
+				string languageCode = cardData.Substring(offset, 1);
+				offset++;
+				if (!int.TryParse(cardData.Substring(offset, 2), out var nameLength))
 				{
 					Log("ParseOnGuardData -> Could not find valid Name length");
 					return null;
 				}
-				num += 2;
-				string name = cardData.Substring(num, result2);
-				num += result2;
-				string text7 = cardData.Substring(num, 1);
-				bool encryptedFlag = text7 == "1";
-				num++;
-				if (text7.ToString() == "1")
+				offset += 2;
+				string name = cardData.Substring(offset, nameLength);
+				offset += nameLength;
+				string encryptedFlagText = cardData.Substring(offset, 1);
+				bool encryptedFlag = encryptedFlagText == "1";
+				offset++;
+				if (encryptedFlagText.ToString() == "1")
 				{
-					Log("First 6: " + text);
-					Log("Last 4: " + text2);
-					Log("PAN Length: " + result);
-					Log("Mod10 check flag: " + text3);
-					Log("Service Code: " + text5);
-					Log("Language Code: " + text6);
-					Log("Cardholder Name Length: " + result2);
-					Log("Encrypted Flag: " + text7);
-					string text8 = cardData.Substring(num, 1);
-					Log("Encryption Format: " + text8);
-					num++;
-					string kSN = cardData.Substring(num, 20);
-					Log("4-digit Extension: " + cardData.Substring(num + 20, 4));
-					num += 24;
-					int num2 = Convert.ToInt32(cardData.Substring(num, 2));
-					Log("IC Encrypted Data Length: " + num2);
-					num += 2;
-					string iCEncData = cardData.Substring(num, num2);
-					num += num2;
-					int num3 = Convert.ToInt32(cardData.Substring(num, 2));
-					Log("AES Pan Length: " + num3);
-					num += 2;
-					string aESPAN = cardData.Substring(num, num3);
-					num += num3;
-					int num4 = Convert.ToInt32(cardData.Substring(num, 2));
-					Log("LS Encrypted Data Length: " + num4);
-					num += 2;
-					string lSEncData = cardData.Substring(num, num4);
-					num += num4;
-					string text9 = cardData.Substring(num, 1);
-					Log("Extended Language Code: " + text9);
-					num++;
+					Log("First 6: " + firstSix);
+					Log("Last 4: " + lastFour);
+					Log("PAN Length: " + panLength);
+					Log("Mod10 check hasFormatPrefix: " + mod10CheckFlag);
+					Log("Service Code: " + serviceCode);
+					Log("Language Code: " + languageCode);
+					Log("Cardholder Name Length: " + nameLength);
+					Log("Encrypted Flag: " + encryptedFlagText);
+					string encFormat = cardData.Substring(offset, 1);
+					Log("Encryption Format: " + encFormat);
+					offset++;
+					string ksn = cardData.Substring(offset, 20);
+					Log("4-digit Extension: " + cardData.Substring(offset + 20, 4));
+					offset += 24;
+					int icEncDataLength = Convert.ToInt32(cardData.Substring(offset, 2));
+					Log("IC Encrypted Data Length: " + icEncDataLength);
+					offset += 2;
+					string icEncData = cardData.Substring(offset, icEncDataLength);
+					offset += icEncDataLength;
+					int aesPanLength = Convert.ToInt32(cardData.Substring(offset, 2));
+					Log("AES Pan Length: " + aesPanLength);
+					offset += 2;
+					string aesPan = cardData.Substring(offset, aesPanLength);
+					offset += aesPanLength;
+					int lsEncDataLength = Convert.ToInt32(cardData.Substring(offset, 2));
+					Log("LS Encrypted Data Length: " + lsEncDataLength);
+					offset += 2;
+					string lsEncData = cardData.Substring(offset, lsEncDataLength);
+					offset += lsEncDataLength;
+					string extLangCode = cardData.Substring(offset, 1);
+					Log("Extended Language Code: " + extLangCode);
+					offset++;
 					Log("**********************************************");
 					return new EncryptedCardReadModel
 					{
-						FirstSix = text,
-						LastFour = text2,
-						PANLength = result,
-						Mod10CheckFlag = text3,
-						Expiry = text4,
-						ServiceCode = text5,
-						LanguageCode = text6,
+						FirstSix = firstSix,
+						LastFour = lastFour,
+						PANLength = panLength,
+						Mod10CheckFlag = mod10CheckFlag,
+						Expiry = expiry,
+						ServiceCode = serviceCode,
+						LanguageCode = languageCode,
 						EncryptedFlag = encryptedFlag,
 						Name = name,
-						NameLength = result2,
-						EncFormat = text8,
-						KSN = kSN,
-						ICEncDataLength = num2,
-						ICEncData = iCEncData,
-						AESPANLength = num3,
-						AESPAN = aESPAN,
-						LSEncDataLength = num4,
-						LSEncData = lSEncData,
-						ExtLangCode = text9,
+						NameLength = nameLength,
+						EncFormat = encFormat,
+						KSN = ksn,
+						ICEncDataLength = icEncDataLength,
+						ICEncData = icEncData,
+						AESPANLength = aesPanLength,
+						AESPAN = aesPan,
+						LSEncDataLength = lsEncDataLength,
+						LSEncData = lsEncData,
+						ExtLangCode = extLangCode,
 						Status = ResponseStatus.Success,
 						MfgSerialNumber = UnitData?.ManufacturingSerialNumber,
 						InjectedSerialNumber = UnitData?.UnitSerialNumber,
@@ -2087,49 +2087,49 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 						FallbackStatusAction = FallbackStatusAction.ResetFallbackCounter
 					};
 				}
-				if (text7.ToString() == "0")
+				if (encryptedFlagText.ToString() == "0")
 				{
-					Log("First 6: " + text);
-					Log("Last 4: " + text2);
-					Log("PAN Length: " + result);
-					Log("Mod10 check flag: " + text3);
-					Log("Expiry: " + text4);
-					Log("Service Code: " + text5);
-					Log("Language Code: " + text6);
-					Log("Encrypted Flag: " + text7);
-					int num5 = Convert.ToInt32(cardData.Substring(num, 2));
-					num += 2;
-					Log("Track1 length: " + num5);
-					string track = null;
-					if (num5 > 0)
+					Log("First 6: " + firstSix);
+					Log("Last 4: " + lastFour);
+					Log("PAN Length: " + panLength);
+					Log("Mod10 check hasFormatPrefix: " + mod10CheckFlag);
+					Log("Expiry: " + expiry);
+					Log("Service Code: " + serviceCode);
+					Log("Language Code: " + languageCode);
+					Log("Encrypted Flag: " + encryptedFlagText);
+					int track1Length = Convert.ToInt32(cardData.Substring(offset, 2));
+					offset += 2;
+					Log("Track1 length: " + track1Length);
+					string track1 = null;
+					if (track1Length > 0)
 					{
-						track = cardData.Substring(num, num5);
-						num += num5;
+						track1 = cardData.Substring(offset, track1Length);
+						offset += track1Length;
 					}
-					int num6 = Convert.ToInt32(cardData.Substring(num, 2));
-					num += 2;
-					Log("Track2 length: " + num6);
+					int track2Length = Convert.ToInt32(cardData.Substring(offset, 2));
+					offset += 2;
+					Log("Track2 length: " + track2Length);
 					string track2 = null;
-					if (num6 > 0)
+					if (track2Length > 0)
 					{
-						track2 = cardData.Substring(num, num6);
-						num += num6;
+						track2 = cardData.Substring(offset, track2Length);
+						offset += track2Length;
 					}
-					string text10 = cardData.Substring(num, 1);
-					Log("Extended Language Code: " + text10);
-					num++;
+					string extLangCode = cardData.Substring(offset, 1);
+					Log("Extended Language Code: " + extLangCode);
+					offset++;
 					return new UnencryptedCardReadModel
 					{
-						FirstSix = text,
-						LastFour = text2,
-						PANLength = result,
-						Mod10CheckFlag = text3,
-						Expiry = text4,
-						ServiceCode = text5,
-						LanguageCode = text6,
+						FirstSix = firstSix,
+						LastFour = lastFour,
+						PANLength = panLength,
+						Mod10CheckFlag = mod10CheckFlag,
+						Expiry = expiry,
+						ServiceCode = serviceCode,
+						LanguageCode = languageCode,
 						EncryptedFlag = encryptedFlag,
 						Name = name,
-						Track1 = track,
+						Track1 = track1,
 						Track2 = track2,
 						Status = ResponseStatus.Success,
 						FallbackStatusAction = FallbackStatusAction.ResetFallbackCounter
@@ -2141,23 +2141,23 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				if (!string.IsNullOrEmpty(cardData))
 				{
 					Log("Card data whitelisted using secbin.dat");
-					if (text != "601056")
+					if (firstSix != "601056")
 					{
 						return null;
 					}
 					Log("Card Bin Matches Gift Card");
-					int num7 = cardData.IndexOf("=");
+					int separatorIndex = cardData.IndexOf("=");
 					return new UnencryptedCardReadModel
 					{
 						Track2 = cardData,
-						PANLength = num7,
+						PANLength = separatorIndex,
 						CardType = CardType.RedboxGiftCard,
-						FirstSix = text,
+						FirstSix = firstSix,
 						EncryptedFlag = false,
 						SwipeMode = SwipeType.Swipe,
-						LastFour = cardData.Substring(num7 - 4, 4),
-						Expiry = cardData.Substring(num7 + 1, 4),
-						ServiceCode = cardData.Substring(num7 + 5, 3),
+						LastFour = cardData.Substring(separatorIndex - 4, 4),
+						Expiry = cardData.Substring(separatorIndex + 1, 4),
+						ServiceCode = cardData.Substring(separatorIndex + 5, 3),
 						Status = ResponseStatus.Success,
 						FallbackStatusAction = FallbackStatusAction.ResetFallbackCounter
 					};
@@ -2180,15 +2180,15 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private bool Offline(int attempts = 3)
 	{
-		ERROR_ID eRROR_ID = ERROR_ID.RESULT_ERROR;
+		ERROR_ID errorId = ERROR_ID.RESULT_ERROR;
 		List<ERROR_ID> list = new List<ERROR_ID>();
-		while (eRROR_ID != ERROR_ID.RESULT_SUCCESS && attempts-- > 0)
+		while (errorId != ERROR_ID.RESULT_SUCCESS && attempts-- > 0)
 		{
-			eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M00_OFFLINE);
-			HandleAndLogResult(eRROR_ID, "00 Offline");
-			list.Add(eRROR_ID);
+			errorId = _rba_api.ProcessMessage(MESSAGE_ID.M00_OFFLINE);
+			HandleAndLogResult(errorId, "00 Offline");
+			list.Add(errorId);
 			int num = 5250;
-			if (eRROR_ID == ERROR_ID.RESULT_SUCCESS && !_areOfflineResponse.WaitOne(num))
+			if (errorId == ERROR_ID.RESULT_SUCCESS && !_areOfflineResponse.WaitOne(num))
 			{
 				Log($"Offline Not received in wait of {num}");
 				return false;
@@ -2198,7 +2198,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			Reconnect();
 		}
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private bool SetAmount(ReadCardContext context)
@@ -2221,9 +2221,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	public bool SetAmount(string amount)
 	{
 		_rba_api.SetParam(PARAMETER_ID.P13_REQ_AMOUNT, amount);
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M13_AMOUNT);
-		HandleAndLogResult(eRROR_ID, "13 Set Amount: " + amount);
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M13_AMOUNT);
+		HandleAndLogResult(errorId, "13 Set Amount: " + amount);
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private bool WaitForVasData(ReadCardContext context)
@@ -2355,9 +2355,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			_rba_api.SetParam(PARAMETER_ID.P87_REQ_ENABLE_DEVICES, text2);
 		}
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M87_E2EE_CARD_READ);
-		HandleAndLogResult(eRROR_ID, "87 OnGuard Card Read");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M87_E2EE_CARD_READ);
+		HandleAndLogResult(errorId, "87 OnGuard Card Read");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private bool CardReadRequestUnencrypted(DeviceInputType? inputs = DeviceInputType.M)
@@ -2381,9 +2381,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			_rba_api.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, text2);
 		}
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
-		HandleAndLogResult(eRROR_ID, "23 Card Read");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
+		HandleAndLogResult(errorId, "23 Card Read");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private string VasModeToIngenicoVasMode(VasMode mode)
@@ -2570,9 +2570,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.SetParam(PARAMETER_ID.P33_00_REQ_EMVH_CURRENT_PACKET_NBR, "0");
 		_rba_api.SetParam(PARAMETER_ID.P33_00_REQ_EMVH_PACKET_TYPE, "0");
 		_rba_api.SetParam(PARAMETER_ID.P33_00_REQ_RESEND_TIMER, "5000");
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M33_00_EMV_TRANSACTION_INITIATION);
-		HandleAndLogResult(eRROR_ID, "33.00 EMV Transaction Initiation");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M33_00_EMV_TRANSACTION_INITIATION);
+		HandleAndLogResult(errorId, "33.00 EMV Transaction Initiation");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private bool SetPaymentType_04(ReadCardContext context)
@@ -2599,52 +2599,52 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.SetParam(PARAMETER_ID.P04_REQ_FORCE_PAYMENT_TYPE, "0");
 		_rba_api.SetParam(PARAMETER_ID.P04_REQ_PAYMENT_TYPE, paymentType);
 		_rba_api.SetParam(PARAMETER_ID.P04_REQ_AMOUNT, amount);
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M04_SET_PAYMENT_TYPE);
-		Log($"ProcessMessage 04. {eRROR_ID}");
-		string param = _rba_api.GetParam(PARAMETER_ID.P04_RES_FORCE_PAYMENT_TYPE);
-		string text = string.Empty;
-		switch (param)
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M04_SET_PAYMENT_TYPE);
+		Log($"ProcessMessage 04. {errorId}");
+		string forceResult = _rba_api.GetParam(PARAMETER_ID.P04_RES_FORCE_PAYMENT_TYPE);
+		string forceResultText = string.Empty;
+		switch (forceResult)
 		{
 		case "0":
-			text = "Success";
+			forceResultText = "Success";
 			break;
 		case "1":
-			text = "Failed";
+			forceResultText = "Failed";
 			break;
 		case "2":
-			text = "Changed Customer Selection";
+			forceResultText = "Changed Customer Selection";
 			break;
 		}
-		Log("P04_RES_FORCE_PAYMENT_TYPE: (" + param + ") - " + text);
-		string param2 = _rba_api.GetParam(PARAMETER_ID.P04_RES_PAYMENT_TYPE);
-		string text2 = "Unknown";
-		switch (param2)
+		Log("P04_RES_FORCE_PAYMENT_TYPE: (" + forceResult + ") - " + forceResultText);
+		string paymentTypeCode = _rba_api.GetParam(PARAMETER_ID.P04_RES_PAYMENT_TYPE);
+		string paymentTypeText = "Unknown";
+		switch (paymentTypeCode)
 		{
 		case "A":
-			text2 = "Debit";
+			paymentTypeText = "Debit";
 			break;
 		case "B":
-			text2 = "Credit";
+			paymentTypeText = "Credit";
 			break;
 		case "C":
-			text2 = "EBT Cash";
+			paymentTypeText = "EBT Cash";
 			break;
 		case "D":
-			text2 = "ET Food Stamps";
+			paymentTypeText = "ET Food Stamps";
 			break;
 		case "E":
-			text2 = "Store Charge";
+			paymentTypeText = "Store Charge";
 			break;
 		case "F":
-			text2 = "Loyalty";
+			paymentTypeText = "Loyalty";
 			break;
 		case "G":
-			text2 = "PayPal";
+			paymentTypeText = "PayPal";
 			break;
 		}
-		Log("P04_RES_PAYMENT_TYPE: (" + param2 + ") - " + text2);
+		Log("P04_RES_PAYMENT_TYPE: (" + paymentTypeCode + ") - " + paymentTypeText);
 		Log("P04_RES_AMOUNT: " + _rba_api.GetParam(PARAMETER_ID.P04_RES_AMOUNT));
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private void SendAuthorizationReponse(bool success = true)
@@ -2666,11 +2666,11 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.ResetParam(PARAMETER_ID.P_ALL_PARAMS);
 		_rba_api.SetParam(PARAMETER_ID.P61_REQ_GROUP_NUM, group);
 		_rba_api.SetParam(PARAMETER_ID.P61_REQ_INDEX_NUM, index);
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M61_CONFIGURATION_READ);
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M61_CONFIGURATION_READ);
 		string param = _rba_api.GetParam(PARAMETER_ID.P61_RES_STATUS);
 		Data = _rba_api.GetParam(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER);
-		HandleAndLogResult(eRROR_ID, "61 Configuration Read Group#: " + group + ", Index#: " + index + ", Data: " + Data + " - P61_RES_STATUS: (" + param + ") - " + ConfigStatusText(param) + " -");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		HandleAndLogResult(errorId, "61 Configuration Read Group#: " + group + ", Index#: " + index + ", Data: " + Data + " - P61_RES_STATUS: (" + param + ") - " + ConfigStatusText(param) + " -");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	public bool WriteConfig(string group, string index, string value, bool sendOffline = true)
@@ -2683,10 +2683,10 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.SetParam(PARAMETER_ID.P60_REQ_GROUP_NUM, group.PadLeft(4, '0'));
 		_rba_api.SetParam(PARAMETER_ID.P60_REQ_INDEX_NUM, index.PadLeft(4, '0'));
 		_rba_api.SetParam(PARAMETER_ID.P60_REQ_DATA_CONFIG_PARAM, value);
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M60_CONFIGURATION_WRITE);
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M60_CONFIGURATION_WRITE);
 		string param = _rba_api.GetParam(PARAMETER_ID.P60_RES_STATUS);
-		HandleAndLogResult(eRROR_ID, "60 Configuration Write Group#: " + group + ", Index#: " + index + ", Data: " + value + " - P60_RES_STATUS: (" + param + ") - " + ConfigStatusText(param) + " -");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		HandleAndLogResult(errorId, "60 Configuration Write Group#: " + group + ", Index#: " + index + ", Data: " + value + " - P60_RES_STATUS: (" + param + ") - " + ConfigStatusText(param) + " -");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private static string ConfigStatusText(string statusNum)
@@ -2724,30 +2724,30 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private bool RebootInner()
 	{
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M97_REBOOT);
-		HandleAndLogResult(eRROR_ID, "97 Reboot");
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M97_REBOOT);
+		HandleAndLogResult(errorId, "97 Reboot");
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private static EncodedData GetEncodedData(Stream ist)
 	{
 		EncodedData encodedData = new EncodedData();
-		List<byte> list = new List<byte>(4074);
-		byte item = byte.MaxValue;
-		int num = -1;
+		List<byte> encoded = new List<byte>(4074);
+		byte escapeByte = byte.MaxValue;
+		int endOfStream = -1;
 		do
 		{
 			byte b;
 			try
 			{
-				int num2 = ist.ReadByte();
-				if (num2 == num)
+				int read = ist.ReadByte();
+				if (read == endOfStream)
 				{
 					encodedData.Result = EncodedResult.EndOfFile;
-					encodedData.EncData = list.ToArray();
+					encodedData.EncData = encoded.ToArray();
 					return encodedData;
 				}
-				b = (byte)(num2 & 0xFF);
+				b = (byte)(read & 0xFF);
 				encodedData.DataLength++;
 			}
 			catch (IOException)
@@ -2758,40 +2758,40 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			if (b >= 0 && b <= 31)
 			{
 				b += 32;
-				list.Add(item);
-				list.Add(b);
+				encoded.Add(escapeByte);
+				encoded.Add(b);
 			}
 			else if (b >= 32 && b <= 254)
 			{
-				list.Add(b);
+				encoded.Add(b);
 			}
 			else if (b == byte.MaxValue)
 			{
-				list.Add(item);
-				list.Add(item);
+				encoded.Add(escapeByte);
+				encoded.Add(escapeByte);
 			}
 		}
-		while (list.Count < 4063);
-		encodedData.EncData = list.ToArray();
+		while (encoded.Count < 4063);
+		encodedData.EncData = encoded.ToArray();
 		return encodedData;
 	}
 
 	private bool WriteData(EncodedData data, string fileName, WriteFileRecordType recordType, int segmentNumber, int retryOnTimeout = 3)
 	{
-		ERROR_ID eRROR_ID = ERROR_ID.RESULT_ERROR;
+		ERROR_ID result = ERROR_ID.RESULT_ERROR;
 		UnpackFlag unpackFlag = UnpackFlag.WriteFileDirectly;
-		while (eRROR_ID != ERROR_ID.RESULT_SUCCESS && retryOnTimeout-- > 0)
+		while (result != ERROR_ID.RESULT_SUCCESS && retryOnTimeout-- > 0)
 		{
 			_rba_api.ResetParam(PARAMETER_ID.P_ALL_PARAMS);
-			int num = (int)recordType;
-			string data2 = num.ToString();
-			_rba_api.SetParam(PARAMETER_ID.P62_REQ_RECORD_TYPE, data2);
+			int numericValue = (int)recordType;
+			string recordTypeText = numericValue.ToString();
+			_rba_api.SetParam(PARAMETER_ID.P62_REQ_RECORD_TYPE, recordTypeText);
 			_rba_api.SetParam(PARAMETER_ID.P62_REQ_ENCODING_FORMAT, "8");
-			string data3 = $"{segmentNumber:D2}";
-			_rba_api.SetParam(PARAMETER_ID.P62_REQ_SEGMENT_NBR, data3);
-			num = (int)unpackFlag;
-			string data4 = num.ToString();
-			_rba_api.SetParam(PARAMETER_ID.P62_REQ_UNPACK_FLAG, data4);
+			string segmentText = $"{segmentNumber:D2}";
+			_rba_api.SetParam(PARAMETER_ID.P62_REQ_SEGMENT_NBR, segmentText);
+			numericValue = (int)unpackFlag;
+			string unpackFlagText = numericValue.ToString();
+			_rba_api.SetParam(PARAMETER_ID.P62_REQ_UNPACK_FLAG, unpackFlagText);
 			_rba_api.SetParam(PARAMETER_ID.P62_REQ_FAST_DOWNLOAD, "1");
 			if (recordType == WriteFileRecordType.NewFileFull || recordType == WriteFileRecordType.NewFileInitialMulti)
 			{
@@ -2799,10 +2799,10 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			}
 			_rba_api.SetParam(PARAMETER_ID.P62_REQ_FILE_DATA, data.EncData);
 			_rba_api.SetParam(PARAMETER_ID.P62_REQ_LAST_MESSAGE_TIMEOUT_SEC, "180");
-			eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.M62_FILE_WRITE);
-			HandleAndLogResult(eRROR_ID, $"62 FileWrite: {fileName} - Record Type: {recordType} - Segment: {segmentNumber} - Length: {data.DataLength} - Result Status: {_rba_api.GetParam(PARAMETER_ID.P62_RES_STATUS)}");
+			result = _rba_api.ProcessMessage(MESSAGE_ID.M62_FILE_WRITE);
+			HandleAndLogResult(result, $"62 FileWrite: {fileName} - Record Type: {recordType} - Segment: {segmentNumber} - Length: {data.DataLength} - Result Status: {_rba_api.GetParam(PARAMETER_ID.P62_RES_STATUS)}");
 		}
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		return result == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	private WriteFileRecordType GetWriteFileRecordType(bool firstFile, bool lastFile)
@@ -2824,12 +2824,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private static Stream ReduceRkiStream(StreamReader sr, string serialNumber)
 	{
-		string text;
-		while (sr != null && !sr.EndOfStream && !string.IsNullOrWhiteSpace(text = sr?.ReadLine()))
+		string line;
+		while (sr != null && !sr.EndOfStream && !string.IsNullOrWhiteSpace(line = sr?.ReadLine()))
 		{
-			if (text.StartsWith(serialNumber))
+			if (line.StartsWith(serialNumber))
 			{
-				return new MemoryStream(Encoding.UTF8.GetBytes(text));
+				return new MemoryStream(Encoding.UTF8.GetBytes(line));
 			}
 		}
 		return null;
@@ -2856,22 +2856,22 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				return true;
 			}
 		}
-		bool flag = true;
+		bool success = true;
 		_rba_api.ResetParam(PARAMETER_ID.P_ALL_PARAMS);
 		bool firstFile = true;
-		bool flag2 = true;
-		int num = 1;
-		long num2 = 0L;
-		while (flag2)
+		bool moreData = true;
+		int segmentNumber = 1;
+		long bytesWritten = 0L;
+		while (moreData)
 		{
 			EncodedData encodedData = GetEncodedData(stream);
-			num2 += encodedData.DataLength;
+			bytesWritten += encodedData.DataLength;
 			switch (encodedData.Result)
 			{
 			case EncodedResult.Success:
 			{
-				WriteFileRecordType writeFileRecordType2 = GetWriteFileRecordType(firstFile, lastFile: false);
-				if (!WriteData(encodedData, fileName, writeFileRecordType2, num))
+				WriteFileRecordType recordType = GetWriteFileRecordType(firstFile, lastFile: false);
+				if (!WriteData(encodedData, fileName, recordType, segmentNumber))
 				{
 					LogError("WriteData Failed.");
 					return false;
@@ -2880,9 +2880,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			}
 			case EncodedResult.EndOfFile:
 			{
-				flag2 = false;
-				WriteFileRecordType writeFileRecordType = GetWriteFileRecordType(firstFile, lastFile: true);
-				if (!WriteData(encodedData, fileName, writeFileRecordType, num))
+				moreData = false;
+				WriteFileRecordType recordType = GetWriteFileRecordType(firstFile, lastFile: true);
+				if (!WriteData(encodedData, fileName, recordType, segmentNumber))
 				{
 					LogError("WriteData Failed.");
 					return false;
@@ -2891,25 +2891,25 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			}
 			case EncodedResult.Error:
 				Log("Aborting File Transfer of " + fileName + ".  Error During GetEncodedData.");
-				WriteData(encodedData, fileName, WriteFileRecordType.AbortRequest, num);
+				WriteData(encodedData, fileName, WriteFileRecordType.AbortRequest, segmentNumber);
 				return false;
 			}
-			Log($"{num2} of {stream?.Length ?? 0} bytes Written.");
+			Log($"{bytesWritten} of {stream?.Length ?? 0} bytes Written.");
 			firstFile = false;
-			num++;
-			if (num % 100 == 0)
+			segmentNumber++;
+			if (segmentNumber % 100 == 0)
 			{
-				num = 1;
+				segmentNumber = 1;
 			}
 		}
 		if (rebootAfterWrite)
 		{
 			_rebootType = RebootType.FileUpdate;
 		}
-		bool flag3 = RebootInner();
-		string arg = ((!rebootAfterWrite) ? string.Empty : $"- Reboot Succesful: {flag3}");
-		Log($"File {fileName} Transfered Successfully: {flag} {arg}");
-		return flag & flag3;
+		bool rebootSucceeded = RebootInner();
+		string rebootText = ((!rebootAfterWrite) ? string.Empty : $"- Reboot Succesful: {rebootSucceeded}");
+		Log($"File {fileName} Transfered Successfully: {success} {rebootText}");
+		return success & rebootSucceeded;
 	}
 
 	private async Task<bool> WriteFileInner(string fullPath, bool rebootAfterWrite)
@@ -2928,31 +2928,31 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.SetParam(PARAMETER_ID.P62_REQ_OS_FILE_NAME, fullPath);
 		_rba_api.SetParam(PARAMETER_ID.P62_REQ_FILE_NAME, fileName);
 		_rba_api.SetParam(PARAMETER_ID.P62_REQ_LAST_MESSAGE_TIMEOUT_SEC, "180");
-		ERROR_ID eRROR_ID = _rba_api.ProcessMessage(MESSAGE_ID.FILE_WRITE);
-		HandleAndLogResult(eRROR_ID, "62 FileWrite");
+		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.FILE_WRITE);
+		HandleAndLogResult(errorId, "62 FileWrite");
 		Log("P62_RES_STATUS " + _rba_api.GetParam(PARAMETER_ID.P62_RES_STATUS));
 		Log("P62_RES_FILE_LENGTH " + _rba_api.GetParam(PARAMETER_ID.P62_RES_FILE_LENGTH));
 		bool flag = true;
-		if ((eRROR_ID == ERROR_ID.RESULT_SUCCESS) & rebootAfterWrite)
+		if ((errorId == ERROR_ID.RESULT_SUCCESS) & rebootAfterWrite)
 		{
 			flag = RebootInner();
 		}
-		return (eRROR_ID == ERROR_ID.RESULT_SUCCESS) & flag;
+		return (errorId == ERROR_ID.RESULT_SUCCESS) & flag;
 	}
 
 	public bool Disconnect()
 	{
-		ERROR_ID eRROR_ID;
+		ERROR_ID errorId;
 		try
 		{
-			eRROR_ID = _rba_api.Disconnect();
+			errorId = _rba_api.Disconnect();
 		}
 		catch (Exception e)
 		{
 			LogException("Discconnect", e);
 			return false;
 		}
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	public bool Reconnect()
@@ -2973,9 +2973,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private bool SendCustomMessage(string message, bool waitForResponse = false)
 	{
-		ERROR_ID eRROR_ID = _rba_api.SendCustomMessage(message, waitForResponse);
-		HandleAndLogResult(eRROR_ID, "SendCustomMessage " + message);
-		return eRROR_ID == ERROR_ID.RESULT_SUCCESS;
+		ERROR_ID errorId = _rba_api.SendCustomMessage(message, waitForResponse);
+		HandleAndLogResult(errorId, "SendCustomMessage " + message);
+		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
 	public void ReadCancel()
