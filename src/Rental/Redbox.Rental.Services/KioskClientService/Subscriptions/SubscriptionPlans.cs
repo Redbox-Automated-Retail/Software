@@ -88,10 +88,10 @@ public class SubscriptionPlans : ISubscriptionPlans
 						Description = benefit.Description,
 						Quantity = benefit.Quantity.GetValueOrDefault()
 					};
-					Enum.TryParse<RedboxPlusBenefitType>(benefit.Type.ToString(), out var result2);
-					redboxPlusBenefit.RedboxPlusBenefitType = result2;
-					Enum.TryParse<RedboxPlusBenefitPeriod>(benefit.Period.ToString(), out var result3);
-					redboxPlusBenefit.Period = result3;
+					Enum.TryParse<RedboxPlusBenefitType>(benefit.Type.ToString(), out var benefitType);
+					redboxPlusBenefit.RedboxPlusBenefitType = benefitType;
+					Enum.TryParse<RedboxPlusBenefitPeriod>(benefit.Period.ToString(), out var benefitPeriod);
+					redboxPlusBenefit.Period = benefitPeriod;
 					redboxPlusOfferPeriod.Benefits.Add(redboxPlusBenefit);
 				}
 			}

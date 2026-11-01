@@ -228,15 +228,15 @@ public partial class KeyboardUserControl : BaseUserControl, IValueConverter, ICo
 			{
 				continue;
 			}
-			short num = (short)text[0];
+			short charCode = (short)text[0];
 			if (keyState == KeyState.LOWER)
 			{
-				if (num >= 65 && num <= 90)
+				if (charCode >= 65 && charCode <= 90)
 				{
 					(child as Button).Content = text.ToLower();
 				}
 			}
-			else if (num >= 97 && num <= 122)
+			else if (charCode >= 97 && charCode <= 122)
 			{
 				(child as Button).Content = text.ToUpper();
 			}
@@ -245,27 +245,27 @@ public partial class KeyboardUserControl : BaseUserControl, IValueConverter, ICo
 
 	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		bool flag = false;
+		bool visible = false;
 		KeyboardMode keyboardMode = KeyboardMode;
 		switch ((string)value)
 		{
 		case "SymbolKeysElem":
-			flag = false;
+			visible = false;
 			break;
 		case "CaseKeysElem":
-			flag = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
+			visible = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
 			break;
 		case "EmailKeysElem":
-			flag = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
+			visible = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
 			break;
 		case "CodeKeysElem":
-			flag = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
+			visible = keyboardMode == KeyboardMode.ACCOUNT_SIGN_IN || keyboardMode == KeyboardMode.EMAIL_RECEIPTS_PROMO || keyboardMode == KeyboardMode.ACCOUNT_EMAIL_CHANGED || keyboardMode == KeyboardMode.EMAIL_COMING_SOON;
 			break;
 		case "PromoCodeElem":
-			flag = keyboardMode == KeyboardMode.PROMOTIONS_CODE;
+			visible = keyboardMode == KeyboardMode.PROMOTIONS_CODE;
 			break;
 		}
-		return (!flag) ? Visibility.Collapsed : Visibility.Visible;
+		return (!visible) ? Visibility.Collapsed : Visibility.Visible;
 	}
 
 	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

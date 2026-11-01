@@ -39,13 +39,13 @@ public class AspectRatioLayoutDecorator : Decorator
 
 	private static bool ValidateAspectRatio(object value)
 	{
-		if (!(value is double num))
+		if (!(value is double aspectRatio))
 		{
 			return false;
 		}
-		if (num > 0.0 && !double.IsInfinity(num))
+		if (aspectRatio > 0.0 && !double.IsInfinity(aspectRatio))
 		{
-			return !double.IsNaN(num);
+			return !double.IsNaN(aspectRatio);
 		}
 		return false;
 	}
@@ -92,17 +92,17 @@ public class AspectRatioLayoutDecorator : Decorator
 			{
 				size = SizeToRatio(arrangeSize, expand: false);
 			}
-			double num = arrangeSize.Width - size.Width;
-			double num2 = arrangeSize.Height - size.Height;
+			double extraWidth = arrangeSize.Width - size.Width;
+			double extraHeight = arrangeSize.Height - size.Height;
 			double y = 0.0;
 			double x = 0.0;
-			if (!double.IsNaN(num) && !double.IsInfinity(num))
+			if (!double.IsNaN(extraWidth) && !double.IsInfinity(extraWidth))
 			{
-				x = num / 2.0;
+				x = extraWidth / 2.0;
 			}
-			if (!double.IsNaN(num2) && !double.IsInfinity(num2))
+			if (!double.IsNaN(extraHeight) && !double.IsInfinity(extraHeight))
 			{
-				y = num2 / 2.0;
+				y = extraHeight / 2.0;
 			}
 			Rect finalRect = new Rect(new Point(x, y), size);
 			Child.Arrange(finalRect);

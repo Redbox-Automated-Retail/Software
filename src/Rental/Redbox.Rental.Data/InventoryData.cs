@@ -776,9 +776,9 @@ public class InventoryData : IInventoryData
 		{
 			_merchOrderBarcodes.Add(item.Barcode, ConvertToPlcInventory(item, Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Rebalancing));
 		}
-		foreach (BarcodeForProductResult item2 in barcodesForMerchOrders2)
+		foreach (BarcodeForProductResult barcodeResult in barcodesForMerchOrders2)
 		{
-			_merchOrderBarcodes.Add(item2.Barcode, ConvertToPlcInventory(item2, Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Thinned));
+			_merchOrderBarcodes.Add(barcodeResult.Barcode, ConvertToPlcInventory(barcodeResult, Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Thinned));
 		}
 	}
 
@@ -838,31 +838,31 @@ public class InventoryData : IInventoryData
 							dictionary[eachInventoryEntry.Code].Add(item);
 						}
 					}
-					int num = searchOrder.UnitCount;
+					int unitsRemaining = searchOrder.UnitCount;
 					foreach (Redbox.KioskEngine.ComponentModel.InventoryStatusCode statusSearch in statusSearchList)
 					{
-						if (num <= 0 || !dictionary.ContainsKey(statusSearch) || dictionary[statusSearch].Count <= 0)
+						if (unitsRemaining <= 0 || !dictionary.ContainsKey(statusSearch) || dictionary[statusSearch].Count <= 0)
 						{
 							continue;
 						}
-						foreach (BarcodeAndTotalRents item3 in dictionary[statusSearch].OrderByDescending((BarcodeAndTotalRents b) => b.RentalCount))
+						foreach (BarcodeAndTotalRents barcodeAndRents in dictionary[statusSearch].OrderByDescending((BarcodeAndTotalRents b) => b.RentalCount))
 						{
-							BarcodeForProductResult item2 = new BarcodeForProductResult
+							BarcodeForProductResult barcodeResult = new BarcodeForProductResult
 							{
 								ProductId = searchOrder.TitleId,
-								Barcode = item3.Barcode
+								Barcode = barcodeAndRents.Barcode
 							};
-							list.Add(item2);
-							num--;
-							if (num == 0)
+							list.Add(barcodeResult);
+							unitsRemaining--;
+							if (unitsRemaining == 0)
 							{
 								break;
 							}
 						}
 					}
-					if (num > 0)
+					if (unitsRemaining > 0)
 					{
-						LogHelper.Instance.Log($">  WARNING: Merchandizing Order for {searchOrder.MerchandizingOrderType.ToString()} for title ID {searchOrder.TitleId} specified {searchOrder.UnitCount} units but only {searchOrder.UnitCount - num} barcodes found for product id: {searchOrder.TitleId}");
+						LogHelper.Instance.Log($">  WARNING: Merchandizing Order for {searchOrder.MerchandizingOrderType.ToString()} for title ID {searchOrder.TitleId} specified {searchOrder.UnitCount} units but only {searchOrder.UnitCount - unitsRemaining} barcodes found for product id: {searchOrder.TitleId}");
 					}
 				}
 				else
@@ -897,10 +897,10 @@ public class InventoryData : IInventoryData
 
 	private bool MerchandizingOrdersAreNotExpired()
 	{
-		int num = ServiceLocator.Instance.GetService<IConfiguration>()?.MerchOrderExpirationDays ?? 7;
+		int expirationDays = ServiceLocator.Instance.GetService<IConfiguration>()?.MerchOrderExpirationDays ?? 7;
 		if (_inventoryDataJsonFile.LastMerchOrdersReceivedDate.HasValue)
 		{
-			return _inventoryDataJsonFile.LastMerchOrdersReceivedDate > DateTime.Now.AddDays(-num);
+			return _inventoryDataJsonFile.LastMerchOrdersReceivedDate > DateTime.Now.AddDays(-expirationDays);
 		}
 		return true;
 	}

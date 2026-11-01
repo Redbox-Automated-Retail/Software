@@ -180,10 +180,10 @@ public class BrowseViewTextToSpeech
 					Value = "AvailableTitles"
 				});
 				AddCheckOutEvent(speechPart, browseViewModel);
-				int valueOrDefault = (RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
+				int cartItemCount = (RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = $"You have {valueOrDefault} {GetCartTitlePlurality()} in your cart."
+					Text = $"You have {cartItemCount} {GetCartTitlePlurality()} in your cart."
 				});
 				speechPart.Texts.Add(new TextPart
 				{
@@ -220,32 +220,32 @@ public class BrowseViewTextToSpeech
 				string text = (BrowseFunctions.IsRedboxPlusBrowseMode ? "Redbox plus movies" : null);
 				List<ITextPart> texts = speechPart.Texts;
 				TextPart textPart = new TextPart();
-				string[] obj = new string[5] { "You are now browsing ", text, " by ", null, null };
+				string[] textParts = new string[5] { "You are now browsing ", text, " by ", null, null };
 				IBrowseState browseState = BrowseState;
-				obj[3] = ((browseState != null) ? browseState.BrowseSelectedSort.GetDisplayName() : null);
-				obj[4] = " ";
-				textPart.Text = string.Concat(obj);
+				textParts[3] = ((browseState != null) ? browseState.BrowseSelectedSort.GetDisplayName() : null);
+				textParts[4] = " ";
+				textPart.Text = string.Concat(textParts);
 				texts.Add(textPart);
 				if (BrowseState.BrowseSelectedSort == BrowseSelectedSort.ForSale && BrowseState.BrowsePriceRangeFilter != null)
 				{
-					string text2 = "filtered by items with prices";
+					string priceRangeText = "filtered by items with prices";
 					BrowsePriceRangeParameter browsePriceRangeFilter = BrowseState.BrowsePriceRangeFilter;
 					if (!browsePriceRangeFilter.PriceRangeLow.HasValue)
 					{
-						text2 = text2 + " of $" + browsePriceRangeFilter.PriceRangeHigh.Value.ToString("0.00") + " and under.";
+						priceRangeText = priceRangeText + " of $" + browsePriceRangeFilter.PriceRangeHigh.Value.ToString("0.00") + " and under.";
 					}
 					else if (!browsePriceRangeFilter.PriceRangeHigh.HasValue)
 					{
-						text2 = text2 + " of $" + browsePriceRangeFilter.PriceRangeLow.Value.ToString("0.00") + " plus.";
+						priceRangeText = priceRangeText + " of $" + browsePriceRangeFilter.PriceRangeLow.Value.ToString("0.00") + " plus.";
 					}
 					else
 					{
-						text2 = text2 + " between $" + browsePriceRangeFilter.PriceRangeLow.Value.ToString("0.00");
-						text2 = text2 + " and $" + browsePriceRangeFilter.PriceRangeHigh.Value.ToString("0.00");
+						priceRangeText = priceRangeText + " between $" + browsePriceRangeFilter.PriceRangeLow.Value.ToString("0.00");
+						priceRangeText = priceRangeText + " and $" + browsePriceRangeFilter.PriceRangeHigh.Value.ToString("0.00");
 					}
 					speechPart.Texts.Add(new TextPart
 					{
-						Text = text2
+						Text = priceRangeText
 					});
 				}
 				speechPart.Texts.Add(new TextPart
@@ -312,11 +312,11 @@ public class BrowseViewTextToSpeech
 						}
 					}
 				});
-				int valueOrDefault = (BrowseState?.TTSBrowseItemModelsShown?.Count((IBrowseItemModel x) => x is DisplayProductModel)).GetValueOrDefault();
+				int titlesShownCount = (BrowseState?.TTSBrowseItemModelsShown?.Count((IBrowseItemModel x) => x is DisplayProductModel)).GetValueOrDefault();
 				string text = (BrowseFunctions.IsRedboxPlusBrowseMode ? "Redbox plus" : null);
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = $"You are currently browsing on page {(browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault()} of {(browseViewModel?.BrowseProductControlModel?.TotalPages).GetValueOrDefault()} pages and there are {valueOrDefault} {text} titles on this screen."
+					Text = $"You are currently browsing on page {(browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault()} of {(browseViewModel?.BrowseProductControlModel?.TotalPages).GetValueOrDefault()} pages and there are {titlesShownCount} {text} titles on this screen."
 				});
 				if ((browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault() > 1)
 				{
@@ -331,12 +331,12 @@ public class BrowseViewTextToSpeech
 					{
 						if (eachTTSBrowseItemModel?.Data is ITitleProduct titleProduct)
 						{
-							string text2 = (BrowseState.TTSBrowseItemModelsShown.IndexOf(eachTTSBrowseItemModel) + 1).ToString();
+							string keyNumber = (BrowseState.TTSBrowseItemModelsShown.IndexOf(eachTTSBrowseItemModel) + 1).ToString();
 							if (!BrowseFunctions.IsRedboxPlusBrowseMode)
 							{
 								speechPart.Events.Add(new MapKeyPressToAction
 								{
-									KeyCode = text2,
+									KeyCode = keyNumber,
 									Action = delegate
 									{
 										browseViewModel.BrowseProductControlModel.ProcessBrowseItemModelSelected(eachTTSBrowseItemModel, null);
@@ -344,14 +344,14 @@ public class BrowseViewTextToSpeech
 								});
 								speechPart.Texts.Add(new TextPart
 								{
-									Text = $"For {titleProduct.ProductName}, Press {text2} for more information."
+									Text = $"For {titleProduct.ProductName}, Press {keyNumber} for more information."
 								});
 							}
 							if (eachTTSBrowseItemModel.CanAdd)
 							{
 								speechPart.Events.Add(new MapKeyPressToAction
 								{
-									KeyCode = $"PLUS{text2}",
+									KeyCode = $"PLUS{keyNumber}",
 									Text = $"you added {titleProduct.ProductName} to your cart.",
 									Action = delegate
 									{
@@ -359,10 +359,10 @@ public class BrowseViewTextToSpeech
 										CommandManager.InvalidateRequerySuggested();
 									}
 								});
-								string text3 = (BrowseFunctions.IsRedboxPlusBrowseMode ? ("For " + titleProduct.ProductName + ", ") : null);
+								string productNamePrefix = (BrowseFunctions.IsRedboxPlusBrowseMode ? ("For " + titleProduct.ProductName + ", ") : null);
 								speechPart.Texts.Add(new TextPart
 								{
-									Text = text3 + " Press PLUS and " + text2 + " to add to cart."
+									Text = productNamePrefix + " Press PLUS and " + keyNumber + " to add to cart."
 								});
 							}
 						}
@@ -571,7 +571,7 @@ public class BrowseViewTextToSpeech
 					Function = "TTSSkipToSpeechPart",
 					Value = "AvailableTitles"
 				});
-				int num = 1;
+				int firstFilterKey = 1;
 				BrowseViewModel browseViewModel2 = browseViewModel;
 				if (browseViewModel2 != null && browseViewModel2.BrowseFilterBarModel?.FormatFilterButtonVisibility == Visibility.Visible)
 				{
@@ -588,7 +588,7 @@ public class BrowseViewTextToSpeech
 					{
 						Text = "To filter by format press 1."
 					});
-					num++;
+					firstFilterKey++;
 				}
 				BrowseViewModel browseViewModel3 = browseViewModel;
 				if (browseViewModel3 != null && browseViewModel3.BrowseFilterBarModel?.PriceRangeFilterButtonVisibility == Visibility.Visible)
@@ -606,13 +606,13 @@ public class BrowseViewTextToSpeech
 					{
 						Text = "To filter by price range press 2."
 					});
-					num++;
+					firstFilterKey++;
 				}
 				if (browseViewModel?.BrowseFilterBarModel?.Filters != null)
 				{
 					foreach (BrowseFilter eachFilter in browseViewModel.BrowseFilterBarModel.Filters.Where((BrowseFilter f) => f.IsVisible))
 					{
-						string text = (browseViewModel.BrowseFilterBarModel.Filters.IndexOf(eachFilter) + num).ToString();
+						string text = (browseViewModel.BrowseFilterBarModel.Filters.IndexOf(eachFilter) + firstFilterKey).ToString();
 						speechPart.Events.Add(new MapKeyPressToAction
 						{
 							KeyCode = text,

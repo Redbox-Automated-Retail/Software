@@ -90,10 +90,10 @@ public static class CustomerOfferFunctions
 
 	public static bool AreAllGameTypesIncluded(List<TitleType> formats, bool includeFormats)
 	{
-		bool flag = false;
+		bool anyGameTypeExcluded = false;
 		List<TitleType> gameTitleTypes = GetGameTitleTypes();
-		flag = ((!includeFormats) ? gameTitleTypes.Any((TitleType f) => formats.Contains(f)) : gameTitleTypes.Any((TitleType f) => !formats.Contains(f)));
-		return !flag;
+		anyGameTypeExcluded = ((!includeFormats) ? gameTitleTypes.Any((TitleType f) => formats.Contains(f)) : gameTitleTypes.Any((TitleType f) => !formats.Contains(f)));
+		return !anyGameTypeExcluded;
 	}
 
 	private static List<TitleType> GetGameTitleTypes()

@@ -71,8 +71,8 @@ public class ComingSoonViewController : BaseViewController
 			List<ITitleProduct> comingSoonByTypeAndRating = GetComingSoonByTypeAndRating(products, ratings, includeBluray);
 			LogHelper.Instance.Log($"FindComingSoonTitles.  Cart Title Item count: {rentalShoppingCart.TitleItems.Count}, Highest Rating: {ratings}");
 			StringBuilder stringBuilder = new StringBuilder($"Available coming soon titles: {comingSoonByTypeAndRating.Count};  Selected coming soon titles: ");
-			List<ITitleProduct> list2 = comingSoonByTypeAndRating.Take(count).ToList();
-			list2.ForEach(delegate(ITitleProduct x)
+			List<ITitleProduct> comingSoonTitles = comingSoonByTypeAndRating.Take(count).ToList();
+			comingSoonTitles.ForEach(delegate(ITitleProduct x)
 			{
 				if (!Enum.TryParse<Ratings>(x.RatingId?.ToString(), out var result))
 				{
@@ -83,7 +83,7 @@ public class ComingSoonViewController : BaseViewController
 			LogHelper.Instance.Log(stringBuilder.ToString());
 			if (comingSoonByTypeAndRating.Count > 0)
 			{
-				list = CreateComingSoonTitles(list2);
+				list = CreateComingSoonTitles(comingSoonTitles);
 			}
 		}
 		_cachedComingSoonTitles = list;
@@ -106,10 +106,10 @@ public class ComingSoonViewController : BaseViewController
 				BitmapImage image = null;
 				if (!string.IsNullOrEmpty(text) && text.StartsWith("cache:"))
 				{
-					string text2 = text.Substring(6);
-					if (OrchestrationService.DataServiceRegisterBitmapImage(text2, text2))
+					string imageName = text.Substring(6);
+					if (OrchestrationService.DataServiceRegisterBitmapImage(imageName, imageName))
 					{
-						image = ServiceLocator.Instance.GetService<IBitmapCacheService>()?.GetBitmapImage(text2);
+						image = ServiceLocator.Instance.GetService<IBitmapCacheService>()?.GetBitmapImage(imageName);
 					}
 				}
 				IComingSoonTitle item = new ComingSoonTitle
@@ -134,13 +134,13 @@ public class ComingSoonViewController : BaseViewController
 				ITitleProduct titleProduct = comingSoonProduct as ITitleProduct;
 				if (comingSoonProduct is ITitleRollupProduct titleRollupProduct)
 				{
-					bool flag = false;
+					bool blurayValid = false;
 					if (includeBluray)
 					{
 						titleProduct = titleRollupProduct.KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == TitleType.Bluray);
-						flag = IsValidComingSoonTitle(titleProduct, includeBluray, highestRating);
+						blurayValid = IsValidComingSoonTitle(titleProduct, includeBluray, highestRating);
 					}
-					if (!flag)
+					if (!blurayValid)
 					{
 						titleProduct = titleRollupProduct.KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == TitleType.DVD);
 					}
@@ -152,12 +152,12 @@ public class ComingSoonViewController : BaseViewController
 			}
 			list.Sort(delegate(ITitleProduct a, ITitleProduct b)
 			{
-				int num = a.TitleType.CompareTo(b.TitleType) * -1;
-				if (num == 0)
+				int comparison = a.TitleType.CompareTo(b.TitleType) * -1;
+				if (comparison == 0)
 				{
-					num = a.MerchandiseDate.CompareTo(b.MerchandiseDate);
+					comparison = a.MerchandiseDate.CompareTo(b.MerchandiseDate);
 				}
-				return num;
+				return comparison;
 			});
 		}
 		return list;
@@ -166,10 +166,10 @@ public class ComingSoonViewController : BaseViewController
 	private static bool IsValidComingSoonTitle(ITitleProduct titleProduct, bool includeBluray, Ratings highestRating)
 	{
 		bool result = false;
-		if (titleProduct != null && titleProduct.TitleFamily == TitleFamily.Movies && (((titleProduct.TitleType == TitleType.Bluray) & includeBluray) || titleProduct.TitleType == TitleType.DVD) && titleProduct.Genres.Contains(1020L) && (!titleProduct.DiscNumber.HasValue || titleProduct.DiscNumber == 1) && titleProduct.RatingId.HasValue && Enum.TryParse<Ratings>(titleProduct.RatingId.ToString(), out var result2))
+		if (titleProduct != null && titleProduct.TitleFamily == TitleFamily.Movies && (((titleProduct.TitleType == TitleType.Bluray) & includeBluray) || titleProduct.TitleType == TitleType.DVD) && titleProduct.Genres.Contains(1020L) && (!titleProduct.DiscNumber.HasValue || titleProduct.DiscNumber == 1) && titleProduct.RatingId.HasValue && Enum.TryParse<Ratings>(titleProduct.RatingId.ToString(), out var rating))
 		{
-			result2 = RatingsProperties.GetMPAARatingEquivalent(result2);
-			if (result2 != Ratings.None && result2 <= highestRating)
+			rating = RatingsProperties.GetMPAARatingEquivalent(rating);
+			if (rating != Ratings.None && rating <= highestRating)
 			{
 				result = true;
 			}

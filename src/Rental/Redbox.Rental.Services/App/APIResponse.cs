@@ -84,8 +84,8 @@ public class APIResponse<T>
 		Response = default(T);
 		StatusCode = HttpResponse?.StatusCode ?? HttpStatusCode.InternalServerError;
 		ResponseTime = requestTime;
-		byte[] obj = content as byte[];
-		ResponseLength = ((obj != null) ? obj.Length : 0);
+		byte[] bytes = content as byte[];
+		ResponseLength = ((bytes != null) ? bytes.Length : 0);
 		try
 		{
 			if (ResponseLength != 0)

@@ -65,11 +65,11 @@ public class ParseLuaValue
 		_rawTokens.Clear();
 		s = s.Replace("\\\"", "&quot");
 		string text = string.Format("({0}[^{0}]*{0})", "\"");
-		foreach (string text2 in Regex.Split(s, text + "|(=)|(,)|(\\[)|(\\])|(\\{)|(\\})|(--[^\\n\\r]*)"))
+		foreach (string token in Regex.Split(s, text + "|(=)|(,)|(\\[)|(\\])|(\\{)|(\\})|(--[^\\n\\r]*)"))
 		{
-			if (text2.Trim().Length != 0 && !text2.StartsWith("--"))
+			if (token.Trim().Length != 0 && !token.StartsWith("--"))
 			{
-				_rawTokens.Add(text2.Trim());
+				_rawTokens.Add(token.Trim());
 			}
 		}
 		_tokenPos = 0;
@@ -79,10 +79,10 @@ public class ParseLuaValue
 	private void LoadProperties()
 	{
 		_properties.Clear();
-		object obj = ReadValue();
-		if (obj is Dictionary<string, object>)
+		object value = ReadValue();
+		if (value is Dictionary<string, object>)
 		{
-			_properties = obj as Dictionary<string, object>;
+			_properties = value as Dictionary<string, object>;
 			return;
 		}
 		throw new Exception("expecting '{', a string or a number");

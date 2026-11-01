@@ -21,11 +21,11 @@ public class SubTotalGroup : ISubTotalGroup
 		{
 			decimal? result = null;
 			IPromotion promotion = _rentalShoppingCart.Promotion;
-			decimal num = ((promotion?.CartItemAction != Action) ? 0m : (promotion?.Price ?? 0m));
-			decimal valueOrDefault = (_rentalShoppingCart?.TitleItems?.Where((IRentalShoppingCartTitleItem x) => x.Action == Action && (x.Status == LineItemStatus.Pending || x.Status == LineItemStatus.ProductSelected || x.Status == LineItemStatus.Fullfilled) && (x.LoyaltyPointsRecord?.ToBeRedeemed ?? false))?.Sum((IRentalShoppingCartTitleItem x) => x.ExtendedPrice)).GetValueOrDefault();
-			if (valueOrDefault > 0m || num > 0m)
+			decimal promotionDiscount = ((promotion?.CartItemAction != Action) ? 0m : (promotion?.Price ?? 0m));
+			decimal loyaltyRedeemedAmount = (_rentalShoppingCart?.TitleItems?.Where((IRentalShoppingCartTitleItem x) => x.Action == Action && (x.Status == LineItemStatus.Pending || x.Status == LineItemStatus.ProductSelected || x.Status == LineItemStatus.Fullfilled) && (x.LoyaltyPointsRecord?.ToBeRedeemed ?? false))?.Sum((IRentalShoppingCartTitleItem x) => x.ExtendedPrice)).GetValueOrDefault();
+			if (loyaltyRedeemedAmount > 0m || promotionDiscount > 0m)
 			{
-				result = Amount - num - valueOrDefault;
+				result = Amount - promotionDiscount - loyaltyRedeemedAmount;
 			}
 			if (result.HasValue)
 			{

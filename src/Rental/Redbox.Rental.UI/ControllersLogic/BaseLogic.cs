@@ -31,7 +31,6 @@ public class BaseLogic : DynamicRouting
 
 	protected static byte[] CreateHashString(string s)
 	{
-		byte[] array = null;
 		using SHA256 sHA = SHA256.Create();
 		using MemoryStream inputStream = new MemoryStream(Encoding.UTF8.GetBytes(s));
 		return sHA.ComputeHash(inputStream);

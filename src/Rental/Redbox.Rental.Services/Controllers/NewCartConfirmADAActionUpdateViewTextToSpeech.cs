@@ -67,14 +67,14 @@ public class NewCartConfirmADAActionUpdateViewTextToSpeech
 						viewModel.OkButtonCommand.Execute(null);
 					}
 				});
-				int num = 1;
+				int keyNumber = 1;
 				foreach (DisplayCheckoutProductModel item in viewModel.DisplayProductModels)
 				{
 					if (item.OfferActionModel != null && item.OfferActionModel.ButtonVisibility == Visibility.Visible)
 					{
 						speechPart.Events.Add(new MapKeyPressToAction
 						{
-							KeyCode = num.ToString(),
+							KeyCode = keyNumber.ToString(),
 							Function = "TTSRepeatSpeechPart",
 							Action = delegate
 							{
@@ -82,7 +82,7 @@ public class NewCartConfirmADAActionUpdateViewTextToSpeech
 							}
 						});
 					}
-					num++;
+					keyNumber++;
 				}
 				speechPart.Texts.Add(new TextPart
 				{
@@ -92,10 +92,10 @@ public class NewCartConfirmADAActionUpdateViewTextToSpeech
 				{
 					Text = string.Format("Your bag has {0} title{1}.", CartCount, (CartCount != 1) ? "s" : null)
 				});
-				int num2 = 0;
+				int itemNumber = 0;
 				foreach (DisplayCheckoutProductModel displayProductModel in viewModel.DisplayProductModels)
 				{
-					num2++;
+					itemNumber++;
 					if (displayProductModel.OfferActionModel != null && displayProductModel.OfferActionModel.ButtonVisibility != Visibility.Visible)
 					{
 						speechPart.Texts.Add(new TextPart
@@ -107,7 +107,7 @@ public class NewCartConfirmADAActionUpdateViewTextToSpeech
 					{
 						speechPart.Texts.Add(new TextPart
 						{
-							Text = $"title {displayProductModel.Name}, {displayProductModel.OfferActionModel.TextLine1}, to {displayProductModel.OfferActionModel.ButtonText}, press {num2}."
+							Text = $"title {displayProductModel.Name}, {displayProductModel.OfferActionModel.TextLine1}, to {displayProductModel.OfferActionModel.ButtonText}, press {itemNumber}."
 						});
 					}
 				}

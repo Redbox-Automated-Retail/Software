@@ -99,9 +99,9 @@ internal class KioskClientServiceDual : BaseKioskClientService, IKioskClientServ
 		}
 		catch (Exception e)
 		{
-			string text2 = "KioskClientServiceDual.Refresh - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text2, e);
-			refreshResponse.Error = text2;
+			string errorMessage = "KioskClientServiceDual.Refresh - An unhandled exception was raised!";
+			LogHelper.Instance.Log(errorMessage, e);
+			refreshResponse.Error = errorMessage;
 		}
 		return refreshResponse;
 	}
@@ -133,9 +133,9 @@ internal class KioskClientServiceDual : BaseKioskClientService, IKioskClientServ
 		}
 		catch (Exception e)
 		{
-			string text2 = "KioskClientServiceDual.UpdateTitles - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text2, e);
-			updateTitlesResponse.Error = text2;
+			string errorMessage = "KioskClientServiceDual.UpdateTitles - An unhandled exception was raised!";
+			LogHelper.Instance.Log(errorMessage, e);
+			updateTitlesResponse.Error = errorMessage;
 		}
 		return updateTitlesResponse;
 	}
@@ -168,9 +168,9 @@ internal class KioskClientServiceDual : BaseKioskClientService, IKioskClientServ
 		}
 		catch (Exception e)
 		{
-			string text2 = "KioskClientServiceDual.InStockInOther - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text2, e);
-			inStockInOtherResponse.Error = text2;
+			string errorMessage = "KioskClientServiceDual.InStockInOther - An unhandled exception was raised!";
+			LogHelper.Instance.Log(errorMessage, e);
+			inStockInOtherResponse.Error = errorMessage;
 		}
 		return inStockInOtherResponse;
 	}

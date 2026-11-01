@@ -297,12 +297,12 @@ public static class InventoryFunctions
 		List<Dictionary<string, object>> result = new List<Dictionary<string, object>>();
 		rebalancesIn.ForEach(delegate(RebalancesInModel item)
 		{
-			Dictionary<string, object> item2 = new Dictionary<string, object>
+			Dictionary<string, object> rebalance = new Dictionary<string, object>
 			{
 				["TitleId"] = item.TitleId,
 				["Quantity"] = item.Quantity
 			};
-			result.Add(item2);
+			result.Add(rebalance);
 		});
 		return result;
 	}
@@ -386,25 +386,25 @@ public static class InventoryFunctions
 				LogHelper.Instance.Log($"InventoryFunctions.InnerShapshot unable to cast item key {key} to a LuaTable; skipping this item.", LogEntryType.Error);
 				continue;
 			}
-			object obj = luaTable["deck"];
-			int? num = null;
-			if (obj != null)
+			object deckValue = luaTable["deck"];
+			int? deckNumber = null;
+			if (deckValue != null)
 			{
-				num = Convert.ToInt32(obj);
+				deckNumber = Convert.ToInt32(deckValue);
 			}
-			object obj2 = luaTable["slot"];
-			int? num2 = null;
-			if (obj2 != null)
+			object slotValue = luaTable["slot"];
+			int? slotNumber = null;
+			if (slotValue != null)
 			{
-				num2 = Convert.ToInt32(obj2);
+				slotNumber = Convert.ToInt32(slotValue);
 			}
 			string text = Convert.ToString(luaTable["barcode"]);
 			if (string.IsNullOrEmpty(text))
 			{
-				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {num} and slot = {num2}; skipping this item.", LogEntryType.Error);
+				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {deckNumber} and slot = {slotNumber}; skipping this item.", LogEntryType.Error);
 				continue;
 			}
-			inventoryItems.Add(inventoryService.CreateInventoryItem(text, num, num2, Enum<InventoryItemStatus>.ParseIgnoringCase(Convert.ToString(luaTable["status"]), InventoryItemStatus.In)));
+			inventoryItems.Add(inventoryService.CreateInventoryItem(text, deckNumber, slotNumber, Enum<InventoryItemStatus>.ParseIgnoringCase(Convert.ToString(luaTable["status"]), InventoryItemStatus.In)));
 			luaTable.Dispose();
 		}
 		items.Dispose();

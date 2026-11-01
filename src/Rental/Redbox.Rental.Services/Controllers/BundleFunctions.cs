@@ -46,11 +46,11 @@ public class BundleFunctions
 			{
 				continue;
 			}
-			foreach (XmlNode item2 in xmlNodeList2)
+			foreach (XmlNode node in xmlNodeList2)
 			{
-				string attributeValue = item2.GetAttributeValue<string>("name");
-				object value = item2.GetNodeValue(string.Empty);
-				string attributeValue2 = item2.GetAttributeValue<string>("type");
+				string attributeValue = node.GetAttributeValue<string>("name");
+				object value = node.GetNodeValue(string.Empty);
+				string attributeValue2 = node.GetAttributeValue<string>("type");
 				if (!string.IsNullOrEmpty(attributeValue2))
 				{
 					Type type = attributeValue2.ToType();

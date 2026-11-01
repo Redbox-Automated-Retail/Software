@@ -381,9 +381,9 @@ public class TitleProduct : KioskProduct, ITitleProduct, IKioskProduct
 	{
 		get
 		{
-			IList<IPricingRecord> obj = ServiceLocator.Instance.GetService<IPricingService>()?.GetProductPricingRecords(_title.ProductId);
+			IList<IPricingRecord> pricingRecords = ServiceLocator.Instance.GetService<IPricingService>()?.GetProductPricingRecords(_title.ProductId);
 			bool hasMdvWorkaround = RequiredAdditionalTitles.Count > 0;
-			return obj?.Any(delegate(IPricingRecord pr)
+			return pricingRecords?.Any(delegate(IPricingRecord pr)
 			{
 				if (pr == null)
 				{
@@ -413,9 +413,9 @@ public class TitleProduct : KioskProduct, ITitleProduct, IKioskProduct
 			decimal? result = null;
 			if (_title.DigitalSDRentPrice.HasValue || _title.DigitalHDRentPrice.HasValue)
 			{
-				decimal? num = _title.DigitalHDRentPrice ?? _title.DigitalSDRentPrice;
-				decimal? num2 = _title.DigitalSDRentPrice ?? _title.DigitalHDRentPrice;
-				result = Math.Min(num.Value, num2.Value);
+				decimal? hdPrice = _title.DigitalHDRentPrice ?? _title.DigitalSDRentPrice;
+				decimal? sdPrice = _title.DigitalSDRentPrice ?? _title.DigitalHDRentPrice;
+				result = Math.Min(hdPrice.Value, sdPrice.Value);
 			}
 			return result;
 		}
@@ -518,10 +518,10 @@ public class TitleProduct : KioskProduct, ITitleProduct, IKioskProduct
 		}
 		if (_store.State == "MD")
 		{
-			decimal num = ((TitleType == TitleType.DigitalCode) ? _store.DigitalPurchaseTaxRate : _store.PurchaseTaxRate);
-			if (num > 0m)
+			decimal taxRate = ((TitleType == TitleType.DigitalCode) ? _store.DigitalPurchaseTaxRate : _store.PurchaseTaxRate);
+			if (taxRate > 0m)
 			{
-				return Math.Round(price * (num / 100m + 1m), 2);
+				return Math.Round(price * (taxRate / 100m + 1m), 2);
 			}
 		}
 		return price;

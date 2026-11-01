@@ -265,8 +265,8 @@ public class ProfileData : IProfileData
 
 	private void LoadStore(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		long num = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-		DataTable data = ((num <= 0) ? db.GetSqlData(string.Format(_keyValueSql, "Store")) : db.GetSqlData(string.Format(_keyValueSqlKey, "Store", num)));
+		long kioskId = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
+		DataTable data = ((kioskId <= 0) ? db.GetSqlData(string.Format(_keyValueSql, "Store")) : db.GetSqlData(string.Format(_keyValueSqlKey, "Store", kioskId)));
 		ConvertToList(data, "LoadStore", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -295,10 +295,10 @@ public class ProfileData : IProfileData
 				ServiceFeeTaxRate = dictionary.ToDecimal("service_fee_tax_rate"),
 				ReturnOnlyModeDate = dictionary.ToDateTime("return_only_mode_date", null)
 			};
-			decimal? num2 = dictionary.ToDecimal("digital_purchase_tax_rate", null);
-			if (num2.HasValue)
+			decimal? digitalPurchaseTaxRate = dictionary.ToDecimal("digital_purchase_tax_rate", null);
+			if (digitalPurchaseTaxRate.HasValue)
 			{
-				store.DigitalPurchaseTaxRate = num2.Value;
+				store.DigitalPurchaseTaxRate = digitalPurchaseTaxRate.Value;
 			}
 			else
 			{
@@ -366,9 +366,9 @@ public class ProfileData : IProfileData
 				DataTable sqlData2 = db.GetSqlData($"SELECT DATA FROM CACHE WHERE [NAME] = '{name}'", nolog: true);
 				if (sqlData2.Rows.Count > 0)
 				{
-					byte[] array = (byte[])sqlData2.Rows[0]["Data"];
+					byte[] imageData = (byte[])sqlData2.Rows[0]["Data"];
 					using FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
-					fileStream.Write(array, 0, array.Length);
+					fileStream.Write(imageData, 0, imageData.Length);
 					fileStream.Close();
 				}
 			});
@@ -380,20 +380,20 @@ public class ProfileData : IProfileData
 		LogHelper.Instance.Log("ProfileData.{0} - Loading", name);
 		if (data != null)
 		{
-			int columnIndex = data.Columns.IndexOf("Key");
-			int columnIndex2 = data.Columns.IndexOf("Value");
+			int keyColumnIndex = data.Columns.IndexOf("Key");
+			int valueColumnIndex = data.Columns.IndexOf("Value");
 			{
 				foreach (DataRow row in data.Rows)
 				{
-					string arg = Convert.ToString(row[columnIndex]);
-					string arg2 = Convert.ToString(row[columnIndex2]);
+					string key = Convert.ToString(row[keyColumnIndex]);
+					string value = Convert.ToString(row[valueColumnIndex]);
 					try
 					{
-						action(arg, arg2);
+						action(key, value);
 					}
 					catch (Exception e)
 					{
-						LogHelper.Instance.Log($"ProfileData.{name} - Unhandled exception occurred, skipping Key: {arg} Value: {arg2}", e);
+						LogHelper.Instance.Log($"ProfileData.{name} - Unhandled exception occurred, skipping Key: {key} Value: {value}", e);
 					}
 				}
 				return;

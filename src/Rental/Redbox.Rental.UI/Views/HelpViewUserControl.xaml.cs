@@ -56,25 +56,25 @@ public partial class HelpViewUserControl : TextToSpeechUserControl, IWPFActor, I
 
 	private void ShowDocumentCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
 	{
-		bool flag = false;
+		bool documentSelected = false;
 		HelpDocuments helpDocument = HelpDocuments.Faq;
 		if (e.OriginalSource is RoundedButton roundedButton)
 		{
 			helpDocument = (HelpDocuments)roundedButton.Tag;
-			flag = true;
+			documentSelected = true;
 		}
 		else if (e.Parameter != null)
 		{
 			try
 			{
 				helpDocument = (HelpDocuments)Enum.Parse(typeof(HelpDocuments), e.Parameter.ToString());
-				flag = true;
+				documentSelected = true;
 			}
 			catch
 			{
 			}
 		}
-		if (flag)
+		if (documentSelected)
 		{
 			Model?.ProcessHelpDocumentButtonPress(helpDocument);
 		}

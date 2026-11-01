@@ -311,7 +311,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 					continue;
 				}
 				DisplayProductModelConstants displayProductModelConstants = GetDisplayProductModelConstants();
-				bool flag = IsProductSelected(product, displayProductModelConstants);
+				bool isSelected = IsProductSelected(product, displayProductModelConstants);
 				DisplayProductModel displayProductModel;
 				if (!isForMiniCart && BrowseState.BrowseMode == BrowseViewFilter.ForSale && (BrowseState.TitleFamily == TitleFamily.Movies || BrowseState.TitleFamily == TitleFamily.Games))
 				{
@@ -347,7 +347,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 					if (isAdaMiniCart)
 					{
 						displayProductModel.ConfigureForADAMiniCart();
-						displayProductModel.CanAdd = product.IsAvailable && !flag;
+						displayProductModel.CanAdd = product.IsAvailable && !isSelected;
 					}
 					else
 					{
@@ -359,7 +359,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 				{
 					displayProductModel.ConfigureForRecommendedTitlesPopup();
 					displayProductModel.FlagVisibility = Visibility.Visible;
-					if (!product.IsAvailable | flag)
+					if (!product.IsAvailable | isSelected)
 					{
 						displayProductModel.ImageOpacity = 0.4;
 						displayProductModel.CornerAddButtonVisibility = Visibility.Collapsed;
@@ -377,7 +377,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 				displayProductModel.AddButtonPlusSignVisibility = (BaseViewController.IsADAMode ? Visibility.Hidden : Visibility.Visible);
 				displayProductModel.AddButtonTextVisibility = ((!BaseViewController.IsADAMode) ? Visibility.Collapsed : Visibility.Visible);
 				displayProductModel.AddButtonStyle = (BaseViewController.IsADAMode ? WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "rubine_white_border_button_style") : WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "classic_rubine_button_style"));
-				if (!flag && !isAdaMiniCart)
+				if (!isSelected && !isAdaMiniCart)
 				{
 					ProductFlags productFlag = BrowseFunctions.GetProductFlag(product);
 					BrowseFunctions.ConfigureProductFlag(displayProductModel, productFlag, hideFlag: false, BaseViewController.GetViewUserControl(), product, displayProductModelConstants);
@@ -453,8 +453,8 @@ public class PromoOfferBrowseViewController : BaseViewController
 			browseControlModel.BrowseItemMargin = new Thickness(10.0, 10.0, 10.0, 10.0);
 			browseControlModel.RowCount = ((!BaseViewController.IsADAMode) ? 1 : 2);
 			browseControlModel.ColumnCount = ((!BaseViewController.IsADAMode) ? 1 : (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles ? 5 : 6));
-			int num = ((!BaseViewController.IsADAMode) ? 1 : (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles ? 10 : 12));
-			for (int i = 0; i < num; i++)
+			int miniCartSlotCount = ((!BaseViewController.IsADAMode) ? 1 : (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles ? 10 : 12));
+			for (int i = 0; i < miniCartSlotCount; i++)
 			{
 				browseControlModel.BrowseControls.Add(new DisplayProductWithCommandsUserControl
 				{
@@ -527,7 +527,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 	private static void BrowseProductControl_OnNotifyBrowseItemsShown(List<IBrowseItemModel> browseItemModels, object parameter)
 	{
 		List<IKioskProduct> kioskProducts = new List<IKioskProduct>();
-		List<IBrowseItemModel> list2 = new List<IBrowseItemModel>();
+		List<IBrowseItemModel> ttsBrowseItemModels = new List<IBrowseItemModel>();
 		if (browseItemModels != null)
 		{
 			foreach (IBrowseItemModel browseItemModel in browseItemModels)
@@ -538,7 +538,7 @@ public class PromoOfferBrowseViewController : BaseViewController
 				}
 				if (!browseItemModel.IsBorderItem)
 				{
-					list2.Add(browseItemModel);
+					ttsBrowseItemModels.Add(browseItemModel);
 				}
 			}
 		}
@@ -549,31 +549,31 @@ public class PromoOfferBrowseViewController : BaseViewController
 			if (PromoOfferState != null)
 			{
 				PromoOfferState.BrowseProductsShown = kioskProducts;
-				PromoOfferState.TTSBrowseItemModelsShown = list2;
+				PromoOfferState.TTSBrowseItemModelsShown = ttsBrowseItemModels;
 			}
 		}
 	}
 
 	private static bool AreProductListsIdentical(List<IKioskProduct> shownKioskProducts, List<IKioskProduct> browseProductsShown)
 	{
-		bool flag = shownKioskProducts?.Count == browseProductsShown?.Count;
-		if (flag)
+		bool identical = shownKioskProducts?.Count == browseProductsShown?.Count;
+		if (identical)
 		{
 			for (int i = 0; i < shownKioskProducts.Count; i++)
 			{
-				flag = shownKioskProducts[i] is ITitleProduct && browseProductsShown[i] is ITitleProduct && (shownKioskProducts[i] as ITitleProduct)?.ProductId == (browseProductsShown[i] as ITitleProduct).ProductId;
-				if (!flag)
+				identical = shownKioskProducts[i] is ITitleProduct && browseProductsShown[i] is ITitleProduct && (shownKioskProducts[i] as ITitleProduct)?.ProductId == (browseProductsShown[i] as ITitleProduct).ProductId;
+				if (!identical)
 				{
 					break;
 				}
 			}
 		}
-		return flag;
+		return identical;
 	}
 
 	private static bool IsProductSelected(ITitleProduct titleProduct, DisplayProductModelConstants displayProductModelConstants)
 	{
-		bool flag = true;
+		bool selected = true;
 		if (titleProduct != null)
 		{
 			if (titleProduct is TitleRollupProduct titleRollupProduct)
@@ -582,17 +582,17 @@ public class PromoOfferBrowseViewController : BaseViewController
 				{
 					if (kioskProduct.IsRentable)
 					{
-						bool flag2 = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || kioskProduct.TitleFamily != TitleFamily.Movies) && !kioskProduct.InStock;
-						flag = flag && (flag2 || (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(kioskProduct.ProductId) ?? true));
+						bool unavailable = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || kioskProduct.TitleFamily != TitleFamily.Movies) && !kioskProduct.InStock;
+						selected = selected && (unavailable || (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(kioskProduct.ProductId) ?? true));
 					}
 				}
 			}
 			else
 			{
-				flag = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId) ?? true;
+				selected = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId) ?? true;
 			}
 		}
-		return flag;
+		return selected;
 	}
 
 	private static void CreateAndStartTimer()

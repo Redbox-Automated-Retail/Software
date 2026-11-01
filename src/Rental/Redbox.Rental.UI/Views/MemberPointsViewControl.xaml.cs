@@ -107,23 +107,23 @@ public partial class MemberPointsViewControl : ViewUserControl, IComponentConnec
 				Height = 180.0,
 				Margin = new Thickness(15.0, 0.0, 15.0, 0.0)
 			};
-			int num = Model.DisplayProductModels.IndexOf(displayProductModel);
+			int index = Model.DisplayProductModels.IndexOf(displayProductModel);
 			displayProductWithCommandsUserControl.CornerIncludeButtonElem.Click += CornerIncludeButton_Pressed;
 			displayProductWithCommandsUserControl.CornerExcludeButtonElem.Click += CornerExcludeButton_Pressed;
-			displayProductWithCommandsUserControl.Name = $"Points_Item_{num}";
-			CartStackPanelElem.Children.Insert(num, displayProductWithCommandsUserControl);
+			displayProductWithCommandsUserControl.Name = $"Points_Item_{index}";
+			CartStackPanelElem.Children.Insert(index, displayProductWithCommandsUserControl);
 		}
 		List<long> selectedProductIds = Model.SelectedProductIds;
 		if (selectedProductIds == null || selectedProductIds.Count <= 0)
 		{
 			return;
 		}
-		foreach (long item2 in selectedProductIds)
+		foreach (long selectedProductId in selectedProductIds)
 		{
 			foreach (object child2 in CartStackPanelElem.Children)
 			{
 				DisplayProductWithCommandsUserControl displayProductWithCommandsUserControl2 = child2 as DisplayProductWithCommandsUserControl;
-				if (item2 == GetProductId(displayProductWithCommandsUserControl2))
+				if (selectedProductId == GetProductId(displayProductWithCommandsUserControl2))
 				{
 					DisplayProductModel displayModel = ChangeControlLook(displayProductWithCommandsUserControl2.CornerIncludeButtonElem, "FlagGrayColor", "FlagGrayShadow", includeOpacity: true);
 					InvokeDisplayProductUserControl(Model.PointsIncludeCommand, displayModel);
@@ -147,22 +147,22 @@ public partial class MemberPointsViewControl : ViewUserControl, IComponentConnec
 
 	private DisplayProductModel ChangeControlLook(RoundedButton buttonToHide, string flagColor, string shadowColor, bool includeOpacity = false)
 	{
-		bool flag = buttonToHide.Name.Equals("CornerExcludeButtonElem");
+		bool isCornerExcludeButton = buttonToHide.Name.Equals("CornerExcludeButtonElem");
 		Grid grid = buttonToHide.Parent as Grid;
-		DisplayProductUserControl obj = (grid.Parent as Grid).Children[0] as DisplayProductUserControl;
-		DisplayProductModel displayProductModel = obj.DataContext as DisplayProductModel;
+		DisplayProductUserControl displayProductUserControl = (grid.Parent as Grid).Children[0] as DisplayProductUserControl;
+		DisplayProductModel displayProductModel = displayProductUserControl.DataContext as DisplayProductModel;
 		displayProductModel.ImageOpacity = (includeOpacity ? 0.8 : 1.0);
-		Flag flag2 = obj.Flag;
+		Flag productFlag = displayProductUserControl.Flag;
 		if (grid.Children.Count > 1)
 		{
-			RoundedButton obj2 = grid.Children[(!flag) ? 1 : 0] as RoundedButton;
+			RoundedButton buttonToShow = grid.Children[(!isCornerExcludeButton) ? 1 : 0] as RoundedButton;
 			Color color = (Color)FindResource(flagColor);
 			Color flagShadowColor = (Color)FindResource(shadowColor);
-			flag2.FlagColor = color;
-			flag2.FlagGradientColor = color;
-			flag2.FlagShadowColor = flagShadowColor;
+			productFlag.FlagColor = color;
+			productFlag.FlagGradientColor = color;
+			productFlag.FlagShadowColor = flagShadowColor;
 			buttonToHide.Visibility = Visibility.Collapsed;
-			obj2.Visibility = Visibility.Visible;
+			buttonToShow.Visibility = Visibility.Visible;
 		}
 		return displayProductModel;
 	}

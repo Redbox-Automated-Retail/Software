@@ -35,9 +35,9 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 			if (kioskClientServiceTestData != null)
 			{
 				IReadTestDataValueResult readTestDataValueResult = kioskClientServiceTestData.ReadPropertyValue("ProxyServiceCustomerProfile", "Login.LiveCall");
-				if (readTestDataValueResult != null && readTestDataValueResult.Success && bool.TryParse(readTestDataValueResult.PropertyValue, out var result2))
+				if (readTestDataValueResult != null && readTestDataValueResult.Success && bool.TryParse(readTestDataValueResult.PropertyValue, out var isLiveCall))
 				{
-					result = result2;
+					result = isLiveCall;
 				}
 			}
 			return result;
@@ -76,7 +76,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 		IConfiguration instance = Redbox.Rental.Services.Configuration.Configuration.Instance;
 		if (instance != null && instance.EarlyIdEnabled)
 		{
-			int num = (int)(ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0);
+			int kioskId = (int)(ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0);
 			string languageCode = OrchestrationService.GetCulture()?.Substring(0, 2);
 			bool isEncrypted = true;
 			ICustomerProfileKioskLoginResponse customerProfileKioskLoginResponse = null;
@@ -88,7 +88,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 				Password = password?.SecureStringToString(),
 				PhoneNumber = phoneNumber,
 				Pin = pin?.SecureStringToString(),
-				KioskId = num,
+				KioskId = kioskId,
 				IsEncrypted = isEncrypted,
 				LanguageCode = languageCode,
 				CustomerProfileNumber = customerProfileNumber
@@ -112,13 +112,13 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 		else
 		{
 			LogHelper.Instance.Log("PersonalizationService login rejected.  Early ID is not enabled.");
-			LoginResult obj = new LoginResult
+			LoginResult loginResult = new LoginResult
 			{
 				Success = false
 			};
 			if (loginResultCallback != null)
 			{
-				loginResultCallback(obj);
+				loginResultCallback(loginResult);
 			}
 		}
 	}
@@ -265,9 +265,9 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 				if (long.TryParse(product.Id, out var result))
 				{
 					RecommendedTitlesIdType idType = RecommendedTitlesIdType.ProductGroupID;
-					if (Enum.TryParse<RecommendedTitlesIdType>(product.Type, ignoreCase: true, out var result2))
+					if (Enum.TryParse<RecommendedTitlesIdType>(product.Type, ignoreCase: true, out var parsedIdType))
 					{
-						idType = result2;
+						idType = parsedIdType;
 					}
 					RecommendedTitleId item = new RecommendedTitleId
 					{
@@ -284,7 +284,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 		{
 			foreach (KioskStoredPromoCode promoCode in response.PromoCodes)
 			{
-				StoredPromoCode item2 = new StoredPromoCode
+				StoredPromoCode storedPromoCode = new StoredPromoCode
 				{
 					PromoCode = promoCode.Code,
 					CampaignId = promoCode.CampaignId,
@@ -295,7 +295,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 					ExpirationText = ((promoCode.ExpirationText != null) ? promoCode.ExpirationText : string.Format(Resources.offer_expires_message, promoCode.ExpirationDate.ToString("M/d/yyyy"))),
 					DaysUntilExpiration = (promoCode.DaysUntilExpiration.HasValue ? promoCode.DaysUntilExpiration : new int?((promoCode.ExpirationDate.Date - DateTime.Today).Days))
 				};
-				loginResult.PersonalizationSession.StoredPromoCodes.Add(item2);
+				loginResult.PersonalizationSession.StoredPromoCodes.Add(storedPromoCode);
 			}
 		}
 		loginResult.PersonalizationSession.AcceptedOffers = new List<IAcceptedOffer>();
@@ -303,7 +303,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 		{
 			foreach (KioskAcceptedOffer acceptedOffer in response.AcceptedOffers)
 			{
-				AcceptedOffer item3 = new AcceptedOffer
+				AcceptedOffer sessionAcceptedOffer = new AcceptedOffer
 				{
 					Code = acceptedOffer.Code,
 					StartDate = acceptedOffer.StartDate,
@@ -323,7 +323,7 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 					RemainderValue = acceptedOffer.RemainderValue,
 					EndValueText = acceptedOffer.EndValueText
 				};
-				loginResult.PersonalizationSession.AcceptedOffers.Add(item3);
+				loginResult.PersonalizationSession.AcceptedOffers.Add(sessionAcceptedOffer);
 			}
 		}
 		if (response?.Loyalty != null && response.Loyalty.IsEnrolled)
@@ -332,9 +332,9 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 			loginResult.PersonalizationSession.LoyaltySession.SignInError = !response.Loyalty.LoyaltySystemOnline;
 			loginResult.PersonalizationSession.LoyaltySession.PointsBalance = response.Loyalty.PointBalance;
 			LoyaltyTiers loyaltyTier = LoyaltyTiers.None;
-			if (Enum.TryParse<LoyaltyTiers>(response.Loyalty.CurrentTier, out var result3))
+			if (Enum.TryParse<LoyaltyTiers>(response.Loyalty.CurrentTier, out var parsedLoyaltyTier))
 			{
-				loyaltyTier = result3;
+				loyaltyTier = parsedLoyaltyTier;
 			}
 			loginResult.PersonalizationSession.LoyaltySession.LoyaltyTier = loyaltyTier;
 			loginResult.PersonalizationSession.LoyaltySession.LoyaltyTierName = response.Loyalty.CurrentTier;
@@ -348,9 +348,9 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 			foreach (KioskSubscription existingSubscription3 in response.Subscriptions.ExistingSubscriptions)
 			{
 				SubscriptionPlanStatus status = SubscriptionPlanStatus.Active;
-				if (Enum.TryParse<SubscriptionPlanStatus>(existingSubscription3.status.ToString(), ignoreCase: true, out var result4))
+				if (Enum.TryParse<SubscriptionPlanStatus>(existingSubscription3.status.ToString(), ignoreCase: true, out var parsedStatus))
 				{
-					status = result4;
+					status = parsedStatus;
 				}
 				IExistingSubscription existingSubscription = new ExistingSubscription
 				{
@@ -386,9 +386,9 @@ public class KioskClientServiceCustomerProfile : BaseKioskClientService, IKioskC
 		{
 			RedboxPlusSession redboxPlusSession = new RedboxPlusSession();
 			RedboxPlusSubscriptionTier subscriptionTier = RedboxPlusSubscriptionTier.Tier1;
-			if (Enum.TryParse<RedboxPlusSubscriptionTier>(existingSubscription2.SubscriptionTier, out var result5))
+			if (Enum.TryParse<RedboxPlusSubscriptionTier>(existingSubscription2.SubscriptionTier, out var parsedSubscriptionTier))
 			{
-				subscriptionTier = result5;
+				subscriptionTier = parsedSubscriptionTier;
 			}
 			IBenefitUsage benefitUsage = existingSubscription2?.BenefitUsages?.FirstOrDefault((IBenefitUsage x) => x.BenefitId == "EXT_NGHT_1500");
 			redboxPlusSession.RedboxPlusPlanInfo = new RedboxPlusPlanInfo

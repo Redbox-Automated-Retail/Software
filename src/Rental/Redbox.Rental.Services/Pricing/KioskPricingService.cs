@@ -373,12 +373,12 @@ public class KioskPricingService : IKioskPricingService
 		{
 			return pp;
 		}
-		decimal num = (isDigitalPurchase ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
-		if (num == 0m)
+		decimal taxRate = (isDigitalPurchase ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
+		if (taxRate == 0m)
 		{
 			return pp;
 		}
-		pp.PurchasePrice = AdjustPrice(pp.PurchasePrice, num);
+		pp.PurchasePrice = AdjustPrice(pp.PurchasePrice, taxRate);
 		return pp;
 	}
 

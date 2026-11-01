@@ -102,22 +102,22 @@ public static class ValidationServices
 			errorMessage = "Invalid Top-Level Domain";
 			return false;
 		}
-		string text2 = emailAddress.Substring(index + 1);
-		string[] array = text2.Substring(0, text2.LastIndexOf(".")).Split('.');
-		if (array != null)
+		string domainName = emailAddress.Substring(index + 1);
+		string[] domainLabels = domainName.Substring(0, domainName.LastIndexOf(".")).Split('.');
+		if (domainLabels != null)
 		{
-			foreach (string text3 in array)
+			foreach (string domainLabel in domainLabels)
 			{
-				if (!ValidateDomain(text3))
+				if (!ValidateDomain(domainLabel))
 				{
-					errorMessage = $"Invalid domain part {text3}";
+					errorMessage = $"Invalid domain part {domainLabel}";
 					return false;
 				}
 			}
 		}
-		if (!ValidateHandle(text, text2))
+		if (!ValidateHandle(text, domainName))
 		{
-			errorMessage = $"Invalid handle {text},  domain {text2}";
+			errorMessage = $"Invalid handle {text},  domain {domainName}";
 			return false;
 		}
 		return true;

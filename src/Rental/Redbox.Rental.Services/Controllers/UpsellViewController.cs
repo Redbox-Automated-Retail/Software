@@ -75,9 +75,9 @@ public class UpsellViewController : BaseLoyaltyController
 		List<DisplayUpsellProductModel> displayUpsellProductModels = new List<DisplayUpsellProductModel>();
 		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-		List<IUpsellItem> list3 = new List<IUpsellItem>();
-		list3.AddRange(BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.UpsellInfo.Items.Where((IUpsellItem x) => x.OfferResponse == UpsellItemOfferResponse.none));
-		foreach (IUpsellItem eachUpsellItem in list3)
+		List<IUpsellItem> pendingUpsellItems = new List<IUpsellItem>();
+		pendingUpsellItems.AddRange(BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.UpsellInfo.Items.Where((IUpsellItem x) => x.OfferResponse == UpsellItemOfferResponse.none));
+		foreach (IUpsellItem eachUpsellItem in pendingUpsellItems)
 		{
 			if (eachUpsellItem.OfferResponse != UpsellItemOfferResponse.none)
 			{
@@ -106,15 +106,15 @@ public class UpsellViewController : BaseLoyaltyController
 					kioskProducts.Add(kioskProduct2);
 				}
 				ITitleProduct titleProduct = kioskProduct2 as ITitleProduct;
-				IList<IPricingRecord> list4 = pricingService?.GetProductPricingRecords(titleProduct?.ProductId ?? 0);
-				IPricingRecord pricingRecord = (((list4?.Count ?? 0) > 0) ? list4[0] : null);
+				IList<IPricingRecord> pricingRecords = pricingService?.GetProductPricingRecords(titleProduct?.ProductId ?? 0);
+				IPricingRecord pricingRecord = (((pricingRecords?.Count ?? 0) > 0) ? pricingRecords[0] : null);
 				displayUpsellProductModel.PriceText = ((pricingRecord != null) ? $"{pricingRecord.InitialNight:c2}" : null);
 				BannerType bannerType = BannerType.None;
 				bannerType = BrowseFunctions.GetProductBannerType(titleProduct);
 				bool hideBanner = false;
 				BrowseFunctions.ConfigureBanner(displayUpsellProductModel, titleProduct, hideBanner, bannerType, BaseViewController.GetViewUserControl());
-				displayUpsellProductModel.CheckboxBorderVisibility = ((list3.Count == 1) ? Visibility.Collapsed : Visibility.Visible);
-				displayUpsellProductModel.CheckboxVisibility = ((list3.Count != 1) ? Visibility.Collapsed : Visibility.Visible);
+				displayUpsellProductModel.CheckboxBorderVisibility = ((pendingUpsellItems.Count == 1) ? Visibility.Collapsed : Visibility.Visible);
+				displayUpsellProductModel.CheckboxVisibility = ((pendingUpsellItems.Count != 1) ? Visibility.Collapsed : Visibility.Visible);
 				displayUpsellProductModels.Add(displayUpsellProductModel);
 			}
 		}

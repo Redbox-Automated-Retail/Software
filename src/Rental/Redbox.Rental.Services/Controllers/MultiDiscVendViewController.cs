@@ -83,28 +83,28 @@ public class MultiDiscVendViewController : BaseViewController
 	private static void PopulateModelText(MultiDiscVendViewModel multiDiscVendViewModel)
 	{
 		IRentalShoppingCart rentalShoppingCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		int num = 0;
+		int discCount = 0;
 		List<string> list = new List<string>();
-		int num2 = 0;
+		int mdvCount = 0;
 		if (rentalShoppingCart != null)
 		{
 			foreach (IRentalShoppingCartTitleItem item in rentalShoppingCart.TitleItems.Where((IRentalShoppingCartTitleItem x) => x.MultiDisc && x.DiscNumber == 1))
 			{
 				if (item?.TitleProduct != null)
 				{
-					num2++;
+					mdvCount++;
 					string productDisplayName = BrowseFunctions.GetProductDisplayName(item.TitleProduct);
-					TitleTypeProperty value = null;
-					TitleTypeProperties.Properties.TryGetValue(item.TitleProduct.TitleType, out value);
-					string text = " " + value?.GetName(Resources.ResourceManager);
+					TitleTypeProperty titleTypeProperty = null;
+					TitleTypeProperties.Properties.TryGetValue(item.TitleProduct.TitleType, out titleTypeProperty);
+					string titleTypeText = " " + titleTypeProperty?.GetName(Resources.ResourceManager);
 					MDVProduct mDVProduct = item.TitleProduct as MDVProduct;
-					string text2 = $" ({mDVProduct?.TitleProducts?.Count ?? 1} {Resources.multi_disc_vend_discs_text})";
-					list.Add(productDisplayName + " " + text + " " + text2);
-					num = mDVProduct?.TitleProducts?.Count ?? 2;
+					string discCountText = $" ({mDVProduct?.TitleProducts?.Count ?? 1} {Resources.multi_disc_vend_discs_text})";
+					list.Add(productDisplayName + " " + titleTypeText + " " + discCountText);
+					discCount = mDVProduct?.TitleProducts?.Count ?? 2;
 				}
 			}
 		}
-		if (num2 == 1)
+		if (mdvCount == 1)
 		{
 			multiDiscVendViewModel.NoteBodyText = Resources.multi_disc_vend_note_body_single_mdv;
 			multiDiscVendViewModel.GrabDiscsText = Resources.multi_disc_vend_grab_discs_text_single_mdv;
@@ -118,7 +118,7 @@ public class MultiDiscVendViewController : BaseViewController
 		multiDiscVendViewModel.ProductListText = list.Join(", ");
 		multiDiscVendViewModel.NoteHeaderText = Resources.multi_disc_vend_note_header;
 		multiDiscVendViewModel.DiscVendText = Resources.disc_vend;
-		multiDiscVendViewModel.NumberOfDiscsText = num.ToString();
+		multiDiscVendViewModel.NumberOfDiscsText = discCount.ToString();
 		multiDiscVendViewModel.OkayButtonText = Resources.multi_disc_vend_okay;
 	}
 
@@ -131,7 +131,7 @@ public class MultiDiscVendViewController : BaseViewController
 		}
 		multiDiscVendViewModel.OnGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_multi_disc_vend_view"
 			};
@@ -178,13 +178,13 @@ public class MultiDiscVendViewController : BaseViewController
 					}
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 

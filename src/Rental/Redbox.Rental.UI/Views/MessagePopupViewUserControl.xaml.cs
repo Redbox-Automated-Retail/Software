@@ -83,18 +83,18 @@ public partial class MessagePopupViewUserControl : TextToSpeechUserControl, ICom
 	private void TimerTick(object sender, EventArgs e)
 	{
 		IViewFrameInstance viewFrameInstance = ServiceLocator.Instance.GetService<IViewService>()?.PeekViewFrame();
-		bool flag = viewFrameInstance?.Id == ViewFrameId;
-		if (!flag)
+		bool isCurrentView = viewFrameInstance?.Id == ViewFrameId;
+		if (!isCurrentView)
 		{
 			string arg = viewFrameInstance?.ViewFrame?.ViewName ?? "Unknown View";
 			LogHelper.Instance.Log($"message_popup_view time out when on {arg}");
 		}
-		StopTimer(flag);
+		StopTimer(isCurrentView);
 	}
 
 	private void StopTimer(bool executeTimeoutEvent)
 	{
-		bool flag = false;
+		bool raiseTimeout = false;
 		lock (m_lockObject)
 		{
 			m_dispatcherTimer?.Stop();
@@ -103,11 +103,11 @@ public partial class MessagePopupViewUserControl : TextToSpeechUserControl, ICom
 				m_timerDisabled = true;
 				if (executeTimeoutEvent)
 				{
-					flag = true;
+					raiseTimeout = true;
 				}
 			}
 		}
-		if (flag && Model?.OnTimeOut != null)
+		if (raiseTimeout && Model?.OnTimeOut != null)
 		{
 			Model.OnTimeOut();
 		}

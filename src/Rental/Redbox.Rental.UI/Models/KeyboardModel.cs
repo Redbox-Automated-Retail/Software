@@ -108,10 +108,10 @@ public class KeyboardModel : BaseModel<KeyboardModel>
 			string text = string.Empty;
 			if (value != null)
 			{
-				int num = value.Length - 1;
+				int lastIndex = value.Length - 1;
 				for (int i = 0; i < value.Length; i++)
 				{
-					text = ((i != num) ? (text + "*") : (text + value[num]));
+					text = ((i != lastIndex) ? (text + "*") : (text + value[lastIndex]));
 				}
 			}
 			KeyboardStars = text;

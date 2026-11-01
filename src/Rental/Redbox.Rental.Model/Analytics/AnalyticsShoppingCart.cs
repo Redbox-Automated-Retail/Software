@@ -75,10 +75,10 @@ public class AnalyticsShoppingCart
 					}
 					else
 					{
-						int num2 = movieBrowseProducts.IndexOf(item.TitleProduct);
-						if (num2 > -1)
+						int productIndex = movieBrowseProducts.IndexOf(item.TitleProduct);
+						if (productIndex > -1)
 						{
-							item.RentalPosition = num2 + 1;
+							item.RentalPosition = productIndex + 1;
 						}
 					}
 				});

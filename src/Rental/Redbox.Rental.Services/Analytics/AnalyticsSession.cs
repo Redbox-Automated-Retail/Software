@@ -260,9 +260,9 @@ public class AnalyticsSession : IAnalyticsSession
 					_logger.Log("AnalyticsService.WriteJsonFile: {0} not found, creating directory.", path);
 					Directory.CreateDirectory(path);
 				}
-				string text2 = Path.Combine(path, "Analytics.json");
-				_logger.Log("AnalyticsService.WriteJsonFile: writing file {0}.", text2);
-				File.WriteAllText(text2, contents);
+				string filePath = Path.Combine(path, "Analytics.json");
+				_logger.Log("AnalyticsService.WriteJsonFile: writing file {0}.", filePath);
+				File.WriteAllText(filePath, contents);
 			}
 		}
 		catch (Exception e)

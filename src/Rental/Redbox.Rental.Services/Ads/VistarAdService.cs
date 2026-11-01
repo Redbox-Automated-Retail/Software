@@ -15,8 +15,8 @@ public class VistarAdService : IVistarAdService, IAdService
 	{
 		IVistarAd vistarAd = null;
 		IConfiguration instance = Redbox.Rental.Services.Configuration.Configuration.Instance;
-		bool flag = true;
-		if (instance.Current.MarketingAd.EnableVistarAds && flag)
+		bool locationSupported = true;
+		if (instance.Current.MarketingAd.EnableVistarAds && locationSupported)
 		{
 			IGetAdResponse getAdResponse = ServiceLocator.Instance.GetService<IKioskClientService>()?.Ads?.GetAd(adLocation);
 			if (getAdResponse != null && getAdResponse.Success && getAdResponse.AdvertisementId != null && getAdResponse.AssetPath != null)
@@ -31,7 +31,7 @@ public class VistarAdService : IVistarAdService, IAdService
 				};
 			}
 		}
-		if (flag)
+		if (locationSupported)
 		{
 			LogHelper.Instance.Log($"VistarAdService.GetScreenAd: Location: {adLocation}, Advertisement Id: {vistarAd?.AdvertisementId}, Image Name: {Path.GetFileName(vistarAd?.ImageName)}");
 		}
@@ -75,25 +75,25 @@ public class VistarAdService : IVistarAdService, IAdService
 
 	public bool RecordAdImpression(IAdImpression adImpression)
 	{
-		bool flag = false;
+		bool sent = false;
 		IVistarAd vistarAd = adImpression?.Ad as IVistarAd;
 		if (vistarAd != null && Redbox.Rental.Services.Configuration.Configuration.Instance.Current.MarketingAd.EnableVistarAds)
 		{
-			flag = ServiceLocator.Instance.GetService<IKioskClientService>()?.Ads?.SendProofOfPlay(adImpression) == true;
+			sent = ServiceLocator.Instance.GetService<IKioskClientService>()?.Ads?.SendProofOfPlay(adImpression) == true;
 		}
-		LogHelper.Instance.Log($"VistarAdService.CreateImpression: Advertisement Id: {vistarAd?.AdvertisementId}, Location: {adImpression?.AdLocation}, Result: {flag}");
-		return flag;
+		LogHelper.Instance.Log($"VistarAdService.CreateImpression: Advertisement Id: {vistarAd?.AdvertisementId}, Location: {adImpression?.AdLocation}, Result: {sent}");
+		return sent;
 	}
 
 	public async Task<bool> RecordAdImpressionAsync(IAdImpression adImpression)
 	{
-		bool flag = false;
+		bool sent = false;
 		IVistarAd vistarAd = adImpression?.Ad as IVistarAd;
 		if (vistarAd != null && Redbox.Rental.Services.Configuration.Configuration.Instance.Current.MarketingAd.EnableVistarAds)
 		{
-			flag = await (ServiceLocator.Instance.GetService<IKioskClientService>()?.Ads?.SendProofOfPlayAsync(adImpression)).ConfigureAwait(continueOnCapturedContext: false);
+			sent = await (ServiceLocator.Instance.GetService<IKioskClientService>()?.Ads?.SendProofOfPlayAsync(adImpression)).ConfigureAwait(continueOnCapturedContext: false);
 		}
-		LogHelper.Instance.Log($"VistarAdService.CreateImpression: Advertisement Id: {vistarAd?.AdvertisementId}, Location: {adImpression?.AdLocation}, Result: {flag}");
-		return flag;
+		LogHelper.Instance.Log($"VistarAdService.CreateImpression: Advertisement Id: {vistarAd?.AdvertisementId}, Location: {adImpression?.AdLocation}, Result: {sent}");
+		return sent;
 	}
 }

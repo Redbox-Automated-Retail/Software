@@ -83,9 +83,9 @@ internal static class PromotionCodeValidationResponseExtensions
 		{
 			dictionary.Add("Success", false);
 			dictionary.Add("HasErrors", true);
-			Dictionary<string, object> dictionary2 = new Dictionary<string, object>();
-			dictionary2.Add("Code", promotionCodeValidationResponse.Error);
-			dictionary.Add("Errors", new ArrayList { dictionary2 });
+			Dictionary<string, object> error = new Dictionary<string, object>();
+			error.Add("Code", promotionCodeValidationResponse.Error);
+			dictionary.Add("Errors", new ArrayList { error });
 		}
 		return dictionary;
 	}

@@ -255,9 +255,9 @@ public class KeyboardViewController : BaseViewController
 
 	private static void StartKeyboardIdleTimer(Action timeOutAction)
 	{
-		int num = 15000;
-		num = (OrchestrationService.TTSEnabled ? OrchestrationService.TTSGetTimeout("medium", num) : num);
-		OrchestrationService.StartIdleTimer(num, timeOutAction, "keyboard_idle_timer");
+		int timeout = 15000;
+		timeout = (OrchestrationService.TTSEnabled ? OrchestrationService.TTSGetTimeout("medium", timeout) : timeout);
+		OrchestrationService.StartIdleTimer(timeout, timeOutAction, "keyboard_idle_timer");
 	}
 
 	private static void TimeOutAction()

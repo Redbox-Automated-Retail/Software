@@ -105,7 +105,7 @@ public class OfferAbandonConfirmViewController : BaseViewController
 		}
 		viewModel.OnGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_multi_disc_vend_view"
 			};
@@ -143,13 +143,13 @@ public class OfferAbandonConfirmViewController : BaseViewController
 					}
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 

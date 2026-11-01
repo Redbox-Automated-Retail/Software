@@ -70,18 +70,18 @@ public class RatingSelectionPopupViewController : BaseViewController
 
 	private static RatingButtonModel CreateRatingButtonModel(Ratings rating)
 	{
-		bool flag = Redbox.Rental.Services.Session.Session.Instance.BrowseState.Rating.HasValue && Redbox.Rental.Services.Session.Session.Instance.BrowseState.Rating == rating;
+		bool isSelected = Redbox.Rental.Services.Session.Session.Instance.BrowseState.Rating.HasValue && Redbox.Rental.Services.Session.Session.Instance.BrowseState.Rating == rating;
 		RatingsProperties.Properties.TryGetValue(rating, out var value);
 		RatingButtonModel ratingButtonModel = new RatingButtonModel(WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_unselected_style"), WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_selected_style"))
 		{
 			Rating = rating,
 			Visibility = Visibility.Visible,
-			IsSelected = flag,
+			IsSelected = isSelected,
 			Margin = new Thickness(8.0, 8.0, 8.0, 8.0),
 			Text = (value?.Name ?? "None")
 		};
 		ratingButtonModel.OnClicked += RatingButtonModel_OnClicked;
-		if (flag)
+		if (isSelected)
 		{
 			_selectedRatingButtonModel = ratingButtonModel;
 		}

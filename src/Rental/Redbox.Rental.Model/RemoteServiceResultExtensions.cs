@@ -14,34 +14,34 @@ public static class RemoteServiceResultExtensions
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = result.Success;
-		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
-		luaTable2["hours"] = result.ExecutionTime.Hours;
-		luaTable2["minutes"] = result.ExecutionTime.Minutes;
-		luaTable2["seconds"] = result.ExecutionTime.Seconds;
-		luaTable2["milliseconds"] = result.ExecutionTime.Milliseconds;
-		luaTable["execution_time"] = luaTable2;
-		LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
+		LuaTable executionTimeTable = (LuaTable)kernelService.NewTable();
+		executionTimeTable["hours"] = result.ExecutionTime.Hours;
+		executionTimeTable["minutes"] = result.ExecutionTime.Minutes;
+		executionTimeTable["seconds"] = result.ExecutionTime.Seconds;
+		executionTimeTable["milliseconds"] = result.ExecutionTime.Milliseconds;
+		luaTable["execution_time"] = executionTimeTable;
+		LuaTable propertiesTable = (LuaTable)kernelService.NewTable();
 		foreach (string key in result.Properties.Keys)
 		{
-			object obj = result.Properties[key];
-			if (!(obj is IEnumerable) || obj is string)
+			object propertyValue = result.Properties[key];
+			if (!(propertyValue is IEnumerable) || propertyValue is string)
 			{
-				luaTable3[key] = obj;
+				propertiesTable[key] = propertyValue;
 			}
 		}
-		luaTable["properties"] = luaTable3;
-		int num = 1;
-		LuaTable luaTable4 = (LuaTable)kernelService.NewTable();
+		luaTable["properties"] = propertiesTable;
+		int errorIndex = 1;
+		LuaTable errorsTable = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in result.Errors)
 		{
-			LuaTable luaTable5 = (LuaTable)kernelService.NewTable();
-			luaTable5["code"] = error.Code;
-			luaTable5["is_warning"] = error.IsWarning;
-			luaTable5["description"] = error.Description;
-			luaTable5["details"] = error.Details;
-			luaTable4[num++] = luaTable5;
+			LuaTable errorTable = (LuaTable)kernelService.NewTable();
+			errorTable["code"] = error.Code;
+			errorTable["is_warning"] = error.IsWarning;
+			errorTable["description"] = error.Description;
+			errorTable["details"] = error.Details;
+			errorsTable[errorIndex++] = errorTable;
 		}
-		luaTable["errors"] = luaTable4;
+		luaTable["errors"] = errorsTable;
 		return luaTable;
 	}
 
@@ -50,12 +50,12 @@ public static class RemoteServiceResultExtensions
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = result.Success;
-		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
-		luaTable2["hours"] = result.ExecutionTime.Hours;
-		luaTable2["minutes"] = result.ExecutionTime.Minutes;
-		luaTable2["seconds"] = result.ExecutionTime.Seconds;
-		luaTable2["milliseconds"] = result.ExecutionTime.Milliseconds;
-		luaTable["execution_time"] = luaTable2;
+		LuaTable executionTimeTable = (LuaTable)kernelService.NewTable();
+		executionTimeTable["hours"] = result.ExecutionTime.Hours;
+		executionTimeTable["minutes"] = result.ExecutionTime.Minutes;
+		executionTimeTable["seconds"] = result.ExecutionTime.Seconds;
+		executionTimeTable["milliseconds"] = result.ExecutionTime.Milliseconds;
+		luaTable["execution_time"] = executionTimeTable;
 		if (result.Properties is Dictionary<string, object> properties)
 		{
 			luaTable["properties"] = ConvertDictionary(properties);
@@ -65,18 +65,18 @@ public static class RemoteServiceResultExtensions
 			LogHelper.Instance.Log("IRemoteServiceResult: IRemoteServiceResult.Properties could not be cast as Dictionary");
 			luaTable["properties"] = (LuaTable)kernelService.NewTable();
 		}
-		int num = 1;
-		LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
+		int errorIndex = 1;
+		LuaTable errorsTable = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in result.Errors)
 		{
-			LuaTable luaTable4 = (LuaTable)kernelService.NewTable();
-			luaTable4["code"] = error.Code;
-			luaTable4["is_warning"] = error.IsWarning;
-			luaTable4["description"] = error.Description;
-			luaTable4["details"] = error.Details;
-			luaTable3[num++] = luaTable4;
+			LuaTable errorTable = (LuaTable)kernelService.NewTable();
+			errorTable["code"] = error.Code;
+			errorTable["is_warning"] = error.IsWarning;
+			errorTable["description"] = error.Description;
+			errorTable["details"] = error.Details;
+			errorsTable[errorIndex++] = errorTable;
 		}
-		luaTable["errors"] = luaTable3;
+		luaTable["errors"] = errorsTable;
 		return luaTable;
 	}
 
@@ -85,23 +85,23 @@ public static class RemoteServiceResultExtensions
 		LuaTable luaTable = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
 		foreach (string key in properties.Keys)
 		{
-			object obj = properties[key];
-			if (obj is Dictionary<string, object>)
+			object propertyValue = properties[key];
+			if (propertyValue is Dictionary<string, object>)
 			{
-				if (obj is Dictionary<string, object> properties2)
+				if (propertyValue is Dictionary<string, object> nestedProperties)
 				{
-					luaTable[key] = ConvertDictionary(properties2);
+					luaTable[key] = ConvertDictionary(nestedProperties);
 				}
 				else
 				{
 					LogHelper.Instance.Log("IRemoteServiceResult: Property[" + key + "] is Dictionary<string,object> but could be converted.");
 				}
 			}
-			else if (obj is string || obj is bool || obj is int)
+			else if (propertyValue is string || propertyValue is bool || propertyValue is int)
 			{
-				luaTable[key] = obj;
+				luaTable[key] = propertyValue;
 			}
-			else if (obj != null)
+			else if (propertyValue != null)
 			{
 				LogHelper.Instance.Log("IRemoteServiceResult: unexpected data type for Property[" + key + "] skipped.");
 			}

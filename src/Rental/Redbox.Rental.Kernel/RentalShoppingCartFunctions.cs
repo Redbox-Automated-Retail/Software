@@ -41,10 +41,10 @@ public static class RentalShoppingCartFunctions
 		value = 0m;
 		if (luaTable != null)
 		{
-			object obj = luaTable[propertyName];
-			if (obj != null && decimal.TryParse(obj.ToString(), out var result2))
+			object rawValue = luaTable[propertyName];
+			if (rawValue != null && decimal.TryParse(rawValue.ToString(), out var parsedValue))
 			{
-				value = result2;
+				value = parsedValue;
 				result = true;
 			}
 		}
@@ -181,14 +181,14 @@ public static class RentalShoppingCartFunctions
 			dictionary["quantity"] = rentalShoppingCartItem.Quantity;
 			dictionary["source_type"] = rentalShoppingCartItem.SourceType.ToString();
 			IUpsellItem upsellItem = rentalShoppingCart?.UpsellInfo?.Items.FirstOrDefault((IUpsellItem x) => x.OriginalProductId == rentalShoppingCartItem.ProductId || x.UpsellProductId == rentalShoppingCartItem.ProductId);
-			Dictionary<string, object> dictionary2 = new Dictionary<string, object>();
+			Dictionary<string, object> upsellTable = new Dictionary<string, object>();
 			if (upsellItem != null)
 			{
-				dictionary2.Add("product_group_id", upsellItem.ProductGroupId);
-				dictionary2.Add("offer", upsellItem.OfferResponse.ToString());
-				dictionary2.Add("title_id", rentalShoppingCartItem.ProductId);
+				upsellTable.Add("product_group_id", upsellItem.ProductGroupId);
+				upsellTable.Add("offer", upsellItem.OfferResponse.ToString());
+				upsellTable.Add("title_id", rentalShoppingCartItem.ProductId);
 			}
-			dictionary["blu_ray_upsell"] = dictionary2.ToLuaTable();
+			dictionary["blu_ray_upsell"] = upsellTable.ToLuaTable();
 			dictionary["multi_disc"] = rentalShoppingCartItem.MultiDisc.ToString();
 			dictionary["pricing_policy"] = ((rentalShoppingCartItem.PricingRecord != null) ? rentalShoppingCartItem.PricingRecord.ToDictionary().ToLuaTable() : new Dictionary<string, object>().ToLuaTable());
 		}

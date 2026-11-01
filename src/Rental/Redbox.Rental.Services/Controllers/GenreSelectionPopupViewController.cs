@@ -76,17 +76,17 @@ public class GenreSelectionPopupViewController : BaseViewController
 
 	private static GenreButtonModel CreateGenreButtonModel(Genres genre)
 	{
-		bool flag = Redbox.Rental.Services.Session.Session.Instance.BrowseState.Genre.HasValue && Redbox.Rental.Services.Session.Session.Instance.BrowseState.Genre == genre;
+		bool isSelected = Redbox.Rental.Services.Session.Session.Instance.BrowseState.Genre.HasValue && Redbox.Rental.Services.Session.Session.Instance.BrowseState.Genre == genre;
 		GenreButtonModel genreButtonModel = new GenreButtonModel(WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_unselected_style"), WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_selected_style"))
 		{
 			Genre = genre,
 			Visibility = Visibility.Visible,
-			IsSelected = flag,
+			IsSelected = isSelected,
 			Margin = new Thickness(8.0, 8.0, 8.0, 8.0),
 			Text = Resources.ResourceManager.GetString(string.Format($"genre_{(long)genre}"))
 		};
 		genreButtonModel.OnClicked += GenreButtonModel_OnClicked;
-		if (flag)
+		if (isSelected)
 		{
 			_selectedGenreButtonModel = genreButtonModel;
 		}

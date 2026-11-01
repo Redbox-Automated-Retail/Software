@@ -69,17 +69,17 @@ public class SortSelectionPopupViewController : BaseViewController
 
 	private static SortButtonModel CreateSortButtonModel(BrowseSort sort)
 	{
-		bool flag = BrowseViewController.GetBrowseSort() == sort;
+		bool isSelected = BrowseViewController.GetBrowseSort() == sort;
 		SortButtonModel sortButtonModel = new SortButtonModel(WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_unselected_style"), WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_selected_style"))
 		{
 			Sort = sort,
 			Visibility = Visibility.Visible,
-			IsSelected = flag,
+			IsSelected = isSelected,
 			Margin = new Thickness(8.0, 8.0, 8.0, 8.0),
 			Text = GetSortSelectionPopupButtonText(sort)
 		};
 		sortButtonModel.OnClicked += SortButtonModel_OnClicked;
-		if (flag)
+		if (isSelected)
 		{
 			_selectedSortButtonModel = sortButtonModel;
 		}

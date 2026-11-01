@@ -50,13 +50,13 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 		}
 		TitleRollupProduct rollupProduct = parameter.RollupProduct;
 		bool isPurchase = parameter.IsPurchase;
-		bool flag = parameter.RedboxPlusBenefitId == 2 && ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.HasAnyTitleRollupTitle(parameter.RollupProduct) == true;
+		bool rollupAlreadyInCart = parameter.RedboxPlusBenefitId == 2 && ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.HasAnyTitleRollupTitle(parameter.RollupProduct) == true;
 		formatSelectionPopupViewModel.HeaderText = rollupProduct.LongName;
 		if (isPurchase)
 		{
 			formatSelectionPopupViewModel.DescriptionText = Resources.purchase_format_dialog_description;
 		}
-		else if (flag)
+		else if (rollupAlreadyInCart)
 		{
 			formatSelectionPopupViewModel.DescriptionText = string.Format(Resources.redbox_plus_already_in_cart_message, parameter?.RollupProduct?.ProductName);
 		}
@@ -174,8 +174,8 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 		if (titleProduct.InStock | isPurchase)
 		{
 			IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-			bool flag = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
-			if (showMnp && (titleProduct.HasMultiNightPrice || (titleProduct.IsSellableAndInStock && (titleProduct.IsMovie || titleProduct.IsGame))) && !isPurchase && !flag)
+			bool inCartPromoOfferActive = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
+			if (showMnp && (titleProduct.HasMultiNightPrice || (titleProduct.IsSellableAndInStock && (titleProduct.IsMovie || titleProduct.IsGame))) && !isPurchase && !inCartPromoOfferActive)
 			{
 				BrowseFunctions.AddMultiNightPricedProductToCart(titleProduct, "purchase_popup_view");
 				return;
@@ -203,8 +203,8 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 			return string.Empty;
 		}
 		decimal price = list.Min((ITitleProduct tp) => tp.PurchasePrice);
-		bool flag = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
-		return string.Format("${0:F2}{1}", price, flag ? "" : "+");
+		bool samePriceForAll = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
+		return string.Format("${0:F2}{1}", price, samePriceForAll ? "" : "+");
 	}
 
 	private static void ProcessPurchaseButtonClick(TitleRollupProduct rollupProduct)
@@ -216,8 +216,8 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 
 	private static void ShowOutOfStockOptionsDialog(ITitleProduct kioskProduct, TitleType titleType, bool showMnp, int? redboxPlusBenefitId)
 	{
-		bool flag = kioskProduct is TitleRollupProduct;
-		ITitleProduct selectedProduct = (flag ? ((TitleRollupProduct)kioskProduct).KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == titleType) : kioskProduct);
+		bool isRollup = kioskProduct is TitleRollupProduct;
+		ITitleProduct selectedProduct = (isRollup ? ((TitleRollupProduct)kioskProduct).KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == titleType) : kioskProduct);
 		OptionSelectionDialogInfo optionSelectionDialogInfo = new OptionSelectionDialogInfo
 		{
 			ViewAnalyticsName = "message_popup_view",
@@ -232,7 +232,7 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 		}, (Func<bool>)null);
 		optionSelectionDialogInfo.DescriptionText = Resources.out_of_stock_movie_message;
 		ObservableCollection<ButtonData> observableCollection = new ObservableCollection<ButtonData>();
-		if (flag && ((ITitleRollupProduct)kioskProduct).KioskProducts.Any((ITitleProduct p) => p.InStock))
+		if (isRollup && ((ITitleRollupProduct)kioskProduct).KioskProducts.Any((ITitleProduct p) => p.InStock))
 		{
 			optionSelectionDialogInfo.DescriptionText = string.Format(Resources.out_of_stock_format_message, titleType.GetDisplayDescription());
 			foreach (ITitleProduct inStockFormat in ((ITitleRollupProduct)kioskProduct).KioskProducts.Where((ITitleProduct p) => p.InStock && p.TitleType != TitleType.DigitalCode))

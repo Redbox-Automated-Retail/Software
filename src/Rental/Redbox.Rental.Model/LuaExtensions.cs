@@ -80,31 +80,31 @@ public static class LuaExtensions
 	public static LuaTable ToLuaTable(this ICollection value)
 	{
 		LuaTable luaTable = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
-		int num = 1;
+		int index = 1;
 		foreach (object item in value)
 		{
 			if (item is ICollection)
 			{
 				if (item is Dictionary<string, object>)
 				{
-					luaTable[num++] = (item as Dictionary<string, object>).ToLuaTable();
+					luaTable[index++] = (item as Dictionary<string, object>).ToLuaTable();
 				}
 				else if (item is Dictionary<long, object>)
 				{
-					luaTable[num++] = (item as Dictionary<long, object>).ToLuaTable();
+					luaTable[index++] = (item as Dictionary<long, object>).ToLuaTable();
 				}
 				else
 				{
-					luaTable[num++] = (item as ICollection).ToLuaTable();
+					luaTable[index++] = (item as ICollection).ToLuaTable();
 				}
 			}
 			else if (item is DateTime)
 			{
-				luaTable[num++] = ((DateTime)item).ToString("yyyyMMddHHmmss");
+				luaTable[index++] = ((DateTime)item).ToString("yyyyMMddHHmmss");
 			}
 			else
 			{
-				luaTable[num++] = item;
+				luaTable[index++] = item;
 			}
 		}
 		return luaTable;

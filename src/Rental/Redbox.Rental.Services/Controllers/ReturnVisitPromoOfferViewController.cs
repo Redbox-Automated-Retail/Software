@@ -42,8 +42,8 @@ public class ReturnVisitPromoOfferViewController : BaseViewController
 			string text = string.Format(Resources.return_visit_promo_offer_promo_code_text, returnVisitPromoOfferViewParameters.PromoCode);
 			returnVisitPromoOfferViewModel.PromoCodeText = string.Empty;
 			_promoCode = returnVisitPromoOfferViewParameters.PromoCode;
-			string text2 = string.Format(Resources.return_visit_promo_offer_expiration_text, returnVisitPromoOfferViewParameters.ExpirationDate);
-			returnVisitPromoOfferViewModel.ExpirationText = string.Format(text + " - " + text2);
+			string expirationText = string.Format(Resources.return_visit_promo_offer_expiration_text, returnVisitPromoOfferViewParameters.ExpirationDate);
+			returnVisitPromoOfferViewModel.ExpirationText = string.Format(text + " - " + expirationText);
 			returnVisitPromoOfferViewModel.LegalText = ((returnVisitPromoOfferViewParameters.PromoType == ReturnPromoType.FirstNightFree) ? Resources.return_visit_promo_offer_first_night_free_legal_text : Resources.return_visit_promo_offer_legal_text);
 			returnVisitPromoOfferViewModel.CloseButtonText = Resources.close_button.ToUpper();
 			returnVisitPromoOfferViewModel.UseNowButtonText = Resources.use_now_button_text.ToUpper();
@@ -108,8 +108,8 @@ public class ReturnVisitPromoOfferViewController : BaseViewController
 		{
 			if (promoType == ReturnPromoType.AmountOff)
 			{
-				decimal? num = amount;
-				if ((num.GetValueOrDefault() > 0m) & num.HasValue)
+				decimal? promoAmount = amount;
+				if ((promoAmount.GetValueOrDefault() > 0m) & promoAmount.HasValue)
 				{
 					goto IL_0036;
 				}

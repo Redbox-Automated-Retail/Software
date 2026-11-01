@@ -12,7 +12,6 @@ public class ApplicationStateFunctions
 	[KernelFunction(Name = "kernel.get_application_state_value")]
 	public static object GetSessionValue(string valueName)
 	{
-		object obj = null;
 		if (valueName != null)
 		{
 			return _baseSettingFunctions.GetPropertyValue(ApplicationState.Instance, valueName);
@@ -29,8 +28,8 @@ public class ApplicationStateFunctions
 		_baseSettingFunctions.GetProperty(ApplicationState.Instance, propertyName, out resultObject, out resultPropertyInfo);
 		if (resultPropertyInfo != null && resultObject != null)
 		{
-			object value2 = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
-			resultPropertyInfo.SetValue(resultObject, value2, null);
+			object convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
+			resultPropertyInfo.SetValue(resultObject, convertedValue, null);
 			return;
 		}
 		throw new ArgumentException($"kernel.set_application_state_value unable to locate property {propertyName}");

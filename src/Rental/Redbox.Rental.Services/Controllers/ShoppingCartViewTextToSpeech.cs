@@ -182,7 +182,7 @@ public class ShoppingCartViewTextToSpeech
 
 	private static void AddSpeechPartListCartItems(ISpeechControl speechControl, Func<ShoppingCartViewModel> getShoppingCartViewModelFunction)
 	{
-		int num = 3;
+		int sequence = 3;
 		ISpeechPart speechPart = new SpeechPart
 		{
 			Sequence = 2,
@@ -215,15 +215,15 @@ public class ShoppingCartViewTextToSpeech
 		ShoppingCartViewModel shoppingCartViewModel = getShoppingCartViewModelFunction();
 		if (shoppingCartViewModel != null && CartCount > 0)
 		{
-			int num2 = 0;
+			int cartItemIndex = 0;
 			List<SpeechPart> speechParts = new List<SpeechPart>();
 			foreach (IRentalShoppingCartTitleItem eachCartItem in RentalShoppingCartService.CurrentRentalShoppingCart.TitleItems)
 			{
-				int speechPartIndex = num2;
+				int speechPartIndex = cartItemIndex;
 				speechParts.Add(new SpeechPart
 				{
-					Sequence = num++,
-					Name = "CartItem" + num2,
+					Sequence = sequence++,
+					Name = "CartItem" + cartItemIndex,
 					Loop = false,
 					StartPause = 500,
 					EndPause = 0
@@ -244,13 +244,13 @@ public class ShoppingCartViewTextToSpeech
 						});
 					}
 				};
-				speechControl.SpeechParts.Add(speechParts[num2]);
-				num2++;
+				speechControl.SpeechParts.Add(speechParts[cartItemIndex]);
+				cartItemIndex++;
 			}
 		}
 		SpeechPart speechPart2 = new SpeechPart
 		{
-			Sequence = num++,
+			Sequence = sequence++,
 			Name = "CartTotals",
 			Loop = false,
 			StartPause = 500,
@@ -299,7 +299,7 @@ public class ShoppingCartViewTextToSpeech
 		speechControl.SpeechParts.Add(speechPart2);
 		SpeechPart speechPart3 = new SpeechPart
 		{
-			Sequence = num++,
+			Sequence = sequence++,
 			Name = "CartButtons",
 			Loop = false,
 			StartPause = 0,

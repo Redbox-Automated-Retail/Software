@@ -95,7 +95,7 @@ public class PersonalizationFunctions
 
 	public static bool CanAddRedboxPlusSubscription()
 	{
-		bool flag = false;
+		bool isEligible = false;
 		IPersonalizationSession personalizationSession = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession;
 		List<ISubscriptionProduct> subscriptionProducts = null;
 		ServiceLocator.Instance.GetService<IDataService>()?.GetSubscriptionProducts(out subscriptionProducts);
@@ -105,12 +105,12 @@ public class PersonalizationFunctions
 			{
 				if (subscriptionProducts.Any((ISubscriptionProduct x) => x.SubscriptionType == SubscriptionType.RedboxPlus && x.SubscriptionId == eachEligibleSubscriptionPlanId))
 				{
-					flag = true;
+					isEligible = true;
 					break;
 				}
 			}
 		}
-		return (personalizationSession?.RedboxPlusSession?.HasActiveSubscription != true) & flag;
+		return (personalizationSession?.RedboxPlusSession?.HasActiveSubscription != true) & isEligible;
 	}
 
 	public static void ShowRedboxPlusSignInSignUpDialog(IRedboxPlusSubscriptionProduct redboxPlusSubscriptionProduct)
@@ -439,7 +439,7 @@ public class PersonalizationFunctions
 					CheckCartForPersonalizationTitleTags();
 					OrchestrationService.AnalyticsAddLoggedInCustomerProfileNumber(loginResult.PersonalizationSession?.CustomerProfileNumber);
 				}
-				IShoppingSession obj = ServiceLocator.Instance.GetService<IShoppingSessionService>()?.GetCurrentSession();
+				IShoppingSession shoppingSession = ServiceLocator.Instance.GetService<IShoppingSessionService>()?.GetCurrentSession();
 				string key = "EarlyIdIndicator";
 				if (walletType == WalletType.Apple)
 				{
@@ -449,7 +449,7 @@ public class PersonalizationFunctions
 				{
 					key = "EarlyIdGoogle";
 				}
-				obj?.ShoppingCart?.SetPropertyBagEntry(key, "true");
+				shoppingSession?.ShoppingCart?.SetPropertyBagEntry(key, "true");
 				OrchestrationService.ResetApplicationIdleTimerTimeout();
 			}
 			afterLoginAction?.Invoke(loginType, loginResult);
@@ -458,7 +458,7 @@ public class PersonalizationFunctions
 
 	public static void ShowRecommendedTitlesIfNeeded(ILoginResult loginResult)
 	{
-		bool flag = false;
+		bool popupShown = false;
 		if (!(ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.IsFull ?? true) && loginResult.PersonalizationSession.RecommendedTitles != null && loginResult.PersonalizationSession.RecommendedTitles.Count > 0 && loginResult.PersonalizationSession.RecommendedTitles[0] != null && loginResult.PersonalizationSession.RecommendedTitles[0].Count > 0)
 		{
 			IRecommendedTitles recommendedTitles = (ApplicationState.Instance.IsADAAccessible ? RecommendedTitlesPopupViewController.UnrollRecommendedTitles(loginResult.PersonalizationSession.RecommendedTitles[0]) : loginResult.PersonalizationSession.RecommendedTitles[0]);
@@ -470,11 +470,11 @@ public class PersonalizationFunctions
 				recommendedTitlesPopupInfo.RecommendedTitles = recommendedTitles;
 				recommendedTitlesPopupInfo.NumberOfTitlesToShow = numberOfTitlesToShow;
 				recommendedTitlesPopupInfo.ShownFromView = "perks_confirm_view";
-				flag = true;
+				popupShown = true;
 				OrchestrationService.ViewShow("recommended_titles_popup_view", recommendedTitlesPopupInfo);
 			}
 		}
-		if (!flag && OrchestrationService.PeekView() == "browse_view")
+		if (!popupShown && OrchestrationService.PeekView() == "browse_view")
 		{
 			OrchestrationService.StartIdleTimer("idle_timer");
 		}
@@ -613,11 +613,11 @@ public class PersonalizationFunctions
 
 	public static string GetTivoQueryIdFromTransactionEntities(ITitleProduct titleProduct)
 	{
-		ITransactionData obj = Redbox.Rental.Services.Session.Session.Instance?.TransactionData;
+		ITransactionData transactionData = Redbox.Rental.Services.Session.Session.Instance?.TransactionData;
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		long productGroupId = dataService.GetProductGroupId(titleProduct);
 		string result = null;
-		List<Redbox.Rental.Model.Transaction.ITransactionEntity> list = obj?.TransactionEntities.Where((Redbox.Rental.Model.Transaction.ITransactionEntity x) => x.Name == "TivoQueryId").ToList();
+		List<Redbox.Rental.Model.Transaction.ITransactionEntity> list = transactionData?.TransactionEntities.Where((Redbox.Rental.Model.Transaction.ITransactionEntity x) => x.Name == "TivoQueryId").ToList();
 		if (list != null)
 		{
 			foreach (Redbox.Rental.Model.Transaction.ITransactionEntity item in list)
@@ -681,11 +681,11 @@ public class PersonalizationFunctions
 	public static void ShowEmailReceiptAddress(string emailAddress)
 	{
 		LogHelper.Instance.Log("Email Receipt starting.");
-		int num = 8000;
+		int timeout = 8000;
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		if (textToSpeechService != null)
 		{
-			num = textToSpeechService.GetTimeout("shorter", num);
+			timeout = textToSpeechService.GetTimeout("shorter", timeout);
 		}
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		object lockObject = new object();
@@ -705,7 +705,7 @@ public class PersonalizationFunctions
 				}
 			}
 		});
-		emailNextTimer = timerService?.CreateTimer("email_next_timer", num, num, delegate
+		emailNextTimer = timerService?.CreateTimer("email_next_timer", timeout, timeout, delegate
 		{
 			continueAction();
 		});
@@ -719,11 +719,11 @@ public class PersonalizationFunctions
 
 	public static void ShowSonySweepstakesConfirmationView(IAuthorizeResult authorizeResult, string emailAddress, bool showRedboxSweepstakes)
 	{
-		int num = 10000;
+		int timeout = 10000;
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		if (textToSpeechService != null)
 		{
-			num = textToSpeechService.GetTimeout("shorter", num);
+			timeout = textToSpeechService.GetTimeout("shorter", timeout);
 		}
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		object lockObject = new object();
@@ -750,7 +750,7 @@ public class PersonalizationFunctions
 				}
 			}
 		});
-		sonySweepstakesConfirmationViewNextTimer = timerService?.CreateTimer("sony_sweepstakes_confirmation_view_next_timer", num, num, delegate
+		sonySweepstakesConfirmationViewNextTimer = timerService?.CreateTimer("sony_sweepstakes_confirmation_view_next_timer", timeout, timeout, delegate
 		{
 			continueAction();
 		});

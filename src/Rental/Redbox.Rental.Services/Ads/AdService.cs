@@ -16,10 +16,10 @@ public class AdService : IAdService
 	public IAd GetScreenAd(AdLocation adLocation)
 	{
 		LogHelper.Instance.Log("AdService.GetScreenAd - started");
-		IAd obj = _vistarAdService?.GetScreenAd(adLocation);
-		bool flag = obj != null;
-		LogHelper.Instance.Log($"AdService.GetScreenAd - finished HasResult: {flag}");
-		return obj;
+		IAd ad = _vistarAdService?.GetScreenAd(adLocation);
+		bool hasResult = ad != null;
+		LogHelper.Instance.Log($"AdService.GetScreenAd - finished HasResult: {hasResult}");
+		return ad;
 	}
 
 	public async Task<IAd> GetScreenAdAsync(AdLocation adLocation)

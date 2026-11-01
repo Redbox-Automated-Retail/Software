@@ -98,13 +98,13 @@ public class MemberPerksPopupViewController : BaseViewController
 			}
 			int memberTier = (int)memberPerksPopupViewModel.MemberTier;
 			int tierIndex = GetTierIndex(perksInfo.YearRentals);
-			bool num = tierIndex < memberTier;
-			tierIndex = (num ? memberTier : tierIndex);
+			bool keepsHigherTier = tierIndex < memberTier;
+			tierIndex = (keepsHigherTier ? memberTier : tierIndex);
 			int nextLevelIndex = GetNextLevelIndex(tierIndex, perksInfo.YearRentals);
-			if (num)
+			if (keepsHigherTier)
 			{
-				uint num2 = perksTiers[tierIndex].RangeLimit - perksInfo.YearRentals;
-				memberPerksPopupViewModel.NextLevelRentals = string.Format(Resources.perks_maintain_message, perksTiers[tierIndex].Title, num2, DateTime.Now.Year);
+				uint rentalsToMaintain = perksTiers[tierIndex].RangeLimit - perksInfo.YearRentals;
+				memberPerksPopupViewModel.NextLevelRentals = string.Format(Resources.perks_maintain_message, perksTiers[tierIndex].Title, rentalsToMaintain, DateTime.Now.Year);
 			}
 			else if (memberPerksPopupViewModel.MemberTier == TierType.Legend)
 			{
@@ -112,8 +112,8 @@ public class MemberPerksPopupViewController : BaseViewController
 			}
 			else
 			{
-				uint num3 = perksTiers[nextLevelIndex].RangeLimit - perksInfo.YearRentals;
-				memberPerksPopupViewModel.NextLevelRentals = string.Format(Resources.perks_next_level, num3, DateTime.Now.Year, perksTiers[nextLevelIndex].Title);
+				uint rentalsToNextLevel = perksTiers[nextLevelIndex].RangeLimit - perksInfo.YearRentals;
+				memberPerksPopupViewModel.NextLevelRentals = string.Format(Resources.perks_next_level, rentalsToNextLevel, DateTime.Now.Year, perksTiers[nextLevelIndex].Title);
 			}
 			memberPerksPopupViewModel.CancelButtonCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), (Action)delegate
 			{

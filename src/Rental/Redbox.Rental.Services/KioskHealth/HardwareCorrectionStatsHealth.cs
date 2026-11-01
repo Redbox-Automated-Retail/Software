@@ -80,12 +80,12 @@ public class HardwareCorrectionStatsHealth : IKioskHealthItem
 		{
 			hardwareCorrectionStats.ToLogHelper();
 		}
-		int num = 0;
+		int statCount = 0;
 		if (stats != null)
 		{
 			Guid relatedId = Guid.NewGuid();
-			num = stats.Count;
-			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - Found {0} Stats.", num);
+			statCount = stats.Count;
+			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - Found {0} Stats.", statCount);
 			if (_hcsReporting)
 			{
 				stats.ForEach(delegate(IHardwareCorrectionStatistic s)
@@ -100,9 +100,9 @@ public class HardwareCorrectionStatsHealth : IKioskHealthItem
 				});
 			}
 		}
-		if (num > 0)
+		if (statCount > 0)
 		{
-			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - Removing {0} Stats.", num);
+			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - Removing {0} Stats.", statCount);
 			hardwareService.RemoveHardwareCorrectionStats(delegate
 			{
 			}, delegate(string jobIdentity, string status)

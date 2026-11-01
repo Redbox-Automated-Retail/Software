@@ -67,25 +67,25 @@ public class PromoListLogic : BaseLogic
 		{
 			return;
 		}
-		int num = 0;
+		int insertIndex = 0;
 		foreach (IAcceptedOffer acceptedOffer in personalizationSession.AcceptedOffers)
 		{
 			PerksOfferListItemModel item = CreatePersOfferListItemModelFromAcceptedOffer(model, acceptedOffer);
-			if (promoModels.Count >= num)
+			if (promoModels.Count >= insertIndex)
 			{
-				promoModels.Insert(num, item);
+				promoModels.Insert(insertIndex, item);
 			}
 			else
 			{
 				promoModels.Add(item);
 			}
-			if (num == 0)
+			if (insertIndex == 0)
 			{
-				num = 3;
+				insertIndex = 3;
 				continue;
 			}
-			num++;
-			if (num <= 4)
+			insertIndex++;
+			if (insertIndex <= 4)
 			{
 				continue;
 			}
@@ -100,19 +100,19 @@ public class PromoListLogic : BaseLogic
 			return;
 		}
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-		bool flag = false;
+		bool redboxPlusPromoAdded = false;
 		foreach (IStoredPromoCode storedPromoCode in personalizationSession.StoredPromoCodes)
 		{
 			string promoCodeExpirationText = DetermineExpirationText(storedPromoCode);
-			bool flag2 = dataService?.GetRedboxPlusPromoCampaign(storedPromoCode.CampaignId) != null;
-			if (!flag2 || (includeRedboxPlus && !flag))
+			bool isRedboxPlusPromo = dataService?.GetRedboxPlusPromoCampaign(storedPromoCode.CampaignId) != null;
+			if (!isRedboxPlusPromo || (includeRedboxPlus && !redboxPlusPromoAdded))
 			{
 				StoredPromoCodeModel storedPromoCodeModel = new StoredPromoCodeModel
 				{
 					PromoCode = storedPromoCode.PromoCode,
 					CampaignId = storedPromoCode.CampaignId,
-					PromoCodeDescription = (flag2 ? Resources.redbox_plus_free_1_night_rental : storedPromoCode.CampaignName),
-					IsRedboxPlusPromo = flag2,
+					PromoCodeDescription = (isRedboxPlusPromo ? Resources.redbox_plus_free_1_night_rental : storedPromoCode.CampaignName),
+					IsRedboxPlusPromo = isRedboxPlusPromo,
 					PromoCodeExpirationText = promoCodeExpirationText,
 					ExpirationDate = storedPromoCode.ExpirationDate,
 					MaskCharacter = maskCharacter,
@@ -122,10 +122,10 @@ public class PromoListLogic : BaseLogic
 					Logic = model.PromoLogic,
 					IsAdaMode = ApplicationState.IsADAAccessible
 				};
-				if (flag2)
+				if (isRedboxPlusPromo)
 				{
 					InsertPromoModel(promoModels, 0, storedPromoCodeModel);
-					flag = true;
+					redboxPlusPromoAdded = true;
 				}
 				else
 				{
@@ -187,26 +187,26 @@ public class PromoListLogic : BaseLogic
 	private static string FormatTimeLeft(string timeToComplete, DateTime? completeDate)
 	{
 		string result = string.Empty;
-		int result2 = -1;
+		int daysLeft = -1;
 		if (completeDate.HasValue)
 		{
-			result2 = (completeDate.Value.Date - DateTime.Now.Date).Days;
+			daysLeft = (completeDate.Value.Date - DateTime.Now.Date).Days;
 		}
 		else if (!string.IsNullOrEmpty(timeToComplete))
 		{
 			string[] parts = timeToComplete.Split(' ');
 			if (parts.Length == 2 && parts[1] == "D")
 			{
-				int.TryParse(parts[0], out result2);
+				int.TryParse(parts[0], out daysLeft);
 			}
 		}
-		if (result2 > 1 && result2 < 15)
+		if (daysLeft > 1 && daysLeft < 15)
 		{
-			result = string.Format(Resources.loyalty_offer_days_left, result2);
+			result = string.Format(Resources.loyalty_offer_days_left, daysLeft);
 		}
 		else
 		{
-			switch (result2)
+			switch (daysLeft)
 			{
 			case 1:
 				result = Resources.loyalty_offer_one_day_left;
@@ -257,11 +257,11 @@ public class PromoListLogic : BaseLogic
 
 	public static int FindPageOfSelectedPromo(IPromoListModel viewModel)
 	{
-		double num = Math.Round((double)(viewModel.StoredPromoCodes.IndexOf(viewModel.StoredPromoCodes.FirstOrDefault((IPerksOfferListItem p) => p is StoredPromoCode && ((StoredPromoCodeModel)p).IsAdded)) + 1) / (double)viewModel.PromosPerPage + 0.4);
-		if (num < 1.0)
+		double page = Math.Round((double)(viewModel.StoredPromoCodes.IndexOf(viewModel.StoredPromoCodes.FirstOrDefault((IPerksOfferListItem p) => p is StoredPromoCode && ((StoredPromoCodeModel)p).IsAdded)) + 1) / (double)viewModel.PromosPerPage + 0.4);
+		if (page < 1.0)
 		{
-			num = 1.0;
+			page = 1.0;
 		}
-		return (int)num;
+		return (int)page;
 	}
 }

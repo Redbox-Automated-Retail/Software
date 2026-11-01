@@ -70,8 +70,8 @@ public partial class BrowseFilterBarUserControl : UserControl, IWPFActor, ICompo
 		}
 		ServiceLocator.Instance.GetService<IConfiguration>();
 		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		int num = filterBarModel.Filters.Count((BrowseFilter browseFilter) => browseFilter.IsVisible) + ((filterBarModel.FormatFilterButtonVisibility == Visibility.Visible) ? 1 : 0) + ((filterBarModel.PriceRangeFilterButtonVisibility == Visibility.Visible) ? 1 : 0);
-		FilterButtonPanel.Margin = new Thickness(0.0, 0.0, (num <= 4) ? 178 : 0, 0.0);
+		int visibleButtonCount = filterBarModel.Filters.Count((BrowseFilter browseFilter) => browseFilter.IsVisible) + ((filterBarModel.FormatFilterButtonVisibility == Visibility.Visible) ? 1 : 0) + ((filterBarModel.PriceRangeFilterButtonVisibility == Visibility.Visible) ? 1 : 0);
+		FilterButtonPanel.Margin = new Thickness(0.0, 0.0, (visibleButtonCount <= 4) ? 178 : 0, 0.0);
 		foreach (BrowseFilter filter in filterBarModel.Filters)
 		{
 			RoundedButton roundedButton = new RoundedButton
@@ -179,10 +179,10 @@ public partial class BrowseFilterBarUserControl : UserControl, IWPFActor, ICompo
 	private static Style GetStyle(FrameworkElement frameworkElement, string styleName)
 	{
 		Style result = null;
-		object obj = frameworkElement.FindResource(styleName);
-		if (obj != null)
+		object resource = frameworkElement.FindResource(styleName);
+		if (resource != null)
 		{
-			result = obj as Style;
+			result = resource as Style;
 		}
 		return result;
 	}

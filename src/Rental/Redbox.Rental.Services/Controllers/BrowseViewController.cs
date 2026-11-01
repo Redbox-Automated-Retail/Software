@@ -678,7 +678,7 @@ public class BrowseViewController : BaseViewController
 		string text = null;
 		Style style = null;
 		string checkOutButtonCountText = null;
-		int valueOrDefault = (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
+		int cartItemCount = (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
 		if (ShowNoThanks())
 		{
 			style = WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "classic_gray_button_style");
@@ -692,7 +692,7 @@ public class BrowseViewController : BaseViewController
 			string check_out_button_count = Resources.check_out_button_count;
 			if (check_out_button_count.Contains("{0}"))
 			{
-				checkOutButtonCountText = string.Format(check_out_button_count, valueOrDefault);
+				checkOutButtonCountText = string.Format(check_out_button_count, cartItemCount);
 			}
 		}
 		browseViewModel.IsADAAccessible = BaseViewController.IsADAMode;
@@ -963,10 +963,10 @@ public class BrowseViewController : BaseViewController
 		};
 		bool isSignedIn = PersonalizationFunctions.IsSignedIn;
 		IRentalShoppingCartService rentalShoppingCartService = BaseViewController.RentalShoppingCartService;
-		bool flag = rentalShoppingCartService != null && rentalShoppingCartService.CurrentRentalShoppingCart?.Count > 0;
+		bool cartHasItems = rentalShoppingCartService != null && rentalShoppingCartService.CurrentRentalShoppingCart?.Count > 0;
 		if (isSignedIn)
 		{
-			if (flag)
+			if (cartHasItems)
 			{
 				MessagePopupViewController.ShowSignedInItemInCartQuitMessagePopupView(delegate
 				{
@@ -997,7 +997,7 @@ public class BrowseViewController : BaseViewController
 				});
 			}
 		}
-		else if (flag)
+		else if (cartHasItems)
 		{
 			MessagePopupViewController.ShowItemInCartQuitMessagePopupView(delegate
 			{
@@ -1600,32 +1600,32 @@ public class BrowseViewController : BaseViewController
 				browseProductControl.PageNumberVisibility = Visibility.Collapsed;
 			}
 			bool show10Titles = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles;
-			bool flag = (BrowseState.BrowseMode == BrowseViewFilter.ForSale && BrowseState.TitleFamily == TitleFamily.Movies) || Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowTitleText;
-			int num = -8;
+			bool showsTitleText = (BrowseState.BrowseMode == BrowseViewFilter.ForSale && BrowseState.TitleFamily == TitleFamily.Movies) || Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowTitleText;
+			int paddleOverlapWidth = -8;
 			Thickness margin = new Thickness(0.0, 15.0, 0.0, 33.0);
 			Thickness browseItemMargin = new Thickness(0.0, 40.0, 0.0, 0.0);
 			if (show10Titles)
 			{
-				if (flag)
+				if (showsTitleText)
 				{
-					num = 24;
+					paddleOverlapWidth = 24;
 					margin = new Thickness(0.0, 26.0, 0.0, 0.0);
 					browseItemMargin = new Thickness(0.0, 26.0, 0.0, 0.0);
 				}
 				else
 				{
-					num = 10;
+					paddleOverlapWidth = 10;
 					margin = new Thickness(0.0, 21.0, 0.0, 7.0);
 					browseItemMargin = new Thickness(0.0, 36.0, 0.0, 0.0);
 				}
 			}
-			else if (flag)
+			else if (showsTitleText)
 			{
-				num = 12;
+				paddleOverlapWidth = 12;
 				margin = new Thickness(0.0, 19.0, 0.0, 37.0);
 				browseItemMargin = new Thickness(0.0, 32.0, 0.0, 0.0);
 			}
-			browseProductControl.PaddleOverlapWidth = num;
+			browseProductControl.PaddleOverlapWidth = paddleOverlapWidth;
 			browseProductControl.Margin = margin;
 			browseProductControl.BrowseItemMargin = browseItemMargin;
 			browseProductControl.RowCount = 2;
@@ -1710,38 +1710,38 @@ public class BrowseViewController : BaseViewController
 
 	private static bool AreTTSBrowseItemModelsIdentical(List<IBrowseItemModel> newBrowseItemModels, List<IBrowseItemModel> oldBrowseItemModels)
 	{
-		bool flag = newBrowseItemModels != null && oldBrowseItemModels != null && newBrowseItemModels.Count == oldBrowseItemModels.Count;
-		if (flag)
+		bool identical = newBrowseItemModels != null && oldBrowseItemModels != null && newBrowseItemModels.Count == oldBrowseItemModels.Count;
+		if (identical)
 		{
 			for (int i = 0; i < newBrowseItemModels.Count; i++)
 			{
 				ITitleProduct titleProduct = newBrowseItemModels[i]?.Data as ITitleProduct;
 				ITitleProduct titleProduct2 = oldBrowseItemModels[i]?.Data as ITitleProduct;
-				flag = titleProduct != null && titleProduct2 != null && titleProduct.ProductId == titleProduct2.ProductId;
-				if (!flag)
+				identical = titleProduct != null && titleProduct2 != null && titleProduct.ProductId == titleProduct2.ProductId;
+				if (!identical)
 				{
 					break;
 				}
 			}
 		}
-		return flag;
+		return identical;
 	}
 
 	private static bool AreProductListsIdentical(List<IKioskProduct> shownKioskProducts, List<IKioskProduct> browseProductsShown)
 	{
-		bool flag = shownKioskProducts?.Count == browseProductsShown?.Count;
-		if (flag)
+		bool identical = shownKioskProducts?.Count == browseProductsShown?.Count;
+		if (identical)
 		{
 			for (int i = 0; i < shownKioskProducts.Count; i++)
 			{
-				flag = shownKioskProducts[i] is ITitleProduct && browseProductsShown[i] is ITitleProduct && (shownKioskProducts[i] as ITitleProduct)?.ProductId == (browseProductsShown[i] as ITitleProduct).ProductId;
-				if (!flag)
+				identical = shownKioskProducts[i] is ITitleProduct && browseProductsShown[i] is ITitleProduct && (shownKioskProducts[i] as ITitleProduct)?.ProductId == (browseProductsShown[i] as ITitleProduct).ProductId;
+				if (!identical)
 				{
 					break;
 				}
 			}
 		}
-		return flag;
+		return identical;
 	}
 
 	private static void BrowseViewModel_OnGroupSelectionItemClicked(DisplayGroupSelectionItemModel displayGroupSelectionItemModel)
@@ -1764,10 +1764,10 @@ public class BrowseViewController : BaseViewController
 			}
 		}
 		DisplayGroupModel item = viewModel?.BrowseProductControlModel?.BrowseItems.FirstOrDefault((IBrowseItemModel x) => x is DisplayGroupModel && (x as DisplayGroupModel).Name == displayGroupSelectionItemModel.Name) as DisplayGroupModel;
-		int num = viewModel?.BrowseProductControlModel?.BrowseItems?.IndexOf(item) ?? (-1);
-		if (num > -1)
+		int itemIndex = viewModel?.BrowseProductControlModel?.BrowseItems?.IndexOf(item) ?? (-1);
+		if (itemIndex > -1)
 		{
-			viewModel.BrowseProductControlModel.SetPageNumber(viewModel?.BrowseProductControlModel.GetPageOfBrowseItemIndex(num) ?? 1, PageChangeSource.GroupSelection);
+			viewModel.BrowseProductControlModel.SetPageNumber(viewModel?.BrowseProductControlModel.GetPageOfBrowseItemIndex(itemIndex) ?? 1, PageChangeSource.GroupSelection);
 		}
 	}
 
@@ -1913,8 +1913,8 @@ public class BrowseViewController : BaseViewController
 		if (titleProduct.InStock || BrowseFunctions.IsPurchase)
 		{
 			IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-			bool flag = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
-			if ((titleProduct.HasMultiNightPrice || (titleProduct.IsSellableAndInStock && (titleProduct.IsMovie || titleProduct.IsGame))) && !BrowseFunctions.IsPurchase && !flag && !BrowseFunctions.IsRedboxPlusBrowseMode)
+			bool inCartPromoOfferActive = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
+			if ((titleProduct.HasMultiNightPrice || (titleProduct.IsSellableAndInStock && (titleProduct.IsMovie || titleProduct.IsGame))) && !BrowseFunctions.IsPurchase && !inCartPromoOfferActive && !BrowseFunctions.IsRedboxPlusBrowseMode)
 			{
 				BrowseFunctions.AddMultiNightPricedProductToCart(titleProduct, "browse_view");
 				return;
@@ -2025,8 +2025,8 @@ public class BrowseViewController : BaseViewController
 			browseControlModel.BrowseItemMargin = new Thickness(0.0, 12.0, 0.0, 0.0);
 			browseControlModel.RowCount = ((!BaseViewController.IsADAMode) ? 1 : 2);
 			browseControlModel.ColumnCount = ((BrowseFunctions.IsRedboxPlusBrowseMode && !BaseViewController.IsADAMode) ? 4 : ((!Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles && BaseViewController.IsADAMode) ? 6 : 5));
-			int num = ((!BaseViewController.IsADAMode) ? 5 : (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles ? 10 : 12));
-			for (int i = 0; i < num; i++)
+			int miniCartSlotCount = ((!BaseViewController.IsADAMode) ? 5 : (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.Show10Titles ? 10 : 12));
+			for (int i = 0; i < miniCartSlotCount; i++)
 			{
 				browseControlModel.BrowseControls.Add(new DisplayProductWithCommandsUserControl
 				{
@@ -2040,7 +2040,7 @@ public class BrowseViewController : BaseViewController
 			{
 				List<IKioskProduct> browseProducts = BaseViewController.ApplicationState.BrowseProducts;
 				IBrowseState browseState = BrowseState;
-				browseControlModel.BrowseItems = CreateBrowseItemsFromKioskProducts(browseProducts, browseState != null && browseState.BrowseSelectedSort == BrowseSelectedSort.Alpha, isADAMiniCart: true, num, 1, _configuredADAMiniCartBrowseItemModels);
+				browseControlModel.BrowseItems = CreateBrowseItemsFromKioskProducts(browseProducts, browseState != null && browseState.BrowseSelectedSort == BrowseSelectedSort.Alpha, isADAMiniCart: true, miniCartSlotCount, 1, _configuredADAMiniCartBrowseItemModels);
 				browseControlModel.SetPageNumber(BrowseState.PageNumber, PageChangeSource.None);
 			}
 			else
@@ -2166,8 +2166,8 @@ public class BrowseViewController : BaseViewController
 					dataService.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: false, out kioskProduct2);
 				}
 				MDVProduct mDVProduct = kioskProduct2 as MDVProduct;
-				bool flag = item.Action == RentalShoppingCartItemAction.purchase;
-				if (flag)
+				bool isPurchase = item.Action == RentalShoppingCartItemAction.purchase;
+				if (isPurchase)
 				{
 					displayProductModel.Banner = BannerCollection.Instance.FirstOrDefault((Banner x) => x.BannerType == BannerType.Purchase);
 				}
@@ -2184,7 +2184,7 @@ public class BrowseViewController : BaseViewController
 					displayProductModel.Banner = null;
 				}
 				displayProductModel.BannerVisibility = ((displayProductModel.Banner == null) ? Visibility.Collapsed : Visibility.Visible);
-				if (flag && displayProductModel.Banner != null)
+				if (isPurchase && displayProductModel.Banner != null)
 				{
 					displayProductModel.BannerText = Resources.ResourceManager.GetString(displayProductModel.Banner.TextResourceName);
 				}
@@ -2200,7 +2200,7 @@ public class BrowseViewController : BaseViewController
 				{
 					displayProductModel.BannerText = null;
 				}
-				displayProductModel.BannerBackgroundBrush = (((flag || mDVProduct != null || rentalShoppingCartSubscriptionItem != null) && displayProductModel.Banner != null) ? WPFFunctions.GetBrush(BaseViewController.GetViewUserControl(), displayProductModel.Banner.BannerStyleName) : null);
+				displayProductModel.BannerBackgroundBrush = (((isPurchase || mDVProduct != null || rentalShoppingCartSubscriptionItem != null) && displayProductModel.Banner != null) ? WPFFunctions.GetBrush(BaseViewController.GetViewUserControl(), displayProductModel.Banner.BannerStyleName) : null);
 				list.Add(displayProductModel);
 			}
 		}
@@ -2209,7 +2209,7 @@ public class BrowseViewController : BaseViewController
 
 	private static DisplayProductModelConstants GetDisplayProductModelConstants()
 	{
-		DisplayProductModelConstants obj = new DisplayProductModelConstants
+		DisplayProductModelConstants constants = new DisplayProductModelConstants
 		{
 			StarringLabel = Resources.starring_label,
 			GenresLabel = Resources.title_details_genres_text,
@@ -2237,13 +2237,13 @@ public class BrowseViewController : BaseViewController
 			RentalShoppingCartService = BaseViewController.RentalShoppingCartService
 		};
 		IRentalShoppingCart rentalShoppingCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		obj.IsInCartBrowse = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
-		obj.OutOfStockTitleDetailsABTestVersion = Redbox.Rental.Services.Configuration.Configuration.Instance.OutOfStockTitleDetailsABTestVersion;
-		obj.EnableRedboxPlus = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.EnableRedboxPlusRedemption;
-		obj.KioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
-		obj.ShowWatchOptions = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowWatchOptions;
-		obj.ShowDualInStock = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowDualInStock;
-		return obj;
+		constants.IsInCartBrowse = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
+		constants.OutOfStockTitleDetailsABTestVersion = Redbox.Rental.Services.Configuration.Configuration.Instance.OutOfStockTitleDetailsABTestVersion;
+		constants.EnableRedboxPlus = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.EnableRedboxPlusRedemption;
+		constants.KioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
+		constants.ShowWatchOptions = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowWatchOptions;
+		constants.ShowDualInStock = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowDualInStock;
+		return constants;
 	}
 
 	private static List<IBrowseItemModel> CreateBrowseItemsFromKioskProducts(List<IKioskProduct> kioskProducts, bool createAlphaGroups, bool isADAMiniCart, int visibleItemCount, int pageNumber, List<long> configuredBrowseItemModels)
@@ -2772,7 +2772,7 @@ public class BrowseViewController : BaseViewController
 			}
 			case "D":
 			{
-				BrowseFilter obj = new BrowseFilter
+				BrowseFilter highPriceFilter = new BrowseFilter
 				{
 					ButtonType = BrowseFilterType.PriceRange,
 					Name = "price_cutoff_high_button",
@@ -2790,22 +2790,22 @@ public class BrowseViewController : BaseViewController
 					else
 					{
 						decimal? priceRangeHigh = browsePriceRangeFilter.PriceRangeHigh;
-						decimal num = 5.99m;
-						isSelected = (((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue) ? 1 : 0);
+						decimal highPriceCutoff = 5.99m;
+						isSelected = (((priceRangeHigh.GetValueOrDefault() == highPriceCutoff) & priceRangeHigh.HasValue) ? 1 : 0);
 					}
 				}
 				else
 				{
 					isSelected = 0;
 				}
-				obj.IsSelected = (byte)isSelected != 0;
-				obj.IsVisible = isVisible3;
-				obj.Parameter = new BrowsePriceRangeParameter
+				highPriceFilter.IsSelected = (byte)isSelected != 0;
+				highPriceFilter.IsVisible = isVisible3;
+				highPriceFilter.Parameter = new BrowsePriceRangeParameter
 				{
 					PriceRangeHigh = 5.99m,
 					analtyicsString = "buy599"
 				};
-				BrowseFilter browseFilter = obj;
+				BrowseFilter browseFilter = highPriceFilter;
 				browseFilter.Text = string.Format(Resources.price_range_low_button, 5.99m.ToString("0.00"));
 				list.Add(browseFilter);
 				break;
@@ -2946,18 +2946,18 @@ public class BrowseViewController : BaseViewController
 			return string.Empty;
 		}
 		decimal? price = list.Min((ITitleProduct tp) => (ServiceLocator.Instance.GetService<IPricingService>()?.GetOneDayProductPricingRecord(tp.ProductId))?.InitialNight);
-		bool flag = list.Count == 1 || list.All(delegate(ITitleProduct tp)
+		bool samePriceForAll = list.Count == 1 || list.All(delegate(ITitleProduct tp)
 		{
-			IPricingRecord obj = ServiceLocator.Instance.GetService<IPricingService>()?.GetOneDayProductPricingRecord(tp.ProductId);
-			if (obj == null)
+			IPricingRecord pricingRecord = ServiceLocator.Instance.GetService<IPricingService>()?.GetOneDayProductPricingRecord(tp.ProductId);
+			if (pricingRecord == null)
 			{
 				return !price.HasValue;
 			}
-			decimal initialNight = obj.InitialNight;
-			decimal? num = price;
-			return (initialNight == num.GetValueOrDefault()) & num.HasValue;
+			decimal initialNight = pricingRecord.InitialNight;
+			decimal? lowestPrice = price;
+			return (initialNight == lowestPrice.GetValueOrDefault()) & lowestPrice.HasValue;
 		});
-		return string.Format("${0:F2}{1}", price, flag ? "" : "+");
+		return string.Format("${0:F2}{1}", price, samePriceForAll ? "" : "+");
 	}
 
 	private static void ConfigureBrowseMessagePopupUserControl(BrowseViewModel browseViewModel)

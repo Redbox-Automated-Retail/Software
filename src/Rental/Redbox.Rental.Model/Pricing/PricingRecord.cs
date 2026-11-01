@@ -83,8 +83,8 @@ public class PricingRecord : IPricingRecord
 		{
 			if (!IsMultiNightPrice && DefaultInitialNightPrice.HasValue)
 			{
-				decimal? num = DefaultInitialNightPrice - (decimal?)InitialNight;
-				return (num.GetValueOrDefault() > 0m) & num.HasValue;
+				decimal? discount = DefaultInitialNightPrice - (decimal?)InitialNight;
+				return (discount.GetValueOrDefault() > 0m) & discount.HasValue;
 			}
 			return false;
 		}
@@ -97,60 +97,60 @@ public class PricingRecord : IPricingRecord
 
 	public int CompareTo(IPricingRecord pricingRecord)
 	{
-		int num = TitleFamily.CompareTo(pricingRecord.TitleFamily);
-		if (num == 0)
+		int comparison = TitleFamily.CompareTo(pricingRecord.TitleFamily);
+		if (comparison == 0)
 		{
-			num = TitleType.CompareTo(pricingRecord.TitleType);
+			comparison = TitleType.CompareTo(pricingRecord.TitleType);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = InitialNight.CompareTo(pricingRecord.InitialNight);
+			comparison = InitialNight.CompareTo(pricingRecord.InitialNight);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = ExtraNight.CompareTo(pricingRecord.ExtraNight);
+			comparison = ExtraNight.CompareTo(pricingRecord.ExtraNight);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = ExpirationPrice.CompareTo(pricingRecord.ExpirationPrice);
+			comparison = ExpirationPrice.CompareTo(pricingRecord.ExpirationPrice);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = NonReturn.CompareTo(pricingRecord.NonReturn);
+			comparison = NonReturn.CompareTo(pricingRecord.NonReturn);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = NonReturnDays.CompareTo(pricingRecord.NonReturnDays);
+			comparison = NonReturnDays.CompareTo(pricingRecord.NonReturnDays);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = PromoValue.CompareTo(pricingRecord.PromoValue);
+			comparison = PromoValue.CompareTo(pricingRecord.PromoValue);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = Purchase.CompareTo(pricingRecord.Purchase);
+			comparison = Purchase.CompareTo(pricingRecord.Purchase);
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = (ProductPricingId ?? (-999)).CompareTo(pricingRecord.ProductPricingId ?? (-999));
+			comparison = (ProductPricingId ?? (-999)).CompareTo(pricingRecord.ProductPricingId ?? (-999));
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = (InitialDays ?? (-999)).CompareTo(pricingRecord.InitialDays ?? (-999));
+			comparison = (InitialDays ?? (-999)).CompareTo(pricingRecord.InitialDays ?? (-999));
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = (DefaultInitialNightPrice ?? (-999m)).CompareTo(pricingRecord.DefaultInitialNightPrice ?? (-999m));
+			comparison = (DefaultInitialNightPrice ?? (-999m)).CompareTo(pricingRecord.DefaultInitialNightPrice ?? (-999m));
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = (DefaultExtraNightPrice ?? (-999m)).CompareTo(pricingRecord.DefaultExtraNightPrice ?? (-999m));
+			comparison = (DefaultExtraNightPrice ?? (-999m)).CompareTo(pricingRecord.DefaultExtraNightPrice ?? (-999m));
 		}
-		if (num == 0)
+		if (comparison == 0)
 		{
-			num = (PriceSetId ?? (-999)).CompareTo(pricingRecord.PriceSetId ?? (-999));
+			comparison = (PriceSetId ?? (-999)).CompareTo(pricingRecord.PriceSetId ?? (-999));
 		}
-		return num;
+		return comparison;
 	}
 
 	public IPricingRecord Clone()
@@ -176,7 +176,7 @@ public class PricingRecord : IPricingRecord
 
 	public Dictionary<string, object> ToDictionary()
 	{
-		Dictionary<string, object> obj = new Dictionary<string, object>
+		Dictionary<string, object> values = new Dictionary<string, object>
 		{
 			{
 				"family",
@@ -200,7 +200,7 @@ public class PricingRecord : IPricingRecord
 			{ "default_extra_night", DefaultExtraNightPrice }
 		};
 		ServiceLocator.Instance.GetService<IPricingService>();
-		obj.Add("price_set_id", "1");
-		return obj;
+		values.Add("price_set_id", "1");
+		return values;
 	}
 }

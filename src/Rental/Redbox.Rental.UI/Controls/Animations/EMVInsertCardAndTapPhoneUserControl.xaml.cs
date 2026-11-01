@@ -144,12 +144,12 @@ public partial class EMVInsertCardAndTapPhoneUserControl : UserControl, ICompone
 		}
 		if (SecondAnimationInfo != null && ThirdAnimationInfo != null)
 		{
-			List<string> list2 = new List<string>();
+			List<string> keyTimeKeys = new List<string>();
 			foreach (KeyValuePair<string, TimeSpan> keyTime2 in ThirdAnimationInfo.KeyTimes)
 			{
-				list2.Add(keyTime2.Key);
+				keyTimeKeys.Add(keyTime2.Key);
 			}
-			list2.ForEach(delegate(string key)
+			keyTimeKeys.ForEach(delegate(string key)
 			{
 				ThirdAnimationInfo.KeyTimes[key] += FirstAnimationInfo.TotalDuration + SecondAnimationInfo.TotalDuration;
 			});

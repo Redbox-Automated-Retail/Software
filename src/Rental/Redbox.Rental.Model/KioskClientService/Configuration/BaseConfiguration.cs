@@ -46,31 +46,31 @@ public class BaseConfiguration
 	private bool isSettingIncluded(object categoryClassInstance, PropertyInfo settingProperty, ConfigLogParameters loggingParameters)
 	{
 		string categoryName = GetCategoryName(categoryClassInstance);
-		string name = categoryClassInstance.GetType().Name;
-		string name2 = settingProperty.Name;
+		string className = categoryClassInstance.GetType().Name;
+		string propertyName = settingProperty.Name;
 		string settingName = GetSettingName(settingProperty);
-		bool flag = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
-		bool flag2 = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag3 = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, name }).Any();
-		bool flag4 = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
+		bool noIncludeCategories = loggingParameters?.IncludeCategories == null || !loggingParameters.IncludeCategories.Any();
+		bool categoryIncluded = loggingParameters?.IncludeCategories != null && loggingParameters.IncludeCategories.Intersect(new string[2] { categoryName, className }).Any();
+		bool categoryExcluded = loggingParameters?.ExcludeCategories != null && loggingParameters.ExcludeCategories.Intersect(new string[2] { categoryName, className }).Any();
+		bool settingIncluded = loggingParameters?.IncludeSettings != null && loggingParameters.IncludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(className, settingName),
+			(className, propertyName)
 		}).Any();
-		bool flag5 = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
+		bool settingExcluded = loggingParameters?.ExcludeSettings != null && loggingParameters.ExcludeSettings.Intersect(new(string, string)[4]
 		{
 			(categoryName, settingName),
-			(categoryName, name2),
-			(name, settingName),
-			(name, name2)
+			(categoryName, propertyName),
+			(className, settingName),
+			(className, propertyName)
 		}).Any();
-		if (!flag4)
+		if (!settingIncluded)
 		{
-			if ((flag && !flag3) | flag2)
+			if ((noIncludeCategories && !categoryExcluded) | categoryIncluded)
 			{
-				return !flag5;
+				return !settingExcluded;
 			}
 			return false;
 		}
@@ -119,15 +119,15 @@ public class BaseConfiguration
 
 	private object GetCategoryClassInstance(PropertyInfo categoryClassPropertyInfo)
 	{
-		object obj = categoryClassPropertyInfo?.GetValue(this, null);
-		if (obj == null)
+		object categoryClassInstance = categoryClassPropertyInfo?.GetValue(this, null);
+		if (categoryClassInstance == null)
 		{
 			try
 			{
-				obj = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
-				if (obj != null)
+				categoryClassInstance = Activator.CreateInstance(categoryClassPropertyInfo.PropertyType);
+				if (categoryClassInstance != null)
 				{
-					categoryClassPropertyInfo.SetValue(this, obj);
+					categoryClassPropertyInfo.SetValue(this, categoryClassInstance);
 				}
 				else
 				{
@@ -139,6 +139,6 @@ public class BaseConfiguration
 				LogHelper.Instance.LogException("Unable to instantiate configuration category class " + categoryClassPropertyInfo?.PropertyType?.Name, e);
 			}
 		}
-		return obj;
+		return categoryClassInstance;
 	}
 }

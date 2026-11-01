@@ -213,9 +213,9 @@ public class UpsellInfo : IUpsellInfo
 
 	private bool CheckForInCartOffer()
 	{
-		bool num = ApplicationState.Instance.InCartTemplateName != null && ApplicationState.Instance.InCartTemplateName != "Default-No-Offer";
+		bool hasInCartTemplate = ApplicationState.Instance.InCartTemplateName != null && ApplicationState.Instance.InCartTemplateName != "Default-No-Offer";
 		bool result = ApplicationState.Instance.InCartTemplateName == "ROGO GAME B" || ApplicationState.Instance.InCartTemplateName == "ROGO GAME FREE G" || ApplicationState.Instance.InCartTemplateName == "ROGO GAME FREE INCLUDE H";
-		if (num)
+		if (hasInCartTemplate)
 		{
 			return result;
 		}

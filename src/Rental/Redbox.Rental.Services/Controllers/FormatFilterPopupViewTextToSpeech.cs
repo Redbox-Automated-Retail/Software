@@ -53,12 +53,12 @@ public class FormatFilterPopupViewTextToSpeech
 				{
 					Text = "pick your format"
 				});
-				int num = 1;
+				int keyNumber = 1;
 				foreach (FormatButtonData button in viewModel.ButtonData)
 				{
 					speechPart.Events.Add(new MapKeyPressToAction
 					{
-						KeyCode = num.ToString(),
+						KeyCode = keyNumber.ToString(),
 						Action = delegate
 						{
 							viewModel.ProcessFormatButtonClicked(button.Format);
@@ -66,9 +66,9 @@ public class FormatFilterPopupViewTextToSpeech
 					});
 					speechPart.Texts.Add(new TextPart
 					{
-						Text = "For " + button.Text + ", press " + num + "."
+						Text = "For " + button.Text + ", press " + keyNumber + "."
 					});
-					num++;
+					keyNumber++;
 				}
 				speechPart.Texts.Add(new TextPart
 				{

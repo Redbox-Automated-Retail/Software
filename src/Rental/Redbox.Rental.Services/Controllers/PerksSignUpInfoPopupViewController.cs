@@ -62,11 +62,11 @@ public class PerksSignUpInfoPopupViewController : BaseViewController
 			viewModel.UseOption2Desc = string.Format(Resources.perks_signup_info_use_desc_2 + " = " + Resources.perks_signup_info_use_points_2);
 			viewModel.VisitHeading = Resources.perks_signup_info_visit_header;
 		}
-		int? num = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.LoyaltySession?.PointsBalance;
-		viewModel.BalanceHeading = (num.HasValue ? string.Format(Resources.perks_signup_info_balance_header, num) : string.Empty);
-		bool valueOrDefault = ServiceLocator.Instance.GetService<IViewService>()?.Stack?.Any((IViewFrameInstance vfi) => vfi?.ViewFrame?.ViewName == "recommended_titles_popup_view") == true;
-		viewModel.OKButtonText = (valueOrDefault ? Resources.back_button.ToUpper() : Resources.okay.ToUpper());
-		viewModel.OKButtonHorizontalAlignment = ((!valueOrDefault) ? HorizontalAlignment.Center : HorizontalAlignment.Left);
+		int? pointsBalance = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.LoyaltySession?.PointsBalance;
+		viewModel.BalanceHeading = (pointsBalance.HasValue ? string.Format(Resources.perks_signup_info_balance_header, pointsBalance) : string.Empty);
+		bool shownFromRecommendedTitles = ServiceLocator.Instance.GetService<IViewService>()?.Stack?.Any((IViewFrameInstance vfi) => vfi?.ViewFrame?.ViewName == "recommended_titles_popup_view") == true;
+		viewModel.OKButtonText = (shownFromRecommendedTitles ? Resources.back_button.ToUpper() : Resources.okay.ToUpper());
+		viewModel.OKButtonHorizontalAlignment = ((!shownFromRecommendedTitles) ? HorizontalAlignment.Center : HorizontalAlignment.Left);
 	}
 
 	private static void OKButtonClickedAction()
@@ -84,7 +84,7 @@ public class PerksSignUpInfoPopupViewController : BaseViewController
 		}
 		viewModel.ProcessGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_perks_sign_up_info_view"
 			};
@@ -151,13 +151,13 @@ public class PerksSignUpInfoPopupViewController : BaseViewController
 					Text = "Use 1750 points per night to get a free 1-night Blu-ray rental"
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 }

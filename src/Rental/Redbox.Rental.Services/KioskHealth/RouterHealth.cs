@@ -241,21 +241,21 @@ public class RouterHealth : IRouterHealth, IKioskHealthItem
 			return;
 		}
 		LogHelper.Instance.Log("RouterHealth.CorrectProblem - Asking HAL to reset the router");
-		bool flag = true;
+		bool success = true;
 		string text = string.Empty;
 		int? elapsed = null;
-		bool flag2 = true;
+		bool supportsRouterReset = true;
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			text = $"RouterHealth.CorrectProblem - IHardwareService is not available.";
 			LogHelper.Instance.Log(text);
-			flag = false;
+			success = false;
 		}
 		else
 		{
-			flag2 = SupportsRouterReset(hardwareService);
-			if (flag2)
+			supportsRouterReset = SupportsRouterReset(hardwareService);
+			if (supportsRouterReset)
 			{
 				string jobId = null;
 				Stopwatch stopwatch = new Stopwatch();
@@ -270,7 +270,7 @@ public class RouterHealth : IRouterHealth, IKioskHealthItem
 				elapsed = (int)stopwatch.ElapsedMilliseconds;
 				if (errorList != null && errorList.Any())
 				{
-					flag = false;
+					success = false;
 					Redbox.KioskEngine.ComponentModel.Error error = errorList[0];
 					text = $"Code: {error.Code} Description: {error.Description} Details: {error.Details}";
 				}
@@ -278,9 +278,9 @@ public class RouterHealth : IRouterHealth, IKioskHealthItem
 		}
 		if (_routerReporting)
 		{
-			_kioskEvents.AddEvent(KioskEvent.NewEvent(3, 301, flag, elapsed, _relatedId, flag ? new
+			_kioskEvents.AddEvent(KioskEvent.NewEvent(3, 301, success, elapsed, _relatedId, success ? new
 			{
-				SupportsRouterReset = flag2
+				SupportsRouterReset = supportsRouterReset
 			}.ToJson() : new
 			{
 				Error = text

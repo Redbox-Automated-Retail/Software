@@ -269,8 +269,8 @@ internal class KeyboardViewUI
 		_rendService.ActiveScene.AddLast(actor2);
 		if (KeyboardType != KeyboardViewType.Promo)
 		{
-			string text2 = (IsSpanish ? ((IsAda ? " " : string.Empty) + "     BORRAR  ") : "        CLEAR");
-			IActor actor3 = CreateCharacter(font, style, text2, x + actor.Width + 14, y, actor.Width);
+			string clearText = (IsSpanish ? ((IsAda ? " " : string.Empty) + "     BORRAR  ") : "        CLEAR");
+			IActor actor3 = CreateCharacter(font, style, clearText, x + actor.Width + 14, y, actor.Width);
 			actor3.HorizontalAlignment = StringAlignment.Near;
 			actor3.Hit -= OnCharacterHit;
 			actor3.Hit += OnClearHit;

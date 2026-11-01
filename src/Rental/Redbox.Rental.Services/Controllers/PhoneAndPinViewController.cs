@@ -280,9 +280,9 @@ public class PhoneAndPinViewController : BaseViewController
 
 	private static void UpdatePinConfirmView(PhoneAndPinViewModel phoneAndPinViewModel)
 	{
-		bool flag = phoneAndPinViewModel.PinConfirmDisplayText == phoneAndPinViewModel.PinDisplayText;
-		phoneAndPinViewModel.IsSignInButtonEnabled &= flag;
-		if (!flag)
+		bool pinsMatch = phoneAndPinViewModel.PinConfirmDisplayText == phoneAndPinViewModel.PinDisplayText;
+		phoneAndPinViewModel.IsSignInButtonEnabled &= pinsMatch;
+		if (!pinsMatch)
 		{
 			phoneAndPinViewModel.ConfirmPinButtonState = 1;
 			phoneAndPinViewModel.ErrorMessageText = Resources.phone_and_pin_confirm_error_text;

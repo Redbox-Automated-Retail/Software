@@ -108,7 +108,7 @@ public class ReservationFunctions
 
 	public static int GetReservedBarcodesCount()
 	{
-		int num = 0;
+		int count = 0;
 		List<IReservation> allReservations = GetAllReservations();
 		if (allReservations != null)
 		{
@@ -118,12 +118,12 @@ public class ReservationFunctions
 				{
 					if (!string.IsNullOrEmpty(reservedTitle.Barcode))
 					{
-						num++;
+						count++;
 					}
 				}
 			}
 		}
-		return num;
+		return count;
 	}
 
 	public static bool IsBarcodeReserved(string barcode)
@@ -340,9 +340,9 @@ public class ReservationFunctions
 	{
 		List<IKioskProduct> recommendedProducts = GetRecommendedProducts();
 		recommendedProducts.Select((IKioskProduct x) => (x as ITitleProduct)?.ProductId.ToString()).Join(",");
-		IRentalShoppingCart obj = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
+		IRentalShoppingCart currentRentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 		IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
-		if (obj == null || analyticsService == null)
+		if (currentRentalShoppingCart == null || analyticsService == null)
 		{
 			return;
 		}
@@ -378,7 +378,7 @@ public class ReservationFunctions
 				excludeProducts.Add(t);
 			});
 		});
-		bool flag = false;
+		bool hasBluray = false;
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		foreach (string item in GetReservedBarcodesToVend(reservations))
 		{
@@ -388,7 +388,7 @@ public class ReservationFunctions
 				excludeProducts.Add(titleProduct.ProductId);
 				if (titleProduct.TitleType == TitleType.Bluray)
 				{
-					flag = true;
+					hasBluray = true;
 				}
 			}
 			else
@@ -396,8 +396,8 @@ public class ReservationFunctions
 				LogHelper.Instance.Log("ReservationFunctions.GetRecommendedProducts unable to find product using barcode: " + item, LogEntryType.Info);
 			}
 		}
-		LogHelper.Instance.Log(string.Format("ReservationFunctions.GetRecommendedProducts GenerateRecommendations({0}, {1})", flag, string.Join(",", excludeProducts)), LogEntryType.Info);
-		return RecommendationOnPickupViewController.GenerateRecommendations(flag, excludeProducts);
+		LogHelper.Instance.Log(string.Format("ReservationFunctions.GetRecommendedProducts GenerateRecommendations({0}, {1})", hasBluray, string.Join(",", excludeProducts)), LogEntryType.Info);
+		return RecommendationOnPickupViewController.GenerateRecommendations(hasBluray, excludeProducts);
 	}
 
 	private static IReservationDetails FindReservationDetailsWithDuplicateTitles(IReservationDetails searchForReservationDetails, List<IReservation> reservations)
@@ -1042,7 +1042,7 @@ public class ReservationFunctions
 
 	private static bool IsValidReservationRequest(IReservationRequest reservationRequest, ReservationRequestResult reservationRequestResult)
 	{
-		bool flag = false;
+		bool isValid = false;
 		if (reservationRequest == null)
 		{
 			reservationRequestResult.ErrorMessage = "Reservation Request required.";
@@ -1065,13 +1065,13 @@ public class ReservationFunctions
 		}
 		else
 		{
-			flag = true;
+			isValid = true;
 		}
-		if (!flag)
+		if (!isValid)
 		{
 			reservationRequestResult.Status = ReservationRequestStatus.InvalidRequest;
 		}
-		return flag;
+		return isValid;
 	}
 
 	private static List<IBarcodeForProductResult> GetBarcodesForNewReservation(List<ReservationRequestTitle> reservationTitles, List<string> barcodesAlreadyInPlay)
@@ -1383,7 +1383,7 @@ public class ReservationFunctions
 
 	public static IDictionary<string, IDictionary<string, IDictionary<string, decimal>>> GetpricesForBrokerService(bool isForRecommendationOnPickup)
 	{
-		Dictionary<string, IDictionary<string, IDictionary<string, decimal>>> obj = new Dictionary<string, IDictionary<string, IDictionary<string, decimal>>>
+		Dictionary<string, IDictionary<string, IDictionary<string, decimal>>> prices = new Dictionary<string, IDictionary<string, IDictionary<string, decimal>>>
 		{
 			{
 				"Movie",
@@ -1395,15 +1395,15 @@ public class ReservationFunctions
 			}
 		};
 		IPricingSet priceSetForBrokerService = GetPriceSetForBrokerService(isForRecommendationOnPickup);
-		IDictionary<string, decimal> value = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType.DVD), includePurchasePrice: true);
-		IDictionary<string, decimal> value2 = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType.Bluray));
-		IDictionary<string, decimal> value3 = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType._4KUHD));
-		IDictionary<string, decimal> value4 = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Games && x.TitleType == TitleType.All));
-		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)obj)["Movie"]["default"] = value;
-		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)obj)["Movie"]["BluRay"] = value2;
-		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)obj)["Movie"]["_4kuhd"] = value3;
-		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)obj)["Game"]["default"] = value4;
-		return obj;
+		IDictionary<string, decimal> dvdPrices = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType.DVD), includePurchasePrice: true);
+		IDictionary<string, decimal> blurayPrices = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType.Bluray));
+		IDictionary<string, decimal> uhdPrices = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Movies && x.TitleType == TitleType._4KUHD));
+		IDictionary<string, decimal> gamePrices = CreatePricingRecordDictionary(priceSetForBrokerService.PriceRecords.FirstOrDefault((IPricingRecord x) => x.TitleFamily == TitleFamily.Games && x.TitleType == TitleType.All));
+		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)prices)["Movie"]["default"] = dvdPrices;
+		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)prices)["Movie"]["BluRay"] = blurayPrices;
+		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)prices)["Movie"]["_4kuhd"] = uhdPrices;
+		((IDictionary<string, IDictionary<string, IDictionary<string, decimal>>>)prices)["Game"]["default"] = gamePrices;
+		return prices;
 	}
 
 	private static IPricingSet GetPriceSetForBrokerService(bool isForRecommendationOnPickup)

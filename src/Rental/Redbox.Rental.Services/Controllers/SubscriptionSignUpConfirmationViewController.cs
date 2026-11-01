@@ -42,12 +42,12 @@ public class SubscriptionSignUpConfirmationViewController : BaseViewController
 	private static void ConfigureText(SubscriptionSignUpConfirmationViewModel subscriptionSignUpConfirmationViewModel)
 	{
 		OrchestrationService.SetCurrentUICulture();
-		bool valueOrDefault = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.IsCPNewInThisSession == true;
-		subscriptionSignUpConfirmationViewModel.RedboxPlusExistingCustomerTextVisibility = (valueOrDefault ? Visibility.Collapsed : Visibility.Visible);
-		subscriptionSignUpConfirmationViewModel.RedboxPlusNewCustomerTextVisibility = ((!valueOrDefault) ? Visibility.Collapsed : Visibility.Visible);
+		bool isNewCustomer = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.IsCPNewInThisSession == true;
+		subscriptionSignUpConfirmationViewModel.RedboxPlusExistingCustomerTextVisibility = (isNewCustomer ? Visibility.Collapsed : Visibility.Visible);
+		subscriptionSignUpConfirmationViewModel.RedboxPlusNewCustomerTextVisibility = ((!isNewCustomer) ? Visibility.Collapsed : Visibility.Visible);
 		if (subscriptionSignUpConfirmationViewModel?.SubscriptionProduct is IRedboxPlusSubscriptionProduct)
 		{
-			if (valueOrDefault)
+			if (isNewCustomer)
 			{
 				subscriptionSignUpConfirmationViewModel.TitleText1 = Resources.redbox_plus_signup_confirmation_new_customer_title;
 				subscriptionSignUpConfirmationViewModel.MessageText1 = Resources.redbox_plus_signup_confirmation_new_customer_message_1;
@@ -70,13 +70,13 @@ public class SubscriptionSignUpConfirmationViewController : BaseViewController
 
 	private static void CreateTimer()
 	{
-		int num = 8000;
+		int timeout = 8000;
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		if (textToSpeechService != null)
 		{
-			num = textToSpeechService.GetTimeout("shorter", num);
+			timeout = textToSpeechService.GetTimeout("shorter", timeout);
 		}
-		(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("subscription_signup_confirmation_timer", num, num, delegate
+		(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("subscription_signup_confirmation_timer", timeout, timeout, delegate
 		{
 			ContinueAction();
 		}))?.Start();

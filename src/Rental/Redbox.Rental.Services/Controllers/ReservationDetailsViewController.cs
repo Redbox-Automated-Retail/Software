@@ -60,13 +60,13 @@ public class ReservationDetailsViewController : BaseViewController
 
 	private static void PopulateModelText(ReservationDetailsViewModel reservationDetailsViewModel)
 	{
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
+		int reservedTitleCount = 0;
+		int mdvDiscCount = 0;
+		int mdvCount = 0;
 		List<IReservation> accountReservations = ReservationFunctions.GetAccountReservations();
 		if (accountReservations != null)
 		{
-			num = accountReservations.Sum((IReservation x) => x.ReservationDetails.ReservedTitles.Count);
+			reservedTitleCount = accountReservations.Sum((IReservation x) => x.ReservationDetails.ReservedTitles.Count);
 			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			if (dataService != null)
 			{
@@ -78,28 +78,28 @@ public class ReservationDetailsViewController : BaseViewController
 						dataService?.GetProductByBarcode(reservedTitle.Barcode, out kioskProduct);
 						if (kioskProduct is MDVProduct { DiscNumber: var discNumber } mDVProduct && discNumber == 1)
 						{
-							num3++;
-							num2 = mDVProduct.TitleProducts.Count;
+							mdvCount++;
+							mdvDiscCount = mDVProduct.TitleProducts.Count;
 						}
 					}
 				}
 			}
 		}
-		reservationDetailsViewModel.MDVVisibility = ((num3 <= 0) ? Visibility.Collapsed : Visibility.Visible);
+		reservationDetailsViewModel.MDVVisibility = ((mdvCount <= 0) ? Visibility.Collapsed : Visibility.Visible);
 		reservationDetailsViewModel.HeaderText = Resources.reservation_pickup_header;
 		string text = Resources.discs_text?.ToLower();
-		if (num == 1)
+		if (reservedTitleCount == 1)
 		{
 			text = text.Substring(0, text.Length - 1);
 		}
-		string arg = string.Format(text, num);
-		reservationDetailsViewModel.BodyText = string.Format(Resources.reservation_pickup_body, arg);
-		reservationDetailsViewModel.DiscVendText = $"{num2} {Resources.disc_vend}";
+		string discsText = string.Format(text, reservedTitleCount);
+		reservationDetailsViewModel.BodyText = string.Format(Resources.reservation_pickup_body, discsText);
+		reservationDetailsViewModel.DiscVendText = $"{mdvDiscCount} {Resources.disc_vend}";
 		reservationDetailsViewModel.NoteHeaderText = Resources.reservation_pickup_note_header;
 		reservationDetailsViewModel.OkayButtonText = Resources.reservation_details_okay;
 		string format;
 		string format2;
-		if (num3 == 1)
+		if (mdvCount == 1)
 		{
 			format = Resources.reservation_pickup_note_body_single_mdv;
 			format2 = Resources.reservation_pickup_return_warning_single_mdv;
@@ -109,8 +109,8 @@ public class ReservationDetailsViewController : BaseViewController
 			format = Resources.reservation_pickup_note_body_multiple_mdv;
 			format2 = Resources.reservation_pickup_return_warning_multiple_mdv;
 		}
-		reservationDetailsViewModel.NoteBodyText = string.Format(format, num3, num2);
-		reservationDetailsViewModel.ReturnWarningText = string.Format(format2, num3, num2);
+		reservationDetailsViewModel.NoteBodyText = string.Format(format, mdvCount, mdvDiscCount);
+		reservationDetailsViewModel.ReturnWarningText = string.Format(format2, mdvCount, mdvDiscCount);
 	}
 
 	private static void ConfigureTTS(ReservationDetailsViewModel multiDiscVendViewModel)
@@ -122,7 +122,7 @@ public class ReservationDetailsViewController : BaseViewController
 		}
 		multiDiscVendViewModel.OnGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_reservation_details_view"
 			};
@@ -157,13 +157,13 @@ public class ReservationDetailsViewController : BaseViewController
 					Text = multiDiscVendViewModel?.ReturnWarningText
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 

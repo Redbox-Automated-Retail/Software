@@ -196,18 +196,18 @@ public static class OrchestrationService
 
 	public static int GetIdleTimerTimeout()
 	{
-		int num = 40000;
+		int timeout = 40000;
 		if (Redbox.Rental.Services.Configuration.Configuration.Instance != null && Redbox.Rental.Services.Configuration.Configuration.Instance.EarlyIdEnabled && Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout > 0 && Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.IsLoggedIn == true)
 		{
-			num = Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout;
+			timeout = Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout;
 		}
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		if (textToSpeechService != null && viewService != null)
 		{
-			num = TTSGetTimeout((viewService.Peek() == "help_document_view") ? "help" : "long", num);
+			timeout = TTSGetTimeout((viewService.Peek() == "help_document_view") ? "help" : "long", timeout);
 		}
-		return num;
+		return timeout;
 	}
 
 	public static int TTSGetTimeout(string timeoutType, int defaultTimeout)
@@ -531,12 +531,12 @@ public static class OrchestrationService
 	public static bool IsCurrentViewValid(string expectedViewName, bool logError = true)
 	{
 		string text = PeekView();
-		bool num = text == expectedViewName;
-		if (!num & logError)
+		bool isValid = text == expectedViewName;
+		if (!isValid & logError)
 		{
 			LogHelper.Instance.Log("Invalid view.  Expected " + expectedViewName + " but found " + text);
 		}
-		return num;
+		return isValid;
 	}
 
 	public static bool IsCultureSpanish()
@@ -585,11 +585,11 @@ public static class OrchestrationService
 				continue;
 			}
 			Dictionary<string, object> dictionary = new Dictionary<string, object>();
-			foreach (XmlNode item2 in xmlNodeList2)
+			foreach (XmlNode node in xmlNodeList2)
 			{
-				string attributeValue = item2.GetAttributeValue<string>("name");
-				object value = item2.GetNodeValue(string.Empty);
-				string attributeValue2 = item2.GetAttributeValue<string>("type");
+				string attributeValue = node.GetAttributeValue<string>("name");
+				object value = node.GetNodeValue(string.Empty);
+				string attributeValue2 = node.GetAttributeValue<string>("type");
 				if (!string.IsNullOrEmpty(attributeValue2))
 				{
 					Type type = attributeValue2.ToType();

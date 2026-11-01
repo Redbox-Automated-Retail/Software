@@ -134,9 +134,9 @@ public class LocalData : ILocalData
 					{
 						badCard.NumberOfAttempts = result;
 					}
-					if (dictionary.ContainsKey("last_attempt") && DateTime.TryParseExact(dictionary["last_attempt"].ToString(), "yyyyMMddHHmm", new CultureInfo("en-US"), DateTimeStyles.None, out var result2))
+					if (dictionary.ContainsKey("last_attempt") && DateTime.TryParseExact(dictionary["last_attempt"].ToString(), "yyyyMMddHHmm", new CultureInfo("en-US"), DateTimeStyles.None, out var lastAttempt))
 					{
-						badCard.LastAttempt = result2;
+						badCard.LastAttempt = lastAttempt;
 					}
 					instance.BadCardList[badCard.HashId] = badCard;
 				}

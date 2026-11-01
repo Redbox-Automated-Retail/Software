@@ -54,15 +54,15 @@ public class ActorFunctions
 		{
 			actor.ForegroundColor = colorFromValue2.Value;
 		}
-		if (textRegion is LuaTable luaTable2)
+		if (textRegion is LuaTable textRegionTable)
 		{
-			actor.TextRegion = luaTable2.ToRectangle();
-			luaTable2.Dispose();
+			actor.TextRegion = textRegionTable.ToRectangle();
+			textRegionTable.Dispose();
 		}
-		if (hotSpot is LuaTable luaTable3)
+		if (hotSpot is LuaTable hotSpotTable)
 		{
-			actor.HotSpot = luaTable3.ToRectangle();
-			luaTable3.Dispose();
+			actor.HotSpot = hotSpotTable.ToRectangle();
+			hotSpotTable.Dispose();
 		}
 		if (!string.IsNullOrEmpty(renderOptions))
 		{
@@ -85,7 +85,7 @@ public class ActorFunctions
 		{
 			if (image.StartsWith("cache:"))
 			{
-				string text2 = image.Substring(6);
+				string imageName = image.Substring(6);
 				IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
 				if (bitmapCacheService == null)
 				{
@@ -94,15 +94,15 @@ public class ActorFunctions
 				}
 				else
 				{
-					Image image2 = bitmapCacheService.GetImage(text2);
-					if (image2 == null)
+					Image cachedImage = bitmapCacheService.GetImage(imageName);
+					if (cachedImage == null)
 					{
 						actor.OptionFlags |= RenderOptionFlags.DrawBorder;
-						actor.ErrorText = $"Bitmap '{text2}' not in cache.";
+						actor.ErrorText = $"Bitmap '{imageName}' not in cache.";
 					}
 					else
 					{
-						actor.Image = image2;
+						actor.Image = cachedImage;
 					}
 				}
 			}

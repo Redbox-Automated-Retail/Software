@@ -31,9 +31,9 @@ public class KioskClientServiceProduct : BaseKioskClientService, IKioskClientSer
 		}
 		catch (Exception e)
 		{
-			string text2 = "KioskClientServiceProduct.ProductsByTitleIds - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text2, e);
-			productByTitleIdsResponse.Error = text2;
+			string errorMessage = "KioskClientServiceProduct.ProductsByTitleIds - An unhandled exception was raised!";
+			LogHelper.Instance.Log(errorMessage, e);
+			productByTitleIdsResponse.Error = errorMessage;
 		}
 		return productByTitleIdsResponse;
 	}

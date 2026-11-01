@@ -68,7 +68,7 @@ public partial class AnimatedDiscReturnViewUserControl : TextToSpeechUserControl
 
 	private void StopTimer(bool executeTimeoutEvent = false)
 	{
-		bool flag = false;
+		bool raiseTimeout = false;
 		lock (_lockObject)
 		{
 			_dispatcherTimer?.Stop();
@@ -77,11 +77,11 @@ public partial class AnimatedDiscReturnViewUserControl : TextToSpeechUserControl
 				_timerDisabled = true;
 				if (executeTimeoutEvent)
 				{
-					flag = true;
+					raiseTimeout = true;
 				}
 			}
 		}
-		if (flag)
+		if (raiseTimeout)
 		{
 			Model?.ProcessOnTimeout();
 		}

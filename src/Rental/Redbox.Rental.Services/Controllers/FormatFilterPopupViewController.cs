@@ -49,32 +49,32 @@ public class FormatFilterPopupViewController : BaseViewController
 				ProcessButtonClick(TitleType.All, "cancel");
 			};
 			Style style = WPFFunctions.GetStyle(viewUserControl, "button_light_large_primary_style");
-			int num = 0;
+			int visibleFormatCount = 0;
 			if (IsTitleTypeAvailable(TitleType.DVD))
 			{
 				formatSelectionPopupViewModel.ButtonData.Add(new FormatButtonData(Resources.dvd, TitleType.DVD, style));
-				num++;
+				visibleFormatCount++;
 			}
 			if (IsTitleTypeAvailable(TitleType.Bluray))
 			{
 				formatSelectionPopupViewModel.ButtonData.Add(new FormatButtonData(Resources.blu_ray.ToUpper(), TitleType.Bluray, style));
-				num++;
+				visibleFormatCount++;
 			}
 			if (IsTitleTypeAvailable(TitleType._4KUHD))
 			{
 				formatSelectionPopupViewModel.ButtonData.Add(new FormatButtonData(Resources.four_k_uhd, TitleType._4KUHD, style));
-				num++;
+				visibleFormatCount++;
 			}
 			if (IsDigitalCodeButtonEnabled)
 			{
 				formatSelectionPopupViewModel.ButtonData.Add(new FormatButtonData(Resources.digital_code.ToUpper(), TitleType.DigitalCode, style));
-				num++;
+				visibleFormatCount++;
 			}
 			formatSelectionPopupViewModel.OnFormatButtonClicked = delegate(TitleType type)
 			{
 				ProcessButtonClick(type, type.GetDisplayName());
 			};
-			if (num == 3)
+			if (visibleFormatCount == 3)
 			{
 				formatSelectionPopupViewModel.DialogWidth = 900;
 			}

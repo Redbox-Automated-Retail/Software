@@ -74,9 +74,9 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 			Redbox.Rental.Services.Session.Session.Instance.PromoOfferState = new PromoOfferState();
 			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
 			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			int num = (int)(storeManager?.KioskId ?? 0);
+			int kioskId = (int)(storeManager?.KioskId ?? 0);
 			string languageCode = OrchestrationService.GetCulture()?.Substring(0, 2);
-			GetOffers(num.ToString(), languageCode, StorefrontEventType.OnSwipe.ToString(), rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId.ToString(), ProcessCustomerOffers);
+			GetOffers(kioskId.ToString(), languageCode, StorefrontEventType.OnSwipe.ToString(), rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId.ToString(), ProcessCustomerOffers);
 		}
 		else
 		{
@@ -125,12 +125,12 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 					}
 					if (result.NewOffers != null && result.NewOffers.Count > 0)
 					{
-						List<CustomerOffer> list2 = new List<CustomerOffer>();
+						List<CustomerOffer> newOffers = new List<CustomerOffer>();
 						foreach (CustomerOfferResult newOffer in result.NewOffers)
 						{
-							list2.Add(CustomerOfferFromCustomerOfferResult(newOffer));
+							newOffers.Add(CustomerOfferFromCustomerOfferResult(newOffer));
 						}
-						remoteServiceResult.Properties["NewOffers"] = list2;
+						remoteServiceResult.Properties["NewOffers"] = newOffers;
 					}
 					remoteServiceResult.Success = result.Success;
 					if (!remoteServiceResult.Success)
@@ -183,8 +183,8 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 
 	private CustomerOffer CustomerOfferFromCustomerOfferResult(CustomerOfferResult offer)
 	{
-		bool flag = offer.IncludeFormatIds != null && offer.IncludeFormatIds.Count > 0;
-		bool flag2 = offer.IncludeTitleIds != null && offer.IncludeTitleIds.Count > 0;
+		bool hasIncludeFormatIds = offer.IncludeFormatIds != null && offer.IncludeFormatIds.Count > 0;
+		bool hasIncludeTitleIds = offer.IncludeTitleIds != null && offer.IncludeTitleIds.Count > 0;
 		CustomerOffer customerOffer = new CustomerOffer
 		{
 			OfferId = offer.OfferId,
@@ -198,10 +198,10 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 			IncludeOlderThan = offer.ExcludeIfWithinRedboxReleaseDate,
 			Amount = offer.DiscountAmount,
 			ActionCode = ParseActionCode(offer.ActionCode),
-			IncludeFormats = flag,
-			FormatIds = (flag ? offer.IncludeFormatIds.ToList() : offer.ExcludeFormatIds.ToList()),
-			IncludeTitles = flag2,
-			TitleIds = (flag2 ? offer.IncludeTitleIds.ToList() : offer.ExcludeTitleIds.ToList()),
+			IncludeFormats = hasIncludeFormatIds,
+			FormatIds = (hasIncludeFormatIds ? offer.IncludeFormatIds.ToList() : offer.ExcludeFormatIds.ToList()),
+			IncludeTitles = hasIncludeTitleIds,
+			TitleIds = (hasIncludeTitleIds ? offer.IncludeTitleIds.ToList() : offer.ExcludeTitleIds.ToList()),
 			RedeemedDateTime = offer.RedeemedDateTime
 		};
 		if (!string.IsNullOrEmpty(offer.OfferScopeType))
@@ -511,24 +511,24 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 
 	private decimal CalcPromoAmount(decimal? itemPrice)
 	{
-		decimal num = 0m;
+		decimal promoAmount = 0m;
 		if (itemPrice.HasValue)
 		{
 			if (_selectedOffer.DiscountType == OfferDiscountType.AmountOff)
 			{
-				num = _selectedOffer.Amount;
+				promoAmount = _selectedOffer.Amount;
 			}
 			else if (_selectedOffer.DiscountType == OfferDiscountType.PercentOff)
 			{
-				num = itemPrice.Value * (_selectedOffer.Amount / 100m);
+				promoAmount = itemPrice.Value * (_selectedOffer.Amount / 100m);
 			}
 			else if (_selectedOffer.DiscountType == OfferDiscountType.Free)
 			{
-				num = itemPrice.Value;
+				promoAmount = itemPrice.Value;
 			}
-			num = Math.Min(num, itemPrice.Value);
+			promoAmount = Math.Min(promoAmount, itemPrice.Value);
 		}
-		return num;
+		return promoAmount;
 	}
 
 	private decimal CalcPromoPrice(decimal itemPrice)

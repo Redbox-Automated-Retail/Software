@@ -238,20 +238,20 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 							(Transform)translateTransform
 						}
 					};
-					bool flag = carouselPosition2 == _carouselPositions.CenterCarouselPosition;
-					bool flag2 = carouselPosition == _carouselPositions.CenterCarouselPosition;
+					bool movingToCenter = carouselPosition2 == _carouselPositions.CenterCarouselPosition;
+					bool movingFromCenter = carouselPosition == _carouselPositions.CenterCarouselPosition;
 					double width = carouselPosition.Width;
-					double value3 = width / carouselPosition.Width;
-					double value4 = carouselPosition2.Width / width;
+					double fromScaleX = width / carouselPosition.Width;
+					double toScaleX = carouselPosition2.Width / width;
 					DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames
 					{
 						KeyFrames = { (DoubleKeyFrame)new EasingDoubleKeyFrame
 						{
 							KeyTime = KeyTime.FromTimeSpan(TimeSpan.Zero),
-							Value = value3
+							Value = fromScaleX
 						} }
 					};
-					if (flag2)
+					if (movingFromCenter)
 					{
 						doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
 						{
@@ -267,28 +267,28 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan5),
-						Value = value3
+						Value = fromScaleX
 					});
 					doubleAnimationUsingKeyFrames.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan7),
-						Value = value4
+						Value = toScaleX
 					});
 					Storyboard.SetTarget(doubleAnimationUsingKeyFrames, displayProductCarouselUserControl);
 					Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"));
 					_carouselRotationStoryboard.Children.Add(doubleAnimationUsingKeyFrames);
 					double height = carouselPosition.Height;
-					double value5 = height / carouselPosition.Height;
-					double value6 = carouselPosition2.Height / height;
+					double fromScaleY = height / carouselPosition.Height;
+					double toScaleY = carouselPosition2.Height / height;
 					DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames2 = new DoubleAnimationUsingKeyFrames
 					{
 						KeyFrames = { (DoubleKeyFrame)new EasingDoubleKeyFrame
 						{
 							KeyTime = KeyTime.FromTimeSpan(TimeSpan.Zero),
-							Value = value5
+							Value = fromScaleY
 						} }
 					};
-					if (flag2)
+					if (movingFromCenter)
 					{
 						doubleAnimationUsingKeyFrames2.KeyFrames.Add(new EasingDoubleKeyFrame
 						{
@@ -304,17 +304,17 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					doubleAnimationUsingKeyFrames2.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan5),
-						Value = value5
+						Value = fromScaleY
 					});
 					doubleAnimationUsingKeyFrames2.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan7),
-						Value = value6
+						Value = toScaleY
 					});
 					Storyboard.SetTarget(doubleAnimationUsingKeyFrames2, displayProductCarouselUserControl);
 					Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames2, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"));
 					_carouselRotationStoryboard.Children.Add(doubleAnimationUsingKeyFrames2);
-					double value7 = carouselPosition2.HorizontalCenter - carouselPosition.HorizontalCenter;
+					double deltaX = carouselPosition2.HorizontalCenter - carouselPosition.HorizontalCenter;
 					DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames3 = new DoubleAnimationUsingKeyFrames
 					{
 						KeyFrames = 
@@ -332,7 +332,7 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 							(DoubleKeyFrame)new EasingDoubleKeyFrame
 							{
 								KeyTime = KeyTime.FromTimeSpan(timeSpan7),
-								Value = value7,
+								Value = deltaX,
 								EasingFunction = new CubicEase
 								{
 									EasingMode = EasingMode.EaseIn
@@ -343,7 +343,7 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					Storyboard.SetTarget(doubleAnimationUsingKeyFrames3, displayProductCarouselUserControl);
 					Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames3, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"));
 					_carouselRotationStoryboard.Children.Add(doubleAnimationUsingKeyFrames3);
-					double value8 = carouselPosition2.VerticalCenter - carouselPosition.VerticalCenter;
+					double deltaY = carouselPosition2.VerticalCenter - carouselPosition.VerticalCenter;
 					DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames4 = new DoubleAnimationUsingKeyFrames();
 					doubleAnimationUsingKeyFrames4.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
@@ -358,12 +358,12 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					doubleAnimationUsingKeyFrames4.KeyFrames.Add(new EasingDoubleKeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan7),
-						Value = value8
+						Value = deltaY
 					});
 					Storyboard.SetTarget(doubleAnimationUsingKeyFrames4, displayProductCarouselUserControl);
 					Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames4, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"));
 					_carouselRotationStoryboard.Children.Add(doubleAnimationUsingKeyFrames4);
-					if (flag2)
+					if (movingFromCenter)
 					{
 						DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames5 = new DoubleAnimationUsingKeyFrames();
 						doubleAnimationUsingKeyFrames5.KeyFrames.Add(new EasingDoubleKeyFrame
@@ -461,7 +461,7 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 						Storyboard.SetTargetProperty(thicknessAnimationUsingKeyFrames, new PropertyPath("ImageBorderThickness"));
 						_carouselRotationStoryboard.Children.Add(thicknessAnimationUsingKeyFrames);
 					}
-					else if (flag)
+					else if (movingToCenter)
 					{
 						DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames8 = new DoubleAnimationUsingKeyFrames();
 						doubleAnimationUsingKeyFrames8.KeyFrames.Add(new EasingDoubleKeyFrame
@@ -561,12 +561,12 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					}
 					Int32AnimationUsingKeyFrames int32AnimationUsingKeyFrames = new Int32AnimationUsingKeyFrames();
 					int zIndex = Panel.GetZIndex(displayProductCarouselUserControl);
-					int num = ((_carouselDirection == CarouselDirection.Left) ? (i - 1) : (i + 1));
-					int value9 = ((num < _carouselPositions.CenterCarouselPositionIndex) ? num : ((num <= _carouselPositions.CenterCarouselPositionIndex) ? _carouselPositions.Count : (_carouselPositions.Count - num)));
+					int targetPositionIndex = ((_carouselDirection == CarouselDirection.Left) ? (i - 1) : (i + 1));
+					int targetZIndex = ((targetPositionIndex < _carouselPositions.CenterCarouselPositionIndex) ? targetPositionIndex : ((targetPositionIndex <= _carouselPositions.CenterCarouselPositionIndex) ? _carouselPositions.Count : (_carouselPositions.Count - targetPositionIndex)));
 					int32AnimationUsingKeyFrames.KeyFrames.Add(new DiscreteInt32KeyFrame
 					{
 						KeyTime = KeyTime.FromTimeSpan(timeSpan8),
-						Value = value9
+						Value = targetZIndex
 					});
 					int32AnimationUsingKeyFrames.KeyFrames.Add(new DiscreteInt32KeyFrame
 					{
@@ -684,17 +684,17 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 	{
 		InitializeCarouselImageSizes();
 		_carouselPositions.Clear();
-		int num = _carouselPositionCount / 2;
-		double num2 = _horizontalCenterOfCenterImage - (_carouselImageLargeSize.X / 2.0 + (double)num * ((double)_carouselImagePadding + _carouselImageSmallSize.X) - _carouselImageSmallSize.X / 2.0);
+		int sideImageCount = _carouselPositionCount / 2;
+		double firstImageLeft = _horizontalCenterOfCenterImage - (_carouselImageLargeSize.X / 2.0 + (double)sideImageCount * ((double)_carouselImagePadding + _carouselImageSmallSize.X) - _carouselImageSmallSize.X / 2.0);
 		_ = _verticalCenterOfCenterImage;
 		for (int i = 0; i < _carouselPositionCount; i++)
 		{
-			bool flag = i == _carouselPositionCount / 2;
+			bool isCenterPosition = i == _carouselPositionCount / 2;
 			CarouselPosition carouselPosition = new CarouselPosition();
-			carouselPosition.Width = (flag ? _carouselImageLargeSize.X : _carouselImageSmallSize.X);
-			carouselPosition.Height = (flag ? _carouselImageLargeSize.Y : _carouselImageSmallSize.Y);
+			carouselPosition.Width = (isCenterPosition ? _carouselImageLargeSize.X : _carouselImageSmallSize.X);
+			carouselPosition.Height = (isCenterPosition ? _carouselImageLargeSize.Y : _carouselImageSmallSize.Y);
 			carouselPosition.VerticalCenter = _verticalCenterOfCenterImage;
-			carouselPosition.HorizontalCenter = num2 + _carouselPositions.Sum((CarouselPosition x) => x.Width) + (double)(_carouselPositions.Count() * _carouselImagePadding) - _carouselImageSmallSize.X / 2.0 + carouselPosition.Width / 2.0;
+			carouselPosition.HorizontalCenter = firstImageLeft + _carouselPositions.Sum((CarouselPosition x) => x.Width) + (double)(_carouselPositions.Count() * _carouselImagePadding) - _carouselImageSmallSize.X / 2.0 + carouselPosition.Width / 2.0;
 			_carouselPositions.Add(carouselPosition);
 		}
 	}

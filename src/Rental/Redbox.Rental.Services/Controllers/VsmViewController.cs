@@ -73,10 +73,10 @@ public class VsmViewController : BaseViewController
 		{
 			ad = BaseViewController.GetAd(AdLocation.VSM);
 		}
-		bool flag = ad is IVistarAd;
+		bool isVistarAd = ad is IVistarAd;
 		vsmViewModel.MinimumDisplayTime = ((ad != null && ad.MinimumDisplay.HasValue) ? ad.MinimumDisplay.Value : 3000);
 		vsmViewModel.AdImage = ad?.Image;
-		vsmViewModel.HeaderHeight = (flag ? 192 : 136);
+		vsmViewModel.HeaderHeight = (isVistarAd ? 192 : 136);
 		vsmViewModel.AdImpression = ((ad != null) ? new AdImpression
 		{
 			Ad = ad,
@@ -107,10 +107,10 @@ public class VsmViewController : BaseViewController
 		}
 		try
 		{
-			int num = viewModel.AdImpression.Ad.MinimumDisplay.Value - viewModel.AdImpression.DisplayMilliseconds;
-			if (num > 0)
+			int remainingDisplayMilliseconds = viewModel.AdImpression.Ad.MinimumDisplay.Value - viewModel.AdImpression.DisplayMilliseconds;
+			if (remainingDisplayMilliseconds > 0)
 			{
-				ServiceLocator.Instance.GetService<ITimerService>()?.Wait(num);
+				ServiceLocator.Instance.GetService<ITimerService>()?.Wait(remainingDisplayMilliseconds);
 			}
 			BaseViewController.RecordAdImpression(viewModel.AdImpression);
 			LogHelper.Instance.Log($"Leaving vsm_view.  Display duration: {viewModel.AdImpression.DisplayMilliseconds}");

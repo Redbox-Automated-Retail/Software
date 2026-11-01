@@ -74,15 +74,15 @@ public partial class PhoneNumberTextBlockUserControl : TextBlock, IComponentConn
 		string text = string.Empty;
 		FormatMask = FormatMask ?? string.Empty;
 		Digits = Digits ?? string.Empty;
-		int num = 0;
+		int digitIndex = 0;
 		for (int i = 0; i < FormatMask.Length; i++)
 		{
 			if (FormatMask[i] == '#')
 			{
-				if (num < Digits.Length)
+				if (digitIndex < Digits.Length)
 				{
-					text += Digits[num];
-					num++;
+					text += Digits[digitIndex];
+					digitIndex++;
 				}
 				else
 				{
@@ -94,9 +94,9 @@ public partial class PhoneNumberTextBlockUserControl : TextBlock, IComponentConn
 				text += FormatMask[i];
 			}
 		}
-		while (num < Digits.Length)
+		while (digitIndex < Digits.Length)
 		{
-			text += Digits[num++];
+			text += Digits[digitIndex++];
 		}
 		Text = text;
 	}

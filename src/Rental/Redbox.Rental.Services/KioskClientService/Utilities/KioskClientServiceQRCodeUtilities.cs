@@ -36,9 +36,9 @@ public class KioskClientServiceQRCodeUtilities : BaseKioskClientService, IKioskC
 					bitmapImage = ServiceLocator.Instance.GetService<IBitmapCacheService>()?.ToBitmapImage(image);
 				}
 			}
-			catch (Exception arg)
+			catch (Exception ex)
 			{
-				LogHelper.Instance.Log($"GetQRCodeImage: Unable to convert byte array to BitmapImage.  Exception:{arg}");
+				LogHelper.Instance.Log($"GetQRCodeImage: Unable to convert byte array to BitmapImage.  Exception:{ex}");
 			}
 		}
 		if ((bitmapImage == null) & returnDefaultOnError)

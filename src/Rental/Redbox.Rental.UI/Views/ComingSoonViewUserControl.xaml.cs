@@ -57,8 +57,8 @@ public partial class ComingSoonViewUserControl : UserControl, IComponentConnecto
 
 	private void SetStyle(FrameworkElement frameworkElement, string styleName)
 	{
-		object obj = FindResource(styleName);
-		if (obj != null && frameworkElement != null && obj is Style style)
+		object resource = FindResource(styleName);
+		if (resource != null && frameworkElement != null && resource is Style style)
 		{
 			frameworkElement.Style = style;
 		}

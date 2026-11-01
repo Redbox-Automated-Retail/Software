@@ -88,19 +88,19 @@ public class NewCartConfirmADAActionUpdateViewController : BaseViewController
 				displayCheckoutProductModel.ConfigureForUpdateADACart();
 				ITitleProduct titleProduct = kioskProduct as ITitleProduct;
 				OfferProduct offerProduct = _selectedOffer.OfferProducts.FirstOrDefault((OfferProduct o) => o.ProductId == titleProduct.ProductId);
-				bool num = offerProduct != null;
-				bool flag = num && eachRentalShoppingCartItem.PricingRecord.InitialDays == offerProduct.NumberOfNights;
-				decimal? num2 = (decimal?)(eachRentalShoppingCartItem.PricingRecord.InitialDays - 1) * (decimal?)eachRentalShoppingCartItem.PricingRecord.ExtraNight;
-				decimal? num3 = offerProduct?.DiscountedPrice;
-				if (num2.HasValue & num3.HasValue)
+				bool hasOfferProduct = offerProduct != null;
+				bool offerApplied = hasOfferProduct && eachRentalShoppingCartItem.PricingRecord.InitialDays == offerProduct.NumberOfNights;
+				decimal? extraNightsPrice = (decimal?)(eachRentalShoppingCartItem.PricingRecord.InitialDays - 1) * (decimal?)eachRentalShoppingCartItem.PricingRecord.ExtraNight;
+				decimal? discountedPrice = offerProduct?.DiscountedPrice;
+				if (extraNightsPrice.HasValue & discountedPrice.HasValue)
 				{
-					_ = num2.GetValueOrDefault() - num3.GetValueOrDefault();
+					_ = extraNightsPrice.GetValueOrDefault() - discountedPrice.GetValueOrDefault();
 				}
 				displayCheckoutProductModel.OfferActionVisibility = Visibility.Visible;
 				DisplayProductCheckoutSpecialOfferActionModel displayProductCheckoutSpecialOfferActionModel = new DisplayProductCheckoutSpecialOfferActionModel();
-				if (num)
+				if (hasOfferProduct)
 				{
-					if (flag)
+					if (offerApplied)
 					{
 						displayProductCheckoutSpecialOfferActionModel.TextLine1 = string.Format(Resources.cart_offer_applied_text_line_1, offerProduct.NumberOfNights, offerProduct.DiscountedPrice.Value.ToCurrencyString(useCentSign: true));
 						displayProductCheckoutSpecialOfferActionModel.TextLine2 = string.Empty;

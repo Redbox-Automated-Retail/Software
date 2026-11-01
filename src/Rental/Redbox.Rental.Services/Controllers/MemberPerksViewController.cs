@@ -82,13 +82,13 @@ public class MemberPerksViewController : BaseViewController
 				HowPointsWorkPopupCommand_Execute(info, perksInfo);
 			});
 			Model.HowPointsWorkButtonText = Resources.perks_how_points_work_button_text;
-			Model.AddOrRemovePromoCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(StoredPromoCodeModel obj)
+			Model.AddOrRemovePromoCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(StoredPromoCodeModel promoCodeModel)
 			{
-				AddOrRemovePromoCommand_Execute(obj, Model);
+				AddOrRemovePromoCommand_Execute(promoCodeModel, Model);
 			});
-			Model.DetailsCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(PerksOfferListItemModel obj)
+			Model.DetailsCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(PerksOfferListItemModel offerModel)
 			{
-				DetailsCommand_Execute(obj, Model);
+				DetailsCommand_Execute(offerModel, Model);
 			});
 			UpdateStoredPromos(Model);
 			SetRedboxPlusInfo(Model);
@@ -268,19 +268,19 @@ public class MemberPerksViewController : BaseViewController
 
 	private static void SetRedboxPlusInfo(MemberPerksModel model)
 	{
-		bool flag = EnableRedboxPlusRedemption && (RedboxPlusSession?.HasActiveSubscription ?? false);
+		bool hasRedboxPlus = EnableRedboxPlusRedemption && (RedboxPlusSession?.HasActiveSubscription ?? false);
 		RedboxPlusSubscriptionTier redboxPlusSubscriptionTier = RedboxPlusSession?.RedboxPlusPlanInfo?.SubscriptionTier ?? RedboxPlusSubscriptionTier.Tier1;
-		bool valueOrDefault = RedboxPlusSession?.RedboxPlusPlanInfo?.IsEarnPointsFor1ExtraNightAvailable == true;
+		bool extraNightAvailable = RedboxPlusSession?.RedboxPlusPlanInfo?.IsEarnPointsFor1ExtraNightAvailable == true;
 		IRedboxPlusSession redboxPlusSession = RedboxPlusSession;
 		string text = ((redboxPlusSession != null && (redboxPlusSession.RedboxPlusPlanInfo?.SubscriptionEndDate).HasValue) ? RedboxPlusSession.RedboxPlusPlanInfo.SubscriptionEndDate.Value.ToShortDateString() : null);
-		if (flag)
+		if (hasRedboxPlus)
 		{
 			model.PerksSelected = false;
 			model.RedboxPlusSelected = true;
 			model.PromosSelected = false;
 		}
-		model.TabButtonsColumns = (flag ? 3 : 2);
-		model.RedboxPlusButtonVisibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
+		model.TabButtonsColumns = (hasRedboxPlus ? 3 : 2);
+		model.RedboxPlusButtonVisibility = ((!hasRedboxPlus) ? Visibility.Collapsed : Visibility.Visible);
 		model.RedboxPlusButtonText = Resources.perks_redbox_plus_btn_text;
 		model.RedboxPlusPlanId1Visibility = ((redboxPlusSubscriptionTier != RedboxPlusSubscriptionTier.Tier1) ? Visibility.Collapsed : Visibility.Visible);
 		model.RedboxPlusPlanId2Visibility = ((redboxPlusSubscriptionTier != RedboxPlusSubscriptionTier.Tier2) ? Visibility.Collapsed : Visibility.Visible);
@@ -291,7 +291,7 @@ public class MemberPerksViewController : BaseViewController
 		model.RedboxPlusExtendedText = Resources.redbox_plus_extended_text;
 		model.RedboxPlusKeepText = Resources.redbox_plus_keep_text;
 		model.RedboxPlusExtraNightText = Resources.redbox_plus_extra_night_text;
-		model.RedboxPlusExtraThisMonthText = string.Format(Resources.redbox_plus_this_month_text, valueOrDefault ? Resources.redbox_plus_ready_to_use_text : Resources.redbox_plus_used_text);
+		model.RedboxPlusExtraThisMonthText = string.Format(Resources.redbox_plus_this_month_text, extraNightAvailable ? Resources.redbox_plus_ready_to_use_text : Resources.redbox_plus_used_text);
 		model.RedboxPlusNeedAnotherText = Resources.redbox_plus_need_another_text;
 		model.RedboxPlusAwardedText = Resources.redbox_plus_awarded_text;
 		if ((RedboxPlusSession?.RedboxPlusPlanInfo?.SubscriptionStatus).GetValueOrDefault() == SubscriptionPlanStatus.Active)

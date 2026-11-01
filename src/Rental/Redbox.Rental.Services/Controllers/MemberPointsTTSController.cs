@@ -65,17 +65,17 @@ public class MemberPointsTTSController : BaseTTSController<MemberPointsTTSContro
 		return delegate
 		{
 			string text = "";
-			string text2 = "";
+			string itemNames = "";
 			List<DisplayProductModel> selectedCartItems = logic.GetSelectedCartItems();
 			foreach (DisplayProductModel item in selectedCartItems)
 			{
-				text2 = text2 + text + item.Name;
+				itemNames = itemNames + text + item.Name;
 				if (text == "")
 				{
 					text = ", ";
 				}
 			}
-			return (selectedCartItems.Count == 0) ? "There are no selected items" : $"You have selected {selectedCartItems.Count} items as follows: {text2}";
+			return (selectedCartItems.Count == 0) ? "There are no selected items" : $"You have selected {selectedCartItems.Count} items as follows: {itemNames}";
 		};
 	}
 
@@ -84,17 +84,17 @@ public class MemberPointsTTSController : BaseTTSController<MemberPointsTTSContro
 		return delegate
 		{
 			string text = "";
-			string text2 = "";
+			string itemNames = "";
 			List<DisplayProductModel> unselectedCartItems = logic.GetUnselectedCartItems();
 			foreach (DisplayProductModel item in unselectedCartItems)
 			{
-				text2 = text2 + text + item.Name;
+				itemNames = itemNames + text + item.Name;
 				if (text == "")
 				{
 					text = ", ";
 				}
 			}
-			return (unselectedCartItems.Count == 0) ? "All items have been selected." : $"The {unselectedCartItems.Count} items you have not selected are as follows: {text2}";
+			return (unselectedCartItems.Count == 0) ? "All items have been selected." : $"The {unselectedCartItems.Count} items you have not selected are as follows: {itemNames}";
 		};
 	}
 
@@ -164,25 +164,25 @@ public class MemberPointsTTSController : BaseTTSController<MemberPointsTTSContro
 			{
 				Text = string.Format("Your cart has {0} title{1}.", CartCount, (CartCount != 1) ? "s" : "")
 			});
-			int num = 0;
+			int itemNumber = 0;
 			foreach (DisplayProductModel item in displayProductModels)
 			{
-				num++;
+				itemNumber++;
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = $"To redeem title {item.Name}, press PLUS and number {num}."
+					Text = $"To redeem title {item.Name}, press PLUS and number {itemNumber}."
 				});
 				speechPart.Events.Add(new MapKeyPressToAction
 				{
-					KeyCode = $"PLUS{num}",
-					Action = CreateUpdatePointsAction(num - 1, logic, bAdd: true, item),
-					ActionText = CreateSelectedCartItemAction(num, item)
+					KeyCode = $"PLUS{itemNumber}",
+					Action = CreateUpdatePointsAction(itemNumber - 1, logic, bAdd: true, item),
+					ActionText = CreateSelectedCartItemAction(itemNumber, item)
 				});
 				speechPart.Events.Add(new MapKeyPressToAction
 				{
-					KeyCode = $"MINUS{num}",
-					Action = CreateUpdatePointsAction(num - 1, logic, bAdd: false, item),
-					Text = (IsCartItem4K(item) ? $"Item {num} title, {item.Name} has not been selected." : $"Item {num} title, {item.Name} is no longer selected.")
+					KeyCode = $"MINUS{itemNumber}",
+					Action = CreateUpdatePointsAction(itemNumber - 1, logic, bAdd: false, item),
+					Text = (IsCartItem4K(item) ? $"Item {itemNumber} title, {item.Name} has not been selected." : $"Item {itemNumber} title, {item.Name} is no longer selected.")
 				});
 			}
 			speechPart.Events.Add(new MapKeyPressToAction

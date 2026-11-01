@@ -26,43 +26,43 @@ public class MultiNightPricingPopupViewController : BaseViewController
 		{
 			MultiNightPricingPopupViewModel multiNightPricingPopupViewModel = new MultiNightPricingPopupViewModel();
 			multiNightPricingPopupViewModel.TitleProduct = multiNightPricingPopupInfo.TitleProduct;
-			bool flag = ShowBuyButton(multiNightPricingPopupInfo.ShownFromView, multiNightPricingPopupInfo.TitleProduct);
+			bool showBuyButton = ShowBuyButton(multiNightPricingPopupInfo.ShownFromView, multiNightPricingPopupInfo.TitleProduct);
 			multiNightPricingPopupViewModel.HeaderText = multiNightPricingPopupInfo.TitleProduct.ProductName;
 			multiNightPricingPopupViewModel.DescriptionText = Resources.multi_night_pricing_popup_description_text;
 			IList<IPricingRecord> list = (multiNightPricingPopupViewModel.PricingRecords = ServiceLocator.Instance.GetService<IPricingService>()?.GetProductPricingRecords(multiNightPricingPopupInfo.TitleProduct.ProductId));
-			bool flag2 = list != null && list.Count > 0;
-			bool flag3 = list != null && list.Count > 1;
-			multiNightPricingPopupViewModel.OneNightButtonVisibility = ((!flag2) ? Visibility.Collapsed : Visibility.Visible);
-			multiNightPricingPopupViewModel.OneNightButtonText1 = (flag2 ? string.Format(Resources.multi_night_pricing_popup_button_text, list[0].InitialDays ?? 1, string.Empty) : string.Empty);
-			multiNightPricingPopupViewModel.OneNightButtonText2 = (flag2 ? $"{list[0].InitialNight:C}" : string.Empty);
+			bool hasOneNightPrice = list != null && list.Count > 0;
+			bool hasMultiNightPrice = list != null && list.Count > 1;
+			multiNightPricingPopupViewModel.OneNightButtonVisibility = ((!hasOneNightPrice) ? Visibility.Collapsed : Visibility.Visible);
+			multiNightPricingPopupViewModel.OneNightButtonText1 = (hasOneNightPrice ? string.Format(Resources.multi_night_pricing_popup_button_text, list[0].InitialDays ?? 1, string.Empty) : string.Empty);
+			multiNightPricingPopupViewModel.OneNightButtonText2 = (hasOneNightPrice ? $"{list[0].InitialNight:C}" : string.Empty);
 			MultiNightPopupData multiNightPopupData = new MultiNightPopupData
 			{
 				ProductId = multiNightPricingPopupInfo.TitleProduct.ProductId
 			};
-			if (flag2)
+			if (hasOneNightPrice)
 			{
 				multiNightPopupData.InitialNightPrice = list[0].InitialNight;
 			}
-			multiNightPricingPopupViewModel.MultiNightButtonVisibility = ((!flag3) ? Visibility.Collapsed : Visibility.Visible);
-			multiNightPricingPopupViewModel.MultiNightButtonText1 = (flag3 ? string.Format(Resources.multi_night_pricing_popup_button_text, list[1].InitialDays ?? 1, "S") : string.Empty);
-			multiNightPricingPopupViewModel.MultiNightButtonText2 = (flag3 ? $"{list[1].InitialNight:C}" : string.Empty);
-			if (flag3)
+			multiNightPricingPopupViewModel.MultiNightButtonVisibility = ((!hasMultiNightPrice) ? Visibility.Collapsed : Visibility.Visible);
+			multiNightPricingPopupViewModel.MultiNightButtonText1 = (hasMultiNightPrice ? string.Format(Resources.multi_night_pricing_popup_button_text, list[1].InitialDays ?? 1, "S") : string.Empty);
+			multiNightPricingPopupViewModel.MultiNightButtonText2 = (hasMultiNightPrice ? $"{list[1].InitialNight:C}" : string.Empty);
+			if (hasMultiNightPrice)
 			{
 				multiNightPopupData.HasMultiNightPrice = true;
 				multiNightPopupData.MultiNightPrice = list[1].InitialNight;
 				multiNightPopupData.MultipNightInitialDays = list[1].InitialDays;
 			}
-			multiNightPricingPopupViewModel.BuyButtonVisibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
-			multiNightPricingPopupViewModel.BuyButtonText1 = (flag ? Resources.multi_night_pricing_popup_buy_button_text : string.Empty);
-			multiNightPricingPopupViewModel.BuyButtonText2 = (flag ? $"${multiNightPricingPopupInfo.TitleProduct.PurchasePrice:F2}" : string.Empty);
-			if (flag)
+			multiNightPricingPopupViewModel.BuyButtonVisibility = ((!showBuyButton) ? Visibility.Collapsed : Visibility.Visible);
+			multiNightPricingPopupViewModel.BuyButtonText1 = (showBuyButton ? Resources.multi_night_pricing_popup_buy_button_text : string.Empty);
+			multiNightPricingPopupViewModel.BuyButtonText2 = (showBuyButton ? $"${multiNightPricingPopupInfo.TitleProduct.PurchasePrice:F2}" : string.Empty);
+			if (showBuyButton)
 			{
 				multiNightPopupData.ShowBuyButton = true;
 				multiNightPopupData.PurchasePrice = multiNightPricingPopupInfo.TitleProduct.PurchasePrice;
 			}
 			analyticsService?.AddData(multiNightPopupData);
 			multiNightPricingPopupViewModel.CancelButtonText = Resources.multi_night_pricing_popup_cancel_button_text.ToUpper();
-			multiNightPricingPopupViewModel.DisclaimerText = ((!flag3 & flag) ? GetDisclaimerText(list[0], flag, flag3) : (flag3 ? GetDisclaimerText(list[1], flag, flag3) : string.Empty));
+			multiNightPricingPopupViewModel.DisclaimerText = ((!hasMultiNightPrice & showBuyButton) ? GetDisclaimerText(list[0], showBuyButton, hasMultiNightPrice) : (hasMultiNightPrice ? GetDisclaimerText(list[1], showBuyButton, hasMultiNightPrice) : string.Empty));
 			multiNightPricingPopupViewModel.OnOneNightButtonClicked = (Action)Delegate.Combine(multiNightPricingPopupViewModel.OnOneNightButtonClicked, new Action(MultiNightPricingPopupViewModel_OnOneNightButtonClicked));
 			multiNightPricingPopupViewModel.OnMultiNightButtonClicked = (Action)Delegate.Combine(multiNightPricingPopupViewModel.OnMultiNightButtonClicked, new Action(MultiNightPricingPopupViewModel_OnMultiNightButtonClicked));
 			multiNightPricingPopupViewModel.OnBuyButtonClicked = (Action)Delegate.Combine(multiNightPricingPopupViewModel.OnBuyButtonClicked, new Action(MultiNightPricingPopupViewModel_OnBuyButtonClicked));

@@ -108,9 +108,9 @@ public class RentalUserControl : UserControl
 		}
 		foreach (DependencyObject item in LogicalTreeHelper.GetChildren(dependencyObj).OfType<DependencyObject>())
 		{
-			foreach (T item2 in FindLogicalChildren<T>(item))
+			foreach (T descendant in FindLogicalChildren<T>(item))
 			{
-				yield return item2;
+				yield return descendant;
 			}
 		}
 	}

@@ -52,17 +52,17 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 	{
 		get
 		{
-			bool flag = false;
+			bool rentalRunning = false;
 			if (_resourceBundleService != null)
 			{
-				flag = _resourceBundleService.IsRentalRunning;
+				rentalRunning = _resourceBundleService.IsRentalRunning;
 			}
-			bool flag2 = false;
+			bool onStartView = false;
 			if (_viewService != null)
 			{
-				flag2 = _viewService.Peek() == _viewService.GetStartOverViewName();
+				onStartView = _viewService.Peek() == _viewService.GetStartOverViewName();
 			}
-			return flag & flag2;
+			return rentalRunning & onStartView;
 		}
 	}
 
@@ -287,14 +287,14 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 		if (_touchScreenHealing)
 		{
 			LogHelper.Instance.Log("TouchScreenHealth.CorrectProblem - Asking HAL to reset the touchscreen");
-			bool flag = true;
+			bool success = true;
 			string error = string.Empty;
 			int? elapsed = null;
 			IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 			if (hardwareService == null)
 			{
 				LogHelper.Instance.Log("TouchScreenHealth.CorrectProblem - IHardwareService is not available.");
-				flag = false;
+				success = false;
 			}
 			else
 			{
@@ -308,7 +308,7 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 				}, out jobId);
 				if (errorList != null && errorList.Count > 0)
 				{
-					flag = false;
+					success = false;
 					Redbox.KioskEngine.ComponentModel.Error error2 = errorList[0];
 					error = $"Code: {error2.Code} Description: {error2.Description} Details: {error2.Details}";
 				}
@@ -316,7 +316,7 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 			}
 			if (_touchScreenReporting)
 			{
-				KioskEvent kioskEvent = KioskEvent.NewEvent(1, 101, flag, elapsed, _relatedId, flag ? null : new
+				KioskEvent kioskEvent = KioskEvent.NewEvent(1, 101, success, elapsed, _relatedId, success ? null : new
 				{
 					Error = error
 				}.ToJson());

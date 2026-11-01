@@ -38,8 +38,8 @@ public class ShoppingCartMessageHelper
 
 	public static MessageShoppingCart CreateShoppingCart(Guid sessionId, bool titleItemsOnly = false)
 	{
-		IRentalShoppingCart obj = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(sessionId);
-		return CreateShoppingCart(obj, obj.Promotion, titleItemsOnly);
+		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(sessionId);
+		return CreateShoppingCart(rentalShoppingCart, rentalShoppingCart.Promotion, titleItemsOnly);
 	}
 
 	public static MessageShoppingCart CreateShoppingCart(IRentalShoppingCart rentalShoppingCart, IPromotion promo, bool titleItemsOnly = false)
@@ -84,12 +84,12 @@ public class ShoppingCartMessageHelper
 					{
 						continue;
 					}
-					foreach (IRentalShoppingCartSubscriptionItem item2 in item)
+					foreach (IRentalShoppingCartSubscriptionItem subscriptionItem in item)
 					{
 						lineItems.Add(new LineItem
 						{
-							SubscriptionId = item2.SubscriptionProduct.SubscriptionId,
-							TempPassword = item2.TempPassword
+							SubscriptionId = subscriptionItem.SubscriptionProduct.SubscriptionId,
+							TempPassword = subscriptionItem.TempPassword
 						});
 					}
 					shoppingCart.Groups.Add(new LineItemGroup
@@ -99,33 +99,33 @@ public class ShoppingCartMessageHelper
 					});
 					continue;
 				}
-				foreach (IRentalShoppingCartTitleItem item3 in item)
+				foreach (IRentalShoppingCartTitleItem titleItem in item)
 				{
-					IUpsellItem upsellItemByRentalShoppingCartItem = rentalShoppingCart.UpsellInfo.GetUpsellItemByRentalShoppingCartItem(item3);
+					IUpsellItem upsellItemByRentalShoppingCartItem = rentalShoppingCart.UpsellInfo.GetUpsellItemByRentalShoppingCartItem(titleItem);
 					BlurayUpsell blurayUpsell = null;
 					if (upsellItemByRentalShoppingCartItem != null)
 					{
 						blurayUpsell = new BlurayUpsell
 						{
 							ProductGroupId = (int)upsellItemByRentalShoppingCartItem.ProductGroupId,
-							TitleId = item3.ProductId,
+							TitleId = titleItem.ProductId,
 							Offer = upsellItemByRentalShoppingCartItem.OfferResponse.ToString(),
 							TypeId = (int)upsellItemByRentalShoppingCartItem.TypeId
 						};
 					}
-					IPricingRecord pricingRecord = item3?.PricingRecord;
+					IPricingRecord pricingRecord = titleItem?.PricingRecord;
 					lineItems.Add(new LineItem
 					{
-						Barcode = item3.Barcode,
+						Barcode = titleItem.Barcode,
 						BlurayUpsell = blurayUpsell,
-						SourceType = item3.SourceType,
-						ProductFamily = item3.TitleFamily.ToString(),
-						ProductId = item3.ProductId,
-						ProductType = item3.TitleType.GetDisplayName(),
-						ProductName = item3.TitleProduct.ProductName,
-						OfferCode = item3.OfferCode,
-						MultiDisc = item3.MultiDisc,
-						DiscNumber = item3.DiscNumber,
+						SourceType = titleItem.SourceType,
+						ProductFamily = titleItem.TitleFamily.ToString(),
+						ProductId = titleItem.ProductId,
+						ProductType = titleItem.TitleType.GetDisplayName(),
+						ProductName = titleItem.TitleProduct.ProductName,
+						OfferCode = titleItem.OfferCode,
+						MultiDisc = titleItem.MultiDisc,
+						DiscNumber = titleItem.DiscNumber,
 						Pricing = new Pricing
 						{
 							DefaultExtraNight = pricingRecord?.DefaultExtraNightPrice,
@@ -140,9 +140,9 @@ public class ShoppingCartMessageHelper
 							ProductPriceId = (int)(pricingRecord?.ProductPricingId).GetValueOrDefault(),
 							Purchase = (pricingRecord?.Purchase ?? 0m)
 						},
-						VendStatus = ConvertToVendStatus(item3.Status),
-						TivoQueryId = item3.TivoQueryId,
-						PersonalizationTitleTags = item3.PersonalizationTitleTags
+						VendStatus = ConvertToVendStatus(titleItem.Status),
+						TivoQueryId = titleItem.TivoQueryId,
+						PersonalizationTitleTags = titleItem.PersonalizationTitleTags
 					});
 				}
 				ISubTotalGroup subTotalGroup = rentalShoppingCart.Totals.SubTotalGroups.FirstOrDefault((ISubTotalGroup y) => item.Key == y.Action);

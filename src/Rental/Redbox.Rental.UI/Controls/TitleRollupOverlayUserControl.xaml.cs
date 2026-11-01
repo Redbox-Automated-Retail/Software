@@ -85,7 +85,7 @@ public partial class TitleRollupOverlayUserControl : UserControl, IComponentConn
 
 	public void StopTimer(bool executeTimeoutEvent)
 	{
-		bool flag = false;
+		bool raiseTimeout = false;
 		lock (_lockObject)
 		{
 			_dispatcherTimer?.Stop();
@@ -95,11 +95,11 @@ public partial class TitleRollupOverlayUserControl : UserControl, IComponentConn
 				_timerDisabled = true;
 				if (executeTimeoutEvent)
 				{
-					flag = true;
+					raiseTimeout = true;
 				}
 			}
 		}
-		if (flag)
+		if (raiseTimeout)
 		{
 			LogHelper.Instance.Log("TitleRollupOverlay timed out");
 			if (base.DataContext is TitleRollupOverlayModel titleRollupOverlayModel)

@@ -326,7 +326,7 @@ public class SimpleViewController : BaseViewController
 		}
 		viewModel.ProcessGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_simple_view"
 			};
@@ -342,13 +342,13 @@ public class SimpleViewController : BaseViewController
 				part.Clear();
 				speechPartRefreshAction(part);
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 }

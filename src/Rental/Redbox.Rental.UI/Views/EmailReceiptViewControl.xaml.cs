@@ -23,8 +23,8 @@ public partial class EmailReceiptViewControl : ViewUserControl, IComponentConnec
 
 	protected override void DataContextHasChanged()
 	{
-		bool flag = GetModel<SimpleModel>()?.BannerImage != null;
-		AdImage.Visibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
+		bool hasBannerImage = GetModel<SimpleModel>()?.BannerImage != null;
+		AdImage.Visibility = ((!hasBannerImage) ? Visibility.Collapsed : Visibility.Visible);
 	}
 
 	protected override void InitSpeechPart(ISpeechPart speechPart)

@@ -41,7 +41,7 @@ public partial class EncryptedSwipeHandAndCardUserControl : UserControl, ICompon
 
 	public void BeginAnimation()
 	{
-		Storyboard obj = new Storyboard
+		Storyboard storyboard = new Storyboard
 		{
 			AutoReverse = true,
 			RepeatBehavior = RepeatBehavior.Forever
@@ -66,7 +66,7 @@ public partial class EncryptedSwipeHandAndCardUserControl : UserControl, ICompon
 		TimeSpan timeSpan7 = timeSpan5 + timeSpan6;
 		TimeSpan timeSpan8 = TimeSpan.FromSeconds(0.25);
 		TimeSpan timeSpan9 = timeSpan7 + timeSpan8;
-		obj.Duration = timeSpan9;
+		storyboard.Duration = timeSpan9;
 		DoubleAnimationUsingKeyFrames doubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames
 		{
 			KeyFrames = 
@@ -177,14 +177,14 @@ public partial class EncryptedSwipeHandAndCardUserControl : UserControl, ICompon
 		};
 		Storyboard.SetTarget(doubleAnimationUsingKeyFrames2, CardAndHand);
 		Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames2, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)"));
-		obj.Children.Add(doubleAnimationUsingKeyFrames2);
+		storyboard.Children.Add(doubleAnimationUsingKeyFrames2);
 		Storyboard.SetTarget(doubleAnimationUsingKeyFrames3, CardAndHand);
 		Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames3, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.Y)"));
-		obj.Children.Add(doubleAnimationUsingKeyFrames3);
+		storyboard.Children.Add(doubleAnimationUsingKeyFrames3);
 		Storyboard.SetTarget(doubleAnimationUsingKeyFrames, CardAndHand);
 		Storyboard.SetTargetProperty(doubleAnimationUsingKeyFrames, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[1].(RotateTransform.Angle)"));
-		obj.Children.Add(doubleAnimationUsingKeyFrames);
-		obj.Begin();
+		storyboard.Children.Add(doubleAnimationUsingKeyFrames);
+		storyboard.Begin();
 	}
 
 	public void StopAnimation()

@@ -244,10 +244,10 @@ public class TitleRollupUtilities
 				}
 				else
 				{
-					decimal num = discountedPriceCalc(purchasePrice);
-					if (num > 0m)
+					decimal discountedPurchasePrice = discountedPriceCalc(purchasePrice);
+					if (discountedPurchasePrice > 0m)
 					{
-						titleRollupFormatButtonProperties.ButtonTextLine2 = $"{buttonTextValues.CurrencySymbol}{$"{num:N2}"}";
+						titleRollupFormatButtonProperties.ButtonTextLine2 = $"{buttonTextValues.CurrencySymbol}{$"{discountedPurchasePrice:N2}"}";
 					}
 					else
 					{
@@ -274,8 +274,8 @@ public class TitleRollupUtilities
 					}
 					else
 					{
-						decimal num2 = discountedPriceCalc(initialNight);
-						titleRollupFormatButtonProperties.ButtonTextLine2 = ((num2 > 0m) ? $"{num2:C}" : Resources.offer_info_free);
+						decimal discountedRentalPrice = discountedPriceCalc(initialNight);
+						titleRollupFormatButtonProperties.ButtonTextLine2 = ((discountedRentalPrice > 0m) ? $"{discountedRentalPrice:C}" : Resources.offer_info_free);
 					}
 				}
 			}

@@ -131,14 +131,14 @@ public class HelpViewTextToSpeech
 			Function = "TTSSkipToSpeechPart",
 			Value = tabKeySpeechPart
 		});
-		int num = 1;
+		int keyNumber = 1;
 		foreach (HelpButtonData button in viewModel.ButtonList)
 		{
 			if (button.DocumentToShow != viewModel.CurrentHelpDocument)
 			{
 				speechPart.Events.Add(new MapKeyPressToAction
 				{
-					KeyCode = num.ToString(),
+					KeyCode = keyNumber.ToString(),
 					Function = "TTSSkipToSpeechPart",
 					Value = "1",
 					Action = delegate
@@ -148,10 +148,10 @@ public class HelpViewTextToSpeech
 				});
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = "Press " + num + " to change the document to " + viewModel.HelpDocumentInfoList[button.DocumentToShow].AbeTitle + "."
+					Text = "Press " + keyNumber + " to change the document to " + viewModel.HelpDocumentInfoList[button.DocumentToShow].AbeTitle + "."
 				});
 			}
-			num++;
+			keyNumber++;
 		}
 		speechPart.Events.Add(new MapKeyPressToAction
 		{

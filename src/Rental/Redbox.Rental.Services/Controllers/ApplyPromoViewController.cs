@@ -42,9 +42,9 @@ public class ApplyPromoViewController : BaseViewController
 			applyPromoViewModel.NextPagePressedCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), promoListLogic.AddNextPagePressedAnalytics);
 			applyPromoViewModel.PreviousPagePressedCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), promoListLogic.AddPreviousPagePressedAnalytics);
 			applyPromoViewModel.PageNumberPressedCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), promoListLogic.AddPageNumberPressedAnalytics);
-			applyPromoViewModel.AddOrRemovePromoCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(StoredPromoCodeModel obj)
+			applyPromoViewModel.AddOrRemovePromoCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(StoredPromoCodeModel promoCodeModel)
 			{
-				AddOrRemovePromoCommand_Execute(obj, info.ApplyPromoCodeAction);
+				AddOrRemovePromoCommand_Execute(promoCodeModel, info.ApplyPromoCodeAction);
 			});
 			applyPromoViewModel.OnLoadedCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), (Action)delegate
 			{
@@ -141,12 +141,12 @@ public class ApplyPromoViewController : BaseViewController
 
 	private static void ClearRedboxPlusDiscount(StoredPromoCodeModel model)
 	{
-		bool flag = model?.IsRedboxPlusPromo ?? false;
-		if (flag)
+		bool isRedboxPlusPromo = model?.IsRedboxPlusPromo ?? false;
+		if (isRedboxPlusPromo)
 		{
 			RedboxPlusFunctions.ClearFreeOneNightRental();
 		}
-		OrchestrationService.UnwindToSafe("shopping_cart_view", discard: true, flag ? "ApplyPromoView Removed Redbox+ Free 1 night rental discount" : "ApplyPromoView Removed Redbox+ purchase discount");
+		OrchestrationService.UnwindToSafe("shopping_cart_view", discard: true, isRedboxPlusPromo ? "ApplyPromoView Removed Redbox+ Free 1 night rental discount" : "ApplyPromoView Removed Redbox+ purchase discount");
 	}
 
 	private static void AddRedboxPlusFreeOneNightRentalDiscount()

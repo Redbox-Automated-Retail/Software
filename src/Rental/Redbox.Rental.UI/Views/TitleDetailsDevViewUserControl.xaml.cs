@@ -111,10 +111,10 @@ public partial class TitleDetailsDevViewUserControl : RentalUserControl, IWPFAct
 	{
 		if (Model?.CurrentProduct != null)
 		{
-			decimal? num = (decimal.TryParse(price_input.Text, out var result) ? new decimal?(result) : ((decimal?)null));
-			if (num.HasValue)
+			decimal? customPrice = (decimal.TryParse(price_input.Text, out var result) ? new decimal?(result) : ((decimal?)null));
+			if (customPrice.HasValue)
 			{
-				Model?.OnAddProductWithCustomPriceButtonClicked?.Invoke(Model.CurrentProduct.ProductId, num.Value);
+				Model?.OnAddProductWithCustomPriceButtonClicked?.Invoke(Model.CurrentProduct.ProductId, customPrice.Value);
 			}
 		}
 		ToggleAddCustomPrice(showPrice: false);

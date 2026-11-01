@@ -265,12 +265,12 @@ public class SignInViewController : BaseViewController
 	private static void AfterVASCardReadAction(CardReadRequestInfo request, CardReadCompleteDetails details)
 	{
 		CardReadEvent cardReadEvent = new CardReadEvent(details?.TrackData);
-		bool flag = details?.Success ?? false;
-		cardReadEvent.CardReadValid = flag && details?.TrackData?.HasVas == true;
-		bool flag2 = details?.TrackData != null && details.TrackData.ReadStatus == ResponseStatus.Cancelled;
-		cardReadEvent.Action = (cardReadEvent.CardReadValid ? "continue" : (flag2 ? "read_cancelled" : "bad_swipe_action"));
+		bool readSucceeded = details?.Success ?? false;
+		cardReadEvent.CardReadValid = readSucceeded && details?.TrackData?.HasVas == true;
+		bool readCancelled = details?.TrackData != null && details.TrackData.ReadStatus == ResponseStatus.Cancelled;
+		cardReadEvent.Action = (cardReadEvent.CardReadValid ? "continue" : (readCancelled ? "read_cancelled" : "bad_swipe_action"));
 		ServiceLocator.Instance?.GetService<IAnalyticsService>()?.AddViewEvent(cardReadEvent);
-		if (flag && details?.TrackData?.HasVas == true)
+		if (readSucceeded && details?.TrackData?.HasVas == true)
 		{
 			Task.Factory.StartNew(delegate
 			{

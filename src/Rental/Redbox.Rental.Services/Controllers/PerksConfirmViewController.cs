@@ -89,7 +89,7 @@ public class PerksConfirmViewController : BaseViewController
 		}
 		viewModel.ProcessGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_perks_sign_up_info_view"
 			};
@@ -152,13 +152,13 @@ public class PerksConfirmViewController : BaseViewController
 					Text = "To hear the rewards terms, press tab."
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 }

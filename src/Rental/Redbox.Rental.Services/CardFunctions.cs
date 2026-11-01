@@ -59,10 +59,10 @@ public class CardFunctions
 			ICardReadAttempt cardReadAttempt = Redbox.Rental.Services.Session.Session.Instance?.CardReadAttemptCollection?.GetMostRecent();
 			if (requestId.HasValue)
 			{
-				bool num;
+				bool matchesCurrentAttempt;
 				if (cardReadAttempt == null)
 				{
-					num = !requestId.HasValue;
+					matchesCurrentAttempt = !requestId.HasValue;
 				}
 				else
 				{
@@ -72,9 +72,9 @@ public class CardFunctions
 					{
 						goto IL_010f;
 					}
-					num = cardReadJobCommandRequestId == guid.GetValueOrDefault();
+					matchesCurrentAttempt = cardReadJobCommandRequestId == guid.GetValueOrDefault();
 				}
-				if (!num)
+				if (!matchesCurrentAttempt)
 				{
 					goto IL_010f;
 				}
@@ -100,11 +100,11 @@ public class CardFunctions
 							{
 								cardRead.CardReadValid = false;
 								cardRead.Action = "bad_swipe_action";
-								Action arg = delegate
+								Action timeOutAction = delegate
 								{
 									ErrorMessageAction(cardReadViewName, cardRead.Action, onError);
 								};
-								Action arg2 = delegate
+								Action continueAction = delegate
 								{
 									ErrorMessageAction(cardReadViewName, cardRead.Action, onError);
 								};
@@ -130,12 +130,12 @@ public class CardFunctions
 									else if (trackData.HasTamperedError())
 									{
 										cardRead.Action = "tampered_card_reader";
-										arg = delegate
+										timeOutAction = delegate
 										{
 											ErrorMessageAction(cardReadViewName, cardRead.Action, onError);
 											ServiceLocator.Instance.GetService<IRedboxRental>()?.EnterMaintenanceModeBecauseOfTamperedCardReader();
 										};
-										arg2 = delegate
+										continueAction = delegate
 										{
 											ErrorMessageAction(cardReadViewName, cardRead.Action, onError);
 											ServiceLocator.Instance.GetService<IRedboxRental>()?.EnterMaintenanceModeBecauseOfTamperedCardReader();
@@ -159,7 +159,7 @@ public class CardFunctions
 									}
 								}
 								AnalyticsService?.AddViewEvent(cardRead);
-								action(arg, arg2);
+								action(timeOutAction, continueAction);
 							}
 							else
 							{

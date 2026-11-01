@@ -65,12 +65,12 @@ public class ViewHealth : IViewHealth, IKioskHealthItem
 	{
 		get
 		{
-			bool flag = false;
+			bool onStartView = false;
 			if (_viewService != null)
 			{
-				flag = _viewService.Peek() == _viewService.GetStartOverViewName();
+				onStartView = _viewService.Peek() == _viewService.GetStartOverViewName();
 			}
-			return IsRentalRunning & flag;
+			return IsRentalRunning & onStartView;
 		}
 	}
 

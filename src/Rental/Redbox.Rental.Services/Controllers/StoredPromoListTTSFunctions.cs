@@ -103,7 +103,7 @@ public static class StoredPromoListTTSFunctions
 			{
 				StoredPromoCodeModel promoInfo = (StoredPromoCodeModel)currentPagePromo;
 				string text = (promoInfo.IsAdded ? "remove" : "add");
-				string text2 = (promoInfo.IsAdded ? "MINUS" : "PLUS");
+				string keyPrefix = (promoInfo.IsAdded ? "MINUS" : "PLUS");
 				speechPart.Texts.Add(new TextPart
 				{
 					Text = "To " + text + " the promo "
@@ -111,11 +111,11 @@ public static class StoredPromoListTTSFunctions
 				SayPromoInfo(speechPart, promoInfo);
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = "Press " + text2 + " then " + promoInfo.AdaButtonNumber + "."
+					Text = "Press " + keyPrefix + " then " + promoInfo.AdaButtonNumber + "."
 				});
 				speechPart.Events.Add(new MapKeyPressToAction
 				{
-					KeyCode = text2 + promoInfo.AdaButtonNumber,
+					KeyCode = keyPrefix + promoInfo.AdaButtonNumber,
 					Action = delegate
 					{
 						model.AddOrRemovePromoCommand.Execute(promoInfo);
@@ -182,12 +182,12 @@ public static class StoredPromoListTTSFunctions
 	public static string GetMaskedPromoCodeEndCharacters(string maskedPromoCode)
 	{
 		string text = maskedPromoCode.Substring(Math.Max(0, maskedPromoCode.Length - 4));
-		string text2 = string.Empty;
-		string text3 = text;
-		foreach (char c in text3)
+		string spokenCharacters = string.Empty;
+		string endCharacters = text;
+		foreach (char c in endCharacters)
 		{
-			text2 += $"{c}{((c == 'A') ? ',' : ' ')} ";
+			spokenCharacters += $"{c}{((c == 'A') ? ',' : ' ')} ";
 		}
-		return text2;
+		return spokenCharacters;
 	}
 }

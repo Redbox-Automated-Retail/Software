@@ -200,19 +200,19 @@ public class BundleBasedPricingService : IBundleBasedPricingService
 		decimal result = price;
 		if (Store?.State == "MD")
 		{
-			decimal num = 0m;
+			decimal taxRate = 0m;
 			switch (action)
 			{
 			case RentalShoppingCartItemAction.rental:
-				num = Store.RentalTaxRate;
+				taxRate = Store.RentalTaxRate;
 				break;
 			case RentalShoppingCartItemAction.purchase:
-				num = ((titleType == TitleType.DigitalCode) ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
+				taxRate = ((titleType == TitleType.DigitalCode) ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
 				break;
 			}
-			if (num != 0m)
+			if (taxRate != 0m)
 			{
-				result = Math.Round(price * (num / 100m + 1m), 2);
+				result = Math.Round(price * (taxRate / 100m + 1m), 2);
 			}
 		}
 		return result;
@@ -220,11 +220,11 @@ public class BundleBasedPricingService : IBundleBasedPricingService
 
 	private IPricingSet GetBundleDefaultPricingSet()
 	{
-		IPricingSet obj = ((Store?.State == "SC") ? _bundleDefaultSCPricingSet : _bundleDefaultPricingSet);
-		obj.PriceRecords.ForEach(delegate(IPricingRecord pricingRecord)
+		IPricingSet pricingSet = ((Store?.State == "SC") ? _bundleDefaultSCPricingSet : _bundleDefaultPricingSet);
+		pricingSet.PriceRecords.ForEach(delegate(IPricingRecord pricingRecord)
 		{
 			pricingRecord.NonReturn = ((Store?.State == "MD") ? (Math.Round(pricingRecord.InitialNight * (Store.RentalTaxRate / 100m + 1m), 2) * pricingRecord.NonReturnDays) : (pricingRecord.InitialNight * pricingRecord.NonReturnDays));
 		});
-		return obj;
+		return pricingSet;
 	}
 }

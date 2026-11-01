@@ -157,15 +157,15 @@ public class InventoryService : IInventoryService
 
 	public int GetFillQuantity()
 	{
-		int num = 0;
+		int defaultFillQuantity = 0;
 		try
 		{
-			return _inventoryData.GetInventoryActionFile()?.FillQty ?? num;
+			return _inventoryData.GetInventoryActionFile()?.FillQty ?? defaultFillQuantity;
 		}
 		catch (Exception e)
 		{
 			LogHelper.Instance.Log("InventoryService.GetFillQuantity - An unhandled exception occurred.", e);
-			return num;
+			return defaultFillQuantity;
 		}
 	}
 

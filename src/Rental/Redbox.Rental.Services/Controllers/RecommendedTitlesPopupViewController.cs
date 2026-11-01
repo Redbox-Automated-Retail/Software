@@ -37,35 +37,35 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 		{
 			_shownFromView = recommendedTitlesPopupInfo.ShownFromView;
 			RecommendedTitlesPopupViewModel recommendedTitlesPopupViewModel = new RecommendedTitlesPopupViewModel();
-			int valueOrDefault = (Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.LoyaltySession?.PointsBalance).GetValueOrDefault();
+			int pointsBalance = (Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.LoyaltySession?.PointsBalance).GetValueOrDefault();
 			ISession instance = Redbox.Rental.Services.Session.Session.Instance;
-			bool flag = instance != null && instance.PersonalizationSession?.StoredPromoCodes?.Count > 0;
+			bool hasStoredPromoCodes = instance != null && instance.PersonalizationSession?.StoredPromoCodes?.Count > 0;
 			bool displayUpdatedPerksPoints = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.DisplayUpdatedPerksPoints;
-			int num = ((!displayUpdatedPerksPoints) ? 1 : 0);
-			int num2 = (displayUpdatedPerksPoints ? 1550 : 1000);
-			int num3 = (displayUpdatedPerksPoints ? 2000 : 1500);
-			bool flag2 = (valueOrDefault >= num) | flag;
-			recommendedTitlesPopupViewModel.PerksInfoBorderVisibility = ((!flag2) ? Visibility.Collapsed : Visibility.Visible);
-			recommendedTitlesPopupViewModel.RecommendationsBorderCornerRadius = (flag2 ? new CornerRadius(0.0, 0.0, 16.0, 16.0) : new CornerRadius(16.0, 16.0, 16.0, 16.0));
+			int minimumPointsForPerksInfo = ((!displayUpdatedPerksPoints) ? 1 : 0);
+			int almostRewardPoints = (displayUpdatedPerksPoints ? 1550 : 1000);
+			int rewardPoints = (displayUpdatedPerksPoints ? 2000 : 1500);
+			bool showPerksInfo = (pointsBalance >= minimumPointsForPerksInfo) | hasStoredPromoCodes;
+			recommendedTitlesPopupViewModel.PerksInfoBorderVisibility = ((!showPerksInfo) ? Visibility.Collapsed : Visibility.Visible);
+			recommendedTitlesPopupViewModel.RecommendationsBorderCornerRadius = (showPerksInfo ? new CornerRadius(0.0, 0.0, 16.0, 16.0) : new CornerRadius(16.0, 16.0, 16.0, 16.0));
 			recommendedTitlesPopupViewModel.PerksHeadingText = Resources.recommended_titles_perks_heading_text;
-			recommendedTitlesPopupViewModel.PerksMessageText = string.Format(Resources.recommended_titles_perks_message_text_points_1_to_999_no_promo, valueOrDefault);
+			recommendedTitlesPopupViewModel.PerksMessageText = string.Format(Resources.recommended_titles_perks_message_text_points_1_to_999_no_promo, pointsBalance);
 			recommendedTitlesPopupViewModel.HowPointsWorkButtonText = Resources.recommended_titles_how_points_work_button_text;
 			recommendedTitlesPopupViewModel.OnHowPointsWorkButtonClicked = (Action)Delegate.Combine(recommendedTitlesPopupViewModel.OnHowPointsWorkButtonClicked, new Action(RecommendedTitlesPopupViewModel_OnHowPointsWorkButtonClicked));
 			recommendedTitlesPopupViewModel.HowPointsWorkButtonVisibility = Visibility.Visible;
-			if (flag2 && valueOrDefault >= num2 && valueOrDefault <= num3 - 1 && !flag)
+			if (showPerksInfo && pointsBalance >= almostRewardPoints && pointsBalance <= rewardPoints - 1 && !hasStoredPromoCodes)
 			{
-				recommendedTitlesPopupViewModel.PerksMessageText = string.Format(Resources.recommended_titles_perks_message_text_points_1000_to_1499_no_promo, num3 - valueOrDefault);
+				recommendedTitlesPopupViewModel.PerksMessageText = string.Format(Resources.recommended_titles_perks_message_text_points_1000_to_1499_no_promo, rewardPoints - pointsBalance);
 			}
-			if (flag2 && valueOrDefault >= num3 && !flag)
+			if (showPerksInfo && pointsBalance >= rewardPoints && !hasStoredPromoCodes)
 			{
 				recommendedTitlesPopupViewModel.PerksMessageText = Resources.recommended_titles_perks_message_text_points_1500_no_promo;
 			}
-			if ((flag2 && valueOrDefault < num3) & flag)
+			if ((showPerksInfo && pointsBalance < rewardPoints) & hasStoredPromoCodes)
 			{
 				recommendedTitlesPopupViewModel.PerksMessageText = Resources.recommended_titles_perks_message_text_points_0_to_1499_yes_promo;
 				recommendedTitlesPopupViewModel.HowPointsWorkButtonVisibility = Visibility.Collapsed;
 			}
-			if ((flag2 && valueOrDefault >= num3) & flag)
+			if ((showPerksInfo && pointsBalance >= rewardPoints) & hasStoredPromoCodes)
 			{
 				recommendedTitlesPopupViewModel.PerksMessageText = Resources.recommended_titles_perks_message_text_points_1500_yes_promo;
 			}

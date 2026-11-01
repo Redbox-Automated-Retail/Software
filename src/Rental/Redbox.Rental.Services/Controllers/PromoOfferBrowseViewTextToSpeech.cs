@@ -158,10 +158,10 @@ public class PromoOfferBrowseViewTextToSpeech
 					Value = "AvailableTitles"
 				});
 				AddCheckOutEvent(speechPart, promoOfferBrowseViewModel);
-				int valueOrDefault = (RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
+				int cartItemCount = (RentalShoppingCartService?.CurrentRentalShoppingCart?.Count).GetValueOrDefault();
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = $"You have {valueOrDefault} {GetCartTitlePlurality()} in your cart."
+					Text = $"You have {cartItemCount} {GetCartTitlePlurality()} in your cart."
 				});
 				if (Redbox.Rental.Services.Session.Session.Instance.PromoOfferState.SelectedProduct != null)
 				{
@@ -264,10 +264,10 @@ public class PromoOfferBrowseViewTextToSpeech
 						}
 					}
 				});
-				int valueOrDefault = (PromoOfferState?.TTSBrowseItemModelsShown?.Count((IBrowseItemModel x) => x is DisplayProductModel)).GetValueOrDefault();
+				int titlesShownCount = (PromoOfferState?.TTSBrowseItemModelsShown?.Count((IBrowseItemModel x) => x is DisplayProductModel)).GetValueOrDefault();
 				speechPart.Texts.Add(new TextPart
 				{
-					Text = $"You are currently browsing on page {(browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault()} of {(browseViewModel?.BrowseProductControlModel?.TotalPages).GetValueOrDefault()} pages and there are {valueOrDefault} titles on this screen."
+					Text = $"You are currently browsing on page {(browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault()} of {(browseViewModel?.BrowseProductControlModel?.TotalPages).GetValueOrDefault()} pages and there are {titlesShownCount} titles on this screen."
 				});
 				if ((browseViewModel?.BrowseProductControlModel?.PageNumber).GetValueOrDefault() > 1)
 				{

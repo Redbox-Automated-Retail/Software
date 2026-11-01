@@ -453,13 +453,13 @@ public class PromotionService : IPromotionService
 						Dictionary<string, object> campaignTitleData = (validation.ContainsKey("CampaignTitles") ? (validation["CampaignTitles"] as Dictionary<string, object>) : null);
 						if (campaignTitleData != null)
 						{
-							ArrayList value = campaignTitleData["Titles"] as ArrayList;
-							Dictionary<string, object> value2 = new Dictionary<string, object>
+							ArrayList campaignTitles = campaignTitleData["Titles"] as ArrayList;
+							Dictionary<string, object> campaignTitlesProperty = new Dictionary<string, object>
 							{
 								["include"] = (bool)campaignTitleData["Include"],
-								["titles"] = value
+								["titles"] = campaignTitles
 							};
-							result.Properties["campaign_titles"] = value2;
+							result.Properties["campaign_titles"] = campaignTitlesProperty;
 						}
 						if (validation.ContainsKey("ServerName"))
 						{
@@ -810,7 +810,7 @@ public class PromotionService : IPromotionService
 
 	public int BrowseCountByCriteria(IRentalShoppingCart rentalShoppingCart, TitleType titleType, TitleFamily titleFamily, List<long> includeProductList, List<long> excludeProductList)
 	{
-		int num = 0;
+		int count = 0;
 		if (includeProductList == null)
 		{
 			includeProductList = new List<long>();
@@ -830,12 +830,12 @@ public class PromotionService : IPromotionService
 				ITitleProduct titleProduct = item as ITitleProduct;
 				if (titleProduct != null && titleProduct.IsRentableAndInStock && !titleProduct.IsEmptyCase && (!titleProduct.DiscNumber.HasValue || titleProduct.DiscNumber == 1) && (includeProductList.Count == 0 || includeProductList.Contains(titleProduct.ProductId)) && (excludeProductList.Count == 0 || !excludeProductList.Contains(titleProduct.ProductId)) && rentalShoppingCart.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem x) => x.ProductId == titleProduct.ProductId && x.Action == RentalShoppingCartItemAction.rental) == null)
 				{
-					num++;
+					count++;
 				}
 			}
 		}
-		LogHelper.Instance.Log("> BrowseCountBy result: {0}", num);
-		return num;
+		LogHelper.Instance.Log("> BrowseCountBy result: {0}", count);
+		return count;
 	}
 
 	public IPromoCodeValidationInfo ValidateRegularInCartPromo(IRentalShoppingCart rentalShoppingCart)
@@ -1155,15 +1155,15 @@ public class PromotionService : IPromotionService
 	{
 		if (rentalShoppingCart != null && offer != null)
 		{
-			decimal num = CalcInCartOfferPromoAmount(applyToLineItem, offer);
+			decimal promoAmount = CalcInCartOfferPromoAmount(applyToLineItem, offer);
 			if (offer.CustomerSegmentType == CustomerSegmentType.BasketStretch && applyToLineItem != null)
 			{
 				IPromotion promotion = new Redbox.Rental.Services.Promotion.Promotion
 				{
 					Name = (offer.PromotionCode ?? offer.OfferDiscountCode),
 					DiscountType = ((offer.PromotionCode != null) ? DiscountType.PromotionCode : DiscountType.Discount),
-					OriginalPrice = num,
-					Price = num,
+					OriginalPrice = promoAmount,
+					Price = promoAmount,
 					Quantity = 1,
 					Intent = PromotionIntentCode.FixedValue,
 					OriginalPercent = 0m,
@@ -1179,7 +1179,7 @@ public class PromotionService : IPromotionService
 				};
 				promotion.PromotionItems.Add(new PromotionItem
 				{
-					PromotionAmount = num,
+					PromotionAmount = promoAmount,
 					RentalShoppingCartItem = applyToLineItem
 				});
 				SetPromotion(promotion);
@@ -1236,24 +1236,24 @@ public class PromotionService : IPromotionService
 
 	public decimal CalcInCartOfferPromoAmount(IRentalShoppingCartTitleItem newLineItem, CustomerOffer offer)
 	{
-		decimal num = 0m;
+		decimal promoAmount = 0m;
 		if (newLineItem != null)
 		{
 			if (offer.DiscountType == OfferDiscountType.AmountOff)
 			{
-				num = offer.Amount;
+				promoAmount = offer.Amount;
 			}
 			else if (offer.DiscountType == OfferDiscountType.PercentOff)
 			{
-				num = newLineItem.Price * (offer.Amount / 100m);
+				promoAmount = newLineItem.Price * (offer.Amount / 100m);
 			}
 			else if (offer.DiscountType == OfferDiscountType.Free)
 			{
-				num = newLineItem.Price;
+				promoAmount = newLineItem.Price;
 			}
-			num = Math.Min(num, newLineItem.Price);
+			promoAmount = Math.Min(promoAmount, newLineItem.Price);
 		}
-		return num;
+		return promoAmount;
 	}
 
 	public IPromoCodeValidationInfo ValidateFreeInCartOffer()
@@ -1298,14 +1298,14 @@ public class PromotionService : IPromotionService
 			{
 				if (promoCodeValidationInfo.QualifyingItems.Count() < 2)
 				{
-					decimal num = Math.Min(redemptionAmountFromInCartPromo, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
+					decimal promotionAmount = Math.Min(redemptionAmountFromInCartPromo, (item?.PricingRecord?.InitialNight).GetValueOrDefault());
 					promoCodeValidationInfo.PromotionItems.Add(new PromotionItem
 					{
 						RentalShoppingCartItem = item,
-						PromotionAmount = num
+						PromotionAmount = promotionAmount
 					});
 					promoCodeValidationInfo.QualifyingItems.Add(item);
-					redemptionAmountFromInCartPromo -= num;
+					redemptionAmountFromInCartPromo -= promotionAmount;
 				}
 			}
 			promoCodeValidationInfo.Price = promoCodeValidationInfo.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
@@ -1338,26 +1338,26 @@ public class PromotionService : IPromotionService
 				{
 					continue;
 				}
-				object value = null;
-				inCartPromoRule.TryGetValue("offer_action", out value);
-				if (value == null)
+				object offerAction = null;
+				inCartPromoRule.TryGetValue("offer_action", out offerAction);
+				if (offerAction == null)
 				{
 					continue;
 				}
-				object value2 = null;
+				object productIdList = null;
 				string key = (include ? "product_id_list" : "exclude_id_list");
-				if (!inCartPromoRule.TryGetValue(key, out value2) || value2 == null)
+				if (!inCartPromoRule.TryGetValue(key, out productIdList) || productIdList == null)
 				{
 					continue;
 				}
-				string[] array = value2.ToString().Split(',');
-				if (array == null)
+				string[] productIds = productIdList.ToString().Split(',');
+				if (productIds == null)
 				{
 					continue;
 				}
-				for (int i = 0; i < array.Length; i++)
+				for (int i = 0; i < productIds.Length; i++)
 				{
-					if (long.TryParse(array[i].Trim(), out var result) && !list.Contains(result))
+					if (long.TryParse(productIds[i].Trim(), out var result) && !list.Contains(result))
 					{
 						list.Add(result);
 					}

@@ -211,7 +211,7 @@ public class PromotionFunctions
 	private static IPromotion CreatePromotionFromPromoCodeValidationResult(IPromoCodeValidationResult promoCodeValidationResult)
 	{
 		decimal amount = promoCodeValidationResult.Amount;
-		decimal num = ((promoCodeValidationResult.IntentCode == PromotionIntentCode.PercentOffCartTotal) ? amount : 0m);
+		decimal percent = ((promoCodeValidationResult.IntentCode == PromotionIntentCode.PercentOffCartTotal) ? amount : 0m);
 		IPromotion promotion = new Redbox.Rental.Services.Promotion.Promotion
 		{
 			Name = promoCodeValidationResult.PromoCode,
@@ -219,8 +219,8 @@ public class PromotionFunctions
 			Price = amount,
 			Quantity = 1,
 			Intent = promoCodeValidationResult.IntentCode,
-			OriginalPercent = num,
-			Percent = num,
+			OriginalPercent = percent,
+			Percent = percent,
 			RentQuantity = (byte)promoCodeValidationResult.RentQuantity,
 			RentFormat = promoCodeValidationResult.RentFormat,
 			GetQuantity = (byte)promoCodeValidationResult.GetQuantity,
@@ -253,10 +253,10 @@ public class PromotionFunctions
 		if (!string.IsNullOrEmpty(promoCode) && promotionCodeValidationResponse != null && Enum.TryParse<PromotionIntentCode>(promotionCodeValidationResponse.PromotionIntentCode, out var result))
 		{
 			decimal amount = promotionCodeValidationResponse.Amount;
-			decimal num = ((result == PromotionIntentCode.PercentOffCartTotal) ? amount : 0m);
-			PromotionRentFormat result2;
-			PromotionGetFormat result3;
-			PromotionActionCode result4;
+			decimal percent = ((result == PromotionIntentCode.PercentOffCartTotal) ? amount : 0m);
+			PromotionRentFormat rentFormat;
+			PromotionGetFormat getFormat;
+			PromotionActionCode actionCode;
 			return new Redbox.Rental.Services.Promotion.Promotion
 			{
 				Name = promoCode,
@@ -264,12 +264,12 @@ public class PromotionFunctions
 				Price = amount,
 				Quantity = 1,
 				Intent = result,
-				OriginalPercent = num,
-				Percent = num,
+				OriginalPercent = percent,
+				Percent = percent,
 				RentQuantity = (byte)(promotionCodeValidationResponse.RentQty.HasValue ? promotionCodeValidationResponse.RentQty.Value : 0),
-				RentFormat = (Enum.TryParse<PromotionRentFormat>(promotionCodeValidationResponse.RentFormat, out result2) ? new PromotionRentFormat?(result2) : ((PromotionRentFormat?)null)),
+				RentFormat = (Enum.TryParse<PromotionRentFormat>(promotionCodeValidationResponse.RentFormat, out rentFormat) ? new PromotionRentFormat?(rentFormat) : ((PromotionRentFormat?)null)),
 				GetQuantity = (byte)(promotionCodeValidationResponse.GetQty.HasValue ? promotionCodeValidationResponse.GetQty.Value : 0),
-				GetFormat = (Enum.TryParse<PromotionGetFormat>(promotionCodeValidationResponse.GetFormat, out result3) ? new PromotionGetFormat?(result3) : ((PromotionGetFormat?)null)),
+				GetFormat = (Enum.TryParse<PromotionGetFormat>(promotionCodeValidationResponse.GetFormat, out getFormat) ? new PromotionGetFormat?(getFormat) : ((PromotionGetFormat?)null)),
 				CampaignTitles = ((promotionCodeValidationResponse.CampaignTitles != null) ? new CampaignTitles
 				{
 					Include = promotionCodeValidationResponse.CampaignTitles.Include,
@@ -277,7 +277,7 @@ public class PromotionFunctions
 				} : null),
 				ProductTypeId = promotionCodeValidationResponse.ProductTypeId,
 				FormatIds = promotionCodeValidationResponse.FormatIds,
-				ActionCode = ((!Enum.TryParse<PromotionActionCode>(promotionCodeValidationResponse.ActionType, out result4)) ? PromotionActionCode.Rental : result4),
+				ActionCode = ((!Enum.TryParse<PromotionActionCode>(promotionCodeValidationResponse.ActionType, out actionCode)) ? PromotionActionCode.Rental : actionCode),
 				AllowFullDiscount = (promotionCodeValidationResponse.AllowFullDiscount ?? true),
 				DefaultPromo = ((promotionCodeValidationResponse.DefaultPromo != null) ? new Redbox.Rental.Services.Promotion.DefaultPromo
 				{
@@ -295,17 +295,17 @@ public class PromotionFunctions
 	{
 		if (defaultPromo != null && !string.IsNullOrEmpty(defaultPromo.PromoCode) && !string.IsNullOrEmpty(defaultPromo.PromotionIntentCode) && defaultPromo.Amount.HasValue && Enum.TryParse<PromotionIntentCode>(defaultPromo.PromotionIntentCode, out var result) && (result == PromotionIntentCode.FixedValue || result == PromotionIntentCode.PercentOffCartTotal))
 		{
-			decimal num = (decimal)defaultPromo.Amount.Value;
-			decimal num2 = ((result == PromotionIntentCode.PercentOffCartTotal) ? num : 0m);
+			decimal amount = (decimal)defaultPromo.Amount.Value;
+			decimal percent = ((result == PromotionIntentCode.PercentOffCartTotal) ? amount : 0m);
 			return new Redbox.Rental.Services.Promotion.Promotion
 			{
 				Name = defaultPromo.PromoCode,
-				OriginalPrice = num,
-				Price = num,
+				OriginalPrice = amount,
+				Price = amount,
 				Quantity = 1,
 				Intent = result,
-				OriginalPercent = num2,
-				Percent = num2,
+				OriginalPercent = percent,
+				Percent = percent,
 				RentQuantity = 0,
 				RentFormat = null,
 				GetQuantity = 0,

@@ -10,10 +10,10 @@ public class WPFFunctions
 		Style result = null;
 		if (!string.IsNullOrEmpty(styleName))
 		{
-			object obj = frameworkElement?.FindResource(styleName);
-			if (obj != null)
+			object resource = frameworkElement?.FindResource(styleName);
+			if (resource != null)
 			{
-				result = obj as Style;
+				result = resource as Style;
 			}
 		}
 		return result;
@@ -22,10 +22,10 @@ public class WPFFunctions
 	public static Brush GetBrush(FrameworkElement frameworkElement, string brushName)
 	{
 		Brush result = null;
-		object obj = frameworkElement?.FindResource(brushName);
-		if (obj != null)
+		object resource = frameworkElement?.FindResource(brushName);
+		if (resource != null)
 		{
-			result = obj as Brush;
+			result = resource as Brush;
 		}
 		return result;
 	}

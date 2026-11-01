@@ -44,19 +44,19 @@ public class MaintenanceViewController : BaseViewController
 				LogHelper.Instance.LogException("Unable to retrieve store from data service.", e);
 			}
 			string text = "";
-			string text2 = "";
+			string zipCode = "";
 			if (store == null)
 			{
 				text = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Store", "ID", "Not Configured");
-				text2 = "Error";
+				zipCode = "Error";
 			}
 			else
 			{
 				text = store.StoreId.ToString();
-				text2 = store.Zip.Substring(0, Math.Min(store.Zip.Length, 5));
+				zipCode = store.Zip.Substring(0, Math.Min(store.Zip.Length, 5));
 			}
 			maintenanceViewModel.StoreNumberText = string.Format(Resources.maintenance_view_kiosk_string, text);
-			maintenanceViewModel.ZipCodeText = string.Format(Resources.maintenance_view_zip_string, text2);
+			maintenanceViewModel.ZipCodeText = string.Format(Resources.maintenance_view_zip_string, zipCode);
 			maintenanceViewModel.ErrorCodeText = string.Format(Resources.maintenance_view_error_string, errorCode);
 			maintenanceViewModel.BackgroundImage = GetBackgroundImageFromErrorCode(errorCode);
 			ServiceLocator.Instance.GetService<IMacroService>()["MaintenanceView:ErrorCode"] = errorCode;

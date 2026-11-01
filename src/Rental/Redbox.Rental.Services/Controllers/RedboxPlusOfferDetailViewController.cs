@@ -97,8 +97,8 @@ public class RedboxPlusOfferDetailViewController : BaseViewController
 		redboxPlusOfferDetailViewModel.AcceptButtonText = (ProductAlreadyInTheCart(redboxPlusOfferDetailViewModel) ? Resources.redbox_plus_offer_accept_button_text_already_in_cart : Resources.redbox_plus_offer_detail_view_accept_button_text);
 		redboxPlusOfferDetailViewModel.AcceptButtonLegalText = (ProductAlreadyInTheCart(redboxPlusOfferDetailViewModel) ? Resources.redbox_plus_offer_detail_view_accept_button_legal_text_already_in_cart : Resources.redbox_plus_offer_detail_view_accept_button_legal_text);
 		redboxPlusOfferDetailViewModel.BoxArtHeaderText = Resources.redbox_plus_offer_detail_view_boxart_title_text;
-		int num = 7;
-		for (int i = 1; i <= num; i++)
+		int maxBoxArtCount = 7;
+		for (int i = 1; i <= maxBoxArtCount; i++)
 		{
 			redboxPlusOfferDetailViewModel.GetType().GetProperty($"BoxArt{i}Visibility")?.SetValue(redboxPlusOfferDetailViewModel, Visibility.Collapsed);
 		}
@@ -106,12 +106,12 @@ public class RedboxPlusOfferDetailViewController : BaseViewController
 		ServiceLocator.Instance.GetService<IDataService>()?.GetProducts(BrowseViewFilter.RedboxPlus, TitleFamily.Movies, TitleType.All, BrowseSort.SortDate, null, null, null, null, isADAView: false, null, null, out products);
 		if (products != null)
 		{
-			int num2 = 1;
-			foreach (IKioskProduct item in products.Take(num))
+			int boxArtNumber = 1;
+			foreach (IKioskProduct item in products.Take(maxBoxArtCount))
 			{
-				redboxPlusOfferDetailViewModel.GetType().GetProperty($"BoxArt{num2}")?.SetValue(redboxPlusOfferDetailViewModel, OrchestrationService.GetProductBitmapImage(item));
-				redboxPlusOfferDetailViewModel.GetType().GetProperty($"BoxArt{num2}Visibility")?.SetValue(redboxPlusOfferDetailViewModel, Visibility.Visible);
-				num2++;
+				redboxPlusOfferDetailViewModel.GetType().GetProperty($"BoxArt{boxArtNumber}")?.SetValue(redboxPlusOfferDetailViewModel, OrchestrationService.GetProductBitmapImage(item));
+				redboxPlusOfferDetailViewModel.GetType().GetProperty($"BoxArt{boxArtNumber}Visibility")?.SetValue(redboxPlusOfferDetailViewModel, Visibility.Visible);
+				boxArtNumber++;
 			}
 		}
 		if (redboxPlusOfferDetailViewModel.RedboxPlusSubscriptionProduct != null)

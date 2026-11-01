@@ -39,9 +39,9 @@ public class TitleDetailsWatchOptionsPopupViewController : BaseViewController
 			string url = ((!string.IsNullOrEmpty(productWebPageUrl)) ? (productWebPageUrl + "?icamp=qrkiosk") : ((ServiceLocator.Instance.GetService<Redbox.Rental.Model.IConfiguration>()?.PublicWebsiteUrl ?? "https://www.kiosk-backend.invalid") + "/?icamp=qrkiosk"));
 			titleDetailsWatchOptionsPopupViewModel.QRCodeImage = ServiceLocator.Instance.GetService<IKioskClientService>()?.QRCodeUtilities?.GetQRCodeImage(url, returnDefaultOnError: true);
 			List<DisplayProductMoreLikeThisModel> list = BrowseFunctions.CreateMoreLikeThis(titleProduct, DisplayProductMoreLikeThisModel_OnMoreLikeThisSelected).Take(8).ToList();
-			bool flag = list.Count > 0;
-			titleDetailsWatchOptionsPopupViewModel.BorderHeight = (flag ? 752 : 585);
-			titleDetailsWatchOptionsPopupViewModel.MoreLikeThisVisibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
+			bool hasMoreLikeThis = list.Count > 0;
+			titleDetailsWatchOptionsPopupViewModel.BorderHeight = (hasMoreLikeThis ? 752 : 585);
+			titleDetailsWatchOptionsPopupViewModel.MoreLikeThisVisibility = ((!hasMoreLikeThis) ? Visibility.Collapsed : Visibility.Visible);
 			titleDetailsWatchOptionsPopupViewModel.DisplayProductMoreLikeThisModels = list;
 			titleDetailsWatchOptionsPopupViewModel.OnWatchOptionsSeeFullDetailsButtonClicked = (Action)Delegate.Combine(titleDetailsWatchOptionsPopupViewModel.OnWatchOptionsSeeFullDetailsButtonClicked, new Action(TitleDetailsWatchOptionsPopupViewModel_OnSeeFullDetailsButtonClicked));
 			titleDetailsWatchOptionsPopupViewModel.OnWatchOptionsCloseButtonClicked = (Action)Delegate.Combine(titleDetailsWatchOptionsPopupViewModel.OnWatchOptionsCloseButtonClicked, new Action(TitleDetailsWatchOptionsPopupViewModel_OnCloseButtonClicked));

@@ -213,7 +213,7 @@ public class KioskProductView
 				list.Add(barcodeForProductResult);
 				if (searchProduct.Barcode == null)
 				{
-					bool flag = false;
+					bool barcodeUnavailable = false;
 					Dictionary<string, List<BarcodeAndTotalRents>> dictionary = new Dictionary<string, List<BarcodeAndTotalRents>>();
 					if (GetProduct(searchProduct.ProductId, excludeTitleRollup: true) is ITitleProduct titleProduct)
 					{
@@ -239,19 +239,19 @@ public class KioskProductView
 							}
 							else
 							{
-								flag = true;
+								barcodeUnavailable = true;
 							}
 						}
-						foreach (string item2 in new List<string> { "Known", "Thinned", "Redeployment", "Rebalancing" })
+						foreach (string status in new List<string> { "Known", "Thinned", "Redeployment", "Rebalancing" })
 						{
-							if (TryAssignBarcodeFromList(dictionary, item2, barcodeForProductResult))
+							if (TryAssignBarcodeFromList(dictionary, status, barcodeForProductResult))
 							{
 								break;
 							}
 						}
 						if (string.IsNullOrEmpty(barcodeForProductResult.Barcode))
 						{
-							if (flag)
+							if (barcodeUnavailable)
 							{
 								LogHelper.Instance.Log($"> WARNING: Last Barcode Not Reservable for product id: {searchProduct.ProductId}");
 								barcodeForProductResult.Status = LineItemStatus.ProductSelected;
@@ -383,8 +383,8 @@ public class KioskProductView
 
 	private List<ITitleProduct> FilterByTitleFamily(BrowseViewFilter browseFilter, TitleFamily titleFamily, List<TitleType> titleTypes, List<ITitleProduct> list, bool includeTitleTypes = true)
 	{
-		bool flag = titleTypes == null || titleTypes.Count == 0 || titleTypes.Contains(TitleType.All);
-		if (titleFamily == TitleFamily.Movies && !flag)
+		bool allTitleTypes = titleTypes == null || titleTypes.Count == 0 || titleTypes.Contains(TitleType.All);
+		if (titleFamily == TitleFamily.Movies && !allTitleTypes)
 		{
 			list.AddRange(from item in FilterToFormat(titleTypes, _movieProducts, includeTitleTypes)
 				where ApplyMainFilter(item, browseFilter)
@@ -404,7 +404,7 @@ public class KioskProductView
 					where ApplyMainFilter(item, browseFilter)
 					select (item));
 			}
-			if (!flag)
+			if (!allTitleTypes)
 			{
 				list = list.Where((ITitleProduct item) => ApplyTitleTypeFilter(item, titleTypes, includeTitleTypes)).ToList();
 			}
@@ -650,38 +650,38 @@ public class KioskProductView
 
 	private bool FilterByPrice(ITitleProduct item, decimal? priceRangeLow, decimal? priceRangeHigh)
 	{
-		bool flag = false;
+		bool matches = false;
 		if (item is TitleRollupProduct titleRollupProduct)
 		{
 			foreach (ITitleProduct kioskProduct in titleRollupProduct.KioskProducts)
 			{
-				flag = flag || (kioskProduct.IsSellableAndInStock && kioskProduct.PurchasePrice >= (priceRangeLow ?? 0.01m) && kioskProduct.PurchasePrice <= (priceRangeHigh ?? decimal.MaxValue));
+				matches = matches || (kioskProduct.IsSellableAndInStock && kioskProduct.PurchasePrice >= (priceRangeLow ?? 0.01m) && kioskProduct.PurchasePrice <= (priceRangeHigh ?? decimal.MaxValue));
 			}
 		}
 		else
 		{
-			flag = item.IsSellableAndInStock && item.PurchasePrice >= (priceRangeLow ?? 0.01m) && item.PurchasePrice <= (priceRangeHigh ?? decimal.MaxValue);
+			matches = item.IsSellableAndInStock && item.PurchasePrice >= (priceRangeLow ?? 0.01m) && item.PurchasePrice <= (priceRangeHigh ?? decimal.MaxValue);
 		}
-		return flag;
+		return matches;
 	}
 
 	private bool FilterByRentalPrice(ITitleProduct item, decimal? priceRangeLow, decimal? priceRangeHigh)
 	{
-		bool flag = false;
+		bool matches = false;
 		if (item is TitleRollupProduct titleRollupProduct)
 		{
 			foreach (ITitleProduct kioskProduct in titleRollupProduct.KioskProducts)
 			{
-				decimal num = ((kioskProduct.RentalPriceRecords != null && kioskProduct.RentalPriceRecords.Count > 0) ? kioskProduct.RentalPriceRecords[0].InitialNight : 0m);
-				flag = flag || (kioskProduct.IsRentableAndInStock && num >= (priceRangeLow ?? 0.01m) && num <= (priceRangeHigh ?? decimal.MaxValue));
+				decimal productRentalPrice = ((kioskProduct.RentalPriceRecords != null && kioskProduct.RentalPriceRecords.Count > 0) ? kioskProduct.RentalPriceRecords[0].InitialNight : 0m);
+				matches = matches || (kioskProduct.IsRentableAndInStock && productRentalPrice >= (priceRangeLow ?? 0.01m) && productRentalPrice <= (priceRangeHigh ?? decimal.MaxValue));
 			}
 		}
 		else
 		{
-			decimal num2 = ((item.RentalPriceRecords != null && item.RentalPriceRecords.Count > 0) ? item.RentalPriceRecords[0].InitialNight : 0m);
-			flag = item.IsRentableAndInStock && num2 >= (priceRangeLow ?? 0.01m) && num2 <= (priceRangeHigh ?? decimal.MaxValue);
+			decimal itemRentalPrice = ((item.RentalPriceRecords != null && item.RentalPriceRecords.Count > 0) ? item.RentalPriceRecords[0].InitialNight : 0m);
+			matches = item.IsRentableAndInStock && itemRentalPrice >= (priceRangeLow ?? 0.01m) && itemRentalPrice <= (priceRangeHigh ?? decimal.MaxValue);
 		}
-		return flag;
+		return matches;
 	}
 
 	private bool FilterByStudio(ITitleProduct titleProduct, string studio)
@@ -866,13 +866,13 @@ public class KioskProductView
 				{
 					continue;
 				}
-				foreach (ProductAndBarcodes item2 in productGroupBarcodes)
+				foreach (ProductAndBarcodes productBarcodes in productGroupBarcodes)
 				{
-					if (item2.BarcodesAndRentalCounts.Count > minimumBarcodeCount)
+					if (productBarcodes.BarcodesAndRentalCounts.Count > minimumBarcodeCount)
 					{
-						for (int num = minimumBarcodeCount; num < item2.BarcodesAndRentalCounts.Count; num++)
+						for (int barcodeIndex = minimumBarcodeCount; barcodeIndex < productBarcodes.BarcodesAndRentalCounts.Count; barcodeIndex++)
 						{
-							list.Add(item2.BarcodesAndRentalCounts[num].Barcode);
+							list.Add(productBarcodes.BarcodesAndRentalCounts[barcodeIndex].Barcode);
 						}
 					}
 				}
@@ -945,12 +945,12 @@ public class KioskProductView
 		}
 		ProfileDataInstance.ProductGroups.Where((KeyValuePair<long, ProductGroup> pair) => pair.Value.ProductGroupTypeId == 1).ForEach(delegate(KeyValuePair<long, ProductGroup> pair)
 		{
-			bool num = pair.Value.ProductIds.Any((long id) => _titleProducts.ContainsKey(id));
-			bool flag = sortOrderProductGroupIds?.Contains(pair.Value.ProductGroupId) ?? false;
-			bool flag2 = !num & flag;
-			if (num | flag2)
+			bool hasLoadedProduct = pair.Value.ProductIds.Any((long id) => _titleProducts.ContainsKey(id));
+			bool inSortOrder = sortOrderProductGroupIds?.Contains(pair.Value.ProductGroupId) ?? false;
+			bool forceAdd = !hasLoadedProduct & inSortOrder;
+			if (hasLoadedProduct | forceAdd)
 			{
-				AddMissingProductIds(pair.Value.ProductIds, flag2);
+				AddMissingProductIds(pair.Value.ProductIds, forceAdd);
 				TitleRollupProduct titleRollupProduct = new TitleRollupProduct(pair.Value, _titleProducts, _mdvProducts, ProfileDataInstance, _store);
 				_titleRollupProducts[titleRollupProduct.ProductGroupId] = titleRollupProduct;
 			}

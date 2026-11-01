@@ -18,13 +18,13 @@ public class HardwareHelper
 	public static void TurnOnAirExchangerFanIfConfigured(bool forcedAirExchangerConfigured, string currentBundleName)
 	{
 		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		IHardwareState service2 = ServiceLocator.Instance.GetService<IHardwareState>();
-		LogHelper.Instance.Log($"Air Exchanger Configured: {service2.ExchangerStatus}");
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
+		LogHelper.Instance.Log($"Air Exchanger Configured: {hardwareState.ExchangerStatus}");
 		if (forcedAirExchangerConfigured)
 		{
 			LogHelper.Instance.Log("Forcing Air Exchanger to be Configured.");
 		}
-		if (forcedAirExchangerConfigured || service2.ExchangerStatus == AirExchangerStatus.Ok)
+		if (forcedAirExchangerConfigured || hardwareState.ExchangerStatus == AirExchangerStatus.Ok)
 		{
 			ErrorList errorList = service?.ExecuteImmediate("AIRXCHGR FANON", null, clearStack: false, currentBundleName);
 			if (errorList != null && errorList.Count > 0)
@@ -55,7 +55,7 @@ public class HardwareHelper
 		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
 		IBarcodeTrackingService barcodeTrackingService = ServiceLocator.Instance.GetService<IBarcodeTrackingService>();
 		BarcodeServices decoderUsed = (Enum.TryParse<BarcodeServices>(hardwareState?.BarcodeDecoder.ToString(), out var result) ? result : BarcodeServices.None);
-		CameraGeneration cameraType = (Enum.TryParse<CameraGeneration>(hardwareState?.CurrentCameraGeneration.ToString(), out var result2) ? result2 : CameraGeneration.Unknown);
+		CameraGeneration cameraType = (Enum.TryParse<CameraGeneration>(hardwareState?.CurrentCameraGeneration.ToString(), out var parsedCameraGeneration) ? parsedCameraGeneration : CameraGeneration.Unknown);
 		string kioskId = ServiceLocator.Instance.GetService<IDataService>()?.GetStore().StoreId.ToString() ?? null;
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		string kioskClientSoftwareVersion = macroService["EngineVersion"] ?? "Not Found";
@@ -67,15 +67,15 @@ public class HardwareHelper
 			int scanAttempt = int.Parse((messageData?.FirstOrDefault((KeyValuePair<string, object> x) => x.Key == "ReadAttempts").Value ?? ((object)0)).ToString());
 			int barcodesRead = int.Parse((messageData?.FirstOrDefault((KeyValuePair<string, object> x) => x.Key == "BarcodesRead").Value ?? ((object)0)).ToString());
 			int secureBarcodesRead = int.Parse((messageData?.FirstOrDefault((KeyValuePair<string, object> x) => x.Key == "SecureCodesRead").Value ?? ((object)0)).ToString());
-			DateTime result3 = DateTime.MinValue;
-			DateTime.TryParse(item.Timestamp, out result3);
+			DateTime scanDateTime = DateTime.MinValue;
+			DateTime.TryParse(item.Timestamp, out scanDateTime);
 			barcodeTrackingService.AddBarcodeTrackingInfoToQueue(new BarcodeTrackingInfo
 			{
 				KioskId = kioskId,
 				Barcode = itemID,
 				BarcodesRead = barcodesRead,
 				SecureBarcodesRead = secureBarcodesRead,
-				ScanDateTime = result3,
+				ScanDateTime = scanDateTime,
 				CameraType = cameraType,
 				DecoderUsed = decoderUsed,
 				KioskClientSoftwareVersion = kioskClientSoftwareVersion,

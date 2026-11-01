@@ -336,9 +336,9 @@ public class DataService : IDataService
 		{
 			List<ISubscriptionProduct> subscriptionProducts = _kioskProductView.GetSubscriptionProducts();
 			List<IRedboxPlusSubscriptionProduct> list = new List<IRedboxPlusSubscriptionProduct>();
-			foreach (ISubscriptionProduct item2 in subscriptionProducts)
+			foreach (ISubscriptionProduct subscriptionProduct in subscriptionProducts)
 			{
-				if (item2 is IRedboxPlusSubscriptionProduct item)
+				if (subscriptionProduct is IRedboxPlusSubscriptionProduct item)
 				{
 					list.Add(item);
 				}

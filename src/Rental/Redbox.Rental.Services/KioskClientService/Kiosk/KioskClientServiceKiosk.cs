@@ -39,8 +39,8 @@ public class KioskClientServiceKiosk : BaseKioskClientService, IKioskClientServi
 	public void LoadNearbyKiosks()
 	{
 		LogHelper.Instance.Log("KCS.Kiosk.KioskClientServiceKiosk.LoadNearbyKiosks");
-		long num = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-		_nearbyKiosks = ((num > 0) ? GetNearbyKiosks(num) : null)?.Kiosks?.OrderBy((NearbyKiosk nk) => nk.DistanceMiles).ThenBy((NearbyKiosk nk) => nk.KioskId).ToList();
+		long kioskId = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
+		_nearbyKiosks = ((kioskId > 0) ? GetNearbyKiosks(kioskId) : null)?.Kiosks?.OrderBy((NearbyKiosk nk) => nk.DistanceMiles).ThenBy((NearbyKiosk nk) => nk.KioskId).ToList();
 		_dualKiosk = _nearbyKiosks?.Where((NearbyKiosk nk) => nk.IsDual).Select((NearbyKiosk nk) => nk).FirstOrDefault();
 	}
 
@@ -74,9 +74,9 @@ public class KioskClientServiceKiosk : BaseKioskClientService, IKioskClientServi
 		}
 		catch (Exception e)
 		{
-			string text2 = "KioskClientServiceKiosk.GetNearbyKiosks - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text2, e);
-			kioskClientServiceNearbyKiosksResponse.Error = text2;
+			string errorMessage = "KioskClientServiceKiosk.GetNearbyKiosks - An unhandled exception was raised!";
+			LogHelper.Instance.Log(errorMessage, e);
+			kioskClientServiceNearbyKiosksResponse.Error = errorMessage;
 		}
 		return kioskClientServiceNearbyKiosksResponse;
 	}

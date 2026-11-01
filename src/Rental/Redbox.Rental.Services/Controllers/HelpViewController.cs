@@ -29,12 +29,12 @@ public class HelpViewController : BaseViewController
 		{
 			BaseViewController.AnalyticsService?.AddButtonPressEvent("HelpBack");
 			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
-			string obj = viewService?.Peek(1);
+			string previousViewName = viewService?.Peek(1);
 			if (restartTimer)
 			{
 				OrchestrationService.ResetApplicationIdleTimerTimeout();
 			}
-			if (obj == viewService?.GetStartOverViewName() && !OrchestrationService.IsPersonalizationSessionSignedIn())
+			if (previousViewName == viewService?.GetStartOverViewName() && !OrchestrationService.IsPersonalizationSessionSignedIn())
 			{
 				ServiceLocator.Instance.GetService<IRedboxRental>()?.CloseOpenSessionAndStartNewRentalSession(null);
 			}
@@ -274,12 +274,12 @@ public class HelpViewController : BaseViewController
 		viewModel.CloseButtonText = Resources.close_button;
 		ServiceLocator.Instance.GetService<IConfigurationService>();
 		BuildHelpDocInfoList(giftCardEnabled: false, viewModel);
-		HelpDocuments valueOrDefault = (Redbox.Rental.Services.Session.Session.Instance?.HelpState?.CurrentHelpDocument).GetValueOrDefault();
-		BuildHelpDocButtons(parameters, viewModel, valueOrDefault);
-		viewModel.CurrentHelpDocument = valueOrDefault;
-		viewModel.XpsDocument = LoadXpsDocument(viewModel.HelpDocumentInfoList[valueOrDefault]);
+		HelpDocuments currentHelpDocument = (Redbox.Rental.Services.Session.Session.Instance?.HelpState?.CurrentHelpDocument).GetValueOrDefault();
+		BuildHelpDocButtons(parameters, viewModel, currentHelpDocument);
+		viewModel.CurrentHelpDocument = currentHelpDocument;
+		viewModel.XpsDocument = LoadXpsDocument(viewModel.HelpDocumentInfoList[currentHelpDocument]);
 		SetTitle(viewModel);
-		viewModel.ShowContactText = valueOrDefault == HelpDocuments.Faq || viewModel.CurrentHelpDocument == HelpDocuments.MobileFaq;
+		viewModel.ShowContactText = currentHelpDocument == HelpDocuments.Faq || viewModel.CurrentHelpDocument == HelpDocuments.MobileFaq;
 		ConfigureTTS(viewModel);
 		helpViewUserControl.DataContext = viewModel;
 		viewModel.CurrentHelpDocumentPage = Redbox.Rental.Services.Session.Session.Instance?.HelpState?.CurrentHelpDocumentPage ?? 1;

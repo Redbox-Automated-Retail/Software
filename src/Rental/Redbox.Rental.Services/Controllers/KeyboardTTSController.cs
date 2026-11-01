@@ -47,13 +47,13 @@ public class KeyboardTTSController : BaseTTSController<KeyboardTTSController, Ke
 					break;
 				case "PLUS9":
 				{
-					string text2 = "";
-					string text3 = text;
-					for (int i = 0; i < text3.Length; i++)
+					string spokenCharacters = "";
+					string enteredText = text;
+					for (int i = 0; i < enteredText.Length; i++)
 					{
-						text2 += ConvertToWord(text3[i].ToString());
+						spokenCharacters += ConvertToWord(enteredText[i].ToString());
 					}
-					result = $"The characters you entered are {text2}.";
+					result = $"The characters you entered are {spokenCharacters}.";
 					break;
 				}
 				}
@@ -415,34 +415,34 @@ public class KeyboardTTSController : BaseTTSController<KeyboardTTSController, Ke
 				if (keyboardLogic.Instructions)
 				{
 					string text;
-					string text2;
-					string text3;
+					string promptText;
+					string noteText;
 					switch (keyboardLogic.KeyboardMode)
 					{
 					case KeyboardMode.PROMOTIONS_CODE:
 						text = "PROMO CODE";
-						text2 = "Please enter your promo code.";
-						text3 = "";
+						promptText = "Please enter your promo code.";
+						noteText = "";
 						break;
 					case KeyboardMode.EMAIL_RECEIPTS_PROMO:
 						text = "EMAIL ADDRESS";
-						text2 = "Please enter your email address if you'd like to receive receipts and promotions.";
-						text3 = "";
+						promptText = "Please enter your email address if you'd like to receive receipts and promotions.";
+						noteText = "";
 						break;
 					case KeyboardMode.ACCOUNT_SIGN_IN:
 						text = "";
-						text2 = "Sign in to something awesome.";
-						text3 = "";
+						promptText = "Sign in to something awesome.";
+						noteText = "";
 						break;
 					case KeyboardMode.PERKS_SIGN_UP:
 						text = "Sign up for Redbox Perks";
-						text2 = "Please enter the email address you would like to use for Redbox Perks";
-						text3 = "Don't worry, we'll never share your info - it's safe with us";
+						promptText = "Please enter the email address you would like to use for Redbox Perks";
+						noteText = "Don't worry, we'll never share your info - it's safe with us";
 						break;
 					default:
 						text = "EMAIL ADDRESS";
-						text2 = "What email address would you like your reminder sent to? If you ask for other reminders during this visit, we'll send them here too.";
-						text3 = "Redbox will never sell your email address to any third parties. We promise.";
+						promptText = "What email address would you like your reminder sent to? If you ask for other reminders during this visit, we'll send them here too.";
+						noteText = "Redbox will never sell your email address to any third parties. We promise.";
 						break;
 					}
 					string keyboardError = keyboardLogic.Model.KeyboardError;
@@ -453,11 +453,11 @@ public class KeyboardTTSController : BaseTTSController<KeyboardTTSController, Ke
 							Text = text
 						});
 					}
-					if (!string.IsNullOrEmpty(text2))
+					if (!string.IsNullOrEmpty(promptText))
 					{
 						speechPart.Texts.Add(new TextPart
 						{
-							Text = text2
+							Text = promptText
 						});
 					}
 					if (!string.IsNullOrEmpty(keyboardError))
@@ -475,11 +475,11 @@ public class KeyboardTTSController : BaseTTSController<KeyboardTTSController, Ke
 					{
 						Text = "Anytime if you want to skip through the instructions, press the tab key."
 					});
-					if (!string.IsNullOrEmpty(text3))
+					if (!string.IsNullOrEmpty(noteText))
 					{
 						speechPart.Texts.Add(new TextPart
 						{
-							Text = text3
+							Text = noteText
 						});
 					}
 					speechPart.Texts.Add(new TextPart

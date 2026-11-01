@@ -197,12 +197,12 @@ public class SignupFunctions
 	private static IIdleTimer ConfigureIdleTimer(EmailEntryInfo emailEntryInfo)
 	{
 		IIdleTimer idleTimer = OrchestrationService.CreateIdleTimer(emailEntryInfo.IdleTimerName);
-		int num = OrchestrationService.TTSGetTimeout("Medium", 40000);
+		int timeout = OrchestrationService.TTSGetTimeout("Medium", 40000);
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		num = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : num);
+		timeout = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : timeout);
 		if (idleTimer != null)
 		{
-			idleTimer.Initialize(num, delegate
+			idleTimer.Initialize(timeout, delegate
 			{
 				ShowTimeoutDialog(emailEntryInfo);
 			});

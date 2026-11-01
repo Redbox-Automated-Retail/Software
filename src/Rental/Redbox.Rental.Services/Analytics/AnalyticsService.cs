@@ -364,9 +364,9 @@ public class AnalyticsService : IAnalyticsService
 					_logger.Log("AnalyticsService.WriteToFile: {0} not found, creating directory.", path);
 					Directory.CreateDirectory(path);
 				}
-				string text2 = Path.Combine(path, sessionId + "." + extension);
-				_logger.Log("AnalyticsService.WriteToFile: writing file {0}.", text2);
-				File.WriteAllText(text2, contents);
+				string filePath = Path.Combine(path, sessionId + "." + extension);
+				_logger.Log("AnalyticsService.WriteToFile: writing file {0}.", filePath);
+				File.WriteAllText(filePath, contents);
 			}
 		}
 		catch (Exception e)

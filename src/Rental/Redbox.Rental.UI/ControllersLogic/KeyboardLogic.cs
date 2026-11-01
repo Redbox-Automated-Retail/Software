@@ -101,32 +101,32 @@ public class KeyboardLogic : BaseLogic
 		Model.KeyboardText = Model.KeyboardText ?? "";
 		Model.KeyboardCode = Model.KeyboardCode ?? "";
 		Model.KeyboardError = "";
-		bool flag;
+		bool isValid;
 		switch (KeyboardMode)
 		{
 		case KeyboardMode.ACCOUNT_SIGN_IN:
-			flag = IsValidEntries != null && IsValidEntries(Model.KeyboardText, Model.KeyboardCode);
-			if (!flag)
+			isValid = IsValidEntries != null && IsValidEntries(Model.KeyboardText, Model.KeyboardCode);
+			if (!isValid)
 			{
 				Model.KeyboardError = GetErrorMessage();
 			}
 			break;
 		case KeyboardMode.ACCOUNT_EMAIL_CHANGED:
-			flag = IsValidEntries != null && IsValidEntries(Model.KeyboardText, Model.KeyboardCode);
-			if (!flag)
+			isValid = IsValidEntries != null && IsValidEntries(Model.KeyboardText, Model.KeyboardCode);
+			if (!isValid)
 			{
 				Model.KeyboardError = GetErrorMessage();
 			}
 			break;
 		default:
-			flag = IsValidEntry != null && IsValidEntry(Model.KeyboardText);
-			if (!flag)
+			isValid = IsValidEntry != null && IsValidEntry(Model.KeyboardText);
+			if (!isValid)
 			{
 				Model.KeyboardError = GetErrorMessage();
 			}
 			break;
 		}
-		return flag;
+		return isValid;
 	}
 
 	public string ContinueButtonExecute()
@@ -195,18 +195,18 @@ public class KeyboardLogic : BaseLogic
 		}
 		if (Model.KeyEmailMode)
 		{
-			int num = Model.KeyboardText.Length - 1;
-			if (num > -1)
+			int lastIndex = Model.KeyboardText.Length - 1;
+			if (lastIndex > -1)
 			{
-				Model.KeyboardText = Model.KeyboardText.Remove(num);
+				Model.KeyboardText = Model.KeyboardText.Remove(lastIndex);
 			}
 		}
 		else
 		{
-			int num = Model.KeyboardCode.Length - 1;
-			if (num > -1)
+			int lastIndex = Model.KeyboardCode.Length - 1;
+			if (lastIndex > -1)
 			{
-				Model.KeyboardCode = Model.KeyboardCode.Remove(num);
+				Model.KeyboardCode = Model.KeyboardCode.Remove(lastIndex);
 			}
 		}
 		UpdateContinue();
@@ -255,17 +255,17 @@ public class KeyboardLogic : BaseLogic
 		{
 			Model.KeyboardError = Resources.email_error_message;
 		}
-		string text2 = Model.KeyboardText.Substring(index + 1);
-		if (text2.Length == 0)
+		string domain = Model.KeyboardText.Substring(index + 1);
+		if (domain.Length == 0)
 		{
 			Model.KeyboardError = Resources.email_error_message;
 		}
 		else
 		{
-			int num2 = text2.IndexOf('.') + 1;
-			if (num2 > 0)
+			int firstDotEnd = domain.IndexOf('.') + 1;
+			if (firstDotEnd > 0)
 			{
-				Model.KeyboardText = Model.KeyboardText.Remove(index + num2);
+				Model.KeyboardText = Model.KeyboardText.Remove(index + firstDotEnd);
 			}
 			Model.KeyboardText += text;
 			SetControlTextMode(mode: false);

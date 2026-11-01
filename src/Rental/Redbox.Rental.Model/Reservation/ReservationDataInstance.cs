@@ -82,12 +82,12 @@ public class ReservationDataInstance : IReservationDataInstance
 					{
 						foreach (ReservationPricingRecord_V001 priceRecord in reservationDataFile.ReservationDataInfo.PricingSet.PriceRecords)
 						{
-							Enum.TryParse<TitleFamily>(priceRecord.TitleFamily, out var result2);
-							Enum.TryParse<TitleType>(priceRecord.TitleType, out var result3);
+							Enum.TryParse<TitleFamily>(priceRecord.TitleFamily, out var titleFamily);
+							Enum.TryParse<TitleType>(priceRecord.TitleType, out var titleType);
 							IPricingRecord item = new PricingRecord
 							{
-								TitleFamily = result2,
-								TitleType = result3,
+								TitleFamily = titleFamily,
+								TitleType = titleType,
 								InitialNight = priceRecord.InitialNight,
 								ExtraNight = priceRecord.ExtraNight,
 								ExpirationPrice = priceRecord.ExpirationPrice,
@@ -264,18 +264,18 @@ public class ReservationDataInstance : IReservationDataInstance
 		{
 			if (!(item is ReservationDataFile_V002 reservationDataFile_V))
 			{
-				bool flag = false;
+				bool converted = false;
 				List<ReservationDataFile_V002> list = Conversions.ConvertReservationDataFileV001ToV002Files(item);
 				if ((list?.Count ?? 0) > 0)
 				{
-					flag = true;
-					foreach (ReservationDataFile_V002 item2 in list)
+					converted = true;
+					foreach (ReservationDataFile_V002 convertedFile in list)
 					{
-						DataFiles[item2.ReferenceNumber] = item2;
-						flag = flag && Save(item2);
+						DataFiles[convertedFile.ReferenceNumber] = convertedFile;
+						converted = converted && Save(convertedFile);
 					}
 				}
-				if (flag)
+				if (converted)
 				{
 					Delete(item);
 				}

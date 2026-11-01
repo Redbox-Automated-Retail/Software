@@ -221,8 +221,8 @@ public class TitleDetailsController : BaseViewController
 		if (titleProduct2.InStock | fromOosSelection)
 		{
 			IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-			bool flag = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
-			if ((titleProduct2.HasMultiNightPrice || (titleProduct2.IsSellableAndInStock && (titleProduct2.IsMovie || titleProduct2.IsGame))) && !flag)
+			bool inCartPromoOfferActive = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
+			if ((titleProduct2.HasMultiNightPrice || (titleProduct2.IsSellableAndInStock && (titleProduct2.IsMovie || titleProduct2.IsGame))) && !inCartPromoOfferActive)
 			{
 				BrowseFunctions.AddMultiNightPricedProductToCart(titleProduct2, "product_detail_view");
 			}
@@ -239,8 +239,8 @@ public class TitleDetailsController : BaseViewController
 
 	private static void ShowOutOfStockOptionsDialog(IBrowseItemModel displayProductModel, ITitleProduct kioskProduct, TitleType titleType, object commandType)
 	{
-		bool flag = kioskProduct is TitleRollupProduct;
-		ITitleProduct selectedProduct = (flag ? ((TitleRollupProduct)kioskProduct).KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == titleType) : kioskProduct);
+		bool isRollup = kioskProduct is TitleRollupProduct;
+		ITitleProduct selectedProduct = (isRollup ? ((TitleRollupProduct)kioskProduct).KioskProducts.FirstOrDefault((ITitleProduct x) => x.TitleType == titleType) : kioskProduct);
 		OptionSelectionDialogInfo optionSelectionDialogInfo = new OptionSelectionDialogInfo
 		{
 			ViewAnalyticsName = "message_popup_view",
@@ -255,7 +255,7 @@ public class TitleDetailsController : BaseViewController
 		}, (Func<bool>)null);
 		optionSelectionDialogInfo.DescriptionText = Resources.out_of_stock_movie_message;
 		ObservableCollection<ButtonData> observableCollection = new ObservableCollection<ButtonData>();
-		if (flag && ((ITitleRollupProduct)kioskProduct).KioskProducts.Any((ITitleProduct p) => p.InStock))
+		if (isRollup && ((ITitleRollupProduct)kioskProduct).KioskProducts.Any((ITitleProduct p) => p.InStock))
 		{
 			optionSelectionDialogInfo.DescriptionText = string.Format(Resources.out_of_stock_format_message, titleType.GetDisplayDescription());
 			foreach (ITitleProduct inStockFormat in ((ITitleRollupProduct)kioskProduct).KioskProducts.Where((ITitleProduct p) => p.InStock && p.TitleType != TitleType.DigitalCode))
@@ -349,13 +349,13 @@ public class TitleDetailsController : BaseViewController
 		ITitleProduct titleProduct = displayProductModel.Data as ITitleProduct;
 		RatingsProperty value = null;
 		RatingsProperties.Properties.TryGetValue((Ratings)(titleProduct?.RatingId).GetValueOrDefault(), out value);
-		TitleTypeProperty value2 = null;
+		TitleTypeProperty titleTypeProperty = null;
 		string format = null;
 		if (titleProduct != null)
 		{
 			_ = titleProduct.TitleType;
-			TitleTypeProperties.Properties.TryGetValue(titleProduct.TitleType, out value2);
-			format = value2?.GetName(Resources.ResourceManager);
+			TitleTypeProperties.Properties.TryGetValue(titleProduct.TitleType, out titleTypeProperty);
+			format = titleTypeProperty?.GetName(Resources.ResourceManager);
 		}
 		string ratingLabel = string.Empty;
 		string ratingDescription = string.Empty;
@@ -383,10 +383,10 @@ public class TitleDetailsController : BaseViewController
 			ratingVisibility = Visibility.Collapsed;
 		}
 		IList<IPricingRecord> list = displayProductModel.DisplayProductModelConstants.PricingService?.GetProductPricingRecords(titleProduct.ProductId);
-		bool flag = list != null && list.Count > 1;
+		bool hasMultiplePricingRecords = list != null && list.Count > 1;
 		IRentalShoppingCart rentalShoppingCart = displayProductModel.DisplayProductModelConstants.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		bool flag2 = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
-		int num = (int)(((rentalShoppingCart != null && rentalShoppingCart.ServiceFeeEnabled) ? rentalShoppingCart.DefaultServiceFee : 0m) * 100m);
+		bool inCartPromoOfferActive = rentalShoppingCart != null && rentalShoppingCart.InCartPromoOfferMade && !rentalShoppingCart.InCartPromoOfferCancel;
+		int serviceFeeCents = (int)(((rentalShoppingCart != null && rentalShoppingCart.ServiceFeeEnabled) ? rentalShoppingCart.DefaultServiceFee : 0m) * 100m);
 		DateTime dateTime = DateTime.Today.Add(Redbox.Rental.Services.Session.Session.Instance?.RentalReturnTime ?? TimeSpan.FromHours(21.0));
 		displayProductModel.Description = titleProduct.ProductDescription;
 		displayProductModel.Rating = value?.Name;
@@ -404,9 +404,9 @@ public class TitleDetailsController : BaseViewController
 		displayProductModel.OneNightPriceLabel = (((titleProduct?.TitleType ?? TitleType.All) != TitleType.DigitalCode) ? displayProductModel.DisplayProductModelConstants.OneNightPriceLabel : null);
 		displayProductModel.MultiNightPrice = GetPriceText(titleProduct, 1, displayProductModel.DisplayProductModelConstants);
 		displayProductModel.MultiNightPriceLabel = (((titleProduct?.TitleType ?? TitleType.All) != TitleType.DigitalCode) ? displayProductModel.DisplayProductModelConstants.MultiNightPriceLabel : null);
-		displayProductModel.MultiNightPriceVisibility = ((!flag || flag2 || titleProduct.IsEmptyCase) ? Visibility.Collapsed : Visibility.Visible);
-		displayProductModel.ServiceFeeTextVisibility = ((num <= 0) ? Visibility.Collapsed : Visibility.Visible);
-		displayProductModel.ServiceFeeText = string.Format(Resources.service_fee_text, num);
+		displayProductModel.MultiNightPriceVisibility = ((!hasMultiplePricingRecords || inCartPromoOfferActive || titleProduct.IsEmptyCase) ? Visibility.Collapsed : Visibility.Visible);
+		displayProductModel.ServiceFeeTextVisibility = ((serviceFeeCents <= 0) ? Visibility.Collapsed : Visibility.Visible);
+		displayProductModel.ServiceFeeText = string.Format(Resources.service_fee_text, serviceFeeCents);
 		displayProductModel.RatingLabel = ratingLabel;
 		displayProductModel.RatingDescription = ratingDescription;
 		displayProductModel.RatingVisibility = ratingVisibility;
@@ -415,7 +415,7 @@ public class TitleDetailsController : BaseViewController
 		displayProductModel.OneNightReturnTimeLabel = (((titleProduct?.TitleType ?? TitleType.All) != TitleType.DigitalCode) ? displayProductModel.DisplayProductModelConstants.OneNightReturnTimeLabel : null);
 		displayProductModel.MultiNightReturnTime = (((titleProduct?.TitleType ?? TitleType.All) != TitleType.DigitalCode) ? GetReturnTimeText(titleProduct, 1, displayProductModel.DisplayProductModelConstants) : null);
 		displayProductModel.MultiNightReturnTimeLabel = (((titleProduct?.TitleType ?? TitleType.All) != TitleType.DigitalCode) ? displayProductModel.DisplayProductModelConstants.MultiNightReturnTimeLabel : null);
-		displayProductModel.MultiNightReturnTimeVisibility = ((!flag || flag2 || titleProduct.IsEmptyCase) ? Visibility.Collapsed : Visibility.Visible);
+		displayProductModel.MultiNightReturnTimeVisibility = ((!hasMultiplePricingRecords || inCartPromoOfferActive || titleProduct.IsEmptyCase) ? Visibility.Collapsed : Visibility.Visible);
 		displayProductModel.DealText = GetDealText(titleProduct);
 		displayProductModel.DealTextVisibility = ((!titleProduct.HasDeal) ? Visibility.Collapsed : Visibility.Visible);
 		displayProductModel.RunningTimeVisibility = ((titleProduct == null || titleProduct.IsEmptyCase || titleProduct == null || !titleProduct.IsMovie || string.IsNullOrEmpty(titleProduct?.RunningTime)) ? Visibility.Collapsed : Visibility.Visible);
@@ -457,10 +457,10 @@ public class TitleDetailsController : BaseViewController
 		displayProductModel.OutOfStockLine2Text = displayProductModel.DisplayProductModelConstants.OutOfStockLine2Text;
 		displayProductModel.OutOfStockLine3Text = string.Format(displayProductModel.DisplayProductModelConstants.OutOfStockLine3Text, (titleProduct != null && titleProduct.IsMovie) ? displayProductModel.DisplayProductModelConstants.Movie : displayProductModel.DisplayProductModelConstants.Game);
 		displayProductModel.OutOfStockLine4Text = displayProductModel.DisplayProductModelConstants.OutOfStockLine4Text;
-		string arg = displayProductModel.DisplayProductModelConstants.KioskClientService?.Kiosk?.KioskLabel ?? "A";
-		string arg2 = displayProductModel.DisplayProductModelConstants.KioskClientService?.Kiosk?.DualKiosk?.Label ?? "A";
-		displayProductModel.DualInStockTextTitleDetailsOutOfStockKioskText = string.Format(Resources.dual_in_stock_text_title_details_out_of_stock_kiosk_text, arg);
-		displayProductModel.DualInStockTextTitleDetailsInStockKioskText = string.Format(Resources.dual_in_stock_text_title_details_in_stock_kiosk_text, arg2);
+		string kioskLabel = displayProductModel.DisplayProductModelConstants.KioskClientService?.Kiosk?.KioskLabel ?? "A";
+		string dualKioskLabel = displayProductModel.DisplayProductModelConstants.KioskClientService?.Kiosk?.DualKiosk?.Label ?? "A";
+		displayProductModel.DualInStockTextTitleDetailsOutOfStockKioskText = string.Format(Resources.dual_in_stock_text_title_details_out_of_stock_kiosk_text, kioskLabel);
+		displayProductModel.DualInStockTextTitleDetailsInStockKioskText = string.Format(Resources.dual_in_stock_text_title_details_in_stock_kiosk_text, dualKioskLabel);
 		IAd ad = ((!loadAd || BaseViewController.ApplicationState.IsADAAccessible) ? null : ServiceLocator.Instance.GetService<IAdService>()?.GetScreenAd(AdLocation.TitleDetail));
 		PopulateModelAdImage(displayProductModel, ad);
 		if (loadMoreLikeThis && Redbox.Rental.Services.Session.Session.Instance.BrowseState.TitleFamily == TitleFamily.Movies && Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseSelectedSort != BrowseSelectedSort.ComingSoon && !BaseViewController.ApplicationState.IsADAAccessible)
@@ -531,9 +531,9 @@ public class TitleDetailsController : BaseViewController
 				IPricingRecord pricingRecord = ((list != null && list.Count > pricingRecordIndex) ? list[pricingRecordIndex] : null);
 				if (pricingRecord != null)
 				{
-					string arg = ((TitleTypeProperties.Properties.ContainsKey(tp.TitleType) && TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager) != null) ? $" {displayProductModelConstants.PriceFor} {TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager)}" : string.Empty);
-					string arg2 = (((pricingRecord.InitialDays ?? 1) > 1) ? string.Format(" {0} {1} {2}{3}", displayProductModelConstants.PriceFor, pricingRecord.InitialDays ?? 1, displayProductModelConstants.Night, (pricingRecord.InitialDays > 1) ? "s" : string.Empty) : string.Empty);
-					priceText.Add($"{pricingRecord.InitialNight:C}{arg}{arg2}");
+					string titleTypeSuffix = ((TitleTypeProperties.Properties.ContainsKey(tp.TitleType) && TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager) != null) ? $" {displayProductModelConstants.PriceFor} {TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager)}" : string.Empty);
+					string nightsSuffix = (((pricingRecord.InitialDays ?? 1) > 1) ? string.Format(" {0} {1} {2}{3}", displayProductModelConstants.PriceFor, pricingRecord.InitialDays ?? 1, displayProductModelConstants.Night, (pricingRecord.InitialDays > 1) ? "s" : string.Empty) : string.Empty);
+					priceText.Add($"{pricingRecord.InitialNight:C}{titleTypeSuffix}{nightsSuffix}");
 				}
 			}
 		});
@@ -553,9 +553,9 @@ public class TitleDetailsController : BaseViewController
 				{
 					DateTime dateTime = DateTime.Today.Add(Redbox.Rental.Services.Session.Session.Instance?.RentalReturnTime ?? TimeSpan.FromHours(21.0));
 					DateTime dateTime2 = DateTime.Now.AddDays(pricingRecord.InitialDays ?? 1);
-					string text = Resources.ResourceManager.GetString(dateTime2.DayOfWeek.ToString());
-					string text2 = ((pricingRecordIndex > 0 && TitleTypeProperties.Properties.ContainsKey(tp.TitleType) && TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager) != null) ? $" {displayProductModelConstants.PriceFor} {TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager)}" : string.Empty);
-					returnTimeText.Add(string.Format("{0} {1}, {2}{3}", dateTime.ToString("h:mm tt"), text, dateTime2.ToShortDateString(), text2));
+					string dayOfWeekName = Resources.ResourceManager.GetString(dateTime2.DayOfWeek.ToString());
+					string titleTypeSuffix = ((pricingRecordIndex > 0 && TitleTypeProperties.Properties.ContainsKey(tp.TitleType) && TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager) != null) ? $" {displayProductModelConstants.PriceFor} {TitleTypeProperties.Properties[tp.TitleType].GetName(Resources.ResourceManager)}" : string.Empty);
+					returnTimeText.Add(string.Format("{0} {1}, {2}{3}", dateTime.ToString("h:mm tt"), dayOfWeekName, dateTime2.ToShortDateString(), titleTypeSuffix));
 				}
 			}
 		});
@@ -593,10 +593,10 @@ public class TitleDetailsController : BaseViewController
 	public static BitmapImage GetSubPlatformBitmapImage(ITitleProduct kioskProduct)
 	{
 		BitmapImage result = null;
-		long? num = kioskProduct?.SubPlatformId;
-		if (num.HasValue && num > 0)
+		long? subPlatformId = kioskProduct?.SubPlatformId;
+		if (subPlatformId.HasValue && subPlatformId > 0)
 		{
-			result = Constants.SubPlatformImages.GetSubPlatformImage((Constants.SubPlatforms)num.Value);
+			result = Constants.SubPlatformImages.GetSubPlatformImage((Constants.SubPlatforms)subPlatformId.Value);
 		}
 		return result;
 	}
@@ -609,8 +609,8 @@ public class TitleDetailsController : BaseViewController
 			return string.Empty;
 		}
 		decimal price = list.Min((ITitleProduct tp) => tp.PurchasePrice);
-		bool flag = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
-		return string.Format("${0:F2}{1}", price, flag ? "" : "+");
+		bool samePriceForAll = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
+		return string.Format("${0:F2}{1}", price, samePriceForAll ? "" : "+");
 	}
 
 	public static void OnLeave(IViewFrameInstance viewFrameInstance)

@@ -47,10 +47,10 @@ public partial class SwipeViewUserControl : TextToSpeechUserControl, IWPFActor, 
 		set
 		{
 			AnimationContainer.Children.Clear();
-			object obj = Activator.CreateInstance(_swipeViewTypeAnimationControls[value]);
-			if (obj != null)
+			object animationControl = Activator.CreateInstance(_swipeViewTypeAnimationControls[value]);
+			if (animationControl != null)
 			{
-				if (obj is FrameworkElement frameworkElement)
+				if (animationControl is FrameworkElement frameworkElement)
 				{
 					frameworkElement.VerticalAlignment = VerticalAlignment.Center;
 					AnimationContainer.Children.Add(frameworkElement);
@@ -126,7 +126,7 @@ public partial class SwipeViewUserControl : TextToSpeechUserControl, IWPFActor, 
 
 	private void StopTimer(bool executeTimeoutEvent)
 	{
-		bool flag = false;
+		bool raiseTimeout = false;
 		lock (m_lockObject)
 		{
 			m_dispatcherTimer?.Stop();
@@ -135,11 +135,11 @@ public partial class SwipeViewUserControl : TextToSpeechUserControl, IWPFActor, 
 				m_timerDisabled = true;
 				if (executeTimeoutEvent)
 				{
-					flag = true;
+					raiseTimeout = true;
 				}
 			}
 		}
-		if (flag)
+		if (raiseTimeout)
 		{
 			SwipeViewModel?.OnTimeout?.Invoke();
 		}

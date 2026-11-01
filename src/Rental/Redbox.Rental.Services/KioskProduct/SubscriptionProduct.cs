@@ -65,11 +65,11 @@ public class SubscriptionProduct : KioskProduct, ISubscriptionProduct, IKioskPro
 
 	public int CompareTo(ISubscriptionProduct subscriptionProduct)
 	{
-		int num = SubscriptionType.CompareTo(subscriptionProduct?.SubscriptionType);
-		if (num == 0)
+		int comparison = SubscriptionType.CompareTo(subscriptionProduct?.SubscriptionType);
+		if (comparison == 0)
 		{
-			num = SubscriptionId.CompareTo(subscriptionProduct?.SubscriptionId);
+			comparison = SubscriptionId.CompareTo(subscriptionProduct?.SubscriptionId);
 		}
-		return num;
+		return comparison;
 	}
 }

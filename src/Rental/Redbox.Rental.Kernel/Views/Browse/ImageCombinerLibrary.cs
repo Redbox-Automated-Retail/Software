@@ -13,36 +13,36 @@ public static class ImageCombinerLibrary
 		{
 			return null;
 		}
-		int num = 262;
-		int num2 = 370;
-		_ = Convert.ToDouble(num) / (double)num2;
-		double num3 = 0.0424;
-		double num4 = 0.01;
-		int num5 = (int)Math.Round(0.086 * (double)num);
-		int num6 = (int)Math.Round(num3 * (double)num2);
-		int num7 = (int)Math.Round(num4 * (double)num);
-		int num8 = num7 * (2 + imageList.Length - 1);
-		int width = num + num8 + num5 * 3;
-		int height = num2 + num8 + num6 * 2;
+		int coverWidth = 262;
+		int coverHeight = 370;
+		_ = Convert.ToDouble(coverWidth) / (double)coverHeight;
+		double verticalOffsetRatio = 0.0424;
+		double borderRatio = 0.01;
+		int horizontalOffset = (int)Math.Round(0.086 * (double)coverWidth);
+		int verticalOffset = (int)Math.Round(verticalOffsetRatio * (double)coverHeight);
+		int borderWidth = (int)Math.Round(borderRatio * (double)coverWidth);
+		int totalBorderWidth = borderWidth * (2 + imageList.Length - 1);
+		int width = coverWidth + totalBorderWidth + horizontalOffset * 3;
+		int height = coverHeight + totalBorderWidth + verticalOffset * 2;
 		Bitmap bitmap = new Bitmap(width, height);
 		Graphics graphics = Graphics.FromImage(bitmap);
-		Bitmap bitmap2 = DarkenImage(SetBorder(ScaleImage(imageList[2], num, num2), num7), 0.6f);
+		Bitmap bitmap2 = DarkenImage(SetBorder(ScaleImage(imageList[2], coverWidth, coverHeight), borderWidth), 0.6f);
 		graphics.DrawImage(bitmap2, new Point
 		{
 			X = bitmap.Width - bitmap2.Width,
 			Y = 0
 		});
-		Bitmap bitmap3 = DarkenImage(SetBorder(ScaleImage(imageList[1], num, num2), num7), 0.3f);
+		Bitmap bitmap3 = DarkenImage(SetBorder(ScaleImage(imageList[1], coverWidth, coverHeight), borderWidth), 0.3f);
 		graphics.DrawImage(bitmap3, new Point
 		{
-			X = bitmap.Width - num5 - bitmap3.Width,
+			X = bitmap.Width - horizontalOffset - bitmap3.Width,
 			Y = (bitmap.Height - bitmap3.Height) / 2
 		});
-		Image image = ScaleImage(imageList[0], num, num2);
-		graphics.DrawImage(SetBorder(image, num7), new Point
+		Image image = ScaleImage(imageList[0], coverWidth, coverHeight);
+		graphics.DrawImage(SetBorder(image, borderWidth), new Point
 		{
 			X = 0,
-			Y = bitmap.Height - image.Height - 2 * num7
+			Y = bitmap.Height - image.Height - 2 * borderWidth
 		});
 		return bitmap;
 	}

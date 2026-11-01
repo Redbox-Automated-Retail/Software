@@ -178,7 +178,7 @@ public class ShoppingCartViewFunctions
 		if (rentalShoppingCart != null && rentalShoppingCartTitleItem != null)
 		{
 			IRentalShoppingCartTitleItem deleteRentalShoppingCartItem = rentalShoppingCart.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem x) => x.ProductId == rentalShoppingCartTitleItem.ProductId);
-			bool flag = true;
+			bool removeNow = true;
 			if (rentalShoppingCart.InCartTitleMarketing)
 			{
 				LogHelper.Instance.Log("Creating temp RentalShoppingCart to retest in cart offer conditions");
@@ -190,7 +190,7 @@ public class ShoppingCartViewFunctions
 				}
 				if (!isCartValid)
 				{
-					flag = false;
+					removeNow = false;
 					MessagePopupViewController.ShowInCartCancelWarning(delegate
 					{
 						LogHelper.Instance.Log("Title marketing remove item warning popup timed out");
@@ -212,7 +212,7 @@ public class ShoppingCartViewFunctions
 					});
 				}
 			}
-			if (flag && deleteRentalShoppingCartItem != null)
+			if (removeNow && deleteRentalShoppingCartItem != null)
 			{
 				RemoveItemFromShoppingCart(rentalShoppingCart, deleteRentalShoppingCartItem);
 				GetViewService()?.Show();

@@ -149,9 +149,9 @@ public class ControlPanelViewController : BaseControlPanelController
 
 	public static void TimeOutAction()
 	{
-		Action obj = BaseViewController.GetViewModel<LoginModel>()?.CancelAction;
+		Action cancelAction = BaseViewController.GetViewModel<LoginModel>()?.CancelAction;
 		OrchestrationService.RemoveIdleTimer(LoginIdleTimerName);
 		LogHelper.Instance.LogTo("UserLoginLog", "Control Panel | Login timed out");
-		obj?.Invoke();
+		cancelAction?.Invoke();
 	}
 }

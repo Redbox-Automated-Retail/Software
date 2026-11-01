@@ -282,13 +282,13 @@ public class ReservationService : IReservationService
 		}
 		else
 		{
-			long num = service?.KioskId ?? 0;
-			if (num > 0)
+			long kioskId = service?.KioskId ?? 0;
+			if (kioskId > 0)
 			{
 				RegisterWithBrokerServiceRequest registerWithBrokerServiceRequest = new RegisterWithBrokerServiceRequest
 				{
 					MessageId = Guid.NewGuid(),
-					KioskId = num
+					KioskId = kioskId
 				};
 				registerWithBrokerServiceResponse = await (ServiceLocator.Instance.GetService<IUpdateClientService>()?.Reservation?.RegisterWithBrokerService(registerWithBrokerServiceRequest));
 				if (registerWithBrokerServiceResponse != null && registerWithBrokerServiceResponse.Success)
@@ -419,10 +419,10 @@ public class ReservationService : IReservationService
 		{
 			_retryRegisterInterval *= 2;
 		}
-		int num = 300000;
-		if (_retryRegisterInterval > num)
+		int maxRetryInterval = 300000;
+		if (_retryRegisterInterval > maxRetryInterval)
 		{
-			_retryRegisterInterval = num;
+			_retryRegisterInterval = maxRetryInterval;
 		}
 		return _retryRegisterInterval;
 	}

@@ -46,9 +46,9 @@ public class KioskClientServiceCampaign : BaseKioskClientService, IKioskClientSe
 		_showStartScreen = instance.Current.CMS.ShowStartScreen;
 		LogHelper.Instance.Log($"ShowStartScreen {_showStartScreen}");
 		_startScreen = (_showStartScreen ? GetKCSStartScreen() : null);
-		LogHelper instance2 = LogHelper.Instance;
+		LogHelper logHelper = LogHelper.Instance;
 		KioskStartScreenDetails startScreen = _startScreen;
-		object obj;
+		object startScreenStatus;
 		if (startScreen != null)
 		{
 			ControlList controls = startScreen.Controls;
@@ -57,15 +57,15 @@ public class KioskClientServiceCampaign : BaseKioskClientService, IKioskClientSe
 				_ = controls.Count;
 				if (true)
 				{
-					obj = $"loaded {_startScreen.Controls.Count}";
+					startScreenStatus = $"loaded {_startScreen.Controls.Count}";
 					goto IL_0151;
 				}
 			}
 		}
-		obj = "null";
+		startScreenStatus = "null";
 		goto IL_0151;
 		IL_0151:
-		instance2.Log("StartScreen " + (string)obj);
+		logHelper.Log("StartScreen " + (string)startScreenStatus);
 		_loadCampaignTimerDuration = instance.Current.CMS.LoadCampaignTimerDuration;
 		LogHelper.Instance.Log($"LoadCampaignTimerDuration {_loadCampaignTimerDuration}");
 	}

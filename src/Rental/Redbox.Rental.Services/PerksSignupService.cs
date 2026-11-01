@@ -189,8 +189,8 @@ public class PerksSignupService : IPerksSignupService
 		_optinForTextClub = false;
 		_emailAddress = string.Empty;
 		_accountNumber = string.Empty;
-		OptInConfirmationStatus valueOrDefault = (ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.MarketingOptInConfirmationStatus).GetValueOrDefault();
-		_confirmationStatus = (ConfirmationStatus)valueOrDefault;
+		OptInConfirmationStatus optInConfirmationStatus = (ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.MarketingOptInConfirmationStatus).GetValueOrDefault();
+		_confirmationStatus = (ConfirmationStatus)optInConfirmationStatus;
 		switch (signUpFlowContext)
 		{
 		case SignUpFlowContext.AfterSwipeAndRedboxPlusSignup:
@@ -920,10 +920,10 @@ public class PerksSignupService : IPerksSignupService
 	private void ConfigureIdleTimer()
 	{
 		IdleTimer = ServiceLocator.Instance.GetService<IIdleTimerService>().CreateIdleTimer("perks_signup_idle_timer");
-		int num = OrchestrationService.TTSGetTimeout("Medium", 60000);
+		int timeout = OrchestrationService.TTSGetTimeout("Medium", 60000);
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		num = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : num);
-		IdleTimer.Initialize(num, ShowTimeoutDialog);
+		timeout = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : timeout);
+		IdleTimer.Initialize(timeout, ShowTimeoutDialog);
 	}
 
 	private static void RemoveIdleTimer()

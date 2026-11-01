@@ -112,22 +112,22 @@ public partial class MemberPerksViewControl : ViewUserControl, IComponentConnect
 			return;
 		}
 		MemberPerksModel memberPerksModel = base.DataContext as MemberPerksModel;
-		int num = sectionalBar.GroupIndex - 1;
-		bool flag = true;
+		int tierIndex = sectionalBar.GroupIndex - 1;
+		bool isDefaultThreshold = true;
 		TierType memberTier = memberPerksModel.MemberTier;
 		if (memberTier != TierType.Member && (uint)(memberTier - 1) <= 2u && sectionalBar.Threshold == -1.0)
 		{
-			flag = false;
-			if (sectionalBar.IsThresholdReached && num == (int)(memberPerksModel.MemberTier - 1))
+			isDefaultThreshold = false;
+			if (sectionalBar.IsThresholdReached && tierIndex == (int)(memberPerksModel.MemberTier - 1))
 			{
-				TierControl tierControl = PanelList[num];
+				TierControl tierControl = PanelList[tierIndex];
 				tierControl.ImageElem.Opacity = 1.0;
 				tierControl.NameElem.Opacity = 1.0;
 			}
 		}
-		if (flag)
+		if (isDefaultThreshold)
 		{
-			TierControl tierControl2 = PanelList[num];
+			TierControl tierControl2 = PanelList[tierIndex];
 			if (sectionalBar.IsThresholdReached)
 			{
 				tierControl2.ImageElem.Opacity = 1.0;

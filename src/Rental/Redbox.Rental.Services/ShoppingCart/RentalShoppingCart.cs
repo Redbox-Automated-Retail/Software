@@ -390,13 +390,13 @@ public class RentalShoppingCart : IRentalShoppingCart
 
 	public void RemoveItem(IBaseRentalShoppingCartItem rentalShoppingCartItem, bool userRemoved)
 	{
-		bool flag = false;
+		bool itemRemoved = false;
 		lock (_syncObject)
 		{
 			if (rentalShoppingCartItem != null && _items.Contains(rentalShoppingCartItem))
 			{
 				_items.Remove(rentalShoppingCartItem);
-				flag = true;
+				itemRemoved = true;
 				Totals.UpdateSubTotalGroups();
 				if (rentalShoppingCartItem is IRentalShoppingCartTitleItem)
 				{
@@ -418,7 +418,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 				ClearLoyaltyPointsToBeEarned();
 			}
 		}
-		if (flag && OnChange != null)
+		if (itemRemoved && OnChange != null)
 		{
 			OnChange(this);
 		}
@@ -426,17 +426,17 @@ public class RentalShoppingCart : IRentalShoppingCart
 
 	public void Clear()
 	{
-		bool flag = false;
+		bool hadItems = false;
 		lock (_syncObject)
 		{
 			if (_items.Count > 0)
 			{
-				flag = true;
+				hadItems = true;
 			}
 			_items.Clear();
 			Totals.UpdateSubTotalGroups();
 		}
-		if (flag && OnChange != null)
+		if (hadItems && OnChange != null)
 		{
 			OnChange(this);
 		}
@@ -698,7 +698,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 	{
 		_isAfterVend = true;
 		CustomerOffer customerOffer = Redbox.Rental.Services.Session.Session.Instance?.PromoOfferState?.SelectedOffer;
-		bool valueOrDefault = Redbox.Rental.Services.Session.Session.Instance?.PromoOfferState?.WasOfferAccepted == true;
+		bool offerAccepted = Redbox.Rental.Services.Session.Session.Instance?.PromoOfferState?.WasOfferAccepted == true;
 		if (Promotion != null)
 		{
 			Promotion.IsValidatedPostVend = true;
@@ -706,7 +706,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 			{
 				ValidateAndUpdatePromoCode();
 			}
-			if ((customerOffer != null) & valueOrDefault)
+			if ((customerOffer != null) & offerAccepted)
 			{
 				if ((Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.UseDiscountsForPmnpOffers && customerOffer.DiscountType == OfferDiscountType.MultiNightPrice) || (customerOffer.OfferScopeType == OfferScopeType.StoredRedeemable && Promotion.IsProductSpecific))
 				{
@@ -725,7 +725,7 @@ public class RentalShoppingCart : IRentalShoppingCart
 				}
 			}
 		}
-		if (valueOrDefault && !string.IsNullOrEmpty(customerOffer?.OfferDiscountCode))
+		if (offerAccepted && !string.IsNullOrEmpty(customerOffer?.OfferDiscountCode))
 		{
 			RecordOfferCodesForDiscsUsingOffer(customerOffer);
 		}
@@ -934,12 +934,12 @@ public class RentalShoppingCart : IRentalShoppingCart
 
 	private IPromoCodeValidationInfo SetResultForExternallyValidatedPromo(IPromotion promotion, PromotionFunctionFilters promotionFunctionFilters)
 	{
-		PromoCodeValidationInfo obj = new PromoCodeValidationInfo
+		PromoCodeValidationInfo validationInfo = new PromoCodeValidationInfo
 		{
 			IsCartValid = true
 		};
-		((IPromoCodeValidationInfo)obj).Price = ((IPromoCodeValidationInfo)obj).PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
-		return obj;
+		((IPromoCodeValidationInfo)validationInfo).Price = ((IPromoCodeValidationInfo)validationInfo).PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);
+		return validationInfo;
 	}
 
 	private IPromoCodeValidationInfo ValidateFixedValuePromo(IPromotion promotion, PromotionFunctionFilters promotionFunctionFilters)
@@ -954,14 +954,14 @@ public class RentalShoppingCart : IRentalShoppingCart
 		{
 			if (originalPrice > 0m)
 			{
-				decimal num = Math.Min(originalPrice, ((promotion.ActionCode != PromotionActionCode.Rental) ? item?.PricingRecord?.Purchase : item?.PricingRecord?.InitialNight).GetValueOrDefault());
+				decimal promotionAmount = Math.Min(originalPrice, ((promotion.ActionCode != PromotionActionCode.Rental) ? item?.PricingRecord?.Purchase : item?.PricingRecord?.InitialNight).GetValueOrDefault());
 				promoCodeValidationInfo.PromotionItems.Add(new PromotionItem
 				{
 					RentalShoppingCartItem = item,
-					PromotionAmount = num
+					PromotionAmount = promotionAmount
 				});
 				promoCodeValidationInfo.QualifyingItems.Add(item);
-				originalPrice -= num;
+				originalPrice -= promotionAmount;
 			}
 		}
 		promoCodeValidationInfo.Price = promoCodeValidationInfo.PromotionItems.Sum((IPromotionItem x) => x.PromotionAmount);

@@ -49,9 +49,9 @@ public class Totals : ITotals
 		{
 			list.Add(item);
 		}
-		foreach (ISubTotalGroup item2 in list)
+		foreach (ISubTotalGroup subTotalGroup in list)
 		{
-			_subTotalGroups.Remove(item2);
+			_subTotalGroups.Remove(subTotalGroup);
 		}
 	}
 }

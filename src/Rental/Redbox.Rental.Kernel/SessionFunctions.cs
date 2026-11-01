@@ -41,7 +41,6 @@ public static class SessionFunctions
 	[KernelFunction(Name = "kernel.get_session_value")]
 	public static object GetSessionValue(string valueName)
 	{
-		object obj = null;
 		if (valueName != null)
 		{
 			return _baseSettingFunctions.GetPropertyValue(Session.Instance, valueName);
@@ -58,8 +57,8 @@ public static class SessionFunctions
 		_baseSettingFunctions.GetProperty(Session.Instance, propertyName, out resultObject, out resultPropertyInfo);
 		if (resultPropertyInfo != null && resultObject != null)
 		{
-			object value2 = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
-			resultPropertyInfo.SetValue(resultObject, value2, null);
+			object convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
+			resultPropertyInfo.SetValue(resultObject, convertedValue, null);
 			return;
 		}
 		throw new ArgumentException($"kernel.set_session_value unable to locate property {propertyName}");

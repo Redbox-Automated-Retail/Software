@@ -84,7 +84,7 @@ public class ViewUserControl : TextToSpeechUserControl, IWPFActor
 
 	protected virtual ISpeechControl CreateSimpleSpeechControl()
 	{
-		SpeechControl obj = new SpeechControl
+		SpeechControl speechControl = new SpeechControl
 		{
 			Name = $"tts_{SpeechViewName}"
 		};
@@ -99,8 +99,8 @@ public class ViewUserControl : TextToSpeechUserControl, IWPFActor
 			speechPart.Clear();
 			InitSpeechPart(speechPart);
 		};
-		((ISpeechControl)obj).SpeechParts.Add(speechPart);
-		return obj;
+		((ISpeechControl)speechControl).SpeechParts.Add(speechPart);
+		return speechControl;
 	}
 
 	public override ISpeechControl GetSpeechControl()

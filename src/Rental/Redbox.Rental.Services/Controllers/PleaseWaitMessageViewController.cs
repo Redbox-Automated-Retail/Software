@@ -31,7 +31,7 @@ public class PleaseWaitMessageViewController : BaseViewController
 		}
 		pleaseWaitMessageViewModel.OnGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_please_wait_message_view"
 			};
@@ -49,8 +49,8 @@ public class PleaseWaitMessageViewController : BaseViewController
 					Text = pleaseWaitMessageViewModel?.TitleMessage
 				});
 			};
-			obj.SpeechParts.Add(part);
-			return obj;
+			speechControl.SpeechParts.Add(part);
+			return speechControl;
 		};
 	}
 }

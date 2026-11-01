@@ -233,8 +233,8 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
 		for (int i = 0; i < VisibleItemCount; i++)
 		{
-			int num = _browseItemIndex + i + indexOffset;
-			IBrowseItemModel browseItemModel = ((num > -1 && _browseControlModel.BrowseItems != null && num < _browseControlModel.BrowseItems.Count) ? _browseControlModel.BrowseItems[num] : null);
+			int itemIndex = _browseItemIndex + i + indexOffset;
+			IBrowseItemModel browseItemModel = ((itemIndex > -1 && _browseControlModel.BrowseItems != null && itemIndex < _browseControlModel.BrowseItems.Count) ? _browseControlModel.BrowseItems[itemIndex] : null);
 			if (browseItemModel != null)
 			{
 				browseItemModel.IsBorderItem = isBorderPage;
@@ -344,8 +344,8 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 				Control control2 = _browseControlModel?.BrowseControls[k + VisibleItemCount * 2];
 				ConfigureBrowseItemControlInGrid(NextPageGrid, control2, m_nextPageBrowseControls, k);
 			}
-			int num = ((_browseControlModel != null && _browseControlModel.ShowBorderItems) ? VisibleItemCount : 0);
-			Control control3 = _browseControlModel?.BrowseControls[k + num];
+			int borderItemOffset = ((_browseControlModel != null && _browseControlModel.ShowBorderItems) ? VisibleItemCount : 0);
+			Control control3 = _browseControlModel?.BrowseControls[k + borderItemOffset];
 			ConfigureBrowseItemControlInGrid(CurrentPageGrid, control3, m_currentPageBrowseControls, k);
 		}
 	}
@@ -422,7 +422,7 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 			_animationScrollDirection = direction;
 			_scrollControl = BrowsePagesStackPanel;
 			TimeSpan timeSpan = TimeSpan.FromSeconds(0.5);
-			Storyboard obj = new Storyboard
+			Storyboard storyboard = new Storyboard
 			{
 				Duration = timeSpan
 			};
@@ -433,8 +433,8 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 			_scrollControl.RenderTransform = renderTransform;
 			Storyboard.SetTarget(doubleAnimation, _scrollControl);
 			Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath("(UIElement.RenderTransform).(TranslateTransform.X)"));
-			obj.Children.Add(doubleAnimation);
-			obj.Begin();
+			storyboard.Children.Add(doubleAnimation);
+			storyboard.Begin();
 		}
 	}
 
@@ -453,22 +453,22 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 
 	private void UpdatePageGridWidth()
 	{
-		double num = (ShowPaddles ? (Math.Max(LeftPaddleButton.ActualWidth, LeftPaddleButton.Width) * 2.0) : 0.0);
+		double paddlesWidth = (ShowPaddles ? (Math.Max(LeftPaddleButton.ActualWidth, LeftPaddleButton.Width) * 2.0) : 0.0);
 		double actualWidth = base.ActualWidth;
-		double num2;
+		double paddleSpace;
 		if (!PageWrapGridUnderPaddles)
 		{
 			BrowseControlModel browseControlModel = _browseControlModel;
 			if (browseControlModel == null || !browseControlModel.UseFullPageWidth)
 			{
-				num2 = Math.Max((num - _browseControlModel?.PaddleOverlapWidth).GetValueOrDefault(), 0.0);
+				paddleSpace = Math.Max((paddlesWidth - _browseControlModel?.PaddleOverlapWidth).GetValueOrDefault(), 0.0);
 				goto IL_00ca;
 			}
 		}
-		num2 = 0.0;
+		paddleSpace = 0.0;
 		goto IL_00ca;
 		IL_00ca:
-		PageGridWidth = Math.Max(0.0, actualWidth - num2);
+		PageGridWidth = Math.Max(0.0, actualWidth - paddleSpace);
 	}
 
 	private void BrowseItemAddCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

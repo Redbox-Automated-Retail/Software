@@ -69,13 +69,13 @@ public class RemoveCardViewController : BaseViewController
 				{
 					deviceServiceClientHelper.GetCardInsertedStatus(delegate(GetCardInsertedStatusResponseEvent getCardInsertedStatusResponseEvent)
 					{
-						bool obj = false;
+						bool cardRemoved = false;
 						lock (_lockObject)
 						{
 							if (OrchestrationService.PeekView() == "remove_card_view" && getCardInsertedStatusResponseEvent != null && getCardInsertedStatusResponseEvent.CardInsertedStatus == InsertedStatus.Removed)
 							{
 								removeCardViewModel.CardHasBeenRemoved = true;
-								obj = true;
+								cardRemoved = true;
 								LogHelper.Instance.Log("Chip card has been removed from the card reader.  Proceeding with post card read functionality...");
 								IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 								Task.Factory.StartNew(delegate
@@ -86,7 +86,7 @@ public class RemoveCardViewController : BaseViewController
 								}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 							}
 						}
-						removeCardViewModel?.ProcessCardRemovedCheckResult(obj);
+						removeCardViewModel?.ProcessCardRemovedCheckResult(cardRemoved);
 					});
 				}
 				else

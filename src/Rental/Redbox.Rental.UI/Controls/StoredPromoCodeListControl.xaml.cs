@@ -366,16 +366,16 @@ public partial class StoredPromoCodeListControl : BaseUserControl, IComponentCon
 				NumberOfPages = (int)Math.Round((double)PromoCodeModels.Sum((IPerksOfferListItem m) => m.NumberOfSpaces) / (double)ItemsPerPage + 0.4);
 				CurrentPageNumber = Math.Min(CurrentPageNumber, NumberOfPages);
 				CurrentPageNumber = Math.Max(CurrentPageNumber, 1);
-				int num = 0;
-				int num2 = 1;
+				int spacesUsed = 0;
+				int adaButtonNumber = 1;
 				foreach (IPerksOfferListItem promoCodeModel in PromoCodeModels)
 				{
-					num += promoCodeModel.NumberOfSpaces;
-					if (num > (CurrentPageNumber - 1) * ItemsPerPage && num <= CurrentPageNumber * ItemsPerPage)
+					spacesUsed += promoCodeModel.NumberOfSpaces;
+					if (spacesUsed > (CurrentPageNumber - 1) * ItemsPerPage && spacesUsed <= CurrentPageNumber * ItemsPerPage)
 					{
 						CurrentPagePromos.Add(promoCodeModel);
-						promoCodeModel.AdaButtonNumber = num2;
-						bool flag = true;
+						promoCodeModel.AdaButtonNumber = adaButtonNumber;
+						bool isAvailable = true;
 						DynamicRoutedCommand buttonCommand;
 						if (promoCodeModel is StoredPromoCodeModel)
 						{
@@ -383,18 +383,18 @@ public partial class StoredPromoCodeListControl : BaseUserControl, IComponentCon
 						}
 						else
 						{
-							flag = ((PerksOfferListItemModel)promoCodeModel).OfferStatus != "Completed";
+							isAvailable = ((PerksOfferListItemModel)promoCodeModel).OfferStatus != "Completed";
 							buttonCommand = ((PerksOfferListItemModel)promoCodeModel).DetailsButtonCommand;
 						}
-						if (flag)
+						if (isAvailable)
 						{
 							AdaButtonData.Add(new AdaButtonInfo
 							{
-								AdaButtonNumber = num2,
+								AdaButtonNumber = adaButtonNumber,
 								ButtonCommand = buttonCommand,
 								Item = promoCodeModel
 							});
-							num2++;
+							adaButtonNumber++;
 						}
 					}
 				}

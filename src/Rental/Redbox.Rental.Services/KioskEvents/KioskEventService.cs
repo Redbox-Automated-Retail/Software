@@ -77,20 +77,20 @@ public class KioskEventService : IKioskEventService
 		{
 			LogHelper.Instance.Log("KioskEventService.Start");
 			Load();
-			int num = Redbox.Rental.Services.Configuration.Configuration.Instance.Current.KioskHealth.KioskEventsUnloadInterval;
-			LogHelper.Instance.Log("KioskEventService Config - KioskEventUnloadInterval - {0} minutes", num);
-			if (num < 3)
+			int unloadIntervalMinutes = Redbox.Rental.Services.Configuration.Configuration.Instance.Current.KioskHealth.KioskEventsUnloadInterval;
+			LogHelper.Instance.Log("KioskEventService Config - KioskEventUnloadInterval - {0} minutes", unloadIntervalMinutes);
+			if (unloadIntervalMinutes < 3)
 			{
-				num = 3;
+				unloadIntervalMinutes = 3;
 			}
-			if (num > 720)
+			if (unloadIntervalMinutes > 720)
 			{
-				num = 720;
+				unloadIntervalMinutes = 720;
 			}
-			int num2 = new Random().Next(0, 59);
-			int num3 = new Random().Next(1, num);
-			_changeTimer.Change(new TimeSpan(0, num3, num2), new TimeSpan(0, num, 0));
-			LogHelper.Instance.Log("KioskEventService.Start - Unload timer set to start in {0}:{1} and to run again in {2}:00 ", num3, num2, num);
+			int startSeconds = new Random().Next(0, 59);
+			int startMinutes = new Random().Next(1, unloadIntervalMinutes);
+			_changeTimer.Change(new TimeSpan(0, startMinutes, startSeconds), new TimeSpan(0, unloadIntervalMinutes, 0));
+			LogHelper.Instance.Log("KioskEventService.Start - Unload timer set to start in {0}:{1} and to run again in {2}:00 ", startMinutes, startSeconds, unloadIntervalMinutes);
 		}
 		catch (Exception e)
 		{

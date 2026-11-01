@@ -40,12 +40,12 @@ public class BaseSettingFunctions
 		List<string> list = name.Split('.').ToList();
 		for (int i = 0; i < list.Count; i++)
 		{
-			string name2 = list[i];
+			string propertyName = list[i];
 			if (obj == null)
 			{
 				continue;
 			}
-			PropertyInfo property = obj.GetType().GetProperty(name2);
+			PropertyInfo property = obj.GetType().GetProperty(propertyName);
 			if (property != null)
 			{
 				if (i != list.Count - 1)
@@ -63,23 +63,23 @@ public class BaseSettingFunctions
 	{
 		if (obj != null)
 		{
-			bool flag = false;
-			foreach (string name2 in name.Split('.'))
+			bool found = false;
+			foreach (string propertyName in name.Split('.'))
 			{
 				if (obj == null)
 				{
 					break;
 				}
-				flag = false;
-				PropertyInfo property = obj.GetType().GetProperty(name2);
+				found = false;
+				PropertyInfo property = obj.GetType().GetProperty(propertyName);
 				if (property == null)
 				{
 					break;
 				}
 				obj = property.GetValue(obj, null);
-				flag = true;
+				found = true;
 			}
-			if (!flag)
+			if (!found)
 			{
 				throw new ArgumentException($"Error in GetPropertyValue.  Unable to locate property {name}");
 			}

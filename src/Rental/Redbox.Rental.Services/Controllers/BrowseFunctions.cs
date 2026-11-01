@@ -219,8 +219,8 @@ public class BrowseFunctions
 		if (productFlag != null && productFlag.Flag == ProductFlags.FlashDeal)
 		{
 			IPricingRecord pricingRecord = null;
-			decimal num = ((!(titleProduct is TitleRollupProduct titleRollupProduct)) ? titleProduct?.RentalPriceRecords?.FirstOrDefault() : (titleRollupProduct.KioskProducts?.Where((ITitleProduct kp) => kp.HasDeal).FirstOrDefault())?.RentalPriceRecords?.FirstOrDefault())?.InitialNight ?? 0m;
-			string flagText = ((num < 1m) ? string.Format(Resources.flag_flash_deal_price_cents, num * 100m) : string.Format(Resources.flag_flash_deal_price_dollar, num));
+			decimal dealPrice = ((!(titleProduct is TitleRollupProduct titleRollupProduct)) ? titleProduct?.RentalPriceRecords?.FirstOrDefault() : (titleRollupProduct.KioskProducts?.Where((ITitleProduct kp) => kp.HasDeal).FirstOrDefault())?.RentalPriceRecords?.FirstOrDefault())?.InitialNight ?? 0m;
+			string flagText = ((dealPrice < 1m) ? string.Format(Resources.flag_flash_deal_price_cents, dealPrice * 100m) : string.Format(Resources.flag_flash_deal_price_dollar, dealPrice));
 			displayProductModel.FlagText = flagText;
 		}
 		else
@@ -258,7 +258,7 @@ public class BrowseFunctions
 			else
 			{
 				double totalDays = (DateTime.Now - titleProduct.MerchandiseDate).TotalDays;
-				bool flag = ServiceLocator.Instance.GetService<IDataService>()?.GetIsProductThinned(titleProduct.ProductId) ?? false;
+				bool isThinned = ServiceLocator.Instance.GetService<IDataService>()?.GetIsProductThinned(titleProduct.ProductId) ?? false;
 				if (titleProduct.Genres.Contains(1025L) && Redbox.Rental.Services.Session.Session.Instance.BrowseState.TitleFamily != TitleFamily.Games)
 				{
 					result = ProductFlags.BackAgain;
@@ -271,7 +271,7 @@ public class BrowseFunctions
 				{
 					result = ProductFlags.New;
 				}
-				else if ((totalDays >= 105.0 && Redbox.Rental.Services.Session.Session.Instance.BrowseState.TitleFamily != TitleFamily.Games) & flag)
+				else if ((totalDays >= 105.0 && Redbox.Rental.Services.Session.Session.Instance.BrowseState.TitleFamily != TitleFamily.Games) & isThinned)
 				{
 					result = ProductFlags.LastChance;
 				}
@@ -320,13 +320,13 @@ public class BrowseFunctions
 				text.Replace(" ", null),
 				"(" + text.Replace(" ", null) + ")"
 			};
-			string text2 = value?.GetAlternateNames(Resources.ResourceManager);
-			if (!string.IsNullOrEmpty(text2))
+			string alternateNames = value?.GetAlternateNames(Resources.ResourceManager);
+			if (!string.IsNullOrEmpty(alternateNames))
 			{
-				List<string> list2 = text2?.Split(',')?.ToList();
-				if (list2 != null)
+				List<string> alternateNameList = alternateNames?.Split(',')?.ToList();
+				if (alternateNameList != null)
 				{
-					foreach (string item in list2)
+					foreach (string item in alternateNameList)
 					{
 						list.Add(item);
 						list.Add("(" + item + ")");
@@ -423,8 +423,8 @@ public class BrowseFunctions
 			OrchestrationService.ViewShow("browse_view", GetBrowseViewparameters());
 			BrowseState.ProductAddedFromCarousel = false;
 		}
-		bool flag = viewService?.Stack.Any((IViewFrameInstance vf) => vf.ViewFrame?.ViewName == "recommended_titles_popup_view") ?? false;
-		if (BrowseState?.ItemAddedFromView == "recommended_titles_popup_view" || ((BrowseState?.ItemAddedFromView == "product_detail_view") & flag))
+		bool recommendedTitlesPopupShowing = viewService?.Stack.Any((IViewFrameInstance vf) => vf.ViewFrame?.ViewName == "recommended_titles_popup_view") ?? false;
+		if (BrowseState?.ItemAddedFromView == "recommended_titles_popup_view" || ((BrowseState?.ItemAddedFromView == "product_detail_view") & recommendedTitlesPopupShowing))
 		{
 			viewService?.UnwindToSafe("browse_view", discard: true, "recommended_titles_popup_view");
 		}
@@ -478,14 +478,14 @@ public class BrowseFunctions
 	public static void ShowRelatedProductsDialog(ITitleProduct selectedProduct)
 	{
 		IRecommendedTitles recommendedTitles = RecommendedTitlesPopupViewController.GenerateRecommendedTitles(selectedProduct);
-		bool flag = false;
+		bool popupShown = false;
 		if (recommendedTitles != null && recommendedTitles.Count > 0)
 		{
 			int numberOfTitlesToShow = 6;
 			List<IBrowseItemModel> list = RecommendedTitlesPopupViewController.CreateBrowseItemsFromRecommendedTitles(recommendedTitles, numberOfTitlesToShow);
 			if (list != null && list.Count > 0)
 			{
-				flag = true;
+				popupShown = true;
 				RecommendedTitlesPopupInfo recommendedTitlesPopupInfo = new RecommendedTitlesPopupInfo();
 				recommendedTitlesPopupInfo.RecommendedTitles = recommendedTitles;
 				recommendedTitlesPopupInfo.NumberOfTitlesToShow = numberOfTitlesToShow;
@@ -493,7 +493,7 @@ public class BrowseFunctions
 				OrchestrationService.ViewShow("recommended_titles_popup_view", recommendedTitlesPopupInfo);
 			}
 		}
-		if (!flag)
+		if (!popupShown)
 		{
 			Action action = delegate
 			{
@@ -506,18 +506,18 @@ public class BrowseFunctions
 
 	private static bool CheckForAdditionalDiscWarning(AddProductToCartParameters addProductToCartParameters)
 	{
-		bool flag = true;
+		bool hasRequiredTitles = true;
 		if (!_multiDiscWarningShown && !addProductToCartParameters.IsPurchase && (addProductToCartParameters.TitleProduct.RequiredAdditionalTitles?.Count ?? 0) > 0)
 		{
 			foreach (long requiredAdditionalTitle in addProductToCartParameters.TitleProduct.RequiredAdditionalTitles)
 			{
 				if (!RentalShoppingCartService.CurrentRentalShoppingCart.HasTitleItem(requiredAdditionalTitle))
 				{
-					flag = false;
+					hasRequiredTitles = false;
 					break;
 				}
 			}
-			if (!flag)
+			if (!hasRequiredTitles)
 			{
 				string title = string.Format(Resources.multi_disc_warning_title, addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count + 1);
 				string empty = string.Empty;
@@ -559,8 +559,8 @@ public class BrowseFunctions
 				{
 					kioskProduct = null;
 					dataService.GetProduct(addProductToCartParameters.TitleProduct.RequiredAdditionalTitles[addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count - 1], excludeTitleRollup: true, out kioskProduct);
-					string arg2 = kioskProduct?.ProductName;
-					empty = string.Format(Resources.multi_disc_warning_2_disc_message, arg2, initialNight.ToString("0.00"));
+					string productName = kioskProduct?.ProductName;
+					empty = string.Format(Resources.multi_disc_warning_2_disc_message, productName, initialNight.ToString("0.00"));
 				}
 				_multiDiscWarningShown = true;
 				MessagePopupViewController.ShowMultiDiscAlert(title, empty, delegate
@@ -579,7 +579,7 @@ public class BrowseFunctions
 				});
 			}
 		}
-		return flag;
+		return hasRequiredTitles;
 	}
 
 	private static bool CheckForADAPurchaseWarning(AddProductToCartParameters addProductToCartParameters)
@@ -588,22 +588,22 @@ public class BrowseFunctions
 		if (ApplicationState.Instance.IsADAAccessible && !_adaPurchaseWarningShown && addProductToCartParameters.IsPurchase)
 		{
 			result = false;
-			TitleTypeProperty value = null;
-			TitleTypeProperties.Properties.TryGetValue(addProductToCartParameters.TitleProduct.TitleType, out value);
-			string arg = $"{value?.GetName(Resources.ResourceManager)} {((addProductToCartParameters.TitleProduct.TitleFamily == TitleFamily.Games) ? Resources.game : null)}".Trim();
-			string arg2 = $"{addProductToCartParameters.TitleProduct.PurchasePrice:n2}";
-			string value2 = string.Format(Resources.ada_purchase_price_message, arg, Resources.currency_symbol, arg2);
+			TitleTypeProperty titleTypeProperty = null;
+			TitleTypeProperties.Properties.TryGetValue(addProductToCartParameters.TitleProduct.TitleType, out titleTypeProperty);
+			string titleTypeName = $"{titleTypeProperty?.GetName(Resources.ResourceManager)} {((addProductToCartParameters.TitleProduct.TitleFamily == TitleFamily.Games) ? Resources.game : null)}".Trim();
+			string purchasePrice = $"{addProductToCartParameters.TitleProduct.PurchasePrice:n2}";
+			string adaPurchaseMessage = string.Format(Resources.ada_purchase_price_message, titleTypeName, Resources.currency_symbol, purchasePrice);
 			string abe_purchase_price_message = Resources.abe_purchase_price_message;
-			string value3 = null;
+			string abePurchaseMessage = null;
 			if (!string.IsNullOrEmpty(abe_purchase_price_message))
 			{
-				value3 = (ApplicationState.Instance.IsABEOn ? string.Format(abe_purchase_price_message, arg, Resources.currency_symbol, arg2) : null);
+				abePurchaseMessage = (ApplicationState.Instance.IsABEOn ? string.Format(abe_purchase_price_message, titleTypeName, Resources.currency_symbol, purchasePrice) : null);
 			}
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 			if (macroService != null)
 			{
-				macroService["ADAPurchaseWarning:Header"] = value2;
-				macroService["ABEPurchaseMessage:Header"] = value3;
+				macroService["ADAPurchaseWarning:Header"] = adaPurchaseMessage;
+				macroService["ABEPurchaseMessage:Header"] = abePurchaseMessage;
 			}
 			MessagePopupViewController.ShowADAPurchaseWarning(delegate
 			{
@@ -692,13 +692,13 @@ public class BrowseFunctions
 									.Replace("PS4 ", string.Empty)
 									.Replace("Move", "Playstation Move")
 									.Replace("Eye Camera", "Playstation Eye Camera");
-								string arg2 = $"\n{arg}{Resources.subplatform_for} {productType?.ProductTypeName}";
+								string subPlatformMessage = $"\n{arg}{Resources.subplatform_for} {productType?.ProductTypeName}";
 								result = false;
 								IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 								if (macroService != null)
 								{
 									macroService["Subplatform:Header"] = Resources.subplatform_warning_title;
-									macroService["Subplatform:Message"] = string.Format(Resources.subplatform_warning, arg2);
+									macroService["Subplatform:Message"] = string.Format(Resources.subplatform_warning, subPlatformMessage);
 								}
 								MessagePopupViewController.ShowSubPlatformWarning(delegate
 								{
@@ -814,9 +814,9 @@ public class BrowseFunctions
 			List<string> list = new List<string>();
 			list.Add(addProductToCartParameters.TitleProduct.TitleFamily.ToString());
 			list.Add("matureWarning");
-			Ratings result2 = Ratings.None;
-			Enum.TryParse<Ratings>(addProductToCartParameters.TitleProduct?.RatingId?.ToString() ?? string.Empty, out result2);
-			RatingsProperty ratingsProperty = ((result2 != Ratings.None) ? RatingsProperties.Properties[result2] : null);
+			Ratings rating = Ratings.None;
+			Enum.TryParse<Ratings>(addProductToCartParameters.TitleProduct?.RatingId?.ToString() ?? string.Empty, out rating);
+			RatingsProperty ratingsProperty = ((rating != Ratings.None) ? RatingsProperties.Properties[rating] : null);
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 			if (macroService != null)
 			{
@@ -894,17 +894,17 @@ public class BrowseFunctions
 			return string.Empty;
 		}
 		decimal price = list.Min((ITitleProduct tp) => tp.PurchasePrice);
-		bool flag = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
+		bool samePriceForAll = list.Count == 1 || list.All((ITitleProduct tp) => tp.PurchasePrice == price);
 		if (discountedPriceCalc != null)
 		{
-			decimal num = discountedPriceCalc(price);
-			if (num > 0m)
+			decimal discountedPrice = discountedPriceCalc(price);
+			if (discountedPrice > 0m)
 			{
-				return string.Format("${0:F2}{1}", num, flag ? "" : "+");
+				return string.Format("${0:F2}{1}", discountedPrice, samePriceForAll ? "" : "+");
 			}
 			return Resources.offer_info_free;
 		}
-		return string.Format("${0:F2}{1}", price, flag ? "" : "+");
+		return string.Format("${0:F2}{1}", price, samePriceForAll ? "" : "+");
 	}
 
 	public static void PromptToRemoveItem(IBaseRentalShoppingCartItem deleteRentalShoppingCartItem, bool userRemoved)

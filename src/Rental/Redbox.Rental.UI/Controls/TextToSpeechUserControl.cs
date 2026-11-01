@@ -80,8 +80,8 @@ public class TextToSpeechUserControl : RentalUserControl, ITextToSpeechControl
 	private UIElement GetUIElement(string controlName)
 	{
 		UIElement result = null;
-		object obj = FindName(controlName);
-		if (obj != null && obj is UIElement uIElement)
+		object element = FindName(controlName);
+		if (element != null && element is UIElement uIElement)
 		{
 			result = uIElement;
 		}

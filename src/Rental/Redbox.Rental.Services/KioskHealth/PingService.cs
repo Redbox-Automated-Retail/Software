@@ -38,13 +38,13 @@ public class PingService : IPingService
 			IUpdateClientServiceKioskHealth updateClientServiceKioskHealth = ServiceLocator.Instance.GetService<IUpdateClientService>()?.KioskHealth;
 			if (updateClientServiceKioskHealth != null)
 			{
-				int num = (int)(ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0);
+				int kioskId = (int)(ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0);
 				ServiceLocator.Instance.GetService<IResourceBundleService>();
 				pingResponse = await updateClientServiceKioskHealth.SendPing(new PingRequest
 				{
 					AppName = "KioskEngine",
 					MessageId = Guid.NewGuid(),
-					KioskId = num,
+					KioskId = kioskId,
 					UTCDate = DateTime.UtcNow.ToString("s"),
 					LocalDate = DateTime.Now.ToString("s")
 				});

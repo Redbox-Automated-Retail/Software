@@ -57,12 +57,12 @@ public class OptionSelectionDialogViewTextToSpeech
 				{
 					Text = viewModel.DescriptionText
 				});
-				int num = 1;
+				int keyNumber = 1;
 				foreach (ButtonData button in viewModel.ButtonData)
 				{
 					speechPart.Events.Add(new MapKeyPressToAction
 					{
-						KeyCode = num.ToString(),
+						KeyCode = keyNumber.ToString(),
 						Action = delegate
 						{
 							button.Command.Execute(button.Tag);
@@ -70,9 +70,9 @@ public class OptionSelectionDialogViewTextToSpeech
 					});
 					speechPart.Texts.Add(new TextPart
 					{
-						Text = "For " + (string.IsNullOrEmpty(button.TtsText) ? button.Text : button.TtsText) + ", press " + num + "."
+						Text = "For " + (string.IsNullOrEmpty(button.TtsText) ? button.Text : button.TtsText) + ", press " + keyNumber + "."
 					});
-					num++;
+					keyNumber++;
 				}
 				speechPart.Texts.Add(new TextPart
 				{

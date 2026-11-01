@@ -60,9 +60,9 @@ public class LoyaltyService : ILoyaltyService
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateAccrualErrors?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateAccrualErrors?), (string)firstError["Code"]);
 								result.Properties["response"] = fieldsForResponseCode ?? ((object)EstimateAccrualErrors.Error);
 							}
 						}
@@ -118,10 +118,10 @@ public class LoyaltyService : ILoyaltyService
 			foreach (object item in arrayList)
 			{
 				IDictionary<string, object> dictionary = item as IDictionary<string, object>;
-				long result2 = 0L;
-				long productId = ((dictionary != null && dictionary.ContainsKey("ProductId")) ? (long.TryParse(dictionary["ProductId"].ToString(), out result2) ? result2 : 0) : 0);
-				int result3 = 0;
-				int value = ((dictionary != null && dictionary.ContainsKey("Points")) ? (int.TryParse(dictionary["Points"].ToString(), out result3) ? result3 : 0) : 0);
+				long parsedProductId = 0L;
+				long productId = ((dictionary != null && dictionary.ContainsKey("ProductId")) ? (long.TryParse(dictionary["ProductId"].ToString(), out parsedProductId) ? parsedProductId : 0) : 0);
+				int parsedPoints = 0;
+				int value = ((dictionary != null && dictionary.ContainsKey("Points")) ? (int.TryParse(dictionary["Points"].ToString(), out parsedPoints) ? parsedPoints : 0) : 0);
 				estimatePointsAccruedResult.ProductEstimatedPointsAccruedList.Add(new ProductEstimatePointsAccrued
 				{
 					ProductId = productId,
@@ -175,9 +175,9 @@ public class LoyaltyService : ILoyaltyService
 						ArrayList arrayList = (dictionary.ContainsKey("Errors") ? (dictionary["Errors"] as ArrayList) : null);
 						if (arrayList != null && arrayList.Count > 0)
 						{
-							if (arrayList[0] is Dictionary<string, object> dictionary2)
+							if (arrayList[0] is Dictionary<string, object> firstError)
 							{
-								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateRedemptionErrors?), (string)dictionary2["Code"]);
+								object fieldsForResponseCode = ResponseCodeAttribute.GetFieldsForResponseCode(typeof(EstimateRedemptionErrors?), (string)firstError["Code"]);
 								result.Properties["response"] = fieldsForResponseCode ?? ((object)EstimateRedemptionErrors.Error);
 							}
 						}
@@ -233,10 +233,10 @@ public class LoyaltyService : ILoyaltyService
 			foreach (object item in arrayList)
 			{
 				IDictionary<string, object> dictionary = item as IDictionary<string, object>;
-				long result2 = 0L;
-				long productId = (dictionary.ContainsKey("ProductId") ? (long.TryParse(dictionary["ProductId"].ToString(), out result2) ? result2 : 0) : 0);
-				int result3 = 0;
-				int value = (dictionary.ContainsKey("Points") ? (int.TryParse(dictionary["Points"].ToString(), out result3) ? result3 : 0) : 0);
+				long parsedProductId = 0L;
+				long productId = (dictionary.ContainsKey("ProductId") ? (long.TryParse(dictionary["ProductId"].ToString(), out parsedProductId) ? parsedProductId : 0) : 0);
+				int parsedPoints = 0;
+				int value = (dictionary.ContainsKey("Points") ? (int.TryParse(dictionary["Points"].ToString(), out parsedPoints) ? parsedPoints : 0) : 0);
 				estimateRedemptionPointsResult.ProductEstimatedRedemptionPointsList.Add(new ProductEstimatedRedemptionPoints
 				{
 					ProductId = productId,

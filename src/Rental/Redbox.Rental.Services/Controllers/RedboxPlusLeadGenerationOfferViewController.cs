@@ -79,10 +79,10 @@ public class RedboxPlusLeadGenerationOfferViewController : BaseViewController
 		{
 			return;
 		}
-		int num = 1;
+		int boxArtNumber = 1;
 		foreach (IKioskProduct item in products.Take(9))
 		{
-			redboxPlusLeadGenerationOfferViewModel?.GetType()?.GetProperty($"BoxArt{num++}")?.SetValue(redboxPlusLeadGenerationOfferViewModel, OrchestrationService.GetProductBitmapImage(item));
+			redboxPlusLeadGenerationOfferViewModel?.GetType()?.GetProperty($"BoxArt{boxArtNumber++}")?.SetValue(redboxPlusLeadGenerationOfferViewModel, OrchestrationService.GetProductBitmapImage(item));
 		}
 	}
 

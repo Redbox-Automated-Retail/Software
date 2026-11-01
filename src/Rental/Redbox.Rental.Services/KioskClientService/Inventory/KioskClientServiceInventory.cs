@@ -126,18 +126,18 @@ public class KioskClientServiceInventory : BaseKioskClientService, IKioskClientS
 			}
 			else
 			{
-				string text2 = $"KioskClientServiceInventory.Snapshot - api call returned result code: {webResult.ExceptionStatus}";
-				LogHelper.Instance.Log(text2);
+				string errorMessage = $"KioskClientServiceInventory.Snapshot - api call returned result code: {webResult.ExceptionStatus}";
+				LogHelper.Instance.Log(errorMessage);
 				kioskClientServiceResult.Success = false;
-				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text2, string.Empty);
+				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", errorMessage, string.Empty);
 			}
 		}
 		catch (Exception ex)
 		{
-			string text3 = "KioskClientServiceInventory.Snapshot - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text3, ex);
+			string exceptionMessage = "KioskClientServiceInventory.Snapshot - An unhandled exception was raised!";
+			LogHelper.Instance.Log(exceptionMessage, ex);
 			kioskClientServiceResult.Success = false;
-			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text3, ex.Message);
+			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", exceptionMessage, ex.Message);
 		}
 		return kioskClientServiceResult;
 	}
@@ -187,18 +187,18 @@ public class KioskClientServiceInventory : BaseKioskClientService, IKioskClientS
 			}
 			else
 			{
-				string text2 = $"KioskClientServiceInventory.DiscAction - api call returned result code: {webResult.ExceptionStatus}";
-				LogHelper.Instance.Log(text2);
+				string errorMessage = $"KioskClientServiceInventory.DiscAction - api call returned result code: {webResult.ExceptionStatus}";
+				LogHelper.Instance.Log(errorMessage);
 				kioskClientServiceResult.Success = false;
-				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text2, string.Empty);
+				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", errorMessage, string.Empty);
 			}
 		}
 		catch (Exception ex)
 		{
-			string text3 = "KioskClientServiceInventory.DiscAction - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text3, ex);
+			string exceptionMessage = "KioskClientServiceInventory.DiscAction - An unhandled exception was raised!";
+			LogHelper.Instance.Log(exceptionMessage, ex);
 			kioskClientServiceResult.Success = false;
-			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text3, ex.Message);
+			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", exceptionMessage, ex.Message);
 		}
 		return kioskClientServiceResult;
 	}
@@ -247,18 +247,18 @@ public class KioskClientServiceInventory : BaseKioskClientService, IKioskClientS
 			}
 			else
 			{
-				string text2 = $"KioskClientServiceInventory.DiscFraud - api call returned result code: {webResult.ExceptionStatus}";
-				LogHelper.Instance.Log(text2);
+				string errorMessage = $"KioskClientServiceInventory.DiscFraud - api call returned result code: {webResult.ExceptionStatus}";
+				LogHelper.Instance.Log(errorMessage);
 				kioskClientServiceResult.Success = false;
-				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text2, string.Empty);
+				kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", errorMessage, string.Empty);
 			}
 		}
 		catch (Exception ex)
 		{
-			string text3 = "KioskClientServiceInventory.DiscFraud - An unhandled exception was raised!";
-			LogHelper.Instance.Log(text3, ex);
+			string exceptionMessage = "KioskClientServiceInventory.DiscFraud - An unhandled exception was raised!";
+			LogHelper.Instance.Log(exceptionMessage, ex);
 			kioskClientServiceResult.Success = false;
-			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", text3, ex.Message);
+			kioskClientServiceResult.Error = Redbox.KioskEngine.ComponentModel.Error.NewError("(V000)", exceptionMessage, ex.Message);
 		}
 		return kioskClientServiceResult;
 	}

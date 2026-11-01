@@ -38,30 +38,30 @@ public class RedboxPlusSignupService
 
 	private static void ConfirmAccountIsEligibleForRedboxPlusOffer()
 	{
-		bool flag = true;
+		bool isEligible = true;
 		IPersonalizationSession personalizationSession = Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession;
 		if (personalizationSession != null)
 		{
 			if (personalizationSession?.SubscriptionData?.SubscriptionServiceIsDown == true)
 			{
 				LogHelper.Instance.Log("Unable to sign up for Redbox+ because the subscription service is down.");
-				flag = false;
+				isEligible = false;
 				MessagePopupViewController.ShowRedboxPlusGenericErrorMessage(continueAction);
 			}
 			else if (personalizationSession?.RedboxPlusSession?.HasActiveSubscription == true)
 			{
 				LogHelper.Instance.Log("Customer with CPN " + personalizationSession?.CustomerProfileNumber + " already has a Redbox+ subscription.");
-				flag = false;
+				isEligible = false;
 				MessagePopupViewController.ShowRedboxPlusExistingSubscriptionErrorMessage(continueAction);
 			}
 			else if (personalizationSession?.SubscriptionData != null && !personalizationSession.SubscriptionData.IsEligibleForSubscription(_redboxPlusSubscriptionProduct?.SubscriptionId))
 			{
 				LogHelper.Instance.Log("Customer with CPN " + personalizationSession?.CustomerProfileNumber + " is not eligible for Redbox+ subscription " + _redboxPlusSubscriptionProduct?.SubscriptionId + ".");
-				flag = false;
+				isEligible = false;
 				MessagePopupViewController.ShowRedboxPlusGenericErrorMessage(continueAction);
 			}
 		}
-		if (flag)
+		if (isEligible)
 		{
 			PromptUserToConfirmEnrollment();
 		}

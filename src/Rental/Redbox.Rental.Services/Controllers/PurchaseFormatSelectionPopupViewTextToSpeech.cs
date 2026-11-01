@@ -49,12 +49,12 @@ public class PurchaseFormatSelectionPopupViewTextToSpeech
 				{
 					Text = formatSelectionPopupViewModel.DescriptionText
 				});
-				int num = 1;
+				int keyNumber = 1;
 				foreach (FormatButtonData button in formatSelectionPopupViewModel.ButtonData)
 				{
 					speechPart.Events.Add(new MapKeyPressToAction
 					{
-						KeyCode = num.ToString(),
+						KeyCode = keyNumber.ToString(),
 						Action = delegate
 						{
 							formatSelectionPopupViewModel.ProcessFormatButtonClicked(button.Format);
@@ -62,9 +62,9 @@ public class PurchaseFormatSelectionPopupViewTextToSpeech
 					});
 					speechPart.Texts.Add(new TextPart
 					{
-						Text = $"For {button.Text}, press {num.ToString()}."
+						Text = $"For {button.Text}, press {keyNumber.ToString()}."
 					});
-					num++;
+					keyNumber++;
 				}
 				speechPart.Events.Add(new MapKeyPressToAction
 				{

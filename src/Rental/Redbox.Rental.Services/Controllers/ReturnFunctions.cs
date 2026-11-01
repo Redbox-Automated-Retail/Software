@@ -26,17 +26,17 @@ public class ReturnFunctions
 
 	public static bool IsValidBarcode(string barcode)
 	{
-		bool flag = false;
+		bool isNumeric = false;
 		try
 		{
 			int.Parse(barcode);
-			flag = true;
+			isNumeric = true;
 		}
 		catch
 		{
-			flag = false;
+			isNumeric = false;
 		}
-		if (flag)
+		if (isNumeric)
 		{
 			return barcode.Length == 9;
 		}

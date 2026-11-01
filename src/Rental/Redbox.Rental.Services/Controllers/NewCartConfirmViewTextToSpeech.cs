@@ -60,7 +60,7 @@ public class NewCartConfirmViewTextToSpeech
 
 	private static void AddSpeechPartListCartItems(ISpeechControl speechControl, Func<NewCartConfirmViewModel> getShoppingCartViewModelFunction, NewCartConfirmviewParameters parameters)
 	{
-		int num = 3;
+		int sequence = 3;
 		NewCartConfirmViewModel viewModel = getShoppingCartViewModelFunction();
 		ISpeechPart speechPart = new SpeechPart
 		{
@@ -92,16 +92,16 @@ public class NewCartConfirmViewTextToSpeech
 		speechControl.SpeechParts.Add(speechPart);
 		if (viewModel != null && CartCount > 0)
 		{
-			int num2 = 0;
+			int cartItemIndex = 0;
 			List<SpeechPart> speechParts = new List<SpeechPart>();
 			foreach (DisplayCheckoutProductModel displayModel in viewModel.DisplayProductModels)
 			{
-				int speechPartIndex = num2;
+				int speechPartIndex = cartItemIndex;
 				IRentalShoppingCartTitleItem eachCartItem = (IRentalShoppingCartTitleItem)displayModel.Data;
 				speechParts.Add(new SpeechPart
 				{
-					Sequence = num++,
-					Name = "CartItem" + num2,
+					Sequence = sequence++,
+					Name = "CartItem" + cartItemIndex,
 					Loop = false,
 					StartPause = 500,
 					EndPause = 0
@@ -112,7 +112,7 @@ public class NewCartConfirmViewTextToSpeech
 					if (viewModel != null)
 					{
 						AddListCartItemsEvents(speechParts[speechPartIndex], viewModel, parameters);
-						decimal num3 = ServiceLocator.Instance.GetService<IPromotionService>().GetPromotion().PromotionItems.FirstOrDefault((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachCartItem.ProductId)?.PromotionAmount ?? 0m;
+						decimal promotionAmount = ServiceLocator.Instance.GetService<IPromotionService>().GetPromotion().PromotionItems.FirstOrDefault((IPromotionItem i) => i.RentalShoppingCartItem.ProductId == eachCartItem.ProductId)?.PromotionAmount ?? 0m;
 						string text = null;
 						IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = eachCartItem;
 						if (rentalShoppingCartTitleItem != null && rentalShoppingCartTitleItem.Action == RentalShoppingCartItemAction.purchase)
@@ -123,7 +123,7 @@ public class NewCartConfirmViewTextToSpeech
 						{
 							string productDescriptionLine2Text = displayModel.ProductDescriptionLine2Text;
 							IRentalShoppingCartTitleItem rentalShoppingCartTitleItem2 = eachCartItem;
-							text = productDescriptionLine2Text.ReplaceFirst("|", $"{((rentalShoppingCartTitleItem2 != null) ? new decimal?(rentalShoppingCartTitleItem2.Price - num3) : ((decimal?)null)):C}. ");
+							text = productDescriptionLine2Text.ReplaceFirst("|", $"{((rentalShoppingCartTitleItem2 != null) ? new decimal?(rentalShoppingCartTitleItem2.Price - promotionAmount) : ((decimal?)null)):C}. ");
 						}
 						speechParts[speechPartIndex].Texts.Add(new TextPart
 						{
@@ -131,13 +131,13 @@ public class NewCartConfirmViewTextToSpeech
 						});
 					}
 				};
-				speechControl.SpeechParts.Add(speechParts[num2]);
-				num2++;
+				speechControl.SpeechParts.Add(speechParts[cartItemIndex]);
+				cartItemIndex++;
 			}
 		}
 		SpeechPart speechPart2 = new SpeechPart
 		{
-			Sequence = num++,
+			Sequence = sequence++,
 			Name = "CartTotals",
 			Loop = false,
 			StartPause = 500,
@@ -177,7 +177,7 @@ public class NewCartConfirmViewTextToSpeech
 		speechControl.SpeechParts.Add(speechPart2);
 		SpeechPart speechPart3 = new SpeechPart
 		{
-			Sequence = num++,
+			Sequence = sequence++,
 			Name = "CartButtons",
 			Loop = false,
 			StartPause = 0,

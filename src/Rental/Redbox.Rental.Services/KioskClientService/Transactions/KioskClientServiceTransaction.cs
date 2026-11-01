@@ -41,9 +41,9 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 			if (kioskClientServiceTestData != null)
 			{
 				IReadTestDataValueResult readTestDataValueResult = kioskClientServiceTestData.ReadPropertyValue("TransactionService", "Authorize.LiveCall");
-				if (readTestDataValueResult != null && readTestDataValueResult.Success && bool.TryParse(readTestDataValueResult.PropertyValue, out var result2))
+				if (readTestDataValueResult != null && readTestDataValueResult.Success && bool.TryParse(readTestDataValueResult.PropertyValue, out var isLiveCall))
 				{
-					result = result2;
+					result = isLiveCall;
 				}
 			}
 			return result;
@@ -667,27 +667,27 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 			return null;
 		}
 		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>().GetRentalShoppingCart(new Guid(sessionId));
-		ISession session2 = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession();
-		CustomerOffer acceptedOffer = session2?.PromoOfferState?.SelectedOffer;
-		bool valueOrDefault = session2?.PromoOfferState?.WasOfferAccepted == true;
+		ISession currentSession = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession();
+		CustomerOffer acceptedOffer = currentSession?.PromoOfferState?.SelectedOffer;
+		bool offerAccepted = currentSession?.PromoOfferState?.WasOfferAccepted == true;
 		IPromotion promo = rentalShoppingCart?.Promotion;
-		bool flag = session.ShoppingCart.Type == ShoppingCartType.Offline;
+		bool isOffline = session.ShoppingCart.Type == ShoppingCartType.Offline;
 		ReconcileRequest reconcileRequest = new ReconcileRequest
 		{
 			MessageId = Guid.NewGuid(),
-			IsOffline = flag,
+			IsOffline = isOffline,
 			Email = session.ShoppingCart.Email,
 			KioskId = int.Parse(session.StoreNumber),
 			ReferenceNumber = session.ShoppingCart.ReferenceNumber,
-			CreditCard = GetCreditCardData(session, flag),
+			CreditCard = GetCreditCardData(session, isOffline),
 			TransactionDate = DateTime.Now,
 			PlayPassPromptAccepted = session.ShoppingCart.PlayPassPromptAccepted,
 			PlayPassPointsEarned = session.ShoppingCart.PlayPassPointsEarned,
 			ShoppingCart = ShoppingCartMessageHelper.CreateShoppingCart(rentalShoppingCart, promo),
 			CustomerProfileNumber = customerProfileNumber,
 			UtcOffset = CalcUtcOffset(DateTime.Now),
-			RedeemedCustomerOffer = (valueOrDefault ? BuildRedeemedOffer(acceptedOffer) : null),
-			DiscOfferCodes = ToRequestOfferCodes(session2.PromoOfferState?.DiscOfferCodes),
+			RedeemedCustomerOffer = (offerAccepted ? BuildRedeemedOffer(acceptedOffer) : null),
+			DiscOfferCodes = ToRequestOfferCodes(currentSession.PromoOfferState?.DiscOfferCodes),
 			IsEarlyId = (session.ShoppingCart.GetPropertyBagEntry("EarlyIdIndicator") == "true"),
 			IsEarlyIdApple = (session.ShoppingCart.GetPropertyBagEntry("EarlyIdApple") == "true"),
 			IsEarlyIdGoogle = (session.ShoppingCart.GetPropertyBagEntry("EarlyIdGoogle") == "true")

@@ -405,19 +405,19 @@ public class PricingService : IPricingService
 		decimal result = price;
 		if (Store?.State == "MD")
 		{
-			decimal num = 0m;
+			decimal taxRate = 0m;
 			switch (action)
 			{
 			case RentalShoppingCartItemAction.rental:
-				num = Store.RentalTaxRate;
+				taxRate = Store.RentalTaxRate;
 				break;
 			case RentalShoppingCartItemAction.purchase:
-				num = ((titleType == TitleType.DigitalCode) ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
+				taxRate = ((titleType == TitleType.DigitalCode) ? Store.DigitalPurchaseTaxRate : Store.PurchaseTaxRate);
 				break;
 			}
-			if (num != 0m)
+			if (taxRate != 0m)
 			{
-				result = Math.Round(price * (num / 100m + 1m), 2);
+				result = Math.Round(price * (taxRate / 100m + 1m), 2);
 			}
 		}
 		return result;

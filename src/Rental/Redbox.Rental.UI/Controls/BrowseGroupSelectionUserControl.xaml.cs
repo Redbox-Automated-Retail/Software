@@ -28,14 +28,14 @@ public partial class BrowseGroupSelectionUserControl : UserControl, IComponentCo
 		{
 			Width = new GridLength(3.0, GridUnitType.Star)
 		});
-		int num = 0;
+		int column = 0;
 		foreach (DisplayGroupSelectionItemModel groupSelectionItem in _displayGroupSelectionModel.GroupSelectionItems)
 		{
 			GroupSelectionContainer.ColumnDefinitions.Add(new ColumnDefinition
 			{
 				Width = new GridLength(10.0, GridUnitType.Star)
 			});
-			num++;
+			column++;
 			UserControl userControl = new UserControl
 			{
 				DataContext = groupSelectionItem
@@ -43,7 +43,7 @@ public partial class BrowseGroupSelectionUserControl : UserControl, IComponentCo
 			GroupSelectionContainer.Children.Add(userControl);
 			userControl.Style = GetStyle(this, "group_selection_item");
 			userControl.InputBindings.Add(new InputBinding(Commands.BrowseGroupSelectedCommand, new MouseGesture(MouseAction.LeftClick)));
-			Grid.SetColumn(userControl, num);
+			Grid.SetColumn(userControl, column);
 		}
 		GroupSelectionContainer.ColumnDefinitions.Add(new ColumnDefinition
 		{
@@ -56,10 +56,10 @@ public partial class BrowseGroupSelectionUserControl : UserControl, IComponentCo
 		Style result = null;
 		if (!string.IsNullOrEmpty(styleName))
 		{
-			object obj = frameworkElement?.FindResource(styleName);
-			if (obj != null)
+			object resource = frameworkElement?.FindResource(styleName);
+			if (resource != null)
 			{
-				result = obj as Style;
+				result = resource as Style;
 			}
 		}
 		return result;

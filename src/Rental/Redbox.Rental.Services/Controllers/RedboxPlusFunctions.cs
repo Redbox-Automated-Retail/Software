@@ -85,8 +85,8 @@ public class RedboxPlusFunctions
 
 	public static void ValidatePromoWillNotConflictWithRedboxPlusBenefit(Action cancelAction, Action continueInSpiteOfConflictAction, Action noConflictContinue)
 	{
-		IRentalShoppingCart obj = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-		if (obj != null && obj.HasRedboxPlusFreeOneNightRentalSelected)
+		IRentalShoppingCart currentRentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
+		if (currentRentalShoppingCart != null && currentRentalShoppingCart.HasRedboxPlusFreeOneNightRentalSelected)
 		{
 			MessagePopupViewController.ShowSwapRedboxPlusBenefitForPromoMessage(cancelAction, cancelAction, delegate
 			{
@@ -250,9 +250,9 @@ public class RedboxPlusFunctions
 
 	private static List<IRentalShoppingCartTitleItem> GetEligibleFreeOneNightRentalItems()
 	{
-		IRentalShoppingCart obj = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
+		IRentalShoppingCart currentRentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-		return obj?.TitleItems?.Where(delegate(IRentalShoppingCartTitleItem x)
+		return currentRentalShoppingCart?.TitleItems?.Where(delegate(IRentalShoppingCartTitleItem x)
 		{
 			IKioskProduct kioskProduct = null;
 			dataService?.GetTitleRollupProduct(x.TitleRollupProductGroupId, out kioskProduct);

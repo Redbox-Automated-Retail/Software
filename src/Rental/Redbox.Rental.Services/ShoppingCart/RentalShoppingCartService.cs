@@ -336,10 +336,10 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 					Action = titleItem.Action
 				});
 			}
-			List<IBarcodeForProductResult> list3 = dataService?.GetBarcodesForProducts(searchBarcodeForProductList, null);
-			if (list3 != null)
+			List<IBarcodeForProductResult> barcodeResults = dataService?.GetBarcodesForProducts(searchBarcodeForProductList, null);
+			if (barcodeResults != null)
 			{
-				foreach (IBarcodeForProductResult eachBarcodeForProductResult in list3)
+				foreach (IBarcodeForProductResult eachBarcodeForProductResult in barcodeResults)
 				{
 					if (eachBarcodeForProductResult.BarcodeAssigned)
 					{
@@ -395,9 +395,9 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 		if (offerProd != null && offerProd.NumberOfNights.HasValue && offerProd.DiscountedPrice.HasValue && !promotion.PromotionItems.Any((IPromotionItem d) => d.RentalShoppingCartItem.ProductId == offerProd.ProductId))
 		{
 			rentalShoppingCartItem.PricingRecord.InitialDays = offerProd.NumberOfNights;
-			decimal num = rentalShoppingCartItem.PricingRecord.DefaultInitialNightPrice.Value + rentalShoppingCartItem.PricingRecord.ExtraNight * (decimal)(offerProd.NumberOfNights.Value - 1);
-			rentalShoppingCartItem.PricingRecord.InitialNight = num;
-			rentalShoppingCartItem.Price = num;
+			decimal multiNightPrice = rentalShoppingCartItem.PricingRecord.DefaultInitialNightPrice.Value + rentalShoppingCartItem.PricingRecord.ExtraNight * (decimal)(offerProd.NumberOfNights.Value - 1);
+			rentalShoppingCartItem.PricingRecord.InitialNight = multiNightPrice;
+			rentalShoppingCartItem.Price = multiNightPrice;
 			promotion.PromotionItems.Add(new PromotionItem
 			{
 				RentalShoppingCartItem = rentalShoppingCartItem,
@@ -416,9 +416,9 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 			if (rentalShoppingCartTitleItem != null && rentalShoppingCartTitleItem.PricingRecord?.InitialDays == 1)
 			{
 				rentalShoppingCartItem.PricingRecord.InitialDays = offerProduct.NumberOfNights;
-				decimal num = rentalShoppingCartItem.PricingRecord.DefaultInitialNightPrice.Value + offerProduct.DiscountedPrice.Value * (decimal)(offerProduct.NumberOfNights.Value - 1);
-				rentalShoppingCartItem.PricingRecord.InitialNight = num;
-				rentalShoppingCartItem.Price = num;
+				decimal multiNightPrice = rentalShoppingCartItem.PricingRecord.DefaultInitialNightPrice.Value + offerProduct.DiscountedPrice.Value * (decimal)(offerProduct.NumberOfNights.Value - 1);
+				rentalShoppingCartItem.PricingRecord.InitialNight = multiNightPrice;
+				rentalShoppingCartItem.Price = multiNightPrice;
 			}
 		}
 	}
@@ -462,8 +462,8 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 
 	public void SetPurchasePriceForSelectedItem(CustomerOffer selectedOffer, IRentalShoppingCartTitleItem newLineItem, IPromotionService promotionService)
 	{
-		decimal num = promotionService.CalcInCartOfferPromoAmount(newLineItem, selectedOffer);
-		newLineItem.PricingRecord.Purchase -= num;
+		decimal promoAmount = promotionService.CalcInCartOfferPromoAmount(newLineItem, selectedOffer);
+		newLineItem.PricingRecord.Purchase -= promoAmount;
 		newLineItem.Price = newLineItem.PricingRecord.Purchase;
 	}
 

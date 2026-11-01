@@ -28,10 +28,10 @@ public partial class BrowseTopMenuUserControl : RentalUserControl, IWPFActor, IC
 	private static Style GetStyle(FrameworkElement frameworkElement, string styleName)
 	{
 		Style result = null;
-		object obj = frameworkElement.FindResource(styleName);
-		if (obj != null)
+		object resource = frameworkElement.FindResource(styleName);
+		if (resource != null)
 		{
-			result = obj as Style;
+			result = resource as Style;
 		}
 		return result;
 	}
@@ -85,19 +85,19 @@ public partial class BrowseTopMenuUserControl : RentalUserControl, IWPFActor, IC
 			StackPanel stackPanel = null;
 			if (browseProductFamilyMenuButton != null)
 			{
-				bool flag = browseProductFamilyMenuButton.ArrowDirection == ArrowDirection.Right;
+				bool arrowPointsRight = browseProductFamilyMenuButton.ArrowDirection == ArrowDirection.Right;
 				stackPanel = new StackPanel
 				{
 					Orientation = Orientation.Horizontal
 				};
 				UserControl userControl = new UserControl
 				{
-					Style = GetStyle(this, flag ? "right_arrow" : "left_arrow"),
-					Margin = (flag ? new Thickness(10.0, 0.0, 0.0, 0.0) : new Thickness(0.0, 0.0, 10.0, 0.0)),
+					Style = GetStyle(this, arrowPointsRight ? "right_arrow" : "left_arrow"),
+					Margin = (arrowPointsRight ? new Thickness(10.0, 0.0, 0.0, 0.0) : new Thickness(0.0, 0.0, 10.0, 0.0)),
 					VerticalAlignment = VerticalAlignment.Center
 				};
-				UIElement element = (flag ? ((UIElement)textBlock) : ((UIElement)userControl));
-				UIElement element2 = (flag ? ((UIElement)userControl) : ((UIElement)textBlock));
+				UIElement element = (arrowPointsRight ? ((UIElement)textBlock) : ((UIElement)userControl));
+				UIElement element2 = (arrowPointsRight ? ((UIElement)userControl) : ((UIElement)textBlock));
 				stackPanel.Children.Add(element);
 				stackPanel.Children.Add(element2);
 			}

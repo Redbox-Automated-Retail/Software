@@ -39,7 +39,7 @@ public class MemberPerksLogic : BaseLogic
 
 	protected void PopulatePerks(PerksMemberInfo memberInfo)
 	{
-		string[] obj = new string[4]
+		string[] tierTitles = new string[4]
 		{
 			Resources.perks_tier_title0,
 			Resources.perks_tier_title1,
@@ -54,12 +54,12 @@ public class MemberPerksLogic : BaseLogic
 		int perksTierIndex = GetPerksTierIndex(rentals);
 		perksTierIndex = ((perksTierIndex < memberTier) ? memberTier : perksTierIndex);
 		SetSimpleNextLevel(perksTierIndex, rentals);
-		string perksLevel = obj[perksTierIndex];
-		bool flag = false;
+		string perksLevel = tierTitles[perksTierIndex];
+		bool isBaseTier = false;
 		switch (perksTierIndex)
 		{
 		default:
-			flag = true;
+			isBaseTier = true;
 			Model.MemberTier = TierType.Member;
 			Model.PerksLevelMessage = Resources.perks_level0_message;
 			break;
@@ -77,11 +77,11 @@ public class MemberPerksLogic : BaseLogic
 			break;
 		}
 		Model.PerksLevel = perksLevel;
-		Model.PerksImagePath = (flag ? null : ("pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/" + ImageNames[perksTierIndex]));
+		Model.PerksImagePath = (isBaseTier ? null : ("pack://Application:,,,/Redbox.Rental.UI;component/Assets/Images/" + ImageNames[perksTierIndex]));
 		Model.EarnedRewardsMessage = GetEarnedRewardsMessage(memberInfo.Points);
 		Model.PerksMarketing = Resources.perks_marketing;
-		Model.PerksImageVisibility = (flag ? Visibility.Collapsed : Visibility.Visible);
-		Model.PerksTitleVisibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
+		Model.PerksImageVisibility = (isBaseTier ? Visibility.Collapsed : Visibility.Visible);
+		Model.PerksTitleVisibility = ((!isBaseTier) ? Visibility.Collapsed : Visibility.Visible);
 		Model.PromoTitle = Resources.perks_promo_title;
 	}
 
@@ -116,10 +116,10 @@ public class MemberPerksLogic : BaseLogic
 
 	private void SetSimpleNextLevel(int index, double rentals)
 	{
-		double num;
+		double nextLevelRentals;
 		do
 		{
-			num = index switch
+			nextLevelRentals = index switch
 			{
 				1 => 20.0, 
 				2 => 50.0, 
@@ -127,7 +127,7 @@ public class MemberPerksLogic : BaseLogic
 				_ => 10.0, 
 			};
 		}
-		while (num >= 0.0 && num - rentals < 0.0);
+		while (nextLevelRentals >= 0.0 && nextLevelRentals - rentals < 0.0);
 	}
 
 	private int GetPerksTierIndex(double rentals)

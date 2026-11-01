@@ -145,12 +145,12 @@ public class PresentOffersViewController : BaseViewController
 	private static Dictionary<LegalTextType, LegalText> GetLegalTextStrings(PresentOffersViewInfo parameters)
 	{
 		Dictionary<LegalTextType, LegalText> dictionary = new Dictionary<LegalTextType, LegalText>();
-		int num = 0;
+		int legalTextCount = 0;
 		foreach (CustomerOffer customerOffer in parameters.CustomerOffers)
 		{
 			if (!dictionary.ContainsKey(customerOffer.LegalTextType))
 			{
-				num++;
+				legalTextCount++;
 				string text = string.Empty;
 				switch (customerOffer.LegalTextType)
 				{
@@ -172,9 +172,9 @@ public class PresentOffersViewController : BaseViewController
 				}
 				dictionary.Add(customerOffer.LegalTextType, new LegalText
 				{
-					Order = num,
+					Order = legalTextCount,
 					Text = text,
-					Asterisk = new string('*', num)
+					Asterisk = new string('*', legalTextCount)
 				});
 			}
 		}
@@ -185,22 +185,22 @@ public class PresentOffersViewController : BaseViewController
 	{
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
 		viewModel.Offers = new ObservableCollection<OfferInfoModel>();
-		bool flag = parameters.CustomerOffers.Count == 1 || (parameters.CustomerOffers[0].CustomerSegmentType != CustomerSegmentType.BasketStretch && parameters.CustomerOffers[0].CustomerSegmentType != CustomerSegmentType.PersonalizedMultiNightPrice);
-		bool flag2 = parameters.CustomerOffers.Count == 2 && (parameters.CustomerOffers[1].CustomerSegmentType == CustomerSegmentType.BasketStretch || parameters.CustomerOffers[1].CustomerSegmentType == CustomerSegmentType.PersonalizedMultiNightPrice);
-		bool flag3 = parameters.CustomerOffers.Count == 3 && (parameters.CustomerOffers[2].CustomerSegmentType == CustomerSegmentType.BasketStretch || parameters.CustomerOffers[2].CustomerSegmentType == CustomerSegmentType.PersonalizedMultiNightPrice);
+		bool isOneUp = parameters.CustomerOffers.Count == 1 || (parameters.CustomerOffers[0].CustomerSegmentType != CustomerSegmentType.BasketStretch && parameters.CustomerOffers[0].CustomerSegmentType != CustomerSegmentType.PersonalizedMultiNightPrice);
+		bool isTwoUp = parameters.CustomerOffers.Count == 2 && (parameters.CustomerOffers[1].CustomerSegmentType == CustomerSegmentType.BasketStretch || parameters.CustomerOffers[1].CustomerSegmentType == CustomerSegmentType.PersonalizedMultiNightPrice);
+		bool isThreeUp = parameters.CustomerOffers.Count == 3 && (parameters.CustomerOffers[2].CustomerSegmentType == CustomerSegmentType.BasketStretch || parameters.CustomerOffers[2].CustomerSegmentType == CustomerSegmentType.PersonalizedMultiNightPrice);
 		bool hasMnpOffer = parameters.CustomerOffers.Any((CustomerOffer o) => o.DiscountType == OfferDiscountType.MultiNightPrice);
-		int num = 0;
+		int offerNumber = 0;
 		foreach (CustomerOffer customerOffer in parameters.CustomerOffers)
 		{
-			num++;
+			offerNumber++;
 			OfferInfoModel offerInfoModel = new OfferInfoModel();
-			offerInfoModel.ControlWidth = (flag ? 1028 : 514);
-			offerInfoModel.ControlHeight = (int)((flag3 && num > 1) ? (viewModel.OfferAreaHeight / 2.0 - 2.0) : viewModel.OfferAreaHeight);
-			offerInfoModel.OneUpVisibility = ((!flag) ? Visibility.Collapsed : Visibility.Visible);
-			offerInfoModel.TwoUpVisibility = ((!flag2) ? Visibility.Collapsed : Visibility.Visible);
-			offerInfoModel.ThreeUpVisibility = ((!flag3) ? Visibility.Collapsed : Visibility.Visible);
-			offerInfoModel.CancelButtonVisibility = ((!flag || customerOffer.OfferScopeType == OfferScopeType.Storeable) ? Visibility.Collapsed : Visibility.Visible);
-			offerInfoModel.BannerVisibility = ((!flag || customerOffer.DiscountType != OfferDiscountType.MultiNightPrice) ? Visibility.Collapsed : Visibility.Visible);
+			offerInfoModel.ControlWidth = (isOneUp ? 1028 : 514);
+			offerInfoModel.ControlHeight = (int)((isThreeUp && offerNumber > 1) ? (viewModel.OfferAreaHeight / 2.0 - 2.0) : viewModel.OfferAreaHeight);
+			offerInfoModel.OneUpVisibility = ((!isOneUp) ? Visibility.Collapsed : Visibility.Visible);
+			offerInfoModel.TwoUpVisibility = ((!isTwoUp) ? Visibility.Collapsed : Visibility.Visible);
+			offerInfoModel.ThreeUpVisibility = ((!isThreeUp) ? Visibility.Collapsed : Visibility.Visible);
+			offerInfoModel.CancelButtonVisibility = ((!isOneUp || customerOffer.OfferScopeType == OfferScopeType.Storeable) ? Visibility.Collapsed : Visibility.Visible);
+			offerInfoModel.BannerVisibility = ((!isOneUp || customerOffer.DiscountType != OfferDiscountType.MultiNightPrice) ? Visibility.Collapsed : Visibility.Visible);
 			offerInfoModel.ImageVisibility = Visibility.Collapsed;
 			offerInfoModel.PerksIconsVisibility = Visibility.Collapsed;
 			offerInfoModel.MessageTextVisibility = Visibility.Collapsed;
@@ -220,15 +220,15 @@ public class PresentOffersViewController : BaseViewController
 			}
 			else if (customerOffer.OfferScopeType == OfferScopeType.Session)
 			{
-				SetTextLinesForInCartOffer(viewUserControl, flag, flag2, customerOffer, offerInfoModel, singularTitleFamilyString, pluralTitleFamilyString, hasMnpOffer, legalTextStrings);
+				SetTextLinesForInCartOffer(viewUserControl, isOneUp, isTwoUp, customerOffer, offerInfoModel, singularTitleFamilyString, pluralTitleFamilyString, hasMnpOffer, legalTextStrings);
 			}
 			else if (customerOffer.OfferScopeType == OfferScopeType.Storeable)
 			{
-				SetTextLinesForNextVisitOffer(viewUserControl, flag, customerOffer, offerInfoModel, singularTitleFamilyString);
+				SetTextLinesForNextVisitOffer(viewUserControl, isOneUp, customerOffer, offerInfoModel, singularTitleFamilyString);
 			}
 			else if (customerOffer.OfferScopeType == OfferScopeType.StoredRedeemable)
 			{
-				SetTextLinesForStoredRedeemableOffer(viewUserControl, flag, customerOffer, offerInfoModel, singularTitleFamilyString);
+				SetTextLinesForStoredRedeemableOffer(viewUserControl, isOneUp, customerOffer, offerInfoModel, singularTitleFamilyString);
 			}
 			viewModel.Offers.Add(offerInfoModel);
 		}
@@ -356,33 +356,33 @@ public class PresentOffersViewController : BaseViewController
 	private static string BuildFormatListLineText(CustomerOffer offer)
 	{
 		List<string> list = new List<string>();
-		bool flag = true;
-		bool flag2 = false;
-		List<TitleType> list2;
+		bool allGameTypesIncluded = true;
+		bool includeGames = false;
+		List<TitleType> titleTypes;
 		if ((offer.FormatIds?.Count ?? 0) > 0 && !offer.FormatIds.Contains(0))
 		{
 			List<TitleType> titleTypesFromFormatIds = CustomerOfferFunctions.GetTitleTypesFromFormatIds(offer.FormatIds);
-			list2 = ((!offer.IncludeFormats) ? CustomerOfferFunctions.GetIncludedTitleTypes(titleTypesFromFormatIds) : titleTypesFromFormatIds);
-			flag = CustomerOfferFunctions.AreAllGameTypesIncluded(list2, includeFormats: true);
+			titleTypes = ((!offer.IncludeFormats) ? CustomerOfferFunctions.GetIncludedTitleTypes(titleTypesFromFormatIds) : titleTypesFromFormatIds);
+			allGameTypesIncluded = CustomerOfferFunctions.AreAllGameTypesIncluded(titleTypes, includeFormats: true);
 		}
 		else
 		{
-			list2 = new List<TitleType>();
+			titleTypes = new List<TitleType>();
 			if (offer.TitleFamily == TitleFamily.All || offer.TitleFamily == TitleFamily.Movies)
 			{
-				list2.Add(TitleType.DVD);
-				list2.Add(TitleType.Bluray);
+				titleTypes.Add(TitleType.DVD);
+				titleTypes.Add(TitleType.Bluray);
 				if (CustomerOfferFunctions.KioskHas4kDiscs())
 				{
-					list2.Add(TitleType._4KUHD);
+					titleTypes.Add(TitleType._4KUHD);
 				}
 			}
 			if (offer.TitleFamily == TitleFamily.All || offer.TitleFamily == TitleFamily.Games)
 			{
-				flag2 = true;
+				includeGames = true;
 			}
 		}
-		foreach (TitleType item in list2)
+		foreach (TitleType item in titleTypes)
 		{
 			if (item.GetTitleFamily() != TitleFamily.Games)
 			{
@@ -391,16 +391,16 @@ public class PresentOffersViewController : BaseViewController
 					list.Add(GetTitleTypeDisplayString(item));
 				}
 			}
-			else if (flag)
+			else if (allGameTypesIncluded)
 			{
-				flag2 = true;
+				includeGames = true;
 			}
 			else
 			{
 				list.Add(GetTitleTypeDisplayString(item));
 			}
 		}
-		if (flag2)
+		if (includeGames)
 		{
 			list.Add(CustomerOfferFunctions.GetSingularTitleFamilyString(TitleFamily.Games));
 		}
@@ -516,7 +516,7 @@ public class PresentOffersViewController : BaseViewController
 		}
 		viewModel.OnGetSpeechControl = delegate
 		{
-			SpeechControl obj = new SpeechControl
+			SpeechControl speechControl = new SpeechControl
 			{
 				Name = "tts_present_offers_view"
 			};
@@ -546,14 +546,14 @@ public class PresentOffersViewController : BaseViewController
 						Text = $"You have {count} offers available."
 					});
 				}
-				int num = 1;
+				int offerNumber = 1;
 				foreach (OfferInfoModel offer in viewModel.Offers)
 				{
 					StringBuilder stringBuilder = new StringBuilder();
 					if (count > 1)
 					{
 						string text = "next";
-						switch (num)
+						switch (offerNumber)
 						{
 						case 1:
 							text = "first";
@@ -578,7 +578,7 @@ public class PresentOffersViewController : BaseViewController
 					});
 					part.Events.Add(new MapKeyPressToAction
 					{
-						KeyCode = num.ToString(),
+						KeyCode = offerNumber.ToString(),
 						Action = delegate
 						{
 							offer.ContinueButtonCommand.Execute(offer.CustomerOffer);
@@ -586,9 +586,9 @@ public class PresentOffersViewController : BaseViewController
 					});
 					part.Texts.Add(new TextPart
 					{
-						Text = $"To Accept this offer press {num}"
+						Text = $"To Accept this offer press {offerNumber}"
 					});
-					num++;
+					offerNumber++;
 				}
 				if (count > 1)
 				{
@@ -625,13 +625,13 @@ public class PresentOffersViewController : BaseViewController
 					Text = viewModel?.LegalText2
 				});
 			};
-			obj.SpeechParts.Add(part);
+			speechControl.SpeechParts.Add(part);
 			int i = 0;
-			obj.SpeechParts.ForEach(delegate(ISpeechPart x)
+			speechControl.SpeechParts.ForEach(delegate(ISpeechPart x)
 			{
 				x.Sequence = i++;
 			});
-			return obj;
+			return speechControl;
 		};
 	}
 
