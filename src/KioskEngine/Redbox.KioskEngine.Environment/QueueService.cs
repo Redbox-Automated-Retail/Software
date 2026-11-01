@@ -112,7 +112,7 @@ public class QueueService : IQueueService, IDisposable
 
 	public bool RegisterMessageProcessorService(IQueueMessageProcessorService queueMessageProcessorService)
 	{
-		bool flag = false;
+		bool isRegistered = false;
 		if (queueMessageProcessorService != null)
 		{
 			lock (_queueMessageProcessorServices)
@@ -129,15 +129,15 @@ public class QueueService : IQueueService, IDisposable
 				{
 					_queueMessageProcessorServices.Add(queueMessageProcessorService);
 					LogHelper.Instance.Log("QueueService registerd Queue Message Processor Service " + queueMessageProcessorService?.Name);
-					flag = true;
+					isRegistered = true;
 				}
 			}
 		}
-		if (!flag)
+		if (!isRegistered)
 		{
 			LogHelper.Instance.Log("Error in RegisterMessageProcessorService. " + queueMessageProcessorService?.Name + " not registered.");
 		}
-		return flag;
+		return isRegistered;
 	}
 
 	public bool UnRegisterMessageProcessorService(IQueueMessageProcessorService queueMessageProcessorService)
@@ -229,8 +229,8 @@ public class QueueService : IQueueService, IDisposable
 						{
 							lock (_queueMessageProcessorServices)
 							{
-								string[] array = _queueMessageProcessorServices.Select((IQueueMessageProcessorService x) => x.Name).ToArray();
-								LogHelper.Instance.Log("Error in QueueService. Unable to find QueueMessageProcessorService for message type " + message?.Type + ".  QueueMessageProcessorServices registered are: " + array?.Join(", "));
+								string[] processorNames = _queueMessageProcessorServices.Select((IQueueMessageProcessorService x) => x.Name).ToArray();
+								LogHelper.Instance.Log("Error in QueueService. Unable to find QueueMessageProcessorService for message type " + message?.Type + ".  QueueMessageProcessorServices registered are: " + processorNames?.Join(", "));
 							}
 							errored = true;
 						}
@@ -285,12 +285,12 @@ public class QueueService : IQueueService, IDisposable
 
 	public ErrorList Enqueue(byte priority, string type, object message)
 	{
-		ErrorList obj = _queueServiceData?.Enqueue(priority, type, ToEncryptedMessage(message)) ?? new ErrorList();
-		if (obj.ContainsCode("Q999"))
+		ErrorList errors = _queueServiceData?.Enqueue(priority, type, ToEncryptedMessage(message)) ?? new ErrorList();
+		if (errors.ContainsCode("Q999"))
 		{
 			HandleCorruptDatabase();
 		}
-		return obj;
+		return errors;
 	}
 
 	public ErrorList EnqueueKioskEvent(object message)
@@ -316,12 +316,12 @@ public class QueueService : IQueueService, IDisposable
 
 	public ErrorList Update(int id, string message)
 	{
-		ErrorList obj = _queueServiceData?.Update(id, ToEncryptedMessage(message)) ?? new ErrorList();
-		if (obj.ContainsCode("Q999"))
+		ErrorList errors = _queueServiceData?.Update(id, ToEncryptedMessage(message)) ?? new ErrorList();
+		if (errors.ContainsCode("Q999"))
 		{
 			HandleCorruptDatabase();
 		}
-		return obj;
+		return errors;
 	}
 
 	public void ForEachPriority(Action<IQueueServicePriority> action)
@@ -336,7 +336,7 @@ public class QueueService : IQueueService, IDisposable
 	{
 		return _queueServiceData?.ForEach(delegate(IMessage encryptedMessage)
 		{
-			IMessage obj = new QueueMessage
+			IMessage message = new QueueMessage
 			{
 				ID = encryptedMessage.ID,
 				Type = encryptedMessage.Type,
@@ -344,7 +344,7 @@ public class QueueService : IQueueService, IDisposable
 				Priority = encryptedMessage.Priority,
 				Data = FromEncryptedMessage(encryptedMessage.Data)
 			};
-			action(obj);
+			action(message);
 		}) ?? new ErrorList();
 	}
 
@@ -352,7 +352,7 @@ public class QueueService : IQueueService, IDisposable
 	{
 		return _queueServiceData?.ForEach(delegate(IMessage encryptedMessage)
 		{
-			IMessage obj = new QueueMessage
+			IMessage message = new QueueMessage
 			{
 				ID = encryptedMessage.ID,
 				Type = encryptedMessage.Type,
@@ -360,7 +360,7 @@ public class QueueService : IQueueService, IDisposable
 				Priority = encryptedMessage.Priority,
 				Data = FromEncryptedMessage(encryptedMessage.Data)
 			};
-			action(obj);
+			action(message);
 		}, type) ?? new ErrorList();
 	}
 
@@ -534,9 +534,9 @@ public class QueueService : IQueueService, IDisposable
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		bool num = ServiceLocator.Instance.GetService<IApplicationState>()?.HasMaintenanceModeReason(MaintenanceModeSource.Database, "SOFT-FILE01") ?? false;
+		bool alreadyInMaintenance = ServiceLocator.Instance.GetService<IApplicationState>()?.HasMaintenanceModeReason(MaintenanceModeSource.Database, "SOFT-FILE01") ?? false;
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>()?.RaiseCorruptDb();
-		if (num)
+		if (alreadyInMaintenance)
 		{
 			return;
 		}
@@ -586,10 +586,10 @@ public class QueueService : IQueueService, IDisposable
 		byte[] buffer = new byte[4];
 		rNGCryptoServiceProvider.GetBytes(buffer);
 		rNGCryptoServiceProvider.Dispose();
-		int num = BitConverter.ToInt32(buffer, 0);
+		int randomValue = BitConverter.ToInt32(buffer, 0);
 		if (min != max)
 		{
-			return min + Math.Abs(num % (max - min));
+			return min + Math.Abs(randomValue % (max - min));
 		}
 		return min;
 	}
@@ -601,12 +601,12 @@ public class QueueService : IQueueService, IDisposable
 
 	private byte[] ToEncryptedMessage(string message)
 	{
-		byte[] array = Encoding.ASCII.GetBytes(message).Encrypt();
-		byte[] array2 = new byte["RedboxEncrypted".Length + array.Length];
+		byte[] encrypted = Encoding.ASCII.GetBytes(message).Encrypt();
+		byte[] taggedMessage = new byte["RedboxEncrypted".Length + encrypted.Length];
 		byte[] bytes = Encoding.ASCII.GetBytes("RedboxEncrypted");
-		Buffer.BlockCopy(bytes, 0, array2, 0, bytes.Length);
-		Buffer.BlockCopy(array, 0, array2, bytes.Length, array.Length);
-		return array2;
+		Buffer.BlockCopy(bytes, 0, taggedMessage, 0, bytes.Length);
+		Buffer.BlockCopy(encrypted, 0, taggedMessage, bytes.Length, encrypted.Length);
+		return taggedMessage;
 	}
 
 	private byte[] FromEncryptedMessage(byte[] data)
@@ -619,9 +619,9 @@ public class QueueService : IQueueService, IDisposable
 			string value = Encoding.ASCII.GetString(buffer);
 			if ("RedboxEncrypted".Equals(value))
 			{
-				byte[] array2 = new byte[data.Length - bytes.Length];
-				Buffer.BlockCopy(data, bytes.Length, array2, 0, array2.Length);
-				return array2.Decrypt();
+				byte[] payload = new byte[data.Length - bytes.Length];
+				Buffer.BlockCopy(data, bytes.Length, payload, 0, payload.Length);
+				return payload.Decrypt();
 			}
 		}
 		return data;

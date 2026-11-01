@@ -262,18 +262,18 @@ public class DebuggerForm : Form
 		if (lineNumber < m_codeEditor.LineCount)
 		{
 			ClearCurrentLineSymbol();
-			int num = lineNumber - 1;
-			if (num < 0)
+			int lineIndex = lineNumber - 1;
+			if (lineIndex < 0)
 			{
-				num = 0;
+				lineIndex = 0;
 			}
-			m_codeEditor.GotoLine(num);
-			int num2 = num - 5;
-			if (num2 < 0)
+			m_codeEditor.GotoLine(lineIndex);
+			int firstVisibleLine = lineIndex - 5;
+			if (firstVisibleLine < 0)
 			{
-				num2 = 0;
+				firstVisibleLine = 0;
 			}
-			m_codeEditor.ScrollIntoView(num2);
+			m_codeEditor.ScrollIntoView(firstVisibleLine);
 			ShowCurrentLineSymbol();
 		}
 		if (!string.IsNullOrEmpty(message))
@@ -575,22 +575,22 @@ public class DebuggerForm : Form
 			return;
 		}
 		string[] pathParts = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		int num = 0;
-		TreeNode[] array2 = m_treeView.Nodes.Find(pathParts[num++], searchAllChildren: false);
-		if (array2.Length == 0)
+		int partIndex = 0;
+		TreeNode[] matches = m_treeView.Nodes.Find(pathParts[partIndex++], searchAllChildren: false);
+		if (matches.Length == 0)
 		{
 			return;
 		}
 		TreeNode treeNode;
-		for (treeNode = array2[0]; treeNode != null; treeNode = array2[0])
+		for (treeNode = matches[0]; treeNode != null; treeNode = matches[0])
 		{
 			treeNode.Expand();
-			if (num >= pathParts.Length)
+			if (partIndex >= pathParts.Length)
 			{
 				break;
 			}
-			array2 = treeNode.Nodes.Find(pathParts[num++], searchAllChildren: false);
-			if (array2.Length == 0)
+			matches = treeNode.Nodes.Find(pathParts[partIndex++], searchAllChildren: false);
+			if (matches.Length == 0)
 			{
 				break;
 			}
@@ -601,14 +601,14 @@ public class DebuggerForm : Form
 	private void SetDebuggerState()
 	{
 		IUserSettingsStore userSettingsStore = ServiceLocator.Instance.GetService<IUserSettingsStore>();
-		bool flag = Debugger != null && userSettingsStore.GetValue<bool>("Debugger", "Enabled");
-		m_enableDebuggingToolStripMenuItem.Checked = flag;
-		m_enableDebuggingToolStripMenuItem.Text = (flag ? "Disable Debugging" : "Enable Debugging");
-		m_enableDebuggingToolStripButton.Checked = flag;
-		m_enableDebuggingToolStripButton.Text = (flag ? "Disable Debugging" : "Enable Debugging");
+		bool debuggingEnabled = Debugger != null && userSettingsStore.GetValue<bool>("Debugger", "Enabled");
+		m_enableDebuggingToolStripMenuItem.Checked = debuggingEnabled;
+		m_enableDebuggingToolStripMenuItem.Text = (debuggingEnabled ? "Disable Debugging" : "Enable Debugging");
+		m_enableDebuggingToolStripButton.Checked = debuggingEnabled;
+		m_enableDebuggingToolStripButton.Text = (debuggingEnabled ? "Disable Debugging" : "Enable Debugging");
 		if (Debugger != null)
 		{
-			if (!flag)
+			if (!debuggingEnabled)
 			{
 				Debugger.State = LuaDebuggerState.Disabled;
 			}
@@ -637,7 +637,7 @@ public class DebuggerForm : Form
 		{
 			return;
 		}
-		bool flag = false;
+		bool hasBreakpoints = false;
 		m_breakpointsToolStripMenuItem.DropDownItems.Clear();
 		foreach (LuaDebugFile item in files)
 		{
@@ -645,8 +645,8 @@ public class DebuggerForm : Form
 			foreach (LuaDebugBreakpoint breakpoint in item.Breakpoints)
 			{
 				LuaDebugBreakpoint workingBreakpoint = breakpoint;
-				ToolStripMenuItem obj = (ToolStripMenuItem)m_breakpointsToolStripMenuItem.DropDownItems.Add($"Script: {item.FileName}, Line: {breakpoint.Line}");
-				obj.Click += delegate(object o, EventArgs e)
+				ToolStripMenuItem menuItem = (ToolStripMenuItem)m_breakpointsToolStripMenuItem.DropDownItems.Add($"Script: {item.FileName}, Line: {breakpoint.Line}");
+				menuItem.Click += delegate(object o, EventArgs e)
 				{
 					try
 					{
@@ -671,12 +671,12 @@ public class DebuggerForm : Form
 						m_refreshingBreakpoints = false;
 					}
 				};
-				obj.Checked = breakpoint.Enabled;
-				flag = true;
+				menuItem.Checked = breakpoint.Enabled;
+				hasBreakpoints = true;
 			}
 		}
-		m_breakpointsToolStripMenuItem.Visible = flag;
-		m_deleteAllBreakpointToolStripMenuItem.Enabled = flag;
+		m_breakpointsToolStripMenuItem.Visible = hasBreakpoints;
+		m_deleteAllBreakpointToolStripMenuItem.Enabled = hasBreakpoints;
 	}
 
 	private void RefreshGlobalList()
@@ -743,19 +743,19 @@ public class DebuggerForm : Form
 	private static object GetAdjustedValue(object var, out Type type, out bool isReadOnly)
 	{
 		isReadOnly = false;
-		object obj = "nil";
+		object adjusted = "nil";
 		if (var != null)
 		{
-			obj = var;
+			adjusted = var;
 		}
-		type = obj.GetType();
+		type = adjusted.GetType();
 		if (type == typeof(LuaTable) || type == typeof(LuaFunction) || type.Name == "LuaCSFunction")
 		{
-			obj = LuaHelper.FormatLuaValue(obj);
-			type = obj.GetType();
+			adjusted = LuaHelper.FormatLuaValue(adjusted);
+			type = adjusted.GetType();
 			isReadOnly = true;
 		}
-		return obj;
+		return adjusted;
 	}
 
 	private static void RefreshVariableTable(DynamicPropertyGrid grid, string category, IEnumerable<LuaVar> vars)

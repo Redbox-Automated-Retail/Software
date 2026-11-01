@@ -24,17 +24,15 @@ public class ResponseCodeAttribute : Attribute
 
 	private static ResponseCodeAttribute GetResponseCodes(MemberInfo fieldInfo, string code)
 	{
-		ResponseCodeAttribute[] array = (ResponseCodeAttribute[])Attribute.GetCustomAttributes(fieldInfo, typeof(ResponseCodeAttribute));
-		ResponseCodeAttribute[] array2 = array;
-		foreach (ResponseCodeAttribute responseCodeAttribute in array2)
+		ResponseCodeAttribute[] attributes = (ResponseCodeAttribute[])Attribute.GetCustomAttributes(fieldInfo, typeof(ResponseCodeAttribute));
+		foreach (ResponseCodeAttribute responseCodeAttribute in attributes)
 		{
 			if (string.Compare(responseCodeAttribute.Name, code, ignoreCase: true) == 0)
 			{
 				return responseCodeAttribute;
 			}
 		}
-		array2 = array;
-		foreach (ResponseCodeAttribute responseCodeAttribute2 in array2)
+		foreach (ResponseCodeAttribute responseCodeAttribute2 in attributes)
 		{
 			if (responseCodeAttribute2.Name == "*")
 			{

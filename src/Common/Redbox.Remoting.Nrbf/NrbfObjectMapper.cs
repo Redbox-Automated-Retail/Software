@@ -37,10 +37,10 @@ internal sealed class NrbfObjectMapper
 		}
 		switch (value)
 		{
-			case NrbfObject obj:
-				return MapObject(obj, targetType);
-			case NrbfArray array:
-				return MapArray(array, targetType);
+			case NrbfObject objectRecord:
+				return MapObject(objectRecord, targetType);
+			case NrbfArray arrayRecord:
+				return MapArray(arrayRecord, targetType);
 			default:
 				return ConvertPrimitive(value, targetType);
 		}

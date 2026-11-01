@@ -164,13 +164,13 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 	public LuaVar[] GetGlobalVars()
 	{
 		List<LuaVar> luaVars = new List<LuaVar>();
-		LuaTable luaTable = (LuaTable)Lua["_G"];
-		int num = 1;
-		foreach (object key in luaTable.Keys)
+		LuaTable globals = (LuaTable)Lua["_G"];
+		int index = 1;
+		foreach (object key in globals.Keys)
 		{
 			if (!(key.ToString() == "_G"))
 			{
-				luaVars.Add(new LuaVar(num++, key.ToString(), luaTable[key]));
+				luaVars.Add(new LuaVar(index++, key.ToString(), globals[key]));
 			}
 		}
 		return luaVars.ToArray();
@@ -246,12 +246,12 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		{
 			return luaVars.ToArray();
 		}
-		int num = 1;
-		for (string upValue = Lua.GetUpValue(functionIndex, num); upValue != null; upValue = Lua.GetUpValue(functionIndex, num))
+		int index = 1;
+		for (string upValue = Lua.GetUpValue(functionIndex, index); upValue != null; upValue = Lua.GetUpValue(functionIndex, index))
 		{
 			object value = Lua.Stack.Pop();
-			luaVars.Add(new LuaVar(num, upValue, value));
-			num++;
+			luaVars.Add(new LuaVar(index, upValue, value));
+			index++;
 		}
 		return luaVars.ToArray();
 	}

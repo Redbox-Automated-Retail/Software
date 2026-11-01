@@ -22,18 +22,18 @@ public static class LuhnHelper
 		{
 			stringBuilder.Insert(0, "0");
 		}
-		int num = 0;
-		string text = stringBuilder.ToString();
+		int sum = 0;
+		string digits = stringBuilder.ToString();
 		for (int k = 1; k <= 16; k++)
 		{
-			int num2 = 1 + k % 2;
-			int number = int.Parse(text.Substring(k - 1, 1)) * num2;
+			int weight = 1 + k % 2;
+			int number = int.Parse(digits.Substring(k - 1, 1)) * weight;
 			if (number > 9)
 			{
 				number -= 9;
 			}
-			num += number;
+			sum += number;
 		}
-		return num % 10 == 0;
+		return sum % 10 == 0;
 	}
 }

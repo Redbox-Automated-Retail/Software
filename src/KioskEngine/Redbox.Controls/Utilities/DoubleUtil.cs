@@ -26,11 +26,11 @@ internal static class DoubleUtil
 		{
 			return true;
 		}
-		double num = (Math.Abs(value1) + Math.Abs(value2) + 10.0) * 2.22044604925031E-16;
-		double num2 = value1 - value2;
-		if (0.0 - num < num2)
+		double tolerance = (Math.Abs(value1) + Math.Abs(value2) + 10.0) * 2.22044604925031E-16;
+		double difference = value1 - value2;
+		if (0.0 - tolerance < difference)
 		{
-			return num > num2;
+			return tolerance > difference;
 		}
 		return false;
 	}
@@ -158,11 +158,11 @@ internal static class DoubleUtil
 		{
 			DoubleValue = value
 		};
-		ulong num = nanUnion.UintValue & 0xFFF0000000000000uL;
-		ulong num2 = nanUnion.UintValue & 0xFFFFFFFFFFFFFL;
-		if (num == 9218868437227405312L || num == 18442240474082181120uL)
+		ulong exponentBits = nanUnion.UintValue & 0xFFF0000000000000uL;
+		ulong mantissaBits = nanUnion.UintValue & 0xFFFFFFFFFFFFFL;
+		if (exponentBits == 9218868437227405312L || exponentBits == 18442240474082181120uL)
 		{
-			return num2 != 0;
+			return mantissaBits != 0;
 		}
 		return false;
 	}

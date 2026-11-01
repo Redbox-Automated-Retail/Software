@@ -99,21 +99,21 @@ public class ExpressionTokenizer
 			SkipWhitespace();
 		}
 		CurrentPosition = new Position(_position);
-		int num = PeekChar();
-		if (num == -1)
+		int next = PeekChar();
+		if (next == -1)
 		{
 			CurrentToken = TokenType.EOF;
 			return;
 		}
-		char c = (char)num;
+		char c = (char)next;
 		if (!SingleCharacterMode)
 		{
 			if (!IgnoreWhitespace && char.IsWhiteSpace(c))
 			{
 				StringBuilder stringBuilder = new StringBuilder();
-				while ((num = PeekChar()) != -1 && char.IsWhiteSpace((char)num))
+				while ((next = PeekChar()) != -1 && char.IsWhiteSpace((char)next))
 				{
-					stringBuilder.Append((char)num);
+					stringBuilder.Append((char)next);
 					ReadChar();
 				}
 				CurrentToken = TokenType.Whitespace;
@@ -126,9 +126,9 @@ public class ExpressionTokenizer
 				string empty = string.Empty;
 				empty += c;
 				ReadChar();
-				while ((num = PeekChar()) != -1)
+				while ((next = PeekChar()) != -1)
 				{
-					c = (char)num;
+					c = (char)next;
 					if (!char.IsDigit(c))
 					{
 						break;
@@ -143,9 +143,9 @@ public class ExpressionTokenizer
 				CurrentToken = TokenType.String;
 				string text = "";
 				ReadChar();
-				while ((num = ReadChar()) != -1)
+				while ((next = ReadChar()) != -1)
 				{
-					c = (char)num;
+					c = (char)next;
 					if (c == '\'')
 					{
 						if (PeekChar() != 39)
@@ -165,9 +165,9 @@ public class ExpressionTokenizer
 				StringBuilder builder = new StringBuilder();
 				builder.Append(c);
 				ReadChar();
-				while ((num = PeekChar()) != -1)
+				while ((next = PeekChar()) != -1)
 				{
-					char c2 = (char)num;
+					char c2 = (char)next;
 					if (c2 == '_' || c2 == '-' || c2 == '.' || c2 == '\\' || char.IsLetterOrDigit(c2))
 					{
 						ReadChar();
@@ -189,36 +189,36 @@ public class ExpressionTokenizer
 				return;
 			}
 			ReadChar();
-			num = PeekChar();
-			if (c == ':' && num == 58)
+			next = PeekChar();
+			if (c == ':' && next == 58)
 			{
 				CurrentToken = TokenType.DoubleColon;
 				TokenText = "::";
 				ReadChar();
 				return;
 			}
-			if (c == '!' && num == 61)
+			if (c == '!' && next == 61)
 			{
 				CurrentToken = TokenType.NE;
 				TokenText = "!=";
 				ReadChar();
 				return;
 			}
-			if (c == '=' && num == 61)
+			if (c == '=' && next == 61)
 			{
 				CurrentToken = TokenType.EQ;
 				TokenText = "==";
 				ReadChar();
 				return;
 			}
-			if (c == '<' && num == 61)
+			if (c == '<' && next == 61)
 			{
 				CurrentToken = TokenType.LE;
 				TokenText = "<=";
 				ReadChar();
 				return;
 			}
-			if (c == '>' && num == 61)
+			if (c == '>' && next == 61)
 			{
 				CurrentToken = TokenType.GE;
 				TokenText = ">=";
@@ -275,10 +275,10 @@ public class ExpressionTokenizer
 		{
 			charIndexToTokenType[i] = TokenType.Punctuation;
 		}
-		CharToTokenType[] array = ExpressionTokenizer.charToTokenType;
-		for (int j = 0; j < array.Length; j++)
+		CharToTokenType[] mappings = ExpressionTokenizer.charToTokenType;
+		for (int j = 0; j < mappings.Length; j++)
 		{
-			CharToTokenType charToTokenType = array[j];
+			CharToTokenType charToTokenType = mappings[j];
 			charIndexToTokenType[(uint)charToTokenType.ch] = charToTokenType.tokenType;
 		}
 	}
@@ -312,8 +312,8 @@ public class ExpressionTokenizer
 
 	private void SkipWhitespace()
 	{
-		int num;
-		while ((num = PeekChar()) != -1 && char.IsWhiteSpace((char)num))
+		int next;
+		while ((next = PeekChar()) != -1 && char.IsWhiteSpace((char)next))
 		{
 			ReadChar();
 		}

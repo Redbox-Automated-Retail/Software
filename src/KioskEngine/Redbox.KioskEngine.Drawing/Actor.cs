@@ -624,9 +624,9 @@ public class Actor : IActor, IDisposable
 	{
 		get
 		{
-			int num = ((Width != 0) ? (Scene.Width - Width - X) : 0);
-			int num2 = ((Height != 0) ? (Scene.Height - Height - Y) : 0);
-			return new Thickness(X, Y, num, num2);
+			int right = ((Width != 0) ? (Scene.Width - Width - X) : 0);
+			int bottom = ((Height != 0) ? (Scene.Height - Height - Y) : 0);
+			return new Thickness(X, Y, right, bottom);
 		}
 	}
 
@@ -832,10 +832,10 @@ public class Actor : IActor, IDisposable
 						Type type = assembly.GetType(WPFControlName);
 						if (type != null)
 						{
-							object obj = Activator.CreateInstance(type);
-							if (obj != null)
+							object control = Activator.CreateInstance(type);
+							if (control != null)
 							{
-								if (obj is System.Windows.Controls.UserControl userControl)
+								if (control is System.Windows.Controls.UserControl userControl)
 								{
 									frameworkElement = userControl;
 								}
@@ -901,13 +901,13 @@ public class Actor : IActor, IDisposable
 
 	private System.Windows.Media.Color GetMediaColor(System.Drawing.Color color, double opacity)
 	{
-		int num = (int)Math.Ceiling(255.0 * opacity);
+		int alpha = (int)Math.Ceiling(255.0 * opacity);
 		return new System.Windows.Media.Color
 		{
 			R = color.R,
 			G = color.G,
 			B = color.B,
-			A = (byte)num
+			A = (byte)alpha
 		};
 	}
 
@@ -1112,12 +1112,12 @@ public class Actor : IActor, IDisposable
 		{
 			using (Font font = new Font("Tahoma", 7f, System.Drawing.FontStyle.Bold))
 			{
-				int num = Y + Height + 2;
+				int errorY = Y + Height + 2;
 				if (m_drawErrorTop)
 				{
-					num = Y - font.Height - 2;
+					errorY = Y - font.Height - 2;
 				}
-				context.DrawString(ErrorText, font, System.Drawing.Brushes.Red, X, num);
+				context.DrawString(ErrorText, font, System.Drawing.Brushes.Red, X, errorY);
 			}
 			m_drawErrorTop = !m_drawErrorTop;
 		}
@@ -1127,37 +1127,37 @@ public class Actor : IActor, IDisposable
 
 	internal Rectangle GetTextRegion(bool forTranslation)
 	{
-		int num = ((!forTranslation) ? X : 0);
-		int num2 = ((!forTranslation) ? Y : 0);
+		int x = ((!forTranslation) ? X : 0);
+		int y = ((!forTranslation) ? Y : 0);
 		int width = Width;
 		int height = Height;
 		if (TextRegion.HasValue)
 		{
 			if (!forTranslation)
 			{
-				num += TextRegion.Value.Left;
-				num2 += TextRegion.Value.Top;
+				x += TextRegion.Value.Left;
+				y += TextRegion.Value.Top;
 			}
 			width = TextRegion.Value.Width;
 			height = TextRegion.Value.Height;
 		}
-		return new Rectangle(num, num2, width, height);
+		return new Rectangle(x, y, width, height);
 	}
 
 	internal Rectangle GetHitTestRectangle()
 	{
-		int num = X;
-		int num2 = Y;
+		int x = X;
+		int y = Y;
 		int width = Width;
 		int height = Height;
 		if (HotSpot.HasValue)
 		{
-			num += HotSpot.Value.Left;
-			num2 += HotSpot.Value.Top;
+			x += HotSpot.Value.Left;
+			y += HotSpot.Value.Top;
 			width = HotSpot.Value.Width;
 			height = HotSpot.Value.Height;
 		}
-		return new Rectangle(num, num2, width, height);
+		return new Rectangle(x, y, width, height);
 	}
 
 	private void BrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -1187,8 +1187,8 @@ public class Actor : IActor, IDisposable
 					{
 						string name = propertyInfo.Name;
 						name = name.Substring(0, 1).ToLower() + name.Substring(1);
-						object obj = state[name];
-						if (obj == null)
+						object stateValue = state[name];
+						if (stateValue == null)
 						{
 							continue;
 						}
@@ -1196,11 +1196,11 @@ public class Actor : IActor, IDisposable
 						{
 							if (name != "image")
 							{
-								object converted = ConversionHelper.ChangeType(obj, propertyInfo.PropertyType);
+								object converted = ConversionHelper.ChangeType(stateValue, propertyInfo.PropertyType);
 								propertyInfo.SetValue(this, converted, null);
 								continue;
 							}
-							string text = obj as string;
+							string text = stateValue as string;
 							if (text != null && text.StartsWith("cache:"))
 							{
 								IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
@@ -1214,7 +1214,7 @@ public class Actor : IActor, IDisposable
 						}
 						catch (Exception e)
 						{
-							LogHelper.Instance.Log($"Unable to set actor property '{propertyInfo.Name}' with value '{obj}'.", e);
+							LogHelper.Instance.Log($"Unable to set actor property '{propertyInfo.Name}' with value '{stateValue}'.", e);
 						}
 					}
 				}
@@ -1243,24 +1243,24 @@ public class Actor : IActor, IDisposable
 		{
 			radius = ((height > width) ? ((int)(width / 2f)) : ((int)(height / 2f)));
 		}
-		float num = radius * 2f;
+		float diameter = radius * 2f;
 		float sweepAngle = CornerSweepAngle ?? 90f;
-		graphicsPath.AddArc(x + width - num, y, num, num, 270f, sweepAngle);
+		graphicsPath.AddArc(x + width - diameter, y, diameter, diameter, 270f, sweepAngle);
 		if (y + height - radius < y + radius)
 		{
 			graphicsPath.AddLine(x + width, y + radius, x + width, y + height - radius);
 		}
-		graphicsPath.AddArc(x + width - num, y + height - num, num, num, 0f, sweepAngle);
+		graphicsPath.AddArc(x + width - diameter, y + height - diameter, diameter, diameter, 0f, sweepAngle);
 		if (x + width - radius < x + radius)
 		{
 			graphicsPath.AddLine(x + width - radius, y + height, x + radius, y + height);
 		}
-		graphicsPath.AddArc(x, y + height - num, num, num, 90f, sweepAngle);
+		graphicsPath.AddArc(x, y + height - diameter, diameter, diameter, 90f, sweepAngle);
 		if (y + height - radius < y + radius)
 		{
 			graphicsPath.AddLine(x, y + height - radius, x, y + radius);
 		}
-		graphicsPath.AddArc(x, y, num, num, 180f, sweepAngle);
+		graphicsPath.AddArc(x, y, diameter, diameter, 180f, sweepAngle);
 		if (x + width - radius > x + radius)
 		{
 			graphicsPath.AddLine(x + radius, y, x + width - radius, y);

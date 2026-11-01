@@ -24,14 +24,14 @@ public sealed class FunctionFactory
 	[ReflectionPermission(SecurityAction.Demand, Flags = ReflectionPermissionFlag.NoFlags)]
 	public static bool ScanAssembly(Assembly assembly)
 	{
-		bool flag = false;
+		bool foundAny = false;
 		Type[] types = assembly.GetTypes();
 		for (int i = 0; i < types.Length; i++)
 		{
-			bool flag2 = ScanTypeForFunctions(types[i]);
-			flag |= flag2;
+			bool found = ScanTypeForFunctions(types[i]);
+			foundAny |= found;
 		}
-		return flag;
+		return foundAny;
 	}
 
 	[ReflectionPermission(SecurityAction.Demand, Flags = ReflectionPermissionFlag.NoFlags)]
@@ -75,12 +75,12 @@ public sealed class FunctionFactory
 
 	internal static MethodInfo LookupFunction(string functionName, FunctionArgument[] args)
 	{
-		object obj = m_methodInfoCollection[functionName];
-		if (obj == null)
+		object registered = m_methodInfoCollection[functionName];
+		if (registered == null)
 		{
 			throw new EvaluatorException(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1052"), functionName));
 		}
-		MethodInfo methodInfo = obj as MethodInfo;
+		MethodInfo methodInfo = registered as MethodInfo;
 		if (methodInfo != null)
 		{
 			if (methodInfo.GetParameters().Length == args.Length)
@@ -91,7 +91,7 @@ public sealed class FunctionFactory
 		}
 		else
 		{
-			ArrayList arrayList = (ArrayList)obj;
+			ArrayList arrayList = (ArrayList)registered;
 			for (int i = 0; i < arrayList.Count; i++)
 			{
 				methodInfo = (MethodInfo)arrayList[i];
@@ -128,12 +128,12 @@ public sealed class FunctionFactory
 			{
 				return false;
 			}
-			bool flag = type.IsTypeOfExpressionEvaluator();
+			bool isFunctionSet = type.IsTypeOfExpressionEvaluator();
 			if (type.IsSubclassOfFunctionSetBase() && !type.IsAbstract)
 			{
-				flag = true;
+				isFunctionSet = true;
 			}
-			if (flag)
+			if (isFunctionSet)
 			{
 				string prefix = functionSetAttribute.Prefix;
 				if (!string.IsNullOrEmpty(prefix))
@@ -164,16 +164,16 @@ public sealed class FunctionFactory
 
 	private static void RegisterFunction(string key, MethodInfo info)
 	{
-		object obj = m_methodInfoCollection[key];
-		if (obj == null)
+		object registered = m_methodInfoCollection[key];
+		if (registered == null)
 		{
 			m_methodInfoCollection.Add(key, info);
 			return;
 		}
-		MethodInfo methodInfo = obj as MethodInfo;
+		MethodInfo methodInfo = registered as MethodInfo;
 		if (methodInfo == null)
 		{
-			((ArrayList)obj).Add(info);
+			((ArrayList)registered).Add(info);
 			return;
 		}
 		ArrayList value = new ArrayList(3) { methodInfo, info };

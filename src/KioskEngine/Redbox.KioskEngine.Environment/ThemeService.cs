@@ -73,9 +73,9 @@ public class ThemeService : IThemeService
 			select t).ToList())
 		{
 			object[] customAttributes = item.GetCustomAttributes(inherit: true);
-			foreach (object obj in customAttributes)
+			foreach (object attribute in customAttributes)
 			{
-				ThemedControlAttribute themedControlAttribute = obj as ThemedControlAttribute;
+				ThemedControlAttribute themedControlAttribute = attribute as ThemedControlAttribute;
 				if (themedControlAttribute != null)
 				{
 					ITheme theme = Themes.FirstOrDefault((ITheme x) => x.Name == themedControlAttribute.ThemeName);

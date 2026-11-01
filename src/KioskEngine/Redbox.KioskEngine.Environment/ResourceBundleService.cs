@@ -211,19 +211,19 @@ public class ResourceBundleService : IResourceBundleService
 			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 			List<string> list = new List<string>();
 			configurationService.GetSettingNames("system", "Filters", out list);
-			foreach (string item2 in list)
+			foreach (string filterName in list)
 			{
 				ConfigurationData value = new ConfigurationData();
-				if (configurationService.TryGetConfigurationData("system", "Filters", item2, out value) && value.Value.GetType() == typeof(string))
+				if (configurationService.TryGetConfigurationData("system", "Filters", filterName, out value) && value.Value.GetType() == typeof(string))
 				{
-					Filter[item2] = value.Value;
-					LogHelper.Instance.Log("Added filter: {0} = {1}", item2, value.Value);
+					Filter[filterName] = value.Value;
+					LogHelper.Instance.Log("Added filter: {0} = {1}", filterName, value.Value);
 				}
 			}
 			SwitchToBundle = null;
 			ActiveBundle.Activate(Filter, out var manifestInfo).CopyToLocalCollection(errorList);
 			List<IResourceBundle> resourceBundles = new List<IResourceBundle>();
-			List<string> list3 = new List<string> { manifestInfo.StartupScript };
+			List<string> startupScripts = new List<string> { manifestInfo.StartupScript };
 			foreach (IBundleSpecifier require in manifestInfo.Requires)
 			{
 				InnerBundles.GetBundle(require.Name, require.Version.ToString(), out var bundle, out var manifestInfo2).CopyToLocalCollection(errorList);
@@ -236,9 +236,9 @@ public class ResourceBundleService : IResourceBundleService
 					errorList.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("B122", "Only Library and Content bundles may be referenced in the Requires property.", "Specify a bundle that has a type of Library or Content."));
 					continue;
 				}
-				if (!string.IsNullOrEmpty(manifestInfo2.StartupScript) && !list3.Contains(manifestInfo2.StartupScript))
+				if (!string.IsNullOrEmpty(manifestInfo2.StartupScript) && !startupScripts.Contains(manifestInfo2.StartupScript))
 				{
-					list3.Add(manifestInfo2.StartupScript);
+					startupScripts.Add(manifestInfo2.StartupScript);
 				}
 				resourceBundles.Add(bundle);
 			}
@@ -252,11 +252,11 @@ public class ResourceBundleService : IResourceBundleService
 				errorList.AddRange(service.ResetAllExtensions());
 				ServiceLocator.Instance.GetService<IReservationService>().UnRegisterFromAWSBrokerService(UnRegisterFromBrokerServiceReason.BundleSwitch);
 				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-				foreach (string item3 in list3)
+				foreach (string startupScript in startupScripts)
 				{
-					if (!kernelService.LoadStartupScript(item3))
+					if (!kernelService.LoadStartupScript(startupScript))
 					{
-						errorList.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("B033", $"Unable to load the startup script resource: '{item3}'", "Review the startup script resource for syntax errors."));
+						errorList.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("B033", $"Unable to load the startup script resource: '{startupScript}'", "Review the startup script resource for syntax errors."));
 					}
 				}
 				if (!errorList.ContainsError())
@@ -359,15 +359,15 @@ public class ResourceBundleService : IResourceBundleService
 				return errorList;
 			}
 			string[] removedBundlesFullPath = _removedBundles.Select((string removedBundle) => Path.Combine(eachPath, removedBundle)).ToArray();
-			string[] array = (from bundleFile in Directory.GetFiles(eachPath, "*.bundle")
+			string[] bundleFiles = (from bundleFile in Directory.GetFiles(eachPath, "*.bundle")
 				where !removedBundlesFullPath.Contains(bundleFile)
 				select bundleFile).ToArray();
-			if (array.Length != 0)
+			if (bundleFiles.Length != 0)
 			{
-				string[] searchPath = array;
-				foreach (string text2 in searchPath)
+				string[] searchPath = bundleFiles;
+				foreach (string bundlePath in searchPath)
 				{
-					ResourceBundle resourceBundle = new ResourceBundle(text2, ResourceBundleStorageType.Zipped);
+					ResourceBundle resourceBundle = new ResourceBundle(bundlePath, ResourceBundleStorageType.Zipped);
 					Redbox.REDS.Framework.ErrorList errorList2 = resourceBundle.LoadResources();
 					if (errorList2.ContainsError())
 					{
@@ -380,7 +380,7 @@ public class ResourceBundleService : IResourceBundleService
 					InnerBundles.AddBundleVersion(resourceBundle).CopyToLocalCollection(errorList);
 					if (!errorList.ContainsError())
 					{
-						LogHelper.Instance.Log("......Loaded bundle '{0}'.", text2);
+						LogHelper.Instance.Log("......Loaded bundle '{0}'.", bundlePath);
 					}
 				}
 			}
@@ -585,14 +585,14 @@ public class ResourceBundleService : IResourceBundleService
 		if (resource != null)
 		{
 			IAspect aspect = resource.GetAspect("content");
-			byte[] array = (byte[])resource.GetAspect("content").GetContent();
-			if (array != null)
+			byte[] content = (byte[])resource.GetAspect("content").GetContent();
+			if (content != null)
 			{
 				string text = string.Format("memorystream://{0}", aspect.Properties["file"]);
 				Package package = PackageStore.GetPackage(new Uri(text));
 				if (package == null)
 				{
-					package = Package.Open(new MemoryStream(array));
+					package = Package.Open(new MemoryStream(content));
 					PackageStore.AddPackage(new Uri(text), package);
 				}
 				result = new XpsDocument(package, CompressionOption.Fast, text);

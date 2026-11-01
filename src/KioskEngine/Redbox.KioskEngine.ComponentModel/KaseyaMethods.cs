@@ -10,28 +10,28 @@ public static class KaseyaMethods
 {
 	public static string GetKaseyaIniDPath()
 	{
-		List<string> list = new List<string>();
-		string text = "C:\\Program Files\\Kaseya";
-		string text2 = "C:\\Program Files (x86)\\Kaseya";
-		List<string> list2 = new List<string>();
-		list2.AddRange(GetKaseyaInstallDirs(text));
-		if (list2.Count == 0)
+		List<string> iniPaths = new List<string>();
+		string programFilesPath = "C:\\Program Files\\Kaseya";
+		string programFilesX86Path = "C:\\Program Files (x86)\\Kaseya";
+		List<string> installDirs = new List<string>();
+		installDirs.AddRange(GetKaseyaInstallDirs(programFilesPath));
+		if (installDirs.Count == 0)
 		{
-			list2.AddRange(GetKaseyaInstallDirs(text2));
+			installDirs.AddRange(GetKaseyaInstallDirs(programFilesX86Path));
 		}
 		try
 		{
-			foreach (string item in list2)
+			foreach (string installDir in installDirs)
 			{
-				string text3 = Path.Combine(item, "KaseyaD.ini");
-				if (File.Exists(text3))
+				string iniPath = Path.Combine(installDir, "KaseyaD.ini");
+				if (File.Exists(iniPath))
 				{
-					list.Add(text3);
+					iniPaths.Add(iniPath);
 				}
 			}
-			string text4 = list.OrderByDescending((string p) => File.GetLastWriteTimeUtc(p)).FirstOrDefault();
-			LogHelper.Instance.Log("KaseyaD.ini path: {0}", text4);
-			return text4;
+			string newestIniPath = iniPaths.OrderByDescending((string p) => File.GetLastWriteTimeUtc(p)).FirstOrDefault();
+			LogHelper.Instance.Log("KaseyaD.ini path: {0}", newestIniPath);
+			return newestIniPath;
 		}
 		catch (Exception ex)
 		{

@@ -47,10 +47,10 @@ public class QueuePrioritiesPreferencePage : UserControl, IPreferencePageHost
 			};
 			string text = $"{eachQueueServicePriority.MinimumPriorityValue} - {eachQueueServicePriority.MaximumPriorityValue}";
 			listViewItem.SubItems.Add(text);
-			string text2 = $"{eachQueueServicePriority.StartTime} - {eachQueueServicePriority.EndTime}";
-			listViewItem.SubItems.Add(text2);
-			string text3 = eachQueueServicePriority.ExcludeTimeRanges.Select((IQueueServicePriority y) => y.PriorityType.ToString()).Join(", ");
-			listViewItem.SubItems.Add(text3);
+			string timeRange = $"{eachQueueServicePriority.StartTime} - {eachQueueServicePriority.EndTime}";
+			listViewItem.SubItems.Add(timeRange);
+			string excludedTypes = eachQueueServicePriority.ExcludeTimeRanges.Select((IQueueServicePriority y) => y.PriorityType.ToString()).Join(", ");
+			listViewItem.SubItems.Add(excludedTypes);
 			listViewItem.SubItems.Add(eachQueueServicePriority.Description);
 			listViewQueuePriorities.Items.Add(listViewItem);
 		});

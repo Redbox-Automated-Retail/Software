@@ -39,15 +39,15 @@ internal class ReadCardJob : IReadCardJob
 		if (IsExecuting)
 		{
 			IsExecuting = false;
-			CancelCommandResponseEvent obj = new CancelCommandResponseEvent(null)
+			CancelCommandResponseEvent response = new CancelCommandResponseEvent(null)
 			{
 				RequestId = _requestId,
 				Success = true,
 				EventName = "Cancel"
 			};
 			Thread.Sleep(1000);
-			ReadCardResponseHandler(obj);
-			cancelCompleteCallback(obj);
+			ReadCardResponseHandler(response);
+			cancelCompleteCallback(response);
 		}
 		return true;
 	}

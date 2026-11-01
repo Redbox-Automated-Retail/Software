@@ -237,10 +237,10 @@ public class ObfuscationHelper : IObfuscationService
 				leading = 0;
 				trailing = 0;
 			}
-			string obj = ((leading > 0) ? msgText.Substring(0, leading) : string.Empty);
-			string text = ((trailing > 0) ? msgText.Substring(msgText.Length - trailing, trailing) : string.Empty);
-			string text2 = new string(newChar, msgText.Length - (leading + trailing));
-			result = obj + text2 + text;
+			string prefix = ((leading > 0) ? msgText.Substring(0, leading) : string.Empty);
+			string suffix = ((trailing > 0) ? msgText.Substring(msgText.Length - trailing, trailing) : string.Empty);
+			string mask = new string(newChar, msgText.Length - (leading + trailing));
+			result = prefix + mask + suffix;
 		}
 		return result;
 	}

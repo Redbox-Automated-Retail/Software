@@ -94,9 +94,9 @@ public class CommandLine : IDisposable
 	{
 		CommandLine commandLine = new CommandLine(container, console);
 		commandLine.GetUsageAttribute();
-		string[] array = arguments ?? GetCommandLineArguments();
+		string[] args = arguments ?? GetCommandLineArguments();
 		ReadOnlyCollection<string> requiredOptions = commandLine.Options.GetRequiredOptions();
-		if (array.Length - 1 <= 0)
+		if (args.Length - 1 <= 0)
 		{
 			if (requiredOptions.Count > 0)
 			{
@@ -104,42 +104,42 @@ public class CommandLine : IDisposable
 			}
 			return commandLine;
 		}
-		int num = 0;
+		int index = 0;
 		OptionValue optionValue = null;
 		do
 		{
-			string text = array[num];
-			if (text == "--help" || text == "-?")
+			string argument = args[index];
+			if (argument == "--help" || argument == "-?")
 			{
 				commandLine.HelpRequested = true;
 				commandLine.WriteUsage(includeHelp: true);
 				break;
 			}
-			if (text.StartsWith('-'.ToString()) && text != '-'.ToString() && text != "--")
+			if (argument.StartsWith('-'.ToString()) && argument != '-'.ToString() && argument != "--")
 			{
-				if (!commandLine.ProcessStandardForm(ref optionValue, text))
+				if (!commandLine.ProcessStandardForm(ref optionValue, argument))
 				{
 					break;
 				}
 			}
 			else if (optionValue == null)
 			{
-				commandLine.BareArguments.Add(text);
+				commandLine.BareArguments.Add(argument);
 			}
 			else
 			{
-				string key = text;
-				object value = text;
-				if ((optionValue.IsDictionary() && !commandLine.ProcessDictionaryValues(text, (string)value, out key, out value)) || !commandLine.SetOptionValue(optionValue, value, key))
+				string key = argument;
+				object value = argument;
+				if ((optionValue.IsDictionary() && !commandLine.ProcessDictionaryValues(argument, (string)value, out key, out value)) || !commandLine.SetOptionValue(optionValue, value, key))
 				{
 					break;
 				}
 				commandLine.ProvidedOptions.Add(optionValue.GetName());
 				optionValue = null;
 			}
-			num++;
+			index++;
 		}
-		while (num != array.Length);
+		while (index != args.Length);
 		if (new List<string>(commandLine.ProvidedOptions.Intersect(requiredOptions)).Count != requiredOptions.Count)
 		{
 			commandLine.Errors.Push("Required parameters are missing.");
@@ -241,19 +241,19 @@ public class CommandLine : IDisposable
 		object result = null;
 		int dashCount = GetDashCount(parameter);
 		string text = parameter.Substring(dashCount);
-		int num = -1;
+		int separatorIndex = -1;
 		foreach (char value in separators)
 		{
-			num = text.IndexOf(value);
-			if (num != -1)
+			separatorIndex = text.IndexOf(value);
+			if (separatorIndex != -1)
 			{
 				break;
 			}
 		}
-		if (num != -1)
+		if (separatorIndex != -1)
 		{
-			name = text.Substring(0, num);
-			result = text.Substring(num + 1, text.Length - (num + 1));
+			name = text.Substring(0, separatorIndex);
+			result = text.Substring(separatorIndex + 1, text.Length - (separatorIndex + 1));
 		}
 		else
 		{
@@ -278,15 +278,15 @@ public class CommandLine : IDisposable
 
 	internal static int GetDashCount(IEnumerable<char> parameter)
 	{
-		int num = 0;
+		int dashCount = 0;
 		using (IEnumerator<char> enumerator = parameter.GetEnumerator())
 		{
 			while (enumerator.MoveNext() && enumerator.Current == '-')
 			{
-				num++;
+				dashCount++;
 			}
 		}
-		return num;
+		return dashCount;
 	}
 
 	internal bool ProcessStandardForm(ref OptionValue optionValue, string argument)

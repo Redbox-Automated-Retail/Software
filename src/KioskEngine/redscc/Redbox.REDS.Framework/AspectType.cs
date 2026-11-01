@@ -55,10 +55,10 @@ public class AspectType : IAspectType
 			{
 				return;
 			}
-			AspectBinaryEncodingType valueOrDefault = aspectBinaryEncodingType.GetValueOrDefault();
+			AspectBinaryEncodingType encoding = aspectBinaryEncodingType.GetValueOrDefault();
 			if (aspectBinaryEncodingType.HasValue)
 			{
-				switch (valueOrDefault)
+				switch (encoding)
 				{
 				case AspectBinaryEncodingType.Base64:
 					aspect.SetContent(Convert.FromBase64String(aspectNode.InnerText));

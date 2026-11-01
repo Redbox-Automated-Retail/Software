@@ -47,11 +47,11 @@ public partial class AddReservationTitleWindow : Window, IComponentConnector
 		}
 		TypeComboBox.ItemsSource = displayReservationTitleTypes;
 		List<DisplayReservationDiscountType> displayReservationDiscountTypes = new List<DisplayReservationDiscountType>();
-		foreach (ReservationDiscountType item2 in Enum.GetValues(typeof(ReservationDiscountType)).Cast<ReservationDiscountType>())
+		foreach (ReservationDiscountType discountType in Enum.GetValues(typeof(ReservationDiscountType)).Cast<ReservationDiscountType>())
 		{
 			displayReservationDiscountTypes.Add(new DisplayReservationDiscountType
 			{
-				ReservationDiscountType = item2
+				ReservationDiscountType = discountType
 			});
 		}
 		ReservationDiscountTypeComboBox.ItemsSource = displayReservationDiscountTypes;
@@ -76,9 +76,9 @@ public partial class AddReservationTitleWindow : Window, IComponentConnector
 
 	private void UpdateDiscountedPrice()
 	{
-		if (decimal.TryParse(DiscountTextBox.Text, out var result) && decimal.TryParse(PriceTextBox.Text, out var result2))
+		if (decimal.TryParse(DiscountTextBox.Text, out var discount) && decimal.TryParse(PriceTextBox.Text, out var price))
 		{
-			ReservationRequestTitle.DiscountedPrice = result2 - result;
+			ReservationRequestTitle.DiscountedPrice = price - discount;
 			LabelDiscountedPrice.Content = ReservationRequestTitle?.DiscountedPrice.ToString("f2");
 		}
 	}

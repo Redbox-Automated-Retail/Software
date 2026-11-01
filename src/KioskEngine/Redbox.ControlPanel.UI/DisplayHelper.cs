@@ -104,8 +104,8 @@ public static class DisplayHelper
 	{
 		List<DisplayDEVMODE> list = new List<DisplayDEVMODE>();
 		DisplayDEVMODE devMode = DisplayDEVMODE.Create();
-		int num = 0;
-		while (EnumDisplaySettings(null, num++, ref devMode))
+		int modeIndex = 0;
+		while (EnumDisplaySettings(null, modeIndex++, ref devMode))
 		{
 			if (!list.Contains(devMode))
 			{

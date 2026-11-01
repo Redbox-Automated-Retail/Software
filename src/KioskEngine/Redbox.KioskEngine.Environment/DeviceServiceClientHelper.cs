@@ -129,25 +129,25 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 	{
 		lock (_pollingLock)
 		{
-			bool flag = _deviceServiceClient.IsCardReaderConnected();
-			bool flag2 = false;
+			bool isConnected = _deviceServiceClient.IsCardReaderConnected();
+			bool isCompatible = false;
 			ValidateVersionModel validateVersionModel = null;
-			if (flag)
+			if (isConnected)
 			{
 				validateVersionModel = _deviceServiceClient.ValidateVersion();
-				flag2 = validateVersionModel?.IsCompatible ?? false;
+				isCompatible = validateVersionModel?.IsCompatible ?? false;
 			}
-			if (flag & flag2)
+			if (isConnected & isCompatible)
 			{
 				LogHelper.Instance.Log("DeviceServiceClientHelper polling succeeded.");
 				RaiseValidDeviceServiceCardReader();
 				return;
 			}
-			if (!flag)
+			if (!isConnected)
 			{
 				LogHelper.Instance.Log("DeviceServiceClientHelper polling failed.  card reader is not connected");
 			}
-			else if (!flag2)
+			else if (!isCompatible)
 			{
 				LogHelper.Instance.Log($"DeviceServiceClientHelper polling failed.  device service version {validateVersionModel?.DeviceServiceVersion} is not compatible with device service client version {_deviceServiceClient?.AssemblyVersion}");
 			}
@@ -169,10 +169,10 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 		{
 			_pollingInterval *= 2;
 		}
-		int num = 300000;
-		if (_pollingInterval > num)
+		int maxInterval = 300000;
+		if (_pollingInterval > maxInterval)
 		{
-			_pollingInterval = num;
+			_pollingInterval = maxInterval;
 		}
 		return _pollingInterval;
 	}
@@ -187,13 +187,13 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		IShoppingSession currentSession = ServiceLocator.Instance.GetService<IShoppingSessionService>().GetCurrentSession();
 		IEnumerable<CardBrandAndSource> deactivatedCardBrandSources = GetDeactivatedCardBrandSources();
-		decimal valueOrDefault = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
-		valueOrDefault = Math.Round(valueOrDefault, 2);
+		decimal amount = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
+		amount = Math.Round(amount, 2);
 		CardReadRequest request = new CardReadRequest
 		{
 			InputType = deviceInputType,
 			VasMode = vasMode,
-			Amount = valueOrDefault,
+			Amount = amount,
 			Timeout = commandTimeout + 5000,
 			ExcludeCardBrandBySource = deactivatedCardBrandSources,
 			SessionId = currentSession.Id,
@@ -314,7 +314,7 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 
 	private void CheckIfCardReaderIsConnectedAndValid(bool cardReaderConnectionAlreadyVerified)
 	{
-		bool flag = false;
+		bool isValid = false;
 		if (!cardReaderConnectionAlreadyVerified)
 		{
 			IDeviceServiceClient deviceServiceClient = _deviceServiceClient;
@@ -323,14 +323,14 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 				goto IL_003b;
 			}
 		}
-		ValidateVersionModel obj = _deviceServiceClient?.ValidateVersion();
-		if (obj != null && obj.IsCompatible)
+		ValidateVersionModel versionModel = _deviceServiceClient?.ValidateVersion();
+		if (versionModel != null && versionModel.IsCompatible)
 		{
-			flag = true;
+			isValid = true;
 		}
 		goto IL_003b;
 		IL_003b:
-		if (flag)
+		if (isValid)
 		{
 			RaiseValidDeviceServiceCardReader();
 		}
@@ -452,8 +452,8 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 	{
 		try
 		{
-			long num = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert(num.ToString(), "ApplicationCrash", "mm:TamperedCardReaderError, 0099CDRR", string.Format("<h2>Kiosk Engine Card Reader Tampered Error</h2><p>Card Reader Tampering detected on Kiosk: {0}!<br><br>Placing Kiosk into Maintenance Mode.<br>{1}</p>", num, "0099CDRR"), DateTime.Now, null, null, skipQueue: true);
+			long kioskId = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
+			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert(kioskId.ToString(), "ApplicationCrash", "mm:TamperedCardReaderError, 0099CDRR", string.Format("<h2>Kiosk Engine Card Reader Tampered Error</h2><p>Card Reader Tampering detected on Kiosk: {0}!<br><br>Placing Kiosk into Maintenance Mode.<br>{1}</p>", kioskId, "0099CDRR"), DateTime.Now, null, null, skipQueue: true);
 		}
 		catch (Exception e)
 		{
@@ -465,8 +465,8 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 	{
 		_deviceServiceClient?.GetCardInsertedStatus(delegate(BaseResponseEvent baseResponseEventCompleteCallback)
 		{
-			GetCardInsertedStatusResponseEvent obj = baseResponseEventCompleteCallback as GetCardInsertedStatusResponseEvent;
-			completeCallback?.Invoke(obj);
+			GetCardInsertedStatusResponseEvent response = baseResponseEventCompleteCallback as GetCardInsertedStatusResponseEvent;
+			completeCallback?.Invoke(response);
 		});
 	}
 

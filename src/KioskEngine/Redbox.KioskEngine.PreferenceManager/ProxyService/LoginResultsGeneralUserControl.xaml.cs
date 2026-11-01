@@ -621,27 +621,27 @@ public partial class LoginResultsGeneralUserControl : UserControl, IPreferencePa
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.LoyaltyPointBalance", delegate(ReadTestDataValueResult result)
 		{
-			int result2 = 0;
-			int.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.LoyaltyPointBalance = result2.ToString();
+			int parsed = 0;
+			int.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.LoyaltyPointBalance = parsed.ToString();
 		}, delegate
 		{
 			_model.LoyaltyPointBalance = "0";
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.LoyaltyTier", delegate(ReadTestDataValueResult result)
 		{
-			LoyaltyTiers result2 = LoyaltyTiers.None;
-			Enum.TryParse<LoyaltyTiers>(result.GetPropertyValue<string>(), out result2);
-			_model.LoyaltyTier = result2;
+			LoyaltyTiers parsed = LoyaltyTiers.None;
+			Enum.TryParse<LoyaltyTiers>(result.GetPropertyValue<string>(), out parsed);
+			_model.LoyaltyTier = parsed;
 		}, delegate
 		{
 			_model.LoyaltyTier = LoyaltyTiers.None;
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.LoyaltyTierCounter", delegate(ReadTestDataValueResult result)
 		{
-			int result2 = 0;
-			int.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.LoyaltyTierCounter = result2.ToString();
+			int parsed = 0;
+			int.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.LoyaltyTierCounter = parsed.ToString();
 		}, delegate
 		{
 			_model.LoyaltyTierCounter = "0";
@@ -662,9 +662,9 @@ public partial class LoginResultsGeneralUserControl : UserControl, IPreferencePa
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.PointsExpiring", delegate(ReadTestDataValueResult result)
 		{
-			int result2 = 0;
-			int.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.PointsExpiring = result2.ToString();
+			int parsed = 0;
+			int.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.PointsExpiring = parsed.ToString();
 		}, delegate
 		{
 			_model.PointsExpiring = "0";
@@ -672,9 +672,9 @@ public partial class LoginResultsGeneralUserControl : UserControl, IPreferencePa
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.PointsExpirationDate", delegate(ReadTestDataValueResult result)
 		{
 			DateTime? pointsExpirationDate = null;
-			if (DateTime.TryParse(result.GetPropertyValue<string>(), out var result2))
+			if (DateTime.TryParse(result.GetPropertyValue<string>(), out var parsed))
 			{
-				pointsExpirationDate = result2;
+				pointsExpirationDate = parsed;
 			}
 			_model.PointsExpirationDate = pointsExpirationDate;
 		}, delegate
@@ -683,36 +683,36 @@ public partial class LoginResultsGeneralUserControl : UserControl, IPreferencePa
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.PromptForPerks", delegate(ReadTestDataValueResult result)
 		{
-			bool result2 = false;
-			bool.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.PromptForPerks = result2;
+			bool parsed = false;
+			bool.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.PromptForPerks = parsed;
 		}, delegate
 		{
 			_model.PromptForPerks = false;
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.PromptForEarlyId", delegate(ReadTestDataValueResult result)
 		{
-			bool result2 = false;
-			bool.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.PromptForEarlyId = result2;
+			bool parsed = false;
+			bool.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.PromptForEarlyId = parsed;
 		}, delegate
 		{
 			_model.PromptForEarlyId = false;
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.TextClubEnabled", delegate(ReadTestDataValueResult result)
 		{
-			bool result2 = false;
-			bool.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.TextClubEnabled = result2;
+			bool parsed = false;
+			bool.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.TextClubEnabled = parsed;
 		}, delegate
 		{
 			_model.TextClubEnabled = false;
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.NumberOfSampleStoredPromos", delegate(ReadTestDataValueResult result)
 		{
-			int result2 = 0;
-			int.TryParse(result.GetPropertyValue<string>(), out result2);
-			_model.NumberOfSampleStoredPromos = result2;
+			int parsed = 0;
+			int.TryParse(result.GetPropertyValue<string>(), out parsed);
+			_model.NumberOfSampleStoredPromos = parsed;
 		}, delegate
 		{
 			_model.NumberOfSampleStoredPromos = 0;
@@ -738,9 +738,9 @@ public partial class LoginResultsGeneralUserControl : UserControl, IPreferencePa
 				LoginResponseErrorComboBox.Items.Add(loginResponseErrorItem);
 			}
 		}
-		foreach (object value2 in Enum.GetValues(typeof(LoyaltyTiers)))
+		foreach (object tier in Enum.GetValues(typeof(LoyaltyTiers)))
 		{
-			LoyaltyTierComboBox.Items.Add(value2);
+			LoyaltyTierComboBox.Items.Add(tier);
 		}
 		return true;
 	}

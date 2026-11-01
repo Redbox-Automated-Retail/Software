@@ -86,12 +86,12 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 
 	private static int LaunchProcess(string processName, string args, bool hiddenProcess)
 	{
-		int num = ProcessFunctions.LaunchProcess(processName, args, hiddenProcess);
-		if (!processName.Equals("explorer.exe") && num > 0 && !_pidList.Contains(num))
+		int processId = ProcessFunctions.LaunchProcess(processName, args, hiddenProcess);
+		if (!processName.Equals("explorer.exe") && processId > 0 && !_pidList.Contains(processId))
 		{
-			_pidList.Add(num);
+			_pidList.Add(processId);
 		}
-		return num;
+		return processId;
 	}
 
 	private void CloseControlPanel()
@@ -316,12 +316,12 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 
 	private string GetTzAbbreviation(string timeZoneName)
 	{
-		string text = string.Empty;
-		foreach (string text2 in timeZoneName.Split(' '))
+		string abbreviation = string.Empty;
+		foreach (string word in timeZoneName.Split(' '))
 		{
-			text = ((text2[0] == '(') ? (text + text2) : (text + text2[0]));
+			abbreviation = ((word[0] == '(') ? (abbreviation + word) : (abbreviation + word[0]));
 		}
-		return text;
+		return abbreviation;
 	}
 
 	private void LogErrorsFromList(ErrorList errors)
@@ -616,8 +616,8 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("toggle_watch_dog");
 		try
 		{
-			bool flag = ProcessFunctions.GetMachineSettingValue("Store", "WatchDogEnabled", "true").ToUpper() == "true".ToUpper();
-			ProcessFunctions.SetMachineSettingValue("Store", "WatchDogEnabled", (!flag).ToString());
+			bool watchDogEnabled = ProcessFunctions.GetMachineSettingValue("Store", "WatchDogEnabled", "true").ToUpper() == "true".ToUpper();
+			ProcessFunctions.SetMachineSettingValue("Store", "WatchDogEnabled", (!watchDogEnabled).ToString());
 			UpdateWatchDogStatus();
 		}
 		catch (Exception ex)
@@ -688,8 +688,8 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		else
 		{
 			string processName = ProcessFunctions.CombinePaths(text, "mshaltester.exe");
-			string text2 = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
-			ProcessFunctions.LaunchProcess(processName, "--secure --username:" + text2, hiddenProcess: false);
+			string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+			ProcessFunctions.LaunchProcess(processName, "--secure --username:" + userName, hiddenProcess: false);
 		}
 	}
 

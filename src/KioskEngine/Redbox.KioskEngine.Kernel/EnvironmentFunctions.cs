@@ -61,24 +61,24 @@ public static class EnvironmentFunctions
 		LogHelper.Instance.Log("Start CanSwitch Check");
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
-		bool flag = ServiceLocator.Instance.GetService<IEngineApplication>()?.AppStarting ?? false;
-		LogHelper.Instance.Log("Performing Startup: {0}", flag);
-		bool flag2 = true;
+		bool appStarting = ServiceLocator.Instance.GetService<IEngineApplication>()?.AppStarting ?? false;
+		LogHelper.Instance.Log("Performing Startup: {0}", appStarting);
+		bool canSwitch = true;
 		if (resourceBundleService != null && resourceBundleService.IsRentalRunning)
 		{
 			IRedboxRental redboxRental = ServiceLocator.Instance.GetService<IRedboxRental>();
 			if (redboxRental != null && redboxRental.IsRentalSessionActive())
 			{
 				LogHelper.Instance.Log("CanSwitch Check: Rental Session Active: true");
-				flag2 = false;
+				canSwitch = false;
 			}
 		}
-		if (flag2)
+		if (canSwitch)
 		{
-			flag2 = !flag && kernelExtensionService.CanSwitch(out var _);
+			canSwitch = !appStarting && kernelExtensionService.CanSwitch(out var _);
 		}
-		LogHelper.Instance.Log("CanSwitch: {0}", flag2);
-		return flag2;
+		LogHelper.Instance.Log("CanSwitch: {0}", canSwitch);
+		return canSwitch;
 	}
 
 	public static bool HandleDataStoreErrors(string dataStore)

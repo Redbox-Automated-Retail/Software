@@ -131,10 +131,10 @@ internal static class CommandHelper
 				parmsvalue += $"{s}|";
 			});
 			LogHelper.Instance.Log("WM_COPYDATA: Activate bundle: {0}", parmsvalue);
-			string[] array = parms[0].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length == 2)
+			string[] parts = parms[0].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Length == 2)
 			{
-				ResourceBundleService.Instance.Activate(array[0], array[1]);
+				ResourceBundleService.Instance.Activate(parts[0], parts[1]);
 			}
 		}
 		catch (Exception e)

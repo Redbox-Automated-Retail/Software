@@ -128,12 +128,12 @@ public class SectionalBar : ProgressBar
 		{
 			while (ActiveItem != null)
 			{
-				for (double num = ActiveItem.Minimum; num <= ActiveItem.Maximum; num++)
+				for (double step = ActiveItem.Minimum; step <= ActiveItem.Maximum; step++)
 				{
-					double value = ActiveItem.GetValue(num);
+					double value = ActiveItem.GetValue(step);
 					Thread.Sleep(20);
 					bool isThresholdReached = value >= ActiveItem.Threshold || ActiveItem.Threshold == -1.0;
-					if (num >= ActiveItem.Value)
+					if (step >= ActiveItem.Value)
 					{
 						ActiveItem.ExecutedRipple(value);
 						ActiveItem.UpdateThresholdReached(isThresholdReached);
@@ -434,18 +434,18 @@ public class SectionalBar : ProgressBar
 		{
 			return;
 		}
-		foreach (SectionalBar item in sections)
+		foreach (SectionalBar section in sections)
 		{
-			if (item.GroupIndex == GroupIndex)
+			if (section.GroupIndex == GroupIndex)
 			{
-				item.IsThresholdReached = true;
+				section.IsThresholdReached = true;
 			}
 		}
-		foreach (SectionalBar item2 in sections)
+		foreach (SectionalBar section in sections)
 		{
-			if (item2.GroupIndex != GroupIndex)
+			if (section.GroupIndex != GroupIndex)
 			{
-				item2.IsThresholdReached = false;
+				section.IsThresholdReached = false;
 			}
 		}
 	}
@@ -454,18 +454,18 @@ public class SectionalBar : ProgressBar
 	{
 		if (AutoCornerRadius)
 		{
-			double num = ((base.Height > 2.0) ? (base.Height / 2.0) : 0.0);
-			FrontCornerRadius = new CornerRadius(num, 0.0, 0.0, num);
-			BackCornerRadius = new CornerRadius(0.0, num, num, 0.0);
+			double radius = ((base.Height > 2.0) ? (base.Height / 2.0) : 0.0);
+			FrontCornerRadius = new CornerRadius(radius, 0.0, 0.0, radius);
+			BackCornerRadius = new CornerRadius(0.0, radius, radius, 0.0);
 		}
 	}
 
 	protected static void IndexSections(List<SectionalBar> sections)
 	{
-		int num = 0;
+		int index = 0;
 		foreach (SectionalBar section in sections)
 		{
-			section.GroupIndex = num++;
+			section.GroupIndex = index++;
 			section.IsFront = false;
 			section.IsBack = false;
 		}
@@ -642,32 +642,32 @@ public class SectionalBar : ProgressBar
 		{
 			return;
 		}
-		bool flag = true;
-		foreach (SectionalBar item in sections)
+		bool allFlagsSet = true;
+		foreach (SectionalBar section in sections)
 		{
-			if ((item.AutomationFlag & SectionFlag.All) != SectionFlag.All)
+			if ((section.AutomationFlag & SectionFlag.All) != SectionFlag.All)
 			{
-				flag = false;
+				allFlagsSet = false;
 				break;
 			}
 		}
-		if (!flag)
+		if (!allFlagsSet)
 		{
 			return;
 		}
 		running = true;
 		RangeLimits = new List<RangeLimit>();
-		foreach (SectionalBar item2 in sections)
+		foreach (SectionalBar section in sections)
 		{
-			RangeLimits.Add(new RangeLimit(item2)
+			RangeLimits.Add(new RangeLimit(section)
 			{
-				Value = item2.AutomationValue,
-				MaxValue = item2.GetMaxValue(),
-				Minimum = item2.Minimum,
-				Maximum = item2.Maximum,
-				Threshold = item2.Threshold
+				Value = section.AutomationValue,
+				MaxValue = section.GetMaxValue(),
+				Minimum = section.Minimum,
+				Maximum = section.Maximum,
+				Threshold = section.Threshold
 			});
-			item2.IsVisibleChanged -= item2.IsVisiblePropertyChanged;
+			section.IsVisibleChanged -= section.IsVisiblePropertyChanged;
 		}
 		for (int i = 1; i < RangeLimits.Count; i++)
 		{

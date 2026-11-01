@@ -114,28 +114,28 @@ public class ResourceEditorWindow : DockContent
 					ServiceLocator.Instance.GetService<IRenderingService>();
 					IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 					viewService.Push(m_resource.Name);
-					int num = 0;
-					int num2 = 0;
+					int offsetX = 0;
+					int offsetY = 0;
 					IViewFrame viewFrame = viewService.GetViewFrame(m_resource.Name) as IViewFrame;
-					int num3;
-					int num4;
+					int viewHeight;
+					int viewWidth;
 					if (viewFrame != null && viewFrame.ViewWindow.HasValue)
 					{
-						num3 = viewFrame.ViewWindow.Value.Height;
-						num4 = viewFrame.ViewWindow.Value.Width;
-						num = viewFrame.ViewWindow.Value.X;
-						num2 = viewFrame.ViewWindow.Value.Y;
+						viewHeight = viewFrame.ViewWindow.Value.Height;
+						viewWidth = viewFrame.ViewWindow.Value.Width;
+						offsetX = viewFrame.ViewWindow.Value.X;
+						offsetY = viewFrame.ViewWindow.Value.Y;
 					}
 					else
 					{
-						num3 = int.Parse(xmlNode.Attributes["height"].Value);
-						num4 = int.Parse(xmlNode.Attributes["width"].Value);
+						viewHeight = int.Parse(xmlNode.Attributes["height"].Value);
+						viewWidth = int.Parse(xmlNode.Attributes["width"].Value);
 					}
-					Rectangle targetRectangle = new Rectangle(0, 0, num4 + num, num3 + num2);
+					Rectangle targetRectangle = new Rectangle(0, 0, viewWidth + offsetX, viewHeight + offsetY);
 					IScene scene = viewFrame.Scene;
 					viewService.ShowFrameInDebug();
 					System.Windows.Forms.PictureBox pictureBox = new System.Windows.Forms.PictureBox();
-					Bitmap bitmap = new Bitmap(num4 + num, num3 + num2);
+					Bitmap bitmap = new Bitmap(viewWidth + offsetX, viewHeight + offsetY);
 					Graphics targetGraphics = Graphics.FromImage(bitmap);
 					using (BufferedGraphics bufferedGraphics = BufferedGraphicsManager.Current.Allocate(targetGraphics, targetRectangle))
 					{
@@ -143,9 +143,9 @@ public class ResourceEditorWindow : DockContent
 						scene.Render(bufferedGraphics.Graphics, out var _);
 						bufferedGraphics.Render();
 					}
-					if (num + num2 > 0)
+					if (offsetX + offsetY > 0)
 					{
-						Rectangle rect = new Rectangle(num, num2, num4, num3);
+						Rectangle rect = new Rectangle(offsetX, offsetY, viewWidth, viewHeight);
 						pictureBox.Image = bitmap.Clone(rect, bitmap.PixelFormat);
 					}
 					else
@@ -165,11 +165,11 @@ public class ResourceEditorWindow : DockContent
 						TextEditor textEditor3 = new TextEditor();
 						textEditor3.SetSyntaxResource("XML");
 						IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
-						object obj = m_resource["product_name"];
-						textEditor3.Name = "text_editor_" + obj?.ToString() + m_resource.Name;
+						object productName = m_resource["product_name"];
+						textEditor3.Name = "text_editor_" + productName?.ToString() + m_resource.Name;
 						foreach (IBundleSpecifier bundle2 in resourceBundleService.ActiveBundleSet.GetBundles())
 						{
-							if (bundle2.Name == (string)obj)
+							if (bundle2.Name == (string)productName)
 							{
 								IResourceBundle bundle = resourceBundleService.GetBundle(bundle2);
 								IResourceBundleStorageEntry entry = bundle.Storage.GetEntry("manifest.resource");

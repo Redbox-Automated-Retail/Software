@@ -57,9 +57,9 @@ public class ClassicTrackDataService : IClassicTrackDataService, ITrackDataServi
 			ITrackData trackData = (ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession())?.TrackData;
 			if (cancelReason == CancelReason.LeavingSwipeView)
 			{
-				bool flag = trackData != null || (trackData?.HasValidData() ?? false);
-				bool hasError = !flag;
-				cCReaderHealth?.EventOccurred(flag, hasError);
+				bool hasValidData = trackData != null || (trackData?.HasValidData() ?? false);
+				bool hasError = !hasValidData;
+				cCReaderHealth?.EventOccurred(hasValidData, hasError);
 			}
 		}
 	}

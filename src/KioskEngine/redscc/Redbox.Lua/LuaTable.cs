@@ -126,14 +126,14 @@ public class LuaTable : LuaObject
 		}
 		visited.Add(this);
 		builder.Append("{ ");
-		bool flag = false;
+		bool needsSeparator = false;
 		foreach (object key in Keys)
 		{
 			if (this[key] is LuaTable luaTable)
 			{
 				if (!visited.Contains(luaTable))
 				{
-					if (flag)
+					if (needsSeparator)
 					{
 						builder.Append(", ");
 					}
@@ -143,13 +143,13 @@ public class LuaTable : LuaObject
 			}
 			else
 			{
-				if (flag)
+				if (needsSeparator)
 				{
 					builder.Append(", ");
 				}
 				builder.AppendFormat("{0}{1}", FormatKey(key), LuaHelper.FormatLuaValue(this[key]));
 			}
-			flag = true;
+			needsSeparator = true;
 		}
 		builder.Append(" }");
 	}
@@ -209,14 +209,14 @@ public class LuaTable : LuaObject
 		foreach (object key2 in table.Keys)
 		{
 			string key = key2.ToString();
-			object obj = table[key2];
-			if (obj is LuaTable table2)
+			object entry = table[key2];
+			if (entry is LuaTable table2)
 			{
 				BuildPropertiesDictionary(properties, table2);
 			}
 			else
 			{
-				properties[key] = obj;
+				properties[key] = entry;
 			}
 		}
 	}

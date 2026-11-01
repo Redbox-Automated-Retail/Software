@@ -199,13 +199,13 @@ public class Program : IDisposable
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService != null)
 		{
-			bool flag = true;
+			bool sendAppCrashAlert = true;
 			if (configurationService.TryGetValue<bool>("system", "General", "SendAppCrashAlert", out var value))
 			{
-				flag = value;
+				sendAppCrashAlert = value;
 			}
-			LogHelper.Instance.Log("Program.SendUnhandledExceptionAlert - SendAppCrashAlert is {0}", flag);
-			if (flag)
+			LogHelper.Instance.Log("Program.SendUnhandledExceptionAlert - SendAppCrashAlert is {0}", sendAppCrashAlert);
+			if (sendAppCrashAlert)
 			{
 				healthServices.SendAlert(storeManager.KioskId.ToString(), "ApplicationCrash", "Unhandled", string.Format($"Message: {unhandledException.Message}, Exception: {unhandledException.Exception}"), DateTime.Now, null);
 			}

@@ -15,71 +15,71 @@ public class ManifestAspectType : AspectType
 		{
 			return;
 		}
-		XmlNodeList xmlNodeList = aspectNode.SelectNodes("resourceType");
-		if (xmlNodeList == null)
+		XmlNodeList resourceTypeNodes = aspectNode.SelectNodes("resourceType");
+		if (resourceTypeNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item in xmlNodeList)
+		foreach (XmlNode typeNode in resourceTypeNodes)
 		{
-			string attributeValue = item.GetAttributeValue<string>("name");
-			if (string.IsNullOrEmpty(attributeValue))
+			string typeName = typeNode.GetAttributeValue<string>("name");
+			if (string.IsNullOrEmpty(typeName))
 			{
 				errors.Add(Error.NewError("R005", "The name attribute must be defined on the aspect element.", "Add a valid name attribute to the aspect element."));
 				break;
 			}
-			IResourceType resourceType = null;
-			string attributeValue2 = item.GetAttributeValue<string>("superType");
-			if (!string.IsNullOrEmpty(attributeValue2))
+			IResourceType superType = null;
+			string superTypeName = typeNode.GetAttributeValue<string>("superType");
+			if (!string.IsNullOrEmpty(superTypeName))
 			{
-				if (!bundle.ResourceTypes.ContainsKey(attributeValue2))
+				if (!bundle.ResourceTypes.ContainsKey(superTypeName))
 				{
-					errors.Add(Error.NewError("R003", $"The type '{attributeValue2}' is not defined.", "Specify a valid resource type in the resource XML and recompile."));
+					errors.Add(Error.NewError("R003", $"The type '{superTypeName}' is not defined.", "Specify a valid resource type in the resource XML and recompile."));
 					break;
 				}
-				resourceType = bundle.ResourceTypes[attributeValue2];
+				superType = bundle.ResourceTypes[superTypeName];
 			}
-			string attributeValue3 = item.GetAttributeValue<string>("runtimeType");
-			Type type = null;
-			if (!string.IsNullOrEmpty(attributeValue3))
+			string runtimeTypeName = typeNode.GetAttributeValue<string>("runtimeType");
+			Type runtimeType = null;
+			if (!string.IsNullOrEmpty(runtimeTypeName))
 			{
-				type = GetType(attributeValue3);
-				if (type == null)
+				runtimeType = GetType(runtimeTypeName);
+				if (runtimeType == null)
 				{
-					errors.Add(Error.NewWarning("R004", $"The runtime type '{attributeValue3}' is not defined in any loaded assembly.", "Specify a valid runtime type and ensure the appropriate assemblies are loaded."));
+					errors.Add(Error.NewWarning("R004", $"The runtime type '{runtimeTypeName}' is not defined in any loaded assembly.", "Specify a valid runtime type and ensure the appropriate assemblies are loaded."));
 				}
 			}
-			IResourceType resourceType2 = ((resourceType == null) ? bundle.ResourceTypes["root"] : resourceType.NewType(attributeValue, type));
-			XmlNodeList xmlNodeList2 = item.SelectNodes("propertyType");
-			if (xmlNodeList2 != null)
+			IResourceType newType = ((superType == null) ? bundle.ResourceTypes["root"] : superType.NewType(typeName, runtimeType));
+			XmlNodeList propertyTypeNodes = typeNode.SelectNodes("propertyType");
+			if (propertyTypeNodes != null)
 			{
-				foreach (XmlNode item2 in xmlNodeList2)
+				foreach (XmlNode propertyTypeNode in propertyTypeNodes)
 				{
-					Type type2 = GetType(item2.GetAttributeValue<string>("type")) ?? typeof(string);
-					IPropertyType propertyType = resourceType2.AddPropertyType(item2.GetAttributeValue<string>("name"), type2, item2.GetAttributeValue<string>("description"), item2.GetAttributeValue<bool>("isRequired"), item2.GetAttributeValue<bool>("isFilter"), item2.GetAttributeValue<int?>("score"), item2.GetAttributeValue<string>("label"), item2.GetAttributeValue<string>("category"));
-					propertyType.SetDefaultValue(item2.GetAttributeValue<string>("defaultValue"));
+					Type valueType = GetType(propertyTypeNode.GetAttributeValue<string>("type")) ?? typeof(string);
+					IPropertyType propertyType = newType.AddPropertyType(propertyTypeNode.GetAttributeValue<string>("name"), valueType, propertyTypeNode.GetAttributeValue<string>("description"), propertyTypeNode.GetAttributeValue<bool>("isRequired"), propertyTypeNode.GetAttributeValue<bool>("isFilter"), propertyTypeNode.GetAttributeValue<int?>("score"), propertyTypeNode.GetAttributeValue<string>("label"), propertyTypeNode.GetAttributeValue<string>("category"));
+					propertyType.SetDefaultValue(propertyTypeNode.GetAttributeValue<string>("defaultValue"));
 				}
 			}
-			XmlNodeList xmlNodeList3 = item.SelectNodes("aspectType");
-			if (xmlNodeList3 != null)
+			XmlNodeList aspectTypeNodes = typeNode.SelectNodes("aspectType");
+			if (aspectTypeNodes != null)
 			{
-				foreach (XmlNode item3 in xmlNodeList3)
+				foreach (XmlNode aspectTypeNode in aspectTypeNodes)
 				{
-					IAspectType aspectType = resourceType2.AddAspectType(item3.GetAttributeValue<string>("name"), GetType(item3.GetAttributeValue<string>("type")));
-					XmlNodeList xmlNodeList4 = item3.SelectNodes("property");
-					if (xmlNodeList4 == null)
+					IAspectType aspectType = newType.AddAspectType(aspectTypeNode.GetAttributeValue<string>("name"), GetType(aspectTypeNode.GetAttributeValue<string>("type")));
+					XmlNodeList propertyNodes = aspectTypeNode.SelectNodes("property");
+					if (propertyNodes == null)
 					{
 						continue;
 					}
-					foreach (XmlNode item4 in xmlNodeList4)
+					foreach (XmlNode propertyNode in propertyNodes)
 					{
-						aspectType[item4.GetAttributeValue<string>("name")] = item4.GetAttributeValue<string>("value");
+						aspectType[propertyNode.GetAttributeValue<string>("name")] = propertyNode.GetAttributeValue<string>("value");
 					}
 				}
 			}
-			if (resourceType2.Name != "root")
+			if (newType.Name != "root")
 			{
-				bundle.ResourceTypes[attributeValue] = resourceType2;
+				bundle.ResourceTypes[typeName] = newType;
 			}
 		}
 	}

@@ -630,8 +630,8 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		errorList.AddRange(QueueService.Instance.Initialize(Path.Combine(RunningPath, "message.data"), new QueueServiceSqliteData()));
 #endif
 		AddService(typeof(IKioskClientService), KioskClientService.Instance);
-		ProductGroupService instance2 = new ProductGroupService(LogHelper.Instance, KioskClientService.Instance);
-		AddService(typeof(IProductGroupService), instance2);
+		ProductGroupService productGroupService = new ProductGroupService(LogHelper.Instance, KioskClientService.Instance);
+		AddService(typeof(IProductGroupService), productGroupService);
 		ServiceLocator.Instance.GetService<IConfiguration>();
 		AddService(typeof(IKioskSessionJsonAnalyticsService), KioskSessionJsonAnalyticsService.Instance);
 		AddService(typeof(IBarcodeTrackingService), BarcodeTrackingService.Instance);

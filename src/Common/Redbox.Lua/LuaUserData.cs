@@ -68,20 +68,20 @@ public class LuaUserData : LuaObject
 
 	public byte[] Read(int offset, int count)
 	{
-		byte[] array = new byte[count];
+		byte[] data = new byte[count];
 		if (base.Reference.HasValue)
 		{
 			IntPtr userDataPointer = GetUserDataPointer();
 			if (userDataPointer != IntPtr.Zero)
 			{
-				Marshal.Copy(new IntPtr(userDataPointer.ToInt32() + offset), array, 0, count);
+				Marshal.Copy(new IntPtr(userDataPointer.ToInt32() + offset), data, 0, count);
 			}
 		}
 		else
 		{
-			Array.Copy(m_buffer, offset, array, 0, count);
+			Array.Copy(m_buffer, offset, data, 0, count);
 		}
-		return array;
+		return data;
 	}
 
 	public short ReadInt16(int offset)

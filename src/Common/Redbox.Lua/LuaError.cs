@@ -20,13 +20,13 @@ public class LuaError
 		string chunkName = null;
 		if (parts.Length == 3)
 		{
-			int num = parts[0].IndexOf('"');
-			if (num != -1)
+			int firstQuote = parts[0].IndexOf('"');
+			if (firstQuote != -1)
 			{
-				int num2 = parts[0].LastIndexOf('"');
-				if (num2 != -1)
+				int lastQuote = parts[0].LastIndexOf('"');
+				if (lastQuote != -1)
 				{
-					chunkName = parts[0].Substring(num + 1, num2 - num - 1);
+					chunkName = parts[0].Substring(firstQuote + 1, lastQuote - firstQuote - 1);
 				}
 			}
 			if (int.TryParse(parts[1], out var result))

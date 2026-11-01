@@ -116,8 +116,8 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 	private void OnExport(object sender, EventArgs e)
 	{
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
-		bool flag = queueService.IsWorkerStarted();
-		if (flag)
+		bool workerStarted = queueService.IsWorkerStarted();
+		if (workerStarted)
 		{
 			queueService.StopQueueWorker();
 		}
@@ -137,7 +137,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 		}
 		finally
 		{
-			if (flag)
+			if (workerStarted)
 			{
 				queueService.StartQueueWorker();
 			}
@@ -237,9 +237,9 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void SetButtonState()
 	{
-		bool flag = ServiceLocator.Instance.GetService<IQueueService>().IsWorkerStarted();
-		m_startQueueWorkerToolStripButton.Enabled = !flag;
-		m_stopQueueWorkerToolStripButton.Enabled = flag;
+		bool workerStarted = ServiceLocator.Instance.GetService<IQueueService>().IsWorkerStarted();
+		m_startQueueWorkerToolStripButton.Enabled = !workerStarted;
+		m_stopQueueWorkerToolStripButton.Enabled = workerStarted;
 	}
 
 	private void OnDocumentChanged(object sender, EventArgs e)

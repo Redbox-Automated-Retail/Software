@@ -53,36 +53,36 @@ public class LuaVirtualMachine : IDisposable
 			{
 				return null;
 			}
-			object obj = null;
+			object found = null;
 			int count = Stack.Count;
-			string[] array = fullPath.Split(".".ToCharArray());
-			Stack.GetGlobal(array[0]);
-			obj = Stack.GetAt(-1);
-			if (array.Length > 1)
+			string[] pathParts = fullPath.Split(".".ToCharArray());
+			Stack.GetGlobal(pathParts[0]);
+			found = Stack.GetAt(-1);
+			if (pathParts.Length > 1)
 			{
-				string[] array2 = new string[array.Length - 1];
-				Array.Copy(array, 1, array2, 0, array.Length - 1);
-				Stack.GetPath(array2);
-				obj = Stack.Top;
+				string[] subPath = new string[pathParts.Length - 1];
+				Array.Copy(pathParts, 1, subPath, 0, pathParts.Length - 1);
+				Stack.GetPath(subPath);
+				found = Stack.Top;
 			}
 			Stack.SetTop(count);
-			return obj;
+			return found;
 		}
 		set
 		{
 			int count = Stack.Count;
-			string[] array = fullPath.Split(".".ToCharArray());
-			if (array.Length == 1)
+			string[] pathParts = fullPath.Split(".".ToCharArray());
+			if (pathParts.Length == 1)
 			{
 				Stack.Push(value);
 				Stack.SetGlobal(fullPath);
 			}
 			else
 			{
-				Stack.GetGlobal(array[0]);
-				string[] array2 = new string[array.Length - 1];
-				Array.Copy(array, 1, array2, 0, array.Length - 1);
-				Stack.SetPath(array2, value);
+				Stack.GetGlobal(pathParts[0]);
+				string[] subPath = new string[pathParts.Length - 1];
+				Array.Copy(pathParts, 1, subPath, 0, pathParts.Length - 1);
+				Stack.SetPath(subPath, value);
 			}
 			Stack.SetTop(count);
 		}
@@ -193,8 +193,8 @@ public class LuaVirtualMachine : IDisposable
 		{
 			registeredMethod.Compile();
 		}
-		int num = m_objectCache.CacheObject(registeredMethod);
-		Stack.Push(num);
+		int objectId = m_objectCache.CacheObject(registeredMethod);
+		Stack.Push(objectId);
 		Stack.GetField(-10000, "kernel_objects_mt");
 		Stack.SetMetaTable(-2);
 		this[name] = Stack.Top;
@@ -328,9 +328,9 @@ public class LuaVirtualMachine : IDisposable
 		int newTop = lua_gettop(luaState);
 		lua_rawgeti(luaState, -10000, ref1);
 		lua_rawgeti(luaState, -10000, ref2);
-		int num = lua_equal(luaState, -1, -2);
+		int equal = lua_equal(luaState, -1, -2);
 		lua_settop(luaState, newTop);
-		return num != 0;
+		return equal != 0;
 	}
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl)]
@@ -494,17 +494,17 @@ public class LuaVirtualMachine : IDisposable
 
 	internal void ThrowExceptionFromError(int oldTop)
 	{
-		object obj = Stack.Pop();
+		object error = Stack.Pop();
 		Stack.SetTop(oldTop);
-		if (obj is LuaScriptException ex)
+		if (error is LuaScriptException ex)
 		{
 			throw ex;
 		}
-		if (obj == null)
+		if (error == null)
 		{
-			obj = "Unknown Lua Error";
+			error = "Unknown Lua Error";
 		}
-		throw new LuaScriptException(obj.ToString(), string.Empty);
+		throw new LuaScriptException(error.ToString(), string.Empty);
 	}
 
 	internal int SetPendingException(Exception e)
@@ -569,10 +569,10 @@ public class LuaVirtualMachine : IDisposable
 	{
 		Stack.Push("__redbox_lua_flag");
 		Stack.GetTable(-10000);
-		object obj = Stack.Pop();
-		if (obj != null)
+		object loadedFlag = Stack.Pop();
+		if (loadedFlag != null)
 		{
-			return (bool)obj;
+			return (bool)loadedFlag;
 		}
 		return false;
 	}
@@ -610,17 +610,17 @@ public class LuaVirtualMachine : IDisposable
 	private int CollectObject(IntPtr luaState)
 	{
 		using LuaUserData luaUserData = (LuaUserData)Stack.Pop();
-		int num = luaUserData.ReadInt32(0);
-		LogHelper.Instance.Log($"Lua: CollectObject called from runtime for object {num}.", LogEntryType.Debug);
-		m_objectCache.RemoveId(num);
+		int objectId = luaUserData.ReadInt32(0);
+		LogHelper.Instance.Log($"Lua: CollectObject called from runtime for object {objectId}.", LogEntryType.Debug);
+		m_objectCache.RemoveId(objectId);
 		return 0;
 	}
 
 	private int ExecuteFunction(IntPtr luaState)
 	{
-		int num = Convert.ToInt32(Stack.GetAt(1));
-		LogHelper.Instance.Log($"Lua: ExecuteFunction called from runtime for object {num}.", LogEntryType.Debug);
-		RegisteredMethod registeredMethod = (RegisteredMethod)m_objectCache.GetObject(num);
+		int objectId = Convert.ToInt32(Stack.GetAt(1));
+		LogHelper.Instance.Log($"Lua: ExecuteFunction called from runtime for object {objectId}.", LogEntryType.Debug);
+		RegisteredMethod registeredMethod = (RegisteredMethod)m_objectCache.GetObject(objectId);
 		if (registeredMethod != null)
 		{
 			LogHelper.Instance.Log($"...Registered method '{registeredMethod.Method}' found in object cache; executing.", LogEntryType.Debug);

@@ -17,20 +17,20 @@ public class TrackDataEncryptionService : ITrackDataEncryptionService
 
 	public void RefreshCertificate()
 	{
-		int num = 0;
+		int keyId = 0;
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService != null && configurationService.TryGetValue<int>("system", "General", "CertificateName", out var value))
 		{
-			num = value;
+			keyId = value;
 		}
-		if (num == 0)
+		if (keyId == 0)
 		{
 			_keyId = GetBundleKeyId();
 			_useStoreCertificate = false;
 		}
 		else
 		{
-			_keyId = num;
+			_keyId = keyId;
 			_useStoreCertificate = true;
 		}
 		if (_useStoreCertificate && GetStoreCertificate() == null)

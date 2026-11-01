@@ -191,12 +191,12 @@ public class ErrorForm : Form
 		if (tag != null)
 		{
 			PropertyInfo property = tag.GetType().GetProperty("Details");
-			object obj = string.Empty;
+			object details = string.Empty;
 			if (property != null)
 			{
-				obj = property.GetValue(tag, null);
+				details = property.GetValue(tag, null);
 			}
-			m_detailTextBox.Text = ((obj != null) ? obj.ToString() : string.Empty);
+			m_detailTextBox.Text = ((details != null) ? details.ToString() : string.Empty);
 		}
 	}
 
@@ -209,34 +209,34 @@ public class ErrorForm : Form
 		}
 		foreach (object error in Errors)
 		{
-			PropertyInfo property = error.GetType().GetProperty("Code");
-			PropertyInfo property2 = error.GetType().GetProperty("IsWarning");
-			PropertyInfo property3 = error.GetType().GetProperty("Description");
-			string text = string.Empty;
-			if (property != null)
+			PropertyInfo codeProperty = error.GetType().GetProperty("Code");
+			PropertyInfo isWarningProperty = error.GetType().GetProperty("IsWarning");
+			PropertyInfo descriptionProperty = error.GetType().GetProperty("Description");
+			string code = string.Empty;
+			if (codeProperty != null)
 			{
-				object value = property.GetValue(error, null);
+				object value = codeProperty.GetValue(error, null);
 				if (value != null)
 				{
-					text = value.ToString();
+					code = value.ToString();
 				}
 			}
-			bool flag = false;
-			if (property2 != null)
+			bool isWarning = false;
+			if (isWarningProperty != null)
 			{
-				flag = (bool)property2.GetValue(error, null);
+				isWarning = (bool)isWarningProperty.GetValue(error, null);
 			}
-			string text2 = string.Empty;
-			if (property3 != null)
+			string description = string.Empty;
+			if (descriptionProperty != null)
 			{
-				object value = property3.GetValue(error, null);
+				object value = descriptionProperty.GetValue(error, null);
 				if (value != null)
 				{
-					text2 = value.ToString();
+					description = value.ToString();
 				}
 			}
-			ListViewItem listViewItem = new ListViewItem(text, flag ? 1 : 0);
-			listViewItem.SubItems.Add(text2);
+			ListViewItem listViewItem = new ListViewItem(code, isWarning ? 1 : 0);
+			listViewItem.SubItems.Add(description);
 			listViewItem.Tag = error;
 			m_errorListView.Items.Add(listViewItem);
 		}

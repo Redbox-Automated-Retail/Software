@@ -93,28 +93,28 @@ public class ResourcePreferencePage : UserControl, IPreferencePageHost
 		List<ScoredResource> list = new List<ScoredResource>();
 		foreach (IResource each in enumerable)
 		{
-			int num = 0;
+			int score = 0;
 			if (!IsResourceEffective(each))
 			{
-				num = -1;
+				score = -1;
 			}
 			else if (filter != null)
 			{
-				List<IPropertyType> list2 = (from f in each.Type.GetFilterProperties()
+				List<IPropertyType> filterProperties = (from f in each.Type.GetFilterProperties()
 					where each[f.Name] != null
 					select f).ToList();
-				if (list2.Count == 0)
+				if (filterProperties.Count == 0)
 				{
-					num++;
+					score++;
 				}
-				else if (list2.Count((IPropertyType eachFilter) => each.PropertyEquals2(eachFilter.Name, (eachFilter.Name.Substring(0, 2) == "!=") ? filter[eachFilter.Name.Substring(2)] : filter[eachFilter.Name])) == list2.Count)
+				else if (filterProperties.Count((IPropertyType eachFilter) => each.PropertyEquals2(eachFilter.Name, (eachFilter.Name.Substring(0, 2) == "!=") ? filter[eachFilter.Name.Substring(2)] : filter[eachFilter.Name])) == filterProperties.Count)
 				{
-					num += list2.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
+					score += filterProperties.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
 				}
 			}
 			list.Add(new ScoredResource
 			{
-				Score = num,
+				Score = score,
 				Resource = each
 			});
 		}

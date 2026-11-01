@@ -241,9 +241,9 @@ public class HidDevice
 		{
 			return null;
 		}
-		byte[] array2 = new byte[lpNumberOfBytesRead];
-		Array.Copy(buffer, array2, lpNumberOfBytesRead);
-		return array2;
+		byte[] data = new byte[lpNumberOfBytesRead];
+		Array.Copy(buffer, data, lpNumberOfBytesRead);
+		return data;
 	}
 
 	internal static int _GetPreparsedData(int hObject, ref int pPHIDP_PREPARSED_DATA)

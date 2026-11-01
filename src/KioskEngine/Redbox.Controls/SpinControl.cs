@@ -207,9 +207,9 @@ public class SpinControl : BaseContainer
 		size = size ?? new Size?(new Size(Width, Height));
 		if (Child is FrameworkElement)
 		{
-			FrameworkElement obj = Child as FrameworkElement;
-			obj.Width = size.Value.Width;
-			obj.Height = size.Value.Height;
+			FrameworkElement child = Child as FrameworkElement;
+			child.Width = size.Value.Width;
+			child.Height = size.Value.Height;
 		}
 	}
 

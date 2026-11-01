@@ -39,28 +39,28 @@ internal static class ResourceLookup
 			{
 				continue;
 			}
-			int num = 0;
+			int score = 0;
 			if (filter != null)
 			{
-				List<IPropertyType> list2 = (from f in each.Type.GetFilterProperties()
+				List<IPropertyType> filterProperties = (from f in each.Type.GetFilterProperties()
 					where each[f.Name] != null
 					select f).ToList();
-				if (list2.Count == 0)
+				if (filterProperties.Count == 0)
 				{
-					num++;
+					score++;
 				}
 				else
 				{
-					int num2 = list2.Count((IPropertyType eachFilter) => each.PropertyEquals(eachFilter.Name, filter[eachFilter.Name]));
-					if (num2 == list2.Count)
+					int matchCount = filterProperties.Count((IPropertyType eachFilter) => each.PropertyEquals(eachFilter.Name, filter[eachFilter.Name]));
+					if (matchCount == filterProperties.Count)
 					{
-						num += list2.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
+						score += filterProperties.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
 					}
 				}
 			}
 			scoredResources.Add(new ScoredResource
 			{
-				Score = num,
+				Score = score,
 				Resource = each
 			});
 		}
@@ -97,28 +97,28 @@ internal static class ResourceLookup
 			{
 				continue;
 			}
-			int num = 0;
+			int score = 0;
 			if (filter != null)
 			{
-				List<IPropertyType> list2 = (from f in each.Type.GetFilterProperties()
+				List<IPropertyType> filterProperties = (from f in each.Type.GetFilterProperties()
 					where each[f.Name] != null
 					select f).ToList();
-				if (list2.Count == 0)
+				if (filterProperties.Count == 0)
 				{
-					num++;
+					score++;
 				}
 				else
 				{
-					int num2 = list2.Count((IPropertyType eachFilter) => each.PropertyEquals2(eachFilter.Name, (eachFilter.Name.Substring(0, 2) == "!=") ? filter[eachFilter.Name.Substring(2)] : filter[eachFilter.Name]));
-					if (num2 == list2.Count)
+					int matchCount = filterProperties.Count((IPropertyType eachFilter) => each.PropertyEquals2(eachFilter.Name, (eachFilter.Name.Substring(0, 2) == "!=") ? filter[eachFilter.Name.Substring(2)] : filter[eachFilter.Name]));
+					if (matchCount == filterProperties.Count)
 					{
-						num += list2.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
+						score += filterProperties.Sum((IPropertyType eachFilter) => eachFilter.FilterScore);
 					}
 				}
 			}
 			scoredResources.Add(new ScoredResource
 			{
-				Score = num,
+				Score = score,
 				Resource = each
 			});
 		}
@@ -154,9 +154,9 @@ internal static class ResourceLookup
 		}
 		if (dateTime2.HasValue)
 		{
-			DateTime value2 = now;
-			DateTime? dateTime4 = dateTime2;
-			if (value2 > dateTime4)
+			DateTime value = now;
+			DateTime? dateTime3 = dateTime2;
+			if (value > dateTime3)
 			{
 				return false;
 			}

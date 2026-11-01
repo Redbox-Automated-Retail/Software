@@ -40,19 +40,19 @@ public static class StringExtensionMethods
 		memoryStream.Position = 0L;
 		byte[] buffer = new byte[memoryStream.Length];
 		memoryStream.Read(buffer, 0, buffer.Length);
-		byte[] array2 = new byte[buffer.Length + 4];
-		Buffer.BlockCopy(buffer, 0, array2, 4, buffer.Length);
-		Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, array2, 0, 4);
-		return Convert.ToBase64String(array2);
+		byte[] compressed = new byte[buffer.Length + 4];
+		Buffer.BlockCopy(buffer, 0, compressed, 4, buffer.Length);
+		Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, compressed, 0, 4);
+		return Convert.ToBase64String(compressed);
 	}
 
 	public static string DecompressString(this string compressedText)
 	{
 		byte[] decoded = Convert.FromBase64String(compressedText);
 		using MemoryStream memoryStream = new MemoryStream();
-		int num = BitConverter.ToInt32(decoded, 0);
+		int length = BitConverter.ToInt32(decoded, 0);
 		memoryStream.Write(decoded, 4, decoded.Length - 4);
-		byte[] buffer = new byte[num];
+		byte[] buffer = new byte[length];
 		memoryStream.Position = 0L;
 		using (GZipStream gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
 		{

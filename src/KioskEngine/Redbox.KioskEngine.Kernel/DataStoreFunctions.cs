@@ -134,10 +134,10 @@ internal static class DataStoreFunctions
 				return luaTable;
 			}
 			ReadOnlyCollection<string> keys = dataStoreService.GetKeys(dataStore, tableName);
-			int num = 1;
+			int index = 1;
 			foreach (string item in keys)
 			{
-				luaTable[num++] = item;
+				luaTable[index++] = item;
 			}
 			return luaTable;
 		}

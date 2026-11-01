@@ -53,7 +53,7 @@ public class PropertiesToolWindow : ToolWindow
 	{
 		m_dynamicPropertyGrid.BeginUpdate();
 		m_dynamicPropertyGrid.Clear();
-		int num = 2;
+		int propertyId = 2;
 		_ = instance is IResourceBundle;
 		if (instance is IResource resource)
 		{
@@ -71,13 +71,13 @@ public class PropertiesToolWindow : ToolWindow
 						{
 							if (!dictionary.ContainsKey(property.Category))
 							{
-								dictionary[property.Category] = m_dynamicPropertyGrid.AppendRootCategory(num++, property.Category);
+								dictionary[property.Category] = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, property.Category);
 							}
 							propertyEnumerator2 = dictionary[property.Category];
 						}
 						else if (propertyEnumerator == null)
 						{
-							propertyEnumerator = m_dynamicPropertyGrid.AppendRootCategory(num++, "Misc");
+							propertyEnumerator = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, "Misc");
 						}
 						string propName = property.Name;
 						if (!string.IsNullOrEmpty(property.Label))
@@ -90,11 +90,11 @@ public class PropertiesToolWindow : ToolWindow
 						if (typedValue is List<object>)
 						{
 							List<string> initialValue = convertValueArray(typedValue as List<object>);
-							m_dynamicPropertyGrid.AppendManagedProperty(propertyEnumerator2 ?? propertyEnumerator, num++, propName, typeof(List<string>), initialValue, property.Description ?? string.Empty, new DefaultValueAttribute(typedValue2));
+							m_dynamicPropertyGrid.AppendManagedProperty(propertyEnumerator2 ?? propertyEnumerator, propertyId++, propName, typeof(List<string>), initialValue, property.Description ?? string.Empty, new DefaultValueAttribute(typedValue2));
 						}
 						else
 						{
-							m_dynamicPropertyGrid.AppendManagedProperty(propertyEnumerator2 ?? propertyEnumerator, num++, propName, property.Type, typedValue, property.Description ?? string.Empty, new DefaultValueAttribute(typedValue2)).Property.Tag = new PropertyHandler
+							m_dynamicPropertyGrid.AppendManagedProperty(propertyEnumerator2 ?? propertyEnumerator, propertyId++, propName, property.Type, typedValue, property.Description ?? string.Empty, new DefaultValueAttribute(typedValue2)).Property.Tag = new PropertyHandler
 							{
 								Properties = 
 								{
@@ -120,16 +120,16 @@ public class PropertiesToolWindow : ToolWindow
 		_ = instance is IResourceType;
 		if (instance is KernelFunctionInfo kernelFunctionInfo)
 		{
-			Dictionary<string, PropertyEnumerator> dictionary2 = new Dictionary<string, PropertyEnumerator>();
-			dictionary2["Library"] = m_dynamicPropertyGrid.AppendRootCategory(num++, "Library");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Library"], num++, "Extension", typeof(string), kernelFunctionInfo.Extension, "The Kiosk Extension name or Core name into which the function is grouped.");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Library"], num++, "Namespace", typeof(string), kernelFunctionInfo.Method.DeclaringType.FullName, "The namespace in which this function is defined");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Library"], num++, "Module", typeof(string), kernelFunctionInfo.Method.Module.Name, "The DLL into which this method is compiled and distributed.");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Library"], num++, "C# Function", typeof(string), kernelFunctionInfo.Method.Name, "The C# function which implements the API when it is called from Lua.");
-			dictionary2["Function"] = m_dynamicPropertyGrid.AppendRootCategory(num++, "Function");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Function"], num++, "API Name", typeof(string), kernelFunctionInfo.Attributes[0].Name, "The API name which is accessible from the Lua runtime.");
-			m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Function"], num++, "Return Type", typeof(string), kernelFunctionInfo.Method.ReturnType.Name, "The object type of the return value.");
-			dictionary2["Parameters"] = m_dynamicPropertyGrid.AppendRootCategory(num++, "Parameters");
+			Dictionary<string, PropertyEnumerator> functionCategories = new Dictionary<string, PropertyEnumerator>();
+			functionCategories["Library"] = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, "Library");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Library"], propertyId++, "Extension", typeof(string), kernelFunctionInfo.Extension, "The Kiosk Extension name or Core name into which the function is grouped.");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Library"], propertyId++, "Namespace", typeof(string), kernelFunctionInfo.Method.DeclaringType.FullName, "The namespace in which this function is defined");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Library"], propertyId++, "Module", typeof(string), kernelFunctionInfo.Method.Module.Name, "The DLL into which this method is compiled and distributed.");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Library"], propertyId++, "C# Function", typeof(string), kernelFunctionInfo.Method.Name, "The C# function which implements the API when it is called from Lua.");
+			functionCategories["Function"] = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, "Function");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Function"], propertyId++, "API Name", typeof(string), kernelFunctionInfo.Attributes[0].Name, "The API name which is accessible from the Lua runtime.");
+			m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Function"], propertyId++, "Return Type", typeof(string), kernelFunctionInfo.Method.ReturnType.Name, "The object type of the return value.");
+			functionCategories["Parameters"] = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, "Parameters");
 			ParameterInfo[] parameters = kernelFunctionInfo.Method.GetParameters();
 			if (parameters != null)
 			{
@@ -138,7 +138,7 @@ public class PropertiesToolWindow : ToolWindow
 					StringBuilder stringBuilder = new StringBuilder();
 					stringBuilder.Append("(" + (parameterInfo.IsOut ? "out" : "in") + ") ");
 					stringBuilder.Append(parameterInfo.ParameterType.Name + " ");
-					m_dynamicPropertyGrid.AppendManagedProperty(dictionary2["Parameters"], num++, parameterInfo.Name, typeof(string), stringBuilder.ToString(), string.Empty);
+					m_dynamicPropertyGrid.AppendManagedProperty(functionCategories["Parameters"], propertyId++, parameterInfo.Name, typeof(string), stringBuilder.ToString(), string.Empty);
 				}
 			}
 		}

@@ -58,18 +58,18 @@ public class RemoteServiceResult : IRemoteServiceResult
 
 	public T GetProperty<T>(string keyName)
 	{
-		object obj = (m_properties.ContainsKey(keyName) ? m_properties[keyName] : null);
+		object propertyValue = (m_properties.ContainsKey(keyName) ? m_properties[keyName] : null);
 		if (typeof(T) == typeof(string))
 		{
-			obj = ((obj != null) ? obj.ToString() : string.Empty);
+			propertyValue = ((propertyValue != null) ? propertyValue.ToString() : string.Empty);
 		}
 		else if (typeof(T) == typeof(int))
 		{
-			obj = GetInt(obj);
+			propertyValue = GetInt(propertyValue);
 		}
-		if (obj != null)
+		if (propertyValue != null)
 		{
-			return (T)obj;
+			return (T)propertyValue;
 		}
 		return default(T);
 	}

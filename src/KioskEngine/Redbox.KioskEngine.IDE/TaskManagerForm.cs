@@ -59,10 +59,10 @@ public class TaskManagerForm : Form
 			return;
 		}
 		m_isRefreshing = true;
-		int num = -1;
+		int selectedIndex = -1;
 		if (m_taskListView.SelectedIndices.Count > 0)
 		{
-			num = m_taskListView.SelectedIndices[0];
+			selectedIndex = m_taskListView.SelectedIndices[0];
 		}
 		m_taskListView.SuspendLayout();
 		m_taskListView.BeginUpdate();
@@ -81,9 +81,9 @@ public class TaskManagerForm : Form
 		}
 		m_taskListView.EndUpdate();
 		m_taskListView.ResumeLayout();
-		if (num != -1)
+		if (selectedIndex != -1)
 		{
-			m_taskListView.SelectedIndices.Add(num);
+			m_taskListView.SelectedIndices.Add(selectedIndex);
 		}
 		m_isRefreshing = false;
 	}

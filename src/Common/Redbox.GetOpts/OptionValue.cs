@@ -70,10 +70,10 @@ public class OptionValue
 
 	public override string ToString()
 	{
-		int num = 80;
+		int consoleWidth = 80;
 		try
 		{
-			num = Console.WindowWidth;
+			consoleWidth = Console.WindowWidth;
 		}
 		catch
 		{
@@ -105,28 +105,28 @@ public class OptionValue
 			text += ":key=value";
 		}
 		stringBuilder.AppendFormat("  {0,-15}", text);
-		int num2 = 15;
+		int column = 15;
 		if (m_definition.Required)
 		{
 			stringBuilder.Append("Required. ");
-			num2 += 10;
+			column += 10;
 		}
 		if (m_defaultValue != null)
 		{
-			string text2 = $"Default value is '{m_defaultValue.Value}'. ";
-			num2 += text2.Length;
-			stringBuilder.Append(text2);
+			string defaultText = $"Default value is '{m_defaultValue.Value}'. ";
+			column += defaultText.Length;
+			stringBuilder.Append(defaultText);
 		}
 		if (m_description != null)
 		{
-			foreach (string text3 in m_description.Description.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+			foreach (string word in m_description.Description.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 			{
-				stringBuilder.AppendFormat("{0} ", text3);
-				num2 += text3.Length + 1;
-				if (num2 > num - 15)
+				stringBuilder.AppendFormat("{0} ", word);
+				column += word.Length + 1;
+				if (column > consoleWidth - 15)
 				{
 					stringBuilder.Append("\n                 ");
-					num2 = 15;
+					column = 15;
 				}
 			}
 		}

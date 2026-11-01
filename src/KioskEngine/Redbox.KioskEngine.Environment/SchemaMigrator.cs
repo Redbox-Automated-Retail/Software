@@ -21,7 +21,7 @@ public static class SchemaMigrator
 			vistaDBCommand.CommandText = $"CREATE DATABASE '{path}', PAGE SIZE 1, LCID 1033, CASE SENSITIVE FALSE;";
 			vistaDBCommand.ExecuteNonQuery();
 		}
-		int? num = null;
+		int? schemaVersion = null;
 		using VistaDBConnection vistaDBConnection = new VistaDBConnection($"Data Source={path};Open Mode=ExclusiveReadWrite;");
 		vistaDBConnection.Open();
 		using (VistaDBCommand vistaDBCommand2 = new VistaDBCommand())
@@ -36,32 +36,32 @@ public static class SchemaMigrator
 				vistaDBCommand3.Connection = vistaDBConnection;
 				vistaDBCommand3.CommandText = "\r\n                                CREATE TABLE System( [Key] varchar(16) NOT NULL PRIMARY KEY, Value varchar(256) );\r\n                                INSERT INTO System([Key],Value) VALUES( 'SchemaVersion', '-1' );";
 				vistaDBCommand3.ExecuteNonQuery();
-				num = -1;
+				schemaVersion = -1;
 			}
 		}
-		if (!num.HasValue)
+		if (!schemaVersion.HasValue)
 		{
 			using VistaDBCommand vistaDBCommand4 = new VistaDBCommand();
 			vistaDBCommand4.Connection = vistaDBConnection;
 			vistaDBCommand4.CommandText = "SELECT Value FROM System WHERE [Key]='SchemaVersion'";
-			num = Convert.ToInt32(vistaDBCommand4.ExecuteScalar());
-			LogHelper.Instance.Log("...SchemaVersion is: {0}", num);
+			schemaVersion = Convert.ToInt32(vistaDBCommand4.ExecuteScalar());
+			LogHelper.Instance.Log("...SchemaVersion is: {0}", schemaVersion);
 		}
 		Assembly assembly = typeof(SchemaMigrator).Assembly;
-		string arg = typeof(SchemaMigrator).Namespace;
+		string namespaceName = typeof(SchemaMigrator).Namespace;
 		string fileName = Path.GetFileName(path);
-		string text = $"{arg}.Migrations.{fileName}";
-		List<string> list = new List<string>();
+		string resourcePrefix = $"{namespaceName}.Migrations.{fileName}";
+		List<string> migrationScripts = new List<string>();
 		string[] manifestResourceNames = assembly.GetManifestResourceNames();
-		foreach (string text2 in manifestResourceNames)
+		foreach (string resourceName in manifestResourceNames)
 		{
-			if (text2.StartsWith(text))
+			if (resourceName.StartsWith(resourcePrefix))
 			{
-				list.Add(text2);
+				migrationScripts.Add(resourceName);
 			}
 		}
-		list.Sort();
-		if (num == list.Count)
+		migrationScripts.Sort();
+		if (schemaVersion == migrationScripts.Count)
 		{
 			LogHelper.Instance.Log("...Schema is up-to-date.");
 			return;
@@ -69,15 +69,15 @@ public static class SchemaMigrator
 		try
 		{
 			LogHelper.Instance.Log("...Migrate schema to current version.");
-			if (num != -1)
+			if (schemaVersion != -1)
 			{
-				num--;
+				schemaVersion--;
 			}
-			for (int j = num.Value + 1; j < list.Count; j++)
+			for (int j = schemaVersion.Value + 1; j < migrationScripts.Count; j++)
 			{
-				string text3 = list[j];
-				LogHelper.Instance.Log("...Executing migration script: {0}", text3.Replace(text + ".", string.Empty));
-				using Stream stream = assembly.GetManifestResourceStream(text3);
+				string scriptName = migrationScripts[j];
+				LogHelper.Instance.Log("...Executing migration script: {0}", scriptName.Replace(resourcePrefix + ".", string.Empty));
+				using Stream stream = assembly.GetManifestResourceStream(scriptName);
 				using VistaDBCommand vistaDBCommand5 = new VistaDBCommand();
 				vistaDBCommand5.Connection = vistaDBConnection;
 				vistaDBCommand5.CommandText = Encoding.ASCII.GetString(stream.GetBytes());
@@ -87,7 +87,7 @@ public static class SchemaMigrator
 			vistaDBCommand6.Connection = vistaDBConnection;
 			vistaDBCommand6.CommandText = "UPDATE System SET Value = @Value WHERE [Key] = @Key";
 			vistaDBCommand6.Parameters.Add("@Key", "SchemaVersion");
-			vistaDBCommand6.Parameters.Add("@Value", list.Count);
+			vistaDBCommand6.Parameters.Add("@Value", migrationScripts.Count);
 			vistaDBCommand6.ExecuteNonQuery();
 		}
 		catch (Exception e)

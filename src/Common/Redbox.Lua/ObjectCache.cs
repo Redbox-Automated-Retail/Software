@@ -29,10 +29,10 @@ public class ObjectCache
 	{
 		if (m_idToObject.ContainsKey(id))
 		{
-			object obj = m_idToObject[id];
-			m_objectToId.Remove(obj);
+			object cached = m_idToObject[id];
+			m_objectToId.Remove(cached);
 			m_idToObject.Remove(id);
-			if (obj is IDisposable disposable)
+			if (cached is IDisposable disposable)
 			{
 				disposable.Dispose();
 			}

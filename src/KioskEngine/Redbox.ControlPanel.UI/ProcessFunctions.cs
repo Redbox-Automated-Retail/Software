@@ -422,19 +422,19 @@ internal static class ProcessFunctions
 	internal static void LaunchSecureBrowser(Dictionary<string, object> approvedUrls, NavigateUrlCallback navigateUrlCallback)
 	{
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
-		bool value = false;
-		bool flag = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
-		Dictionary<string, string> dictionary = new Dictionary<string, string>();
+		bool fieldVisitFormDisabled = false;
+		bool settingFound = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out fieldVisitFormDisabled) ?? false;
+		Dictionary<string, string> urls = new Dictionary<string, string>();
 		for (int i = 0; i <= approvedUrls.Keys.Count - 1; i++)
 		{
 			KeyValuePair<string, object> keyValuePair = approvedUrls.ElementAt(i);
-			if (!(flag & value) || !(keyValuePair.Key == "------------Field Visit Form------------"))
+			if (!(settingFound & fieldVisitFormDisabled) || !(keyValuePair.Key == "------------Field Visit Form------------"))
 			{
-				string value2 = ((!(keyValuePair.Key == "------------Field Visit Form------------") && !(keyValuePair.Key == "------------Install Check List------------")) ? ((string)keyValuePair.Value) : keyValuePair.Value.ToString().Replace("${StoreNumber}", kioskId.ToString()));
-				dictionary[keyValuePair.Key] = value2;
+				string url = ((!(keyValuePair.Key == "------------Field Visit Form------------") && !(keyValuePair.Key == "------------Install Check List------------")) ? ((string)keyValuePair.Value) : keyValuePair.Value.ToString().Replace("${StoreNumber}", kioskId.ToString()));
+				urls[keyValuePair.Key] = url;
 			}
 		}
-		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>().LaunchSecureBrowser(dictionary, navigateUrlCallback);
+		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>().LaunchSecureBrowser(urls, navigateUrlCallback);
 	}
 
 	internal static Dictionary<string, object> GetTable(string name)
@@ -459,18 +459,18 @@ internal static class ProcessFunctions
 			}
 			string key = string.Empty;
 			object value = new object();
-			foreach (XmlNode item2 in xmlNodeList2)
+			foreach (XmlNode propertyNode in xmlNodeList2)
 			{
-				string attributeValue = item2.GetAttributeValue<string>("name");
+				string attributeValue = propertyNode.GetAttributeValue<string>("name");
 				if (attributeValue == "title")
 				{
-					key = item2.GetNodeValue(string.Empty);
+					key = propertyNode.GetNodeValue(string.Empty);
 				}
 				if (attributeValue == "url")
 				{
-					value = item2.GetNodeValue(string.Empty);
+					value = propertyNode.GetNodeValue(string.Empty);
 				}
-				string attributeValue2 = item2.GetAttributeValue<string>("type");
+				string attributeValue2 = propertyNode.GetAttributeValue<string>("type");
 				if (!string.IsNullOrEmpty(attributeValue2))
 				{
 					Type type = attributeValue2.ToType();
@@ -566,26 +566,26 @@ internal static class ProcessFunctions
 		{
 			return;
 		}
-		int num = 0;
+		int itemIndex = 0;
 		foreach (Item item in items)
 		{
 			int deck = item.deck;
-			int? num2 = null;
-			num2 = Convert.ToInt32(deck);
+			int? deckNumber = null;
+			deckNumber = Convert.ToInt32(deck);
 			int slot = item.slot;
-			int? num3 = null;
-			num3 = Convert.ToInt32(slot);
+			int? slotNumber = null;
+			slotNumber = Convert.ToInt32(slot);
 			string barcode = item.barcode;
 			if (string.IsNullOrEmpty(barcode))
 			{
-				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {num2} and slot = {num3}; skipping this item.", LogEntryType.Error);
-				num++;
+				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {deckNumber} and slot = {slotNumber}; skipping this item.", LogEntryType.Error);
+				itemIndex++;
 			}
 			else
 			{
 				InventoryItemStatus status = Enum<InventoryItemStatus>.ParseIgnoringCase(item.status, InventoryItemStatus.In);
-				inventoryItems.Add(inventoryService.CreateInventoryItem(barcode, num2, num3, status));
-				num++;
+				inventoryItems.Add(inventoryService.CreateInventoryItem(barcode, deckNumber, slotNumber, status));
+				itemIndex++;
 			}
 		}
 	}

@@ -84,14 +84,14 @@ public class MostRecentlyUsedDictionary<K, V>
 
 	public bool Contains(K key)
 	{
-		bool num = m_dictionary.ContainsKey(key);
-		if (num)
+		bool found = m_dictionary.ContainsKey(key);
+		if (found)
 		{
 			LinkedListNode<V> node = m_dictionary[key];
 			m_list.Remove(node);
 			m_list.AddFirst(node);
 		}
-		return num;
+		return found;
 	}
 
 	public void Remove(K key)

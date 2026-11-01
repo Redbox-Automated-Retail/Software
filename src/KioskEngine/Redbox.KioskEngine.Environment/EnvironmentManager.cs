@@ -159,8 +159,8 @@ public class EnvironmentManager : IEnvironmentNotificationService
 			else
 			{
 				HasValidCardReader = true;
-				IClassicTrackDataService service3 = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
-				SetTrackDataService(service3);
+				IClassicTrackDataService classicTrackDataService = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
+				SetTrackDataService(classicTrackDataService);
 			}
 		}
 	}
@@ -222,9 +222,9 @@ public class EnvironmentManager : IEnvironmentNotificationService
 
 	public void NotifyConfigurationCallbacks(string store, string action, string path, string key, string newValue)
 	{
-		ConfigurationCallback[] array = new ConfigurationCallback[m_configurationCallbacks.Count];
-		m_configurationCallbacks.Values.CopyTo(array, 0);
-		foreach (ConfigurationCallback function in array)
+		ConfigurationCallback[] callbacks = new ConfigurationCallback[m_configurationCallbacks.Count];
+		m_configurationCallbacks.Values.CopyTo(callbacks, 0);
+		foreach (ConfigurationCallback function in callbacks)
 		{
 			CallbackService.Instance.EnqueueCallback(new ConfigurationCallbackEntry
 			{

@@ -88,19 +88,19 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 
 	private async Task<long> GetMaxReferenceNumber()
 	{
-		long result = 123456L;
+		long nextReferenceNumber = 123456L;
 		APIResponse<Redbox.KioskEngine.PreferenceManager.KioskEngineApiClient.Reservation.GetReservationsResponse> aPIResponse = await KioskEngineApiReservationClient.GetReservations();
 		if (aPIResponse != null && aPIResponse.IsSuccessStatusCode)
 		{
 			foreach (Redbox.KioskEngine.PreferenceManager.KioskEngineApiClient.Reservation.Reservation item in aPIResponse.Response.Content)
 			{
-				if (long.TryParse(item.ReferenceNumber, out var result2) && result2 >= result)
+				if (long.TryParse(item.ReferenceNumber, out var referenceNumber) && referenceNumber >= nextReferenceNumber)
 				{
-					result = result2 + 1;
+					nextReferenceNumber = referenceNumber + 1;
 				}
 			}
 		}
-		return result;
+		return nextReferenceNumber;
 	}
 
 	public static string GenerateHash(string sourcString)
@@ -148,12 +148,12 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 			string text = $"Reservation Created with reference # {_reservationRequest?.ReferenceNumber}.";
 			if (!aPIResponse.IsSuccessStatusCode)
 			{
-				string text2 = null;
+				string errorDetails = null;
 				if (aPIResponse.Errors != null && aPIResponse.Errors.Count > 0)
 				{
-					text2 = "Errors: " + string.Join(", ", aPIResponse.Errors?.Select((Redbox.Rental.Services.App.Error x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
+					errorDetails = "Errors: " + string.Join(", ", aPIResponse.Errors?.Select((Redbox.Rental.Services.App.Error x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
 				}
-				text = ((aPIResponse != null && aPIResponse.IsSuccessStatusCode) ? string.Empty : $"Creation failed. {System.Environment.NewLine}Status code: {(int)aPIResponse.StatusCode} {aPIResponse.StatusCode} {text2}");
+				text = ((aPIResponse != null && aPIResponse.IsSuccessStatusCode) ? string.Empty : $"Creation failed. {System.Environment.NewLine}Status code: {(int)aPIResponse.StatusCode} {aPIResponse.StatusCode} {errorDetails}");
 				try
 				{
 					aPIResponse.Response = JsonConvert.DeserializeObject<Redbox.KioskEngine.PreferenceManager.KioskEngineApiClient.Reservation.CreateReservationResponse>(aPIResponse.ResponseContent);
@@ -164,12 +164,12 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 				}
 				if (aPIResponse?.Response?.Errors != null)
 				{
-					text2 = null;
+					errorDetails = null;
 					if (aPIResponse.Response.Errors.Count > 0)
 					{
-						text2 = System.Environment.NewLine + string.Join(", ", aPIResponse.Response.Errors?.Select((ResponseError x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
+						errorDetails = System.Environment.NewLine + string.Join(", ", aPIResponse.Response.Errors?.Select((ResponseError x) => "Code: " + x.Code + ", Message: " + x.Message).ToArray());
 					}
-					text += text2;
+					text += errorDetails;
 				}
 			}
 			SimpleMessageWindow.Show(ControlUtilities.GetParentWindow(this), "Reservation Creation Result", text);
@@ -198,12 +198,12 @@ public partial class CreateReservationUserControl : UserControl, Redbox.KioskEng
 		try
 		{
 			_reservationRequest.SubTotal = _reservationRequest.Titles?.Sum((ReservationRequestTitle x) => x.Price) ?? 0m;
-			decimal num = _reservationRequest.Titles?.Sum((ReservationRequestTitle x) => x.Discount) ?? 0m;
-			_reservationRequest.DiscountedSubTotal = _reservationRequest.SubTotal - num;
+			decimal discount = _reservationRequest.Titles?.Sum((ReservationRequestTitle x) => x.Discount) ?? 0m;
+			_reservationRequest.DiscountedSubTotal = _reservationRequest.SubTotal - discount;
 			decimal tax = _reservationRequest.TaxRate / 100m * _reservationRequest.DiscountedSubTotal;
 			_reservationRequest.Tax = tax;
-			decimal num2 = (_storeInfo?.ServiceFeeTaxRate ?? 0m) / 100m * _reservationRequest.ActualServiceFeeAmount;
-			_reservationRequest.GrandTotal = _reservationRequest.DiscountedSubTotal + _reservationRequest.Tax + _reservationRequest.ActualServiceFeeAmount + num2;
+			decimal serviceFeeTax = (_storeInfo?.ServiceFeeTaxRate ?? 0m) / 100m * _reservationRequest.ActualServiceFeeAmount;
+			_reservationRequest.GrandTotal = _reservationRequest.DiscountedSubTotal + _reservationRequest.Tax + _reservationRequest.ActualServiceFeeAmount + serviceFeeTax;
 			base.DataContext = null;
 			base.DataContext = _reservationRequest;
 		}

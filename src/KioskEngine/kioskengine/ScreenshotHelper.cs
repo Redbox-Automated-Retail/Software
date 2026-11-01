@@ -23,18 +23,17 @@ public static class ScreenshotHelper
 			Directory.CreateDirectory(text);
 		}
 		string[] files = Directory.GetFiles(text, "screenshot_*.png");
-		int num = 0;
-		string[] array = files;
-		for (int i = 0; i < array.Length; i++)
+		int highestNumber = 0;
+		for (int i = 0; i < files.Length; i++)
 		{
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(array[i]);
+			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(files[i]);
 			int index = fileNameWithoutExtension.IndexOf("_");
-			if (index >= 0 && int.TryParse(fileNameWithoutExtension.Substring(index + 1), out var result) && result > num)
+			if (index >= 0 && int.TryParse(fileNameWithoutExtension.Substring(index + 1), out var number) && number > highestNumber)
 			{
-				num = result;
+				highestNumber = number;
 			}
 		}
-		string path = $"screenshot_{num + 1}.png";
+		string path = $"screenshot_{highestNumber + 1}.png";
 		bitmap.Save(Path.Combine(text, path), ImageFormat.Png);
 	}
 }

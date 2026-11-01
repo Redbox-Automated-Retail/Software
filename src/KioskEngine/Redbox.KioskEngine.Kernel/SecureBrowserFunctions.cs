@@ -12,13 +12,13 @@ internal static class SecureBrowserFunctions
 	internal static void LaunchSecureBrowser(LuaTable approvedUrls, NavigateUrlCallback navigateUrlCallback)
 	{
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
-		bool value = false;
-		bool flag = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
+		bool fieldVisitFormDisabled = false;
+		bool settingFound = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out fieldVisitFormDisabled) ?? false;
 		Dictionary<string, string> dictionary = new Dictionary<string, string>();
 		for (int i = 1; i <= approvedUrls.Keys.Count; i++)
 		{
 			LuaTable luaTable = (LuaTable)approvedUrls[i];
-			if (!(flag & value) || !((string)luaTable["title"] == "------------Field Visit Form------------"))
+			if (!(settingFound & fieldVisitFormDisabled) || !((string)luaTable["title"] == "------------Field Visit Form------------"))
 			{
 				dictionary[(string)luaTable["title"]] = (string)luaTable["url"];
 			}

@@ -108,9 +108,9 @@ public static class CardHelper
 
 	public static string GenerateReservationCardId(string firstSix, string lastFour)
 	{
-		string text = GenerateHash(firstSix);
-		string text2 = GenerateHash(lastFour);
-		return text + text2;
+		string firstSixHash = GenerateHash(firstSix);
+		string lastFourHash = GenerateHash(lastFour);
+		return firstSixHash + lastFourHash;
 	}
 
 	public static string GenerateHash(string sourcString)
@@ -282,11 +282,11 @@ public static class CardHelper
 	{
 		if (trackData.CardType == CardType.RedboxGiftCard && trackData is IUnencryptedTrackData unencryptedTrackData)
 		{
-			string[] array = ExtractFromSecure(unencryptedTrackData.Track2).Split('=');
+			string[] track2Fields = ExtractFromSecure(unencryptedTrackData.Track2).Split('=');
 			LogHelper.Instance.Log("Using First Data account number parsing.");
-			if (array != null && array.Length >= 1 && array[0] != null && array[0].Length >= 15 && array[1] != null && array[1].Length >= 20)
+			if (track2Fields != null && track2Fields.Length >= 1 && track2Fields[0] != null && track2Fields[0].Length >= 15 && track2Fields[1] != null && track2Fields[1].Length >= 20)
 			{
-				unencryptedTrackData.AccountNumber = CopyToSecure(array[1].Substring(12, 1) + array[1].Substring(14, 2) + array[0].Substring(6, 9) + array[1].Substring(16, 4));
+				unencryptedTrackData.AccountNumber = CopyToSecure(track2Fields[1].Substring(12, 1) + track2Fields[1].Substring(14, 2) + track2Fields[0].Substring(6, 9) + track2Fields[1].Substring(16, 4));
 			}
 			else
 			{
@@ -316,25 +316,25 @@ public static class CardHelper
 		ErrorList errors = unencryptedTrackData.Errors;
 		try
 		{
-			string[] array = ExtractFromSecure(value).Split(';');
-			if (array.Length == 0)
+			string[] tracks = ExtractFromSecure(value).Split(';');
+			if (tracks.Length == 0)
 			{
 				errors.Add(ErrorCodes.NewInvalidTracksError());
 				return unencryptedTrackData;
 			}
-			if (array.Length > 1)
+			if (tracks.Length > 1)
 			{
-				unencryptedTrackData.Track1 = CopyToSecure(array[0]);
-				unencryptedTrackData.Track2 = CopyToSecure(array[1]);
+				unencryptedTrackData.Track1 = CopyToSecure(tracks[0]);
+				unencryptedTrackData.Track2 = CopyToSecure(tracks[1]);
 				ParseNameData(unencryptedTrackData);
 			}
-			else if (array.Length != 0)
+			else if (tracks.Length != 0)
 			{
 				unencryptedTrackData.Track1.Clear();
-				unencryptedTrackData.Track2 = CopyToSecure(array[0]);
+				unencryptedTrackData.Track2 = CopyToSecure(tracks[0]);
 			}
-			string[] array2 = ExtractFromSecure(unencryptedTrackData.Track2).Split('=');
-			unencryptedTrackData.AccountNumber = CopyToSecure(array2[0]);
+			string[] track2Fields = ExtractFromSecure(unencryptedTrackData.Track2).Split('=');
+			unencryptedTrackData.AccountNumber = CopyToSecure(track2Fields[0]);
 			AssignCardType(unencryptedTrackData, ExtractFromSecure(unencryptedTrackData.AccountNumber));
 			if (unencryptedTrackData.CardType == CardType.RedboxGiftCard)
 			{
@@ -352,8 +352,8 @@ public static class CardHelper
 			}
 			unencryptedTrackData.FirstSix = ExtractFromSecure(unencryptedTrackData.AccountNumber).Substring(0, 6);
 			unencryptedTrackData.LastFour = ExtractFromSecure(unencryptedTrackData.AccountNumber).Substring(unencryptedTrackData.AccountNumber.Length - 4);
-			unencryptedTrackData.ExpiryYear = array2[1].Substring(0, 2);
-			unencryptedTrackData.ExpiryMonth = array2[1].Substring(2, 2);
+			unencryptedTrackData.ExpiryYear = track2Fields[1].Substring(0, 2);
+			unencryptedTrackData.ExpiryMonth = track2Fields[1].Substring(2, 2);
 			if (unencryptedTrackData.Track2.Length > 1)
 			{
 				unencryptedTrackData.Track2 = CopyToSecure(ExtractFromSecure(unencryptedTrackData.Track2).Substring(0, ExtractFromSecure(unencryptedTrackData.Track2).IndexOf("?")));

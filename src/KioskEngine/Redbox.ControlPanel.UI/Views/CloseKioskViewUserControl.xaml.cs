@@ -132,7 +132,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 		List<IHardwareResult> list = ProcessFunctions.HardwareGetProgramResults(jobid);
 		if (list != null)
 		{
-			List<ProcessFunctions.Item> list2 = (from item in list
+			List<ProcessFunctions.Item> kioskItems = (from item in list
 				where !string.IsNullOrEmpty(item.ItemID) && item.ItemID.ToLower() != "unknown" && item.ItemID.ToLower() != "redbox" && item.ItemID.ToLower() != "empty" && item.ItemID.ToLower() != "undefined" && item.Deck != 0 && item.Slot != 0
 				select new ProcessFunctions.Item
 				{
@@ -141,8 +141,8 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 					slot = item.Slot,
 					status = "Removed"
 				}).ToList();
-			ProcessFunctions.kioskItemsCount = list2.Count();
-			SnapshotImmediate(ProcessFunctions.kioskId.ToString(), list2, callBackDelegate);
+			ProcessFunctions.kioskItemsCount = kioskItems.Count();
+			SnapshotImmediate(ProcessFunctions.kioskId.ToString(), kioskItems, callBackDelegate);
 		}
 	}
 

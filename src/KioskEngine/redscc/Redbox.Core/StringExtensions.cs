@@ -48,13 +48,13 @@ public static class StringExtensions
 		MatchCollection matchCollection = Regex.Matches(source, "(?n:((?<name>[\\w-_]*)=(?<val>[\\w-_\\\\\\/\\(\\)\\,'\\.\\s]*)))");
 		foreach (Match item in matchCollection)
 		{
-			Group obj = item.Groups["name"];
-			Group obj2 = item.Groups["val"];
-			if (obj.Captures.Count == obj2.Captures.Count)
+			Group names = item.Groups["name"];
+			Group values = item.Groups["val"];
+			if (names.Captures.Count == values.Captures.Count)
 			{
-				for (int i = 0; i < obj.Captures.Count; i++)
+				for (int i = 0; i < names.Captures.Count; i++)
 				{
-					dictionary[obj.Captures[i].Value] = obj2.Captures[i].Value;
+					dictionary[names.Captures[i].Value] = values.Captures[i].Value;
 				}
 			}
 		}
@@ -203,13 +203,13 @@ public static class StringExtensions
 		{
 			return cardNumber;
 		}
-		int num = cardNumber.Length - 4;
+		int maskLength = cardNumber.Length - 4;
 		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < num; i++)
+		for (int i = 0; i < maskLength; i++)
 		{
 			stringBuilder.Append("X");
 		}
-		stringBuilder.Append(cardNumber.Substring(num));
+		stringBuilder.Append(cardNumber.Substring(maskLength));
 		return stringBuilder.ToString();
 	}
 
@@ -278,8 +278,8 @@ public static class StringExtensions
 			}
 			try
 			{
-				object obj3 = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
-				current = obj3;
+				object memberValue = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				current = memberValue;
 				if (current == null)
 				{
 					break;

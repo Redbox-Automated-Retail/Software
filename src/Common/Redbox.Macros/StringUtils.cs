@@ -43,17 +43,17 @@ public static class StringUtils
 		{
 			separator = string.Empty;
 		}
-		string[] array = new string[value.Count];
-		value.CopyTo(array, 0);
-		return string.Join(separator, array);
+		string[] items = new string[value.Count];
+		value.CopyTo(items, 0);
+		return string.Join(separator, items);
 	}
 
 	public static StringCollection Clone(StringCollection stringCollection)
 	{
-		string[] array = new string[stringCollection.Count];
-		stringCollection.CopyTo(array, 0);
-		StringCollection stringCollection2 = new StringCollection();
-		stringCollection2.AddRange(array);
-		return stringCollection2;
+		string[] items = new string[stringCollection.Count];
+		stringCollection.CopyTo(items, 0);
+		StringCollection clone = new StringCollection();
+		clone.AddRange(items);
+		return clone;
 	}
 }

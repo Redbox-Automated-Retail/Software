@@ -19,8 +19,8 @@ internal static class MathFunctions
 		RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 		byte[] buffer = new byte[4];
 		rNGCryptoServiceProvider.GetBytes(buffer);
-		int num = BitConverter.ToInt32(buffer, 0);
-		return min + Math.Abs(num % (max - min));
+		int randomValue = BitConverter.ToInt32(buffer, 0);
+		return min + Math.Abs(randomValue % (max - min));
 	}
 
 	[KernelFunction(Name = "kernel.formatasbytesize")]

@@ -285,16 +285,16 @@ internal sealed class NrbfReader
 
 	private NrbfObject ReadClassMembers(int id, ClassMetadata metadata)
 	{
-		NrbfObject obj = new NrbfObject(id, metadata.Name, metadata.LibraryName, metadata.MemberNames);
-		Register(obj);
+		NrbfObject record = new NrbfObject(id, metadata.Name, metadata.LibraryName, metadata.MemberNames);
+		Register(record);
 		for (int i = 0; i < metadata.MemberNames.Length; i++)
 		{
 			NrbfMemberType? memberType = metadata.MemberTypes?[i];
-			obj.Values[i] = memberType is { BinaryType: NrbfBinaryType.Primitive }
+			record.Values[i] = memberType is { BinaryType: NrbfBinaryType.Primitive }
 				? ReadPrimitive(memberType.Value.Primitive)
 				: ReadValueRecord(out _);
 		}
-		return obj;
+		return record;
 	}
 
 	// MS-NRBF 2.3.1.2 MemberTypeInfo: all BinaryTypeEnums first, then the AdditionalInfo of those that have one.
@@ -434,13 +434,13 @@ internal sealed class NrbfReader
 	{
 		switch (value)
 		{
-			case NrbfObject obj:
-				_objects[obj.Id] = obj;
-				_allObjects.Add(obj);
+			case NrbfObject objectRecord:
+				_objects[objectRecord.Id] = objectRecord;
+				_allObjects.Add(objectRecord);
 				break;
-			case NrbfArray array:
-				_objects[array.Id] = array;
-				_allArrays.Add(array);
+			case NrbfArray arrayRecord:
+				_objects[arrayRecord.Id] = arrayRecord;
+				_allArrays.Add(arrayRecord);
 				break;
 		}
 		return value;
@@ -448,13 +448,13 @@ internal sealed class NrbfReader
 
 	private void ResolveReferences()
 	{
-		foreach (NrbfObject obj in _allObjects)
+		foreach (NrbfObject objectRecord in _allObjects)
 		{
-			Resolve(obj.Values);
+			Resolve(objectRecord.Values);
 		}
-		foreach (NrbfArray array in _allArrays)
+		foreach (NrbfArray arrayRecord in _allArrays)
 		{
-			Resolve(array.Items);
+			Resolve(arrayRecord.Items);
 		}
 	}
 

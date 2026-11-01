@@ -103,16 +103,16 @@ public class TextToSpeechService : ITextToSpeechService
 	{
 		get
 		{
-			int num = ServiceLocator.Instance.GetService<IConfiguration>()?.TextToSpeechVolume ?? 100;
-			if (num < 0)
+			int volume = ServiceLocator.Instance.GetService<IConfiguration>()?.TextToSpeechVolume ?? 100;
+			if (volume < 0)
 			{
-				num = 0;
+				volume = 0;
 			}
-			if (num > 100)
+			if (volume > 100)
 			{
-				num = 100;
+				volume = 100;
 			}
-			return num;
+			return volume;
 		}
 	}
 
@@ -280,12 +280,12 @@ public class TextToSpeechService : ITextToSpeechService
 		{
 			speechPart?.Refresh();
 		}
-		int num = -1;
+		int currentSequence = -1;
 		if (_currentSpeechPart != null && speechPart.SpeechControl == _currentSpeechPart.SpeechControl)
 		{
-			num = _currentSpeechPart.Sequence;
+			currentSequence = _currentSpeechPart.Sequence;
 		}
-		if (num == speechPart.Sequence)
+		if (currentSequence == speechPart.Sequence)
 		{
 			LogHelper.Instance.Log("TTS((> Repeat speech control {0} part #{1} {2}", speechPart?.SpeechControl?.Name, speechPart?.Sequence.ToString(), speechPart?.Name);
 		}
@@ -377,90 +377,90 @@ public class TextToSpeechService : ITextToSpeechService
 					{
 					case "TTSVolumeUp":
 					{
-						Action value8 = delegate
+						Action keyHandler = delegate
 						{
 							TTSVolumeUp();
 							string speech = ((eachSpeechPartEvent.Text != null) ? eachSpeechPartEvent.Text : "Volume Up");
 							SayTTS(speech);
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value8);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSVolumeDown":
 					{
-						Action value7 = delegate
+						Action keyHandler = delegate
 						{
 							TTSVolumeDown();
 							string speech = ((eachSpeechPartEvent.Text != null) ? eachSpeechPartEvent.Text : "Volume Down");
 							SayTTS(speech);
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value7);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSFaster":
 					{
-						Action value6 = delegate
+						Action keyHandler = delegate
 						{
 							TTSFaster();
 							SayTTS("Faster");
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value6);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSSlower":
 					{
-						Action value5 = delegate
+						Action keyHandler = delegate
 						{
 							TTSSlower();
 							SayTTS("Slower");
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value5);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSRepeatSpeechPart":
 					{
-						Action value4 = delegate
+						Action keyHandler = delegate
 						{
 							int sequence = _currentSpeechPart.Sequence;
 							RunSpeechPart(_speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == sequence));
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value4);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSSkipToSpeechPart":
 					{
-						Action value3 = delegate
+						Action keyHandler = delegate
 						{
 							if (eachSpeechPartEvent.Value != null)
 							{
 								int goToSequence = 0;
-								bool num = int.TryParse(eachSpeechPartEvent.Value, out goToSequence);
-								ISpeechPart speechPart2 = null;
-								speechPart2 = ((!num) ? _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == eachSpeechPartEvent.Value) : _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
-								RunSpeechPart(speechPart2);
+								bool isSequenceNumber = int.TryParse(eachSpeechPartEvent.Value, out goToSequence);
+								ISpeechPart targetPart = null;
+								targetPart = ((!isSequenceNumber) ? _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == eachSpeechPartEvent.Value) : _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
+								RunSpeechPart(targetPart);
 							}
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value3);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSNextSpeechPart":
 					{
-						Action value2 = delegate
+						Action keyHandler = delegate
 						{
 							int sequence = _currentSpeechPart.Sequence;
-							ISpeechPart speechPart2 = _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == sequence + 1);
-							if (speechPart2 != null)
+							ISpeechPart targetPart = _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == sequence + 1);
+							if (targetPart != null)
 							{
 								ServiceLocator.Instance.GetService<ITimerService>()?.RemoveTimer("TTSTimer");
-								RunSpeechPart(speechPart2);
+								RunSpeechPart(targetPart);
 							}
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value2);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					case "TTSNextAudioSnippet":
 					{
-						Action value = delegate
+						Action keyHandler = delegate
 						{
 							if (m_textQueue.Count > 0)
 							{
@@ -471,7 +471,7 @@ public class TextToSpeechService : ITextToSpeechService
 								ReaderNothingLeftToSay();
 							}
 						};
-						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value);
+						m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 						break;
 					}
 					}
@@ -482,7 +482,7 @@ public class TextToSpeechService : ITextToSpeechService
 					{
 						continue;
 					}
-					Action value9 = delegate
+					Action keyHandler = delegate
 					{
 						string text = eachSpeechPartEvent.Text;
 						foreach (KeyValuePair<string, string> item in m_macrosFound)
@@ -491,7 +491,7 @@ public class TextToSpeechService : ITextToSpeechService
 						}
 						SayTTS(text);
 					};
-					m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, value9);
+					m_keyHandlers.Add(eachSpeechPartEvent.KeyCode, keyHandler);
 				}
 			}
 			else if (eachSpeechPartEvent is IMapKeyPressToActorHit)
@@ -502,11 +502,11 @@ public class TextToSpeechService : ITextToSpeechService
 					continue;
 				}
 				string actor_name = mapKeyPressToActorHitEvent.ActorName;
-				foreach (KeyValuePair<string, string> item2 in m_macrosFound)
+				foreach (KeyValuePair<string, string> macro in m_macrosFound)
 				{
-					actor_name = actor_name.Replace("{{" + item2.Key + "}}", item2.Value);
+					actor_name = actor_name.Replace("{{" + macro.Key + "}}", macro.Value);
 				}
-				Action value10 = delegate
+				Action keyHandler = delegate
 				{
 					LogHelper.Instance.Log("TTS((> actor_name:" + actor_name);
 					if (!string.IsNullOrEmpty(mapKeyPressToActorHitEvent.Command))
@@ -523,9 +523,9 @@ public class TextToSpeechService : ITextToSpeechService
 						{
 							string text = mapKeyPressToActorHitEvent.Text;
 							LogHelper.Instance.Log("TTS((> Say Action: " + text);
-							foreach (KeyValuePair<string, string> item3 in m_macrosFound)
+							foreach (KeyValuePair<string, string> macro in m_macrosFound)
 							{
-								text = text.Replace("{{" + item3.Key + "}}", item3.Value);
+								text = text.Replace("{{" + macro.Key + "}}", macro.Value);
 							}
 							LogHelper.Instance.Log("TTS((> Say Action: " + text);
 							SayTTS(text);
@@ -545,7 +545,7 @@ public class TextToSpeechService : ITextToSpeechService
 					IActor actor = viewFrame.Scene.GetActor(actor_name);
 					if (actor != null && (!string.IsNullOrEmpty(mapKeyPressToActorHitEvent.Command) || (actor.Visible && actor.Enabled)))
 					{
-						m_keyHandlers.Add(mapKeyPressToActorHitEvent.KeyCode, value10);
+						m_keyHandlers.Add(mapKeyPressToActorHitEvent.KeyCode, keyHandler);
 					}
 				}
 			}
@@ -560,7 +560,7 @@ public class TextToSpeechService : ITextToSpeechService
 				{
 					continue;
 				}
-				Action value11 = delegate
+				Action keyHandler = delegate
 				{
 					mapKeyPressToAction.Action();
 					if (mapKeyPressToAction.ActionText != null)
@@ -571,9 +571,9 @@ public class TextToSpeechService : ITextToSpeechService
 					{
 						string text = mapKeyPressToAction.Text;
 						LogHelper.Instance.Log("Say Action: " + text);
-						foreach (KeyValuePair<string, string> item4 in m_macrosFound)
+						foreach (KeyValuePair<string, string> macro in m_macrosFound)
 						{
-							text = text.Replace("{{" + item4.Key + "}}", item4.Value);
+							text = text.Replace("{{" + macro.Key + "}}", macro.Value);
 						}
 						LogHelper.Instance.Log("Say Action: " + text);
 						SayTTS(text);
@@ -581,11 +581,11 @@ public class TextToSpeechService : ITextToSpeechService
 					if (mapKeyPressToAction.Function == "TTSSkipToSpeechPart" && mapKeyPressToAction.Value != null)
 					{
 						int goToSequence = 0;
-						ISpeechPart speechPart2 = null;
-						speechPart2 = ((!int.TryParse(mapKeyPressToAction.Value, out goToSequence)) ? _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == mapKeyPressToAction.Value) : _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
-						if (speechPart2 != null)
+						ISpeechPart targetPart = null;
+						targetPart = ((!int.TryParse(mapKeyPressToAction.Value, out goToSequence)) ? _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == mapKeyPressToAction.Value) : _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
+						if (targetPart != null)
 						{
-							RunSpeechPartAfterDelay(speechPart2, _currentSpeechPart?.EndPause ?? 0);
+							RunSpeechPartAfterDelay(targetPart, _currentSpeechPart?.EndPause ?? 0);
 						}
 					}
 					if (mapKeyPressToAction.Function == "TTSRepeatSpeechPart")
@@ -593,7 +593,7 @@ public class TextToSpeechService : ITextToSpeechService
 						TTSRepeatSequence();
 					}
 				};
-				m_keyHandlers.Add(mapKeyPressToAction.KeyCode, value11);
+				m_keyHandlers.Add(mapKeyPressToAction.KeyCode, keyHandler);
 			}
 		}
 		KeyPressHandler handler = delegate(string key, int keyCode, string modifier)
@@ -744,11 +744,11 @@ public class TextToSpeechService : ITextToSpeechService
 		LogHelper.Instance.Log("TTS((> Final Key Sequence: " + m_keySequence);
 		if (m_keyHandlers.ContainsKey(m_keySequence))
 		{
-			Delegate obj = m_keyHandlers[m_keySequence];
+			Delegate handler = m_keyHandlers[m_keySequence];
 			m_keySequence = "";
-			if ((object)obj != null)
+			if ((object)handler != null)
 			{
-				obj.DynamicInvoke();
+				handler.DynamicInvoke();
 			}
 			else
 			{
@@ -824,12 +824,12 @@ public class TextToSpeechService : ITextToSpeechService
 		{
 			return;
 		}
-		foreach (XmlNode item2 in xmlNodeList)
+		foreach (XmlNode valueNode in xmlNodeList)
 		{
-			string attributeValue = item2.GetAttributeValue<string>("default");
+			string attributeValue = valueNode.GetAttributeValue<string>("default");
 			NeededMacro item = new NeededMacro
 			{
-				Name = item2.InnerText,
+				Name = valueNode.InnerText,
 				Default = attributeValue
 			};
 			speechPart.NeededMacros.Add(item);
@@ -888,21 +888,21 @@ public class TextToSpeechService : ITextToSpeechService
 		{
 			return;
 		}
-		foreach (XmlNode item2 in xmlNode)
+		foreach (XmlNode eventNode in xmlNode)
 		{
 			SpeechPartEvent item = null;
-			string attributeValue = item2.GetAttributeValue<string>("keyCode");
-			XmlNode xmlNode3 = item2.SelectSingleNode("function");
-			XmlNode xmlNode4 = item2.SelectSingleNode("text");
-			XmlNode xmlNode5 = item2.SelectSingleNode("value");
-			string name = item2.Name;
+			string attributeValue = eventNode.GetAttributeValue<string>("keyCode");
+			XmlNode xmlNode3 = eventNode.SelectSingleNode("function");
+			XmlNode xmlNode4 = eventNode.SelectSingleNode("text");
+			XmlNode xmlNode5 = eventNode.SelectSingleNode("value");
+			string name = eventNode.Name;
 			if (!(name == "mapKeyPress"))
 			{
 				if (name == "mapKeyPressToActorHit")
 				{
-					XmlNode xmlNode6 = item2.SelectSingleNode("actorName");
-					XmlNode xmlNode7 = item2.SelectSingleNode("command");
-					XmlNode xmlNode8 = item2.SelectSingleNode("parameter");
+					XmlNode xmlNode6 = eventNode.SelectSingleNode("actorName");
+					XmlNode xmlNode7 = eventNode.SelectSingleNode("command");
+					XmlNode xmlNode8 = eventNode.SelectSingleNode("parameter");
 					item = new MapKeyPressToActorHit
 					{
 						KeyCode = attributeValue,
@@ -1030,9 +1030,9 @@ public class TextToSpeechService : ITextToSpeechService
 		ISpeechPart speechPart = _currentSpeechPart;
 		if (!_currentSpeechPart.Loop && _speechControl.SpeechParts.Count > 1)
 		{
-			int num = _speechControl.SpeechParts.Max((ISpeechPart x) => x.Sequence);
+			int maxSequence = _speechControl.SpeechParts.Max((ISpeechPart x) => x.Sequence);
 			int minSequence = _speechControl.SpeechParts.Min((ISpeechPart x) => x.Sequence);
-			if (_currentSpeechPart.Sequence == num)
+			if (_currentSpeechPart.Sequence == maxSequence)
 			{
 				speechPart = _speechControl.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == minSequence);
 			}
@@ -1146,20 +1146,20 @@ public class TextToSpeechService : ITextToSpeechService
 				LogHelper.Instance.Log("TTS((> actor is NOT ENABLED.");
 				return;
 			}
-			int num = FindWindow(null, "Redbox Kiosk Engine");
-			if (num > 0)
+			int windowHandle = FindWindow(null, "Redbox Kiosk Engine");
+			if (windowHandle > 0)
 			{
 				RECT lprect = default(RECT);
-				GetWindowRect(num, out lprect);
+				GetWindowRect(windowHandle, out lprect);
 				int x = lprect.X + actor.X + (int)Math.Floor((double)(actor.Width / 2));
-				int num2 = lprect.Y + actor.Y + (int)Math.Floor((double)(actor.Height / 2));
+				int y = lprect.Y + actor.Y + (int)Math.Floor((double)(actor.Height / 2));
 				if (Debugger.IsAttached)
 				{
-					num2 += 25;
+					y += 25;
 				}
-				Cursor.Position = new Point(x, num2);
+				Cursor.Position = new Point(x, y);
 				Thread.Sleep(10);
-				MouseClick(x, num2);
+				MouseClick(x, y);
 			}
 		}
 		catch (Exception ex)

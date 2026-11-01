@@ -154,9 +154,9 @@ public class PropertyDictionary : DictionaryBase
 
 	protected override void OnRemove(object key, object value)
 	{
-		if (key is string value2 && m_readOnlyProperties.Contains(value2))
+		if (key is string name && m_readOnlyProperties.Contains(name))
 		{
-			m_readOnlyProperties.Remove(value2);
+			m_readOnlyProperties.Remove(name);
 		}
 	}
 
@@ -235,19 +235,19 @@ public class PropertyDictionary : DictionaryBase
 			builder.Append("Expression: ");
 			builder.Append(text);
 			int startPos = ex.StartPos;
-			int num = ex.EndPos;
-			if (startPos != -1 || num != -1)
+			int endPos = ex.EndPos;
+			if (startPos != -1 || endPos != -1)
 			{
 				builder.Append(Environment.NewLine);
-				if (num == -1)
+				if (endPos == -1)
 				{
-					num = startPos + 1;
+					endPos = startPos + 1;
 				}
 				for (int i = 0; i < startPos + "Expression: ".Length; i++)
 				{
 					builder.Append(' ');
 				}
-				for (int j = startPos; j < num; j++)
+				for (int j = startPos; j < endPos; j++)
 				{
 					builder.Append('^');
 				}

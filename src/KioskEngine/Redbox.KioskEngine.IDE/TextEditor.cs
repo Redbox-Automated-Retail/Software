@@ -44,18 +44,18 @@ public class TextEditor : UserControl
 		if (lineNumber < m_codeEditor.LineCount)
 		{
 			ClearCurrentLineSymbol();
-			int num = lineNumber - 1;
-			if (num < 0)
+			int lineIndex = lineNumber - 1;
+			if (lineIndex < 0)
 			{
-				num = 0;
+				lineIndex = 0;
 			}
-			m_codeEditor.GotoLine(num);
-			int num2 = num - 5;
-			if (num2 < 0)
+			m_codeEditor.GotoLine(lineIndex);
+			int firstVisibleLine = lineIndex - 5;
+			if (firstVisibleLine < 0)
 			{
-				num2 = 0;
+				firstVisibleLine = 0;
 			}
-			m_codeEditor.ScrollIntoView(num2);
+			m_codeEditor.ScrollIntoView(firstVisibleLine);
 			ShowCurrentLineSymbol();
 		}
 		if (!string.IsNullOrEmpty(error) && string.Compare(error, "breakpoint hit", ignoreCase: true) != 0)

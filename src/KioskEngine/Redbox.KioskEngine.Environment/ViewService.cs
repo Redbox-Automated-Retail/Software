@@ -214,8 +214,8 @@ public class ViewService : IViewService
 			IBaseViewFrame viewFrame3 = viewFrameInstance.ViewFrame;
 			if (viewFrame3 != null)
 			{
-				string text2 = (viewFrame3 as IViewFrame)?.Scene?.Actors?.First?.Value?.Name;
-				object tag = ((viewFrame3 is IWPFViewFrame) ? ((object)viewFrameInstance.Id) : text2);
+				string firstActorName = (viewFrame3 as IViewFrame)?.Scene?.Actors?.First?.Value?.Name;
+				object tag = ((viewFrame3 is IWPFViewFrame) ? ((object)viewFrameInstance.Id) : firstActorName);
 				FrameworkElement wPFGridChild = viewFrame3.Scene.GetWPFGridChild(tag);
 				if (wPFGridChild != null)
 				{
@@ -259,11 +259,11 @@ public class ViewService : IViewService
 					list.Add(item.Key);
 				}
 			}
-			foreach (string item2 in list)
+			foreach (string key in list)
 			{
-				if (m_viewFrameCache.ContainsKey(item2))
+				if (m_viewFrameCache.ContainsKey(key))
 				{
-					m_viewFrameCache.Remove(item2);
+					m_viewFrameCache.Remove(key);
 				}
 			}
 		}
@@ -310,8 +310,8 @@ public class ViewService : IViewService
 	public string GetCurrentViewAnalyticsName()
 	{
 		IViewFrameInstance viewFrameInstance = InnerStack.Peek();
-		object obj = (viewFrameInstance?.Parameter as IViewAnalyticsName)?.ViewAnalyticsName;
-		if (obj == null)
+		object analyticsName = (viewFrameInstance?.Parameter as IViewAnalyticsName)?.ViewAnalyticsName;
+		if (analyticsName == null)
 		{
 			if (viewFrameInstance == null)
 			{
@@ -322,9 +322,9 @@ public class ViewService : IViewService
 			{
 				return null;
 			}
-			obj = viewFrame.ViewName;
+			analyticsName = viewFrame.ViewName;
 		}
-		return (string)obj;
+		return (string)analyticsName;
 	}
 
 	public string GetLastShownView()
@@ -393,22 +393,22 @@ public class ViewService : IViewService
 	public string ViewStackContentsToString()
 	{
 		StringBuilder stringBuilder = new StringBuilder($"View Stack Count: {InnerStack?.Count} Contents: ");
-		int num = 0;
+		int position = 0;
 		if (InnerStack != null)
 		{
 			foreach (IViewFrameInstance item in InnerStack)
 			{
-				if (num < 10)
+				if (position < 10)
 				{
-					string text = ((num > 0) ? ", " : null);
-					stringBuilder.Append(text + item?.ViewFrame?.ViewName);
+					string separator = ((position > 0) ? ", " : null);
+					stringBuilder.Append(separator + item?.ViewFrame?.ViewName);
 				}
-				else if (num == 10)
+				else if (position == 10)
 				{
 					stringBuilder.Append(", ...");
 					break;
 				}
-				num++;
+				position++;
 			}
 		}
 		return stringBuilder.ToString();
@@ -422,15 +422,15 @@ public class ViewService : IViewService
 	public IViewFrameInstance PeekViewFrame(int index)
 	{
 		IViewFrameInstance result = null;
-		int num = 0;
+		int position = 0;
 		foreach (IViewFrameInstance item in InnerStack)
 		{
-			if (index == num)
+			if (index == position)
 			{
 				result = item;
 				break;
 			}
-			num++;
+			position++;
 		}
 		return result;
 	}
@@ -439,18 +439,18 @@ public class ViewService : IViewService
 	{
 		index = -1;
 		IViewFrameInstance result = null;
-		int num = 0;
+		int position = 0;
 		if (ViewStackCount > 0)
 		{
 			foreach (IViewFrameInstance item in InnerStack)
 			{
 				if (item?.ViewFrame?.ViewName == viewName)
 				{
-					index = num;
+					index = position;
 					result = item;
 					break;
 				}
-				num++;
+				position++;
 			}
 		}
 		return result;

@@ -84,9 +84,9 @@ public partial class LoginResultsSubscriptionUserControl : UserControl, IPrefere
 		{
 			RedboxPlusSubscriptionTierComboBox.Items.Add(value?.ToString());
 		}
-		foreach (object value2 in Enum.GetValues(typeof(CustomerSubscriptionPlanStatus)))
+		foreach (object status in Enum.GetValues(typeof(CustomerSubscriptionPlanStatus)))
 		{
-			RedboxPlusSubscriptionStatusComboBox.Items.Add(value2?.ToString());
+			RedboxPlusSubscriptionStatusComboBox.Items.Add(status?.ToString());
 		}
 		return true;
 	}

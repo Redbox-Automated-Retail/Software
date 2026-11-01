@@ -141,10 +141,10 @@ public class ProjectExplorerToolWindow : ToolWindow
 				TreeNode treeNode2 = new TreeNode(item.Key, 3, 3);
 				foreach (IResource allResource in bundle.GetAllResources(item.Key))
 				{
-					string text = allResource["program_name"] as string;
-					string obj = (string.IsNullOrEmpty(text) ? allResource.Name : $"{allResource.Name} '{text}'");
+					string programName = allResource["program_name"] as string;
+					string label = (string.IsNullOrEmpty(programName) ? allResource.Name : $"{allResource.Name} '{programName}'");
 					ResourceTypeIcons resourceTypeIcons = Enum<ResourceTypeIcons>.ParseIgnoringCase(item.Key, ResourceTypeIcons.invalid);
-					TreeNode node = new TreeNode(obj, (int)resourceTypeIcons, (int)resourceTypeIcons)
+					TreeNode node = new TreeNode(label, (int)resourceTypeIcons, (int)resourceTypeIcons)
 					{
 						Tag = allResource
 					};
@@ -177,19 +177,19 @@ public class ProjectExplorerToolWindow : ToolWindow
 			TreeNode treeNode = new TreeNode(item.Key, 17, 17);
 			if (item.Value is SortedDictionary<string, object> sortedDictionary)
 			{
-				foreach (KeyValuePair<string, object> item2 in sortedDictionary)
+				foreach (KeyValuePair<string, object> section in sortedDictionary)
 				{
-					TreeNode treeNode2 = new TreeNode(item2.Key, 18, 18);
-					if (item2.Value is SortedDictionary<string, object> sortedDictionary2)
+					TreeNode sectionNode = new TreeNode(section.Key, 18, 18);
+					if (section.Value is SortedDictionary<string, object> functions)
 					{
-						foreach (KeyValuePair<string, object> item3 in sortedDictionary2)
+						foreach (KeyValuePair<string, object> function in functions)
 						{
-							TreeNode treeNode3 = new TreeNode(item3.Key, 16, 16);
-							treeNode3.Tag = item3.Value;
-							treeNode2.Nodes.Add(treeNode3);
+							TreeNode functionNode = new TreeNode(function.Key, 16, 16);
+							functionNode.Tag = function.Value;
+							sectionNode.Nodes.Add(functionNode);
 						}
 					}
-					treeNode.Nodes.Add(treeNode2);
+					treeNode.Nodes.Add(sectionNode);
 				}
 			}
 			m_treeView.Nodes.Add(treeNode);
@@ -253,19 +253,19 @@ public class ProjectExplorerToolWindow : ToolWindow
 			{
 				continue;
 			}
-			foreach (KeyValuePair<string, object> item2 in sortedDictionary)
+			foreach (KeyValuePair<string, object> section in sortedDictionary)
 			{
-				streamWriter.WriteLine($"<p style=\"font-style:bold;font-family:Segoe UI;color:blue;font-size:14;\">{item2.Key}</p>");
-				if (!(item2.Value is SortedDictionary<string, object> sortedDictionary2))
+				streamWriter.WriteLine($"<p style=\"font-style:bold;font-family:Segoe UI;color:blue;font-size:14;\">{section.Key}</p>");
+				if (!(section.Value is SortedDictionary<string, object> functions))
 				{
 					continue;
 				}
 				streamWriter.WriteLine("<table border=\"0\" width=\"100%\" style=\"font-family:Courier;font-size:10\">");
 				streamWriter.WriteLine("<col valign=\"top\">");
 				streamWriter.WriteLine("<col valign=\"top\">");
-				foreach (KeyValuePair<string, object> item3 in sortedDictionary2)
+				foreach (KeyValuePair<string, object> function in functions)
 				{
-					if (!(item3.Value is KernelFunctionInfo kernelFunctionInfo))
+					if (!(function.Value is KernelFunctionInfo kernelFunctionInfo))
 					{
 						continue;
 					}
@@ -275,14 +275,14 @@ public class ProjectExplorerToolWindow : ToolWindow
 					stringBuilder.Append("<font color=\"blue\">internal " + kernelFunctionInfo.Method.ReturnType.Name + " ");
 					stringBuilder.Append("<font color=\"black\">" + kernelFunctionInfo.Method.Name + "(");
 					ParameterInfo[] parameters = kernelFunctionInfo.Method.GetParameters();
-					int num = 0;
+					int parameterIndex = 0;
 					if (parameters != null)
 					{
 						foreach (ParameterInfo parameterInfo in parameters)
 						{
-							num++;
+							parameterIndex++;
 							stringBuilder.Append("<font color=\"blue\">" + parameterInfo.ParameterType.Name + " <font color=\"black\">" + parameterInfo.Name);
-							if (num < parameters.Count())
+							if (parameterIndex < parameters.Count())
 							{
 								stringBuilder.Append(", ");
 							}

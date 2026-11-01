@@ -324,25 +324,25 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 				{
 					continue;
 				}
-				object obj2 = item.GetAttributeValue<object>(actorPropertyTagAttribute.Name);
-				if (obj2 == null)
+				object propertyValue = item.GetAttributeValue<object>(actorPropertyTagAttribute.Name);
+				if (propertyValue == null)
 				{
 					if (styleSheetState == null)
 					{
 						continue;
 					}
-					obj2 = styleSheetState[actorPropertyTagAttribute.Name];
+					propertyValue = styleSheetState[actorPropertyTagAttribute.Name];
 				}
-				if (obj2 != null)
+				if (propertyValue != null)
 				{
 					try
 					{
-						object value = ConversionHelper.ChangeType(obj2, fieldInfo.FieldType);
+						object value = ConversionHelper.ChangeType(propertyValue, fieldInfo.FieldType);
 						fieldInfo.SetValue(actorProperties, value);
 					}
 					catch (Exception e)
 					{
-						LogHelper.Instance.Log($"Unable to set actor property '{actorPropertyTagAttribute.Name}' with value '{obj2}'.", e);
+						LogHelper.Instance.Log($"Unable to set actor property '{actorPropertyTagAttribute.Name}' with value '{propertyValue}'.", e);
 					}
 				}
 			}
@@ -356,15 +356,15 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 			{
 				base.Errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("V003", $"{attributeValue4}.font: Font resource '{text}' not found.", $" Actor {attributeValue4} is referencing a font resource named '{text}' that was not found."));
 			}
-			string text2 = item.GetAttributeValue<string>("image");
-			if (string.IsNullOrEmpty(text2) && styleSheetState != null)
+			string imageName = item.GetAttributeValue<string>("image");
+			if (string.IsNullOrEmpty(imageName) && styleSheetState != null)
 			{
-				text2 = styleSheetState["image"] as string;
+				imageName = styleSheetState["image"] as string;
 			}
-			if (!string.IsNullOrEmpty(text2))
+			if (!string.IsNullOrEmpty(imageName))
 			{
-				text2 = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(text2);
-				Image bitmap2 = resourceBundleService.GetBitmap(text2);
+				imageName = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(imageName);
+				Image bitmap2 = resourceBundleService.GetBitmap(imageName);
 				if (bitmap2 != null)
 				{
 					actorProperties.Image = bitmap2;
@@ -375,8 +375,8 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 					actorProperties.Width = 32;
 					actorProperties.Height = 32;
 					actorProperties.OptionFlags |= RenderOptionFlags.DrawBorder;
-					actorProperties.ErrorText = $"Bitmap resource '{text2}' not found.";
-					base.Errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("V004", $"{attributeValue4}.image: Bitmap resource '{text2}' not found.", $"Actor {attributeValue4} is referencing a bitmap resource named '{text2}' that was not found."));
+					actorProperties.ErrorText = $"Bitmap resource '{imageName}' not found.";
+					base.Errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("V004", $"{attributeValue4}.image: Bitmap resource '{imageName}' not found.", $"Actor {attributeValue4} is referencing a bitmap resource named '{imageName}' that was not found."));
 				}
 			}
 			if (ViewWindow.HasValue)

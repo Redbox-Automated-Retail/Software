@@ -22,12 +22,12 @@ internal static class AttributeQuery<T> where T : Attribute
 
 	public static T Find<P>(P provider, bool inherit) where P : ICustomAttributeProvider
 	{
-		T[] array = FindAll(provider, inherit);
-		if (array.Length == 0)
+		T[] attributes = FindAll(provider, inherit);
+		if (attributes.Length == 0)
 		{
 			return null;
 		}
-		return array[0];
+		return attributes[0];
 	}
 
 	public static T FindAll<P>(P provider) where P : ICustomAttributeProvider

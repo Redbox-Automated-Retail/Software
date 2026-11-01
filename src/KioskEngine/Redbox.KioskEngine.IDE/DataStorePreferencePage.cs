@@ -270,7 +270,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		if (findKeyValueForm.ShowDialog() == DialogResult.OK && m_dataGridView.DataSource is DataTable dataTable)
 		{
 			m_codeEditor.ClearText();
-			DataRow[] obj = ((findKeyValueForm.SearchType == KeyValueSearchType.Key) ? dataTable.Select($"[Key] = '{findKeyValueForm.SearchFor}'") : dataTable.Select($"[Value] LIKE '%{findKeyValueForm.SearchFor}%'"));
+			DataRow[] rows = ((findKeyValueForm.SearchType == KeyValueSearchType.Key) ? dataTable.Select($"[Key] = '{findKeyValueForm.SearchFor}'") : dataTable.Select($"[Value] LIKE '%{findKeyValueForm.SearchFor}%'"));
 			DataTable dataTable2 = new DataTable
 			{
 				Columns = 
@@ -285,7 +285,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 					}
 				}
 			};
-			foreach (DataRow dataRow in obj)
+			foreach (DataRow dataRow in rows)
 			{
 				dataTable2.Rows.Add(dataRow[0], dataRow[1]);
 			}

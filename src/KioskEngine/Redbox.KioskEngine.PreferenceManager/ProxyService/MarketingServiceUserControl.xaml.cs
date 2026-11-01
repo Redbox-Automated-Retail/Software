@@ -199,9 +199,9 @@ public partial class MarketingServiceUserControl : UserControl, IPreferencePageH
 		}));
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("MarketingService.ConfirmationStatus", delegate(ReadTestDataValueResult result)
 		{
-			ConfirmationStatus result2 = ConfirmationStatus.DontShow;
-			Enum.TryParse<ConfirmationStatus>(result.GetPropertyValue<string>(), out result2);
-			_model.ConfirmationStatus = result2;
+			ConfirmationStatus parsed = ConfirmationStatus.DontShow;
+			Enum.TryParse<ConfirmationStatus>(result.GetPropertyValue<string>(), out parsed);
+			_model.ConfirmationStatus = parsed;
 		}, delegate
 		{
 			_model.ConfirmationStatus = ConfirmationStatus.DontShow;

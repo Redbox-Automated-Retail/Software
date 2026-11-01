@@ -20,9 +20,9 @@ public class RadioOffersToEnumConverter : IValueConverter
 	public static KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers ToOffer(string offer)
 	{
 		KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers result = KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers.NoOffer;
-		if (Enum.TryParse<KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers>(offer, out var result2))
+		if (Enum.TryParse<KioskClientServiceTransactionConstants.TestData.AfterSwipeCustomerOffers.Offers>(offer, out var parsedOffer))
 		{
-			result = result2;
+			result = parsedOffer;
 		}
 		return result;
 	}

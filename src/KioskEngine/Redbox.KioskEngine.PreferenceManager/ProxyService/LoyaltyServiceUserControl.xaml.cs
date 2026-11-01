@@ -362,8 +362,8 @@ public partial class LoyaltyServiceUserControl : UserControl, IPreferencePageHos
 		List<LoyaltyTestShoppingCartItem> list = await KioskEngineApiShoppingCartClient.GetLoyaltyTestShoppingCartItems();
 		if (list != null)
 		{
-			int num = _model.DefaultAccrualValue ?? 1000;
-			int num2 = _model.DefaultRedemptionValue ?? 1000;
+			int defaultAccrual = _model.DefaultAccrualValue ?? 1000;
+			int defaultRedemption = _model.DefaultRedemptionValue ?? 1000;
 			foreach (LoyaltyTestShoppingCartItem item in list)
 			{
 				LoyaltyTestAccrualRedemptionModel loyaltyTestAccrualRedemptionModel = new LoyaltyTestAccrualRedemptionModel
@@ -372,8 +372,8 @@ public partial class LoyaltyServiceUserControl : UserControl, IPreferencePageHos
 					Name = item.Name
 				};
 				LoyaltyTestAccrualRedemption loyaltyTestAccrualRedemption = savedLoyaltyTestAccrualRedemptions?.FirstOrDefault((LoyaltyTestAccrualRedemption x) => x.ProductId == loyaltyTestAccrualRedemptionModel.ProductId);
-				loyaltyTestAccrualRedemptionModel.AccrualPoints = loyaltyTestAccrualRedemption?.AccrualPoints ?? num;
-				loyaltyTestAccrualRedemptionModel.RedemptionPoints = loyaltyTestAccrualRedemption?.RedemptionPoints ?? num2;
+				loyaltyTestAccrualRedemptionModel.AccrualPoints = loyaltyTestAccrualRedemption?.AccrualPoints ?? defaultAccrual;
+				loyaltyTestAccrualRedemptionModel.RedemptionPoints = loyaltyTestAccrualRedemption?.RedemptionPoints ?? defaultRedemption;
 				itemModels.Add(loyaltyTestAccrualRedemptionModel);
 			}
 		}
@@ -396,11 +396,11 @@ public partial class LoyaltyServiceUserControl : UserControl, IPreferencePageHos
 			_accrualErrorItems.Add(accrualErrorItem);
 			AccrualErrorComboBox.Items.Add(accrualErrorItem);
 		}
-		foreach (object value2 in Enum.GetValues(typeof(EstimateRedemptionErrors)))
+		foreach (object error in Enum.GetValues(typeof(EstimateRedemptionErrors)))
 		{
 			Type enumType2 = typeof(EstimateRedemptionErrors);
-			object[] customAttributes2 = enumType2.GetMember(value2.ToString()).FirstOrDefault((MemberInfo m) => m.DeclaringType == enumType2).GetCustomAttributes(typeof(ResponseCodeAttribute), inherit: false);
-			string responseName2 = value2.ToString();
+			object[] customAttributes2 = enumType2.GetMember(error.ToString()).FirstOrDefault((MemberInfo m) => m.DeclaringType == enumType2).GetCustomAttributes(typeof(ResponseCodeAttribute), inherit: false);
+			string responseName2 = error.ToString();
 			string code2 = ((customAttributes2.Count() > 0) ? (customAttributes2[0] as ResponseCodeAttribute)?.Name : null);
 			RedemptionErrorItem redemptionErrorItem = new RedemptionErrorItem
 			{

@@ -323,12 +323,12 @@ public class RoundedButton : Button, IThemedControl
 
 	private void CreateAnimationStoryboard()
 	{
-		double num = 0.05;
-		double value = num * 2.0;
+		double duration = 0.05;
+		double totalDuration = duration * 2.0;
 		_storyboard = new Storyboard
 		{
 			Name = "ButtonAnimationStoryboard",
-			Duration = new Duration(TimeSpan.FromSeconds(value))
+			Duration = new Duration(TimeSpan.FromSeconds(totalDuration))
 		};
 		base.RenderTransformOrigin = new Point(0.5, 0.5);
 		ScaleTransform scaleTransform = new ScaleTransform();
@@ -339,7 +339,7 @@ public class RoundedButton : Button, IThemedControl
 		{
 			From = 1.0,
 			To = 0.95,
-			Duration = new Duration(TimeSpan.FromSeconds(num)),
+			Duration = new Duration(TimeSpan.FromSeconds(duration)),
 			AutoReverse = true
 		};
 		_storyboard.Children.Add(doubleAnimation);
@@ -349,7 +349,7 @@ public class RoundedButton : Button, IThemedControl
 		{
 			From = 1.0,
 			To = 0.95,
-			Duration = new Duration(TimeSpan.FromSeconds(num)),
+			Duration = new Duration(TimeSpan.FromSeconds(duration)),
 			AutoReverse = true
 		};
 		_storyboard.Children.Add(doubleAnimation2);
@@ -435,7 +435,7 @@ public class RoundedButton : Button, IThemedControl
 
 	private void LogButtonClick()
 	{
-		string text = null;
+		string parentName = null;
 		DependencyObject parent = VisualTreeHelper.GetParent(this);
 		while (parent != null && !(parent is Window) && !(parent is UserControl))
 		{
@@ -444,43 +444,43 @@ public class RoundedButton : Button, IThemedControl
 		if (parent != null && parent is UserControl)
 		{
 			UserControl userControl = parent as UserControl;
-			text = userControl?.Name;
-			if (string.IsNullOrEmpty(text))
+			parentName = userControl?.Name;
+			if (string.IsNullOrEmpty(parentName))
 			{
-				text = userControl?.GetType()?.ToString();
+				parentName = userControl?.GetType()?.ToString();
 			}
 		}
 		else if (parent != null && parent is Window)
 		{
 			Window window = parent as Window;
-			text = window?.Name;
-			if (string.IsNullOrEmpty(text))
+			parentName = window?.Name;
+			if (string.IsNullOrEmpty(parentName))
 			{
-				text = window?.GetType()?.ToString();
+				parentName = window?.GetType()?.ToString();
 			}
 		}
-		string text2 = "";
+		string identity = "";
 		if (!string.IsNullOrEmpty(base.Name))
 		{
-			text2 = "Button Name: " + base.Name;
+			identity = "Button Name: " + base.Name;
 		}
 		else
 		{
-			string text3 = base.Tag?.ToString();
-			if (!string.IsNullOrEmpty(text3))
+			string tag = base.Tag?.ToString();
+			if (!string.IsNullOrEmpty(tag))
 			{
-				text2 = "Tag: " + text3.Substring(0, Math.Min(text3.Length, 50));
+				identity = "Tag: " + tag.Substring(0, Math.Min(tag.Length, 50));
 			}
 		}
-		LogHelper.Instance.Log("RoundedButton click: Parent: " + text + ", " + text2);
+		LogHelper.Instance.Log("RoundedButton click: Parent: " + parentName + ", " + identity);
 	}
 
 	private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		RoundedButton obj = d as RoundedButton;
-		AdjustGlassHighlight(obj);
-		AdjustCornRadiusInner(obj);
-		obj.InvalidateProperty(FrameworkElement.WidthProperty);
+		RoundedButton button = d as RoundedButton;
+		AdjustGlassHighlight(button);
+		AdjustCornRadiusInner(button);
+		button.InvalidateProperty(FrameworkElement.WidthProperty);
 	}
 
 	private static void AdjustCornRadiusInner(RoundedButton roundedButton)

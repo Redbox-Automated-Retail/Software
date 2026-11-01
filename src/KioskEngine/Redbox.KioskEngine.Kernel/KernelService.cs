@@ -151,11 +151,11 @@ public sealed class KernelService : IKernelService, IDisposable
 			return null;
 		}
 		LuaTable luaTable = new LuaTable(LuaRuntime);
-		int num = 1;
+		int index = 1;
 		foreach (T item in enumerator)
 		{
-			luaTable[num] = item;
-			num++;
+			luaTable[index] = item;
+			index++;
 		}
 		return luaTable;
 	}

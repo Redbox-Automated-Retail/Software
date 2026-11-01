@@ -87,83 +87,83 @@ public class Resource : IResource
 				errorList.Add(Error.NewError("R001", "The specified XML document is invalid.", "Review the resource bundle to ensure valid XML is embedded."));
 				return errorList;
 			}
-			string attributeValue = document.DocumentElement.GetAttributeValue<string>("type");
-			if (string.IsNullOrEmpty(attributeValue))
+			string typeName = document.DocumentElement.GetAttributeValue<string>("type");
+			if (string.IsNullOrEmpty(typeName))
 			{
 				errorList.Add(Error.NewError("R002", "The type attribute must be specified.", "Specify the type attribute in the resource XML and recompile."));
 				return errorList;
 			}
-			if (!bundle.ResourceTypes.ContainsKey(attributeValue))
+			if (!bundle.ResourceTypes.ContainsKey(typeName))
 			{
-				errorList.Add(Error.NewError("R003", $"The type '{attributeValue}' is not defined.", "Specify a valid resource type in the resource XML and recompile."));
+				errorList.Add(Error.NewError("R003", $"The type '{typeName}' is not defined.", "Specify a valid resource type in the resource XML and recompile."));
 				return errorList;
 			}
-			IResourceType resourceType = bundle.ResourceTypes[attributeValue];
+			IResourceType resourceType = bundle.ResourceTypes[typeName];
 			XmlNode node = document.DocumentElement.SelectSingleNode("property[@name='name']");
 			resource = resourceType.NewResourceInstance(node.GetAttributeValue<string>("value"));
-			XmlNodeList xmlNodeList = document.DocumentElement.SelectNodes("property");
-			if (xmlNodeList != null)
+			XmlNodeList propertyNodes = document.DocumentElement.SelectNodes("property");
+			if (propertyNodes != null)
 			{
-				foreach (XmlNode item in xmlNodeList)
+				foreach (XmlNode propertyNode in propertyNodes)
 				{
-					string attributeValue2 = item.GetAttributeValue<string>("name");
-					if (item.Attributes["value"] != null)
+					string propertyName = propertyNode.GetAttributeValue<string>("name");
+					if (propertyNode.Attributes["value"] != null)
 					{
-						resource[attributeValue2] = item.GetAttributeValue<object>("value");
+						resource[propertyName] = propertyNode.GetAttributeValue<object>("value");
 						continue;
 					}
-					XmlNodeList xmlNodeList2 = item.SelectNodes("value");
-					if (xmlNodeList2 == null || xmlNodeList2.Count == 0)
+					XmlNodeList valueNodes = propertyNode.SelectNodes("value");
+					if (valueNodes == null || valueNodes.Count == 0)
 					{
-						errorList.Add(Error.NewError("R006", $"The property '{attributeValue}' does not have a value attribute or child value nodes.", "Each property must have a valid value attribute or one or more valid value child nodes."));
+						errorList.Add(Error.NewError("R006", $"The property '{typeName}' does not have a value attribute or child value nodes.", "Each property must have a valid value attribute or one or more valid value child nodes."));
 						continue;
 					}
-					List<object> list = new List<object>();
-					foreach (XmlNode item2 in xmlNodeList2)
+					List<object> values = new List<object>();
+					foreach (XmlNode valueNode in valueNodes)
 					{
-						list.Add(item2.GetNodeValue<object>());
+						values.Add(valueNode.GetNodeValue<object>());
 					}
-					resource[attributeValue2] = list;
+					resource[propertyName] = values;
 				}
 			}
-			string attributeValue3 = document.DocumentElement.GetAttributeValue<string>("depends");
-			if (!string.IsNullOrEmpty(attributeValue3))
+			string dependsOn = document.DocumentElement.GetAttributeValue<string>("depends");
+			if (!string.IsNullOrEmpty(dependsOn))
 			{
-				foreach (string text in attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+				foreach (string dependency in dependsOn.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 				{
-					string trimmed = text.Trim();
+					string trimmed = dependency.Trim();
 					if (!(trimmed == resource.Name))
 					{
 						resource.AddDependency(trimmed);
 					}
 				}
 			}
-			XmlNodeList xmlNodeList3 = document.DocumentElement.SelectNodes("aspect");
-			if (xmlNodeList3 != null)
+			XmlNodeList aspectNodes = document.DocumentElement.SelectNodes("aspect");
+			if (aspectNodes != null)
 			{
-				foreach (XmlNode item3 in xmlNodeList3)
+				foreach (XmlNode aspectNode in aspectNodes)
 				{
-					string attributeValue4 = item3.GetAttributeValue<string>("name");
-					if (string.IsNullOrEmpty(attributeValue4))
+					string aspectName = aspectNode.GetAttributeValue<string>("name");
+					if (string.IsNullOrEmpty(aspectName))
 					{
 						errorList.Add(Error.NewError("R004", "The name attribute on the aspect element must be specified.", "Specify the name attribute on the aspect element in the resource XML and recompile."));
 						continue;
 					}
-					IAspectType aspectType = resource.Type.GetAspectType(attributeValue4);
+					IAspectType aspectType = resource.Type.GetAspectType(aspectName);
 					if (aspectType == null)
 					{
-						errorList.Add(Error.NewError("R005", $"The aspect type '{attributeValue4}' is not defined.", "Specify a valid aspect type in the resource XML and recompile."));
+						errorList.Add(Error.NewError("R005", $"The aspect type '{aspectName}' is not defined.", "Specify a valid aspect type in the resource XML and recompile."));
 						return errorList;
 					}
-					IAspect aspect = resource.NewAspect(attributeValue4, aspectType);
-					foreach (XmlAttribute attribute in item3.Attributes)
+					IAspect aspect = resource.NewAspect(aspectName, aspectType);
+					foreach (XmlAttribute attribute in aspectNode.Attributes)
 					{
 						if (!(attribute.Name == "name"))
 						{
 							aspect.Properties[attribute.Name] = attribute.Value;
 						}
 					}
-					errorList.AddRange(aspect.Type.ParseAspect(bundle, aspect, item3));
+					errorList.AddRange(aspect.Type.ParseAspect(bundle, aspect, aspectNode));
 				}
 			}
 		}
@@ -322,10 +322,10 @@ public class Resource : IResource
 		{
 			return false;
 		}
-		bool flag = name.Substring(0, 2) == "!=";
+		bool negate = name.Substring(0, 2) == "!=";
 		if (this[name] is List<object> list)
 		{
-			if (!flag)
+			if (!negate)
 			{
 				return list.Contains(value);
 			}
@@ -333,13 +333,13 @@ public class Resource : IResource
 		}
 		if (this[name] is string strA && value is string)
 		{
-			if (!flag)
+			if (!negate)
 			{
 				return string.Compare(strA, (string)value, ignoreCase: true) == 0;
 			}
 			return string.Compare(strA, (string)value, ignoreCase: true) != 0;
 		}
-		if (!flag)
+		if (!negate)
 		{
 			if (this[name] != null)
 			{

@@ -27,7 +27,7 @@ public class ControlPanelFunctions
 
 	private static void AuthenticateUser(UserData userData)
 	{
-		bool flag = true;
+		bool authenticationSkipped = true;
 		IAuthenticationServices authenticationServices = ServiceLocator.Instance.GetService<IAuthenticationServices>();
 		if (authenticationServices != null)
 		{
@@ -37,10 +37,10 @@ public class ControlPanelFunctions
 			{
 				userData.StoreNumber = machineSettingsStore.StoreNumberString();
 				authenticationServices.Authenticate(userData.StoreNumber, userData.Id, userData.Password, useLdapAuthentication: true, remoteServiceCallback);
-				flag = false;
+				authenticationSkipped = false;
 			}
 		}
-		if (flag)
+		if (authenticationSkipped)
 		{
 			LogHelper.Instance.LogTo("UserLoginLog", "Control Panel | Login IAuthenticationServices or ICallbackService failed");
 			userData.AuthenticationResultCallback(null);

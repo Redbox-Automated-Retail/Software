@@ -11,11 +11,11 @@ public static class ListExtensions
 		{
 			if (list1.Count == list2.Count)
 			{
-				IEnumerable<T> source = list1.Except(list2);
-				IEnumerable<T> source2 = list2.Except(list1);
-				if (!source.Any())
+				IEnumerable<T> onlyInFirst = list1.Except(list2);
+				IEnumerable<T> onlyInSecond = list2.Except(list1);
+				if (!onlyInFirst.Any())
 				{
-					return !source2.Any();
+					return !onlyInSecond.Any();
 				}
 				return false;
 			}

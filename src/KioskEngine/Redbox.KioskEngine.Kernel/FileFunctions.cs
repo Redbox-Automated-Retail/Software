@@ -107,20 +107,20 @@ internal static class FileFunctions
 				json = streamReader.ReadToEnd();
 			}
 			List<Dictionary<string, object>> list = json.ToObject<List<Dictionary<string, object>>>();
-			int num = 1;
-			foreach (Dictionary<string, object> item in list)
+			int index = 1;
+			foreach (Dictionary<string, object> record in list)
 			{
-				if (kioskIdFilter != null && (!item.ContainsKey("KioskId") || !(item["KioskId"].ToString() == kioskIdFilter)))
+				if (kioskIdFilter != null && (!record.ContainsKey("KioskId") || !(record["KioskId"].ToString() == kioskIdFilter)))
 				{
 					continue;
 				}
-				LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-				luaTable[num++] = luaTable2;
-				foreach (KeyValuePair<string, object> item2 in item)
+				LuaTable row = new LuaTable(KernelService.Instance.LuaRuntime);
+				luaTable[index++] = row;
+				foreach (KeyValuePair<string, object> field in record)
 				{
-					if (kioskIdFilter == null || item2.Key.ToString() != "KioskId")
+					if (kioskIdFilter == null || field.Key.ToString() != "KioskId")
 					{
-						luaTable2[item2.Key] = item2.Value;
+						row[field.Key] = field.Value;
 					}
 				}
 			}

@@ -138,44 +138,44 @@ public partial class MainWindow : Window, IComponentConnector
 		{
 			List<string> list = preferencePage.Path.Split('/').ToList();
 			TreeViewItem treeViewItem = null;
-			foreach (string item in list)
+			foreach (string pathPart in list)
 			{
 				if (treeViewItem == null)
 				{
-					foreach (object item2 in (IEnumerable)NavigationTree.Items)
+					foreach (object node in (IEnumerable)NavigationTree.Items)
 					{
-						if (item2 is TreeViewItem { Header: var header } treeViewItem2 && header?.ToString() == item)
+						if (node is TreeViewItem { Header: var header } rootItem && header?.ToString() == pathPart)
 						{
-							treeViewItem = treeViewItem2;
+							treeViewItem = rootItem;
 						}
 					}
 					if (treeViewItem == null)
 					{
 						treeViewItem = new TreeViewItem
 						{
-							Header = item
+							Header = pathPart
 						};
 						NavigationTree.Items.Add(treeViewItem);
 					}
 					continue;
 				}
-				TreeViewItem treeViewItem3 = null;
-				foreach (object item3 in (IEnumerable)treeViewItem.Items)
+				TreeViewItem childMatch = null;
+				foreach (object node in (IEnumerable)treeViewItem.Items)
 				{
-					if (item3 is TreeViewItem { Header: var header2 } treeViewItem4 && header2?.ToString() == item)
+					if (node is TreeViewItem { Header: var header } childItem && header?.ToString() == pathPart)
 					{
-						treeViewItem3 = treeViewItem4;
+						childMatch = childItem;
 					}
 				}
-				if (treeViewItem3 == null)
+				if (childMatch == null)
 				{
-					treeViewItem3 = new TreeViewItem
+					childMatch = new TreeViewItem
 					{
-						Header = item
+						Header = pathPart
 					};
-					treeViewItem.Items.Add(treeViewItem3);
+					treeViewItem.Items.Add(childMatch);
 				}
-				treeViewItem = treeViewItem3;
+				treeViewItem = childMatch;
 			}
 			if (treeViewItem != null)
 			{

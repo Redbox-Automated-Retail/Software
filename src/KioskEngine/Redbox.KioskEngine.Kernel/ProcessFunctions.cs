@@ -114,35 +114,35 @@ internal static class ProcessFunctions
 	[KernelFunction(Name = "kernel.listrunningprocesses")]
 	internal static LuaTable ListRunningProcesses()
 	{
-		int num = 0;
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		int index = 0;
+		LuaTable processTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		Process[] processes = Process.GetProcesses();
 		foreach (Process process in processes)
 		{
-			LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-			luaTable2["id"] = process.Id;
-			luaTable2["name"] = process.ProcessName;
-			luaTable2["memory"] = $"{process.WorkingSet64 / 1000:#,###}K";
-			luaTable[num] = luaTable2;
-			num++;
+			LuaTable entry = new LuaTable(KernelService.Instance.LuaRuntime);
+			entry["id"] = process.Id;
+			entry["name"] = process.ProcessName;
+			entry["memory"] = $"{process.WorkingSet64 / 1000:#,###}K";
+			processTable[index] = entry;
+			index++;
 		}
-		return luaTable;
+		return processTable;
 	}
 
 	[KernelFunction(Name = "kernel.listpidrundll32s")]
 	internal static LuaTable ListRunningRunDLL32Processes()
 	{
-		int num = 0;
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		int index = 0;
+		LuaTable processIds = new LuaTable(KernelService.Instance.LuaRuntime);
 		Process[] processes = Process.GetProcesses();
 		foreach (Process process in processes)
 		{
 			if (string.CompareOrdinal(process.ProcessName.ToLower(), 0, "rundll32", 0, "rundll32".Length) == 0)
 			{
-				luaTable[num++] = process.Id;
+				processIds[index++] = process.Id;
 			}
 		}
-		return luaTable;
+		return processIds;
 	}
 
 	[KernelFunction(Name = "kernel.showtaskmanager")]
@@ -155,8 +155,8 @@ internal static class ProcessFunctions
 		}
 		form.Kill += delegate
 		{
-			LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-			int num = 1;
+			LuaTable selected = new LuaTable(KernelService.Instance.LuaRuntime);
+			int index = 1;
 			foreach (Process selectedProcess in form.SelectedProcesses)
 			{
 				LuaTable value = new LuaTable(KernelService.Instance.LuaRuntime)
@@ -167,9 +167,9 @@ internal static class ProcessFunctions
 					["start_time"] = selectedProcess.StartTime.ToString(),
 					["memory"] = $"{selectedProcess.WorkingSet64 / 1000:#,###}K"
 				};
-				luaTable[num++] = value;
+				selected[index++] = value;
 			}
-			if (killHandler != null && killHandler(luaTable))
+			if (killHandler != null && killHandler(selected))
 			{
 				form.RefreshList();
 			}

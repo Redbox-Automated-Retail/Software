@@ -30,17 +30,17 @@ public static class FormAspects
 						TypeConverter converter = TypeDescriptor.GetConverter(typeof(Size));
 						TypeConverter converter2 = TypeDescriptor.GetConverter(typeof(Point));
 						Rectangle rectangle = new Rectangle((Point)converter2.ConvertFromString(parts[1]), (Size)converter.ConvertFromString(parts[2]));
-						bool flag = false;
+						bool screenFound = false;
 						Screen[] allScreens = Screen.AllScreens;
 						for (int i = 0; i < allScreens.Length; i++)
 						{
 							if (allScreens[i].WorkingArea.IntersectsWith(rectangle))
 							{
-								flag = true;
+								screenFound = true;
 								break;
 							}
 						}
-						form.Bounds = (flag ? rectangle : Screen.PrimaryScreen.Bounds);
+						form.Bounds = (screenFound ? rectangle : Screen.PrimaryScreen.Bounds);
 					}
 				}
 			}

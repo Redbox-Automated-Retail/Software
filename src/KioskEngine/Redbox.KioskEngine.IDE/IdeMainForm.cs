@@ -319,9 +319,9 @@ public class IdeMainForm : Form
 					string[] parts = s.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 					if (parts.Length == 2)
 					{
-						SymbolsToolWindow obj = ((parts[1] == "Locals") ? m_localsToolWindow : m_globalsToolWindow);
-						obj.RefreshSymbols();
-						return obj;
+						SymbolsToolWindow toolWindow = ((parts[1] == "Locals") ? m_localsToolWindow : m_globalsToolWindow);
+						toolWindow.RefreshSymbols();
+						return toolWindow;
 					}
 				}
 				if (s == typeof(ImmediateToolWindow).ToString())

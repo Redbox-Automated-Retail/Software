@@ -113,24 +113,24 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 			});
 			CardData cardData = _model.StoredCardData[keyChar.ToString()];
 			CardSourceType cardSourceType = ParseCardSourceType(cardData.CardSource);
-			BaseResponseEvent obj;
+			BaseResponseEvent response;
 			switch (cardSourceType)
 			{
 			case CardSourceType.Swipe:
 			case CardSourceType.MSDContactless:
-				obj = CreateSwipeResponse(cardData, cardSourceType, _readCardJob);
+				response = CreateSwipeResponse(cardData, cardSourceType, _readCardJob);
 				break;
 			case CardSourceType.EMVContact:
 			case CardSourceType.QuickChip:
 			case CardSourceType.EMVContactless:
 			case CardSourceType.Mobile:
 			case CardSourceType.VASOnly:
-				obj = CreateEMVResponse(cardData, cardSourceType);
+				response = CreateEMVResponse(cardData, cardSourceType);
 				break;
 			default:
 				return false;
 			}
-			_readCardJob.ReadCardResponseHandler(obj);
+			_readCardJob.ReadCardResponseHandler(response);
 			return true;
 		}
 		return false;
@@ -180,13 +180,13 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		IShoppingSession currentSession = ServiceLocator.Instance.GetService<IShoppingSessionService>().GetCurrentSession();
 		IEnumerable<CardBrandAndSource> deactivatedCardBrandSources = GetDeactivatedCardBrandSources();
-		decimal valueOrDefault = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
-		valueOrDefault = Math.Round(valueOrDefault, 2);
+		decimal amount = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
+		amount = Math.Round(amount, 2);
 		CardReadRequest cardReadRequest = new CardReadRequest
 		{
 			InputType = deviceInputType,
 			VasMode = vasMode,
-			Amount = valueOrDefault,
+			Amount = amount,
 			Timeout = commandTimeout + 5000,
 			ExcludeCardBrandBySource = deactivatedCardBrandSources,
 			SessionId = currentSession.Id
@@ -233,12 +233,12 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 
 	private void CheckIfCardReaderIsConnectedAndValid(bool cardReaderConnectionAlreadyVerified)
 	{
-		bool flag = false;
+		bool isValid = false;
 		if (cardReaderConnectionAlreadyVerified || IsCardReaderConnected)
 		{
-			flag = true;
+			isValid = true;
 		}
-		if (flag)
+		if (isValid)
 		{
 			RaiseValidDeviceServiceCardReader();
 		}
@@ -294,8 +294,8 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 	{
 		try
 		{
-			long num = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert((ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0).ToString(), "ApplicationCrash", "mm:TamperedCardReaderError, 0099CDRR", string.Format("<h2>Kiosk Engine Card Reader Tampered Error</h2><p>Card Reader Tampering detected on Kiosk: {0}!<br><br>Placing Kiosk into Maintenance Mode.<br>{1}</p>", num, "0099CDRR"), DateTime.Now, null, null, skipQueue: true);
+			long kioskId = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
+			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert((ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0).ToString(), "ApplicationCrash", "mm:TamperedCardReaderError, 0099CDRR", string.Format("<h2>Kiosk Engine Card Reader Tampered Error</h2><p>Card Reader Tampering detected on Kiosk: {0}!<br><br>Placing Kiosk into Maintenance Mode.<br>{1}</p>", kioskId, "0099CDRR"), DateTime.Now, null, null, skipQueue: true);
 		}
 		catch (Exception e)
 		{
@@ -305,12 +305,12 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 
 	public void GetCardInsertedStatus(Action<GetCardInsertedStatusResponseEvent> completeCallback)
 	{
-		GetCardInsertedStatusResponseEvent obj = new GetCardInsertedStatusResponseEvent(null)
+		GetCardInsertedStatusResponseEvent response = new GetCardInsertedStatusResponseEvent(null)
 		{
 			CardInsertedStatus = (_readCardJob.IsCardInserted ? InsertedStatus.Inserted : InsertedStatus.Removed),
 			RequestId = _readCardJob.RequestId
 		};
-		completeCallback?.Invoke(obj);
+		completeCallback?.Invoke(response);
 	}
 
 	public bool ShutDownDeviceService(bool forceShutdown, ShutDownReason shutDownReason)

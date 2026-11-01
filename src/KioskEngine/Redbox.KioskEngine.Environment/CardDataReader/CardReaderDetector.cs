@@ -13,9 +13,9 @@ public class CardReaderDetector
 {
 	public static bool IsDeviceServiceCardReaderAttached()
 	{
-		bool flag = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>()?.IsCardReaderConnected ?? false;
-		LogHelper.Instance.Log($"CardReaderDetector.IsDeviceServiceCardReaderAttached: {flag}");
-		return flag;
+		bool isConnected = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>()?.IsCardReaderConnected ?? false;
+		LogHelper.Instance.Log($"CardReaderDetector.IsDeviceServiceCardReaderAttached: {isConnected}");
+		return isConnected;
 	}
 
 	public static bool IsUSBCardReaderAttached()
@@ -23,10 +23,10 @@ public class CardReaderDetector
 		using (HidDeviceManager hidDeviceManager = new HidDeviceManager())
 		{
 			List<string> uSBCardReaderKeys = GetUSBCardReaderKeys();
-			HidDevice[] array = hidDeviceManager.EnumerateDevices();
-			for (int i = 0; i < array.Length; i++)
+			HidDevice[] devices = hidDeviceManager.EnumerateDevices();
+			for (int i = 0; i < devices.Length; i++)
 			{
-				string devicePath = array[i].DevicePath.ToLower();
+				string devicePath = devices[i].DevicePath.ToLower();
 				string s = string.Format("{0},{1}", GetIdFromPath(devicePath, "vid_"), GetIdFromPath(devicePath, "pid_"));
 				SHA256Managed sHA256Managed = new SHA256Managed();
 				string item = Convert.ToBase64String(sHA256Managed.ComputeHash(sHA256Managed.ComputeHash(Encoding.UTF8.GetBytes(s))));
@@ -54,10 +54,10 @@ public class CardReaderDetector
 				object registryValue = key.GetValue("List");
 				if (registryValue != null)
 				{
-					string[] array = registryValue.ToString().Split(',');
-					for (int i = 0; i < array.Length; i++)
+					string[] valueNames = registryValue.ToString().Split(',');
+					for (int i = 0; i < valueNames.Length; i++)
 					{
-						list.Add((string)key.GetValue(array[i]));
+						list.Add((string)key.GetValue(valueNames[i]));
 					}
 				}
 				key.Close();

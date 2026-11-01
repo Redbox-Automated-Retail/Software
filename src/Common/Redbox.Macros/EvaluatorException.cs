@@ -15,14 +15,14 @@ public class EvaluatorException : ApplicationException
 		get
 		{
 			string text = base.Message;
-			string text2 = string.Empty;
+			string location = string.Empty;
 			if (_location != null)
 			{
-				text2 = _location.ToString();
+				location = _location.ToString();
 			}
-			if (!string.IsNullOrEmpty(text2))
+			if (!string.IsNullOrEmpty(location))
 			{
-				text = text2 + Environment.NewLine + text;
+				text = location + Environment.NewLine + text;
 			}
 			return text;
 		}

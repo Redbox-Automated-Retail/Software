@@ -72,8 +72,8 @@ public class ExpressionEvaluator : ExpressionEvalBase
 			{
 				return methodInfo.Invoke(this, args);
 			}
-			object obj = methodInfo.DeclaringType.GetConstructor(new Type[1] { typeof(PropertyDictionary) }).Invoke(new object[1] { m_properties });
-			return methodInfo.Invoke(obj, args);
+			object functionSet = methodInfo.DeclaringType.GetConstructor(new Type[1] { typeof(PropertyDictionary) }).Invoke(new object[1] { m_properties });
+			return methodInfo.Invoke(functionSet, args);
 		}
 		catch (TargetInvocationException ex)
 		{

@@ -14,14 +14,14 @@ public static class ResourceTool
 		{
 			return null;
 		}
-		byte[] array = null;
+		byte[] data = null;
 		IntPtr intPtr = FindResource(module.Handle, name.ToUpper(), group.ToUpper());
 		if (intPtr == IntPtr.Zero)
 		{
 			throw new Win32Exception(Marshal.GetLastWin32Error());
 		}
-		int num = SizeofResource(module.Handle, intPtr);
-		if (num > 0)
+		int size = SizeofResource(module.Handle, intPtr);
+		if (size > 0)
 		{
 			IntPtr intPtr2 = LoadResource(module.Handle, intPtr);
 			if (intPtr2 == IntPtr.Zero)
@@ -31,11 +31,11 @@ public static class ResourceTool
 			IntPtr intPtr3 = LockResource(intPtr2);
 			if (intPtr3 != IntPtr.Zero)
 			{
-				array = new byte[num];
-				Marshal.Copy(intPtr3, array, 0, num);
+				data = new byte[size];
+				Marshal.Copy(intPtr3, data, 0, size);
 			}
 		}
-		return array;
+		return data;
 	}
 
 	public static int ForEachResourceDo(LibraryModule module, string group, Action<string> action)

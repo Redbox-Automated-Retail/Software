@@ -20,21 +20,21 @@ public class LuaDelegate
 	{
 		ReadOnlyCollection<object> readOnlyCollection = m_function.Call(inArgs);
 		object result;
-		int num;
+		int resultIndex;
 		if (m_returnTypes[0] == typeof(void))
 		{
 			result = null;
-			num = 0;
+			resultIndex = 0;
 		}
 		else
 		{
 			result = readOnlyCollection[0];
-			num = 1;
+			resultIndex = 1;
 		}
 		for (int i = 0; i < outArgs.Length; i++)
 		{
-			args[outArgs[i]] = ConversionHelper.ChangeType(readOnlyCollection[num], m_returnTypes[i]);
-			num++;
+			args[outArgs[i]] = ConversionHelper.ChangeType(readOnlyCollection[resultIndex], m_returnTypes[i]);
+			resultIndex++;
 		}
 		return result;
 	}

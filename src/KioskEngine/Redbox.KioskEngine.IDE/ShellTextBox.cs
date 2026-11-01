@@ -166,13 +166,13 @@ public class ShellTextBox : TextBox
 
 	private void ReplaceTextAtPrompt(string text)
 	{
-		int num = GetCurrentLine().Length - m_prompt.Length;
-		if (num == 0)
+		int inputLength = GetCurrentLine().Length - m_prompt.Length;
+		if (inputLength == 0)
 		{
 			AddText(text);
 			return;
 		}
-		Select(TextLength - num, num);
+		Select(TextLength - inputLength, inputLength);
 		SelectedText = text;
 	}
 

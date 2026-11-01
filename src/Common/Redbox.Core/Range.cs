@@ -30,9 +30,9 @@ public class Range
 		{
 			End = result;
 		}
-		if (int.TryParse(parts[0], out var result2))
+		if (int.TryParse(parts[0], out var start))
 		{
-			Start = result2;
+			Start = start;
 		}
 	}
 

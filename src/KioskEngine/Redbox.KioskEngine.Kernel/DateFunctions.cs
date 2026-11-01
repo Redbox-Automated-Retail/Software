@@ -13,42 +13,42 @@ public static class DateFunctions
 	{
 		DateTime? workingDate = date.ToDateTime();
 		string s = string.Empty;
-		int num = 0;
-		int num2 = 0;
+		int months = 0;
+		int years = 0;
 		if (!workingDate.HasValue)
 		{
 			return null;
 		}
-		string[] array = interval.Split(new char[1] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-		switch (array.Length)
+		string[] parts = interval.Split(new char[1] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+		switch (parts.Length)
 		{
 		case 1:
-			s = array[0];
+			s = parts[0];
 			break;
 		case 2:
-			s = $"{array[0]}.{array[1]}";
+			s = $"{parts[0]}.{parts[1]}";
 			break;
 		case 3:
-			s = $"{array[1]}.{array[2]}";
-			num = int.Parse(array[0]);
+			s = $"{parts[1]}.{parts[2]}";
+			months = int.Parse(parts[0]);
 			break;
 		case 4:
-			s = $"{array[2]}.{array[3]}";
-			num = int.Parse(array[1]);
-			num2 = int.Parse(array[0]);
+			s = $"{parts[2]}.{parts[3]}";
+			months = int.Parse(parts[1]);
+			years = int.Parse(parts[0]);
 			break;
 		}
 		if (!TimeSpan.TryParse(s, out var result))
 		{
 			return null;
 		}
-		if (num2 > 0)
+		if (years > 0)
 		{
-			workingDate = workingDate.Value.AddYears(num2);
+			workingDate = workingDate.Value.AddYears(years);
 		}
-		if (num > 0)
+		if (months > 0)
 		{
-			workingDate = workingDate.Value.AddMonths(num);
+			workingDate = workingDate.Value.AddMonths(months);
 		}
 		date.Dispose();
 		workingDate = workingDate.Value.Add(result);
@@ -98,9 +98,9 @@ public static class DateFunctions
 	[KernelFunction(Name = "kernel.stringdatecompare")]
 	internal static int StringDateCompare(string left, string right)
 	{
-		if (DateTime.TryParse(left, out var result) && DateTime.TryParse(right, out var result2))
+		if (DateTime.TryParse(left, out var leftDate) && DateTime.TryParse(right, out var rightDate))
 		{
-			return result.CompareTo(result2);
+			return leftDate.CompareTo(rightDate);
 		}
 		return 1;
 	}
@@ -109,9 +109,9 @@ public static class DateFunctions
 	public static object GetElapsedDays(string startDateString, string endDateString)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
-		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result2))
+		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var startDate) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var endDate))
 		{
-			return (result2 - result).TotalDays;
+			return (endDate - startDate).TotalDays;
 		}
 		return null;
 	}
@@ -119,18 +119,18 @@ public static class DateFunctions
 	public static bool ParseDateString(string dateString, out DateTime date)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
-		bool result = DateTime.TryParseExact(dateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result2);
-		date = result2;
-		return result;
+		bool parsed = DateTime.TryParseExact(dateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var parsedDate);
+		date = parsedDate;
+		return parsed;
 	}
 
 	[KernelFunction(Name = "kernel.getelapsedhours")]
 	internal static object GetElapsedHours(string startDateString, string endDateString)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
-		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result2))
+		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var startDate) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var endDate))
 		{
-			return (result2 - result).TotalHours;
+			return (endDate - startDate).TotalHours;
 		}
 		return null;
 	}
@@ -164,9 +164,9 @@ public static class DateFunctions
 	[KernelFunction(Name = "kernel.gettimezone")]
 	internal static string GetTimezone()
 	{
-		string obj = (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now) ? TimeZone.CurrentTimeZone.DaylightName : TimeZone.CurrentTimeZone.StandardName);
+		string zoneName = (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now) ? TimeZone.CurrentTimeZone.DaylightName : TimeZone.CurrentTimeZone.StandardName);
 		StringBuilder stringBuilder = new StringBuilder();
-		foreach (string text in obj.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+		foreach (string text in zoneName.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 		{
 			stringBuilder.Append(text[0]);
 		}

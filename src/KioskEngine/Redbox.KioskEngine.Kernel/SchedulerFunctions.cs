@@ -40,32 +40,32 @@ internal static class SchedulerFunctions
 		{
 			return;
 		}
-		DateTime? dateTime = null;
-		DateTime? endTime2 = null;
-		if (startTime is LuaTable luaTable)
+		DateTime? startDateTime = null;
+		DateTime? endDateTime = null;
+		if (startTime is LuaTable startTable)
 		{
-			dateTime = luaTable.ToDateTime();
+			startDateTime = startTable.ToDateTime();
 		}
-		if (endTime is LuaTable luaTable2)
+		if (endTime is LuaTable endTable)
 		{
-			endTime2 = luaTable2.ToDateTime();
+			endDateTime = endTable.ToDateTime();
 		}
-		List<object> list = new List<object>();
+		List<object> parameterValues = new List<object>();
 		if (parameters != null)
 		{
-			if (parameters is LuaTable luaTable3)
+			if (parameters is LuaTable parameterTable)
 			{
-				foreach (object key in luaTable3.Keys)
+				foreach (object key in parameterTable.Keys)
 				{
-					list.Add(luaTable3[key]);
+					parameterValues.Add(parameterTable[key]);
 				}
 			}
 			else
 			{
-				list.Add(parameters);
+				parameterValues.Add(parameters);
 			}
 		}
-		schedulerService.AddScheduleEntry(jobname, label, dateTime ?? DateTime.UtcNow, endTime2, cronExpression, functionName, programName, misfireInstruction, list.ToArray());
+		schedulerService.AddScheduleEntry(jobname, label, startDateTime ?? DateTime.UtcNow, endDateTime, cronExpression, functionName, programName, misfireInstruction, parameterValues.ToArray());
 	}
 
 	[KernelFunction(Name = "scheduler_services.get_entries")]
@@ -80,25 +80,25 @@ internal static class SchedulerFunctions
 		{
 			return null;
 		}
-		int num = 1;
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		int index = 1;
+		LuaTable entries = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (ISchedulerEntry scheduleEntry in schedulerService.GetScheduleEntries())
 		{
 			new ErrorList();
-			CreateResultTable(scheduleEntry.JobName)["results"] = luaTable;
-			LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-			luaTable2["id"] = scheduleEntry.JobName;
-			luaTable2["status"] = "Pending";
-			luaTable2["label"] = scheduleEntry.Label;
-			luaTable2["program"] = scheduleEntry.Program;
-			luaTable2["function"] = scheduleEntry.FunctionName;
-			luaTable2["starttime"] = scheduleEntry.CronExpression;
-			luaTable2["executiontime"] = string.Empty;
-			luaTable2["priority"] = string.Empty;
-			luaTable2["misfireinstruction"] = scheduleEntry.MisfireInstruction;
-			luaTable[num++] = luaTable2;
+			CreateResultTable(scheduleEntry.JobName)["results"] = entries;
+			LuaTable entry = new LuaTable(KernelService.Instance.LuaRuntime);
+			entry["id"] = scheduleEntry.JobName;
+			entry["status"] = "Pending";
+			entry["label"] = scheduleEntry.Label;
+			entry["program"] = scheduleEntry.Program;
+			entry["function"] = scheduleEntry.FunctionName;
+			entry["starttime"] = scheduleEntry.CronExpression;
+			entry["executiontime"] = string.Empty;
+			entry["priority"] = string.Empty;
+			entry["misfireinstruction"] = scheduleEntry.MisfireInstruction;
+			entries[index++] = entry;
 		}
-		return luaTable;
+		return entries;
 	}
 
 	[KernelFunction(Name = "scheduler_services.get_entry")]
@@ -134,13 +134,13 @@ internal static class SchedulerFunctions
 
 	private static LuaTable CreateResultTable(string jobname)
 	{
-		LuaTable obj = new LuaTable(KernelService.Instance.LuaRuntime)
+		LuaTable resultTable = new LuaTable(KernelService.Instance.LuaRuntime)
 		{
 			["success"] = true,
 			["job_id"] = jobname
 		};
-		LuaTable value = new LuaTable(KernelService.Instance.LuaRuntime);
-		obj["errors"] = value;
-		return obj;
+		LuaTable errors = new LuaTable(KernelService.Instance.LuaRuntime);
+		resultTable["errors"] = errors;
+		return resultTable;
 	}
 }

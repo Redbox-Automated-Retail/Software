@@ -159,14 +159,14 @@ public class GridExt : Grid
 
 	private static bool IsWidthHeightValid(object value)
 	{
-		double num = (double)value;
-		if (double.IsNaN(num))
+		double length = (double)value;
+		if (double.IsNaN(length))
 		{
 			return true;
 		}
-		if (num >= 0.0)
+		if (length >= 0.0)
 		{
-			return !double.IsPositiveInfinity(num);
+			return !double.IsPositiveInfinity(length);
 		}
 		return false;
 	}

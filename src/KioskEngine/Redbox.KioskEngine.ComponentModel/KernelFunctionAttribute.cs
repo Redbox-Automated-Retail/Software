@@ -25,8 +25,8 @@ public class KernelFunctionAttribute : Attribute
 			{
 				DescriptionAttribute descriptionAttribute = (DescriptionAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute));
 				ObsoleteAttribute obsoleteAttribute = (ObsoleteAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(ObsoleteAttribute));
-				KernelFunctionAttribute[] array = (KernelFunctionAttribute[])Attribute.GetCustomAttributes(methodInfo, typeof(KernelFunctionAttribute));
-				if (array != null && array.Length != 0)
+				KernelFunctionAttribute[] attributes = (KernelFunctionAttribute[])Attribute.GetCustomAttributes(methodInfo, typeof(KernelFunctionAttribute));
+				if (attributes != null && attributes.Length != 0)
 				{
 					KernelFunctionInfo kernelFunctionInfo = new KernelFunctionInfo
 					{
@@ -35,7 +35,7 @@ public class KernelFunctionAttribute : Attribute
 						Description = descriptionAttribute?.Description,
 						DeprecationWarning = obsoleteAttribute?.Message
 					};
-					kernelFunctionInfo.InnerAttributes.AddRange(array);
+					kernelFunctionInfo.InnerAttributes.AddRange(attributes);
 					kernelFunctionInfoList.Add(kernelFunctionInfo);
 				}
 			}

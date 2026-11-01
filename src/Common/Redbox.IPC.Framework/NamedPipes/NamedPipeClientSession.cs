@@ -42,10 +42,10 @@ public class NamedPipeClientSession : ClientSession
 
 	public override void ConnectThrowOnError()
 	{
-		bool flag = false;
+		bool connected = false;
 		for (int i = 0; i < 3; i++)
 		{
-			if (flag)
+			if (connected)
 			{
 				break;
 			}
@@ -56,7 +56,7 @@ public class NamedPipeClientSession : ClientSession
 					m_stream.Connect(5000);
 					if (m_stream.IsConnected)
 					{
-						flag = true;
+						connected = true;
 					}
 				}
 			}
@@ -65,7 +65,7 @@ public class NamedPipeClientSession : ClientSession
 				LogHelper.Instance.Log($"NamedPipeclient.Connect() timed out; still have {3 - i} re-connect attempts.", LogEntryType.Info);
 			}
 		}
-		if (!flag)
+		if (!connected)
 		{
 			throw new TimeoutException("Failed to connect to pipe server after 3 tries; maybe it's down?");
 		}

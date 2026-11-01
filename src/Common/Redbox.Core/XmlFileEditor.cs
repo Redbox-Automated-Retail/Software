@@ -92,29 +92,29 @@ public class XmlFileEditor
 				XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes(edit.XPath);
 				if (xmlNodeList != null && xmlNodeList.Count > 0)
 				{
-					List<XmlNode> list2 = new List<XmlNode>();
+					List<XmlNode> targets = new List<XmlNode>();
 					if (EditAllMatches)
 					{
 						foreach (XmlNode item in xmlNodeList)
 						{
-							list2.Add(item);
+							targets.Add(item);
 						}
 					}
 					else
 					{
-						list2.Add(xmlNodeList[0]);
+						targets.Add(xmlNodeList[0]);
 					}
-					foreach (XmlNode item2 in list2)
+					foreach (XmlNode target in targets)
 					{
-						if (item2 != null)
+						if (target != null)
 						{
-							switch (item2.NodeType)
+							switch (target.NodeType)
 							{
 							case XmlNodeType.Attribute:
-								item2.Value = edit.Value;
+								target.Value = edit.Value;
 								continue;
 							case XmlNodeType.Element:
-								item2.InnerText = edit.Value;
+								target.InnerText = edit.Value;
 								continue;
 							}
 							xmlEditorErrors.Add(new XmlEditorError

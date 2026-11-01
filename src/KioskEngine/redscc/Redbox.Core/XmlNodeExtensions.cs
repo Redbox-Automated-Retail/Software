@@ -88,14 +88,14 @@ public static class XmlNodeExtensions
 
 	private static XmlNode GetTargetNode(XmlNode node, string path)
 	{
-		string[] array = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] parts = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		XmlNode xmlNode = node;
-		foreach (string text in array)
+		foreach (string part in parts)
 		{
-			XmlNode xmlNode2 = xmlNode.SelectSingleNode(text);
+			XmlNode xmlNode2 = xmlNode.SelectSingleNode(part);
 			if (xmlNode2 == null)
 			{
-				xmlNode2 = xmlNode.OwnerDocument.CreateElement(text);
+				xmlNode2 = xmlNode.OwnerDocument.CreateElement(part);
 				xmlNode.AppendChild(xmlNode2);
 			}
 			xmlNode = xmlNode2;

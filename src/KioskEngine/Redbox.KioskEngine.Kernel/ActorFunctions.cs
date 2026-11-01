@@ -41,30 +41,30 @@ public static class ActorFunctions
 			float value = Convert.ToSingle(textRotationAngle);
 			actor.TextRotationAngle = value;
 		}
-		if (textTranslationPoint is LuaTable luaTable)
+		if (textTranslationPoint is LuaTable pointTable)
 		{
-			actor.TextTranslationPoint = luaTable.ToPoint();
-			luaTable.Dispose();
+			actor.TextTranslationPoint = pointTable.ToPoint();
+			pointTable.Dispose();
 		}
-		Color? colorFromValue = GetColorFromValue(backgroundColor);
-		if (colorFromValue.HasValue)
+		Color? background = GetColorFromValue(backgroundColor);
+		if (background.HasValue)
 		{
-			actor.BackgroundColor = colorFromValue.Value;
+			actor.BackgroundColor = background.Value;
 		}
-		Color? colorFromValue2 = GetColorFromValue(foregroundColor);
-		if (colorFromValue2.HasValue)
+		Color? foreground = GetColorFromValue(foregroundColor);
+		if (foreground.HasValue)
 		{
-			actor.ForegroundColor = colorFromValue2.Value;
+			actor.ForegroundColor = foreground.Value;
 		}
-		if (textRegion is LuaTable luaTable2)
+		if (textRegion is LuaTable textRegionTable)
 		{
-			actor.TextRegion = luaTable2.ToRectangle();
-			luaTable2.Dispose();
+			actor.TextRegion = textRegionTable.ToRectangle();
+			textRegionTable.Dispose();
 		}
-		if (hotSpot is LuaTable luaTable3)
+		if (hotSpot is LuaTable hotSpotTable)
 		{
-			actor.HotSpot = luaTable3.ToRectangle();
-			luaTable3.Dispose();
+			actor.HotSpot = hotSpotTable.ToRectangle();
+			hotSpotTable.Dispose();
 		}
 		if (!string.IsNullOrEmpty(renderOptions))
 		{
@@ -87,7 +87,7 @@ public static class ActorFunctions
 		{
 			if (image.StartsWith("cache:"))
 			{
-				string text2 = image.Substring(6);
+				string cacheName = image.Substring(6);
 				IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
 				if (bitmapCacheService == null)
 				{
@@ -96,15 +96,15 @@ public static class ActorFunctions
 				}
 				else
 				{
-					Image image2 = bitmapCacheService.GetImage(text2);
-					if (image2 == null)
+					Image cachedImage = bitmapCacheService.GetImage(cacheName);
+					if (cachedImage == null)
 					{
 						actor.OptionFlags |= RenderOptionFlags.DrawBorder;
-						actor.ErrorText = $"Bitmap '{text2}' not in cache.";
+						actor.ErrorText = $"Bitmap '{cacheName}' not in cache.";
 					}
 					else
 					{
-						actor.Image = image2;
+						actor.Image = cachedImage;
 					}
 				}
 			}
@@ -607,10 +607,10 @@ public static class ActorFunctions
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		List<IActor> actorByTag = ServiceLocator.Instance.GetService<IRenderingService>().GetScene("Default").GetActorByTag(tag);
-		int num = 1;
+		int index = 1;
 		foreach (IActor item in actorByTag)
 		{
-			luaTable[num++] = item.Name;
+			luaTable[index++] = item.Name;
 		}
 		KernelService.Instance.LuaRuntime["actors_by_tag"] = null;
 		return luaTable;

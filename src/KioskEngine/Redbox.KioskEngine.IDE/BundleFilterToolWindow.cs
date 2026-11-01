@@ -45,8 +45,8 @@ public class BundleFilterToolWindow : ToolWindow
 		m_dynamicPropertyGrid.BeginUpdate();
 		m_dynamicPropertyGrid.Clear();
 		m_dynamicPropertyGrid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
-		int num = 2;
-		List<string> list = new List<string>();
+		int propertyId = 2;
+		List<string> filterNames = new List<string>();
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		foreach (KeyValuePair<string, IResourceType> resourceType in resourceBundleService.GetResourceTypes())
 		{
@@ -55,23 +55,23 @@ public class BundleFilterToolWindow : ToolWindow
 			{
 				continue;
 			}
-			List<IPropertyType> list2 = new List<IPropertyType>();
+			List<IPropertyType> typeFilters = new List<IPropertyType>();
 			foreach (IPropertyType each in filterProperties)
 			{
-				if (list.Find((string eachName) => each.Name == eachName) == null)
+				if (filterNames.Find((string eachName) => each.Name == eachName) == null)
 				{
-					list2.Add(each);
-					list.Add(each.Name);
+					typeFilters.Add(each);
+					filterNames.Add(each.Name);
 				}
 			}
-			if (list2.Count == 0)
+			if (typeFilters.Count == 0)
 			{
 				continue;
 			}
-			PropertyEnumerator underCategory = m_dynamicPropertyGrid.AppendRootCategory(num++, resourceType.Key);
-			foreach (IPropertyType item in list2)
+			PropertyEnumerator underCategory = m_dynamicPropertyGrid.AppendRootCategory(propertyId++, resourceType.Key);
+			foreach (IPropertyType filter in typeFilters)
 			{
-				m_dynamicPropertyGrid.AppendManagedProperty(underCategory, num++, $"{item.Label} ({item.Name})", item.Type, resourceBundleService.Filter[item.Name], item.Description ?? string.Empty, new DefaultValueAttribute(item.DefaultValue)).Property.Tag = item;
+				m_dynamicPropertyGrid.AppendManagedProperty(underCategory, propertyId++, $"{filter.Label} ({filter.Name})", filter.Type, resourceBundleService.Filter[filter.Name], filter.Description ?? string.Empty, new DefaultValueAttribute(filter.DefaultValue)).Property.Tag = filter;
 			}
 		}
 		m_dynamicPropertyGrid.EndUpdate();

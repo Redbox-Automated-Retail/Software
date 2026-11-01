@@ -34,12 +34,12 @@ public static class Int32Extensions
 
 	public static bool BetweenAnyRange(this int theNumber, Pair<int, int>[] ranges)
 	{
-		bool flag = false;
+		bool inRange = false;
 		for (int i = 0; i < ranges.Length; i++)
 		{
-			flag = flag || theNumber.Between(ranges[i].First, ranges[i].Second);
+			inRange = inRange || theNumber.Between(ranges[i].First, ranges[i].Second);
 		}
-		return flag;
+		return inRange;
 	}
 
 	public static bool Between(this int theNumber, int min, int max)

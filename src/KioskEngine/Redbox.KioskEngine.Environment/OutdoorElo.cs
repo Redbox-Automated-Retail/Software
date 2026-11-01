@@ -48,10 +48,10 @@ public class OutdoorElo : GenericTouchScreen
 			{
 				process.Kill();
 			});
-			bool flag = !Enabled();
-			WindowsAPI.WritePrivateProfileString("Output", "EnabledBoo1", Convert.ToInt16(flag).ToString(), ControlFile);
+			bool enable = !Enabled();
+			WindowsAPI.WritePrivateProfileString("Output", "EnabledBoo1", Convert.ToInt16(enable).ToString(), ControlFile);
 			string lpString = "2";
-			if (!flag)
+			if (!enable)
 			{
 				lpString = "0";
 			}

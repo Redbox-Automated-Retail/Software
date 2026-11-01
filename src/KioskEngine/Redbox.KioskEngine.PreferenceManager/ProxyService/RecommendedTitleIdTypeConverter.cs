@@ -9,9 +9,9 @@ public class RecommendedTitleIdTypeConverter : IValueConverter
 {
 	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
-		RecommendedTitlesIdType num = (RecommendedTitlesIdType)Enum.Parse(typeof(RecommendedTitlesIdType), (string)parameter);
+		RecommendedTitlesIdType expectedType = (RecommendedTitlesIdType)Enum.Parse(typeof(RecommendedTitlesIdType), (string)parameter);
 		RecommendedTitlesIdType recommendedTitlesIdType = (RecommendedTitlesIdType)value;
-		return num == recommendedTitlesIdType;
+		return expectedType == recommendedTitlesIdType;
 	}
 
 	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -18,16 +18,16 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 		{
 			base.Scene.SuspendDrawing();
 			base.Scene.SceneRenderType = RenderType.WPF;
-			bool flag = true;
+			bool addToScene = true;
 			if (base.Clear)
 			{
 				base.Scene.Clear();
 			}
 			else if (base.Scene.GetWPFGridChild(viewFrameInstance.Id) != null)
 			{
-				flag = false;
+				addToScene = false;
 			}
-			if (flag)
+			if (addToScene)
 			{
 				FrameworkElement frameworkElement = CreateControlInstance();
 				frameworkElement.Tag = viewFrameInstance?.Id;

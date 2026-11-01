@@ -15,21 +15,21 @@ public static class RectangleHelper
 		}
 		rectangles.Sort(delegate(Rectangle lhs, Rectangle rhs)
 		{
-			int num2 = lhs.Left.CompareTo(rhs.Left);
-			int num3 = lhs.Top.CompareTo(rhs.Top);
-			return (num2 <= num3) ? num2 : num3;
+			int byLeft = lhs.Left.CompareTo(rhs.Left);
+			int byTop = lhs.Top.CompareTo(rhs.Top);
+			return (byLeft <= byTop) ? byLeft : byTop;
 		});
 		Rectangle rectangle = rectangles[0];
-		for (int num = 1; num < rectangles.Count; num++)
+		for (int i = 1; i < rectangles.Count; i++)
 		{
-			Rectangle rectangle2 = rectangles[num];
-			if (rectangle.IntersectsWith(rectangle2))
+			Rectangle next = rectangles[i];
+			if (rectangle.IntersectsWith(next))
 			{
-				rectangle = Rectangle.Union(rectangle, rectangle2);
+				rectangle = Rectangle.Union(rectangle, next);
 				continue;
 			}
 			list.Add(rectangle);
-			rectangle = rectangle2;
+			rectangle = next;
 		}
 		list.Add(rectangle);
 		return list;

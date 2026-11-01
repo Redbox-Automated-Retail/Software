@@ -140,25 +140,25 @@ public class RegisteredMethod
 	private static object[] ConvertParametersForMethodInfo(MethodInfo methodInfo, IEnumerable<object> parms)
 	{
 		ParameterInfo[] parameters = methodInfo.GetParameters();
-		object[] array = new object[parameters.Length];
-		int num = 0;
+		object[] converted = new object[parameters.Length];
+		int index = 0;
 		foreach (object parm in parms)
 		{
-			if (typeof(Delegate).IsAssignableFrom(parameters[num].ParameterType) && parm is LuaFunction)
+			if (typeof(Delegate).IsAssignableFrom(parameters[index].ParameterType) && parm is LuaFunction)
 			{
-				array[num] = DelegateFactory.GetDelegate(parameters[num].ParameterType, (LuaFunction)parm);
+				converted[index] = DelegateFactory.GetDelegate(parameters[index].ParameterType, (LuaFunction)parm);
 			}
 			else
 			{
-				array[num] = ConversionHelper.ChangeType(parm, parameters[num].ParameterType);
+				converted[index] = ConversionHelper.ChangeType(parm, parameters[index].ParameterType);
 			}
-			num++;
-			if (num >= parameters.Length)
+			index++;
+			if (index >= parameters.Length)
 			{
 				break;
 			}
 		}
-		return array;
+		return converted;
 	}
 
 	private MethodInfo FindBestMethodOverload(ReadOnlyCollection<object> parms)
@@ -175,7 +175,7 @@ public class RegisteredMethod
 			{
 				continue;
 			}
-			int num = 0;
+			int score = 0;
 			for (int i = 0; i < parameters.Length; i++)
 			{
 				Type type = parms[i].GetType();
@@ -183,47 +183,47 @@ public class RegisteredMethod
 				{
 					if (parameters[i].ParameterType == typeof(double))
 					{
-						num += 5;
+						score += 5;
 					}
 					else if (parameters[i].ParameterType == typeof(decimal))
 					{
-						num += 4;
+						score += 4;
 					}
 					else if (parameters[i].ParameterType == typeof(float))
 					{
-						num += 3;
+						score += 3;
 					}
 					else if (parameters[i].ParameterType == typeof(long))
 					{
-						num += 2;
+						score += 2;
 					}
 					else if (parameters[i].ParameterType == typeof(int) || parameters[i].ParameterType == typeof(ushort) || parameters[i].ParameterType == typeof(short) || parameters[i].ParameterType == typeof(byte))
 					{
-						num++;
+						score++;
 					}
 				}
 				else if (type == typeof(bool) && parameters[i].ParameterType == typeof(bool))
 				{
-					num++;
+					score++;
 				}
 				else if (type == typeof(string) && parameters[i].ParameterType == typeof(string))
 				{
-					num++;
+					score++;
 				}
 				else if (type == typeof(LuaFunction) && typeof(Delegate).IsAssignableFrom(parameters[i].ParameterType))
 				{
-					num++;
+					score++;
 				}
 				else if (type == typeof(LuaObject) && parameters[i].ParameterType == typeof(LuaObject))
 				{
-					num++;
+					score++;
 				}
 			}
-			if (num > 0)
+			if (score > 0)
 			{
 				scoredMethodInfoList.Add(new ScoredMethodInfo
 				{
-					Score = num,
+					Score = score,
 					MethodInfo = methodOverload
 				});
 			}

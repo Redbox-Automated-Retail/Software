@@ -57,7 +57,7 @@ internal class CommandInstance
 				commandFormAttribute.Filter.Trim().Split('|').ToList()
 					.ForEach(formMethod.Filters.Add);
 			}
-			int num = 0;
+			int index = 0;
 			foreach (ParameterInfo parameterInfo in parameters)
 			{
 				if (parameterInfo.ParameterType == typeof(CommandContext))
@@ -67,7 +67,7 @@ internal class CommandInstance
 				FormMethodParameter formMethodParameter = new FormMethodParameter
 				{
 					Parameter = parameterInfo,
-					Index = num++
+					Index = index++
 				};
 				CommandKeyValueAttribute commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
 				formMethodParameter.KeyName = parameterInfo.Name.ToUpper();

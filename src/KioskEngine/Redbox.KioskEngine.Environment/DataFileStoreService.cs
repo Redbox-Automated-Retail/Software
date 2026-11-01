@@ -190,7 +190,7 @@ public class DataFileStoreService : IDataFileStoreService
 
 	public bool Get<T>(string fileName, out T deserializedObject)
 	{
-		bool flag = false;
+		bool found = false;
 		deserializedObject = default(T);
 		string raw = GetRaw(fileName);
 		if (raw != null)
@@ -203,11 +203,11 @@ public class DataFileStoreService : IDataFileStoreService
 					Type type = GetType(jsonWrapper?.AssemblyName, jsonWrapper?.SerializedType);
 					if (type != null)
 					{
-						object obj = JsonConvert.DeserializeObject(jsonWrapper.JsonData, type);
-						if (obj != null && obj is T)
+						object deserialized = JsonConvert.DeserializeObject(jsonWrapper.JsonData, type);
+						if (deserialized != null && deserialized is T)
 						{
-							deserializedObject = (T)obj;
-							flag = true;
+							deserializedObject = (T)deserialized;
+							found = true;
 						}
 						else
 						{
@@ -230,11 +230,11 @@ public class DataFileStoreService : IDataFileStoreService
 				ServiceLocator.Instance.GetService<IHealthServices>()?.SendAlert(ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId.ToString() ?? null, "ApplicationCrash", _dataStoreName + ", Read-Error-01", "There was an error in " + _dataStoreName + " deserializing file " + fileName, DateTime.Now, null);
 			}
 		}
-		if (!flag)
+		if (!found)
 		{
 			RenameCorruptFileExtension(fileName);
 		}
-		return flag;
+		return found;
 	}
 
 	private void RenameCorruptFileExtension(string fileName)
@@ -314,11 +314,11 @@ public class DataFileStoreService : IDataFileStoreService
 
 	private Type GetCachedSerializationType(string assemblyName, string typeName)
 	{
-		Type value = null;
-		Dictionary<string, Type> value2 = null;
-		_cachedSerializationTypes.TryGetValue(assemblyName, out value2);
-		value2?.TryGetValue(typeName, out value);
-		return value;
+		Type type = null;
+		Dictionary<string, Type> typesByName = null;
+		_cachedSerializationTypes.TryGetValue(assemblyName, out typesByName);
+		typesByName?.TryGetValue(typeName, out type);
+		return type;
 	}
 
 	private void AddCachedSerializationType(string assemblyName, string typeName, Type type)

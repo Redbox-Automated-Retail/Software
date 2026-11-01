@@ -88,25 +88,25 @@ public class SymbolsToolWindow : ToolWindow
 	private static object GetAdjustedValue(object var, out Type type, out bool isReadOnly)
 	{
 		isReadOnly = false;
-		object obj = "nil";
+		object adjusted = "nil";
 		if (var != null)
 		{
-			obj = var;
+			adjusted = var;
 		}
-		type = obj.GetType();
+		type = adjusted.GetType();
 		if (type == typeof(LuaTable))
 		{
-			obj = "(table)";
+			adjusted = "(table)";
 			type = typeof(string);
 			isReadOnly = true;
 		}
 		else if (type == typeof(LuaFunction))
 		{
-			obj = "(function)";
+			adjusted = "(function)";
 			type = typeof(string);
 			isReadOnly = true;
 		}
-		return obj;
+		return adjusted;
 	}
 
 	private void RefreshVariableGrid(DynamicPropertyGrid grid, string category, IEnumerable<LuaVar> vars)
@@ -119,7 +119,7 @@ public class SymbolsToolWindow : ToolWindow
 			grid.Clear();
 			grid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 			PropertyEnumerator underCategory = grid.AppendRootCategory(1, category);
-			int num = 2;
+			int propertyId = 2;
 			foreach (LuaVar var in vars)
 			{
 				if (!(var.Name == "package"))
@@ -129,13 +129,13 @@ public class SymbolsToolWindow : ToolWindow
 					{
 						new DefaultValueAttribute(adjustedValue)
 					};
-					LuaTable obj = var.Value as LuaTable;
-					PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(underCategory, num++, var.Name, type, adjustedValue, string.Empty, attributes.ToArray());
-					if (obj != null)
+					LuaTable table = var.Value as LuaTable;
+					PropertyEnumerator propertyEnumerator = grid.AppendManagedProperty(underCategory, propertyId++, var.Name, type, adjustedValue, string.Empty, attributes.ToArray());
+					if (table != null)
 					{
 						propertyEnumerator.Property.Tag = var.Value;
 						propertyEnumerator.Property.Feel = grid.GetRegisteredFeel("button");
-						grid.AppendManagedProperty(propertyEnumerator, num++, "hidden", typeof(string), null, string.Empty);
+						grid.AppendManagedProperty(propertyEnumerator, propertyId++, "hidden", typeof(string), null, string.Empty);
 					}
 					if (var.Value is LuaFunction)
 					{

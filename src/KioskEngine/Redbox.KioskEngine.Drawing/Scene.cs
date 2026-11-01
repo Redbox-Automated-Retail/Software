@@ -32,16 +32,16 @@ public class Scene : IScene, IDisposable
 	{
 		get
 		{
-			int num = 0;
+			int count = 0;
 			for (LinkedListNode<IActor> linkedListNode = Actors.Last; linkedListNode != null; linkedListNode = linkedListNode.Previous)
 			{
-				IActor value = linkedListNode.Value;
-				if ((value.HitFlags & HitTestFlags.Enabled) != HitTestFlags.None && value.Visible && value.Enabled && value.HitExists)
+				IActor actor = linkedListNode.Value;
+				if ((actor.HitFlags & HitTestFlags.Enabled) != HitTestFlags.None && actor.Visible && actor.Enabled && actor.HitExists)
 				{
-					num++;
+					count++;
 				}
 			}
-			return num;
+			return count;
 		}
 	}
 

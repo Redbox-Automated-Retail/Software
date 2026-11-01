@@ -43,9 +43,9 @@ public partial class LoginResultRecommendedTitlesUserControl : UserControl, IPre
 		_testDataReadPropertyItems.Add(new TestDataReadPropertyItem("Login.RecommendedTitleIdType", delegate(ReadTestDataValueResult result)
 		{
 			RecommendedTitlesIdType recommendedTitleTypeId = RecommendedTitlesIdType.TitleID;
-			if (Enum.TryParse<RecommendedTitlesIdType>(result.GetPropertyValue<string>(), out var result2))
+			if (Enum.TryParse<RecommendedTitlesIdType>(result.GetPropertyValue<string>(), out var parsed))
 			{
-				recommendedTitleTypeId = result2;
+				recommendedTitleTypeId = parsed;
 			}
 			_model.RecommendedTitleTypeId = recommendedTitleTypeId;
 		}, delegate

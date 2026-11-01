@@ -35,7 +35,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 		{
 			CommandText = CommandText
 		};
-		bool flag = Session == null || DisposeWhenDone;
+		bool disposeSession = Session == null || DisposeWhenDone;
 		try
 		{
 			Session = Session ?? ClientSession.GetClientSession(Protocol, CommandTimeout);
@@ -73,7 +73,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 			ExecutionTime = val.ExecutionTime;
 			try
 			{
-				if (flag && Session != null)
+				if (disposeSession && Session != null)
 				{
 					Session.Dispose();
 				}
@@ -142,18 +142,18 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 				}
 				stringBuilder.Replace("|*", string.Empty);
 				stringBuilder.Replace("*|", string.Empty);
-				string text = stringBuilder.ToString();
-				string text2 = text.ExtractCodeFromBrackets("[", "]");
-				if (text2 != null)
+				string message = stringBuilder.ToString();
+				string code = message.ExtractCodeFromBrackets("[", "]");
+				if (code != null)
 				{
-					string[] array = text.Substring(text2.Length + 2).Split("|".ToCharArray());
-					if (array[0].IndexOf("WARNING") != -1)
+					string[] parts = message.Substring(code.Length + 2).Split("|".ToCharArray());
+					if (parts[0].IndexOf("WARNING") != -1)
 					{
-						result.Errors.Add(Error.NewWarning(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewWarning(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 					else
 					{
-						result.Errors.Add(Error.NewError(text2, array[0].Trim(), (array.Length == 2) ? array[1].Trim() : string.Empty));
+						result.Errors.Add(Error.NewError(code, parts[0].Trim(), (parts.Length == 2) ? parts[1].Trim() : string.Empty));
 					}
 				}
 			}

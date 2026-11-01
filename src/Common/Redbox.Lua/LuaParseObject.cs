@@ -66,9 +66,9 @@ public class LuaParseObject : IEnumerable
 	public static implicit operator Dictionary<string, object>(LuaParseObject m)
 	{
 		Dictionary<string, object> dictionary = new Dictionary<string, object>();
-		if (m.m_instance is Dictionary<string, LuaParseObject> dictionary2)
+		if (m.m_instance is Dictionary<string, LuaParseObject> table)
 		{
-			foreach (KeyValuePair<string, LuaParseObject> item in dictionary2)
+			foreach (KeyValuePair<string, LuaParseObject> item in table)
 			{
 				dictionary[item.Key] = item.Value;
 			}

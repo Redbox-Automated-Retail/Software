@@ -49,9 +49,9 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 			if (configuration == null || configuration.KioskSession.DeviceService.CardReadTechnicalFallbackEnabled)
 			{
-				int num = (ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession())?.CardReadTechnicalFallbackCount ?? 0;
-				int num2 = configuration?.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit ?? 3;
-				result = num >= num2;
+				int fallbackCount = (ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession())?.CardReadTechnicalFallbackCount ?? 0;
+				int fallbackLimit = configuration?.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit ?? 3;
+				result = fallbackCount >= fallbackLimit;
 			}
 			return result;
 		}
@@ -298,9 +298,9 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 			return;
 		}
 		ICCReaderHealth service = ServiceLocator.Instance.GetService<ICCReaderHealth>();
-		bool flag = trackData?.HasValidData() ?? false;
-		bool hasError = !flag;
-		service?.EventOccurred(flag, hasError);
+		bool hasValidData = trackData?.HasValidData() ?? false;
+		bool hasError = !hasValidData;
+		service?.EventOccurred(hasValidData, hasError);
 	}
 
 	private static bool ResponseEventIsTimedOut(BaseResponseEvent responseEvent)

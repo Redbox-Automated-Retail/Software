@@ -205,10 +205,10 @@ public class HidDeviceManager : IDisposable
 	public static void TestDeviceManager()
 	{
 		using HidDeviceManager hidDeviceManager = new HidDeviceManager();
-		HidDevice[] array = hidDeviceManager.EnumerateDevices();
-		for (int i = 0; i < array.Length; i++)
+		HidDevice[] devices = hidDeviceManager.EnumerateDevices();
+		for (int i = 0; i < devices.Length; i++)
 		{
-			Console.WriteLine(array[i].DevicePath);
+			Console.WriteLine(devices[i].DevicePath);
 		}
 	}
 

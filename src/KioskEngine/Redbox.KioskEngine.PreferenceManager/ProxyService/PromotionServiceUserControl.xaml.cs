@@ -210,9 +210,9 @@ public partial class PromotionServiceUserControl : UserControl, IPreferencePageH
 		{
 			PromotionIntentCodeComboBox.Items.Add(value);
 		}
-		foreach (object value2 in Enum.GetValues(typeof(PromotionValidationResponse)))
+		foreach (object response in Enum.GetValues(typeof(PromotionValidationResponse)))
 		{
-			PromotionValidationResponseComboBox.Items.Add(value2);
+			PromotionValidationResponseComboBox.Items.Add(response);
 		}
 		return true;
 	}

@@ -230,18 +230,18 @@ public class CommandService
 		{
 			buffer[i] = Convert.ToByte(parts[i]);
 		}
-		foreach (byte[] item in m_accessFilter[command])
+		foreach (byte[] filter in m_accessFilter[command])
 		{
-			bool flag = true;
-			for (int j = 0; j < item.Length; j++)
+			bool matches = true;
+			for (int j = 0; j < filter.Length; j++)
 			{
-				if (item[j] != buffer[j])
+				if (filter[j] != buffer[j])
 				{
-					flag = false;
+					matches = false;
 					break;
 				}
 			}
-			if (flag)
+			if (matches)
 			{
 				return true;
 			}

@@ -22,12 +22,12 @@ public class LuaParse
 
 	public void Parse(string s, bool allowAnonymous)
 	{
-		string text = string.Format("({0}[^{0}]*{0})", "\"");
-		foreach (string text2 in Regex.Split(s, text + "|(=)|(,)|(\\[)|(\\])|(\\{)|(\\})|(--[^\\n\\r]*)"))
+		string quotedPattern = string.Format("({0}[^{0}]*{0})", "\"");
+		foreach (string token in Regex.Split(s, quotedPattern + "|(=)|(,)|(\\[)|(\\])|(\\{)|(\\})|(--[^\\n\\r]*)"))
 		{
-			if (text2.Trim().Length != 0 && !text2.StartsWith("--"))
+			if (token.Trim().Length != 0 && !token.StartsWith("--"))
 			{
-				m_tokens.Add(text2.Trim());
+				m_tokens.Add(token.Trim());
 			}
 		}
 		Assign(!allowAnonymous);
@@ -134,16 +134,16 @@ public class LuaParse
 
 	protected LuaParseObject GetNumber()
 	{
-		int num = Convert.ToInt32(m_tokens[0]);
+		int number = Convert.ToInt32(m_tokens[0]);
 		m_tokens.RemoveAt(0);
-		return num;
+		return number;
 	}
 
 	protected LuaParseObject GetFloat()
 	{
-		double num = Convert.ToDouble(m_tokens[0]);
+		double number = Convert.ToDouble(m_tokens[0]);
 		m_tokens.RemoveAt(0);
-		return num;
+		return number;
 	}
 
 	protected void NextToken()

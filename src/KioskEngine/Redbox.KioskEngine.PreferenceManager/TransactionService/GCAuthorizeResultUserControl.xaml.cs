@@ -239,11 +239,11 @@ public partial class GCAuthorizeResultUserControl : UserControl, IPreferencePage
 		}
 		GiftCardStatusComboBox.Items.Clear();
 		_giftCardStatusItems.Clear();
-		foreach (object value2 in Enum.GetValues(typeof(GiftCardStatus)))
+		foreach (object status in Enum.GetValues(typeof(GiftCardStatus)))
 		{
 			GiftCardStatusItem giftCardStatusItem = new GiftCardStatusItem
 			{
-				GiftCardStatus = (GiftCardStatus)value2
+				GiftCardStatus = (GiftCardStatus)status
 			};
 			_giftCardStatusItems.Add(giftCardStatusItem);
 			GiftCardStatusComboBox.Items.Add(giftCardStatusItem);

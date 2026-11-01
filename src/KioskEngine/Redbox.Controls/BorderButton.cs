@@ -207,9 +207,9 @@ public class BorderButton : Button
 
 	private static void OnBorderSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		BorderButton obj = d as BorderButton;
-		obj.Width = obj.BorderSize.Width;
-		obj.Height = obj.BorderSize.Height;
+		BorderButton button = d as BorderButton;
+		button.Width = button.BorderSize.Width;
+		button.Height = button.BorderSize.Height;
 	}
 
 	private static void OnDisposeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

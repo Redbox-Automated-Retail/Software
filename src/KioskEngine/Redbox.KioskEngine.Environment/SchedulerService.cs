@@ -69,11 +69,11 @@ public class SchedulerService : ISchedulerService
 					return;
 				}
 				object[] parameters = new object[list.Count];
-				int num = 0;
+				int index = 0;
 				foreach (object item in list)
 				{
-					parameters[num] = item.ToString();
-					num++;
+					parameters[index] = item.ToString();
+					index++;
 				}
 				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 				if (kernelService != null)

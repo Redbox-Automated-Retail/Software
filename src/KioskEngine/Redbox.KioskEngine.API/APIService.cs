@@ -36,10 +36,10 @@ public class APIService : IApiService
 		{
 			c.SingleApiVersion("v1", "Redbox.KioskEngine.API");
 			c.DescribeAllEnumsAsStrings();
-			string text2 = Path.ChangeExtension(Assembly.GetExecutingAssembly()?.Location, ".xml");
-			if (File.Exists(text2))
+			string xmlDocPath = Path.ChangeExtension(Assembly.GetExecutingAssembly()?.Location, ".xml");
+			if (File.Exists(xmlDocPath))
 			{
-				c.IncludeXmlComments(text2);
+				c.IncludeXmlComments(xmlDocPath);
 			}
 		}).EnableSwaggerUi(delegate(SwaggerUiConfig x)
 		{

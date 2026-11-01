@@ -78,55 +78,55 @@ public class Program : IDisposable
 			errorList.Add(Error.NewError("C003", $"The specified bundle project path '{Options.Path}' does not exist.", "Specify a valid bundle project path."));
 			return errorList;
 		}
-		List<string> list = new List<string>(Directory.GetFiles(Options.Path, "*.resource"));
-		string text = list.Find((string each) => string.Compare("manifest.resource", Path.GetFileName(each), ignoreCase: true) == 0);
-		if (text == null)
+		List<string> resourceFiles = new List<string>(Directory.GetFiles(Options.Path, "*.resource"));
+		string manifestPath = resourceFiles.Find((string each) => string.Compare("manifest.resource", Path.GetFileName(each), ignoreCase: true) == 0);
+		if (manifestPath == null)
 		{
 			errorList.Add(Error.NewError("C004", "The manifest.resource file is missing from the bundle.", "Provide a valid manifest.resource file and recompile."));
 			return errorList;
 		}
-		bool flag = false;
+		bool propertiesUpdated = false;
 		if (Options.Properties.Count > 0)
 		{
 			defaultConsole.Write($"Update manifest.resource properties ... ");
-			list.Remove(text);
-			string text2 = Path.Combine(Path.GetTempPath(), "manifest.resource");
-			File.Copy(text, text2, overwrite: true);
-			list.Add(text2);
+			resourceFiles.Remove(manifestPath);
+			string tempManifestPath = Path.Combine(Path.GetTempPath(), "manifest.resource");
+			File.Copy(manifestPath, tempManifestPath, overwrite: true);
+			resourceFiles.Add(tempManifestPath);
 			XmlDocument xmlDocument = new XmlDocument();
-			xmlDocument.Load(text2);
+			xmlDocument.Load(tempManifestPath);
 			if (xmlDocument.DocumentElement != null)
 			{
 				XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes("property");
 				if (xmlNodeList != null)
 				{
-					foreach (XmlNode item in xmlNodeList)
+					foreach (XmlNode propertyNode in xmlNodeList)
 					{
-						string attributeValue = item.GetAttributeValue<string>("name");
+						string attributeValue = propertyNode.GetAttributeValue<string>("name");
 						if (Options.Properties.ContainsKey(attributeValue))
 						{
-							item.SetAttributeValue("value", Options.Properties[attributeValue]);
-							flag = true;
+							propertyNode.SetAttributeValue("value", Options.Properties[attributeValue]);
+							propertiesUpdated = true;
 						}
 					}
 				}
-				xmlDocument.Save(text2);
+				xmlDocument.Save(tempManifestPath);
 			}
 			defaultConsole.WriteLine("done.");
 		}
-		foreach (string item2 in list)
+		foreach (string resourceFile in resourceFiles)
 		{
 			try
 			{
-				defaultConsole.Write($"Verify resource file: {Path.GetFileName(item2)} ... ");
+				defaultConsole.Write($"Verify resource file: {Path.GetFileName(resourceFile)} ... ");
 				XmlDocument xmlDocument2 = new XmlDocument();
-				xmlDocument2.Load(item2);
+				xmlDocument2.Load(resourceFile);
 				defaultConsole.WriteLine("done.");
 			}
 			catch (Exception e)
 			{
 				defaultConsole.WriteLine("errored.");
-				errorList.Add(Error.NewError("C999", $"Unable to parse the resource XML file: {item2}.", e));
+				errorList.Add(Error.NewError("C999", $"Unable to parse the resource XML file: {resourceFile}.", e));
 			}
 		}
 		defaultConsole.Write($"Write resource bundle file: {Options.OutputFile} ... ");
@@ -143,15 +143,15 @@ public class Program : IDisposable
 				return errorList;
 			}
 			resourceBundle.BeginUpdate();
-			foreach (string item3 in list)
+			foreach (string resourceFile in resourceFiles)
 			{
-				if (Path.GetFileName(item3) == "manifest.resource" && flag)
+				if (Path.GetFileName(resourceFile) == "manifest.resource" && propertiesUpdated)
 				{
-					resourceBundle.AddEntry(item3, Path.GetDirectoryName(item3));
+					resourceBundle.AddEntry(resourceFile, Path.GetDirectoryName(resourceFile));
 				}
 				else
 				{
-					resourceBundle.AddEntry(item3);
+					resourceBundle.AddEntry(resourceFile);
 				}
 			}
 			string[] files = Directory.GetFiles(Options.Path, "*.*", SearchOption.AllDirectories);
@@ -169,13 +169,13 @@ public class Program : IDisposable
 		using (ResourceBundle resourceBundle2 = new ResourceBundle(Options.OutputFile, ResourceBundleStorageType.Zipped))
 		{
 			defaultConsole.Write($"Verify resource bundle file: {Options.OutputFile} ... ");
-			ErrorList errorList2 = resourceBundle2.LoadResources();
-			if (errorList2.Count > 0)
+			ErrorList loadErrors = resourceBundle2.LoadResources();
+			if (loadErrors.Count > 0)
 			{
 				defaultConsole.WriteLine("errored.");
-				foreach (Error item4 in errorList2)
+				foreach (Error error in loadErrors)
 				{
-					errorList.Add(item4.IsWarning ? Error.NewWarning(item4.Code, item4.Description, item4.Details) : Error.NewError(item4.Code, item4.Description, item4.Details));
+					errorList.Add(error.IsWarning ? Error.NewWarning(error.Code, error.Description, error.Details) : Error.NewError(error.Code, error.Description, error.Details));
 				}
 			}
 			else
@@ -184,23 +184,23 @@ public class Program : IDisposable
 				{
 					foreach (IResource allResource in resourceBundle2.GetAllResources("script"))
 					{
-						string text3 = string.Empty;
+						string scriptSource = string.Empty;
 						object content = allResource.GetAspect("content").GetContent();
 						if (content is string)
 						{
-							text3 = (string)content;
+							scriptSource = (string)content;
 						}
 						else if (content is byte[])
 						{
-							text3 = Encoding.ASCII.GetString((byte[])content);
+							scriptSource = Encoding.ASCII.GetString((byte[])content);
 						}
-						if (!string.IsNullOrEmpty(text3))
+						if (!string.IsNullOrEmpty(scriptSource))
 						{
-							string text4 = Path.GetTempFileName().Escaped();
+							string tempScriptPath = Path.GetTempFileName().Escaped();
 							try
 							{
-								File.WriteAllText(text4, text3);
-								luaVirtualMachine.DoString($"assert( loadfile( \"{text4}\" ) )");
+								File.WriteAllText(tempScriptPath, scriptSource);
+								luaVirtualMachine.DoString($"assert( loadfile( \"{tempScriptPath}\" ) )");
 							}
 							catch (Exception ex)
 							{
@@ -208,7 +208,7 @@ public class Program : IDisposable
 							}
 							finally
 							{
-								File.Delete(text4);
+								File.Delete(tempScriptPath);
 							}
 						}
 						else

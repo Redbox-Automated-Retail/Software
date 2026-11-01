@@ -55,11 +55,11 @@ public class CommandRepository
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		List<string> list = new List<string>();
 		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		List<string> list2 = new List<string>();
+		List<string> assemblyFiles = new List<string>();
 		if (AssemblyPatterns == null || AssemblyPatterns.Length == 0)
 		{
-			list2.AddRange(Directory.GetFiles(directoryName, "*.dll"));
-			list2.AddRange(Directory.GetFiles(directoryName, "*.exe"));
+			assemblyFiles.AddRange(Directory.GetFiles(directoryName, "*.dll"));
+			assemblyFiles.AddRange(Directory.GetFiles(directoryName, "*.exe"));
 		}
 		else
 		{
@@ -68,23 +68,23 @@ public class CommandRepository
 			{
 				if (text.IndexOf("*") == -1 && text.IndexOf("?") == -1)
 				{
-					list2.Add(Path.Combine(directoryName, text));
+					assemblyFiles.Add(Path.Combine(directoryName, text));
 				}
 				else
 				{
-					list2.AddRange(Directory.GetFiles(directoryName, text));
+					assemblyFiles.AddRange(Directory.GetFiles(directoryName, text));
 				}
 			}
 		}
 #if !NETFRAMEWORK
 		// On .NET an .exe project's code is in <name>.dll; the .exe beside it is the native launcher.
-		list2 = list2.Select(delegate(string path)
+		assemblyFiles = assemblyFiles.Select(delegate(string path)
 		{
 			string dll = Path.ChangeExtension(path, ".dll");
 			return path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && File.Exists(dll) ? dll : path;
 		}).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 #endif
-		foreach (string item in list2)
+		foreach (string item in assemblyFiles)
 		{
 			if (!File.Exists(item))
 			{

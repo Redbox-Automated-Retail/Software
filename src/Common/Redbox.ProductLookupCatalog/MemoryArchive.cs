@@ -135,46 +135,46 @@ public class MemoryArchive : IDisposable
 
 	public Inventory Find(string barcode)
 	{
-		long num = 0L;
-		long num2 = GetNumberOfRecords() - 1;
-		while (num <= num2)
+		long low = 0L;
+		long high = GetNumberOfRecords() - 1;
+		while (low <= high)
 		{
-			long num3 = (num + num2) / 2;
-			string text = ReadBarcode(num3);
-			if (text.CompareTo(barcode) < 0)
+			long mid = (low + high) / 2;
+			string midBarcode = ReadBarcode(mid);
+			if (midBarcode.CompareTo(barcode) < 0)
 			{
-				num = num3 + 1;
+				low = mid + 1;
 				continue;
 			}
-			if (text.CompareTo(barcode) > 0)
+			if (midBarcode.CompareTo(barcode) > 0)
 			{
-				num2 = num3 - 1;
+				high = mid - 1;
 				continue;
 			}
-			return ReadInventory(num3);
+			return ReadInventory(mid);
 		}
 		return null;
 	}
 
 	public long FindIndex(string barcode)
 	{
-		long num = 0L;
-		long num2 = GetNumberOfRecords() - 1;
-		while (num <= num2)
+		long low = 0L;
+		long high = GetNumberOfRecords() - 1;
+		while (low <= high)
 		{
-			long num3 = (num + num2) / 2;
-			string text = ReadBarcode(num3);
-			if (text.CompareTo(barcode) < 0)
+			long mid = (low + high) / 2;
+			string midBarcode = ReadBarcode(mid);
+			if (midBarcode.CompareTo(barcode) < 0)
 			{
-				num = num3 + 1;
+				low = mid + 1;
 				continue;
 			}
-			if (text.CompareTo(barcode) > 0)
+			if (midBarcode.CompareTo(barcode) > 0)
 			{
-				num2 = num3 - 1;
+				high = mid - 1;
 				continue;
 			}
-			return num3;
+			return mid;
 		}
 		return -1L;
 	}

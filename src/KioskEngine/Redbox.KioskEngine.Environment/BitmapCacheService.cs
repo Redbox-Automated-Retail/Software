@@ -83,13 +83,13 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			return null;
 		}
 		ImageTracker imageTracker = Images[name];
-		int num = (m_usageCounts.ContainsKey(name) ? m_usageCounts[name] : 0);
-		num++;
-		if (num > 65536)
+		int useCount = (m_usageCounts.ContainsKey(name) ? m_usageCounts[name] : 0);
+		useCount++;
+		if (useCount > 65536)
 		{
-			num = 1;
+			useCount = 1;
 		}
-		m_usageCounts[name] = num;
+		m_usageCounts[name] = useCount;
 		return imageTracker.Instance;
 	}
 
@@ -274,7 +274,7 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 
 	private int TrimBitmapImageCache(int maximumItems)
 	{
-		int num = Math.Max(0, _bitmapImages.Count - maximumItems);
+		int trimCount = Math.Max(0, _bitmapImages.Count - maximumItems);
 		LogHelper.Instance.Log("Trim the bitmap image cache:");
 		List<ImageUsage> imageUsages = new List<ImageUsage>();
 		foreach (KeyValuePair<string, int> item in _bitmapImageUsageCount)
@@ -286,22 +286,22 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			});
 		}
 		imageUsages.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
-		foreach (ImageUsage item2 in imageUsages.Take(num))
+		foreach (ImageUsage usage in imageUsages.Take(trimCount))
 		{
-			LogHelper.Instance.Log("...Trim bitmap image '{0}' from the cache.", item2.Name);
-			_bitmapImages.Remove(item2.Name);
-			_bitmapImageUsageCount.Remove(item2.Name);
+			LogHelper.Instance.Log("...Trim bitmap image '{0}' from the cache.", usage.Name);
+			_bitmapImages.Remove(usage.Name);
+			_bitmapImageUsageCount.Remove(usage.Name);
 		}
-		LogHelper.Instance.Log("...{0} bitmap images trimmed.", num);
-		return num;
+		LogHelper.Instance.Log("...{0} bitmap images trimmed.", trimCount);
+		return trimCount;
 	}
 
 	private int TrimImageCache(int maximumItems)
 	{
-		int num = 0;
+		int trimCount = 0;
 		if (m_images.Count <= maximumItems)
 		{
-			return num;
+			return trimCount;
 		}
 		LogHelper.Instance.Log("Trim the image cache:");
 		List<ImageUsage> imageUsages = new List<ImageUsage>();
@@ -321,9 +321,9 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			}
 		}
 		imageUsages.Sort((ImageUsage x, ImageUsage y) => x.Uses.CompareTo(y.Uses));
-		for (int num2 = 0; num2 < m_images.Count - maximumItems; num2++)
+		for (int i = 0; i < m_images.Count - maximumItems; i++)
 		{
-			string name = imageUsages[num2].Name;
+			string name = imageUsages[i].Name;
 			LogHelper.Instance.Log("...Trim image '{0}' from the cache.", name);
 			ImageTracker imageTracker = m_images[name];
 			try
@@ -336,10 +336,10 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 			}
 			m_images.Remove(name);
 			m_usageCounts.Remove(name);
-			num++;
+			trimCount++;
 		}
-		LogHelper.Instance.Log("...{0} images trimmed.", num);
-		return num;
+		LogHelper.Instance.Log("...{0} images trimmed.", trimCount);
+		return trimCount;
 	}
 
 	public BitmapImage GetBitmapImage(string imageName)
@@ -348,10 +348,10 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 		BitmapImages.TryGetValue(imageName, out value);
 		if (value != null)
 		{
-			int value2 = 0;
-			_bitmapImageUsageCount.TryGetValue(imageName, out value2);
-			value2++;
-			_bitmapImageUsageCount[imageName] = value2;
+			int useCount = 0;
+			_bitmapImageUsageCount.TryGetValue(imageName, out useCount);
+			useCount++;
+			_bitmapImageUsageCount[imageName] = useCount;
 		}
 		return value;
 	}

@@ -139,39 +139,39 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		XmlNodeList xmlNodeList = xml.SelectNodes("row");
-		if (xmlNodeList == null)
+		XmlNodeList rowNodes = xml.SelectNodes("row");
+		if (rowNodes == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		decimal num = 1m;
-		foreach (XmlNode item in xmlNodeList)
+		LuaTable rows = new LuaTable(KernelService.Instance.LuaRuntime);
+		decimal rowIndex = 1m;
+		foreach (XmlNode rowNode in rowNodes)
 		{
-			XmlNodeList xmlNodeList2 = item.SelectNodes("column");
-			if (xmlNodeList2 == null)
+			XmlNodeList columnNodes = rowNode.SelectNodes("column");
+			if (columnNodes == null)
 			{
 				continue;
 			}
-			LuaTable luaTable2 = new LuaTable(KernelService.Instance.LuaRuntime);
-			foreach (XmlNode item2 in xmlNodeList2)
+			LuaTable row = new LuaTable(KernelService.Instance.LuaRuntime);
+			foreach (XmlNode columnNode in columnNodes)
 			{
-				string attributeValue = item2.GetAttributeValue<string>("name");
-				object value = item2.GetNodeValue(string.Empty);
-				string attributeValue2 = item2.GetAttributeValue<string>("type");
-				if (!string.IsNullOrEmpty(attributeValue2))
+				string columnName = columnNode.GetAttributeValue<string>("name");
+				object value = columnNode.GetNodeValue(string.Empty);
+				string typeName = columnNode.GetAttributeValue<string>("type");
+				if (!string.IsNullOrEmpty(typeName))
 				{
-					Type type = attributeValue2.ToType();
+					Type type = typeName.ToType();
 					if (type != null)
 					{
 						value = ConversionHelper.ChangeType(value, type);
 					}
 				}
-				luaTable2[attributeValue] = value;
+				row[columnName] = value;
 			}
-			luaTable[num++] = luaTable2;
+			rows[rowIndex++] = row;
 		}
-		return luaTable;
+		return rows;
 	}
 
 	[KernelFunction(Name = "kernel.getdictionary")]
@@ -182,36 +182,36 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		XmlNodeList xmlNodeList = xml.SelectNodes("row");
-		if (xmlNodeList == null)
+		XmlNodeList rowNodes = xml.SelectNodes("row");
+		if (rowNodes == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		foreach (XmlNode item in xmlNodeList)
+		LuaTable dictionary = new LuaTable(KernelService.Instance.LuaRuntime);
+		foreach (XmlNode rowNode in rowNodes)
 		{
-			XmlNodeList xmlNodeList2 = item.SelectNodes("column");
-			if (xmlNodeList2 == null)
+			XmlNodeList columnNodes = rowNode.SelectNodes("column");
+			if (columnNodes == null)
 			{
 				continue;
 			}
-			foreach (XmlNode item2 in xmlNodeList2)
+			foreach (XmlNode columnNode in columnNodes)
 			{
-				string attributeValue = item2.GetAttributeValue<string>("name");
-				object value = item2.GetNodeValue(string.Empty);
-				string attributeValue2 = item2.GetAttributeValue<string>("type");
-				if (!string.IsNullOrEmpty(attributeValue2))
+				string columnName = columnNode.GetAttributeValue<string>("name");
+				object value = columnNode.GetNodeValue(string.Empty);
+				string typeName = columnNode.GetAttributeValue<string>("type");
+				if (!string.IsNullOrEmpty(typeName))
 				{
-					Type type = attributeValue2.ToType();
+					Type type = typeName.ToType();
 					if (type != null)
 					{
 						value = ConversionHelper.ChangeType(value, type);
 					}
 				}
-				luaTable[attributeValue] = value;
+				dictionary[columnName] = value;
 			}
 		}
-		return luaTable;
+		return dictionary;
 	}
 
 	[KernelFunction(Name = "kernel.getfilter")]

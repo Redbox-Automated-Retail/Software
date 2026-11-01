@@ -28,14 +28,14 @@ public static class ConversionHelper
 				FlagsAttribute[] flagsAttributes = (FlagsAttribute[])convertToType.GetCustomAttributes(typeof(FlagsAttribute), inherit: false);
 				if (flagsAttributes != null && flagsAttributes.Length > 0)
 				{
-					int num = 0;
-					string text = (string)value;
-					foreach (string text2 in text.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+					int flags = 0;
+					string names = (string)value;
+					foreach (string name in names.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 					{
-						object value2 = Enum.Parse(convertToType, text2.Trim(), ignoreCase: true);
-						num |= Convert.ToInt32(value2);
+						object flagValue = Enum.Parse(convertToType, name.Trim(), ignoreCase: true);
+						flags |= Convert.ToInt32(flagValue);
 					}
-					return num;
+					return flags;
 				}
 				return Enum.Parse(convertToType, (string)value, ignoreCase: true);
 			}

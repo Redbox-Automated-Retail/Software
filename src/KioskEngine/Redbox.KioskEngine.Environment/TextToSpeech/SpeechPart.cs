@@ -86,19 +86,19 @@ public class SpeechPart : ISpeechPart
 			}
 			string expression = RegularExpression.Expression;
 			LogHelper.Instance.Log("TTS((> regex:" + expression + "  value: " + text);
-			bool flag = expression != null && new Regex(expression).IsMatch(text);
-			LogHelper.Instance.Log("TTS((> regex result:" + flag);
-			string text2 = (flag ? RegularExpression.Success : RegularExpression.Failure);
+			bool isMatch = expression != null && new Regex(expression).IsMatch(text);
+			LogHelper.Instance.Log("TTS((> regex result:" + isMatch);
+			string target = (isMatch ? RegularExpression.Success : RegularExpression.Failure);
 			int goToSequence = 0;
-			speechPart = ((!int.TryParse(text2, out goToSequence)) ? SpeechControl?.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == RegularExpression.Success) : SpeechControl?.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
+			speechPart = ((!int.TryParse(target, out goToSequence)) ? SpeechControl?.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Name == RegularExpression.Success) : SpeechControl?.SpeechParts.FirstOrDefault((ISpeechPart x) => x.Sequence == goToSequence));
 			if (speechPart != null)
 			{
 				LogHelper.Instance.Log("TTS((> Skipping to Sequence: #{0} {1}", speechPart.Sequence, speechPart.Name);
 			}
 			else
 			{
-				LogHelper.Instance.Log("TTS((> Skipping to Sequence: {0}", text2);
-				LogHelper.Instance.Log("TTS((> Unable to find to Sequence: {0}", text2);
+				LogHelper.Instance.Log("TTS((> Skipping to Sequence: {0}", target);
+				LogHelper.Instance.Log("TTS((> Unable to find to Sequence: {0}", target);
 			}
 		}
 		return speechPart;
@@ -110,45 +110,45 @@ public class SpeechPart : ISpeechPart
 		{
 			return;
 		}
-		foreach (ITextPart text2 in Texts)
+		foreach (ITextPart textPart in Texts)
 		{
 			string text = string.Empty;
-			if (text2.TextAvailable != null)
+			if (textPart.TextAvailable != null)
 			{
-				bool flag = false;
-				foreach (KeyValuePair<string, string> item in macrosFound)
+				bool macroAvailable = false;
+				foreach (KeyValuePair<string, string> macro in macrosFound)
 				{
-					if (text2.TextAvailable.Contains(item.Key) && !string.IsNullOrEmpty(item.Value))
+					if (textPart.TextAvailable.Contains(macro.Key) && !string.IsNullOrEmpty(macro.Value))
 					{
-						flag = true;
+						macroAvailable = true;
 						break;
 					}
 				}
-				if (flag)
+				if (macroAvailable)
 				{
-					text += text2.Text;
+					text += textPart.Text;
 				}
 			}
-			else if (text2.IfActorVisible != null)
+			else if (textPart.IfActorVisible != null)
 			{
-				IActor actor = ((viewService?.PeekViewFrame())?.ViewFrame as IViewFrame)?.Scene?.GetActor(text2.IfActorVisible);
-				bool flag2 = true;
-				if (!string.IsNullOrEmpty(text2.IfControlEnabled) && actor?.WPFFrameworkElement != null && actor.WPFFrameworkElement is ITextToSpeechControl textToSpeechControl)
+				IActor actor = ((viewService?.PeekViewFrame())?.ViewFrame as IViewFrame)?.Scene?.GetActor(textPart.IfActorVisible);
+				bool controlEnabled = true;
+				if (!string.IsNullOrEmpty(textPart.IfControlEnabled) && actor?.WPFFrameworkElement != null && actor.WPFFrameworkElement is ITextToSpeechControl textToSpeechControl)
 				{
-					flag2 = textToSpeechControl.IsControlEnabled(text2.IfControlEnabled);
+					controlEnabled = textToSpeechControl.IsControlEnabled(textPart.IfControlEnabled);
 				}
-				if ((actor != null && actor.Visible && actor.Enabled) & flag2)
+				if ((actor != null && actor.Visible && actor.Enabled) & controlEnabled)
 				{
-					text += text2.Text;
+					text += textPart.Text;
 				}
 			}
 			else
 			{
-				text += text2.Text;
+				text += textPart.Text;
 			}
-			foreach (KeyValuePair<string, string> item2 in macrosFound)
+			foreach (KeyValuePair<string, string> macro in macrosFound)
 			{
-				text = text.Replace("{{" + item2.Key + "}}", item2.Value);
+				text = text.Replace("{{" + macro.Key + "}}", macro.Value);
 			}
 			text = text.Replace("\r\n", " ");
 			text = text.Replace("\t", "");

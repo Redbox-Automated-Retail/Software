@@ -127,16 +127,16 @@ public class PreferencesManager : Form
 		{
 			return;
 		}
-		string[] array = value.Split(m_treeView.PathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] pathParts = value.Split(m_treeView.PathSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		TreeNode treeNode = null;
-		foreach (string key in array)
+		foreach (string key in pathParts)
 		{
-			TreeNode[] array3 = ((treeNode == null) ? m_treeView.Nodes.Find(key, searchAllChildren: false) : treeNode.Nodes.Find(key, searchAllChildren: false));
-			if (array3.Length == 0)
+			TreeNode[] matches = ((treeNode == null) ? m_treeView.Nodes.Find(key, searchAllChildren: false) : treeNode.Nodes.Find(key, searchAllChildren: false));
+			if (matches.Length == 0)
 			{
 				break;
 			}
-			treeNode = array3[0];
+			treeNode = matches[0];
 			treeNode.Expand();
 		}
 		m_treeView.SelectedNode = treeNode;
@@ -165,10 +165,10 @@ public class PreferencesManager : Form
 			TreeNode treeNode = null;
 			foreach (string item in list)
 			{
-				TreeNode[] array = ((treeNode == null) ? m_treeView.Nodes.Find(item, searchAllChildren: false) : treeNode.Nodes.Find(item, searchAllChildren: false));
-				if (array.Length != 0)
+				TreeNode[] matches = ((treeNode == null) ? m_treeView.Nodes.Find(item, searchAllChildren: false) : treeNode.Nodes.Find(item, searchAllChildren: false));
+				if (matches.Length != 0)
 				{
-					treeNode = array[0];
+					treeNode = matches[0];
 					continue;
 				}
 				treeNode = ((treeNode == null) ? m_treeView.Nodes.Add(item, item) : treeNode.Nodes.Add(item, item));

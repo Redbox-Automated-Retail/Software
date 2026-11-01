@@ -43,51 +43,51 @@ public class StyleSheetService : IStyleSheetService
 			Name = name
 		};
 		m_stylesheets[name] = styleSheet;
-		XmlNodeList xmlNodeList = xml.SelectNodes("style");
-		if (xmlNodeList != null)
+		XmlNodeList styleNodes = xml.SelectNodes("style");
+		if (styleNodes != null)
 		{
-			foreach (XmlNode item in xmlNodeList)
+			foreach (XmlNode styleNode in styleNodes)
 			{
-				string attributeValue = item.GetAttributeValue<string>("name");
-				if (string.IsNullOrEmpty(attributeValue))
+				string styleName = styleNode.GetAttributeValue<string>("name");
+				if (string.IsNullOrEmpty(styleName))
 				{
 					continue;
 				}
-				if (styleSheet.GetStyle(attributeValue) != null)
+				if (styleSheet.GetStyle(styleName) != null)
 				{
-					LogHelper.Instance.Log("WARNING: Duplicate style '{0}' defined in stylesheet resource: {1}.", attributeValue, name);
+					LogHelper.Instance.Log("WARNING: Duplicate style '{0}' defined in stylesheet resource: {1}.", styleName, name);
 					continue;
 				}
-				XmlNodeList xmlNodeList2 = item.SelectNodes("state");
-				if (xmlNodeList2 == null)
+				XmlNodeList stateNodes = styleNode.SelectNodes("state");
+				if (stateNodes == null)
 				{
 					continue;
 				}
-				IStyleSheetStyle styleSheetStyle = styleSheet.AddStyle(attributeValue);
-				foreach (XmlNode item2 in xmlNodeList2)
+				IStyleSheetStyle styleSheetStyle = styleSheet.AddStyle(styleName);
+				foreach (XmlNode stateNode in stateNodes)
 				{
-					string attributeValue2 = item2.GetAttributeValue<string>("name");
-					if (string.IsNullOrEmpty(attributeValue2))
+					string stateName = stateNode.GetAttributeValue<string>("name");
+					if (string.IsNullOrEmpty(stateName))
 					{
 						continue;
 					}
-					if (styleSheetStyle.GetState(attributeValue2) != null)
+					if (styleSheetStyle.GetState(stateName) != null)
 					{
-						LogHelper.Instance.Log("WARNING: Duplicate style state '{0}' defined in style '{1}' of resource: {2}.", attributeValue2, attributeValue, name);
+						LogHelper.Instance.Log("WARNING: Duplicate style state '{0}' defined in style '{1}' of resource: {2}.", stateName, styleName, name);
 						continue;
 					}
-					XmlNodeList xmlNodeList3 = item2.SelectNodes("property");
-					if (xmlNodeList3 == null)
+					XmlNodeList propertyNodes = stateNode.SelectNodes("property");
+					if (propertyNodes == null)
 					{
 						continue;
 					}
-					IStyleSheetState styleSheetState = styleSheetStyle.AddState(attributeValue2);
-					foreach (XmlNode item3 in xmlNodeList3)
+					IStyleSheetState styleSheetState = styleSheetStyle.AddState(stateName);
+					foreach (XmlNode propertyNode in propertyNodes)
 					{
-						string attributeValue3 = item3.GetAttributeValue<string>("name");
-						if (!string.IsNullOrEmpty(attributeValue3))
+						string propertyName = propertyNode.GetAttributeValue<string>("name");
+						if (!string.IsNullOrEmpty(propertyName))
 						{
-							((StyleSheetState)styleSheetState)[attributeValue3] = item3.GetAttributeValue<object>("value");
+							((StyleSheetState)styleSheetState)[propertyName] = propertyNode.GetAttributeValue<object>("value");
 						}
 					}
 				}

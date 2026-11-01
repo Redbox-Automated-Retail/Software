@@ -11,11 +11,11 @@ public static class EnvironmentHelper
 		if (m_newLineBytes == null)
 		{
 			m_newLineBytes = new byte[Environment.NewLine.Length];
-			int num = 0;
+			int index = 0;
 			string newLine = Environment.NewLine;
 			foreach (char c in newLine)
 			{
-				m_newLineBytes[num++] = (byte)c;
+				m_newLineBytes[index++] = (byte)c;
 			}
 		}
 		return m_newLineBytes;
