@@ -63,881 +63,881 @@ public abstract class ExpressionEvalBase
 
 	private object ParseBooleanOr()
 	{
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object obj = ParseBooleanAnd();
-		EvalMode evalMode = _evalMode;
+		ExpressionTokenizer.Position leftStart = _tokenizer.CurrentPosition;
+		object left = ParseBooleanAnd();
+		EvalMode savedEvalMode = _evalMode;
 		try
 		{
 			while (_tokenizer.IsKeyword("or"))
 			{
-				bool flag = true;
+				bool leftValue = true;
 				if (!SyntaxCheckOnly())
 				{
-					flag = (bool)SafeConvert(typeof(bool), obj, "the left hand side of the 'or' operator", currentPosition, _tokenizer.CurrentPosition);
-					if (flag)
+					leftValue = (bool)SafeConvert(typeof(bool), left, "the left hand side of the 'or' operator", leftStart, _tokenizer.CurrentPosition);
+					if (leftValue)
 					{
 						_evalMode = EvalMode.ParseOnly;
 					}
 				}
 				_tokenizer.GetNextToken();
-				ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
-				object source = ParseBooleanAnd();
-				ExpressionTokenizer.Position currentPosition3 = _tokenizer.CurrentPosition;
+				ExpressionTokenizer.Position rightStart = _tokenizer.CurrentPosition;
+				object right = ParseBooleanAnd();
+				ExpressionTokenizer.Position rightEnd = _tokenizer.CurrentPosition;
 				if (!SyntaxCheckOnly())
 				{
-					bool flag2 = (bool)SafeConvert(typeof(bool), source, "the right hand side of the 'or' operator", currentPosition2, currentPosition3);
-					obj = flag | flag2;
+					bool rightValue = (bool)SafeConvert(typeof(bool), right, "the right hand side of the 'or' operator", rightStart, rightEnd);
+					left = leftValue | rightValue;
 				}
 			}
-			return obj;
+			return left;
 		}
 		finally
 		{
-			_evalMode = evalMode;
+			_evalMode = savedEvalMode;
 		}
 	}
 
 	private object ParseBooleanAnd()
 	{
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object obj = ParseRelationalExpression();
-		EvalMode evalMode = _evalMode;
+		ExpressionTokenizer.Position leftStart = _tokenizer.CurrentPosition;
+		object left = ParseRelationalExpression();
+		EvalMode savedEvalMode = _evalMode;
 		try
 		{
 			while (_tokenizer.IsKeyword("and"))
 			{
-				bool flag = true;
+				bool leftValue = true;
 				if (!SyntaxCheckOnly())
 				{
-					flag = (bool)SafeConvert(typeof(bool), obj, "the left hand side of the 'and' operator", currentPosition, _tokenizer.CurrentPosition);
-					if (!flag)
+					leftValue = (bool)SafeConvert(typeof(bool), left, "the left hand side of the 'and' operator", leftStart, _tokenizer.CurrentPosition);
+					if (!leftValue)
 					{
 						_evalMode = EvalMode.ParseOnly;
 					}
 				}
 				_tokenizer.GetNextToken();
-				ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
-				object source = ParseRelationalExpression();
-				ExpressionTokenizer.Position currentPosition3 = _tokenizer.CurrentPosition;
+				ExpressionTokenizer.Position rightStart = _tokenizer.CurrentPosition;
+				object right = ParseRelationalExpression();
+				ExpressionTokenizer.Position rightEnd = _tokenizer.CurrentPosition;
 				if (!SyntaxCheckOnly())
 				{
-					bool flag2 = (bool)SafeConvert(typeof(bool), source, "the right hand side of the 'and' operator", currentPosition2, currentPosition3);
-					obj = flag & flag2;
+					bool rightValue = (bool)SafeConvert(typeof(bool), right, "the right hand side of the 'and' operator", rightStart, rightEnd);
+					left = leftValue & rightValue;
 				}
 			}
-			return obj;
+			return left;
 		}
 		finally
 		{
-			_evalMode = evalMode;
+			_evalMode = savedEvalMode;
 		}
 	}
 
 	private object ParseRelationalExpression()
 	{
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object obj = ParseAddSubtract();
+		ExpressionTokenizer.Position start = _tokenizer.CurrentPosition;
+		object left = ParseAddSubtract();
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.EQ || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.NE || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.LT || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.GT || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.LE || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.GE)
 		{
-			ExpressionTokenizer.TokenType currentToken = _tokenizer.CurrentToken;
+			ExpressionTokenizer.TokenType op = _tokenizer.CurrentToken;
 			_tokenizer.GetNextToken();
-			object obj2 = ParseAddSubtract();
-			ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
+			object right = ParseAddSubtract();
+			ExpressionTokenizer.Position end = _tokenizer.CurrentPosition;
 			if (SyntaxCheckOnly())
 			{
 				return null;
 			}
-			switch (currentToken)
+			switch (op)
 			{
 			case ExpressionTokenizer.TokenType.EQ:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return Convert.ToInt64(obj).Equals(obj2);
+					return Convert.ToInt64(left).Equals(right);
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return Convert.ToDouble(obj).Equals(obj2);
+					return Convert.ToDouble(left).Equals(right);
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return obj.Equals(Convert.ToInt64(obj2));
+					return left.Equals(Convert.ToInt64(right));
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return Convert.ToDouble(obj).Equals(obj2);
+					return Convert.ToDouble(left).Equals(right);
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return obj.Equals(Convert.ToDouble(obj2));
+					return left.Equals(Convert.ToDouble(right));
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return obj.Equals(Convert.ToDouble(obj2));
+					return left.Equals(Convert.ToDouble(right));
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return obj.Equals(obj2);
+					return left.Equals(right);
 				}
-				if (obj.GetType().IsEnum)
+				if (left.GetType().IsEnum)
 				{
-					if (obj2 is string)
+					if (right is string)
 					{
-						return obj.Equals(Enum.Parse(obj.GetType(), (string)obj2, ignoreCase: false));
+						return left.Equals(Enum.Parse(left.GetType(), (string)right, ignoreCase: false));
 					}
-					return obj.Equals(Enum.ToObject(obj.GetType(), obj2));
+					return left.Equals(Enum.ToObject(left.GetType(), right));
 				}
-				if (obj2.GetType().IsEnum)
+				if (right.GetType().IsEnum)
 				{
-					if (obj is string)
+					if (left is string)
 					{
-						return obj2.Equals(Enum.Parse(obj2.GetType(), (string)obj, ignoreCase: false));
+						return right.Equals(Enum.Parse(right.GetType(), (string)left, ignoreCase: false));
 					}
-					return obj2.Equals(Enum.ToObject(obj2.GetType(), obj));
+					return right.Equals(Enum.ToObject(right.GetType(), left));
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1038"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1038"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			case ExpressionTokenizer.TokenType.NE:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return !Convert.ToInt64(obj).Equals(obj2);
+					return !Convert.ToInt64(left).Equals(right);
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return !Convert.ToDouble(obj).Equals(obj2);
+					return !Convert.ToDouble(left).Equals(right);
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return !obj.Equals(Convert.ToInt64(obj2));
+					return !left.Equals(Convert.ToInt64(right));
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return !Convert.ToDouble(obj).Equals(obj2);
+					return !Convert.ToDouble(left).Equals(right);
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return !obj.Equals(Convert.ToDouble(obj2));
+					return !left.Equals(Convert.ToDouble(right));
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return !obj.Equals(Convert.ToDouble(obj2));
+					return !left.Equals(Convert.ToDouble(right));
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return !obj.Equals(obj2);
+					return !left.Equals(right);
 				}
-				if (obj.GetType().IsEnum)
+				if (left.GetType().IsEnum)
 				{
-					if (obj2 is string)
+					if (right is string)
 					{
-						return !obj.Equals(Enum.Parse(obj.GetType(), (string)obj2, ignoreCase: false));
+						return !left.Equals(Enum.Parse(left.GetType(), (string)right, ignoreCase: false));
 					}
-					return !obj.Equals(Enum.ToObject(obj.GetType(), obj2));
+					return !left.Equals(Enum.ToObject(left.GetType(), right));
 				}
-				if (obj2.GetType().IsEnum)
+				if (right.GetType().IsEnum)
 				{
-					if (obj is string)
+					if (left is string)
 					{
-						return !obj2.Equals(Enum.Parse(obj2.GetType(), (string)obj, ignoreCase: false));
+						return !right.Equals(Enum.Parse(right.GetType(), (string)left, ignoreCase: false));
 					}
-					return !obj2.Equals(Enum.ToObject(obj2.GetType(), obj));
+					return !right.Equals(Enum.ToObject(right.GetType(), left));
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1042"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1042"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			case ExpressionTokenizer.TokenType.LT:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return string.Compare((string)obj, (string)obj2, ignoreCase: false, CultureInfo.InvariantCulture) < 0;
+					return string.Compare((string)left, (string)right, ignoreCase: false, CultureInfo.InvariantCulture) < 0;
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return ((IComparable)Convert.ToInt64(obj)).CompareTo(obj2) < 0;
+					return ((IComparable)Convert.ToInt64(left)).CompareTo(right) < 0;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) < 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) < 0;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToInt64(obj2)) < 0;
+					return ((IComparable)left).CompareTo(Convert.ToInt64(right)) < 0;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) < 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) < 0;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) < 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) < 0;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) < 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) < 0;
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return ((IComparable)obj).CompareTo(obj2) < 0;
+					return ((IComparable)left).CompareTo(right) < 0;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1051"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1051"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			case ExpressionTokenizer.TokenType.GT:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return string.Compare((string)obj, (string)obj2, ignoreCase: false, CultureInfo.InvariantCulture) > 0;
+					return string.Compare((string)left, (string)right, ignoreCase: false, CultureInfo.InvariantCulture) > 0;
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return ((IComparable)Convert.ToInt64(obj)).CompareTo(obj2) > 0;
+					return ((IComparable)Convert.ToInt64(left)).CompareTo(right) > 0;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) > 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) > 0;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToInt64(obj2)) > 0;
+					return ((IComparable)left).CompareTo(Convert.ToInt64(right)) > 0;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) > 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) > 0;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) > 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) > 0;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) > 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) > 0;
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return ((IComparable)obj).CompareTo(obj2) > 0;
+					return ((IComparable)left).CompareTo(right) > 0;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1037"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1037"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			case ExpressionTokenizer.TokenType.LE:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return string.Compare((string)obj, (string)obj2, ignoreCase: false, CultureInfo.InvariantCulture) <= 0;
+					return string.Compare((string)left, (string)right, ignoreCase: false, CultureInfo.InvariantCulture) <= 0;
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return ((IComparable)Convert.ToInt64(obj)).CompareTo(obj2) <= 0;
+					return ((IComparable)Convert.ToInt64(left)).CompareTo(right) <= 0;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) <= 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) <= 0;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToInt64(obj2)) <= 0;
+					return ((IComparable)left).CompareTo(Convert.ToInt64(right)) <= 0;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) <= 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) <= 0;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) <= 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) <= 0;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) <= 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) <= 0;
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return ((IComparable)obj).CompareTo(obj2) <= 0;
+					return ((IComparable)left).CompareTo(right) <= 0;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1049"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1049"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			case ExpressionTokenizer.TokenType.GE:
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					return string.Compare((string)obj, (string)obj2, ignoreCase: false, CultureInfo.InvariantCulture) >= 0;
+					return string.Compare((string)left, (string)right, ignoreCase: false, CultureInfo.InvariantCulture) >= 0;
 				}
-				if (obj is bool && obj2 is bool)
+				if (left is bool && right is bool)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					return ((IComparable)Convert.ToInt64(obj)).CompareTo(obj2) >= 0;
+					return ((IComparable)Convert.ToInt64(left)).CompareTo(right) >= 0;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) >= 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) >= 0;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToInt64(obj2)) >= 0;
+					return ((IComparable)left).CompareTo(Convert.ToInt64(right)) >= 0;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					return ((IComparable)Convert.ToDouble(obj)).CompareTo(obj2) >= 0;
+					return ((IComparable)Convert.ToDouble(left)).CompareTo(right) >= 0;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) >= 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) >= 0;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					return ((IComparable)obj).CompareTo(Convert.ToDouble(obj2)) >= 0;
+					return ((IComparable)left).CompareTo(Convert.ToDouble(right)) >= 0;
 				}
-				if (obj is DateTime && obj2 is DateTime)
+				if (left is DateTime && right is DateTime)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				if (obj is Version && obj2 is Version)
+				if (left is Version && right is Version)
 				{
-					return ((IComparable)obj).CompareTo(obj2) >= 0;
+					return ((IComparable)left).CompareTo(right) >= 0;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1050"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1050"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			}
 		}
-		return obj;
+		return left;
 	}
 
 	private object ParseAddSubtract()
 	{
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object obj = ParseMulDiv();
+		ExpressionTokenizer.Position start = _tokenizer.CurrentPosition;
+		object left = ParseMulDiv();
 		while (true)
 		{
 			if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Plus)
 			{
 				_tokenizer.GetNextToken();
-				object obj2 = ParseMulDiv();
-				ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
+				object right = ParseMulDiv();
+				ExpressionTokenizer.Position end = _tokenizer.CurrentPosition;
 				if (SyntaxCheckOnly())
 				{
 					continue;
 				}
-				if (obj is string && obj2 is string)
+				if (left is string && right is string)
 				{
-					obj = (string)obj + (string)obj2;
+					left = (string)left + (string)right;
 					continue;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					obj = (int)obj + (int)obj2;
+					left = (int)left + (int)right;
 					continue;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					obj = (int)obj + (long)obj2;
+					left = (int)left + (long)right;
 					continue;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					obj = (double)(int)obj + (double)obj2;
+					left = (double)(int)left + (double)right;
 					continue;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					obj = (long)obj + (long)obj2;
+					left = (long)left + (long)right;
 					continue;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					obj = (long)obj + (int)obj2;
+					left = (long)left + (int)right;
 					continue;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					obj = (double)(long)obj + (double)obj2;
+					left = (double)(long)left + (double)right;
 					continue;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					obj = (double)obj + (double)obj2;
+					left = (double)left + (double)right;
 					continue;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					obj = (double)obj + (double)(int)obj2;
+					left = (double)left + (double)(int)right;
 					continue;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					obj = (double)obj + (double)(long)obj2;
+					left = (double)left + (double)(long)right;
 					continue;
 				}
-				if (obj is DateTime && obj2 is TimeSpan)
+				if (left is DateTime && right is TimeSpan)
 				{
-					obj = (DateTime)obj + (TimeSpan)obj2;
+					left = (DateTime)left + (TimeSpan)right;
 					continue;
 				}
-				if (obj is TimeSpan && obj2 is TimeSpan)
+				if (left is TimeSpan && right is TimeSpan)
 				{
-					obj = (TimeSpan)obj + (TimeSpan)obj2;
+					left = (TimeSpan)left + (TimeSpan)right;
 					continue;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1041"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1041"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			}
 			if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Minus)
 			{
 				break;
 			}
 			_tokenizer.GetNextToken();
-			object obj3 = ParseMulDiv();
-			ExpressionTokenizer.Position currentPosition3 = _tokenizer.CurrentPosition;
+			object subtrahend = ParseMulDiv();
+			ExpressionTokenizer.Position subtrahendEnd = _tokenizer.CurrentPosition;
 			if (SyntaxCheckOnly())
 			{
 				continue;
 			}
-			if (obj is int && obj3 is int)
+			if (left is int && subtrahend is int)
 			{
-				obj = (int)obj - (int)obj3;
+				left = (int)left - (int)subtrahend;
 				continue;
 			}
-			if (obj is int && obj3 is long)
+			if (left is int && subtrahend is long)
 			{
-				obj = (int)obj - (long)obj3;
+				left = (int)left - (long)subtrahend;
 				continue;
 			}
-			if (obj is int && obj3 is double)
+			if (left is int && subtrahend is double)
 			{
-				obj = (double)(int)obj - (double)obj3;
+				left = (double)(int)left - (double)subtrahend;
 				continue;
 			}
-			if (obj is long && obj3 is long)
+			if (left is long && subtrahend is long)
 			{
-				obj = (long)obj - (long)obj3;
+				left = (long)left - (long)subtrahend;
 				continue;
 			}
-			if (obj is long && obj3 is int)
+			if (left is long && subtrahend is int)
 			{
-				obj = (long)obj - (int)obj3;
+				left = (long)left - (int)subtrahend;
 				continue;
 			}
-			if (obj is long && obj3 is double)
+			if (left is long && subtrahend is double)
 			{
-				obj = (double)(long)obj - (double)obj3;
+				left = (double)(long)left - (double)subtrahend;
 				continue;
 			}
-			if (obj is double && obj3 is double)
+			if (left is double && subtrahend is double)
 			{
-				obj = (double)obj - (double)obj3;
+				left = (double)left - (double)subtrahend;
 				continue;
 			}
-			if (obj is double && obj3 is int)
+			if (left is double && subtrahend is int)
 			{
-				obj = (double)obj - (double)(int)obj3;
+				left = (double)left - (double)(int)subtrahend;
 				continue;
 			}
-			if (obj is double && obj3 is long)
+			if (left is double && subtrahend is long)
 			{
-				obj = (double)obj - (double)(long)obj3;
+				left = (double)left - (double)(long)subtrahend;
 				continue;
 			}
-			if (obj is DateTime && obj3 is DateTime)
+			if (left is DateTime && subtrahend is DateTime)
 			{
-				obj = (DateTime)obj - (DateTime)obj3;
+				left = (DateTime)left - (DateTime)subtrahend;
 				continue;
 			}
-			if (obj is DateTime && obj3 is TimeSpan)
+			if (left is DateTime && subtrahend is TimeSpan)
 			{
-				obj = (DateTime)obj - (TimeSpan)obj3;
+				left = (DateTime)left - (TimeSpan)subtrahend;
 				continue;
 			}
-			if (obj is TimeSpan && obj3 is TimeSpan)
+			if (left is TimeSpan && subtrahend is TimeSpan)
 			{
-				obj = (TimeSpan)obj - (TimeSpan)obj3;
+				left = (TimeSpan)left - (TimeSpan)subtrahend;
 				continue;
 			}
-			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1048"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj3.GetType())), currentPosition, currentPosition3);
+			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1048"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(subtrahend.GetType())), start, subtrahendEnd);
 		}
-		return obj;
+		return left;
 	}
 
 	private object ParseMulDiv()
 	{
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object obj = ParseValue();
+		ExpressionTokenizer.Position start = _tokenizer.CurrentPosition;
+		object left = ParseValue();
 		while (true)
 		{
 			if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Mul)
 			{
 				_tokenizer.GetNextToken();
-				object obj2 = ParseValue();
-				ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
+				object right = ParseValue();
+				ExpressionTokenizer.Position end = _tokenizer.CurrentPosition;
 				if (SyntaxCheckOnly())
 				{
 					continue;
 				}
-				if (obj is int && obj2 is int)
+				if (left is int && right is int)
 				{
-					obj = (int)obj * (int)obj2;
+					left = (int)left * (int)right;
 					continue;
 				}
-				if (obj is int && obj2 is long)
+				if (left is int && right is long)
 				{
-					obj = (int)obj * (long)obj2;
+					left = (int)left * (long)right;
 					continue;
 				}
-				if (obj is int && obj2 is double)
+				if (left is int && right is double)
 				{
-					obj = (double)(int)obj * (double)obj2;
+					left = (double)(int)left * (double)right;
 					continue;
 				}
-				if (obj is long && obj2 is long)
+				if (left is long && right is long)
 				{
-					obj = (long)obj * (long)obj2;
+					left = (long)left * (long)right;
 					continue;
 				}
-				if (obj is long && obj2 is int)
+				if (left is long && right is int)
 				{
-					obj = (long)obj * (int)obj2;
+					left = (long)left * (int)right;
 					continue;
 				}
-				if (obj is long && obj2 is double)
+				if (left is long && right is double)
 				{
-					obj = (double)(long)obj * (double)obj2;
+					left = (double)(long)left * (double)right;
 					continue;
 				}
-				if (obj is double && obj2 is double)
+				if (left is double && right is double)
 				{
-					obj = (double)obj * (double)obj2;
+					left = (double)left * (double)right;
 					continue;
 				}
-				if (obj is double && obj2 is int)
+				if (left is double && right is int)
 				{
-					obj = (double)obj * (double)(int)obj2;
+					left = (double)left * (double)(int)right;
 					continue;
 				}
-				if (obj is double && obj2 is long)
+				if (left is double && right is long)
 				{
-					obj = (double)obj * (double)(long)obj2;
+					left = (double)left * (double)(long)right;
 					continue;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1036"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj2.GetType())), currentPosition, currentPosition2);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1036"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			}
 			if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Div)
 			{
 				_tokenizer.GetNextToken();
-				ExpressionTokenizer.Position currentPosition3 = _tokenizer.CurrentPosition;
-				object obj3 = ParseValue();
-				ExpressionTokenizer.Position currentPosition4 = _tokenizer.CurrentPosition;
+				ExpressionTokenizer.Position rightStart = _tokenizer.CurrentPosition;
+				object right = ParseValue();
+				ExpressionTokenizer.Position end = _tokenizer.CurrentPosition;
 				if (SyntaxCheckOnly())
 				{
 					continue;
 				}
-				if (obj is int && obj3 is int)
+				if (left is int && right is int)
 				{
-					if ((int)obj3 == 0)
+					if ((int)right == 0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (int)obj / (int)obj3;
+					left = (int)left / (int)right;
 					continue;
 				}
-				if (obj is int && obj3 is long)
+				if (left is int && right is long)
 				{
-					if ((long)obj3 == 0L)
+					if ((long)right == 0L)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (int)obj / (long)obj3;
+					left = (int)left / (long)right;
 					continue;
 				}
-				if (obj is int && obj3 is double)
+				if (left is int && right is double)
 				{
-					if ((double)obj3 == 0.0)
+					if ((double)right == 0.0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (double)(int)obj / (double)obj3;
+					left = (double)(int)left / (double)right;
 					continue;
 				}
-				if (obj is long && obj3 is long)
+				if (left is long && right is long)
 				{
-					if ((long)obj3 == 0L)
+					if ((long)right == 0L)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (long)obj / (long)obj3;
+					left = (long)left / (long)right;
 					continue;
 				}
-				if (obj is long && obj3 is int)
+				if (left is long && right is int)
 				{
-					if ((int)obj3 == 0)
+					if ((int)right == 0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (long)obj / (int)obj3;
+					left = (long)left / (int)right;
 					continue;
 				}
-				if (obj is long && obj3 is double)
+				if (left is long && right is double)
 				{
-					if ((double)obj3 == 0.0)
+					if ((double)right == 0.0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (double)(long)obj / (double)obj3;
+					left = (double)(long)left / (double)right;
 					continue;
 				}
-				if (obj is double && obj3 is double)
+				if (left is double && right is double)
 				{
-					if ((double)obj3 == 0.0)
+					if ((double)right == 0.0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (double)obj / (double)obj3;
+					left = (double)left / (double)right;
 					continue;
 				}
-				if (obj is double && obj3 is int)
+				if (left is double && right is int)
 				{
-					if ((int)obj3 == 0)
+					if ((int)right == 0)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (double)obj / (double)(int)obj3;
+					left = (double)left / (double)(int)right;
 					continue;
 				}
-				if (obj is double && obj3 is long)
+				if (left is double && right is long)
 				{
-					if ((long)obj3 == 0L)
+					if ((long)right == 0L)
 					{
-						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition3, currentPosition4);
+						throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), rightStart, end);
 					}
-					obj = (double)obj / (double)(long)obj3;
+					left = (double)left / (double)(long)right;
 					continue;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1039"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj3.GetType())), currentPosition, currentPosition4);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1039"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(right.GetType())), start, end);
 			}
 			if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Mod)
 			{
 				break;
 			}
 			_tokenizer.GetNextToken();
-			ExpressionTokenizer.Position currentPosition5 = _tokenizer.CurrentPosition;
-			object obj4 = ParseValue();
-			ExpressionTokenizer.Position currentPosition6 = _tokenizer.CurrentPosition;
+			ExpressionTokenizer.Position modulusStart = _tokenizer.CurrentPosition;
+			object modulus = ParseValue();
+			ExpressionTokenizer.Position modulusEnd = _tokenizer.CurrentPosition;
 			if (SyntaxCheckOnly())
 			{
 				continue;
 			}
-			if (obj is int && obj4 is int)
+			if (left is int && modulus is int)
 			{
-				if ((int)obj4 == 0)
+				if ((int)modulus == 0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (int)obj % (int)obj4;
+				left = (int)left % (int)modulus;
 				continue;
 			}
-			if (obj is int && obj4 is long)
+			if (left is int && modulus is long)
 			{
-				if ((long)obj4 == 0L)
+				if ((long)modulus == 0L)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (int)obj % (long)obj4;
+				left = (int)left % (long)modulus;
 				continue;
 			}
-			if (obj is int && obj4 is double)
+			if (left is int && modulus is double)
 			{
-				if ((double)obj4 == 0.0)
+				if ((double)modulus == 0.0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (double)(int)obj % (double)obj4;
+				left = (double)(int)left % (double)modulus;
 				continue;
 			}
-			if (obj is long && obj4 is long)
+			if (left is long && modulus is long)
 			{
-				if ((long)obj4 == 0L)
+				if ((long)modulus == 0L)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (long)obj % (long)obj4;
+				left = (long)left % (long)modulus;
 				continue;
 			}
-			if (obj is long && obj4 is int)
+			if (left is long && modulus is int)
 			{
-				if ((int)obj4 == 0)
+				if ((int)modulus == 0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (long)obj % (int)obj4;
+				left = (long)left % (int)modulus;
 				continue;
 			}
-			if (obj is long && obj4 is double)
+			if (left is long && modulus is double)
 			{
-				if ((double)obj4 == 0.0)
+				if ((double)modulus == 0.0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (double)(long)obj % (double)obj4;
+				left = (double)(long)left % (double)modulus;
 				continue;
 			}
-			if (obj is double && obj4 is double)
+			if (left is double && modulus is double)
 			{
-				if ((double)obj4 == 0.0)
+				if ((double)modulus == 0.0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (double)obj % (double)obj4;
+				left = (double)left % (double)modulus;
 				continue;
 			}
-			if (obj is double && obj4 is int)
+			if (left is double && modulus is int)
 			{
-				if ((int)obj4 == 0)
+				if ((int)modulus == 0)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (double)obj % (double)(int)obj4;
+				left = (double)left % (double)(int)modulus;
 				continue;
 			}
-			if (obj is double && obj4 is long)
+			if (left is double && modulus is long)
 			{
-				if ((long)obj4 == 0L)
+				if ((long)modulus == 0L)
 				{
-					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), currentPosition5, currentPosition6);
+					throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1043")), modulusStart, modulusEnd);
 				}
-				obj = (double)obj % (double)(long)obj4;
+				left = (double)left % (double)(long)modulus;
 				continue;
 			}
-			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1047"), GetSimpleTypeName(obj.GetType()), GetSimpleTypeName(obj4.GetType())), currentPosition, currentPosition6);
+			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1047"), GetSimpleTypeName(left.GetType()), GetSimpleTypeName(modulus.GetType())), start, modulusEnd);
 		}
-		return obj;
+		return left;
 	}
 
 	private object ParseConditional()
@@ -948,57 +948,57 @@ public abstract class ExpressionEvalBase
 			throw BuildParseError("'(' expected.", _tokenizer.CurrentPosition);
 		}
 		_tokenizer.GetNextToken();
-		ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
-		object source = ParseExpression();
-		ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
-		bool flag = false;
+		ExpressionTokenizer.Position conditionStart = _tokenizer.CurrentPosition;
+		object condition = ParseExpression();
+		ExpressionTokenizer.Position conditionEnd = _tokenizer.CurrentPosition;
+		bool conditionValue = false;
 		if (!SyntaxCheckOnly())
 		{
-			flag = (bool)SafeConvert(typeof(bool), source, "the conditional expression", currentPosition, currentPosition2);
+			conditionValue = (bool)SafeConvert(typeof(bool), condition, "the conditional expression", conditionStart, conditionEnd);
 		}
 		if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Comma)
 		{
 			throw BuildParseError("',' expected.", _tokenizer.CurrentPosition);
 		}
 		_tokenizer.GetNextToken();
-		EvalMode evalMode = _evalMode;
+		EvalMode savedEvalMode = _evalMode;
 		try
 		{
-			if (!flag)
+			if (!conditionValue)
 			{
 				_evalMode = EvalMode.ParseOnly;
 			}
 			else
 			{
-				_evalMode = evalMode;
+				_evalMode = savedEvalMode;
 			}
-			object obj = ParseExpression();
-			_evalMode = evalMode;
+			object whenTrue = ParseExpression();
+			_evalMode = savedEvalMode;
 			if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Comma)
 			{
 				throw BuildParseError("',' expected.", _tokenizer.CurrentPosition);
 			}
 			_tokenizer.GetNextToken();
-			if (flag)
+			if (conditionValue)
 			{
 				_evalMode = EvalMode.ParseOnly;
 			}
 			else
 			{
-				_evalMode = evalMode;
+				_evalMode = savedEvalMode;
 			}
-			object obj2 = ParseExpression();
-			_evalMode = evalMode;
+			object whenFalse = ParseExpression();
+			_evalMode = savedEvalMode;
 			if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.RightParen)
 			{
 				throw BuildParseError("')' expected.", _tokenizer.CurrentPosition);
 			}
 			_tokenizer.GetNextToken();
-			return flag ? obj : obj2;
+			return conditionValue ? whenTrue : whenFalse;
 		}
 		finally
 		{
-			_evalMode = evalMode;
+			_evalMode = savedEvalMode;
 		}
 	}
 
@@ -1012,98 +1012,98 @@ public abstract class ExpressionEvalBase
 		}
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Number)
 		{
-			string tokenText2 = _tokenizer.TokenText;
-			ExpressionTokenizer.Position currentPosition = _tokenizer.CurrentPosition;
+			string number = _tokenizer.TokenText;
+			ExpressionTokenizer.Position numberStart = _tokenizer.CurrentPosition;
 			_tokenizer.GetNextToken();
-			ExpressionTokenizer.Position p = new ExpressionTokenizer.Position(_tokenizer.CurrentPosition.CharIndex - 1);
+			ExpressionTokenizer.Position numberEnd = new ExpressionTokenizer.Position(_tokenizer.CurrentPosition.CharIndex - 1);
 			if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Dot)
 			{
-				tokenText2 += ".";
+				number += ".";
 				_tokenizer.GetNextToken();
 				if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Number)
 				{
 					throw BuildParseError("Fractional part expected.", _tokenizer.CurrentPosition);
 				}
-				tokenText2 += _tokenizer.TokenText;
+				number += _tokenizer.TokenText;
 				_tokenizer.GetNextToken();
-				p = _tokenizer.CurrentPosition;
+				numberEnd = _tokenizer.CurrentPosition;
 				try
 				{
-					return double.Parse(tokenText2, CultureInfo.InvariantCulture);
+					return double.Parse(number, CultureInfo.InvariantCulture);
 				}
 				catch (OverflowException)
 				{
-					throw BuildParseError("Value was either too large or too small for type 'double'.", currentPosition, p);
+					throw BuildParseError("Value was either too large or too small for type 'double'.", numberStart, numberEnd);
 				}
 			}
 			try
 			{
-				return int.Parse(tokenText2, CultureInfo.InvariantCulture);
+				return int.Parse(number, CultureInfo.InvariantCulture);
 			}
 			catch (OverflowException)
 			{
 				try
 				{
-					return long.Parse(tokenText2, CultureInfo.InvariantCulture);
+					return long.Parse(number, CultureInfo.InvariantCulture);
 				}
 				catch (OverflowException)
 				{
-					throw BuildParseError("Value was either too large or too small for type 'long'.", currentPosition, p);
+					throw BuildParseError("Value was either too large or too small for type 'long'.", numberStart, numberEnd);
 				}
 			}
 		}
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Minus)
 		{
 			_tokenizer.GetNextToken();
-			ExpressionTokenizer.Position currentPosition2 = _tokenizer.CurrentPosition;
-			object obj = ParseValue();
-			ExpressionTokenizer.Position currentPosition3 = _tokenizer.CurrentPosition;
+			ExpressionTokenizer.Position operandStart = _tokenizer.CurrentPosition;
+			object operand = ParseValue();
+			ExpressionTokenizer.Position operandEnd = _tokenizer.CurrentPosition;
 			if (!SyntaxCheckOnly())
 			{
-				if (obj is int)
+				if (operand is int)
 				{
-					return -(int)obj;
+					return -(int)operand;
 				}
-				if (obj is long)
+				if (operand is long)
 				{
-					return -(long)obj;
+					return -(long)operand;
 				}
-				if (obj is double)
+				if (operand is double)
 				{
-					return 0.0 - (double)obj;
+					return 0.0 - (double)operand;
 				}
-				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1040"), GetSimpleTypeName(obj.GetType())), currentPosition2, currentPosition3);
+				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1040"), GetSimpleTypeName(operand.GetType())), operandStart, operandEnd);
 			}
 			return null;
 		}
 		if (_tokenizer.IsKeyword("not"))
 		{
 			_tokenizer.GetNextToken();
-			ExpressionTokenizer.Position currentPosition4 = _tokenizer.CurrentPosition;
-			object source = ParseValue();
-			ExpressionTokenizer.Position currentPosition5 = _tokenizer.CurrentPosition;
+			ExpressionTokenizer.Position operandStart = _tokenizer.CurrentPosition;
+			object operand = ParseValue();
+			ExpressionTokenizer.Position operandEnd = _tokenizer.CurrentPosition;
 			if (!SyntaxCheckOnly())
 			{
-				return !(bool)SafeConvert(typeof(bool), source, "the argument of 'not' operator", currentPosition4, currentPosition5);
+				return !(bool)SafeConvert(typeof(bool), operand, "the argument of 'not' operator", operandStart, operandEnd);
 			}
 			return null;
 		}
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.LeftParen)
 		{
 			_tokenizer.GetNextToken();
-			object result = ParseExpression();
+			object inner = ParseExpression();
 			if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.RightParen)
 			{
 				throw BuildParseError("')' expected.", _tokenizer.CurrentPosition);
 			}
 			_tokenizer.GetNextToken();
-			return result;
+			return inner;
 		}
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Keyword)
 		{
-			ExpressionTokenizer.Position currentPosition6 = _tokenizer.CurrentPosition;
-			string text = _tokenizer.TokenText;
-			switch (text)
+			ExpressionTokenizer.Position nameStart = _tokenizer.CurrentPosition;
+			string name = _tokenizer.TokenText;
+			switch (name)
 			{
 			case "if":
 				return ParseConditional();
@@ -1117,25 +1117,25 @@ public abstract class ExpressionEvalBase
 			{
 				_tokenizer.IgnoreWhitespace = false;
 				_tokenizer.GetNextToken();
-				ArrayList arrayList = new ArrayList();
-				bool flag = false;
+				ArrayList args = new ArrayList();
+				bool isFunction = false;
 				if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.DoubleColon)
 				{
-					flag = true;
-					text += "::";
+					isFunction = true;
+					name += "::";
 					_tokenizer.GetNextToken();
 					if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.Keyword)
 					{
-						throw BuildParseError("Function name expected.", currentPosition6, _tokenizer.CurrentPosition);
+						throw BuildParseError("Function name expected.", nameStart, _tokenizer.CurrentPosition);
 					}
-					text += _tokenizer.TokenText;
+					name += _tokenizer.TokenText;
 					_tokenizer.GetNextToken();
 				}
 				else
 				{
 					while (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Dot || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Minus || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Keyword || _tokenizer.CurrentToken == ExpressionTokenizer.TokenType.Number)
 					{
-						text += _tokenizer.TokenText;
+						name += _tokenizer.TokenText;
 						_tokenizer.GetNextToken();
 					}
 				}
@@ -1144,22 +1144,22 @@ public abstract class ExpressionEvalBase
 				{
 					_tokenizer.GetNextToken();
 				}
-				MethodInfo methodInfo = null;
-				if (flag)
+				MethodInfo function = null;
+				if (isFunction)
 				{
 					if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.LeftParen)
 					{
 						throw BuildParseError("'(' expected.", _tokenizer.CurrentPosition);
 					}
 					_tokenizer.GetNextToken();
-					int num = 0;
+					int argumentIndex = 0;
 					while (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.RightParen && _tokenizer.CurrentToken != ExpressionTokenizer.TokenType.EOF)
 					{
-						ExpressionTokenizer.Position currentPosition7 = _tokenizer.CurrentPosition;
-						object value = ParseExpression();
-						ExpressionTokenizer.Position currentPosition8 = _tokenizer.CurrentPosition;
-						arrayList.Add(new FunctionArgument(text, num, value, currentPosition7, currentPosition8));
-						num++;
+						ExpressionTokenizer.Position argStart = _tokenizer.CurrentPosition;
+						object argValue = ParseExpression();
+						ExpressionTokenizer.Position argEnd = _tokenizer.CurrentPosition;
+						args.Add(new FunctionArgument(name, argumentIndex, argValue, argStart, argEnd));
+						argumentIndex++;
 						if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.RightParen)
 						{
 							break;
@@ -1177,24 +1177,24 @@ public abstract class ExpressionEvalBase
 					_tokenizer.GetNextToken();
 					if (!SyntaxCheckOnly())
 					{
-						FunctionArgument[] array = new FunctionArgument[arrayList.Count];
-						arrayList.CopyTo(0, array, 0, arrayList.Count);
+						FunctionArgument[] functionArgs = new FunctionArgument[args.Count];
+						args.CopyTo(0, functionArgs, 0, args.Count);
 						try
 						{
-							methodInfo = FunctionFactory.LookupFunction(text, array);
+							function = FunctionFactory.LookupFunction(name, functionArgs);
 						}
-						catch (EvaluatorException ex4)
+						catch (EvaluatorException ex)
 						{
-							throw BuildParseError(ex4.Message, currentPosition6, _tokenizer.CurrentPosition);
+							throw BuildParseError(ex.Message, nameStart, _tokenizer.CurrentPosition);
 						}
-						ParameterInfo[] parameters = methodInfo.GetParameters();
-						arrayList.Clear();
-						for (int i = 0; i < array.Length; i++)
+						ParameterInfo[] parameters = function.GetParameters();
+						args.Clear();
+						for (int i = 0; i < functionArgs.Length; i++)
 						{
-							FunctionArgument functionArgument = array[i];
+							FunctionArgument functionArgument = functionArgs[i];
 							ParameterInfo parameterInfo = parameters[i];
-							object value2 = SafeConvert(parameterInfo.ParameterType, functionArgument.Value, string.Format(CultureInfo.InvariantCulture, "argument {1} ({0}) of {2}()", parameterInfo.Name, functionArgument.Index, functionArgument.Name), functionArgument.BeforeArgument, functionArgument.AfterArgument);
-							arrayList.Add(value2);
+							object convertedValue = SafeConvert(parameterInfo.ParameterType, functionArgument.Value, string.Format(CultureInfo.InvariantCulture, "argument {1} ({0}) of {2}()", parameterInfo.Name, functionArgument.Index, functionArgument.Name), functionArgument.BeforeArgument, functionArgument.AfterArgument);
+							args.Add(convertedValue);
 						}
 					}
 				}
@@ -1202,21 +1202,21 @@ public abstract class ExpressionEvalBase
 				{
 					if (!SyntaxCheckOnly())
 					{
-						if (flag)
+						if (isFunction)
 						{
-							return EvaluateFunction(methodInfo, arrayList.ToArray());
+							return EvaluateFunction(function, args.ToArray());
 						}
-						return EvaluateProperty(text);
+						return EvaluateProperty(name);
 					}
 					return null;
 				}
-				catch (Exception ex5)
+				catch (Exception ex)
 				{
-					if (flag)
+					if (isFunction)
 					{
-						throw BuildParseError("Function call failed.", currentPosition6, _tokenizer.CurrentPosition, ex5);
+						throw BuildParseError("Function call failed.", nameStart, _tokenizer.CurrentPosition, ex);
 					}
-					throw BuildParseError("Property evaluation failed.", currentPosition6, _tokenizer.CurrentPosition, ex5);
+					throw BuildParseError("Property evaluation failed.", nameStart, _tokenizer.CurrentPosition, ex);
 				}
 			}
 			}
@@ -1243,7 +1243,7 @@ public abstract class ExpressionEvalBase
 	{
 		try
 		{
-			bool flag = false;
+			bool unsupported = false;
 			if (source == null)
 			{
 				if (returnType == typeof(string))
@@ -1254,27 +1254,27 @@ public abstract class ExpressionEvalBase
 			}
 			if (source is bool && returnType != typeof(string) && returnType != typeof(bool))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (returnType == typeof(bool) && !(source is string) && !(source is bool))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (source is DateTime && returnType != typeof(string) && returnType != typeof(DateTime))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (returnType == typeof(DateTime) && !(source is DateTime) && !(source is string))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (source is TimeSpan && returnType != typeof(TimeSpan))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (returnType == typeof(TimeSpan) && !(source is TimeSpan))
 			{
-				flag = true;
+				unsupported = true;
 			}
 			if (returnType == typeof(string))
 			{
@@ -1289,27 +1289,27 @@ public abstract class ExpressionEvalBase
 			}
 			if (returnType.IsEnum)
 			{
-				if (source is string text)
+				if (source is string flagNames)
 				{
-					string[] array = text.Split(' ', ',');
-					StringBuilder stringBuilder = new StringBuilder(text.Length);
-					for (int i = 0; i < array.Length; i++)
+					string[] names = flagNames.Split(' ', ',');
+					StringBuilder normalized = new StringBuilder(flagNames.Length);
+					for (int i = 0; i < names.Length; i++)
 					{
-						string text2 = array[i].Trim();
-						if (text2.Length != 0)
+						string flagName = names[i].Trim();
+						if (flagName.Length != 0)
 						{
-							if (stringBuilder.Length > 0)
+							if (normalized.Length > 0)
 							{
-								stringBuilder.Append(',');
+								normalized.Append(',');
 							}
-							stringBuilder.Append(text2);
+							normalized.Append(flagName);
 						}
 					}
-					return Enum.Parse(returnType, stringBuilder.ToString(), ignoreCase: true);
+					return Enum.Parse(returnType, normalized.ToString(), ignoreCase: true);
 				}
 				return Enum.ToObject(returnType, source);
 			}
-			if (flag)
+			if (unsupported)
 			{
 				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, "Cannot convert {0} to '{1}' (actual type was '{2}').", description, GetSimpleTypeName(returnType), GetSimpleTypeName(source.GetType())), p0, p1);
 			}
@@ -1319,9 +1319,9 @@ public abstract class ExpressionEvalBase
 		{
 			throw;
 		}
-		catch (Exception ex2)
+		catch (Exception ex)
 		{
-			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, "Cannot convert {0} to '{1}' (actual type was '{2}').", description, GetSimpleTypeName(returnType), GetSimpleTypeName(source.GetType())), p0, p1, ex2);
+			throw BuildParseError(string.Format(CultureInfo.InvariantCulture, "Cannot convert {0} to '{1}' (actual type was '{2}').", description, GetSimpleTypeName(returnType), GetSimpleTypeName(source.GetType())), p0, p1, ex);
 		}
 	}
 
