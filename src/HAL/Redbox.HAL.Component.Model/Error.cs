@@ -26,26 +26,26 @@ public sealed class Error
 	{
 		string code = ExtractCodeFromBrackets(error, "[", "]");
 		int startIndex = error.IndexOf("]");
-		string[] array = error.Substring(startIndex).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] parts = error.Substring(startIndex).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		string details = null;
-		if (array.Length > 1)
+		if (parts.Length > 1)
 		{
-			details = array[1];
+			details = parts[1];
 		}
-		string description = array[0].Substring(array[0].IndexOf(":") + 1);
-		return new Error(code, description, details, array[0].StartsWith("WARNING"));
+		string description = parts[0].Substring(parts[0].IndexOf(":") + 1);
+		return new Error(code, description, details, parts[0].StartsWith("WARNING"));
 	}
 
 	public static Error NewError(string code, string description, Exception e)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(e.ToString());
+		StringBuilder details = new StringBuilder();
+		details.Append(e.ToString());
 		if (e.InnerException != null)
 		{
-			stringBuilder.AppendFormat("\r\n\r\nInner Exception:\r\n---------------------------\r\n{0}\r\n", e.InnerException);
+			details.AppendFormat("\r\n\r\nInner Exception:\r\n---------------------------\r\n{0}\r\n", e.InnerException);
 		}
-		stringBuilder.AppendFormat("\r\n\r\nStack Trace:\r\n----------------------------\r\n{0}\r\n", e.StackTrace);
-		return new Error(code, description, stringBuilder.ToString(), isWarning: false);
+		details.AppendFormat("\r\n\r\nStack Trace:\r\n----------------------------\r\n{0}\r\n", e.StackTrace);
+		return new Error(code, description, details.ToString(), isWarning: false);
 	}
 
 	public static Error NewError(string code, string description, string details)
@@ -73,46 +73,46 @@ public sealed class Error
 
 	private static string ExtractCodeFromBrackets(string value, string prefix, string postfix)
 	{
-		int num = 0;
-		int num2 = -1;
-		int num3 = -1;
-		int num4 = 0;
+		int depth = 0;
+		int codeStart = -1;
+		int codeEnd = -1;
+		int position = 0;
 		do
 		{
-			string text = string.Empty;
-			if (num4 + prefix.Length < value.Length)
+			string candidatePrefix = string.Empty;
+			if (position + prefix.Length < value.Length)
 			{
-				text = value.Substring(num4, prefix.Length);
+				candidatePrefix = value.Substring(position, prefix.Length);
 			}
-			string text2 = string.Empty;
-			if (num4 + text2.Length < value.Length)
+			string candidatePostfix = string.Empty;
+			if (position + candidatePostfix.Length < value.Length)
 			{
-				text2 = value.Substring(num4, postfix.Length);
+				candidatePostfix = value.Substring(position, postfix.Length);
 			}
-			if (text == prefix)
+			if (candidatePrefix == prefix)
 			{
-				if (num2 == -1)
+				if (codeStart == -1)
 				{
-					num2 = num4 + prefix.Length;
+					codeStart = position + prefix.Length;
 				}
-				num++;
+				depth++;
 			}
-			else if (text2 == postfix)
+			else if (candidatePostfix == postfix)
 			{
-				num--;
-				if (num == 0)
+				depth--;
+				if (depth == 0)
 				{
-					num3 = num4 - postfix.Length;
+					codeEnd = position - postfix.Length;
 					break;
 				}
 			}
-			num4++;
+			position++;
 		}
-		while (num4 < value.Length);
-		if (num2 == -1 || num3 == -1)
+		while (position < value.Length);
+		if (codeStart == -1 || codeEnd == -1)
 		{
 			return null;
 		}
-		return value.Substring(num2, num3 - num2 + postfix.Length);
+		return value.Substring(codeStart, codeEnd - codeStart + postfix.Length);
 	}
 }

@@ -9,43 +9,43 @@ internal sealed class ZipCompressionAlgorithm : ICompressionAlgorithm
 {
 	public byte[] Compress(byte[] source)
 	{
-		using MemoryStream memoryStream = StreamBase.NewOn(source);
-		BinaryReader binaryReader = new BinaryReader(memoryStream);
-		byte[] array;
-		using (MemoryStream memoryStream2 = StreamBase.New())
+		using MemoryStream input = StreamBase.NewOn(source);
+		BinaryReader binaryReader = new BinaryReader(input);
+		byte[] result;
+		using (MemoryStream output = StreamBase.New())
 		{
-			ZipOutputStream zipOutputStream = new ZipOutputStream(memoryStream2);
-			zipOutputStream.Write(binaryReader.ReadBytes((int)memoryStream.Length), 0, (int)memoryStream.Length);
+			ZipOutputStream zipOutputStream = new ZipOutputStream(output);
+			zipOutputStream.Write(binaryReader.ReadBytes((int)input.Length), 0, (int)input.Length);
 			zipOutputStream.Finish();
 			zipOutputStream.Flush();
-			array = new byte[memoryStream2.Length];
-			Array.Copy(memoryStream2.GetBuffer(), 0L, array, 0L, memoryStream2.Length);
+			result = new byte[output.Length];
+			Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
 		}
 		binaryReader.Close();
-		return array;
+		return result;
 	}
 
 	public byte[] Decompress(byte[] source)
 	{
-		using MemoryStream memoryStream = StreamBase.New();
-		BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-		using (MemoryStream memoryStream2 = StreamBase.NewOn(source))
+		using MemoryStream output = StreamBase.New();
+		BinaryWriter binaryWriter = new BinaryWriter(output);
+		using (MemoryStream input = StreamBase.NewOn(source))
 		{
 			byte[] buffer = new byte[4096];
-			ZipInputStream zipInputStream = new ZipInputStream(memoryStream2);
+			ZipInputStream zipInputStream = new ZipInputStream(input);
 			while (true)
 			{
-				int num = zipInputStream.Read(buffer, 0, 4096);
-				if (num == 0)
+				int bytesRead = zipInputStream.Read(buffer, 0, 4096);
+				if (bytesRead == 0)
 				{
 					break;
 				}
-				binaryWriter.Write(buffer, 0, num);
+				binaryWriter.Write(buffer, 0, bytesRead);
 			}
 		}
-		byte[] array = new byte[memoryStream.Length];
-		Array.Copy(memoryStream.GetBuffer(), 0L, array, 0L, memoryStream.Length);
+		byte[] result = new byte[output.Length];
+		Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
 		binaryWriter.Close();
-		return array;
+		return result;
 	}
 }

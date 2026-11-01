@@ -16,19 +16,19 @@ public class NullCompressionAlgorithm : CompressionAlgorithm
 
 	public override void Compress(Stream source, Stream target)
 	{
-		byte[] array = new byte[4096];
-		for (int num = source.Read(array, 0, array.Length); num > 0; num = source.Read(array, 0, array.Length))
+		byte[] buffer = new byte[4096];
+		for (int bytesRead = source.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = source.Read(buffer, 0, buffer.Length))
 		{
-			target.Write(array, 0, num);
+			target.Write(buffer, 0, bytesRead);
 		}
 	}
 
 	public override void Decompress(Stream source, Stream target)
 	{
-		byte[] array = new byte[4096];
-		for (int num = source.Read(array, 0, array.Length); num > 0; num = source.Read(array, 0, array.Length))
+		byte[] buffer = new byte[4096];
+		for (int bytesRead = source.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = source.Read(buffer, 0, buffer.Length))
 		{
-			target.Write(array, 0, num);
+			target.Write(buffer, 0, bytesRead);
 		}
 	}
 }

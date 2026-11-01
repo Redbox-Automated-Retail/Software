@@ -27,44 +27,44 @@ public static class PropertyHelper
 		{
 			return;
 		}
-		XmlNodeList xmlNodeList = parentNode.SelectNodes("property");
-		if (xmlNodeList == null)
+		XmlNodeList propertyNodes = parentNode.SelectNodes("property");
+		if (propertyNodes == null)
 		{
 			return;
 		}
-		foreach (XmlNode item in xmlNodeList)
+		foreach (XmlNode propertyNode in propertyNodes)
 		{
-			if (item.Attributes["read-only"] != null && string.Compare(item.Attributes["read-only"].Value, bool.TrueString, ignoreCase: true) == 0)
+			if (propertyNode.Attributes["read-only"] != null && string.Compare(propertyNode.Attributes["read-only"].Value, bool.TrueString, ignoreCase: true) == 0)
 			{
 				continue;
 			}
 			PropertyInfo propertyInfo = null;
-			if (item.Attributes["name"] != null)
+			if (propertyNode.Attributes["name"] != null)
 			{
-				propertyInfo = instance.GetType().GetProperty(item.Attributes["name"].Value, BindingFlags.Instance | BindingFlags.Public);
+				propertyInfo = instance.GetType().GetProperty(propertyNode.Attributes["name"].Value, BindingFlags.Instance | BindingFlags.Public);
 			}
 			if (propertyInfo == null)
 			{
 				continue;
 			}
-			XmlNodeList xmlNodeList2 = item.SelectNodes("property");
-			if (xmlNodeList2 != null && xmlNodeList2.Count > 0)
+			XmlNodeList childPropertyNodes = propertyNode.SelectNodes("property");
+			if (childPropertyNodes != null && childPropertyNodes.Count > 0)
 			{
-				UpdateObjectFromXml(propertyInfo.GetValue(instance, new object[0]), item);
+				UpdateObjectFromXml(propertyInfo.GetValue(instance, new object[0]), propertyNode);
 				continue;
 			}
 			CustomEditorAttribute customEditorAttribute = (CustomEditorAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(CustomEditorAttribute));
-			if (item.ChildNodes.Count > 0 && customEditorAttribute != null && customEditorAttribute.SetMethodName != null)
+			if (propertyNode.ChildNodes.Count > 0 && customEditorAttribute != null && customEditorAttribute.SetMethodName != null)
 			{
-				MethodInfo method = instance.GetType().GetMethod(customEditorAttribute.SetMethodName, BindingFlags.Instance | BindingFlags.Public);
-				if (method != null)
+				MethodInfo setMethod = instance.GetType().GetMethod(customEditorAttribute.SetMethodName, BindingFlags.Instance | BindingFlags.Public);
+				if (setMethod != null)
 				{
-					method.Invoke(instance, new object[1] { item });
+					setMethod.Invoke(instance, new object[1] { propertyNode });
 				}
 			}
-			else if (item.Attributes["value"] != null)
+			else if (propertyNode.Attributes["value"] != null)
 			{
-				string value = item.Attributes["value"].Value;
+				string value = propertyNode.Attributes["value"].Value;
 				propertyInfo.SetValue(instance, ConversionHelper.ChangeType(value, propertyInfo.PropertyType), null);
 			}
 		}
@@ -112,23 +112,23 @@ public static class PropertyHelper
 				xmlWriter.WriteAttributeString("custom-editor", customEditorAttribute.Text);
 				if (customEditorAttribute.GetMethodName != null)
 				{
-					MethodInfo method = instance.GetType().GetMethod(customEditorAttribute.GetMethodName, BindingFlags.Instance | BindingFlags.Public);
-					if (method != null)
+					MethodInfo getMethod = instance.GetType().GetMethod(customEditorAttribute.GetMethodName, BindingFlags.Instance | BindingFlags.Public);
+					if (getMethod != null)
 					{
-						method.Invoke(instance, new object[1] { xmlWriter });
+						getMethod.Invoke(instance, new object[1] { xmlWriter });
 					}
 				}
 			}
 			else
 			{
-				object obj = null;
+				object propertyValue = null;
 				try
 				{
-					obj = propertyInfo.GetValue(instance, new object[0]);
-					if (obj != null)
+					propertyValue = propertyInfo.GetValue(instance, new object[0]);
+					if (propertyValue != null)
 					{
-						TypeConverter converter = TypeDescriptor.GetConverter(obj);
-						string value = ((converter == null || !converter.CanConvertTo(typeof(string))) ? obj.ToString() : converter.ConvertToString(obj));
+						TypeConverter converter = TypeDescriptor.GetConverter(propertyValue);
+						string value = ((converter == null || !converter.CanConvertTo(typeof(string))) ? propertyValue.ToString() : converter.ConvertToString(propertyValue));
 						xmlWriter.WriteAttributeString("value", value);
 						xmlWriter.WriteAttributeString("default-value", value);
 					}
@@ -140,23 +140,23 @@ public static class PropertyHelper
 				{
 					xmlWriter.WriteAttributeString("type", propertyInfo.PropertyType.AssemblyQualifiedName);
 				}
-				if (Attribute.IsDefined(propertyInfo, typeof(RecurseAttribute)) && obj != null)
+				if (Attribute.IsDefined(propertyInfo, typeof(RecurseAttribute)) && propertyValue != null)
 				{
-					WalkObjectTree(obj, xmlWriter);
+					WalkObjectTree(propertyValue, xmlWriter);
 				}
 				else
 				{
 					ValidValueListProviderAttribute validValueListProviderAttribute = (ValidValueListProviderAttribute)Attribute.GetCustomAttribute(propertyInfo, typeof(ValidValueListProviderAttribute));
 					if (validValueListProviderAttribute != null)
 					{
-						MethodInfo method2 = instance.GetType().GetMethod(validValueListProviderAttribute.MethodName, BindingFlags.Instance | BindingFlags.Public);
-						if (method2 != null && method2.Invoke(instance, null) is string[] array)
+						MethodInfo validValuesMethod = instance.GetType().GetMethod(validValueListProviderAttribute.MethodName, BindingFlags.Instance | BindingFlags.Public);
+						if (validValuesMethod != null && validValuesMethod.Invoke(instance, null) is string[] validValues)
 						{
-							xmlWriter.WriteAttributeString("valid-value-count", array.Length.ToString());
-							foreach (string value2 in array)
+							xmlWriter.WriteAttributeString("valid-value-count", validValues.Length.ToString());
+							foreach (string validValue in validValues)
 							{
 								xmlWriter.WriteStartElement("valid");
-								xmlWriter.WriteAttributeString("value", value2);
+								xmlWriter.WriteAttributeString("value", validValue);
 								xmlWriter.WriteEndElement();
 							}
 						}

@@ -4,46 +4,46 @@ public static class GlobalStringExtensions
 {
 	public static string ExtractCodeFromBrackets(this string value, string prefix, string postfix)
 	{
-		int num = 0;
-		int num2 = -1;
-		int num3 = -1;
-		int num4 = 0;
+		int depth = 0;
+		int codeStart = -1;
+		int codeEnd = -1;
+		int position = 0;
 		do
 		{
-			string text = string.Empty;
-			if (num4 + prefix.Length < value.Length)
+			string candidatePrefix = string.Empty;
+			if (position + prefix.Length < value.Length)
 			{
-				text = value.Substring(num4, prefix.Length);
+				candidatePrefix = value.Substring(position, prefix.Length);
 			}
-			string text2 = string.Empty;
-			if (num4 + text2.Length < value.Length)
+			string candidatePostfix = string.Empty;
+			if (position + candidatePostfix.Length < value.Length)
 			{
-				text2 = value.Substring(num4, postfix.Length);
+				candidatePostfix = value.Substring(position, postfix.Length);
 			}
-			if (text == prefix)
+			if (candidatePrefix == prefix)
 			{
-				if (num2 == -1)
+				if (codeStart == -1)
 				{
-					num2 = num4 + prefix.Length;
+					codeStart = position + prefix.Length;
 				}
-				num++;
+				depth++;
 			}
-			else if (text2 == postfix)
+			else if (candidatePostfix == postfix)
 			{
-				num--;
-				if (num == 0)
+				depth--;
+				if (depth == 0)
 				{
-					num3 = num4 - postfix.Length;
+					codeEnd = position - postfix.Length;
 					break;
 				}
 			}
-			num4++;
+			position++;
 		}
-		while (num4 < value.Length);
-		if (num2 == -1 || num3 == -1)
+		while (position < value.Length);
+		if (codeStart == -1 || codeEnd == -1)
 		{
 			return null;
 		}
-		return value.Substring(num2, num3 - num2 + postfix.Length);
+		return value.Substring(codeStart, codeEnd - codeStart + postfix.Length);
 	}
 }

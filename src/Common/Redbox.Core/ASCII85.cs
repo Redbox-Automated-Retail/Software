@@ -46,17 +46,17 @@ public class ASCII85
 		{
 			s = s.Substring(0, s.Length - "~>".Length);
 		}
-		MemoryStream memoryStream = new MemoryStream();
-		int num = 0;
-		bool flag = false;
-		string text = s;
-		for (int i = 0; i < text.Length; i++)
+		MemoryStream decoded = new MemoryStream();
+		int count = 0;
+		bool processChar = false;
+		string chars = s;
+		for (int i = 0; i < chars.Length; i++)
 		{
-			char c = text[i];
+			char c = chars[i];
 			switch (c)
 			{
 			case 'z':
-				if (num != 0)
+				if (count != 0)
 				{
 					throw new Exception("The character 'z' is invalid inside an ASCII85 block.");
 				}
@@ -64,8 +64,8 @@ public class ASCII85
 				m_decodedBlock[1] = 0;
 				m_decodedBlock[2] = 0;
 				m_decodedBlock[3] = 0;
-				memoryStream.Write(m_decodedBlock, 0, m_decodedBlock.Length);
-				flag = false;
+				decoded.Write(m_decodedBlock, 0, m_decodedBlock.Length);
+				processChar = false;
 				break;
 			case '\0':
 			case '\b':
@@ -73,85 +73,85 @@ public class ASCII85
 			case '\n':
 			case '\f':
 			case '\r':
-				flag = false;
+				processChar = false;
 				break;
 			default:
 				if (c < '!' || c > 'u')
 				{
 					throw new Exception("Bad character '" + c + "' found. ASCII85 only allows characters '!' to 'u'.");
 				}
-				flag = true;
+				processChar = true;
 				break;
 			}
-			if (flag)
+			if (processChar)
 			{
-				m_tuple += (uint)((c - 33) * (int)pow85[num]);
-				num++;
-				if (num == m_encodedBlock.Length)
+				m_tuple += (uint)((c - 33) * (int)pow85[count]);
+				count++;
+				if (count == m_encodedBlock.Length)
 				{
 					DecodeBlock();
-					memoryStream.Write(m_decodedBlock, 0, m_decodedBlock.Length);
+					decoded.Write(m_decodedBlock, 0, m_decodedBlock.Length);
 					m_tuple = 0u;
-					num = 0;
+					count = 0;
 				}
 			}
 		}
-		switch (num)
+		switch (count)
 		{
 		case 1:
 			throw new Exception("The last block of ASCII85 data cannot be a single byte.");
 		default:
 		{
-			num--;
-			m_tuple += pow85[num];
-			DecodeBlock(num);
-			for (int j = 0; j < num; j++)
+			count--;
+			m_tuple += pow85[count];
+			DecodeBlock(count);
+			for (int j = 0; j < count; j++)
 			{
-				memoryStream.WriteByte(m_decodedBlock[j]);
+				decoded.WriteByte(m_decodedBlock[j]);
 			}
 			break;
 		}
 		case 0:
 			break;
 		}
-		return memoryStream.ToArray();
+		return decoded.ToArray();
 	}
 
 	private string InternalEncode(byte[] ba)
 	{
-		StringBuilder stringBuilder = new StringBuilder(ba.Length * (m_encodedBlock.Length / m_decodedBlock.Length));
+		StringBuilder sb = new StringBuilder(ba.Length * (m_encodedBlock.Length / m_decodedBlock.Length));
 		m_linePos = 0;
-		AppendString(stringBuilder, "<~");
-		int num = 0;
+		AppendString(sb, "<~");
+		int count = 0;
 		m_tuple = 0u;
 		foreach (byte b in ba)
 		{
-			if (num >= m_decodedBlock.Length - 1)
+			if (count >= m_decodedBlock.Length - 1)
 			{
 				m_tuple |= b;
 				if (m_tuple == 0)
 				{
-					AppendChar(stringBuilder, 'z');
+					AppendChar(sb, 'z');
 				}
 				else
 				{
-					EncodeBlock(stringBuilder);
+					EncodeBlock(sb);
 				}
 				m_tuple = 0u;
-				num = 0;
+				count = 0;
 			}
 			else
 			{
-				m_tuple |= (uint)(b << 24 - num * 8);
-				num++;
+				m_tuple |= (uint)(b << 24 - count * 8);
+				count++;
 			}
 		}
-		if (num > 0)
+		if (count > 0)
 		{
-			EncodeBlock(num + 1, stringBuilder);
+			EncodeBlock(count + 1, sb);
 		}
-		AppendString(stringBuilder, "~>");
-		return stringBuilder.ToString();
+		AppendString(sb, "~>");
+		return sb.ToString();
 	}
 
 	private void EncodeBlock(StringBuilder sb)
@@ -161,9 +161,9 @@ public class ASCII85
 
 	private void EncodeBlock(int count, StringBuilder sb)
 	{
-		for (int num = m_encodedBlock.Length - 1; num >= 0; num--)
+		for (int i = m_encodedBlock.Length - 1; i >= 0; i--)
 		{
-			m_encodedBlock[num] = (byte)(m_tuple % 85 + 33);
+			m_encodedBlock[i] = (byte)(m_tuple % 85 + 33);
 			m_tuple /= 85u;
 		}
 		for (int i = 0; i < count; i++)

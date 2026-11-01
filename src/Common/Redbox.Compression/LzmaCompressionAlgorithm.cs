@@ -9,18 +9,18 @@ public class LzmaCompressionAlgorithm : CompressionAlgorithm
 {
 	public override byte[] Compress(byte[] source)
 	{
-		using MemoryStream memoryStream = new MemoryStream();
-		using MemoryStream source2 = new MemoryStream(source);
-		Compress(source2, memoryStream);
-		return memoryStream.ToArray();
+		using MemoryStream targetStream = new MemoryStream();
+		using MemoryStream sourceStream = new MemoryStream(source);
+		Compress(sourceStream, targetStream);
+		return targetStream.ToArray();
 	}
 
 	public override byte[] Decompress(byte[] source)
 	{
-		using MemoryStream memoryStream = new MemoryStream();
-		using MemoryStream source2 = new MemoryStream(source);
-		Decompress(source2, memoryStream);
-		return memoryStream.ToArray();
+		using MemoryStream targetStream = new MemoryStream();
+		using MemoryStream sourceStream = new MemoryStream(source);
+		Decompress(sourceStream, targetStream);
+		return targetStream.ToArray();
 	}
 
 	public override void Compress(Stream source, Stream target)
@@ -50,24 +50,24 @@ public class LzmaCompressionAlgorithm : CompressionAlgorithm
 
 	public override void Decompress(Stream source, Stream target)
 	{
-		byte[] array = new byte[5];
-		if (source.Read(array, 0, 5) != 5)
+		byte[] decoderProperties = new byte[5];
+		if (source.Read(decoderProperties, 0, 5) != 5)
 		{
 			throw new Exception("input .lzma is too short");
 		}
 		Decoder decoder = new Decoder();
-		decoder.SetDecoderProperties(array);
-		long num = 0L;
+		decoder.SetDecoderProperties(decoderProperties);
+		long outSize = 0L;
 		for (int i = 0; i < 8; i++)
 		{
-			int num2 = source.ReadByte();
-			if (num2 < 0)
+			int v = source.ReadByte();
+			if (v < 0)
 			{
 				throw new Exception("Can't Read 1");
 			}
-			num |= (long)((ulong)(byte)num2 << 8 * i);
+			outSize |= (long)((ulong)(byte)v << 8 * i);
 		}
 		long inSize = source.Length - source.Position;
-		decoder.Code(source, target, inSize, num, null);
+		decoder.Code(source, target, inSize, outSize, null);
 	}
 }

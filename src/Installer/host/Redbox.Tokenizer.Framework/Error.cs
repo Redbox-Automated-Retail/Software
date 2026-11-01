@@ -27,26 +27,26 @@ internal class Error
 		string code = Redbox_002EMacros1309_002EGlobalStringExtensions.ExtractCodeFromBrackets(error, "[", "]");
 		int startIndex = error.IndexOf("]");
 		string text = error.Substring(startIndex);
-		string[] array = text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] parts = text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		string details = null;
-		if (array.Length > 1)
+		if (parts.Length > 1)
 		{
-			details = array[1];
+			details = parts[1];
 		}
-		string description = array[0].Substring(array[0].IndexOf(":") + 1);
-		return new Error(code, description, details, array[0].StartsWith("WARNING"));
+		string description = parts[0].Substring(parts[0].IndexOf(":") + 1);
+		return new Error(code, description, details, parts[0].StartsWith("WARNING"));
 	}
 
 	public static Error NewError(string code, string description, Exception e)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(e.ToString());
+		StringBuilder details = new StringBuilder();
+		details.Append(e.ToString());
 		if (e.InnerException != null)
 		{
-			stringBuilder.AppendFormat("\r\n\r\nInner Exception:\r\n---------------------------\r\n{0}\r\n", e.InnerException);
+			details.AppendFormat("\r\n\r\nInner Exception:\r\n---------------------------\r\n{0}\r\n", e.InnerException);
 		}
-		stringBuilder.AppendFormat("\r\n\r\nStack Trace:\r\n----------------------------\r\n{0}\r\n", e.StackTrace);
-		return new Error(code, description, stringBuilder.ToString(), isWarning: false);
+		details.AppendFormat("\r\n\r\nStack Trace:\r\n----------------------------\r\n{0}\r\n", e.StackTrace);
+		return new Error(code, description, details.ToString(), isWarning: false);
 	}
 
 	public static Error NewError(string code, string description, string details)

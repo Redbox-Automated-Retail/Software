@@ -10,8 +10,8 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 
 	public override byte[] Compress(byte[] source)
 	{
-		byte[] array = new byte[1024000];
-		byte[] array2;
+		byte[] buffer = new byte[BufferSize];
+		byte[] bytes;
 		using (MemoryStream input = new MemoryStream(source))
 		{
 			BinaryReader binaryReader = new BinaryReader(input);
@@ -27,49 +27,49 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 				while (true)
 				{
 					bool flag = true;
-					int num = binaryReader.Read(array, 0, array.Length);
-					if (num == 0)
+					int bytesRead = binaryReader.Read(buffer, 0, buffer.Length);
+					if (bytesRead == 0)
 					{
 						break;
 					}
-					zipOutputStream.Write(array, 0, num);
+					zipOutputStream.Write(buffer, 0, bytesRead);
 				}
 				zipOutputStream.Finish();
 				zipOutputStream.Flush();
-				array2 = new byte[memoryStream.Length];
-				Array.Copy(memoryStream.GetBuffer(), 0L, array2, 0L, memoryStream.Length);
+				bytes = new byte[memoryStream.Length];
+				Array.Copy(memoryStream.GetBuffer(), 0L, bytes, 0L, memoryStream.Length);
 			}
 			binaryReader.Close();
 		}
-		return array2;
+		return bytes;
 	}
 
 	public override byte[] Decompress(byte[] source)
 	{
-		byte[] array2;
+		byte[] bytes;
 		using (MemoryStream memoryStream = new MemoryStream())
 		{
 			BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 			using (MemoryStream baseInputStream = new MemoryStream(source))
 			{
-				byte[] array = new byte[1024000];
+				byte[] buffer = new byte[BufferSize];
 				ZipInputStream zipInputStream = new ZipInputStream(baseInputStream);
 				while (true)
 				{
 					bool flag = true;
-					int num = zipInputStream.Read(array, 0, array.Length);
-					if (num == 0)
+					int bytesRead = zipInputStream.Read(buffer, 0, buffer.Length);
+					if (bytesRead == 0)
 					{
 						break;
 					}
-					binaryWriter.Write(array, 0, num);
+					binaryWriter.Write(buffer, 0, bytesRead);
 				}
 			}
-			array2 = new byte[memoryStream.Length];
-			Array.Copy(memoryStream.GetBuffer(), 0L, array2, 0L, memoryStream.Length);
+			bytes = new byte[memoryStream.Length];
+			Array.Copy(memoryStream.GetBuffer(), 0L, bytes, 0L, memoryStream.Length);
 			binaryWriter.Close();
 		}
-		return array2;
+		return bytes;
 	}
 
 	public override void Compress(Stream source, Stream target)
@@ -88,17 +88,17 @@ public class ZipCompressionAlgorithm : CompressionAlgorithm
 
 	public override void Decompress(Stream source, Stream target)
 	{
-		byte[] array = new byte[1024000];
+		byte[] buffer = new byte[BufferSize];
 		using ZipInputStream zipInputStream = new ZipInputStream(source);
 		while (true)
 		{
 			bool flag = true;
-			int num = zipInputStream.Read(array, 0, array.Length);
-			if (num == 0)
+			int bytesRead = zipInputStream.Read(buffer, 0, buffer.Length);
+			if (bytesRead == 0)
 			{
 				break;
 			}
-			target.Write(array, 0, num);
+			target.Write(buffer, 0, bytesRead);
 		}
 	}
 }

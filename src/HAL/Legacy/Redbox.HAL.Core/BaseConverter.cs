@@ -155,12 +155,12 @@ public class BaseConverter
 		{
 			throw new ArgumentNullException("value");
 		}
-		long value2 = ConvertToBase10(value, From, _fromNumberingScheme, _maxFromSchemeCharacter);
+		long base10 = ConvertToBase10(value, From, _fromNumberingScheme, _maxFromSchemeCharacter);
 		if (To != 10)
 		{
-			return ConvertFromBase10(value2, To, _toNumberingScheme);
+			return ConvertFromBase10(base10, To, _toNumberingScheme);
 		}
-		return value2.ToString();
+		return base10.ToString();
 	}
 
 	private BaseConverter(int fromRadix, NumberingSchemes fromScheme, int toRadix, NumberingSchemes toScheme)
@@ -200,40 +200,40 @@ public class BaseConverter
 
 	private static long ConvertToBase10(string value, int fromBase, string characters, int maxFromSchemeCharacter)
 	{
-		StringBuilder stringBuilder = new StringBuilder(value);
-		int num = 0;
-		long num2 = 0L;
-		while (stringBuilder.Length > 0)
+		StringBuilder remaining = new StringBuilder(value);
+		int power = 0;
+		long result = 0L;
+		while (remaining.Length > 0)
 		{
-			int num3 = Array.IndexOf(characters.ToCharArray(), stringBuilder[stringBuilder.Length - 1]);
-			if (num3 < 0)
+			int digit = Array.IndexOf(characters.ToCharArray(), remaining[remaining.Length - 1]);
+			if (digit < 0)
 			{
 				throw new FormatException("Unsupported character in value string");
 			}
-			if (num3 >= maxFromSchemeCharacter)
+			if (digit >= maxFromSchemeCharacter)
 			{
 				throw new FormatException("Value contains character not valid for number base");
 			}
-			num2 += num3 * (long)Math.Pow(fromBase, num);
-			if (num2 < 0)
+			result += digit * (long)Math.Pow(fromBase, power);
+			if (result < 0)
 			{
 				throw new OverflowException();
 			}
-			stringBuilder.Length--;
-			num++;
+			remaining.Length--;
+			power++;
 		}
-		return num2;
+		return result;
 	}
 
 	private static string ConvertFromBase10(long value, int toBase, string characters)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder result = new StringBuilder();
 		while (value > 0)
 		{
 			int index = (int)(value % toBase);
-			stringBuilder.Insert(0, characters[index]);
+			result.Insert(0, characters[index]);
 			value /= toBase;
 		}
-		return stringBuilder.ToString();
+		return result.ToString();
 	}
 }
