@@ -271,7 +271,7 @@ public class RecommendationOnPickupViewController : BaseLoyaltyController
 	public static List<IKioskProduct> GenerateRecommendations(bool includeBluray, List<long> excludeProducts)
 	{
 		List<IKioskProduct> recommendedProducts = new List<IKioskProduct>();
-		LogHelper.Instance.Log("Generating recommendation recommendedProducts on top 20");
+		LogHelper.Instance.Log("Generating recommendation list on top 20");
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		if (dataService != null)
 		{
@@ -316,7 +316,7 @@ public class RecommendationOnPickupViewController : BaseLoyaltyController
 		foreach (IKioskProduct recommendedProduct in recommendedProducts)
 		{
 			ITitleProduct recommendedTitle = recommendedProduct as ITitleProduct;
-			LogHelper.Instance.Log($"recommendation recommendedProducts: adding {recommendedTitle?.ProductId}");
+			LogHelper.Instance.Log($"recommendation list: adding {recommendedTitle?.ProductId}");
 		}
 		return recommendedProducts;
 	}

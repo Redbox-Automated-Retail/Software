@@ -430,7 +430,7 @@ public class UpdateService : IDisposable
 		}
 		script = new Script();
 		string scriptText = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
-		string command = $"update-script create scriptText: '{scriptText}' createdBy: '{createBy}' system: '{system}' name: '{name}'";
+		string command = $"update-script create text: '{scriptText}' createdBy: '{createBy}' system: '{system}' name: '{name}'";
 		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		if (clientCommandResult.Success)
 		{
@@ -451,7 +451,7 @@ public class UpdateService : IDisposable
 		}
 		script = new Script();
 		string scriptText = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
-		string command = string.Format("update-script update id: {3} scriptText: '{0}' modifiedby: '{1}' system: '{2}'", scriptText, modifiedBy, system, id);
+		string command = string.Format("update-script update id: {3} text: '{0}' modifiedby: '{1}' system: '{2}'", scriptText, modifiedBy, system, id);
 		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		if (clientCommandResult.Success)
 		{
@@ -845,7 +845,7 @@ public class UpdateService : IDisposable
 			clientCommandResult.Errors.AddRange(errorList);
 			return clientCommandResult;
 		}
-		string commandText = string.Format("downloadfile set-script " + (id.HasValue ? $" id:{id.Value} " : $" name:'{name}' ") + " commandText:'{0}'", File.ReadAllBytes(path).ToBase64());
+		string commandText = string.Format("downloadfile set-script " + (id.HasValue ? $" id:{id.Value} " : $" name:'{name}' ") + " text:'{0}'", File.ReadAllBytes(path).ToBase64());
 		Console.WriteLine(commandText);
 		return ExecuteCommandString(commandText);
 	}

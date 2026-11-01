@@ -434,7 +434,7 @@ public class UpdateService : IUpdateService
 			}
 			if (items.Count != 1)
 			{
-				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("D999", $"Job {job2.ID} has {items.Count} items. It have 1 deltaItem.", "This download will be canceled."));
+				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("D999", $"Job {job2.ID} has {items.Count} items. It have 1 item.", "This download will be canceled."));
 				dataStoreService.Delete(jobId);
 				return errorList;
 			}
