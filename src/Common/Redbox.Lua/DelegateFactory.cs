@@ -20,30 +20,30 @@ public static class DelegateFactory
 
 	public static Delegate GetDelegate(Type delegateType, LuaFunction luaFunc)
 	{
-		List<Type> list = new List<Type>();
-		Type type;
+		List<Type> returnTypes = new List<Type>();
+		Type wrapperType;
 		if (m_delegateCollection.ContainsKey(delegateType))
 		{
-			type = m_delegateCollection[delegateType];
+			wrapperType = m_delegateCollection[delegateType];
 		}
 		else
 		{
-			type = GenerateDelegate(delegateType);
-			m_delegateCollection[delegateType] = type;
+			wrapperType = GenerateDelegate(delegateType);
+			m_delegateCollection[delegateType] = wrapperType;
 		}
 		MethodInfo method = delegateType.GetMethod("Invoke");
-		list.Add(method.ReturnType);
+		returnTypes.Add(method.ReturnType);
 		ParameterInfo[] parameters = method.GetParameters();
 		foreach (ParameterInfo parameterInfo in parameters)
 		{
 			if (parameterInfo.ParameterType.IsByRef)
 			{
-				list.Add(parameterInfo.ParameterType);
+				returnTypes.Add(parameterInfo.ParameterType);
 			}
 		}
-		LuaDelegate luaDelegate = (LuaDelegate)Activator.CreateInstance(type);
+		LuaDelegate luaDelegate = (LuaDelegate)Activator.CreateInstance(wrapperType);
 		luaDelegate.m_function = luaFunc;
-		luaDelegate.m_returnTypes = list.ToArray();
+		luaDelegate.m_returnTypes = returnTypes.ToArray();
 		return Delegate.CreateDelegate(delegateType, luaDelegate, "CallFunction");
 	}
 
@@ -70,148 +70,148 @@ public static class DelegateFactory
 		TypeBuilder typeBuilder = m_newModule.DefineType(name, TypeAttributes.Public, typeof(LuaDelegate));
 		MethodInfo method = delegateType.GetMethod("Invoke");
 		ParameterInfo[] parameters = method.GetParameters();
-		Type[] array = new Type[parameters.Length];
+		Type[] paramTypes = new Type[parameters.Length];
 		Type returnType = method.ReturnType;
-		int num = 0;
-		int num2 = 0;
-		for (int i = 0; i < array.Length; i++)
+		int nOutParams = 0;
+		int nOutAndRefParams = 0;
+		for (int i = 0; i < paramTypes.Length; i++)
 		{
-			array[i] = parameters[i].ParameterType;
+			paramTypes[i] = parameters[i].ParameterType;
 			if (!parameters[i].IsIn && parameters[i].IsOut)
 			{
-				num++;
+				nOutParams++;
 			}
-			if (array[i].IsByRef)
+			if (paramTypes[i].IsByRef)
 			{
-				num2++;
+				nOutAndRefParams++;
 			}
 		}
-		int[] array2 = new int[num2];
-		ILGenerator iLGenerator = typeBuilder.DefineMethod("CallFunction", method.Attributes, returnType, array).GetILGenerator();
-		iLGenerator.DeclareLocal(typeof(object[]));
-		iLGenerator.DeclareLocal(typeof(object[]));
-		iLGenerator.DeclareLocal(typeof(int[]));
+		int[] refArgs = new int[nOutAndRefParams];
+		ILGenerator generator = typeBuilder.DefineMethod("CallFunction", method.Attributes, returnType, paramTypes).GetILGenerator();
+		generator.DeclareLocal(typeof(object[]));
+		generator.DeclareLocal(typeof(object[]));
+		generator.DeclareLocal(typeof(int[]));
 		if (!(returnType == typeof(void)))
 		{
-			iLGenerator.DeclareLocal(returnType);
+			generator.DeclareLocal(returnType);
 		}
 		else
 		{
-			iLGenerator.DeclareLocal(typeof(object));
+			generator.DeclareLocal(typeof(object));
 		}
-		iLGenerator.Emit(OpCodes.Ldc_I4, array.Length);
-		iLGenerator.Emit(OpCodes.Newarr, typeof(object));
-		iLGenerator.Emit(OpCodes.Stloc_0);
-		iLGenerator.Emit(OpCodes.Ldc_I4, array.Length - num);
-		iLGenerator.Emit(OpCodes.Newarr, typeof(object));
-		iLGenerator.Emit(OpCodes.Stloc_1);
-		iLGenerator.Emit(OpCodes.Ldc_I4, num2);
-		iLGenerator.Emit(OpCodes.Newarr, typeof(int));
-		iLGenerator.Emit(OpCodes.Stloc_2);
+		generator.Emit(OpCodes.Ldc_I4, paramTypes.Length);
+		generator.Emit(OpCodes.Newarr, typeof(object));
+		generator.Emit(OpCodes.Stloc_0);
+		generator.Emit(OpCodes.Ldc_I4, paramTypes.Length - nOutParams);
+		generator.Emit(OpCodes.Newarr, typeof(object));
+		generator.Emit(OpCodes.Stloc_1);
+		generator.Emit(OpCodes.Ldc_I4, nOutAndRefParams);
+		generator.Emit(OpCodes.Newarr, typeof(int));
+		generator.Emit(OpCodes.Stloc_2);
 		int j = 0;
-		int num3 = 0;
-		int num4 = 0;
-		for (; j < array.Length; j++)
+		int argIndex = 0;
+		int refArgIndex = 0;
+		for (; j < paramTypes.Length; j++)
 		{
-			iLGenerator.Emit(OpCodes.Ldloc_0);
-			iLGenerator.Emit(OpCodes.Ldc_I4, j);
-			iLGenerator.Emit(OpCodes.Ldarg, j + 1);
-			if (array[j].IsByRef)
+			generator.Emit(OpCodes.Ldloc_0);
+			generator.Emit(OpCodes.Ldc_I4, j);
+			generator.Emit(OpCodes.Ldarg, j + 1);
+			if (paramTypes[j].IsByRef)
 			{
-				if (array[j].GetElementType().IsValueType)
+				if (paramTypes[j].GetElementType().IsValueType)
 				{
-					iLGenerator.Emit(OpCodes.Ldobj, array[j].GetElementType());
-					iLGenerator.Emit(OpCodes.Box, array[j].GetElementType());
+					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType());
+					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType());
 				}
 				else
 				{
-					iLGenerator.Emit(OpCodes.Ldind_Ref);
+					generator.Emit(OpCodes.Ldind_Ref);
 				}
 			}
-			else if (array[j].IsValueType)
+			else if (paramTypes[j].IsValueType)
 			{
-				iLGenerator.Emit(OpCodes.Box, array[j]);
+				generator.Emit(OpCodes.Box, paramTypes[j]);
 			}
-			iLGenerator.Emit(OpCodes.Stelem_Ref);
-			if (array[j].IsByRef)
+			generator.Emit(OpCodes.Stelem_Ref);
+			if (paramTypes[j].IsByRef)
 			{
-				iLGenerator.Emit(OpCodes.Ldloc_2);
-				iLGenerator.Emit(OpCodes.Ldc_I4, num4);
-				iLGenerator.Emit(OpCodes.Ldc_I4, j);
-				iLGenerator.Emit(OpCodes.Stelem_I4);
-				array2[num4] = j;
-				num4++;
+				generator.Emit(OpCodes.Ldloc_2);
+				generator.Emit(OpCodes.Ldc_I4, refArgIndex);
+				generator.Emit(OpCodes.Ldc_I4, j);
+				generator.Emit(OpCodes.Stelem_I4);
+				refArgs[refArgIndex] = j;
+				refArgIndex++;
 			}
 			if (!parameters[j].IsIn && parameters[j].IsOut)
 			{
 				continue;
 			}
-			iLGenerator.Emit(OpCodes.Ldloc_1);
-			iLGenerator.Emit(OpCodes.Ldc_I4, num3);
-			iLGenerator.Emit(OpCodes.Ldarg, j + 1);
-			if (array[j].IsByRef)
+			generator.Emit(OpCodes.Ldloc_1);
+			generator.Emit(OpCodes.Ldc_I4, argIndex);
+			generator.Emit(OpCodes.Ldarg, j + 1);
+			if (paramTypes[j].IsByRef)
 			{
-				if (array[j].GetElementType().IsValueType)
+				if (paramTypes[j].GetElementType().IsValueType)
 				{
-					iLGenerator.Emit(OpCodes.Ldobj, array[j].GetElementType());
-					iLGenerator.Emit(OpCodes.Box, array[j].GetElementType());
+					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType());
+					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType());
 				}
 				else
 				{
-					iLGenerator.Emit(OpCodes.Ldind_Ref);
+					generator.Emit(OpCodes.Ldind_Ref);
 				}
 			}
-			else if (array[j].IsValueType)
+			else if (paramTypes[j].IsValueType)
 			{
-				iLGenerator.Emit(OpCodes.Box, array[j]);
+				generator.Emit(OpCodes.Box, paramTypes[j]);
 			}
-			iLGenerator.Emit(OpCodes.Stelem_Ref);
-			num3++;
+			generator.Emit(OpCodes.Stelem_Ref);
+			argIndex++;
 		}
-		iLGenerator.Emit(OpCodes.Ldarg_0);
-		iLGenerator.Emit(OpCodes.Ldloc_0);
-		iLGenerator.Emit(OpCodes.Ldloc_1);
-		iLGenerator.Emit(OpCodes.Ldloc_2);
+		generator.Emit(OpCodes.Ldarg_0);
+		generator.Emit(OpCodes.Ldloc_0);
+		generator.Emit(OpCodes.Ldloc_1);
+		generator.Emit(OpCodes.Ldloc_2);
 		MethodInfo method2 = typeof(LuaDelegate).GetMethod("CallFunction");
-		iLGenerator.Emit(OpCodes.Call, method2);
+		generator.Emit(OpCodes.Call, method2);
 		if (returnType == typeof(void))
 		{
-			iLGenerator.Emit(OpCodes.Pop);
-			iLGenerator.Emit(OpCodes.Ldnull);
+			generator.Emit(OpCodes.Pop);
+			generator.Emit(OpCodes.Ldnull);
 		}
 		else if (returnType.IsValueType)
 		{
-			iLGenerator.Emit(OpCodes.Unbox, returnType);
-			iLGenerator.Emit(OpCodes.Ldobj, returnType);
+			generator.Emit(OpCodes.Unbox, returnType);
+			generator.Emit(OpCodes.Ldobj, returnType);
 		}
 		else
 		{
-			iLGenerator.Emit(OpCodes.Castclass, returnType);
+			generator.Emit(OpCodes.Castclass, returnType);
 		}
-		iLGenerator.Emit(OpCodes.Stloc_3);
-		for (int k = 0; k < array2.Length; k++)
+		generator.Emit(OpCodes.Stloc_3);
+		for (int k = 0; k < refArgs.Length; k++)
 		{
-			iLGenerator.Emit(OpCodes.Ldarg, array2[k] + 1);
-			iLGenerator.Emit(OpCodes.Ldloc_0);
-			iLGenerator.Emit(OpCodes.Ldc_I4, array2[k]);
-			iLGenerator.Emit(OpCodes.Ldelem_Ref);
-			if (array[array2[k]].GetElementType().IsValueType)
+			generator.Emit(OpCodes.Ldarg, refArgs[k] + 1);
+			generator.Emit(OpCodes.Ldloc_0);
+			generator.Emit(OpCodes.Ldc_I4, refArgs[k]);
+			generator.Emit(OpCodes.Ldelem_Ref);
+			if (paramTypes[refArgs[k]].GetElementType().IsValueType)
 			{
-				iLGenerator.Emit(OpCodes.Unbox, array[array2[k]].GetElementType());
-				iLGenerator.Emit(OpCodes.Ldobj, array[array2[k]].GetElementType());
-				iLGenerator.Emit(OpCodes.Stobj, array[array2[k]].GetElementType());
+				generator.Emit(OpCodes.Unbox, paramTypes[refArgs[k]].GetElementType());
+				generator.Emit(OpCodes.Ldobj, paramTypes[refArgs[k]].GetElementType());
+				generator.Emit(OpCodes.Stobj, paramTypes[refArgs[k]].GetElementType());
 			}
 			else
 			{
-				iLGenerator.Emit(OpCodes.Castclass, array[array2[k]].GetElementType());
-				iLGenerator.Emit(OpCodes.Stind_Ref);
+				generator.Emit(OpCodes.Castclass, paramTypes[refArgs[k]].GetElementType());
+				generator.Emit(OpCodes.Stind_Ref);
 			}
 		}
 		if (!(returnType == typeof(void)))
 		{
-			iLGenerator.Emit(OpCodes.Ldloc_3);
+			generator.Emit(OpCodes.Ldloc_3);
 		}
-		iLGenerator.Emit(OpCodes.Ret);
+		generator.Emit(OpCodes.Ret);
 		return typeBuilder.CreateType();
 	}
 }
