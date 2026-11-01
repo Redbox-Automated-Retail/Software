@@ -7,6 +7,7 @@ using Redbox.HAL.Common.GUI.Functions;
 using Redbox.HAL.Component.Model;
 using Redbox.HAL.Core;
 using Redbox.HAL.Management.Console.Properties;
+using Range = Redbox.HAL.Core.Range;
 
 namespace Redbox.HAL.Management.Console;
 

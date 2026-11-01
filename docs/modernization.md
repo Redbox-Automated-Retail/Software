@@ -518,9 +518,10 @@ Notes from HAL on .NET 10 (Sandbox, 2026-10-31):
 
 - **What runs where.** `halservice\bin` holds one framework: the .NET 10 release replaces `halsvc-win32`,
   `HAL.PackageInstaller`, `CameraTuner`, `Redbox.HAL.Service.Framework`, the libraries and
-  `camera.plugins\Redbox.HAL.DirectShow.Frame.Plugin.dll`. `halmgmtc` (its own copies of the HAL libraries, log4net
-  1.2.9) and the two legacy camera plug-ins (`DirectShow`, `Vidcap`; not configured on the image's kiosk) are still
-  net48 only and are left out of a .NET 10 release. Follow-up: `halmgmtc` on .NET 10.
+  `camera.plugins\Redbox.HAL.DirectShow.Frame.Plugin.dll`, and `halmgmtc` (its own copies of the HAL libraries; it
+  has to move with the folder, since the .NET 10 release replaces `log4net.dll`, which the 4.8 `halmgmtc` binds to
+  as 1.2.x). The two legacy camera plug-ins (`DirectShow`, `Vidcap`; not configured on the image's kiosk) are still
+  net48 only and are left out of a .NET 10 release.
 - **Job contexts.** The 4.8 HAL saves every job in `data\contexts\<id>\ctx.data` (and cooperative jobs' compiled
   programs) with the BinaryFormatter. The .NET 10 HAL writes `ctx.json` (the same `GetObjectData` entries) and keeps
   a program as its script source (`<program>.hs`, compiled again on load). On its first start it reads each

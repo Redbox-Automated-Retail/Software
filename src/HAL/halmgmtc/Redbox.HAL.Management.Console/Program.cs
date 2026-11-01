@@ -105,6 +105,9 @@ public class Program : IDisposable, ILogger
 	[STAThread]
 	public static void Main()
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		using Program program = new Program();
 		program.m_instanceLock = new NamedLock(m_applicationGuid.ToString(), LockScope.Local);
 		if (!program.m_instanceLock.IsOwned)

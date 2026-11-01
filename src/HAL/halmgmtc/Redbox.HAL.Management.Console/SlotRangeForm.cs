@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Redbox.HAL.Client;
 using Redbox.HAL.Common.GUI.Functions;
 using Redbox.HAL.Core;
+using Range = Redbox.HAL.Core.Range;
 
 namespace Redbox.HAL.Management.Console;
 

@@ -3,7 +3,7 @@
     <AssemblyName>halmgmtc</AssemblyName>
     <RootNamespace>SevenZip</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -11,12 +11,17 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>ICSharpCode.SharpZipLib;PowerCollections</ILRepackAssemblies>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- Shipped self-contained next to the .NET 10 HAL service, like it. -->
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="Redbox.HAL.Common.GUI.Functions.Properties\Resources.resx" LogicalName="Redbox.HAL.Common.GUI.Functions.Properties.Resources.resources" />
     <EmbeddedResource Update="Redbox.HAL.Management.Console.Properties\Resources.resx" LogicalName="Redbox.HAL.Management.Console.Properties.Resources.resources" />
     <EmbeddedResource Update="Redbox.HAL.Management.Console\Form1.resx" LogicalName="Redbox.HAL.Management.Console.Form1.resources" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -31,8 +36,18 @@
     <Reference Include="PowerCollections">
       <HintPath>..\..\..\lib\PowerCollections\PowerCollections.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="log4net">
       <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.14" />
+    <PackageReference Include="System.Management" Version="10.0.14" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.14" />
+    <!-- NetFrameworkCompatibility.ImportExeConfig: halmgmtc.exe.config stays the file kiosks edit. -->
+    <Compile Include="..\..\Common\Redbox.Core\NetFrameworkCompatibility.cs" Link="Compat\NetFrameworkCompatibility.cs" />
   </ItemGroup>
 </Project>
