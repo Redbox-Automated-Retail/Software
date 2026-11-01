@@ -40,7 +40,7 @@ public class CommandRepository
 #if !NETFRAMEWORK
 			// A self-contained .NET service has the whole runtime next to it, and an .exe's code is in <name>.dll; .NET
 			// Framework scanned neither (only libraries are .dll there).
-			if (IsRuntimeAssembly(Path.GetFileName(item)) || File.Exists(Path.ChangeExtension(item, ".runtimeconfig.json")))
+			if (IsRuntimeAssembly(Path.GetFileName(item)) || File.Exists(Path.ChangeExtension(item, ".runtimeconfig.json")) || !IsNetAssembly(item))
 			{
 				continue;
 			}
@@ -157,6 +157,23 @@ public class CommandRepository
 	}
 
 #if !NETFRAMEWORK
+	// Whether a file is a .NET assembly, from its PE header alone. The command scan calls this before Assembly.LoadFrom: on .NET,
+	// LoadFrom maps a file that is not IL-only with the system loader before it finds there is no .NET metadata, which runs a
+	// native DLL's start-up code (one of the ClearImage DLLs in halservice\bin crashes there). .NET Framework never ran it.
+	private static bool IsNetAssembly(string path)
+	{
+		try
+		{
+			using FileStream stream = File.OpenRead(path);
+			using System.Reflection.PortableExecutable.PEReader reader = new System.Reflection.PortableExecutable.PEReader(stream);
+			return reader.HasMetadata;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
 	private static bool IsRuntimeAssembly(string fileName)
 	{
 		string[] prefixes = new string[6] { "System.", "Microsoft.", "mscorlib.", "netstandard.", "WindowsBase.", "api-ms-" };

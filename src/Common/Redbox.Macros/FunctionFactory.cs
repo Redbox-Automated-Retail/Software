@@ -46,6 +46,12 @@ public sealed class FunctionFactory
 		list.AddRange(directoryInfo.GetFiles("*.exe"));
 		list.ForEach(delegate(FileInfo f)
 		{
+#if !NETFRAMEWORK
+			if (!NetFrameworkCompatibility.IsNetAssembly(f.FullName))
+			{
+				return;
+			}
+#endif
 			try
 			{
 				ScanAssembly(f.FullName);

@@ -37,6 +37,12 @@ public class CommandRepository
 		list2.AddRange(Directory.GetFiles(directoryName, "*.dll"));
 		foreach (string item in list2)
 		{
+#if !NETFRAMEWORK
+			if (!Redbox.Core.NetFrameworkCompatibility.IsNetAssembly(item))
+			{
+				continue;
+			}
+#endif
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(item);

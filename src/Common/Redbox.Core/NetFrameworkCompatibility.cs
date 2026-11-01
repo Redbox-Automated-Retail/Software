@@ -24,6 +24,23 @@ public static class NetFrameworkCompatibility
 	// the same (hashes, encrypted values) uses this instead.
 	public static Encoding AnsiCodePage => Encoding.GetEncoding(0);
 
+	// Whether a file is a .NET assembly, from its PE header alone. Folder scans call this before Assembly.LoadFrom: on .NET,
+	// LoadFrom maps a file that is not IL-only with the system loader before it finds there is no .NET metadata, which runs a
+	// native DLL's start-up code (one of the ClearImage DLLs in halservice\bin crashes there). .NET Framework never ran it.
+	public static bool IsNetAssembly(string path)
+	{
+		try
+		{
+			using FileStream stream = File.OpenRead(path);
+			using System.Reflection.PortableExecutable.PEReader reader = new System.Reflection.PortableExecutable.PEReader(stream);
+			return reader.HasMetadata;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
 	// .NET 10 reads <app>.dll.config, not <app>.exe.config, and rejects sections it has no declaration for (machine.config
 	// declared system.serviceModel, startup, runtime, ... on .NET Framework). Kiosks, the update store and rb-reprovision
 	// keep editing <app>.exe.config, so copy it to <app>.dll.config with only what .NET 10 can read: appSettings,

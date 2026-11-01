@@ -210,20 +210,21 @@ internal sealed class PackageInstaller : IDisposable
 	}
 
 #if !NETFRAMEWORK
-	// The runtime's native DLLs (coreclr.dll, e_sqlite3.dll, ...) are not assemblies.
+	// The runtime's native DLLs (coreclr.dll, e_sqlite3.dll, ...) are not assemblies; read from the PE header, so that no
+	// native DLL is loaded (see CommandRepository.IsNetAssembly in Redbox.HAL.IPC.Framework).
 	private static bool IsAssembly(string path)
 	{
 		try
 		{
-			AssemblyName.GetAssemblyName(path);
-			return true;
+			using FileStream stream = File.OpenRead(path);
+			using System.Reflection.PortableExecutable.PEReader reader = new System.Reflection.PortableExecutable.PEReader(stream);
+			return reader.HasMetadata;
 		}
-		catch (BadImageFormatException)
+		catch (Exception)
 		{
 			return false;
 		}
 	}
-
 #endif
 	private void RegisterHandlers()
 	{

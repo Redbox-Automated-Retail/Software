@@ -90,6 +90,12 @@ public class CommandRepository
 			{
 				continue;
 			}
+#if !NETFRAMEWORK
+			if (!NetFrameworkCompatibility.IsNetAssembly(item))
+			{
+				continue;
+			}
+#endif
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(item);
