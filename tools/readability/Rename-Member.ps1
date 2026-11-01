@@ -26,7 +26,11 @@ foreach ($v in @($Map.Values | Sort-Object -Unique)) {
 }
 if ($Map.Count -eq 0) { "nothing to rename in $($Method.Trim())"; return }
 $rx = '\b(' + ((@($Map.Keys) | Sort-Object Length -Descending | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')\b'
+# A rename must never change a string (whole-word replace would also hit words inside literals).
+$literals = { param($s) ([regex]::Matches(([regex]::Replace($s, '\$@?"(?:[^"\\]|\\.)*"', { param($i) [regex]::Replace($i.Value, '\{[^{}]*\}', '{}') })), '@?"(?:[^"\\]|\\.)*"') | ForEach-Object Value) -join [char]1 }
+$before = & $literals $body
 $body = [regex]::Replace($body, $rx, { param($m) $Map[$m.Value] })
+if ((& $literals $body) -ne $before) { throw "a string literal would change in $Method; rename by hand" }
 $text = $text.Substring(0, $start) + $body + $text.Substring($end)
 [IO.File]::WriteAllText($full, $text.Replace("`n", $nl), (New-Object Text.UTF8Encoding($bom)))
 "renamed $(@($Map.Keys).Count) in $($Method.Trim())"
