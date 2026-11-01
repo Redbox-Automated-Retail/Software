@@ -198,82 +198,77 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 		Pattern.Add(new ESPNode(deck.Number, slot, idx));
 	}
 
+	// The order in which empty slots are searched: quadrant by quadrant across decks 3, 2, 4, 1 and 5, then the remaining
+	// decks. Non-VMZ: six quadrants (12 slots on a sparse deck, else 15) on decks 1-5, then all of decks 6 and 7, and deck 8
+	// unless it is the QLM deck. VMZ: quadrants 2-6 on decks 1-5, slots 16 and up of decks 6, 8 and 7, then the first
+	// quadrant (slots 15 down to 1) of every deck.
 	private void ComputeList()
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		int[] array = new int[5] { 3, 2, 4, 1, 5 };
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		int[] deckOrder = new int[5] { 3, 2, 4, 1, 5 };
 		int idx = 0;
 		IDeck deck = null;
 		if (!ControllerConfiguration.Instance.IsVMZMachine)
 		{
-			for (int i = 0; i < 6; i++)
+			for (int quadrant = 0; quadrant < 6; quadrant++)
 			{
-				int[] array2 = array;
-				foreach (int number in array2)
+				foreach (int deckNumber in deckOrder)
 				{
-					deck = service.GetByNumber(number);
-					int num = (deck.IsSparse ? 12 : 15);
-					int num2 = i * num + 1;
-					for (int k = num2; k <= num2 + num - 1; k++)
+					deck = decksService.GetByNumber(deckNumber);
+					int slotsPerQuadrant = (deck.IsSparse ? 12 : 15);
+					int firstSlot = quadrant * slotsPerQuadrant + 1;
+					for (int slot = firstSlot; slot <= firstSlot + slotsPerQuadrant - 1; slot++)
 					{
-						AddLocation(deck, k, ref idx);
+						AddLocation(deck, slot, ref idx);
 					}
 				}
 			}
-			deck = service.GetByNumber(6);
-			for (int l = 1; l <= deck.NumberOfSlots; l++)
+			deck = decksService.GetByNumber(6);
+			for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
 			{
-				AddLocation(deck, l, ref idx);
+				AddLocation(deck, slot, ref idx);
 			}
-			deck = service.GetByNumber(7);
-			for (int m = 1; m <= deck.NumberOfSlots; m++)
+			deck = decksService.GetByNumber(7);
+			for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
 			{
-				AddLocation(deck, m, ref idx);
+				AddLocation(deck, slot, ref idx);
 			}
-			deck = service.GetByNumber(8);
+			deck = decksService.GetByNumber(8);
 			if (!deck.IsQlm)
 			{
-				for (int n = 1; n <= deck.NumberOfSlots; n++)
+				for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
 				{
-					AddLocation(deck, n, ref idx);
+					AddLocation(deck, slot, ref idx);
 				}
 			}
 			return;
 		}
-		for (int num3 = 1; num3 < 6; num3++)
+		for (int quadrant = 1; quadrant < 6; quadrant++)
 		{
-			int[] array2 = array;
-			foreach (int number2 in array2)
+			foreach (int deckNumber in deckOrder)
 			{
-				deck = service.GetByNumber(number2);
-				int num4 = num3 * deck.SlotsPerQuadrant + 1;
-				for (int num5 = num4; num5 <= num4 + deck.SlotsPerQuadrant - 1; num5++)
+				deck = decksService.GetByNumber(deckNumber);
+				int firstSlot = quadrant * deck.SlotsPerQuadrant + 1;
+				for (int slot = firstSlot; slot <= firstSlot + deck.SlotsPerQuadrant - 1; slot++)
 				{
-					AddLocation(deck, num5, ref idx);
+					AddLocation(deck, slot, ref idx);
 				}
 			}
 		}
-		deck = service.GetByNumber(6);
-		for (int num6 = 16; num6 <= deck.NumberOfSlots; num6++)
+		foreach (int deckNumber in new int[3] { 6, 8, 7 })
 		{
-			AddLocation(deck, num6, ref idx);
-		}
-		deck = service.GetByNumber(8);
-		for (int num7 = 16; num7 <= deck.NumberOfSlots; num7++)
-		{
-			AddLocation(deck, num7, ref idx);
-		}
-		deck = service.GetByNumber(7);
-		for (int num8 = 16; num8 <= deck.NumberOfSlots; num8++)
-		{
-			AddLocation(deck, num8, ref idx);
-		}
-		for (int num9 = 1; num9 <= 8; num9++)
-		{
-			deck = service.GetByNumber(num9);
-			for (int num10 = 15; num10 >= 1; num10--)
+			deck = decksService.GetByNumber(deckNumber);
+			for (int slot = 16; slot <= deck.NumberOfSlots; slot++)
 			{
-				AddLocation(deck, num10, ref idx);
+				AddLocation(deck, slot, ref idx);
+			}
+		}
+		for (int deckNumber = 1; deckNumber <= 8; deckNumber++)
+		{
+			deck = decksService.GetByNumber(deckNumber);
+			for (int slot = 15; slot >= 1; slot--)
+			{
+				AddLocation(deck, slot, ref idx);
 			}
 		}
 	}

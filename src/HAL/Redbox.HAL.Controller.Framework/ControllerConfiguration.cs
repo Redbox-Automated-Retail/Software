@@ -830,6 +830,7 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 		Manager.UpdateFromPropertyXml(propertyNode);
 	}
 
+	// Imports the machine configuration from the legacy GAMP files (C:\gamp\SystemData.dat and Slotdata.dat).
 	protected override void ImportInner(ErrorList errors)
 	{
 		GampHelper gampHelper = new GampHelper();
@@ -845,98 +846,98 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 			errors.Add(Error.NewError("H323", "Configuration mismatch error.", $"The machine is configured for {registrySlotCount} slots; the gamp data says there are {platterSlots} slots."));
 			return;
 		}
-		int? num = null;
-		int? num2 = null;
-		List<int> list = new List<int>();
-		List<bool> list2 = new List<bool>();
-		IDictionary<string, int> dictionary = gampHelper.ReadLegacySystemDataFile();
-		if (dictionary.Count == 0)
+		int? qlmDeckNumber = null;
+		int? sellThruOffset = null;
+		List<int> platterMaxSlots = new List<int>();
+		List<bool> deckSellStatus = new List<bool>();
+		IDictionary<string, int> systemData = gampHelper.ReadLegacySystemDataFile();
+		if (systemData.Count == 0)
 		{
 			errors.Add(Error.NewError("H321", "The SystemData.dat file was not found or had no properties.", "Check the C:\\gamp folder to ensure the file exists."));
 			return;
 		}
-		if (dictionary.ContainsKey("PushTime"))
+		if (systemData.ContainsKey("PushTime"))
 		{
-			PushTime = dictionary["PushTime"];
+			PushTime = systemData["PushTime"];
 		}
-		if (dictionary.ContainsKey("RollInExtendTime"))
+		if (systemData.ContainsKey("RollInExtendTime"))
 		{
-			RollInExtendTime = dictionary["RollInExtendTime"];
+			RollInExtendTime = systemData["RollInExtendTime"];
 		}
-		if (dictionary.ContainsKey("TestExtendTime"))
+		if (systemData.ContainsKey("TestExtendTime"))
 		{
-			TestExtendTime = dictionary["TestExtendTime"];
+			TestExtendTime = systemData["TestExtendTime"];
 		}
-		if (dictionary.ContainsKey("PickExtendTime"))
+		if (systemData.ContainsKey("PickExtendTime"))
 		{
-			QlmExtendTime = dictionary["PickExtendTime"];
+			QlmExtendTime = systemData["PickExtendTime"];
 		}
-		if (dictionary.ContainsKey("QLMaproch"))
+		if (systemData.ContainsKey("QLMaproch"))
 		{
-			QlmApproachOffset = dictionary["QLMaproch"];
+			QlmApproachOffset = systemData["QLMaproch"];
 		}
-		if (dictionary.ContainsKey("QLMZoffset"))
+		if (systemData.ContainsKey("QLMZoffset"))
 		{
-			QlmYOffset = dictionary["QLMZoffset"];
+			QlmYOffset = systemData["QLMZoffset"];
 		}
-		if (dictionary.ContainsKey("ReceivePositionOffSet"))
+		if (systemData.ContainsKey("ReceivePositionOffSet"))
 		{
-			VendPositionReceiveOffset = dictionary["ReceivePositionOffSet"];
+			VendPositionReceiveOffset = systemData["ReceivePositionOffSet"];
 		}
-		if (dictionary.ContainsKey("ArcusComPort"))
+		if (systemData.ContainsKey("ArcusComPort"))
 		{
-			MotionControllerPortName = string.Format("COM{0}", dictionary["ArcusComPort"]);
+			MotionControllerPortName = string.Format("COM{0}", systemData["ArcusComPort"]);
 		}
-		if (dictionary.ContainsKey("ControlComPort"))
+		if (systemData.ContainsKey("ControlComPort"))
 		{
-			ControllerPortName = string.Format("COM{0}", dictionary["ControlComPort"]);
+			ControllerPortName = string.Format("COM{0}", systemData["ControlComPort"]);
 		}
-		VendYPosition = (dictionary.ContainsKey("VendPosition") ? dictionary["VendPosition"] : (-86200));
-		if (dictionary.ContainsKey("ZHomeDropBack"))
+		VendYPosition = (systemData.ContainsKey("VendPosition") ? systemData["VendPosition"] : (-86200));
+		if (systemData.ContainsKey("ZHomeDropBack"))
 		{
-			HomeYDropBack = -dictionary["ZHomeDropBack"];
+			HomeYDropBack = -systemData["ZHomeDropBack"];
 		}
-		NumberOfPulls = (dictionary.ContainsKey("NumberOfPulls") ? dictionary["NumberOfPulls"] : 2);
-		if (dictionary.ContainsKey("SellThrughOffSet"))
+		NumberOfPulls = (systemData.ContainsKey("NumberOfPulls") ? systemData["NumberOfPulls"] : 2);
+		if (systemData.ContainsKey("SellThrughOffSet"))
 		{
-			num2 = dictionary["SellThrughOffSet"];
+			sellThruOffset = systemData["SellThrughOffSet"];
 		}
-		if (dictionary.ContainsKey("QLMDeckNumber"))
+		if (systemData.ContainsKey("QLMDeckNumber"))
 		{
-			num = dictionary["QLMDeckNumber"];
+			qlmDeckNumber = systemData["QLMDeckNumber"];
 		}
-		GearX = new MotorGear(dictionary.ContainsKey("RGearRatio") ? dictionary["RGearRatio"] : 10, dictionary.ContainsKey("RPulseRatio") ? dictionary["RPulseRatio"] : 398, dictionary.ContainsKey("REncoderRatio") ? dictionary["REncoderRatio"] : 114, dictionary.ContainsKey("RStepRes") ? dictionary["RStepRes"] : 8);
-		GearY = new MotorGear(dictionary.ContainsKey("ZGearRatio") ? dictionary["ZGearRatio"] : 20, 0, 0, dictionary.ContainsKey("ZStepRes") ? dictionary["ZStepRes"] : 4);
-		InitAxisXSpeed = new MotorSpeed(dictionary.ContainsKey("InitAxis1LS") ? dictionary["InitAxis1LS"] : 600, dictionary.ContainsKey("InitAxis1HS") ? dictionary["InitAxis1HS"] : 3000, 300, GearX);
-		InitAxisYSpeed = new MotorSpeed(dictionary.ContainsKey("InitAxis2LS") ? dictionary["InitAxis2LS"] : 800, dictionary.ContainsKey("InitAxis2HS") ? dictionary["InitAxis2HS"] : 2400, 300, GearY);
-		MoveAxisYSpeed = new MotorSpeed(500, dictionary.ContainsKey("MoveZHS") ? dictionary["MoveZHS"] : 15000, dictionary.ContainsKey("MoveZAcc") ? dictionary["MoveZAcc"] : 500, GearY);
-		MoveAxisXSpeed = new MotorSpeed(500, dictionary.ContainsKey("MoveRHS") ? dictionary["MoveRHS"] : 15000, dictionary.ContainsKey("MoveRAcc") ? dictionary["MoveRAcc"] : 500, GearY);
-		MoveAxisXYSpeed = new MotorSpeed(500, dictionary.ContainsKey("MoveZRHS") ? dictionary["MoveZRHS"] : 15000, dictionary.ContainsKey("MoveZRAcc") ? dictionary["MoveZRAcc"] : 500, GearY);
-		int num3 = 1;
+		GearX = new MotorGear(systemData.ContainsKey("RGearRatio") ? systemData["RGearRatio"] : 10, systemData.ContainsKey("RPulseRatio") ? systemData["RPulseRatio"] : 398, systemData.ContainsKey("REncoderRatio") ? systemData["REncoderRatio"] : 114, systemData.ContainsKey("RStepRes") ? systemData["RStepRes"] : 8);
+		GearY = new MotorGear(systemData.ContainsKey("ZGearRatio") ? systemData["ZGearRatio"] : 20, 0, 0, systemData.ContainsKey("ZStepRes") ? systemData["ZStepRes"] : 4);
+		InitAxisXSpeed = new MotorSpeed(systemData.ContainsKey("InitAxis1LS") ? systemData["InitAxis1LS"] : 600, systemData.ContainsKey("InitAxis1HS") ? systemData["InitAxis1HS"] : 3000, 300, GearX);
+		InitAxisYSpeed = new MotorSpeed(systemData.ContainsKey("InitAxis2LS") ? systemData["InitAxis2LS"] : 800, systemData.ContainsKey("InitAxis2HS") ? systemData["InitAxis2HS"] : 2400, 300, GearY);
+		MoveAxisYSpeed = new MotorSpeed(500, systemData.ContainsKey("MoveZHS") ? systemData["MoveZHS"] : 15000, systemData.ContainsKey("MoveZAcc") ? systemData["MoveZAcc"] : 500, GearY);
+		MoveAxisXSpeed = new MotorSpeed(500, systemData.ContainsKey("MoveRHS") ? systemData["MoveRHS"] : 15000, systemData.ContainsKey("MoveRAcc") ? systemData["MoveRAcc"] : 500, GearY);
+		MoveAxisXYSpeed = new MotorSpeed(500, systemData.ContainsKey("MoveZRHS") ? systemData["MoveZRHS"] : 15000, systemData.ContainsKey("MoveZRAcc") ? systemData["MoveZRAcc"] : 500, GearY);
+		int deckNumber = 1;
 		while (true)
 		{
-			string key = $"PlatterMaxSlots{num3++}";
-			if (!dictionary.ContainsKey(key))
+			string key = $"PlatterMaxSlots{deckNumber++}";
+			if (!systemData.ContainsKey(key))
 			{
 				break;
 			}
-			int item = (dictionary.ContainsKey(key) ? dictionary[key] : 90);
-			list.Add(item);
+			int item = (systemData.ContainsKey(key) ? systemData[key] : 90);
+			platterMaxSlots.Add(item);
 		}
-		num3 = 1;
+		deckNumber = 1;
 		while (true)
 		{
-			string key2 = $"DeckSellStat{num3++}";
-			if (!dictionary.ContainsKey(key2))
+			string key2 = $"DeckSellStat{deckNumber++}";
+			if (!systemData.ContainsKey(key2))
 			{
 				break;
 			}
-			list2.Add(dictionary[key2] == 1);
+			deckSellStatus.Add(systemData[key2] == 1);
 		}
-		List<List<int>> list3 = gampHelper.ReadLegacySlotDataFile(removeZeroes: false);
+		List<List<int>> slotData = gampHelper.ReadLegacySlotDataFile(removeZeroes: false);
 		Manager.Clear();
-		num3 = 1;
-		Range[] array = new Range[5]
+		deckNumber = 1;
+		Range[] qlmQuadrantRanges = new Range[5]
 		{
 			new Range(1, 1),
 			new Range(1, 19),
@@ -944,29 +945,29 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 			new Range(41, 61),
 			new Range(62, 80)
 		};
-		foreach (List<int> item2 in list3)
+		foreach (List<int> deckSlots in slotData)
 		{
-			int num4 = ((num3 == num) ? 80 : list[num3 - 1]);
-			List<Quadrant> list4 = new List<Quadrant>();
-			for (int i = 1; i < item2.Count && item2[i] != 0; i++)
+			int numberOfSlots = ((deckNumber == qlmDeckNumber) ? 80 : platterMaxSlots[deckNumber - 1]);
+			List<Quadrant> quadrants = new List<Quadrant>();
+			for (int i = 1; i < deckSlots.Count && deckSlots[i] != 0; i++)
 			{
-				if (num.HasValue && num3 == num.Value && i < array.Length)
+				if (qlmDeckNumber.HasValue && deckNumber == qlmDeckNumber.Value && i < qlmQuadrantRanges.Length)
 				{
-					list4.Add(new Quadrant(item2[i], array[i]));
+					quadrants.Add(new Quadrant(deckSlots[i], qlmQuadrantRanges[i]));
 				}
 				else
 				{
-					list4.Add(new Quadrant(item2[i]));
+					quadrants.Add(new Quadrant(deckSlots[i]));
 				}
 			}
-			decimal num5 = 166.6667m;
-			if (num.HasValue && num3 == num.Value)
+			decimal slotWidth = 166.6667m;
+			if (qlmDeckNumber.HasValue && deckNumber == qlmDeckNumber.Value)
 			{
-				num5 = 177.7m;
+				slotWidth = 177.7m;
 			}
-			bool isQlm = num.HasValue && num3 == num.Value;
-			Manager.Add(new Deck(num3, item2[0], isQlm, num4, (num4 == 72) ? 173.3m : num5, (num4 == 72) ? new int?(6) : ((int?)null), (num4 == 72) ? num2 : ((int?)null), list4.ToArray()));
-			num3++;
+			bool isQlm = qlmDeckNumber.HasValue && deckNumber == qlmDeckNumber.Value;
+			Manager.Add(new Deck(deckNumber, deckSlots[0], isQlm, numberOfSlots, (numberOfSlots == 72) ? 173.3m : slotWidth, (numberOfSlots == 72) ? new int?(6) : ((int?)null), (numberOfSlots == 72) ? sellThruOffset : ((int?)null), quadrants.ToArray()));
+			deckNumber++;
 		}
 	}
 
