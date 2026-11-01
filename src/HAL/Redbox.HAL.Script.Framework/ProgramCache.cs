@@ -47,10 +47,10 @@ internal sealed class ProgramCache : IDisposable
 		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
 		using (ExecutionTimer executionTimer = new ExecutionTimer())
 		{
-			string text = service.RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
+			string scriptAssembly = service.RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
 			try
 			{
-				Assembly assembly = Assembly.LoadFrom(text);
+				Assembly assembly = Assembly.LoadFrom(scriptAssembly);
 				RegisterNatives(assembly.GetTypes());
 			}
 			catch (BadImageFormatException)
@@ -58,76 +58,74 @@ internal sealed class ProgramCache : IDisposable
 			}
 			catch (Exception e)
 			{
-				LogHelper.Instance.Log($"Unable to load assembly '{text}' to scan for commands.", e);
+				LogHelper.Instance.Log($"Unable to load assembly '{scriptAssembly}' to scan for commands.", e);
 			}
 			executionTimer.Stop();
 			LogHelper.Instance.Log($"[Program Cache] Time to scan for {JobToOperand.Keys.Count} native jobs: {executionTimer.Elapsed}");
 		}
-		foreach (string key in JobToOperand.Keys)
+		foreach (string jobName in JobToOperand.Keys)
 		{
-			string text2 = key;
-			string programSource = $"NATIVEJOB {JobToOperand[key]}";
-			LogHelper.Instance.Log(LogEntryType.Debug, "Compile native program {0}", text2);
-			ExecutionResult executionResult = CompileStringSource(text2, programSource);
+			string programSource = $"NATIVEJOB {JobToOperand[jobName]}";
+			LogHelper.Instance.Log(LogEntryType.Debug, "Compile native program {0}", jobName);
+			ExecutionResult executionResult = CompileStringSource(jobName, programSource);
 			errorList.AddRange(executionResult.Errors);
 			if (!executionResult.Errors.ContainsError())
 			{
 				continue;
 			}
-			LogHelper.Instance.Log($"There were errors compiling native script {text2}", LogEntryType.Error);
+			LogHelper.Instance.Log($"There were errors compiling native script {jobName}", LogEntryType.Error);
 			foreach (Error error in executionResult.Errors)
 			{
 				LogHelper.Instance.Log(error.ToString(), LogEntryType.Error);
 			}
 		}
-		using ExecutionTimer executionTimer2 = new ExecutionTimer();
+		using ExecutionTimer compileTimer = new ExecutionTimer();
 		string[] files = Directory.GetFiles(scriptsDirectory, "*.hs");
-		string[] array = files;
-		foreach (string text3 in array)
+		foreach (string file in files)
 		{
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(text3);
+			string programName = Path.GetFileNameWithoutExtension(file);
 			if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
 			{
-				LogHelper.Instance.Log($"Compile program {fileNameWithoutExtension} from file {text3}", LogEntryType.Info);
+				LogHelper.Instance.Log($"Compile program {programName} from file {file}", LogEntryType.Info);
 			}
-			using MemoryStream stream = new MemoryStream(ServiceLocator.Instance.GetService<IRuntimeService>().ReadToBuffer(text3));
-			ExecutionResult executionResult2 = CompileInner(stream, fileNameWithoutExtension);
-			errorList.AddRange(executionResult2.Errors);
-			if (!executionResult2.Errors.ContainsError())
+			using MemoryStream stream = new MemoryStream(ServiceLocator.Instance.GetService<IRuntimeService>().ReadToBuffer(file));
+			ExecutionResult compileResult = CompileInner(stream, programName);
+			errorList.AddRange(compileResult.Errors);
+			if (!compileResult.Errors.ContainsError())
 			{
 				continue;
 			}
-			LogHelper.Instance.Log($"There were errors compiling script {fileNameWithoutExtension}", LogEntryType.Error);
-			foreach (Error error2 in executionResult2.Errors)
+			LogHelper.Instance.Log($"There were errors compiling script {programName}", LogEntryType.Error);
+			foreach (Error error in compileResult.Errors)
 			{
-				LogHelper.Instance.Log(error2.ToString(), LogEntryType.Error);
+				LogHelper.Instance.Log(error.ToString(), LogEntryType.Error);
 			}
 		}
-		executionTimer2.Stop();
-		LogHelper.Instance.Log("[Program Cache] Time to compile {0} programs: {1}", files.Length, executionTimer2.Elapsed);
+		compileTimer.Stop();
+		LogHelper.Instance.Log("[Program Cache] Time to compile {0} programs: {1}", files.Length, compileTimer.Elapsed);
 	}
 
 	internal NativeJobAdapter MakeJobFromOperand(ExecutionContext ctx, ExecutionResult result, string key)
 	{
-		NativeJobAdapter result2 = null;
+		NativeJobAdapter job = null;
 		if (key == "RETURN")
 		{
-			result2 = new ReturnJob(result, ctx);
+			job = new ReturnJob(result, ctx);
 		}
 		else if (OperandToType.ContainsKey(key))
 		{
 			try
 			{
-				result2 = (NativeJobAdapter)Activator.CreateInstance(OperandToType[key], BindingFlags.Instance | BindingFlags.NonPublic, null, new object[2] { result, ctx }, null);
+				job = (NativeJobAdapter)Activator.CreateInstance(OperandToType[key], BindingFlags.Instance | BindingFlags.NonPublic, null, new object[2] { result, ctx }, null);
 			}
 			catch (Exception ex)
 			{
 				LogHelper.Instance.Log("Unable to create job {0}", key);
 				LogHelper.Instance.Log(ex.Message);
-				result2 = null;
+				job = null;
 			}
 		}
-		return result2;
+		return job;
 	}
 
 	internal ExecutionResult CompileStringSource(string programName, string programSource)
@@ -203,8 +201,8 @@ internal sealed class ProgramCache : IDisposable
 		{
 			foreach (string key in CompiledPrograms.Keys)
 			{
-				string text = NoShowJobs.Find((string each) => each.Equals(key, StringComparison.CurrentCultureIgnoreCase));
-				if (text == null)
+				string hidden = NoShowJobs.Find((string each) => each.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+				if (hidden == null)
 				{
 					list.Add(key);
 				}
@@ -229,17 +227,16 @@ internal sealed class ProgramCache : IDisposable
 
 	private void RegisterNatives(IEnumerable<Type> types)
 	{
-		int num = 0;
-		int num2 = 0;
+		int matchingConstructors = 0;
+		int registeredJobs = 0;
 		foreach (Type type in types)
 		{
-			NativeJobAttribute[] array = (NativeJobAttribute[])type.GetCustomAttributes(typeof(NativeJobAttribute), inherit: false);
-			if (array == null || array.Length == 0)
+			NativeJobAttribute[] attributes = (NativeJobAttribute[])type.GetCustomAttributes(typeof(NativeJobAttribute), inherit: false);
+			if (attributes.Length == 0)
 			{
 				continue;
 			}
-			NativeJobAttribute[] array2 = array;
-			foreach (NativeJobAttribute nativeJobAttribute in array2)
+			foreach (NativeJobAttribute nativeJobAttribute in attributes)
 			{
 				if (nativeJobAttribute.ProgramName == null)
 				{
@@ -251,7 +248,7 @@ internal sealed class ProgramCache : IDisposable
 				}
 				OperandToType.Add(nativeJobAttribute.Operand, type);
 				JobToOperand.Add(nativeJobAttribute.ProgramName, nativeJobAttribute.Operand);
-				num2++;
+				registeredJobs++;
 				if (nativeJobAttribute.HideFromList)
 				{
 					NoShowJobs.Add(nativeJobAttribute.ProgramName);
@@ -262,10 +259,9 @@ internal sealed class ProgramCache : IDisposable
 					LogHelper.Instance.Log("Type {0} does not express a non-public ctor.", type.ToString());
 					continue;
 				}
-				ConstructorInfo[] array3 = constructors;
-				for (int j = 0; j < array3.Length; j++)
+				foreach (ConstructorInfo constructor in constructors)
 				{
-					ParameterInfo[] parameters = array3[j].GetParameters();
+					ParameterInfo[] parameters = constructor.GetParameters();
 					if (parameters == null || parameters.Length == 0)
 					{
 						LogHelper.Instance.Log("Type {0} has a ctor that does not match.", type.ToString());
@@ -280,14 +276,14 @@ internal sealed class ProgramCache : IDisposable
 					}
 					else
 					{
-						num++;
+						matchingConstructors++;
 					}
 				}
 			}
 		}
-		if (num != num2)
+		if (matchingConstructors != registeredJobs)
 		{
-			LogHelper.Instance.Log("There is a mismatch between ctor count ({0}) & job keys ({1})", num, num2);
+			LogHelper.Instance.Log("There is a mismatch between ctor count ({0}) & job keys ({1})", matchingConstructors, registeredJobs);
 		}
 	}
 }

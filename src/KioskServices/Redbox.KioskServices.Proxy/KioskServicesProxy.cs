@@ -102,59 +102,61 @@ public class KioskServicesProxy
 		try
 		{
 			IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-			Dictionary<string, object> dictionary = jsonRequest.ToObject<Dictionary<string, object>>();
-			service?.ObfuscateDictionary(dictionary);
-			if (dictionary.ContainsKey("OptInItems") && dictionary["OptInItems"] != null)
+			// A copy of the request with card data, opt-in contacts and images masked, for the log only; the request
+			// itself is sent as it is.
+			Dictionary<string, object> logRequest = jsonRequest.ToObject<Dictionary<string, object>>();
+			service?.ObfuscateDictionary(logRequest);
+			if (logRequest.ContainsKey("OptInItems") && logRequest["OptInItems"] != null)
 			{
-				foreach (object item in dictionary["OptInItems"] as ArrayList)
+				foreach (object item in logRequest["OptInItems"] as ArrayList)
 				{
-					Dictionary<string, object> dictionary2 = item as Dictionary<string, object>;
-					if (dictionary2.ContainsKey("OptInMethodData") && dictionary2["OptInMethodData"] != null)
+					Dictionary<string, object> optInItem = item as Dictionary<string, object>;
+					if (optInItem.ContainsKey("OptInMethodData") && optInItem["OptInMethodData"] != null)
 					{
-						dictionary2["OptInMethodData"] = service?.ObfuscateMessageData(dictionary2["OptInMethodData"].ToString(), 'x', 1, 0);
+						optInItem["OptInMethodData"] = service?.ObfuscateMessageData(optInItem["OptInMethodData"].ToString(), 'x', 1, 0);
 					}
 				}
 			}
-			if (dictionary.ContainsKey("CreditCard"))
+			if (logRequest.ContainsKey("CreditCard"))
 			{
-				Dictionary<string, object> dictionary3 = (Dictionary<string, object>)dictionary["CreditCard"];
-				service?.ObfuscateDictionary(dictionary3);
-				if (dictionary3.ContainsKey("EmvTags") && dictionary3["EmvTags"] != null)
+				Dictionary<string, object> creditCard = (Dictionary<string, object>)logRequest["CreditCard"];
+				service?.ObfuscateDictionary(creditCard);
+				if (creditCard.ContainsKey("EmvTags") && creditCard["EmvTags"] != null)
 				{
-					IDictionary<string, object> obj = (IDictionary<string, object>)dictionary3["EmvTags"];
-					Dictionary<string, object> dictionary4 = new Dictionary<string, object>();
-					foreach (KeyValuePair<string, object> item2 in obj)
+					IDictionary<string, object> emvTags = (IDictionary<string, object>)creditCard["EmvTags"];
+					Dictionary<string, object> maskedTags = new Dictionary<string, object>();
+					foreach (KeyValuePair<string, object> tag in emvTags)
 					{
-						dictionary4.Add(item2.Key, new string('x', ((string)item2.Value).Length));
+						maskedTags.Add(tag.Key, new string('x', ((string)tag.Value).Length));
 					}
-					dictionary3["EmvTags"] = dictionary4;
+					creditCard["EmvTags"] = maskedTags;
 				}
 			}
-			if (dictionary.ContainsKey("Image"))
+			if (logRequest.ContainsKey("Image"))
 			{
-				ArrayList arrayList = dictionary["Image"] as ArrayList;
-				List<object> list = arrayList?.ToArray().ToList();
-				string arg = ((arrayList != null) ? string.Join(string.Empty, list.Take(Math.Min(10, arrayList.Count))) : string.Empty);
-				dictionary["Image"] = $"{arg} ... {list?.Count ?? 0}";
+				ArrayList image = logRequest["Image"] as ArrayList;
+				List<object> imageItems = image?.ToArray().ToList();
+				string imageStart = ((image != null) ? string.Join(string.Empty, imageItems.Take(Math.Min(10, image.Count))) : string.Empty);
+				logRequest["Image"] = $"{imageStart} ... {imageItems?.Count ?? 0}";
 			}
-			string text = dictionary.ToJson();
-			string text2 = text.ToPrettyJson();
-			LogHelper.Instance.Log("KioskServicesProxy JSON request: {0}", (text2.Length <= 10000) ? text2 : text);
-			string text3 = PerformRemoteMessage(jsonRequest);
-			dictionary = text3.ToObject<Dictionary<string, object>>() ?? new Dictionary<string, object>();
-			service?.ObfuscateDictionary(dictionary);
-			if (dictionary.ContainsKey("CustomerProfile"))
+			string logJson = logRequest.ToJson();
+			string prettyLogJson = logJson.ToPrettyJson();
+			LogHelper.Instance.Log("KioskServicesProxy JSON request: {0}", (prettyLogJson.Length <= 10000) ? prettyLogJson : logJson);
+			string jsonResponse = PerformRemoteMessage(jsonRequest);
+			Dictionary<string, object> logResponse = jsonResponse.ToObject<Dictionary<string, object>>() ?? new Dictionary<string, object>();
+			service?.ObfuscateDictionary(logResponse);
+			if (logResponse.ContainsKey("CustomerProfile"))
 			{
-				Dictionary<string, object> workDictionary = (Dictionary<string, object>)dictionary["CustomerProfile"];
-				service?.ObfuscateDictionary(workDictionary);
+				Dictionary<string, object> customerProfile = (Dictionary<string, object>)logResponse["CustomerProfile"];
+				service?.ObfuscateDictionary(customerProfile);
 			}
-			string source = dictionary.ToJson();
-			LogHelper.Instance.Log($"KioskServicesProxy JSON response: {source.ToPrettyJson()}");
+			string logResponseJson = logResponse.ToJson();
+			LogHelper.Instance.Log($"KioskServicesProxy JSON response: {logResponseJson.ToPrettyJson()}");
 			LogHelper.Instance.Log("KioskServicesProxy call execution time: {0}", executionTimer.Elapsed);
-			if (!string.IsNullOrEmpty(text3))
+			if (!string.IsNullOrEmpty(jsonResponse))
 			{
 				RaiseCommunicationActivity(true);
-				return text3.ToDictionary();
+				return jsonResponse.ToDictionary();
 			}
 			return new Dictionary<string, object> { ["Success"] = false };
 		}

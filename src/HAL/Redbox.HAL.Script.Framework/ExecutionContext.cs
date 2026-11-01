@@ -477,10 +477,10 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 	protected ExecutionContext(SerializationInfo info, StreamingContext context)
 	{
 		IsHydrating = true;
-		bool flag = true;
+		bool cooperative = true;
 		try
 		{
-			flag = (IsCooperative = info.GetBoolean("IsCooperative"));
+			cooperative = (IsCooperative = info.GetBoolean("IsCooperative"));
 		}
 		catch (SerializationException e)
 		{
@@ -493,10 +493,10 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		m_label = info.GetString("Label");
 		ProgramName = info.GetString("ProgramName");
 		ID = info.GetString("ID");
-		string value = info.GetString("Priority");
-		m_priority = Enum<ProgramPriority>.ParseIgnoringCase(value, ProgramPriority.Normal);
-		string value2 = info.GetString("Status");
-		Status.NextValue = Enum<ExecutionContextStatus>.ParseIgnoringCase(value2, ExecutionContextStatus.Stopped);
+		string priority = info.GetString("Priority");
+		m_priority = Enum<ProgramPriority>.ParseIgnoringCase(priority, ProgramPriority.Normal);
+		string status = info.GetString("Status");
+		Status.NextValue = Enum<ExecutionContextStatus>.ParseIgnoringCase(status, ExecutionContextStatus.Stopped);
 		if (Status.NextValue == ExecutionContextStatus.Running)
 		{
 			Status.NextValue = ExecutionContextStatus.Suspended;
@@ -509,29 +509,29 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		}
 		if (info.GetBoolean("HasExecutionTime"))
 		{
-			string text = info.GetString("ExecutionTime");
-			if (!string.IsNullOrEmpty(text))
+			string executionTime = info.GetString("ExecutionTime");
+			if (!string.IsNullOrEmpty(executionTime))
 			{
-				m_result.ExecutionTime = TimeSpan.Parse(text);
+				m_result.ExecutionTime = TimeSpan.Parse(executionTime);
 			}
 		}
 		if (info.GetBoolean("HasExecutionStartTime"))
 		{
 			ExecutionStart = info.GetDateTime("ExecutionStartTime");
 		}
-		string text2 = info.GetString("Errors");
-		if (!string.IsNullOrEmpty(text2))
+		string errors = info.GetString("Errors");
+		if (!string.IsNullOrEmpty(errors))
 		{
-			string[] array = text2.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array != null && array.Length != 0)
+			string[] errorItems = errors.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (errorItems.Length != 0)
 			{
-				m_result.Errors.AddRange(ErrorList.NewFromStrings(array));
+				m_result.Errors.AddRange(ErrorList.NewFromStrings(errorItems));
 			}
 		}
-		string text3 = info.GetString("Messages");
-		if (!string.IsNullOrEmpty(text3))
+		string messages = info.GetString("Messages");
+		if (!string.IsNullOrEmpty(messages))
 		{
-			Array.ForEach(text3.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries), delegate(string item)
+			Array.ForEach(messages.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries), delegate(string item)
 			{
 				if (!string.IsNullOrEmpty(item))
 				{
@@ -539,10 +539,10 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 				}
 			});
 		}
-		string text4 = info.GetString("Results");
-		if (!string.IsNullOrEmpty(text4))
+		string results = info.GetString("Results");
+		if (!string.IsNullOrEmpty(results))
 		{
-			Array.ForEach(text4.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries), delegate(string item)
+			Array.ForEach(results.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries), delegate(string item)
 			{
 				if (!string.IsNullOrEmpty(item))
 				{
@@ -551,29 +551,28 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 			});
 		}
 		ParentID = info.GetString("ParentID");
-		if (flag)
+		if (cooperative)
 		{
-			string[] array2 = info.GetString("Programs").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			string[] programNames = info.GetString("Programs").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 #if NETFRAMEWORK
 			BinaryFormatter binaryFormatter = new BinaryFormatter();
 #endif
-			string[] array3 = array2;
-			foreach (string text5 in array3)
+			foreach (string programName in programNames)
 			{
 				try
 				{
 #if NETFRAMEWORK
-					string path = Path.Combine(ContextDirectory, text5);
+					string path = Path.Combine(ContextDirectory, programName);
 					using FileStream serializationStream = File.OpenRead(path);
-					ProgramCache[text5] = (ProgramInstruction)binaryFormatter.Deserialize(serializationStream);
+					ProgramCache[programName] = (ProgramInstruction)binaryFormatter.Deserialize(serializationStream);
 #else
-					ProgramCache[text5] = ExecutionContextStore.LoadProgram(ContextDirectory, text5, out byte[] source);
-					ProgramSources[text5] = source;
+					ProgramCache[programName] = ExecutionContextStore.LoadProgram(ContextDirectory, programName, out byte[] source);
+					ProgramSources[programName] = source;
 #endif
 				}
-				catch (Exception e2)
+				catch (Exception programException)
 				{
-					LogHelper.Instance.Log("Unable to deserialize program.", e2);
+					LogHelper.Instance.Log("Unable to deserialize program.", programException);
 				}
 			}
 		}
@@ -581,31 +580,33 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		{
 			SymbolTable = (IDictionary<string, object>)info.GetValue("SymbolTable", typeof(Dictionary<string, object>));
 		}
-		string[] array4 = info.GetString("Stack").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		for (int num2 = array4.Length - 1; num2 >= 0; num2--)
+		// Saved top first as "<type>=<value>"; pushed back bottom first.
+		string[] stackItems = info.GetString("Stack").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		for (int i = stackItems.Length - 1; i >= 0; i--)
 		{
-			string[] array5 = array4[num2].Split("=".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
-			if (array5.Length >= 2)
+			string[] typeAndValue = stackItems[i].Split("=".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
+			if (typeAndValue.Length >= 2)
 			{
-				OnPush(ConversionHelper.ChangeType(array5[1], Type.GetType(array5[0])), StackEnd.Top);
+				OnPush(ConversionHelper.ChangeType(typeAndValue[1], Type.GetType(typeAndValue[0])), StackEnd.Top);
 			}
 		}
-		if (flag)
+		if (cooperative)
 		{
-			string[] array6 = info.GetString("CallFrames").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			for (int num3 = array6.Length - 1; num3 >= 0; num3--)
+			// "PC|X|Y|program|parent line" per frame, top first.
+			string[] frames = info.GetString("CallFrames").Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			for (int i = frames.Length - 1; i >= 0; i--)
 			{
-				string[] array7 = array6[num3].Split('|');
-				string text6 = array7[3];
-				int parentContextLineNumber = int.Parse(array7[4]);
+				string[] fields = frames[i].Split('|');
+				string frameProgramName = fields[3];
+				int parentContextLineNumber = int.Parse(fields[4]);
 				CallFrame callFrame = new CallFrame
 				{
-					PC = int.Parse(array7[0]),
-					X = int.Parse(array7[1]),
-					Y = int.Parse(array7[2]),
-					ProgramName = text6
+					PC = int.Parse(fields[0]),
+					X = int.Parse(fields[1]),
+					Y = int.Parse(fields[2]),
+					ProgramName = frameProgramName
 				};
-				ProgramInstruction program = (ProgramCache.ContainsKey(text6) ? ProgramCache[text6] : null);
+				ProgramInstruction program = (ProgramCache.ContainsKey(frameProgramName) ? ProgramCache[frameProgramName] : null);
 				callFrame.LoadInstructionPointer(parentContextLineNumber, program);
 				Registers.CallStack.Push(callFrame);
 			}
@@ -997,18 +998,18 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		{
 			info.AddValue("HasExecutionTime", value: false);
 		}
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder messages = new StringBuilder();
 		foreach (ScriptMessage message in Messages)
 		{
-			stringBuilder.Append($"{message.ToString()};");
+			messages.Append($"{message};");
 		}
-		info.AddValue("Messages", stringBuilder.ToString());
-		StringBuilder stringBuilder2 = new StringBuilder();
+		info.AddValue("Messages", messages.ToString());
+		StringBuilder results = new StringBuilder();
 		foreach (string cachedResult in CachedResults)
 		{
-			stringBuilder2.Append($"{cachedResult.ToString()};");
+			results.Append($"{cachedResult};");
 		}
-		info.AddValue("Results", stringBuilder2.ToString());
+		info.AddValue("Results", results.ToString());
 		info.AddValue("ParentID", ParentID);
 		if (SymbolTable.Keys.Count > 0)
 		{
@@ -1019,30 +1020,30 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 		{
 			info.AddValue("HasSymbolTable", value: false);
 		}
-		StringBuilder stringBuilder3 = new StringBuilder();
+		StringBuilder stack = new StringBuilder();
 		foreach (object item in DataStack)
 		{
-			stringBuilder3.Append($"{item.GetType().FullName}={item};");
+			stack.Append($"{item.GetType().FullName}={item};");
 		}
-		info.AddValue("Stack", stringBuilder3);
+		// The StringBuilder itself, as .NET Framework HAL files hold it.
+		info.AddValue("Stack", stack);
 		if (IsCooperative)
 		{
-			StringBuilder stringBuilder4 = new StringBuilder();
-			foreach (CallFrame item2 in Registers.CallStack)
+			StringBuilder frames = new StringBuilder();
+			foreach (CallFrame frame in Registers.CallStack)
 			{
-				string value = $"{item2.PC}|{item2.X}|{item2.Y}|{item2.ProgramName}|{((item2.ParentContext != null) ? item2.ParentContext.LineNumber : (-1))};";
-				stringBuilder4.Append(value);
+				frames.Append($"{frame.PC}|{frame.X}|{frame.Y}|{frame.ProgramName}|{((frame.ParentContext != null) ? frame.ParentContext.LineNumber : (-1))};");
 			}
-			info.AddValue("CallFrames", stringBuilder4.ToString());
+			info.AddValue("CallFrames", frames.ToString());
 #if NETFRAMEWORK
 			BinaryFormatter binaryFormatter = new BinaryFormatter();
 #endif
-			StringBuilder stringBuilder5 = new StringBuilder();
+			StringBuilder programNames = new StringBuilder();
 			foreach (string key in ProgramCache.Keys)
 			{
 				try
 				{
-					stringBuilder5.Append(key + ";");
+					programNames.Append(key + ";");
 #if NETFRAMEWORK
 					using FileStream serializationStream = File.OpenWrite(Path.Combine(ContextDirectory, key));
 					binaryFormatter.Serialize(serializationStream, ProgramCache[key]);
@@ -1055,7 +1056,7 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 					LogHelper.Instance.Log($"Unable to serialize program {key}.", e);
 				}
 			}
-			info.AddValue("Programs", stringBuilder5.ToString());
+			info.AddValue("Programs", programNames.ToString());
 		}
 		AppLog.Serialize(info);
 	}

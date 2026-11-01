@@ -579,27 +579,26 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 		// A job saved by the .NET Framework HAL has no script source of its own; it gets the current one.
 		ExecutionContextStore.CurrentProgramSource = (string name) => ProgramCache.GetProgram(name)?.Source;
 #endif
-		string path = Path.Combine(DataDirectory, "contexts");
+		string contextsDirectory = Path.Combine(DataDirectory, "contexts");
 		try
 		{
-			if (!Directory.Exists(path))
+			if (!Directory.Exists(contextsDirectory))
 			{
 				LogHelper.Instance.Log("[ExecutionEngine] Contexts directory doesn't exist; creating.", LogEntryType.Debug);
-				Directory.CreateDirectory(path);
+				Directory.CreateDirectory(contextsDirectory);
 			}
 		}
 		catch (Exception e)
 		{
 			LogHelper.Instance.Log("[ExecutionEngine] Unable to create contexts directory.", e);
 		}
-		Array.ForEach(Directory.GetDirectories(path), delegate(string contextPath)
+		Array.ForEach(Directory.GetDirectories(contextsDirectory), delegate(string contextPath)
 		{
 			ExecutionContext executionContext = null;
 			try
 			{
 #if NETFRAMEWORK
-				string path2 = Path.Combine(contextPath, "ctx.data");
-				using (FileStream serializationStream = File.OpenRead(path2))
+				using (FileStream serializationStream = File.OpenRead(Path.Combine(contextPath, "ctx.data")))
 				{
 					executionContext = (ExecutionContext)new BinaryFormatter().Deserialize(serializationStream);
 				}
@@ -617,17 +616,17 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 					Contexts.Add(executionContext);
 				}
 			}
-			catch (Exception e3)
+			catch (Exception loadException)
 			{
 				LogHelper.Instance.Log("[ExecutionEngine] Unable to load context {0}; deleting.", contextPath);
-				LogHelper.Instance.Log("[ExecutionEngine] Why the context could not be loaded:", e3);
+				LogHelper.Instance.Log("[ExecutionEngine] Why the context could not be loaded:", loadException);
 				try
 				{
 					Directory.Delete(contextPath, recursive: true);
 				}
-				catch (Exception e2)
+				catch (Exception deleteException)
 				{
-					LogHelper.Instance.Log("[ExecutionEngine] Unable to delete context", e2);
+					LogHelper.Instance.Log("[ExecutionEngine] Unable to delete context", deleteException);
 				}
 			}
 		});
