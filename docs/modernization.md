@@ -444,6 +444,7 @@ only in Windows Sandbox.
 | **HAL on .NET 10**: `halsvc-win32`, `HAL.PackageInstaller`, `CameraTuner`, the camera plug-in and their libraries (self-contained win-x86); job contexts as JSON, 4.8 contexts imported | **runs in Windows Sandbox** with the .NET 10 engine (start view, its HAL jobs complete); `tests/HalContextStore.Check`: 35 of the kiosk's 4.8 contexts imported and round-tripped | `HAL on .NET 10: ...` |
 | HAL: clean stop on configuration errors (a `hal.xml` without decks) | done; Sandbox: P006, service ends Stopped | `HAL: stop cleanly when the configuration has errors ...` |
 | IDE: Scintilla (`Scintilla5.NET`, MIT) in place of Puzzle.SyntaxBox; the .NET 10 engine without BinaryFormatter | done; `tests/CodeEditor.Check`: 29 checks on net48 and .NET 10; Sandbox: the engine reaches its start view with `EnableUnsafeBinaryFormatterSerialization` false | `IDE: Scintilla in place of Puzzle.SyntaxBox ...` |
+| Update Manager (.NET 10) as a Windows service | Sandbox: `updatemgrd --register`/`--unregister` work, the service starts, listens on 7004, reads the store number and srcp URL, and its Quartz scheduler starts (after the fix below). The image's `Update Manager` has no `scripts` folder, so nothing schedules a poll; the srcp poll itself is covered by the Backend harness | `Update Manager (.NET 10): self-contained ...`, `Update Manager (.NET 10): Quartz without System.Web ...` |
 | `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (324 files, `NewFiles` lists them all); not yet published to the backend or installed by the Update Manager | `release.ps1: -Framework ...` |
 
 Notes from the .NET 10 engine work:
@@ -465,7 +466,9 @@ Notes from the .NET 10 engine work:
   - the IDE's Puzzle.SyntaxBox resources needed BinaryFormatter; SyntaxBox is now replaced by Scintilla
     (`CodeEditor`), and the engine runs without the BinaryFormatter compatibility package.
 
-  Quartz 1.0 and VistaDB 3.5 load and work on .NET 10 as they are.
+  Quartz 1.0 and VistaDB 3.5 load and work on .NET 10 as they are. Quartz 2.3 (Update Manager) does not when it
+  has to look for `quartz.config`: that lookup uses `System.Web.HttpContext` (TypeLoadException), so the .NET 10 build
+  passes it the app config's `quartz` section or Quartz's embedded defaults, which is what it would have found.
 
 Notes from the .NET 10 services:
 

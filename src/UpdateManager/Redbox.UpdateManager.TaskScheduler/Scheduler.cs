@@ -134,7 +134,36 @@ public class Scheduler : ITaskScheduler
 
 	private static readonly object FileLock = new object();
 
+#if NETFRAMEWORK
 	private readonly ISchedulerFactory m_schedulerFactory = new StdSchedulerFactory();
+#else
+	// Without properties Quartz 2.3 looks for quartz.config through Quartz.Util.FileUtil, which uses System.Web.HttpContext
+	// (TypeLoadException on .NET 10). Given the properties it would have found, it skips the lookup: the app config's
+	// quartz section, else Quartz's own embedded defaults (what the kiosks run with: there is no quartz.config).
+	private readonly ISchedulerFactory m_schedulerFactory = new StdSchedulerFactory(QuartzDefaultProperties());
+
+	private static System.Collections.Specialized.NameValueCollection QuartzDefaultProperties()
+	{
+		if (System.Configuration.ConfigurationManager.GetSection("quartz") is System.Collections.Specialized.NameValueCollection section)
+		{
+			return section;
+		}
+		System.Collections.Specialized.NameValueCollection properties = new System.Collections.Specialized.NameValueCollection();
+		using Stream stream = typeof(StdSchedulerFactory).Assembly.GetManifestResourceStream("Quartz.quartz.config");
+		using StreamReader reader = new StreamReader(stream);
+		string line;
+		while ((line = reader.ReadLine()) != null)
+		{
+			line = line.Trim();
+			int equals = line.IndexOf('=');
+			if (line.Length > 0 && !line.StartsWith("#") && equals > 0)
+			{
+				properties[line.Substring(0, equals).Trim()] = line.Substring(equals + 1).Trim();
+			}
+		}
+		return properties;
+	}
+#endif
 
 	private List<Task> m_tasks = new List<Task>();
 
