@@ -74,9 +74,9 @@ public class BrowseViewController : BaseViewController
 			OrchestrationService.GetProductBitmapImage(item);
 		}
 		service?.GetProducts(BrowseViewFilter.ComingSoon, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
-		foreach (IKioskProduct item2 in products)
+		foreach (IKioskProduct product in products)
 		{
-			OrchestrationService.GetProductBitmapImage(item2);
+			OrchestrationService.GetProductBitmapImage(product);
 		}
 	}
 
@@ -454,95 +454,95 @@ public class BrowseViewController : BaseViewController
 		{
 			if (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowTopFilterButtons)
 			{
-				Style style = WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_unselected_style");
-				Style style2 = WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_selected_style");
-				bool flag = BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha;
+				Style unselectedStyle = WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_unselected_style");
+				Style selectedStyle = WPFFunctions.GetStyle(BaseViewController.GetViewUserControl(), "button_selectable_selected_style");
+				bool isAlphaSort = BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha;
 				bool isRedboxPlusBrowseMode = BrowseFunctions.IsRedboxPlusBrowseMode;
-				bool hasValue = BrowseState.Genre.HasValue;
-				CheckMarkButtonModel checkMarkButtonModel = new CheckMarkButtonModel(style, style2)
+				bool genreSelected = BrowseState.Genre.HasValue;
+				CheckMarkButtonModel genreButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowGenreSelectionPopupButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
-					IsSelected = hasValue,
-					Text = (hasValue ? Resources.ResourceManager.GetString(string.Format($"genre_{(long)BrowseState.Genre.Value}")) : Resources.genre_selection_popup_button_text),
-					ShowArrow = !hasValue,
-					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!hasValue) ? 104 : 128))
+					Visibility = ((!ShowGenreSelectionPopupButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
+					IsSelected = genreSelected,
+					Text = (genreSelected ? Resources.ResourceManager.GetString(string.Format($"genre_{(long)BrowseState.Genre.Value}")) : Resources.genre_selection_popup_button_text),
+					ShowArrow = !genreSelected,
+					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!genreSelected) ? 104 : 128))
 				};
-				checkMarkButtonModel.OnClicked += GenreSelectionPopupButtonModel_OnClicked;
-				bool hasValue2 = BrowseState.Rating.HasValue;
-				RatingsProperties.Properties.TryGetValue(BrowseState.Rating.GetValueOrDefault(), out var value);
-				CheckMarkButtonModel checkMarkButtonModel2 = new CheckMarkButtonModel(style, style2)
+				genreButton.OnClicked += GenreSelectionPopupButtonModel_OnClicked;
+				bool ratingSelected = BrowseState.Rating.HasValue;
+				RatingsProperties.Properties.TryGetValue(BrowseState.Rating.GetValueOrDefault(), out var rating);
+				CheckMarkButtonModel ratingButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowRatingSelectionPopupButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
-					IsSelected = hasValue2,
-					Text = ((!hasValue2) ? Resources.rating_selection_popup_button_text : (value?.Name ?? "None")),
-					ShowArrow = !hasValue2,
-					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!hasValue2) ? 104 : 128))
+					Visibility = ((!ShowRatingSelectionPopupButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
+					IsSelected = ratingSelected,
+					Text = ((!ratingSelected) ? Resources.rating_selection_popup_button_text : (rating?.Name ?? "None")),
+					ShowArrow = !ratingSelected,
+					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!ratingSelected) ? 104 : 128))
 				};
-				checkMarkButtonModel2.OnClicked += RatingSelectionPopupButtonModel_OnClicked;
-				bool flag2 = BrowseState.TitleType == TitleType.DVD || BrowseState.TitleType == TitleType.Bluray || BrowseState.TitleType == TitleType._4KUHD || BrowseState.TitleType == TitleType.DigitalCode;
-				CheckMarkButtonModel checkMarkButtonModel3 = new CheckMarkButtonModel(style, style2)
+				ratingButton.OnClicked += RatingSelectionPopupButtonModel_OnClicked;
+				bool formatSelected = BrowseState.TitleType == TitleType.DVD || BrowseState.TitleType == TitleType.Bluray || BrowseState.TitleType == TitleType._4KUHD || BrowseState.TitleType == TitleType.DigitalCode;
+				CheckMarkButtonModel formatButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowTopFormatFilterButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
-					IsSelected = flag2,
+					Visibility = ((!ShowTopFormatFilterButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
+					IsSelected = formatSelected,
 					Text = GetFormatSelectionPopupButtonText(),
-					ShowArrow = !flag2,
-					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!flag2) ? 104 : 128))
+					ShowArrow = !formatSelected,
+					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : ((!formatSelected) ? 104 : 128))
 				};
-				checkMarkButtonModel3.OnClicked += FormatSelectionPopupButtonModel_OnClicked;
-				CheckMarkButtonModel checkMarkButtonModel4 = new CheckMarkButtonModel(style, style2)
+				formatButton.OnClicked += FormatSelectionPopupButtonModel_OnClicked;
+				CheckMarkButtonModel dealsButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowTopDealsFilterButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
+					Visibility = ((!ShowTopDealsFilterButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
 					IsSelected = (BrowseState.BrowseMode == BrowseViewFilter.Deals),
 					Text = Resources.deals_button,
 					TextMaxWidth = 128
 				};
-				checkMarkButtonModel4.OnClicked += DealsFilterButtonModel_OnClicked;
-				CheckMarkButtonModel checkMarkButtonModel5 = new CheckMarkButtonModel(style, style2)
+				dealsButton.OnClicked += DealsFilterButtonModel_OnClicked;
+				CheckMarkButtonModel forSaleButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowTopForSaleButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
+					Visibility = ((!ShowTopForSaleButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
 					IsSelected = (BrowseState.BrowseMode == BrowseViewFilter.ForSale),
 					Text = Resources.to_buy_button,
 					TextMaxWidth = 128
 				};
-				checkMarkButtonModel5.OnClicked += ToBuyFilterButtonModel_OnClicked;
+				forSaleButton.OnClicked += ToBuyFilterButtonModel_OnClicked;
 				BrowseSort browseSort = GetBrowseSort();
-				CheckMarkButtonModel checkMarkButtonModel6 = new CheckMarkButtonModel(style, style2)
+				CheckMarkButtonModel sortButton = new CheckMarkButtonModel(unselectedStyle, selectedStyle)
 				{
-					Visibility = ((!ShowSortSelectionPopupButton() || flag) ? Visibility.Collapsed : Visibility.Visible),
+					Visibility = ((!ShowSortSelectionPopupButton() || isAlphaSort) ? Visibility.Collapsed : Visibility.Visible),
 					IsSelected = false,
 					Text = Resources.sort_selection_popup_button_text,
 					SmallText = GetSortSelectionPopupButtonText(browseSort),
 					TextMaxWidth = (isRedboxPlusBrowseMode ? 220 : 128),
 					ShowDownArrow = true
 				};
-				checkMarkButtonModel6.OnClicked += SortSelectionPopupButtonModel_OnClicked;
-				List<CheckMarkButtonModel> checkMarkButtonModels = new List<CheckMarkButtonModel> { checkMarkButtonModel, checkMarkButtonModel2, checkMarkButtonModel3, checkMarkButtonModel4, checkMarkButtonModel5, checkMarkButtonModel6 };
+				sortButton.OnClicked += SortSelectionPopupButtonModel_OnClicked;
+				List<CheckMarkButtonModel> checkMarkButtonModels = new List<CheckMarkButtonModel> { genreButton, ratingButton, formatButton, dealsButton, forSaleButton, sortButton };
 				topMenuModel.CheckMarkButtonModels = checkMarkButtonModels;
 				topMenuModel.AZButtonVisibility = ((!ShowTopAZButton()) ? Visibility.Collapsed : Visibility.Visible);
-				bool flag3 = BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha;
-				topMenuModel.AZButtonIconVisibility = (flag3 ? Visibility.Collapsed : Visibility.Visible);
-				topMenuModel.AZButtonExitIconVisibility = ((!flag3) ? Visibility.Collapsed : Visibility.Visible);
-				topMenuModel.AZButtonText = (flag3 ? Resources.abc_exit_button : Resources.abc_button);
+				bool isAToZ = BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha;
+				topMenuModel.AZButtonIconVisibility = (isAToZ ? Visibility.Collapsed : Visibility.Visible);
+				topMenuModel.AZButtonExitIconVisibility = ((!isAToZ) ? Visibility.Collapsed : Visibility.Visible);
+				topMenuModel.AZButtonText = (isAToZ ? Resources.abc_exit_button : Resources.abc_button);
 				topMenuModel.OnAZButtonClicked += TopMenuModel_OnAZButtonClicked;
 			}
 			else
 			{
-				bool flag4 = PersonalizationFunctions.IsSignedIn && RedboxPlusFunctions.CanShowRedboxPlusRedemption;
+				bool showRedboxPlusRedemption = PersonalizationFunctions.IsSignedIn && RedboxPlusFunctions.CanShowRedboxPlusRedemption;
 				bool isDeselectable = !BaseViewController.IsADAMode;
 				BrowseMenuButton browseMenuButton = null;
 				int width = (OrchestrationService.IsCultureSpanish() ? 142 : 121);
 				browseMenuButton = CreateGenreMenuButton(Genres.Top20Movies, highlightSelectedGenre, width, isDeselectable);
 				topMenuModel.MenuButtons.AddRange(new List<BrowseMenuButton>
 				{
-					CreateGenreMenuButton(Genres.ActionAndAdventure, highlightSelectedGenre, flag4 ? 101 : 121, isDeselectable),
-					CreateGenreMenuButton(Genres.Comedy, highlightSelectedGenre, flag4 ? 101 : 121, isDeselectable),
-					CreateGenreMenuButton(Genres.FamilyMovies, highlightSelectedGenre, flag4 ? 101 : 121, isDeselectable),
-					CreateGenreMenuButton(Genres.Horror, highlightSelectedGenre, flag4 ? 101 : 121, isDeselectable),
-					CreateGenreMenuButton(Genres.Drama, highlightSelectedGenre, flag4 ? 101 : 121, isDeselectable),
+					CreateGenreMenuButton(Genres.ActionAndAdventure, highlightSelectedGenre, showRedboxPlusRedemption ? 101 : 121, isDeselectable),
+					CreateGenreMenuButton(Genres.Comedy, highlightSelectedGenre, showRedboxPlusRedemption ? 101 : 121, isDeselectable),
+					CreateGenreMenuButton(Genres.FamilyMovies, highlightSelectedGenre, showRedboxPlusRedemption ? 101 : 121, isDeselectable),
+					CreateGenreMenuButton(Genres.Horror, highlightSelectedGenre, showRedboxPlusRedemption ? 101 : 121, isDeselectable),
+					CreateGenreMenuButton(Genres.Drama, highlightSelectedGenre, showRedboxPlusRedemption ? 101 : 121, isDeselectable),
 					browseMenuButton,
 					CreateGenreMenuButton(null, highlightSelectedGenre, OrchestrationService.IsCultureSpanish() ? 121 : 142)
 				});
-				if (flag4)
+				if (showRedboxPlusRedemption)
 				{
 					topMenuModel.MenuButtons.Add(CreateSignOutMenuButton());
 				}
@@ -1392,73 +1392,10 @@ public class BrowseViewController : BaseViewController
 			{
 				break;
 			}
-			decimal num = 3.99m;
-			int num2;
-			decimal? priceRangeHigh2;
-			if ((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue)
-			{
-				BrowsePriceRangeParameter browsePriceRangeFilter = BrowseState.BrowsePriceRangeFilter;
-				if (browsePriceRangeFilter == null)
-				{
-					num2 = 0;
-				}
-				else
-				{
-					priceRangeHigh2 = browsePriceRangeFilter.PriceRangeHigh;
-					num = 3.99m;
-					num2 = (((priceRangeHigh2.GetValueOrDefault() == num) & priceRangeHigh2.HasValue) ? 1 : 0);
-				}
-			}
-			else
-			{
-				num2 = 0;
-			}
-			priceRangeHigh2 = browsePriceRangeParameter.PriceRangeHigh;
-			num = 5.99m;
-			int num3;
-			if ((priceRangeHigh2.GetValueOrDefault() == num) & priceRangeHigh2.HasValue)
-			{
-				BrowsePriceRangeParameter browsePriceRangeFilter2 = BrowseState.BrowsePriceRangeFilter;
-				if (browsePriceRangeFilter2 == null)
-				{
-					num3 = 0;
-				}
-				else
-				{
-					priceRangeHigh2 = browsePriceRangeFilter2.PriceRangeHigh;
-					num = 5.99m;
-					num3 = (((priceRangeHigh2.GetValueOrDefault() == num) & priceRangeHigh2.HasValue) ? 1 : 0);
-				}
-			}
-			else
-			{
-				num3 = 0;
-			}
-			bool flag = (byte)num3 != 0;
-			priceRangeHigh2 = browsePriceRangeParameter.PriceRangeLow;
-			num = 6.99m;
-			int num4;
-			if ((priceRangeHigh2.GetValueOrDefault() == num) & priceRangeHigh2.HasValue)
-			{
-				BrowsePriceRangeParameter browsePriceRangeFilter3 = BrowseState.BrowsePriceRangeFilter;
-				if (browsePriceRangeFilter3 == null)
-				{
-					num4 = 0;
-				}
-				else
-				{
-					priceRangeHigh2 = browsePriceRangeFilter3.PriceRangeLow;
-					num = 6.99m;
-					num4 = (((priceRangeHigh2.GetValueOrDefault() == num) & priceRangeHigh2.HasValue) ? 1 : 0);
-				}
-			}
-			else
-			{
-				num4 = 0;
-			}
-			bool flag2 = (byte)num4 != 0;
-			bool flag3 = (byte)((uint)num2 | (flag ? 1u : 0u) | (flag2 ? 1u : 0u)) != 0;
-			SetBrowseFilters(BrowseViewFilter.ForSale, BrowseSelectedSort.ForSale, TitleType.All, "browse-filter-family," + browsePriceRangeParameter.analtyicsString, 1, browsePriceRangeParameter, null, (BrowseState.BrowseSelectedSort == BrowseSelectedSort.ForSale) & isDeselectable & flag3, flag3);
+			// Clicking the price range that is already selected (up to $3.99, up to $5.99, or from $6.99) deselects it.
+			BrowsePriceRangeParameter selected = BrowseState.BrowsePriceRangeFilter;
+			bool alreadySelected = selected != null && ((priceRangeHigh == 3.99m && selected.PriceRangeHigh == 3.99m) || (browsePriceRangeParameter.PriceRangeHigh == 5.99m && selected.PriceRangeHigh == 5.99m) || (browsePriceRangeParameter.PriceRangeLow == 6.99m && selected.PriceRangeLow == 6.99m));
+			SetBrowseFilters(BrowseViewFilter.ForSale, BrowseSelectedSort.ForSale, TitleType.All, "browse-filter-family," + browsePriceRangeParameter.analtyicsString, 1, browsePriceRangeParameter, null, (BrowseState.BrowseSelectedSort == BrowseSelectedSort.ForSale) & isDeselectable & alreadySelected, alreadySelected);
 			break;
 		}
 		case BrowseFilterType._99Cents:
@@ -1703,20 +1640,20 @@ public class BrowseViewController : BaseViewController
 		{
 			BrowseState.BrowseItemModels = browseProductControl.BrowseItems;
 		}
-		for (int num2 = 0; num2 < browseProductControl.RowCount * browseProductControl.ColumnCount * 3; num2++)
+		for (int i = 0; i < browseProductControl.RowCount * browseProductControl.ColumnCount * 3; i++)
 		{
 			if (BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha)
 			{
 				browseProductControl.BrowseControls.Add(new DisplayProductAToZUserControl
 				{
-					Name = $"product_{num2 + 1}"
+					Name = $"product_{i + 1}"
 				});
 			}
 			else if ((BrowseState.BrowseMode == BrowseViewFilter.ForSale && BrowseState.TitleFamily == TitleFamily.Movies) || Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.Browse.ShowTitleText)
 			{
 				browseProductControl.BrowseControls.Add(new DisplayProductWithPriceBrowseUserControl
 				{
-					Name = $"product_{num2 + 1}",
+					Name = $"product_{i + 1}",
 					HorizontalAlignment = HorizontalAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Center
 				});
@@ -1725,7 +1662,7 @@ public class BrowseViewController : BaseViewController
 			{
 				browseProductControl.BrowseControls.Add(new DisplayProductBrowseUserControl
 				{
-					Name = $"product_{num2 + 1}",
+					Name = $"product_{i + 1}",
 					HorizontalAlignment = HorizontalAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Center
 				});
@@ -1746,28 +1683,28 @@ public class BrowseViewController : BaseViewController
 
 	private static void BrowseProductControl_OnNotifyBrowseItemsShown(List<IBrowseItemModel> browseItemModels, object parameter)
 	{
-		List<IKioskProduct> list = new List<IKioskProduct>();
-		List<IBrowseItemModel> list2 = new List<IBrowseItemModel>();
+		List<IKioskProduct> shownProducts = new List<IKioskProduct>();
+		List<IBrowseItemModel> shownItemModels = new List<IBrowseItemModel>();
 		if (browseItemModels != null)
 		{
 			foreach (IBrowseItemModel browseItemModel in browseItemModels)
 			{
 				if (browseItemModel?.Data is IKioskProduct item)
 				{
-					list.Add(item);
+					shownProducts.Add(item);
 				}
 				if (!browseItemModel.IsBorderItem)
 				{
-					list2.Add(browseItemModel);
+					shownItemModels.Add(browseItemModel);
 				}
 			}
 		}
-		if (!AreProductListsIdentical(list, BrowseState.BrowseProductsShown) || !AreTTSBrowseItemModelsIdentical(list2, BrowseState.TTSBrowseItemModelsShown))
+		if (!AreProductListsIdentical(shownProducts, BrowseState.BrowseProductsShown) || !AreTTSBrowseItemModelsIdentical(shownItemModels, BrowseState.TTSBrowseItemModelsShown))
 		{
-			_ = list.Count;
+			_ = shownProducts.Count;
 			_ = 0;
-			BrowseState.BrowseProductsShown = list;
-			BrowseState.TTSBrowseItemModelsShown = list2;
+			BrowseState.BrowseProductsShown = shownProducts;
+			BrowseState.TTSBrowseItemModelsShown = shownItemModels;
 		}
 	}
 
@@ -1819,9 +1756,9 @@ public class BrowseViewController : BaseViewController
 		{
 			groupSelectionItem.IsSelected = groupSelectionItem.IsEnabled && groupSelectionItem.Name == displayGroupSelectionItemModel?.Name;
 		}
-		foreach (IBrowseItemModel item2 in viewModel.BrowseProductControlModel.BrowseItems.Where((IBrowseItemModel x) => x is DisplayGroupModel))
+		foreach (IBrowseItemModel browseItem in viewModel.BrowseProductControlModel.BrowseItems.Where((IBrowseItemModel x) => x is DisplayGroupModel))
 		{
-			if (item2 is DisplayGroupModel displayGroupModel)
+			if (browseItem is DisplayGroupModel displayGroupModel)
 			{
 				displayGroupModel.IsSelected = displayGroupModel.Name == displayGroupSelectionItemModel.Name;
 			}
@@ -1837,14 +1774,14 @@ public class BrowseViewController : BaseViewController
 	private static List<DisplayGroupSelectionItemModel> CreateAToZGroups(List<IBrowseItemModel> browseItems)
 	{
 		List<DisplayGroupSelectionItemModel> list = new List<DisplayGroupSelectionItemModel>();
-		List<string> list2 = new List<string> { "#" };
+		List<string> groupNames = new List<string> { "#" };
 		for (int i = 65; i < 91; i++)
 		{
-			list2.Add(((char)i).ToString());
+			groupNames.Add(((char)i).ToString());
 		}
 		LinearGradientBrush resource = GetResource<LinearGradientBrush>(BaseViewController.GetViewUserControl(), "group_selection_item_unselected_background");
 		LinearGradientBrush resource2 = GetResource<LinearGradientBrush>(BaseViewController.GetViewUserControl(), "group_selection_item_selected_background");
-		foreach (string eachGroupName in list2)
+		foreach (string eachGroupName in groupNames)
 		{
 			bool isEnabled = browseItems.Any((IBrowseItemModel x) => x is DisplayGroupModel && ((DisplayGroupModel)x).Name == eachGroupName);
 			list.Add(new DisplayGroupSelectionItemModel
@@ -2317,27 +2254,27 @@ public class BrowseViewController : BaseViewController
 		if (kioskProducts != null)
 		{
 			DisplayProductModelConstants displayProductModelConstants = GetDisplayProductModelConstants();
-			int num = Math.Max((pageNumber - 2) * visibleItemCount, 0);
-			int num2 = num + visibleItemCount * 3;
+			int firstIndexToShow = Math.Max((pageNumber - 2) * visibleItemCount, 0);
+			int lastIndexToShow = firstIndexToShow + visibleItemCount * 3;
 			if (createAlphaGroups)
 			{
-				num = 0;
-				num2 = kioskProducts.Count;
+				firstIndexToShow = 0;
+				lastIndexToShow = kioskProducts.Count;
 			}
-			int num3 = 0;
+			int productIndex = 0;
 			foreach (IKioskProduct kioskProduct in kioskProducts)
 			{
 				ITitleProduct titleProduct = kioskProduct as ITitleProduct;
 				string productDisplayName = BrowseFunctions.GetProductDisplayName(titleProduct);
-				string text = null;
+				string titleTypeText = null;
 				if (titleProduct.IsGame)
 				{
 					TitleTypeProperty value = null;
 					TitleTypeProperties.Properties.TryGetValue(titleProduct.TitleType, out value);
-					text = " " + value?.GetName(Resources.ResourceManager);
+					titleTypeText = " " + value?.GetName(Resources.ResourceManager);
 				}
-				string text2 = ((titleProduct is MDVProduct mDVProduct) ? $" ({mDVProduct.TitleProducts.Count} {Resources.multi_disc_vend_discs_text})" : null);
-				string header = productDisplayName + text + text2;
+				string discCountText = ((titleProduct is MDVProduct mDVProduct) ? $" ({mDVProduct.TitleProducts.Count} {Resources.multi_disc_vend_discs_text})" : null);
+				string header = productDisplayName + titleTypeText + discCountText;
 				DisplayProductModel displayProductModel;
 				if (BrowseState.BrowseMode != BrowseViewFilter.ForSale || BrowseState.TitleFamily != TitleFamily.Movies)
 				{
@@ -2376,12 +2313,12 @@ public class BrowseViewController : BaseViewController
 						PriceText = (purchasePriceText ?? "")
 					};
 				}
-				if (num3 >= num && num3 < num2)
+				if (productIndex >= firstIndexToShow && productIndex < lastIndexToShow)
 				{
 					ConfigureDisplayProductModel(kioskProduct, displayProductModel, isADAMiniCart, displayProductModelConstants);
 					configuredBrowseItemModels?.Add(titleProduct.ProductId);
 				}
-				num3++;
+				productIndex++;
 				if (createAlphaGroups)
 				{
 					string alphaGroupCharacter = GetAlphaGroupCharacter(kioskProduct as ITitleProduct);
@@ -2412,10 +2349,10 @@ public class BrowseViewController : BaseViewController
 		{
 			return;
 		}
-		int num = (pageNumber - 1) * browseControlModel.VisibleItemCount;
-		int num2 = num + browseControlModel.VisibleItemCount;
+		int pageStart = (pageNumber - 1) * browseControlModel.VisibleItemCount;
+		int pageEnd = pageStart + browseControlModel.VisibleItemCount;
 		DisplayProductModelConstants displayProductModelConstants = null;
-		for (int i = num; i < num2; i++)
+		for (int i = pageStart; i < pageEnd; i++)
 		{
 			if (i < 0 || i > browseControlModel.BrowseItems.Count - 1)
 			{
@@ -2466,11 +2403,11 @@ public class BrowseViewController : BaseViewController
 		{
 			bannerType = ((titleProduct == null || !titleProduct.ComingSoon) ? BrowseFunctions.GetProductBannerType(titleProduct, BrowseState.TitleType != TitleType.All) : BannerType.ComingSoon);
 		}
-		bool flag = AreAllProductFormatsInCart(titleProduct, displayProductModelConstants);
-		bool flag2 = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || titleProduct.TitleFamily != TitleFamily.Movies) && !titleProduct.InStock;
+		bool allFormatsInCart = AreAllProductFormatsInCart(titleProduct, displayProductModelConstants);
+		bool shownOutOfStock = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || titleProduct.TitleFamily != TitleFamily.Movies) && !titleProduct.InStock;
 		_ = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
 		IBrowseState browseState = BrowseState;
-		if ((browseState == null || browseState.BrowseMode != BrowseViewFilter.ComingSoon) && ((!BrowseFunctions.CanAddProductToCart || !titleProduct.IsAvailable || (flag && (!BrowseFunctions.IsRedboxPlusBrowseMode || (BaseViewController.IsADAMode && RedboxPlusFunctions.IsTitleProductSelectedRedboxPlusFreeOneNightRental(titleProduct))))) | flag2))
+		if ((browseState == null || browseState.BrowseMode != BrowseViewFilter.ComingSoon) && ((!BrowseFunctions.CanAddProductToCart || !titleProduct.IsAvailable || (allFormatsInCart && (!BrowseFunctions.IsRedboxPlusBrowseMode || (BaseViewController.IsADAMode && RedboxPlusFunctions.IsTitleProductSelectedRedboxPlusFreeOneNightRental(titleProduct))))) | shownOutOfStock))
 		{
 			browseItemModel.ImageOpacity = 0.4;
 		}
@@ -2480,14 +2417,14 @@ public class BrowseViewController : BaseViewController
 		}
 		BrowseFunctions.ConfigureBanner(browseItemModel, titleProduct, isADAMiniCart, bannerType, BaseViewController.GetViewUserControl());
 		ConfigureWatchOptionsAndDualInStock(browseItemModel, titleProduct, displayProductModelConstants);
-		ProductFlags browseProductFlag = GetBrowseProductFlag(titleProduct, isEmptyCase, flag);
+		ProductFlags browseProductFlag = GetBrowseProductFlag(titleProduct, isEmptyCase, allFormatsInCart);
 		BrowseFunctions.ConfigureProductFlag(browseItemModel, browseProductFlag, isADAMiniCart, BaseViewController.GetViewUserControl(), titleProduct, displayProductModelConstants);
-		bool flag3 = (displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B" && titleProduct.TitleFamily == TitleFamily.Movies) || (titleProduct?.InStock ?? false);
-		bool flag4 = (BrowseFunctions.CanAddProductToCart && titleProduct != null && titleProduct.IsAvailable && (!flag || (BrowseFunctions.IsRedboxPlusBrowseMode && (!BaseViewController.IsADAMode || !RedboxPlusFunctions.IsTitleProductSelectedRedboxPlusFreeOneNightRental(titleProduct))))) & flag3;
-		browseItemModel.CanAdd = flag4 || BrowseState.BrowseMode == BrowseViewFilter.ComingSoon;
-		Visibility visibility = ((!flag4 && !BaseViewController.IsADAMode) ? Visibility.Collapsed : Visibility.Visible);
-		browseItemModel.CornerAddButtonVisibility = ((!isADAMiniCart) ? visibility : Visibility.Collapsed);
-		browseItemModel.RightAddButtonVisibility = ((visibility == Visibility.Collapsed) ? Visibility.Hidden : visibility);
+		bool shownInStock = (displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B" && titleProduct.TitleFamily == TitleFamily.Movies) || (titleProduct?.InStock ?? false);
+		bool canAdd = (BrowseFunctions.CanAddProductToCart && titleProduct != null && titleProduct.IsAvailable && (!allFormatsInCart || (BrowseFunctions.IsRedboxPlusBrowseMode && (!BaseViewController.IsADAMode || !RedboxPlusFunctions.IsTitleProductSelectedRedboxPlusFreeOneNightRental(titleProduct))))) & shownInStock;
+		browseItemModel.CanAdd = canAdd || BrowseState.BrowseMode == BrowseViewFilter.ComingSoon;
+		Visibility addButtonVisibility = ((!canAdd && !BaseViewController.IsADAMode) ? Visibility.Collapsed : Visibility.Visible);
+		browseItemModel.CornerAddButtonVisibility = ((!isADAMiniCart) ? addButtonVisibility : Visibility.Collapsed);
+		browseItemModel.RightAddButtonVisibility = ((addButtonVisibility == Visibility.Collapsed) ? Visibility.Hidden : addButtonVisibility);
 		browseItemModel.ADAMiniCartAddButtonVisibility = ((!isADAMiniCart) ? Visibility.Collapsed : Visibility.Visible);
 		browseItemModel.AddButtonPlusSignVisibility = (BaseViewController.IsADAMode ? Visibility.Hidden : Visibility.Visible);
 		browseItemModel.AddButtonTextVisibility = ((!BaseViewController.IsADAMode) ? Visibility.Collapsed : Visibility.Visible);
@@ -2504,22 +2441,22 @@ public class BrowseViewController : BaseViewController
 		{
 			browseItemModel.ConfigureForBrowse();
 		}
-		bool flag5 = titleProduct is TitleRollupProduct && titleProduct.KioskProductType == KioskProductType.TitleRollup;
-		Visibility visibility2 = ((BrowseFunctions.IsShoppingCartFull || (!titleProduct.IsSellableAndInStock && !titleProduct.IsEmptyCase) || !(flag5 ? (!((TitleRollupProduct)titleProduct).KioskProducts.All((ITitleProduct x) => BaseViewController.RentalShoppingCartService.CurrentRentalShoppingCart.HasTitleItem(x.ProductId))) : (!BaseViewController.RentalShoppingCartService.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId)))) ? Visibility.Collapsed : Visibility.Visible);
-		browseItemModel.ShowBuy = ((visibility2 != Visibility.Visible || titleProduct.TitleFamily == TitleFamily.Games) ? Visibility.Collapsed : Visibility.Visible);
+		bool isTitleRollup = titleProduct is TitleRollupProduct && titleProduct.KioskProductType == KioskProductType.TitleRollup;
+		Visibility buyVisibility = ((BrowseFunctions.IsShoppingCartFull || (!titleProduct.IsSellableAndInStock && !titleProduct.IsEmptyCase) || !(isTitleRollup ? (!((TitleRollupProduct)titleProduct).KioskProducts.All((ITitleProduct x) => BaseViewController.RentalShoppingCartService.CurrentRentalShoppingCart.HasTitleItem(x.ProductId))) : (!BaseViewController.RentalShoppingCartService.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId)))) ? Visibility.Collapsed : Visibility.Visible);
+		browseItemModel.ShowBuy = ((buyVisibility != Visibility.Visible || titleProduct.TitleFamily == TitleFamily.Games) ? Visibility.Collapsed : Visibility.Visible);
 		browseItemModel.ButtonData.Clear();
 		if (!titleProduct.IsEmptyCase)
 		{
-			if (flag5)
+			if (isTitleRollup)
 			{
 				foreach (ITitleProduct item in ((TitleRollupProduct)titleProduct).KioskProducts.OrderBy((ITitleProduct p) => p.TitleType))
 				{
-					AddFormatButtonData(browseItemModel, item, flag5, displayProductModelConstants);
+					AddFormatButtonData(browseItemModel, item, isTitleRollup, displayProductModelConstants);
 				}
 			}
 			else
 			{
-				AddFormatButtonData(browseItemModel, titleProduct, flag5, displayProductModelConstants);
+				AddFormatButtonData(browseItemModel, titleProduct, isTitleRollup, displayProductModelConstants);
 			}
 		}
 		browseItemModel.ComingSoonVisibility = Visibility.Collapsed;
@@ -2547,31 +2484,31 @@ public class BrowseViewController : BaseViewController
 		browseItemModel.DualInStockVisibility = Visibility.Collapsed;
 		browseItemModel.DualInStockAZVisibility = Visibility.Collapsed;
 		browseItemModel.OutOfStockTextAZVisibility = Visibility.Collapsed;
-		bool flag = !titleProduct.InStock && BrowseState.BrowseMode != BrowseViewFilter.ComingSoon && !BaseViewController.IsADAMode && !titleProduct.IsEmptyCase;
-		bool flag2 = displayProductModelConstants.ShowWatchOptions & flag;
-		bool valueOrDefault = displayProductModelConstants.KioskClientService?.Kiosk?.HasDual == true;
-		bool flag3 = false;
-		if (valueOrDefault)
+		bool outOfStockHere = !titleProduct.InStock && BrowseState.BrowseMode != BrowseViewFilter.ComingSoon && !BaseViewController.IsADAMode && !titleProduct.IsEmptyCase;
+		bool showWatchOptions = displayProductModelConstants.ShowWatchOptions & outOfStockHere;
+		bool hasDual = displayProductModelConstants.KioskClientService?.Kiosk?.HasDual == true;
+		bool inStockInDual = false;
+		if (hasDual)
 		{
-			flag3 = ((!(titleProduct is TitleRollupProduct titleRollupProduct)) ? (displayProductModelConstants.KioskClientService?.Dual?.IsInStockInOther(titleProduct.ProductId) == true) : (titleRollupProduct.KioskProducts?.Any((ITitleProduct tp) => displayProductModelConstants.KioskClientService?.Dual?.IsInStockInOther(tp.ProductId) == true) ?? false));
+			inStockInDual = ((!(titleProduct is TitleRollupProduct titleRollupProduct)) ? (displayProductModelConstants.KioskClientService?.Dual?.IsInStockInOther(titleProduct.ProductId) == true) : (titleRollupProduct.KioskProducts?.Any((ITitleProduct tp) => displayProductModelConstants.KioskClientService?.Dual?.IsInStockInOther(tp.ProductId) == true) ?? false));
 		}
-		bool flag4 = displayProductModelConstants.ShowDualInStock & flag & flag3;
-		if (flag4)
+		bool showDualInStock = displayProductModelConstants.ShowDualInStock & outOfStockHere & inStockInDual;
+		if (showDualInStock)
 		{
-			string arg = displayProductModelConstants.KioskClientService?.Kiosk?.DualKiosk?.Label ?? "A";
+			string dualKioskLabel = displayProductModelConstants.KioskClientService?.Kiosk?.DualKiosk?.Label ?? "A";
 			if (BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha)
 			{
 				browseItemModel.DualInStockAZVisibility = Visibility.Visible;
 				browseItemModel.OutOfStockTextAZVisibility = Visibility.Visible;
-				browseItemModel.DualInStockTextAZKioskText = string.Format(Resources.dual_in_stock_text_az_kiosk_text, arg);
+				browseItemModel.DualInStockTextAZKioskText = string.Format(Resources.dual_in_stock_text_az_kiosk_text, dualKioskLabel);
 			}
 			else
 			{
 				browseItemModel.DualInStockVisibility = Visibility.Visible;
-				browseItemModel.DualInStockTextKioskText = string.Format(Resources.dual_in_stock_text_kiosk_text, arg);
+				browseItemModel.DualInStockTextKioskText = string.Format(Resources.dual_in_stock_text_kiosk_text, dualKioskLabel);
 			}
 		}
-		else if (flag2)
+		else if (showWatchOptions)
 		{
 			if (BrowseState.BrowseSelectedSort == BrowseSelectedSort.Alpha)
 			{
@@ -2583,10 +2520,10 @@ public class BrowseViewController : BaseViewController
 				browseItemModel.WatchOptionsVisibility = Visibility.Visible;
 			}
 		}
-		bool flag5 = (titleProduct.TitleFamily == TitleFamily.Movies && displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || titleProduct.InStock;
-		browseItemModel.AddButtonBarVisibility = ((!((!BrowseFunctions.IsShoppingCartFull && !titleProduct.ComingSoon) & flag5)) ? Visibility.Collapsed : Visibility.Visible);
-		browseItemModel.OutOfStockVisibility = ((flag5 || flag4 || titleProduct.ComingSoon) ? Visibility.Collapsed : Visibility.Visible);
-		browseItemModel.DualInStockTitleDetailsVisibility = ((!flag4) ? Visibility.Collapsed : Visibility.Visible);
+		bool shownInStock = (titleProduct.TitleFamily == TitleFamily.Movies && displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || titleProduct.InStock;
+		browseItemModel.AddButtonBarVisibility = ((!((!BrowseFunctions.IsShoppingCartFull && !titleProduct.ComingSoon) & shownInStock)) ? Visibility.Collapsed : Visibility.Visible);
+		browseItemModel.OutOfStockVisibility = ((shownInStock || showDualInStock || titleProduct.ComingSoon) ? Visibility.Collapsed : Visibility.Visible);
+		browseItemModel.DualInStockTitleDetailsVisibility = ((!showDualInStock) ? Visibility.Collapsed : Visibility.Visible);
 	}
 
 	private static void AddFormatButtonData(DisplayProductModel browseItemModel, ITitleProduct product, bool isTitleRollup, DisplayProductModelConstants displayProductModelConstants)
@@ -2606,7 +2543,7 @@ public class BrowseViewController : BaseViewController
 
 	private static bool AreAllProductFormatsInCart(ITitleProduct titleProduct, DisplayProductModelConstants displayProductModelConstants)
 	{
-		bool flag = true;
+		bool allInCart = true;
 		if (titleProduct != null)
 		{
 			if (titleProduct is TitleRollupProduct titleRollupProduct)
@@ -2615,17 +2552,17 @@ public class BrowseViewController : BaseViewController
 				{
 					if ((BrowseState.BrowseMode == BrowseViewFilter.ForSale && kioskProduct.IsSellable) || (BrowseState.BrowseMode != BrowseViewFilter.ForSale && kioskProduct.IsRentable))
 					{
-						bool flag2 = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || kioskProduct.TitleFamily != TitleFamily.Movies) && !kioskProduct.InStock;
-						flag = flag && (flag2 || (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(kioskProduct.ProductId) ?? true));
+						bool shownOutOfStock = (!(displayProductModelConstants.OutOfStockTitleDetailsABTestVersion == "B") || kioskProduct.TitleFamily != TitleFamily.Movies) && !kioskProduct.InStock;
+						allInCart = allInCart && (shownOutOfStock || (BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(kioskProduct.ProductId) ?? true));
 					}
 				}
 			}
 			else
 			{
-				flag = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId) ?? true;
+				allInCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.HasTitleItem(titleProduct.ProductId) ?? true;
 			}
 		}
-		return flag;
+		return allInCart;
 	}
 
 	private static ProductFlags GetBrowseProductFlag(ITitleProduct titleProduct, bool isEmptyCase, bool areAllProductFormatsInCart)
@@ -2711,10 +2648,10 @@ public class BrowseViewController : BaseViewController
 		T result = default(T);
 		if (!string.IsNullOrEmpty(resourceName))
 		{
-			object obj = frameworkElement?.FindResource(resourceName);
-			if (obj != null && obj is T result2)
+			object resource = frameworkElement?.FindResource(resourceName);
+			if (resource != null && resource is T typedResource)
 			{
-				return result2;
+				return typedResource;
 			}
 		}
 		return result;
@@ -2759,158 +2696,78 @@ public class BrowseViewController : BaseViewController
 				{
 					break;
 				}
-				BrowseFilter obj2 = new BrowseFilter
+				// The range already selected, when browsing what is for sale.
+				BrowsePriceRangeParameter selectedRange = (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale) ? browseState.BrowsePriceRangeFilter : null;
+				list.Add(new BrowseFilter
 				{
 					ButtonType = BrowseFilterType.PriceRange,
 					Name = "price_range_low_button",
 					Height = height,
-					Width = 136
-				};
-				int isSelected2;
-				if (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale)
-				{
-					BrowsePriceRangeParameter browsePriceRangeFilter2 = browseState.BrowsePriceRangeFilter;
-					if (browsePriceRangeFilter2 == null)
+					Width = 136,
+					IsSelected = selectedRange?.PriceRangeHigh == 3.99m,
+					IsVisible = isVisible3,
+					Parameter = new BrowsePriceRangeParameter
 					{
-						isSelected2 = 0;
-					}
-					else
-					{
-						decimal? priceRangeHigh = browsePriceRangeFilter2.PriceRangeHigh;
-						decimal num = 3.99m;
-						isSelected2 = (((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue) ? 1 : 0);
-					}
-				}
-				else
-				{
-					isSelected2 = 0;
-				}
-				obj2.IsSelected = (byte)isSelected2 != 0;
-				obj2.IsVisible = isVisible3;
-				obj2.Parameter = new BrowsePriceRangeParameter
-				{
-					PriceRangeHigh = 3.99m,
-					analtyicsString = "buy399range"
-				};
-				obj2.IsDeselectable = isDeselectable;
-				BrowseFilter browseFilter2 = obj2;
-				browseFilter2.Text = string.Format(Resources.price_range_low_button, 3.99m.ToString("0.00"));
-				list.Add(browseFilter2);
-				BrowseFilter obj3 = new BrowseFilter
+						PriceRangeHigh = 3.99m,
+						analtyicsString = "buy399range"
+					},
+					IsDeselectable = isDeselectable,
+					Text = string.Format(Resources.price_range_low_button, 3.99m.ToString("0.00"))
+				});
+				list.Add(new BrowseFilter
 				{
 					ButtonType = BrowseFilterType.PriceRange,
 					Name = "price_range_mid_button",
 					Height = height,
-					Width = 127
-				};
-				int isSelected3;
-				if (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale)
-				{
-					BrowsePriceRangeParameter browsePriceRangeFilter3 = browseState.BrowsePriceRangeFilter;
-					if (browsePriceRangeFilter3 == null)
+					Width = 127,
+					IsSelected = selectedRange?.PriceRangeHigh == 5.99m,
+					IsVisible = isVisible3,
+					Parameter = new BrowsePriceRangeParameter
 					{
-						isSelected3 = 0;
-					}
-					else
-					{
-						decimal? priceRangeHigh = browsePriceRangeFilter3.PriceRangeHigh;
-						decimal num = 5.99m;
-						isSelected3 = (((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue) ? 1 : 0);
-					}
-				}
-				else
-				{
-					isSelected3 = 0;
-				}
-				obj3.IsSelected = (byte)isSelected3 != 0;
-				obj3.IsVisible = isVisible3;
-				obj3.Parameter = new BrowsePriceRangeParameter
-				{
-					PriceRangeLow = 4.99m,
-					PriceRangeHigh = 5.99m,
-					analtyicsString = "buymidrange"
-				};
-				obj3.IsDeselectable = isDeselectable;
-				browseFilter2 = obj3;
-				browseFilter2.Text = string.Format(Resources.price_range_mid_button, 4.99m.ToString("0.00"), 5.99m.ToString("0.00"));
-				list.Add(browseFilter2);
-				BrowseFilter obj4 = new BrowseFilter
+						PriceRangeLow = 4.99m,
+						PriceRangeHigh = 5.99m,
+						analtyicsString = "buymidrange"
+					},
+					IsDeselectable = isDeselectable,
+					Text = string.Format(Resources.price_range_mid_button, 4.99m.ToString("0.00"), 5.99m.ToString("0.00"))
+				});
+				list.Add(new BrowseFilter
 				{
 					ButtonType = BrowseFilterType.PriceRange,
 					Name = "price_range_high_button",
 					Height = height,
-					Width = width
-				};
-				int isSelected4;
-				if (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale)
-				{
-					BrowsePriceRangeParameter browsePriceRangeFilter4 = browseState.BrowsePriceRangeFilter;
-					if (browsePriceRangeFilter4 == null)
+					Width = width,
+					IsSelected = selectedRange?.PriceRangeLow == 6.99m,
+					IsVisible = isVisible3,
+					Parameter = new BrowsePriceRangeParameter
 					{
-						isSelected4 = 0;
-					}
-					else
-					{
-						decimal? priceRangeHigh = browsePriceRangeFilter4.PriceRangeLow;
-						decimal num = 6.99m;
-						isSelected4 = (((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue) ? 1 : 0);
-					}
-				}
-				else
-				{
-					isSelected4 = 0;
-				}
-				obj4.IsSelected = (byte)isSelected4 != 0;
-				obj4.IsVisible = isVisible3;
-				obj4.Parameter = new BrowsePriceRangeParameter
-				{
-					PriceRangeLow = 6.99m,
-					analtyicsString = "buy699range"
-				};
-				obj4.IsDeselectable = isDeselectable;
-				browseFilter2 = obj4;
-				browseFilter2.Text = string.Format(Resources.price_range_high_button, 6.99m.ToString("0.00"));
-				list.Add(browseFilter2);
+						PriceRangeLow = 6.99m,
+						analtyicsString = "buy699range"
+					},
+					IsDeselectable = isDeselectable,
+					Text = string.Format(Resources.price_range_high_button, 6.99m.ToString("0.00"))
+				});
 				break;
 			}
 			case "C":
 			{
-				BrowseFilter obj5 = new BrowseFilter
+				// The range already selected, when browsing what is for sale.
+				BrowsePriceRangeParameter selectedRange = (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale) ? browseState.BrowsePriceRangeFilter : null;
+				list.Add(new BrowseFilter
 				{
 					ButtonType = BrowseFilterType.PriceRange,
 					Name = "price_cutoff_low_button",
 					Height = height,
-					Width = 136
-				};
-				int isSelected5;
-				if (browseState.BrowseSelectedSort == BrowseSelectedSort.ForSale)
-				{
-					BrowsePriceRangeParameter browsePriceRangeFilter5 = browseState.BrowsePriceRangeFilter;
-					if (browsePriceRangeFilter5 == null)
+					Width = 136,
+					IsSelected = selectedRange?.PriceRangeHigh == 3.99m,
+					IsVisible = isVisible3,
+					Parameter = new BrowsePriceRangeParameter
 					{
-						isSelected5 = 0;
-					}
-					else
-					{
-						decimal? priceRangeHigh = browsePriceRangeFilter5.PriceRangeHigh;
-						decimal num = 3.99m;
-						isSelected5 = (((priceRangeHigh.GetValueOrDefault() == num) & priceRangeHigh.HasValue) ? 1 : 0);
-					}
-				}
-				else
-				{
-					isSelected5 = 0;
-				}
-				obj5.IsSelected = (byte)isSelected5 != 0;
-				obj5.IsVisible = isVisible3;
-				obj5.Parameter = new BrowsePriceRangeParameter
-				{
-					PriceRangeHigh = 3.99m,
-					analtyicsString = "buy399"
-				};
-				BrowseFilter browseFilter3 = obj5;
-				browseFilter3.Text = string.Format(Resources.price_range_low_button, 3.99m.ToString("0.00"));
-				list.Add(browseFilter3);
+						PriceRangeHigh = 3.99m,
+						analtyicsString = "buy399"
+					},
+					Text = string.Format(Resources.price_range_low_button, 3.99m.ToString("0.00"))
+				});
 				break;
 			}
 			case "D":
