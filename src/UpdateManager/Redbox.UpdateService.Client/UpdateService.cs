@@ -280,16 +280,16 @@ public class UpdateService : IDisposable
 			entry = new RepositoryEntry();
 			return clientCommandResult;
 		}
-		List<RepositoryEntry> list = new List<RepositoryEntry>();
-		foreach (Identifier item in files)
+		List<RepositoryEntry> entries = new List<RepositoryEntry>();
+		foreach (Identifier fileId in files)
 		{
-			clientCommandResult = Get<RepositoryEntry>(item, out var t);
+			clientCommandResult = Get<RepositoryEntry>(fileId, out var fileEntry);
 			if (clientCommandResult.Success)
 			{
-				list.Add(t);
+				entries.Add(fileEntry);
 			}
 		}
-		RepositoryEntry repositoryEntry = list.Find((RepositoryEntry f) => Path.Combine(f.Path, f.Name) == fullPath);
+		RepositoryEntry repositoryEntry = entries.Find((RepositoryEntry f) => Path.Combine(f.Path, f.Name) == fullPath);
 		if (repositoryEntry == null)
 		{
 			clientCommandResult.Success = false;
@@ -315,18 +315,18 @@ public class UpdateService : IDisposable
 	public ClientCommandResult Commit(string name, LocalChangeSet set, string user, string system, string comment, out RevLog log)
 	{
 		log = new RevLog();
-		List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+		List<Dictionary<string, string>> changes = new List<Dictionary<string, string>>();
 		foreach (KeyValuePair<string, Dictionary<string, string>> newFile in set.m_newFiles)
 		{
-			list.Add(newFile.Value);
+			changes.Add(newFile.Value);
 		}
 		foreach (KeyValuePair<long, Dictionary<string, string>> update in set.m_updates)
 		{
 			update.Value.Add("ID", update.Key.ToString());
-			list.Add(update.Value);
+			changes.Add(update.Value);
 		}
 		ClientCommandResult clientCommandResult;
-		foreach (Dictionary<string, string> item in list)
+		foreach (Dictionary<string, string> change in changes)
 		{
 			clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "data-upload begin-upload");
 			if (!clientCommandResult.Success)
@@ -334,22 +334,22 @@ public class UpdateService : IDisposable
 				return clientCommandResult;
 			}
 			CompressionAlgorithm algorithm = CompressionAlgorithm.GetAlgorithm(CompressionType.GZip);
-			long num = Convert.ToInt64(clientCommandResult.CommandMessages[0]);
-			using FileStream file = File.OpenRead(item["Data"]);
-			byte[] array = new byte[10485760];
-			for (int num2 = ReadChunk(file, array); num2 > 0; num2 = ReadChunk(file, array))
+			long uploadId = Convert.ToInt64(clientCommandResult.CommandMessages[0]);
+			using FileStream file = File.OpenRead(change["Data"]);
+			byte[] buffer = new byte[10485760];
+			for (int bytesRead = ReadChunk(file, buffer); bytesRead > 0; bytesRead = ReadChunk(file, buffer))
 			{
-				byte[] array2 = new byte[num2];
-				Array.Copy(array, array2, array2.Length);
-				clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, $"data-upload append id: {num} data: '{algorithm.Compress(array2).ToBase64()}'");
+				byte[] chunk = new byte[bytesRead];
+				Array.Copy(buffer, chunk, chunk.Length);
+				clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, $"data-upload append id: {uploadId} data: '{algorithm.Compress(chunk).ToBase64()}'");
 				if (!clientCommandResult.Success)
 				{
 					return clientCommandResult;
 				}
 			}
-			item["Data"] = num.ToString();
+			change["Data"] = uploadId.ToString();
 		}
-		string command = $"repository commit name: '{name}' comment: '{comment}' modifiedBy: '{user}' system: '{system}' data: '{list.ToJson().EscapedJson()}'";
+		string command = $"repository commit name: '{name}' comment: '{comment}' modifiedBy: '{user}' system: '{system}' data: '{changes.ToJson().EscapedJson()}'";
 		clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		if (clientCommandResult.Success)
 		{
@@ -429,8 +429,8 @@ public class UpdateService : IDisposable
 			};
 		}
 		script = new Script();
-		string text = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
-		string command = $"update-script create text: '{text}' createdBy: '{createBy}' system: '{system}' name: '{name}'";
+		string scriptText = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
+		string command = $"update-script create scriptText: '{scriptText}' createdBy: '{createBy}' system: '{system}' name: '{name}'";
 		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		if (clientCommandResult.Success)
 		{
@@ -450,8 +450,8 @@ public class UpdateService : IDisposable
 			};
 		}
 		script = new Script();
-		string text = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
-		string command = string.Format("update-script update id: {3} text: '{0}' modifiedby: '{1}' system: '{2}'", text, modifiedBy, system, id);
+		string scriptText = Encoding.Unicode.GetBytes(File.ReadAllText(scriptLocation)).ToBase64().Replace("'", "\\'");
+		string command = string.Format("update-script update id: {3} scriptText: '{0}' modifiedby: '{1}' system: '{2}'", scriptText, modifiedBy, system, id);
 		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		if (clientCommandResult.Success)
 		{
@@ -622,20 +622,20 @@ public class UpdateService : IDisposable
 		string credentialHash = UpdateServiceCredentials.Instance.GetCredentialHash(storeNumber);
 		string command = $"u pr n:'{storeNumber}' v:'{version}' c:'{pollReplyDTOList.ToJson().EscapedJson()}' h:'{credentialHash}'";
 		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
-		List<PollReplyDTO> list = new List<PollReplyDTO>();
+		List<PollReplyDTO> replies = new List<PollReplyDTO>();
 		foreach (string commandMessage in clientCommandResult.CommandMessages)
 		{
 			try
 			{
-				PollReplyDTO item = commandMessage.ToObject<PollReplyDTO>();
-				list.Add(item);
+				PollReplyDTO pollReply = commandMessage.ToObject<PollReplyDTO>();
+				replies.Add(pollReply);
 			}
 			catch (Exception e)
 			{
 				clientCommandResult.Errors.Add(Redbox.IPC.Framework.Error.NewError("POLL", "Error parsing poll reply: " + commandMessage, e));
 			}
 		}
-		pollReplyList = PollReplyDTO.GetPollReplyList(list);
+		pollReplyList = PollReplyDTO.GetPollReplyList(replies);
 		return clientCommandResult;
 	}
 
@@ -688,13 +688,8 @@ public class UpdateService : IDisposable
 
 	public ClientCommandResult ForcePublishRun(string name)
 	{
-		object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager", "AllowForceDataFiles", false.ToString());
-		bool flag = false;
-		if (value != null && value is string && bool.TryParse(value as string, out var result))
-		{
-			flag = result;
-		}
-		if (flag)
+		object registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager", "AllowForceDataFiles", false.ToString());
+		if (registryValue is string allowForceDataFiles && bool.TryParse(allowForceDataFiles, out var allowed) && allowed)
 		{
 			string command = $"subscription publish name: '{name}'";
 			return ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
@@ -728,10 +723,10 @@ public class UpdateService : IDisposable
 	public ClientCommandResult ConfigDefaultCreate(long configSetting, string configdefaulttype, long configdefaulttypekey, string configdefaulttypevalue, string value, string path, DateTime effectiveTime, DateTime? expireTime)
 	{
 		string format = "configdefault create configsetting: '{0}' configdefaulttype: '{1}' configdefaulttypekey: '{2}' configdefaulttypevalue: '{3}' effectiveTime: '{4}'";
-		string arg = "";
+		string encodedValue = "";
 		if (!string.IsNullOrEmpty(value))
 		{
-			arg = value;
+			encodedValue = value;
 		}
 		else if (!string.IsNullOrEmpty(path))
 		{
@@ -742,22 +737,22 @@ public class UpdateService : IDisposable
 					Errors = { Redbox.IPC.Framework.Error.NewError("U563", $"The file does not exist: {path}.", "Specify a path to a valid file.") }
 				};
 			}
-			arg = File.ReadAllBytes(path).ToBase64();
+			encodedValue = File.ReadAllBytes(path).ToBase64();
 		}
-		string text = string.Format(format, configSetting, configdefaulttype, configdefaulttypekey, configdefaulttypevalue, effectiveTime);
+		string command = string.Format(format, configSetting, configdefaulttype, configdefaulttypekey, configdefaulttypevalue, effectiveTime);
 		if (expireTime.HasValue)
 		{
-			text += $" expireTime: '{expireTime.Value}'";
+			command += $" expireTime: '{expireTime.Value}'";
 		}
-		text += $" value: '{arg}'";
-		Console.WriteLine(text);
-		return ExecuteCommandString(text);
+		command += $" value: '{encodedValue}'";
+		Console.WriteLine(command);
+		return ExecuteCommandString(command);
 	}
 
 	public ClientCommandResult ConfigDefaultUpdate(long id, string path)
 	{
 		string format = "configdefault update id: '{0}' value: '{1}' ";
-		string text = "";
+		string encodedFile = "";
 		ClientCommandResult clientCommandResult = new ClientCommandResult();
 		if (string.IsNullOrEmpty(path))
 		{
@@ -769,10 +764,10 @@ public class UpdateService : IDisposable
 			clientCommandResult.Errors.Add(Redbox.IPC.Framework.Error.NewError("US1010", $"The file does not exist: {path}.", "Specify a path to a valid file."));
 			return clientCommandResult;
 		}
-		text = File.ReadAllBytes(path).ToBase64();
-		string text2 = string.Format(format, id, text);
-		Console.WriteLine(text2);
-		return ExecuteCommandString(text2);
+		encodedFile = File.ReadAllBytes(path).ToBase64();
+		string command = string.Format(format, id, encodedFile);
+		Console.WriteLine(command);
+		return ExecuteCommandString(command);
 	}
 
 	public ClientCommandResult DownloadFileSetFile(long? id, string name, string filename, string destinationPath, string path)
@@ -800,30 +795,30 @@ public class UpdateService : IDisposable
 			clientCommandResult.Errors.AddRange(errorList);
 			return clientCommandResult;
 		}
-		int num = File.ReadAllBytes(path).Length;
-		int num2 = ((num != 0) ? (num / 1048576) : 0);
-		int num3 = 0;
-		Log("Uploading file: {0} - {1} mb", path, num2);
+		int fileLength = File.ReadAllBytes(path).Length;
+		int fileMegabytes = ((fileLength != 0) ? (fileLength / 1048576) : 0);
+		int bytesUploaded = 0;
+		Log("Uploading file: {0} - {1} mb", path, fileMegabytes);
 		using FileStream fileStream = File.OpenRead(path);
-		string arg = fileStream.ToASCIISHA1Hash();
+		string fileKey = fileStream.ToASCIISHA1Hash();
 		fileStream.Seek(0L, SeekOrigin.Begin);
-		ClientCommandResult clientCommandResult2 = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "downloadfile set-file " + (id.HasValue ? $"id:{id.Value} " : $"name:'{name}' ") + $"filename:'{filename}' destinationpath:'{destinationPath.EscapedJson()}' filekey:'{arg}'");
+		ClientCommandResult clientCommandResult2 = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "downloadfile set-file " + (id.HasValue ? $"id:{id.Value} " : $"name:'{name}' ") + $"filename:'{filename}' destinationpath:'{destinationPath.EscapedJson()}' filekey:'{fileKey}'");
 		if (!clientCommandResult2.Success)
 		{
 			return clientCommandResult2;
 		}
-		byte[] array = new byte[1048576];
-		for (int num4 = ReadChunk(fileStream, array); num4 > 0; num4 = ReadChunk(fileStream, array))
+		byte[] buffer = new byte[1048576];
+		for (int bytesRead = ReadChunk(fileStream, buffer); bytesRead > 0; bytesRead = ReadChunk(fileStream, buffer))
 		{
-			byte[] array2 = new byte[num4];
-			Array.Copy(array, array2, array2.Length);
-			clientCommandResult2 = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "downloadfile upload-file " + (id.HasValue ? $"id:{id.Value} " : $"name:'{name}' ") + $"data:'{array2.ToBase64()}'");
+			byte[] chunk = new byte[bytesRead];
+			Array.Copy(buffer, chunk, chunk.Length);
+			clientCommandResult2 = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "downloadfile upload-file " + (id.HasValue ? $"id:{id.Value} " : $"name:'{name}' ") + $"data:'{chunk.ToBase64()}'");
 			if (!clientCommandResult2.Success)
 			{
 				return clientCommandResult2;
 			}
-			num3 += array2.Length;
-			Log("Uploaded {0} mb / {1} mb", (num3 != 0) ? (num3 / 1048576) : 0, num2);
+			bytesUploaded += chunk.Length;
+			Log("Uploaded {0} mb / {1} mb", (bytesUploaded != 0) ? (bytesUploaded / 1048576) : 0, fileMegabytes);
 		}
 		clientCommandResult2 = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, "downloadfile upload-file " + (id.HasValue ? $"id:{id.Value}" : $"name:'{name}'") + " finished:true");
 		if (clientCommandResult2.Success)
@@ -850,9 +845,9 @@ public class UpdateService : IDisposable
 			clientCommandResult.Errors.AddRange(errorList);
 			return clientCommandResult;
 		}
-		string text = string.Format("downloadfile set-script " + (id.HasValue ? $" id:{id.Value} " : $" name:'{name}' ") + " text:'{0}'", File.ReadAllBytes(path).ToBase64());
-		Console.WriteLine(text);
-		return ExecuteCommandString(text);
+		string commandText = string.Format("downloadfile set-script " + (id.HasValue ? $" id:{id.Value} " : $" name:'{name}' ") + " commandText:'{0}'", File.ReadAllBytes(path).ToBase64());
+		Console.WriteLine(commandText);
+		return ExecuteCommandString(commandText);
 	}
 
 	public ClientCommandResult StoreCacheGet(string filterKey, string filterValue, string kioskStatus, string enabled, out List<StoreCacheData> storeCacheData)
@@ -865,24 +860,24 @@ public class UpdateService : IDisposable
 
 	public ClientCommandResult StatusMessageGet(string key, string subKey, string type, int? numResults, out List<StatusMessage> updates)
 	{
-		string text = string.Format("STATUSMESSAGE list", key);
+		string command = string.Format("STATUSMESSAGE list", key);
 		if (!string.IsNullOrEmpty(key))
 		{
-			text += $" key:{key}";
+			command += $" key:{key}";
 		}
 		if (!string.IsNullOrEmpty(subKey))
 		{
-			text += $" subkey:{subKey}";
+			command += $" subkey:{subKey}";
 		}
 		if (!string.IsNullOrEmpty(type))
 		{
-			text += $" type:{type}";
+			command += $" type:{type}";
 		}
 		if (numResults.HasValue)
 		{
-			text += $" numresults:{numResults.Value}";
+			command += $" numresults:{numResults.Value}";
 		}
-		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, text);
+		ClientCommandResult clientCommandResult = ClientCommand<ClientCommandResult>.ExecuteCommand(Session, disposeWhenDone: false, command);
 		updates = (clientCommandResult.Success ? clientCommandResult.CommandMessages[0].ToObject<List<StatusMessage>>() : new List<StatusMessage>());
 		return clientCommandResult;
 	}
@@ -895,11 +890,11 @@ public class UpdateService : IDisposable
 	private static int ReadChunk(Stream file, byte[] buffer)
 	{
 		int i;
-		int num;
-		for (i = 0; i < buffer.Length; i += num)
+		int bytesRead;
+		for (i = 0; i < buffer.Length; i += bytesRead)
 		{
-			num = file.Read(buffer, i, buffer.Length - i);
-			if (num == 0)
+			bytesRead = file.Read(buffer, i, buffer.Length - i);
+			if (bytesRead == 0)
 			{
 				break;
 			}
