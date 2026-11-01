@@ -10,6 +10,11 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>ICSharpCode.SharpZipLib;Jayrock.Json;SevenZip;log4net;Redbox.Command.Tokenizer;Redbox.Compression;Redbox.Core;Redbox.DeltaCompression;Redbox.GetOpts;Redbox.IPC.Framework;Redbox.JSONPrettyPrinter;Redbox.Log.Framework;Redbox.Lua;Redbox.Macros;Redbox.Macros.Functions;Redbox.Tokenizer.Framework;Redbox.UpdateManager.BITS;Redbox.UpdateManager.ComponentModel;Redbox.UpdateManager.Environment;Redbox.UpdateManager.Kernel;Redbox.UpdateManager.Remoting;Redbox.UpdateManager.ServiceProxies;Redbox.UpdateManager.TaskScheduler;Redbox.UpdateService.Client;Redbox.UpdateService.Model;TaskScheduler</ILRepackAssemblies>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <!-- Shipped self-contained, like the engine and HAL: the kiosk needs no .NET runtime installed. -->
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
