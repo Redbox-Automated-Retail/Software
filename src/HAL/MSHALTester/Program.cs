@@ -14,6 +14,9 @@ public class Program : IDisposable
 	[STAThread]
 	public static void Main(string[] args)
 	{
+#if !NETFRAMEWORK
+		Redbox.Core.NetFrameworkCompatibility.ImportExeConfig();
+#endif
 		using Program program = new Program();
 		program.m_instanceLock = new NamedLock(m_applicationGuid.ToString());
 		if (!program.m_instanceLock.IsOwned)

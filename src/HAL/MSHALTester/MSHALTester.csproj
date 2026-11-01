@@ -3,17 +3,21 @@
     <AssemblyName>MSHALTester</AssemblyName>
     <RootNamespace>Redbox.HAL.MSHALTester</RootNamespace>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>True</UseWindowsForms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ILRepackAssemblies>ICSharpCode.SharpZipLib;Newtonsoft.Json;log4net;Redbox.DirectShow;Redbox.HAL.Client;Redbox.HAL.Component.Model;Redbox.HAL.Core;Redbox.HAL.IPC.Framework;Redbox.HAL.Common.GUI.Functions;Redbox.HAL.Configuration</ILRepackAssemblies>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx" LogicalName="Redbox.HAL.MSHALTester.Properties.Resources.resources" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -28,12 +32,19 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\..\lib\SharpZipLib\0.85.5\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
+    <Reference Include="log4net" Condition="'$(TargetFramework)' == 'net48'">
       <HintPath>..\..\..\lib\log4net\1.2.9\log4net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" Condition="'$(TargetFramework)' == 'net48'" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" Condition="'$(TargetFramework)' != 'net48'" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <PackageReference Include="System.Management" Version="10.0.14" />
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <!-- NetFrameworkCompatibility.ImportExeConfig: MSHALTester.exe.config holds its settings and log4net configuration. -->
+    <Compile Include="..\..\Common\Redbox.Core\NetFrameworkCompatibility.cs" Link="Compat\NetFrameworkCompatibility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Redbox.DirectShow\Redbox.DirectShow.csproj" />
