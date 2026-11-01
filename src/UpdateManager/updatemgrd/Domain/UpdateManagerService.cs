@@ -54,31 +54,31 @@ internal class UpdateManagerService : IDisposable
 
 	public void Intialize(string kioskEnginePath, string scriptLocation, string updateServiceUrl, string wcfUpdateServiceUrl, string kioskEngineUrl, bool developerMode, bool initialSubscriptionState, string storeNumberFromConfigFile, int trimWorkingSetInterval, TimeSpan updateServiceTimeout, string shutdownScript, int minimumRetryDelay)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ErrorList errorList = new ErrorList();
-		string text;
+		string storeNumber;
 		if (string.IsNullOrEmpty(storeNumberFromConfigFile))
 		{
-			text = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "ID", "N\\A") as string;
-			if (text == null || text == "N\\A")
+			storeNumber = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "ID", "N\\A") as string;
+			if (storeNumber == null || storeNumber == "N\\A")
 			{
 				if (!Debugger.IsAttached)
 				{
 					throw new ArgumentException("This store does not have a store id. The engine can not run.");
 				}
-				text = "7045";
+				storeNumber = "7045";
 			}
 		}
 		else
 		{
-			text = storeNumberFromConfigFile;
+			storeNumber = storeNumberFromConfigFile;
 		}
-		_storeNumber = text;
+		_storeNumber = storeNumber;
 		string directoryName = Path.GetDirectoryName(typeof(UpdateManagerService).Assembly.Location);
-		service["StoreNumber"] = text;
-		service["REDS"] = "C:\\Program Files\\Redbox\\REDS";
-		service["RedboxProgramFiles"] = "C:\\Program Files\\Redbox";
-		service["ProgramFiles"] = "C:\\Program Files";
+		macroService["StoreNumber"] = storeNumber;
+		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";
+		macroService["RedboxProgramFiles"] = "C:\\Program Files\\Redbox";
+		macroService["ProgramFiles"] = "C:\\Program Files";
 		ScriptLocation = scriptLocation;
 		KioskEnginePath = kioskEnginePath;
 		if (!Path.IsPathRooted(ScriptLocation))
@@ -90,40 +90,40 @@ internal class UpdateManagerService : IDisposable
 			KioskEnginePath = Path.Combine(directoryName, KioskEnginePath);
 		}
 		LogHelper.Instance.Log("Working Directory: {0}", directoryName);
-		service["WorkingDirectory"] = directoryName;
-		service["engine"] = KioskEnginePath;
-		service["Scripts"] = ScriptLocation;
-		LogHelper.Instance.Log("Scripts = {0}", service.ExpandProperties("${Scripts}"));
-		LogHelper.Instance.Log("engine = {0}", service.ExpandProperties("${engine}"));
+		macroService["WorkingDirectory"] = directoryName;
+		macroService["engine"] = KioskEnginePath;
+		macroService["Scripts"] = ScriptLocation;
+		LogHelper.Instance.Log("Scripts = {0}", macroService.ExpandProperties("${Scripts}"));
+		LogHelper.Instance.Log("engine = {0}", macroService.ExpandProperties("${engine}"));
 		KioskEngineService.Instance.Initialize(KioskEnginePath, kioskEngineUrl);
 		LogHelper.Instance.Log("Kiosk Engine URL: {0}", kioskEngineUrl);
-		string text2 = service.ExpandProperties("${RunningPath}\\..\\.store\\.data");
-		QueueService.Instance.Initialize(text2);
-		DataStoreService.Instance.Initialize(text2);
-		LogHelper.Instance.Log("Data Store Directory: {0}", text2);
+		string dataDirectory = macroService.ExpandProperties("${RunningPath}\\..\\.store\\.data");
+		QueueService.Instance.Initialize(dataDirectory);
+		DataStoreService.Instance.Initialize(dataDirectory);
+		LogHelper.Instance.Log("Data Store Directory: {0}", dataDirectory);
 		KernelService.Instance.Initialize();
 		Scheduler.Instance.Initialize();
 		WindowsTaskScheduler.Instance.Initialize();
 		TransferService.Instance.Initialize();
-		string text3 = service.ExpandProperties("${RunningPath}\\..\\.store\\.repository");
-		RepositoryService.Instance.Initialize(text3);
-		LogHelper.Instance.Log("Repository Directory: {0}", text3);
-		string text4 = service.ExpandProperties("${RunningPath}\\..\\.store\\.configfiles");
-		ConfigFileService.Instance.Initialize(text4);
-		LogHelper.Instance.Log("Config File Directory: {0}", text4);
-		string text5 = service.ExpandProperties("${RunningPath}\\..\\.store\\.storefiles");
-		StoreFileService.Instance.Initialize(text5);
-		LogHelper.Instance.Log("StoreFile Directory: {0}", text5);
-		IPCPoll.Instance.Initialize(text, updateServiceUrl, updateServiceTimeout, 2);
-		LogHelper.Instance.Log("IPCPoll URL: {0}, Store Number: {1}", updateServiceUrl, text);
+		string repositoryDirectory = macroService.ExpandProperties("${RunningPath}\\..\\.store\\.repository");
+		RepositoryService.Instance.Initialize(repositoryDirectory);
+		LogHelper.Instance.Log("Repository Directory: {0}", repositoryDirectory);
+		string configFileDirectory = macroService.ExpandProperties("${RunningPath}\\..\\.store\\.configfiles");
+		ConfigFileService.Instance.Initialize(configFileDirectory);
+		LogHelper.Instance.Log("Config File Directory: {0}", configFileDirectory);
+		string storeFileDirectory = macroService.ExpandProperties("${RunningPath}\\..\\.store\\.storefiles");
+		StoreFileService.Instance.Initialize(storeFileDirectory);
+		LogHelper.Instance.Log("StoreFile Directory: {0}", storeFileDirectory);
+		IPCPoll.Instance.Initialize(storeNumber, updateServiceUrl, updateServiceTimeout, 2);
+		LogHelper.Instance.Log("IPCPoll URL: {0}, Store Number: {1}", updateServiceUrl, storeNumber);
 		PollService.Instance.Initialize(IPCPoll.Instance);
 		LogHelper.Instance.Log("Poll Service default poll type: {0}", IPCPoll.Instance.GetType());
-		Redbox.UpdateManager.Remoting.UpdateService.Instance.Initialize(updateServiceUrl, updateServiceTimeout, text, minimumRetryDelay);
-		LogHelper.Instance.Log("IPC Update Service URL: {0}, Store Number: {1}", updateServiceUrl, text);
-		IDataStoreService service2 = ServiceLocator.Instance.GetService<IDataStoreService>();
-		service2.Set("config-developer-mode-flag", developerMode);
-		service2.Set("config-initial-subscription-state-flag", initialSubscriptionState);
-		service2.Set("config-store-number", text);
+		Redbox.UpdateManager.Remoting.UpdateService.Instance.Initialize(updateServiceUrl, updateServiceTimeout, storeNumber, minimumRetryDelay);
+		LogHelper.Instance.Log("IPC Update Service URL: {0}, Store Number: {1}", updateServiceUrl, storeNumber);
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		dataStoreService.Set("config-developer-mode-flag", developerMode);
+		dataStoreService.Set("config-initial-subscription-state-flag", initialSubscriptionState);
+		dataStoreService.Set("config-store-number", storeNumber);
 		if (errorList.ContainsError())
 		{
 			LogHelper.Instance.Log("Errors from UpdateManagerServiceInitialize to follow:");

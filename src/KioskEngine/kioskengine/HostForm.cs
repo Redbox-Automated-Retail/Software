@@ -132,25 +132,25 @@ public class HostForm : Form
 
 	public void OnKeyDown(object sender, KeyEventArgs e)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService bundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		switch (e.KeyCode)
 		{
 		case Keys.Home:
 		{
-			ITextToSpeechService service4 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			if (service4 != null)
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			if (textToSpeechService != null)
 			{
-				service4.AudioDeviceConnected = true;
-				service4.RunSpeechWorkflow($"tts_{ServiceLocator.Instance.GetService<IViewService>()?.PeekViewFrame()?.ViewFrame?.ViewName}");
+				textToSpeechService.AudioDeviceConnected = true;
+				textToSpeechService.RunSpeechWorkflow($"tts_{ServiceLocator.Instance.GetService<IViewService>()?.PeekViewFrame()?.ViewFrame?.ViewName}");
 			}
 			break;
 		}
 		case Keys.End:
 		{
-			ITextToSpeechService service3 = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			if (service3 != null)
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			if (textToSpeechService != null)
 			{
-				service3.AudioDeviceConnected = false;
+				textToSpeechService.AudioDeviceConnected = false;
 			}
 			break;
 		}
@@ -158,7 +158,7 @@ public class HostForm : Form
 			ScreenshotHelper.Capture(this);
 			break;
 		case Keys.F2:
-			if (service != null && service.Filter["environment"] != "Production")
+			if (bundleService != null && bundleService.Filter["environment"] != "Production")
 			{
 				new ManageViewsForm().ShowDialog();
 			}
@@ -166,11 +166,11 @@ public class HostForm : Form
 		case Keys.F4:
 		{
 			PreferencesManager preferencesManager = new PreferencesManager();
-			if (service == null)
+			if (bundleService == null)
 			{
 				break;
 			}
-			XmlNode xml = service.GetXml("config");
+			XmlNode xml = bundleService.GetXml("config");
 			if (xml == null)
 			{
 				break;
@@ -180,24 +180,24 @@ public class HostForm : Form
 			{
 				break;
 			}
-			string text = null;
-			foreach (XmlNode item in xmlNodeList)
+			string passwordHash = null;
+			foreach (XmlNode row in xmlNodeList)
 			{
-				XmlNodeList xmlNodeList2 = item.SelectNodes("column");
-				if (xmlNodeList2 == null)
+				XmlNodeList columns = row.SelectNodes("column");
+				if (columns == null)
 				{
 					continue;
 				}
-				foreach (XmlNode item2 in xmlNodeList2)
+				foreach (XmlNode column in columns)
 				{
-					if (item2.GetAttributeValue<string>("name") == "F4PasswordHash")
+					if (column.GetAttributeValue<string>("name") == "F4PasswordHash")
 					{
-						text = item2.GetNodeValue(string.Empty);
+						passwordHash = column.GetNodeValue(string.Empty);
 						break;
 					}
 				}
 			}
-			if (text == null)
+			if (passwordHash == null)
 			{
 				break;
 			}
@@ -205,9 +205,9 @@ public class HostForm : Form
 			if (unlockForm.ShowDialog() == DialogResult.OK)
 			{
 				SHA256Managed sHA256Managed = new SHA256Managed();
-				string obj = Convert.ToBase64String(sHA256Managed.ComputeHash(sHA256Managed.ComputeHash(Encoding.UTF8.GetBytes(unlockForm.Password))));
+				string enteredHash = Convert.ToBase64String(sHA256Managed.ComputeHash(sHA256Managed.ComputeHash(Encoding.UTF8.GetBytes(unlockForm.Password))));
 				sHA256Managed.Clear();
-				if (obj == text)
+				if (enteredHash == passwordHash)
 				{
 					preferencesManager.ShowDialog();
 				}
@@ -219,13 +219,13 @@ public class HostForm : Form
 			break;
 		}
 		case Keys.F5:
-			if (service != null && service.Filter["environment"] != "Production")
+			if (bundleService != null && bundleService.Filter["environment"] != "Production")
 			{
 				ServiceLocator.Instance.GetService<IIdeService>()?.Show();
 			}
 			break;
 		case Keys.F6:
-			if (service != null && service.Filter["environment"] != "Production")
+			if (bundleService != null && bundleService.Filter["environment"] != "Production")
 			{
 				new ManageTimersForm().ShowDialog();
 			}
@@ -235,25 +235,25 @@ public class HostForm : Form
 			break;
 		case Keys.F10:
 		{
-			IRenderingService service5 = ServiceLocator.Instance.GetService<IRenderingService>();
+			IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 			string name = "ADALine";
-			if (service5.ActiveScene.SceneRenderType == RenderType.WPF)
+			if (renderingService.ActiveScene.SceneRenderType == RenderType.WPF)
 			{
-				System.Windows.Controls.UserControl userControl = (service5.ActiveScene.Actors.First?.Value)?.WPFFrameworkElement as System.Windows.Controls.UserControl;
+				System.Windows.Controls.UserControl userControl = (renderingService.ActiveScene.Actors.First?.Value)?.WPFFrameworkElement as System.Windows.Controls.UserControl;
 				Grid grid = userControl?.Content as Grid;
 				IEnumerator enumerator = grid.Children.GetEnumerator();
-				bool flag = false;
+				bool lineFound = false;
 				while (enumerator.MoveNext())
 				{
 					if (enumerator.Current is Line line)
 					{
 						line.Visibility = ((line.Visibility == Visibility.Visible) ? Visibility.Hidden : Visibility.Visible);
 						userControl.InvalidateVisual();
-						flag = true;
+						lineFound = true;
 						break;
 					}
 				}
-				if (!flag)
+				if (!lineFound)
 				{
 					Line element = new Line
 					{
@@ -275,28 +275,28 @@ public class HostForm : Form
 			}
 			else
 			{
-				service5.ActiveScene.SuspendDrawing();
-				IActor actor = service5.ActiveScene.GetActor(name);
+				renderingService.ActiveScene.SuspendDrawing();
+				IActor actor = renderingService.ActiveScene.GetActor(name);
 				if (actor != null)
 				{
-					service5.ActiveScene.Remove(actor);
+					renderingService.ActiveScene.Remove(actor);
 				}
 				else
 				{
-					IActor actor2 = service5.ActiveScene.CreateActor();
-					actor2.Name = name;
-					actor2.Y = 286;
-					actor2.X = 0;
-					actor2.Width = 1024;
-					actor2.Height = 3;
-					actor2.BackgroundColor = System.Drawing.Color.GreenYellow;
-					actor2.Visible = true;
-					actor2.HitFlags = HitTestFlags.None;
-					actor2.ForegroundColor = System.Drawing.Color.GreenYellow;
-					actor2.OptionFlags = RenderOptionFlags.Background;
-					service5.ActiveScene.AddLast(actor2);
+					IActor lineActor = renderingService.ActiveScene.CreateActor();
+					lineActor.Name = name;
+					lineActor.Y = 286;
+					lineActor.X = 0;
+					lineActor.Width = 1024;
+					lineActor.Height = 3;
+					lineActor.BackgroundColor = System.Drawing.Color.GreenYellow;
+					lineActor.Visible = true;
+					lineActor.HitFlags = HitTestFlags.None;
+					lineActor.ForegroundColor = System.Drawing.Color.GreenYellow;
+					lineActor.OptionFlags = RenderOptionFlags.Background;
+					renderingService.ActiveScene.AddLast(lineActor);
 				}
-				service5.ActiveScene.ResumeDrawing();
+				renderingService.ActiveScene.ResumeDrawing();
 			}
 			break;
 		}
@@ -313,11 +313,11 @@ public class HostForm : Form
 			break;
 		case Keys.F12:
 		{
-			IViewService service2 = ServiceLocator.Instance.GetService<IViewService>();
-			if (service2.Peek() == "product_detail_view")
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			if (viewService.Peek() == "product_detail_view")
 			{
-				service2.Push("title_details_dev_view", false);
-				service2.Show();
+				viewService.Push("title_details_dev_view", false);
+				viewService.Show();
 			}
 			break;
 		}
@@ -439,11 +439,11 @@ public class HostForm : Form
 		string value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>("Core", "DebugWindowSize");
 		if (value != null)
 		{
-			string[] array = value.Split(',');
-			if (array != null && array.Length == 2 && int.TryParse(array[0], out var result) && int.TryParse(array[1], out var result2) && result != 0 && result2 != 0)
+			string[] size = value.Split(',');
+			if (size.Length == 2 && int.TryParse(size[0], out var width) && int.TryParse(size[1], out var height) && width != 0 && height != 0)
 			{
-				base.Width = result;
-				base.Height = result2;
+				base.Width = width;
+				base.Height = height;
 			}
 		}
 	}

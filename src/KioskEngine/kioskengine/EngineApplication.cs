@@ -494,13 +494,14 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	public static char? GetCharFromKey(Key key)
 	{
 		char? result = null;
-		int num = KeyInterop.VirtualKeyFromKey(key);
+		int virtualKey = KeyInterop.VirtualKeyFromKey(key);
 		byte[] lpKeyState = new byte[256];
 		GetKeyboardState(lpKeyState);
-		uint wScanCode = MapVirtualKey((uint)num, MapType.MAPVK_VK_TO_VSC);
+		uint wScanCode = MapVirtualKey((uint)virtualKey, MapType.MAPVK_VK_TO_VSC);
 		StringBuilder stringBuilder = new StringBuilder(2);
-		int num2 = ToUnicode((uint)num, wScanCode, lpKeyState, stringBuilder, stringBuilder.Capacity, 0u);
-		if ((uint)(num2 - -1) > 1u)
+		int charCount = ToUnicode((uint)virtualKey, wScanCode, lpKeyState, stringBuilder, stringBuilder.Capacity, 0u);
+		// -1: a dead key, 0: no character.
+		if (charCount != -1 && charCount != 0)
 		{
 			result = stringBuilder[0];
 		}
@@ -607,12 +608,12 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		AddService(typeof(IUpdateClientService), new UpdateClientService());
 		AddService(typeof(IApiService), new APIService());
 		AddService(typeof(IEngineApplicationService), new EngineApplicationService());
-		IConfigurationService service2 = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service2 != null && (service2.TryGetValue<bool>("system", "General", "TextToSpeechEnabled", out var value) & value))
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService != null && (configurationService.TryGetValue<bool>("system", "General", "TextToSpeechEnabled", out var value) & value))
 		{
 			AddService(typeof(ITextToSpeechService), TextToSpeechService.Instance);
 		}
-		AnalyticsService instance = new AnalyticsService(LogHelper.Instance, service2, this);
+		AnalyticsService instance = new AnalyticsService(LogHelper.Instance, configurationService, this);
 		AddService(typeof(IAnalyticsService), instance);
 		InitializePreferencePages();
 		errorList.AddRange(SchedulerService.Instance.Initialize());
@@ -696,13 +697,13 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		{
 			AddService(typeof(IRentalSessionService), new RentalSessionService());
 			IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-			IConfigurationService service2 = ServiceLocator.Instance.GetService<IConfigurationService>();
-			IKioskClientService service3 = ServiceLocator.Instance.GetService<IKioskClientService>();
+			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			AddService(instance: new ControlPanelService(), serviceType: typeof(IControlPanelService));
 			AddService(instance: new FieldMaintenanceService(), serviceType: typeof(IFieldMaintenanceService));
-			StoreManagerService storeManagerService = new StoreManagerService(Country.US, service2);
+			StoreManagerService storeManagerService = new StoreManagerService(Country.US, configurationService);
 			AddService(typeof(IStoreManager), storeManagerService);
-			service3?.Kiosk?.LoadNearbyKiosks();
+			kioskClientService?.Kiosk?.LoadNearbyKiosks();
 			KioskEventService kioskEventService = new KioskEventService(storeManagerService);
 			kioskEventService.Start();
 			AddService(typeof(IKioskEventService), kioskEventService);
@@ -812,39 +813,39 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 
 	protected override void OnMainFormClosed(object sender, EventArgs e)
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		IIdleTimerService service2 = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		ICallbackService service3 = ServiceLocator.Instance.GetService<ICallbackService>();
-		service3.Flush();
-		IEnvironmentNotificationService service4 = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		IQueueService service5 = ServiceLocator.Instance.GetService<IQueueService>();
-		IKernelService service6 = ServiceLocator.Instance.GetService<IKernelService>();
-		IRenderingService service7 = ServiceLocator.Instance.GetService<IRenderingService>();
-		IFontCacheService service8 = ServiceLocator.Instance.GetService<IFontCacheService>();
-		IDataCacheService service9 = ServiceLocator.Instance.GetService<IDataCacheService>();
-		IBitmapCacheService service10 = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		IShoppingSessionService service11 = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IDataStoreService service12 = ServiceLocator.Instance.GetService<IDataStoreService>();
-		ISchedulerService service13 = ServiceLocator.Instance.GetService<ISchedulerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+		callbackService.Flush();
+		IEnvironmentNotificationService notificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		IFontCacheService fontCacheService = ServiceLocator.Instance.GetService<IFontCacheService>();
+		IDataCacheService dataCacheService = ServiceLocator.Instance.GetService<IDataCacheService>();
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		ISchedulerService schedulerService = ServiceLocator.Instance.GetService<ISchedulerService>();
 		ServiceLocator.Instance.GetService<IStyleSheetService>().Reset();
-		service2?.Reset();
-		service.Reset();
-		service13.Shutdown();
-		service4.Unregister(base.MainForm.Handle);
-		service4.Reset();
-		if (service7.ActiveScene != null)
+		idleTimerService?.Reset();
+		timerService.Reset();
+		schedulerService.Shutdown();
+		notificationService.Unregister(base.MainForm.Handle);
+		notificationService.Reset();
+		if (renderingService.ActiveScene != null)
 		{
-			service7.ActiveScene.Clear();
+			renderingService.ActiveScene.Clear();
 		}
-		service10.DropCache();
-		service8.DropCache();
-		service6.Dispose();
-		service9.Shutdown();
-		service3.Reset();
-		service5.StopQueueWorker();
-		service11.Dispose();
-		service5.Dispose();
-		service12.CloseAllStores();
+		bitmapCacheService.DropCache();
+		fontCacheService.DropCache();
+		kernelService.Dispose();
+		dataCacheService.Shutdown();
+		callbackService.Reset();
+		queueService.StopQueueWorker();
+		shoppingSessionService.Dispose();
+		queueService.Dispose();
+		dataStoreService.CloseAllStores();
 		ServiceLocator.Instance.GetService<IKioskHealthService>().Stop();
 		ServiceLocator.Instance.GetService<IPricingService>().Stop();
 		ServiceLocator.Instance.GetService<IKioskEventService>().Stop();
@@ -1035,10 +1036,10 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		if (m_idleHandlers.Count != 0)
 		{
-			KeyValuePair<string, IdleEventHandler>[] array = new KeyValuePair<string, IdleEventHandler>[m_idleHandlers.Count];
-			m_idleHandlers.CopyTo(array, 0);
-			KeyValuePair<string, IdleEventHandler>[] array2 = array;
-			foreach (KeyValuePair<string, IdleEventHandler> keyValuePair in array2)
+			// A copy: a handler may add or remove handlers.
+			KeyValuePair<string, IdleEventHandler>[] snapshot = new KeyValuePair<string, IdleEventHandler>[m_idleHandlers.Count];
+			m_idleHandlers.CopyTo(snapshot, 0);
+			foreach (KeyValuePair<string, IdleEventHandler> keyValuePair in snapshot)
 			{
 				keyValuePair.Value();
 			}
@@ -1049,10 +1050,10 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		if (m_activatedHandlers.Count != 0)
 		{
-			KeyValuePair<string, ActivatedEventHandler>[] array = new KeyValuePair<string, ActivatedEventHandler>[m_activatedHandlers.Count];
-			m_activatedHandlers.CopyTo(array, 0);
-			KeyValuePair<string, ActivatedEventHandler>[] array2 = array;
-			foreach (KeyValuePair<string, ActivatedEventHandler> keyValuePair in array2)
+			// A copy: a handler may add or remove handlers.
+			KeyValuePair<string, ActivatedEventHandler>[] snapshot = new KeyValuePair<string, ActivatedEventHandler>[m_activatedHandlers.Count];
+			m_activatedHandlers.CopyTo(snapshot, 0);
+			foreach (KeyValuePair<string, ActivatedEventHandler> keyValuePair in snapshot)
 			{
 				keyValuePair.Value();
 			}
@@ -1065,10 +1066,10 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		{
 			string key = e.KeyChar.ToString();
 			int keyChar = e.KeyChar;
-			KeyValuePair<string, KeyPressHandler>[] array = new KeyValuePair<string, KeyPressHandler>[m_keyPressHandlers.Count];
-			m_keyPressHandlers.CopyTo(array, 0);
-			KeyValuePair<string, KeyPressHandler>[] array2 = array;
-			foreach (KeyValuePair<string, KeyPressHandler> keyValuePair in array2)
+			// A copy: a handler may add or remove handlers.
+			KeyValuePair<string, KeyPressHandler>[] snapshot = new KeyValuePair<string, KeyPressHandler>[m_keyPressHandlers.Count];
+			m_keyPressHandlers.CopyTo(snapshot, 0);
+			foreach (KeyValuePair<string, KeyPressHandler> keyValuePair in snapshot)
 			{
 				keyValuePair.Value(key, keyChar, e.ModifierKeys.ToString());
 			}
@@ -1079,10 +1080,10 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		if (m_mouseClickHandlers.Count != 0)
 		{
-			KeyValuePair<string, MouseClickHandler>[] array = new KeyValuePair<string, MouseClickHandler>[m_mouseClickHandlers.Count];
-			m_mouseClickHandlers.CopyTo(array, 0);
-			KeyValuePair<string, MouseClickHandler>[] array2 = array;
-			foreach (KeyValuePair<string, MouseClickHandler> keyValuePair in array2)
+			// A copy: a handler may add or remove handlers.
+			KeyValuePair<string, MouseClickHandler>[] snapshot = new KeyValuePair<string, MouseClickHandler>[m_mouseClickHandlers.Count];
+			m_mouseClickHandlers.CopyTo(snapshot, 0);
+			foreach (KeyValuePair<string, MouseClickHandler> keyValuePair in snapshot)
 			{
 				keyValuePair.Value(e.Button.ToString(), e.X, e.Y);
 			}
@@ -1093,10 +1094,10 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		if (m_mouseDoubleClickHandlers.Count != 0)
 		{
-			KeyValuePair<string, MouseClickHandler>[] array = new KeyValuePair<string, MouseClickHandler>[m_mouseDoubleClickHandlers.Count];
-			m_mouseDoubleClickHandlers.CopyTo(array, 0);
-			KeyValuePair<string, MouseClickHandler>[] array2 = array;
-			foreach (KeyValuePair<string, MouseClickHandler> keyValuePair in array2)
+			// A copy: a handler may add or remove handlers.
+			KeyValuePair<string, MouseClickHandler>[] snapshot = new KeyValuePair<string, MouseClickHandler>[m_mouseDoubleClickHandlers.Count];
+			m_mouseDoubleClickHandlers.CopyTo(snapshot, 0);
+			foreach (KeyValuePair<string, MouseClickHandler> keyValuePair in snapshot)
 			{
 				keyValuePair.Value(e.Button.ToString(), e.X, e.Y);
 			}
@@ -1171,23 +1172,23 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 						LogHelper.Instance.Log("A new {0} file was loaded.", Path.GetFileName(file.Name));
 						if (name.Equals("kioskhealth", StringComparison.CurrentCultureIgnoreCase))
 						{
-							IKioskEventService service2 = ServiceLocator.Instance.GetService<IKioskEventService>();
-							if (service2 == null)
+							IKioskEventService kioskEventService = ServiceLocator.Instance.GetService<IKioskEventService>();
+							if (kioskEventService == null)
 							{
 								LogHelper.Instance.Log("Event service was not found when trying to trigger a new health config file.");
 							}
 							else
 							{
-								service2.Restart();
+								kioskEventService.Restart();
 							}
-							IKioskHealthService service3 = ServiceLocator.Instance.GetService<IKioskHealthService>();
-							if (service3 == null)
+							IKioskHealthService kioskHealthService = ServiceLocator.Instance.GetService<IKioskHealthService>();
+							if (kioskHealthService == null)
 							{
 								LogHelper.Instance.Log("Health service was not found when trying to trigger a new health config file.");
 							}
 							else
 							{
-								service3.Restart();
+								kioskHealthService.Restart();
 							}
 						}
 					});

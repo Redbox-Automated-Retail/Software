@@ -173,14 +173,16 @@ internal class FileSetDownloader
 		_fileSetInfoList = fileSetInfoList;
 	}
 
+	// The cheapest way to get the files this kiosk lacks: nothing, the revision's patch set (plus whole files without a
+	// patch), a patch per file, the files one by one, or the whole file set.
 	private DownloadMethod GetDownloadMethod()
 	{
 		UpdateFileSetInfoList();
-		long num = FileSetInfoList.Sum((FileSetFileInfo item) => item.Exists ? 0 : item.FileSize);
-		long num2 = 0L;
+		long fileBytes = FileSetInfoList.Sum((FileSetFileInfo item) => item.Exists ? 0 : item.FileSize);
+		long patchBytes = 0L;
 		if (_revision.PatchSetFileSize > 0)
 		{
-			num2 = FileSetInfoList.Sum(delegate(FileSetFileInfo item)
+			patchBytes = FileSetInfoList.Sum(delegate(FileSetFileInfo item)
 			{
 				if (item.Exists)
 				{
@@ -189,10 +191,10 @@ internal class FileSetDownloader
 				return (item.PatchSize > 0) ? item.PatchSize : item.FileSize;
 			});
 		}
-		long num3 = 0L;
+		long patchSetBytes = 0L;
 		if (_revision.PatchSetFileSize > 0)
 		{
-			num3 = FileSetInfoList.Sum(delegate(FileSetFileInfo item)
+			patchSetBytes = FileSetInfoList.Sum(delegate(FileSetFileInfo item)
 			{
 				if (item.Exists)
 				{
@@ -200,21 +202,21 @@ internal class FileSetDownloader
 				}
 				return (item.PatchSize == 0L) ? item.FileSize : 0;
 			});
-			num3 += _revision.PatchSetFileSize;
+			patchSetBytes += _revision.PatchSetFileSize;
 		}
-		if (num == 0L)
+		if (fileBytes == 0L)
 		{
 			return DownloadMethod.None;
 		}
-		if (num3 > 0 && (num2 == 0L || num3 <= num2) && num3 < num && num3 < _revision.SetFileSize)
+		if (patchSetBytes > 0 && (patchBytes == 0L || patchSetBytes <= patchBytes) && patchSetBytes < fileBytes && patchSetBytes < _revision.SetFileSize)
 		{
 			return DownloadMethod.PatchSet;
 		}
-		if (num2 > 0 && num2 < num && num2 < _revision.SetFileSize)
+		if (patchBytes > 0 && patchBytes < fileBytes && patchBytes < _revision.SetFileSize)
 		{
 			return DownloadMethod.Patches;
 		}
-		if (num < _revision.SetFileSize)
+		if (fileBytes < _revision.SetFileSize)
 		{
 			return DownloadMethod.Files;
 		}
