@@ -38,21 +38,21 @@ public class ReservationService : IReservationService
 
 	public async Task<GetReservationServiceStatusResponse> GetReservationServiceStatus()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		GetReservationServiceStatusResponse response = new GetReservationServiceStatusResponse();
 		await Task.Factory.StartNew(delegate
 		{
 			try
 			{
-				IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
+				IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 				response.Content = new ReservationServiceStatus
 				{
 					IsRegisteredWithBrokerService = IsRegisteredWithBrokerService,
 					BrokerServiceRegistrationDateTime = BrokerServiceRegistrationDateTime,
-					AuthorizeAtPickup = (service2?.AuthorizeAtPickup ?? false),
-					GiftCardsEnabled = (service2?.GiftCardsEnabled ?? false),
-					RecommendationOnPickupEnabled = (service2?.RecommendationOnPickup ?? false),
+					AuthorizeAtPickup = (configuration?.AuthorizeAtPickup ?? false),
+					GiftCardsEnabled = (configuration?.GiftCardsEnabled ?? false),
+					RecommendationOnPickupEnabled = (configuration?.RecommendationOnPickup ?? false),
 					KioskEngineVersion = macroService["EngineVersion"]
 				};
 				response.Success = true;
@@ -69,14 +69,14 @@ public class ReservationService : IReservationService
 				});
 			}
 			LogHelper.Instance.Log("ReservationService.GetReservationServiceStatus result=" + JsonConvert.SerializeObject(response));
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		return response;
 	}
 
 	public async Task<GetReservationsResponse> GetReservations()
 	{
 		LogHelper.Instance.Log("Starting ReservationService.GetReservations");
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		GetReservationsResponse response = new GetReservationsResponse
 		{
 			Content = new List<IReservation>()
@@ -86,7 +86,7 @@ public class ReservationService : IReservationService
 			response.Content = ReservationFunctions.GetAllReservations();
 			response.StatusCode = ((response.Content != null && response.Content.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NotFound);
 			response.Success = true;
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		LogHelper.Instance.Log("ReservationService.GetReservations result=" + JsonConvert.SerializeObject(response));
 		return response;
 	}
@@ -94,7 +94,7 @@ public class ReservationService : IReservationService
 	public async Task<GetReservableTitlesResponse> GetReservableTitles()
 	{
 		LogHelper.Instance.Log("Starting ReservationService.GetReservableTitles");
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		GetReservableTitlesResponse response = new GetReservableTitlesResponse
 		{
 			Content = new List<ReservableTitle>()
@@ -126,14 +126,14 @@ public class ReservationService : IReservationService
 			response.StatusCode = ((response.Content != null && response.Content.Count > 0) ? HttpStatusCode.OK : HttpStatusCode.NotFound);
 			response.Success = true;
 			LogHelper.Instance.Log("ReservationService.GetReservableTitles result=" + JsonConvert.SerializeObject(response));
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		return response;
 	}
 
 	public async Task<CreateReservationResponse> CreateReservation(ReservationRequest reservationRequest)
 	{
 		LogHelper.Instance.Log("Starting ReservationService.CreateReservation");
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		CreateReservationResponse response = new CreateReservationResponse();
 		await Task.Factory.StartNew(delegate
 		{
@@ -174,7 +174,7 @@ public class ReservationService : IReservationService
 					Message = reservationRequestResult?.ErrorMessage
 				});
 			}
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		LogHelper.Instance.Log("ReservationService.CreateReservation result=" + JsonConvert.SerializeObject(response));
 		return response;
 	}
@@ -185,7 +185,7 @@ public class ReservationService : IReservationService
 		{
 			Success = false
 		};
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		await Task.Factory.StartNew(delegate
 		{
 			LogHelper.Instance.Log("ReservationService.CreateReservation referenceNumber=" + referenceNumber);
@@ -225,7 +225,7 @@ public class ReservationService : IReservationService
 				}
 			}
 			LogHelper.Instance.Log("ReservationService.CancelReservation result=" + JsonConvert.SerializeObject(response));
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		return response;
 	}
 
@@ -344,7 +344,7 @@ public class ReservationService : IReservationService
 		}
 		else
 		{
-			IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
 			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 			CancelRetryRegisterTimer();
 			if (IsRegisteredWithBrokerService)
@@ -352,7 +352,7 @@ public class ReservationService : IReservationService
 				UnregisterFromBrokerServiceRequest unregisterWithBrokerServiceRequest = new UnregisterFromBrokerServiceRequest
 				{
 					MessageId = Guid.NewGuid(),
-					KioskId = (service?.KioskId ?? 0),
+					KioskId = (storeManager?.KioskId ?? 0),
 					AppName = macroService["ProductName"],
 					Reason = reason.ToString()
 				};

@@ -49,10 +49,10 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 		}
 		int lpNumberOfBytesWritten = 0;
 		byte[] bytes = BitConverter.GetBytes(message.Length);
-		byte[] array = new byte[bytes.Length + message.Length];
-		Array.Copy(bytes, array, bytes.Length);
-		Array.Copy(message, 0, array, bytes.Length, message.Length);
-		if (!Win32.WriteFile(PipeHandle, array, array.Length, out lpNumberOfBytesWritten, IntPtr.Zero))
+		byte[] buffer = new byte[bytes.Length + message.Length];
+		Array.Copy(bytes, buffer, bytes.Length);
+		Array.Copy(message, 0, buffer, bytes.Length, message.Length);
+		if (!Win32.WriteFile(PipeHandle, buffer, buffer.Length, out lpNumberOfBytesWritten, IntPtr.Zero))
 		{
 			int lastWin32Error = Marshal.GetLastWin32Error();
 			LogHelper.Instance.Log($"[BasePipeChannel] Write failed: GetLastError() = {lastWin32Error}", LogEntryType.Error);

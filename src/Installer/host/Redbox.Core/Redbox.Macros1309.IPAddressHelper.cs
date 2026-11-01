@@ -45,8 +45,8 @@ internal static class Redbox_002EMacros1309_002EIPAddressHelper
 			if (networkInterface.Description == "Microsoft TV/Video Connection")
 			{
 				byte[] addressBytes = networkInterface.GetPhysicalAddress().GetAddressBytes();
-				byte[] array = new byte[6];
-				if (addressBytes == array)
+				byte[] buffer = new byte[6];
+				if (addressBytes == buffer)
 				{
 					continue;
 				}

@@ -36,16 +36,16 @@ public sealed class ProgramResult
 
 	public static ProgramResult FromString(string value)
 	{
-		string[] array = value.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		if (string.Compare(array[0], "RESULT", ignoreCase: true) == 0 && array.Length >= 7)
+		string[] parts = value.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		if (string.Compare(parts[0], "RESULT", ignoreCase: true) == 0 && parts.Length >= 7)
 		{
 			ProgramResult programResult = new ProgramResult
 			{
-				ID = new Guid(array[1]),
-				TimeStamp = DateTime.Parse(array[2]),
-				Code = array[3].Trim()
+				ID = new Guid(parts[1]),
+				TimeStamp = DateTime.Parse(parts[2]),
+				Code = parts[3].Trim()
 			};
-			string[] array2 = array[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			string[] array2 = parts[4].Trim().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			if (array2.Length == 2)
 			{
 				if (int.TryParse(array2[0], out var result))
@@ -57,20 +57,20 @@ public sealed class ProgramResult
 					programResult.Slot = result;
 				}
 			}
-			string text = array[5].Trim();
+			string text = parts[5].Trim();
 			if (text != "~")
 			{
 				programResult.ItemID = new ResultItem(text);
 			}
-			programResult.Message = array[6];
-			if (9 == array.Length)
+			programResult.Message = parts[6];
+			if (9 == parts.Length)
 			{
-				string text2 = array[7].Trim();
+				string text2 = parts[7].Trim();
 				if (text2 != "~")
 				{
 					programResult.ReturnTime = DateTime.Parse(text2);
 				}
-				string text3 = array[8].Trim();
+				string text3 = parts[8].Trim();
 				if (text3 != "~")
 				{
 					programResult.PreviousItem = new ResultItem(text3);

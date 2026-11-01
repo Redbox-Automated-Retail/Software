@@ -15,9 +15,9 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 
 	internal void BackupConfiguration(string kioskID)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		using StreamWriter streamWriter = new StreamWriter(File.Open(service.RuntimePath("backup-log.txt"), FileMode.Append, FileAccess.Write, FileShare.Read));
-		string text = service.RuntimePath(kioskID);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		using StreamWriter streamWriter = new StreamWriter(File.Open(runtimeService.RuntimePath("backup-log.txt"), FileMode.Append, FileAccess.Write, FileShare.Read));
+		string text = runtimeService.RuntimePath(kioskID);
 		if (!Directory.Exists(text))
 		{
 			try
@@ -44,24 +44,24 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 
 	internal bool UpdateOption(string updateConfigurationString)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		char c = ':';
-		int num = updateConfigurationString.IndexOf('|');
-		if (-1 != num)
+		int index = updateConfigurationString.IndexOf('|');
+		if (-1 != index)
 		{
 			c = '|';
 		}
-		string[] array = updateConfigurationString.Split(c);
-		if (array.Length < 3)
+		string[] parts = updateConfigurationString.Split(c);
+		if (parts.Length < 3)
 		{
 			Console.WriteLine("Unable to parse option {0}", updateConfigurationString);
 			return false;
 		}
-		string path = service.RuntimePath("ConfigurationUpdateError.log");
-		string text = array[0];
-		string arg = array[1];
-		string text2 = array[2];
-		bool flag = array.Length == 4;
+		string path = runtimeService.RuntimePath("ConfigurationUpdateError.log");
+		string text = parts[0];
+		string arg = parts[1];
+		string text2 = parts[2];
+		bool flag = parts.Length == 4;
 		if (File.Exists(path))
 		{
 			try
@@ -106,8 +106,8 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 			return true;
 		}
 		hardwareCommandResult = Service.ExecuteImmediate($"GETCFG \"{arg}\" TYPE={text}", out job);
-		string path2 = service.RuntimePath("ConfigurationUpdateValidateError.log");
-		service.SafeDelete(path2);
+		string path2 = runtimeService.RuntimePath("ConfigurationUpdateValidateError.log");
+		runtimeService.SafeDelete(path2);
 		bool result = false;
 		StreamWriter validateFile = new StreamWriter(path2);
 		try

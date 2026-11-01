@@ -42,7 +42,7 @@ internal sealed class Gen5DeviceDescriptor : IDeviceDescriptor
 
 	internal Gen5DeviceDescriptor()
 	{
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(DeviceClass.Ports);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(DeviceClass.Ports);
 	}
 }

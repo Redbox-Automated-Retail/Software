@@ -32,10 +32,10 @@ public class HardwareAlertManagerServiceFunctions
 		IHardwareResult hardwareResultFromLuaTable = GetHardwareResultFromLuaTable(jobResult);
 		if (hardwareResultFromLuaTable != null)
 		{
-			IHardwareAlertManagerService service = ServiceLocator.Instance.GetService<IHardwareAlertManagerService>();
-			if (service != null)
+			IHardwareAlertManagerService hardwareAlertManagerService = ServiceLocator.Instance.GetService<IHardwareAlertManagerService>();
+			if (hardwareAlertManagerService != null)
 			{
-				result = service.FormatJobResult(hardwareResultFromLuaTable);
+				result = hardwareAlertManagerService.FormatJobResult(hardwareResultFromLuaTable);
 			}
 		}
 		return result;

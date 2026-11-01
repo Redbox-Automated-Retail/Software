@@ -43,9 +43,9 @@ public sealed class DataTableService : IDataTableService
 
 	public DataTableService(bool exclusive)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		DataDescriptor dataDescriptor = new DataDescriptor(service.DataPath);
-		CountersDescriptor d = new CountersDescriptor(service.DataPath, exclusive);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		DataDescriptor dataDescriptor = new DataDescriptor(runtimeService.DataPath);
+		CountersDescriptor d = new CountersDescriptor(runtimeService.DataPath, exclusive);
 		TypeMap.Add(typeof(IPersistentCounter), new PersistentCounterTable(d));
 		TypeMap.Add(typeof(ILocation), new InventoryTable(dataDescriptor));
 		TypeMap.Add(typeof(IDumpBinInventoryItem), new DumpbinTable(dataDescriptor));

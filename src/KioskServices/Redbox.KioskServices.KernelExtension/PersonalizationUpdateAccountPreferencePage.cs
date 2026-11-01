@@ -67,11 +67,11 @@ public class PersonalizationUpdateAccountPreferencePage : UserControl, IPreferen
 
 	private void btnUpdateAccount_Click(object sender, EventArgs e)
 	{
-		IPersonalizationService service = ServiceLocator.Instance.GetService<IPersonalizationService>();
+		IPersonalizationService personalizationService = ServiceLocator.Instance.GetService<IPersonalizationService>();
 		Action<IUpdateAccountResult> action = updateAcountCallback;
 		SecureString secureString = CardHelper.CopyToSecure(tb_Pin.Text.Trim());
 		PersonalizationServicesProxySimulator instance = PersonalizationServicesProxySimulator.Instance;
-		service.UpdateAccount(instance.CustomerProfileNumber.Trim(), instance.LoginEmail.Trim(), instance.MobilePhoneNumber.Trim(), secureString, cbPunchCardOptIn.Checked, cbTextClubOptIn.Checked, action, false, Redbox.KioskServices.Proxy.ComponentModel.AccountSourceType.General);
+		personalizationService.UpdateAccount(instance.CustomerProfileNumber.Trim(), instance.LoginEmail.Trim(), instance.MobilePhoneNumber.Trim(), secureString, cbPunchCardOptIn.Checked, cbTextClubOptIn.Checked, action, false, Redbox.KioskServices.Proxy.ComponentModel.AccountSourceType.General);
 	}
 
 	private void updateAcountCallback(IUpdateAccountResult result)

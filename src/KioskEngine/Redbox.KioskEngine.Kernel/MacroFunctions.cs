@@ -8,10 +8,10 @@ internal static class MacroFunctions
 	[KernelFunction(Name = "kernel.setmacro")]
 	internal static void SetMacro(string name, string value)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		if (service != null)
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		if (macroService != null)
 		{
-			service[name] = value;
+			macroService[name] = value;
 		}
 	}
 

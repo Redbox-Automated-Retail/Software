@@ -57,8 +57,8 @@ internal static class HealthServicesFunctions
 		{
 			foreach (IKernelExtension extension in kernelExtensionService.Extensions)
 			{
-				int num = extension.Name.LastIndexOf('.');
-				string key = "[Extension] " + extension.Name.Substring(num + 1);
+				int lastIndex = extension.Name.LastIndexOf('.');
+				string key = "[Extension] " + extension.Name.Substring(lastIndex + 1);
 				luaTable[key] = extension.Version;
 			}
 		}
@@ -71,19 +71,19 @@ internal static class HealthServicesFunctions
 				luaTable[key2] = bundle.Version.ToString();
 			}
 		}
-		IDeviceServiceClientHelper service4 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		if (service != null)
 		{
-			service["DeviceServiceVersion"] = service4?.DeviceServiceVersion?.ToString() ?? "Not Found";
-			service["DeviceServiceClientVersion"] = service4?.DeviceServiceClientVersion?.ToString() ?? "Not Found";
+			service["DeviceServiceVersion"] = deviceServiceClientHelper?.DeviceServiceVersion?.ToString() ?? "Not Found";
+			service["DeviceServiceClientVersion"] = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString() ?? "Not Found";
 		}
 		return luaTable;
 	}
 
 	private static void InnerSendAlert(string storeNumber, string alertType, string subType, string message, LuaFunction callback)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null)
 		{
 			return;
 		}
@@ -107,13 +107,13 @@ internal static class HealthServicesFunctions
 				callbackService2.EnqueueCallback(resultCallbackEntry);
 			};
 		}
-		service.SendAlert(storeNumber, alertType, subType, message, DateTime.Now, callback2);
+		healthServices.SendAlert(storeNumber, alertType, subType, message, DateTime.Now, callback2);
 	}
 
 	private static void InnerSendAuditEvent(string storeNumber, string eventType, string userName, string source, string message, LuaFunction callback)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null)
 		{
 			return;
 		}
@@ -137,6 +137,6 @@ internal static class HealthServicesFunctions
 				callbackService2.EnqueueCallback(resultCallbackEntry);
 			};
 		}
-		service.SendAuditEvent(storeNumber, eventType, DateTime.Now, userName, message, source, callback2);
+		healthServices.SendAuditEvent(storeNumber, eventType, DateTime.Now, userName, message, source, callback2);
 	}
 }

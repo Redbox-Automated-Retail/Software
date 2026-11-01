@@ -754,11 +754,11 @@ public class MessagePopupViewController : BaseViewController
 	public static void ShowSubPlatformWarning(Action timeOutAction, Action backAction, Action continueAction)
 	{
 		LogHelper.Instance.Log("Showing Sub Platform Warning message popup");
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ShowModal(new ModalParameters(ModalType.Dialog)
 		{
-			TitleText = service["Subplatform:Header"],
-			MessageText = service["Subplatform:Message"],
+			TitleText = macroService["Subplatform:Header"],
+			MessageText = macroService["Subplatform:Message"],
 			Button1Text = Resources.back_uppercase_button,
 			Button2Text = Resources.okay_button,
 			TimeOut = GetDefaultMessageTimeOut(),
@@ -773,10 +773,10 @@ public class MessagePopupViewController : BaseViewController
 	public static void ShowADAPurchaseWarning(Action timeOutAction, Action backAction, Action continueAction)
 	{
 		LogHelper.Instance.Log("Showing ADA Purchase Warning message popup");
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ShowModal(new ModalParameters(ModalType.Dialog)
 		{
-			TitleText = service["ADAPurchaseWarning:Header"],
+			TitleText = macroService["ADAPurchaseWarning:Header"],
 			Button1Text = Resources.back_uppercase_button,
 			Button2Text = Resources.okay_button,
 			TimeOut = GetDefaultMessageTimeOut(),
@@ -790,11 +790,11 @@ public class MessagePopupViewController : BaseViewController
 	public static void ShowPurchaseWarning(Action timeOutAction, Action backAction, Action continueAction)
 	{
 		LogHelper.Instance.Log("Showing Purchase Warning message popup");
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ShowModal(new ModalParameters(ModalType.Dialog)
 		{
-			TitleText = service["PurchaseWarning:Header"],
-			MessageText = service["PurchaseWarning:Message"],
+			TitleText = macroService["PurchaseWarning:Header"],
+			MessageText = macroService["PurchaseWarning:Message"],
 			Button1Text = Resources.back_uppercase_button,
 			Button2Text = Resources.okay_button,
 			TimeOut = GetDefaultMessageTimeOut(),
@@ -809,11 +809,11 @@ public class MessagePopupViewController : BaseViewController
 	public static void ShowMatureWarning(Action timeOutAction, Action backAction, Action continueAction, List<string> analyticsContexts)
 	{
 		LogHelper.Instance.Log("Showing Mature Warning message popup");
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ShowModal(new ModalParameters(ModalType.Dialog)
 		{
-			TitleText = service["MatureWarning:Header"],
-			MessageText = service["MatureWarning:Message"],
+			TitleText = macroService["MatureWarning:Header"],
+			MessageText = macroService["MatureWarning:Message"],
 			Button1Text = Resources.back_uppercase_button,
 			Button2Text = Resources.okay_button,
 			TimeOut = GetDefaultMessageTimeOut(),
@@ -1434,20 +1434,20 @@ public class MessagePopupViewController : BaseViewController
 
 	public static void HideMessagePopupView(bool popOnly)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null && service.Peek() == "message_popup_view")
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null && viewService.Peek() == "message_popup_view")
 		{
 			MessagePopupViewStopTimer();
-			service.GoBackSafe("messageviewmanager:hide()", popOnly);
+			viewService.GoBackSafe("messageviewmanager:hide()", popOnly);
 		}
 	}
 
 	public static bool IsMessagePopupViewShowing()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			return service.Peek() == "message_popup_view";
+			return viewService.Peek() == "message_popup_view";
 		}
 		return false;
 	}
@@ -1554,8 +1554,8 @@ public class MessagePopupViewController : BaseViewController
 
 	private static void ConfigureTTS(MessagePopupViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => MessagePopupViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}

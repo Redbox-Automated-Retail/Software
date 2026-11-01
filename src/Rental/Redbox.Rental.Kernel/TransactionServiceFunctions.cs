@@ -17,10 +17,10 @@ public class TransactionServiceFunctions
 		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 		if (callbackService != null)
 		{
-			IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			ServiceLocator.Instance.GetService<IConfiguration>();
 			_ = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId;
-			service.Transaction.ReservationAuthorize(sessionId, customerProfileNumber, long.Parse(referenceNumber), delegate(IRemoteServiceResult r)
+			kioskClientService.Transaction.ReservationAuthorize(sessionId, customerProfileNumber, long.Parse(referenceNumber), delegate(IRemoteServiceResult r)
 			{
 				ICallbackService callbackService2 = callbackService;
 				ResultCallbackEntry resultCallbackEntry = new ResultCallbackEntry
@@ -69,7 +69,7 @@ public class TransactionServiceFunctions
 		{
 			return;
 		}
-		IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 		RemoteServiceCallback completeCallback = null;
 		if (callback != null)
 		{
@@ -86,6 +86,6 @@ public class TransactionServiceFunctions
 				});
 			};
 		}
-		service.Transaction.PickupAuthorize(sessionId, customerProfileNumber, referenceNumber, cartWasModified, completeCallback);
+		kioskClientService.Transaction.PickupAuthorize(sessionId, customerProfileNumber, referenceNumber, cartWasModified, completeCallback);
 	}
 }

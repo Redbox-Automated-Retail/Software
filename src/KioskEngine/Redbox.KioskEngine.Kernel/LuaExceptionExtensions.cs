@@ -18,8 +18,8 @@ public static class LuaExceptionExtensions
 		LuaError luaError = LuaError.FromString(rawMessage);
 		LogHelper.Instance.Log($"An unhandled error was raised from script resource '{luaError.ChunkName ?? resourceName}' at line {luaError.LineNumber.GetValueOrDefault()}: {luaError.Message ?? luaError.RawMessage}", LogEntryType.Error);
 		LogException(e);
-		IDebugService service = ServiceLocator.Instance.GetService<IDebugService>();
-		if (!service.IsEnabled)
+		IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+		if (!debugService.IsEnabled)
 		{
 			LogHelper.Instance.Log("IDebugService.IsEnabled == false; not opening debugger window.");
 			return;
@@ -27,7 +27,7 @@ public static class LuaExceptionExtensions
 		LogHelper.Instance.Log("IDebugService.IsEnabled == true; opening debugger window.");
 		if (!luaError.LineNumber.HasValue)
 		{
-			service.ActivateDebugger(luaError.ChunkName ?? resourceName);
+			debugService.ActivateDebugger(luaError.ChunkName ?? resourceName);
 			return;
 		}
 		string text = luaError.Message;
@@ -39,7 +39,7 @@ public static class LuaExceptionExtensions
 				text = text + "Exception:\n" + ex.InnerException.Message;
 			}
 		}
-		service.ActivateDebugger(luaError.ChunkName ?? resourceName, luaError.LineNumber.Value, text);
+		debugService.ActivateDebugger(luaError.ChunkName ?? resourceName, luaError.LineNumber.Value, text);
 	}
 
 	private static void LogException(Exception exception)

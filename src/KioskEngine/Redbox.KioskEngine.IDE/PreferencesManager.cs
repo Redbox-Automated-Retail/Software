@@ -42,8 +42,8 @@ public class PreferencesManager : Form
 	{
 		if (!DeactivateCurrentPage())
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (MessageBox.Show("There are unsaved changes because of errors.\n\nWould you like to correct them or close the window and lose your changes?", service.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (MessageBox.Show("There are unsaved changes because of errors.\n\nWould you like to correct them or close the window and lose your changes?", macroService.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
 			{
 				return;
 			}
@@ -117,12 +117,12 @@ public class PreferencesManager : Form
 		}
 		m_isActivated = true;
 		RefreshTree();
-		IUserSettingsStore service = ServiceLocator.Instance.GetService<IUserSettingsStore>();
+		IUserSettingsStore userSettingsStore = ServiceLocator.Instance.GetService<IUserSettingsStore>();
 		if (m_treeView.SelectedNode != null)
 		{
-			service.SetValue("Shell\\Preferences", "CurrentSelection", m_treeView.SelectedNode.FullPath);
+			userSettingsStore.SetValue("Shell\\Preferences", "CurrentSelection", m_treeView.SelectedNode.FullPath);
 		}
-		string value = service.GetValue<string>("Shell\\Preferences", "CurrentSelection");
+		string value = userSettingsStore.GetValue<string>("Shell\\Preferences", "CurrentSelection");
 		if (value == null)
 		{
 			return;
@@ -144,14 +144,14 @@ public class PreferencesManager : Form
 
 	private void RefreshTree()
 	{
-		IPreferenceService service = ServiceLocator.Instance.GetService<IPreferenceService>();
-		if (service == null)
+		IPreferenceService preferenceService = ServiceLocator.Instance.GetService<IPreferenceService>();
+		if (preferenceService == null)
 		{
 			return;
 		}
 		m_treeView.SuspendLayout();
 		m_treeView.BeginUpdate();
-		foreach (IPreferencePage preferencePage in service.PreferencePages)
+		foreach (IPreferencePage preferencePage in preferenceService.PreferencePages)
 		{
 			List<string> list = new List<string>();
 			if (string.IsNullOrEmpty(preferencePage.DisplayPath))

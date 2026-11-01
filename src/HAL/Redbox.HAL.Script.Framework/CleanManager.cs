@@ -12,7 +12,7 @@ internal sealed class CleanManager
 		MerchTransferManager merchTransferManager = new MerchTransferManager(context, ThinHelper.Debug);
 		try
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			using VMZIterator vMZIterator = new VMZIterator();
 			_ = context.AppLog;
 			do
@@ -24,7 +24,7 @@ internal sealed class CleanManager
 						return;
 					}
 				}
-				else if (service.IsStuck(vMZIterator.Location))
+				else if (inventoryService.IsStuck(vMZIterator.Location))
 				{
 					LogHelper.Instance.WithContext("CleanManager: don't process location {0} stuckFlags {1}", vMZIterator.Location.ToString(), vMZIterator.Location.StuckCount.ToString());
 				}

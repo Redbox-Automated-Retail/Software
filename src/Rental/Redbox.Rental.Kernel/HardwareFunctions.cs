@@ -23,18 +23,18 @@ public class HardwareFunctions
 	[KernelFunction(Name = "kernel.refresh_hardware_state")]
 	internal static void RefreshHardwareState()
 	{
-		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
-		if (service == null)
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
+		if (hardwareState == null)
 		{
 			LogHelper.Instance.Log("Hardware State was not found.");
 		}
-		else if (service.IsInitialized)
+		else if (hardwareState.IsInitialized)
 		{
-			service.Refresh();
+			hardwareState.Refresh();
 		}
 		else
 		{
-			service.Initialize();
+			hardwareState.Initialize();
 		}
 	}
 }

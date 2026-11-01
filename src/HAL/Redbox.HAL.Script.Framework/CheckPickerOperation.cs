@@ -55,8 +55,8 @@ internal struct CheckPickerOperation : IFileDiskHandler, IDisposable
 	{
 		Context.Send("CheckPickerStart");
 		LogHelper.Instance.WithContext("Check picker to see if we need to put something away.");
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IPickerSensorReadResult pickerSensorReadResult = service.ReadPickerSensors();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		IPickerSensorReadResult pickerSensorReadResult = controlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
 		{
 			Context.CreateItemStuckResult(vendId);
@@ -74,7 +74,7 @@ internal struct CheckPickerOperation : IFileDiskHandler, IDisposable
 			Context.SetSymbolValue("MSTESTER-SYMBOL-PICKER-FULL", "The gripper is obstructed.");
 			return ErrorCodes.PickerObstructed;
 		}
-		pickerSensorReadResult = service.ReadPickerSensors();
+		pickerSensorReadResult = controlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
 		{
 			Context.CreateItemStuckResult(vendId);
@@ -88,9 +88,9 @@ internal struct CheckPickerOperation : IFileDiskHandler, IDisposable
 		}
 		Context.Send("ItemInPicker");
 		LogHelper.Instance.WithContext("Picker is full, trying to find a slot for product.");
-		if (service.VendDoorState != VendDoorState.Closed)
+		if (controlSystem.VendDoorState != VendDoorState.Closed)
 		{
-			service.VendDoorClose();
+			controlSystem.VendDoorClose();
 		}
 		string text = Scanner.ReadDiskInPicker(ReadDiskOptions.LeaveCaptureResult | ReadDiskOptions.LeaveNoReadResult, Context);
 		LogHelper.Instance.WithContext("The ID in the picker: {0}", text);

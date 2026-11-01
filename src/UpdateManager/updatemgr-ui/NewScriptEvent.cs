@@ -73,7 +73,7 @@ public class NewScriptEvent : Form
 		m_errors.SetError(m_advanced_path, string.Empty);
 		m_errors.SetError(m_advanced_name, string.Empty);
 		bool flag = false;
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		ErrorList errorList = new ErrorList();
 		if (m_newScriptTabControl.SelectedTab == BasicPage)
 		{
@@ -109,7 +109,7 @@ public class NewScriptEvent : Form
 			{
 				return;
 			}
-			errorList.AddRange(service.ScheduleSimpleJob(repeatInterval: new TimeSpan(0, 0, int.Parse(m_basic_recurrence.Text)), name: m_basic_name.Text, payload: m_basic_path.Text.Escaped(), payloadType: PayloadType.Script, startOffset: startOffset, startTime: null, endTime: null));
+			errorList.AddRange(taskScheduler.ScheduleSimpleJob(repeatInterval: new TimeSpan(0, 0, int.Parse(m_basic_recurrence.Text)), name: m_basic_name.Text, payload: m_basic_path.Text.Escaped(), payloadType: PayloadType.Script, startOffset: startOffset, startTime: null, endTime: null));
 		}
 		else
 		{
@@ -145,7 +145,7 @@ public class NewScriptEvent : Form
 			{
 				return;
 			}
-			errorList.AddRange(service.ScheduleCronJob(m_advanced_name.Text, m_advanced_path.Text.Escaped(), PayloadType.Script, startOffset2, null, null, m_advanced_cronExpression.Text));
+			errorList.AddRange(taskScheduler.ScheduleCronJob(m_advanced_name.Text, m_advanced_path.Text.Escaped(), PayloadType.Script, startOffset2, null, null, m_advanced_cronExpression.Text));
 		}
 		if (errorList.ContainsError())
 		{

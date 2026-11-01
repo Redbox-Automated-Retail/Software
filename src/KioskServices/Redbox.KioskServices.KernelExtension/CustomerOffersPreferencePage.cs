@@ -60,10 +60,10 @@ public class CustomerOffersPreferencePage : UserControl, IPreferencePageHost
 	public bool SaveValues(IPreferencePage preferencePage)
 	{
 		List<long> list = new List<long>();
-		string[] array = txtProductIds.Text.Split(',');
-		for (int i = 0; i < array.Length; i++)
+		string[] parts = txtProductIds.Text.Split(',');
+		for (int i = 0; i < parts.Length; i++)
 		{
-			if (long.TryParse(array[i], out var result))
+			if (long.TryParse(parts[i], out var result))
 			{
 				list.Add(result);
 			}

@@ -9,7 +9,7 @@ internal static class SyncHelper
 	internal static SyncResult SyncSlot(ExecutionResult result, ExecutionContext context, ILocation loc, SyncDecorator decorator)
 	{
 		IDeck deck = ServiceLocator.Instance.GetService<IDecksService>().GetFrom(loc);
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		if (deck == null)
 		{
@@ -46,7 +46,7 @@ internal static class SyncHelper
 		{
 			context.CreateResult("InventoryState", "This location was updated in inventory.", deck2, slot, "EMPTY", null, disk.Previous);
 			loc.ReturnDate = null;
-			service.Save(loc);
+			inventoryService.Save(loc);
 			return SyncResult.SlotEmpty;
 		}
 		if (!disk.Success)
@@ -87,7 +87,7 @@ internal static class SyncHelper
 			MerchFlags flags = ((scanResult.ScannedMatrix == disk.Previous) ? disk.Flags : MerchFlags.None);
 			loc.ReturnDate = ((!scanResult.ReadCode) ? disk.ReturnTime : ((DateTime?)null));
 			loc.Flags = flags;
-			service.Save(loc);
+			inventoryService.Save(loc);
 			if (!scanResult.SnapOk && ControllerConfiguration.Instance.ErrorSyncOnCameraFailure)
 			{
 				decorator.AddError("The CAMERA isn't working.");

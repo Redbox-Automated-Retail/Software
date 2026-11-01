@@ -9,12 +9,12 @@ public class StoredPromoCodeCollection : List<IStoredPromoCode>
 	public List<IStoredPromoCode> GetRedboxPlusPromos()
 	{
 		List<IStoredPromoCode> list = new List<IStoredPromoCode>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		using Enumerator enumerator = GetEnumerator();
 		while (enumerator.MoveNext())
 		{
 			IStoredPromoCode current = enumerator.Current;
-			if (service?.GetRedboxPlusPromoCampaign(current.CampaignId) != null)
+			if (dataService?.GetRedboxPlusPromoCampaign(current.CampaignId) != null)
 			{
 				list.Add(current);
 			}

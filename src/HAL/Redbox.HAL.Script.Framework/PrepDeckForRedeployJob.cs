@@ -9,10 +9,10 @@ internal sealed class PrepDeckForRedeployJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
+		int operand = base.Context.PopTop<int>();
 		int num2 = 0;
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
-		for (int i = 0; i < num; i++)
+		for (int i = 0; i < operand; i++)
 		{
 			int num3 = base.Context.PopTop<int>();
 			IDeck byNumber = base.DecksService.GetByNumber(num3);

@@ -54,12 +54,12 @@ public class IdleTimer : IIdleTimer
 		{
 			LogHelper.Instance.Log("idle timer {0} started.", Name);
 			_isEnabled = true;
-			IInputService service = ServiceLocator.Instance.GetService<IInputService>();
-			service?.RegisterMouseClickHandler(Name, delegate
+			IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
+			inputService?.RegisterMouseClickHandler(Name, delegate
 			{
 				Reset();
 			});
-			service?.RegisterKeyPressHandler(Name, delegate
+			inputService?.RegisterKeyPressHandler(Name, delegate
 			{
 				Reset();
 			});
@@ -73,10 +73,10 @@ public class IdleTimer : IIdleTimer
 		{
 			LogHelper.Instance.Log("idle timer {0} stopped.", Name);
 			StopIdleTimer();
-			IInputService service = ServiceLocator.Instance.GetService<IInputService>();
-			service?.RemoveKeyPressHandler(Name);
-			service?.RemoveMouseClickHandler(Name);
-			service?.RemoveIdleHandler(Name);
+			IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
+			inputService?.RemoveKeyPressHandler(Name);
+			inputService?.RemoveMouseClickHandler(Name);
+			inputService?.RemoveIdleHandler(Name);
 			_isRegistered = false;
 			_isEnabled = false;
 		}

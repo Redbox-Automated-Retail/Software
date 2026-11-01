@@ -80,9 +80,9 @@ internal class BitsDownloader : DownloaderBase
 		try
 		{
 			ITransferJob job = null;
-			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
+			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
 			string text = $"<::~{base.DownloadData.Key}~::>";
-			errorList.AddRange(service.CreateDownloadJob(text, out job));
+			errorList.AddRange(transferService.CreateDownloadJob(text, out job));
 			errorList.AddRange(job.SetMinimumRetryDelay(60u));
 			errorList.AddRange(job.SetNoProgressTimeout(0u));
 			errorList.AddRange(job.SetPriority(GetPriority()));
@@ -299,8 +299,8 @@ internal class BitsDownloader : DownloaderBase
 	private static ErrorList GetDownloadFileBitsJobs(out List<ITransferJob> jobs)
 	{
 		ErrorList errorList = new ErrorList();
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		errorList.AddRange(service.GetJobs(out jobs, allUsers: false));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		errorList.AddRange(transferService.GetJobs(out jobs, allUsers: false));
 		if (errorList.ContainsError())
 		{
 			jobs = new List<ITransferJob>();

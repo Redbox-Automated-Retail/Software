@@ -10,8 +10,8 @@ internal sealed class VMZRemovedThinsJob : NativeJobAdapter
 		ApplicationLog applicationLog = ApplicationLog.ConfigureLog(base.Context, logAppends: true, "VMZ", flushOnWrite: false, "vmz-removed-disks");
 		applicationLog.Write("** Remove thins from VMZ **");
 		VMZ.Instance.DumpZone(applicationLog);
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		int totalEmptyNow = service.GetMachineEmptyCount();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		int totalEmptyNow = inventoryService.GetMachineEmptyCount();
 		ILocation location = SegmentManager.Instance.FindHighest();
 		if (location != null)
 		{

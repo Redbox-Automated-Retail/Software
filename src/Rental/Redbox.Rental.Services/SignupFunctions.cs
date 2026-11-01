@@ -61,9 +61,9 @@ public class SignupFunctions
 
 	public static void CallUpdateAccountImmediate(string phoneNumber, SecureString pin, string emailAddress, string customerProfileNumber, bool optinForTextClub, bool acceptedPerksSignup, Action<IUpdateAccountResult> callback, AccountSourceType source = AccountSourceType.General)
 	{
-		IPersonalizationService service = ServiceLocator.Instance.GetService<IPersonalizationService>();
+		IPersonalizationService personalizationService = ServiceLocator.Instance.GetService<IPersonalizationService>();
 		LogHelper.Instance.Log("Calling PersonalizationService.UpdateAccount");
-		service.UpdateAccount(customerProfileNumber, emailAddress, phoneNumber, pin, acceptedPerksSignup, optinForTextClub, callback, queued: false, source);
+		personalizationService.UpdateAccount(customerProfileNumber, emailAddress, phoneNumber, pin, acceptedPerksSignup, optinForTextClub, callback, queued: false, source);
 	}
 
 	public static void SetNewAccountLoggedInState(IUpdateAccountResult updateAccountResult, string emailAddress, string mobilePhoneNumber, bool textClubEnabled)
@@ -110,11 +110,11 @@ public class SignupFunctions
 
 	public static void AddSubscriptionAndReturnToShoppingCartOrBrowseView(ISubscriptionProduct subscriptionProduct)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart rentalShoppingCart = service?.CurrentRentalShoppingCart;
-		if (rentalShoppingCart != null && service != null)
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.CurrentRentalShoppingCart;
+		if (rentalShoppingCart != null && rentalShoppingCartService != null)
 		{
-			rentalShoppingCart.AddSubscriptionItem(service?.CreateRentalShoppingCartItemFromSubscriptionProduct(subscriptionProduct));
+			rentalShoppingCart.AddSubscriptionItem(rentalShoppingCartService?.CreateRentalShoppingCartItemFromSubscriptionProduct(subscriptionProduct));
 		}
 		ReturnToShoppingCartOrBrowseView("added_subscription_to_cart");
 	}
@@ -185,21 +185,21 @@ public class SignupFunctions
 	private static void ValidateEmail(string email, EmailEntryInfo emailEntryInfo)
 	{
 		OrchestrationService.ViewShowSafe("please_wait_view");
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
 		long kioskid = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
 		SendEmailConfirmCallback completeCallback = delegate(IEmailConfirmResult emailConfirmResult)
 		{
 			ProcessConfirmEmailResult(emailConfirmResult, emailEntryInfo);
 		};
-		service.SendEmailConfirm(kioskid, email, null, completeCallback);
+		marketingServices.SendEmailConfirm(kioskid, email, null, completeCallback);
 	}
 
 	private static IIdleTimer ConfigureIdleTimer(EmailEntryInfo emailEntryInfo)
 	{
 		IIdleTimer idleTimer = OrchestrationService.CreateIdleTimer(emailEntryInfo.IdleTimerName);
 		int num = OrchestrationService.TTSGetTimeout("Medium", 40000);
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		num = ((service != null && service.TTSEnabled) ? 90000 : num);
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		num = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : num);
 		if (idleTimer != null)
 		{
 			idleTimer.Initialize(num, delegate
@@ -252,9 +252,9 @@ public class SignupFunctions
 		LogHelper.Instance.Log("returning to keyboard view to display error");
 		OrchestrationService.StartIdleTimer(emailEntryInfo?.IdleTimerName);
 		OrchestrationService.ViewGoBackSafe("ProcessConfirmEmailResult", popOnly: false);
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		IViewFrameInstance viewFrameInstance = service?.PeekViewFrame();
-		if (service != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame?.ViewName == emailEntryInfo?.KeyboardViewName)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		IViewFrameInstance viewFrameInstance = viewService?.PeekViewFrame();
+		if (viewService != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame?.ViewName == emailEntryInfo?.KeyboardViewName)
 		{
 			if (viewFrameInstance.Parameter is KeyboardInfo keyboardInfo)
 			{
@@ -263,7 +263,7 @@ public class SignupFunctions
 				keyboardInfo.KeyboardText = emailEntryInfo?.EmailAddress;
 				keyboardInfo.KeyboardCode = string.Empty;
 			}
-			service.Show();
+			viewService.Show();
 		}
 	}
 

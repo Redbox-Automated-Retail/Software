@@ -469,8 +469,8 @@ internal class KeyboardViewUI
 			LogHelper.Instance.Log("Keyboard - Failed Validation.");
 			return;
 		}
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		if (service != null && service.GetCurrentSession() != null)
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		if (shoppingSessionService != null && shoppingSessionService.GetCurrentSession() != null)
 		{
 			ServiceLocator.Instance.GetService<IAnalyticsService>()?.AddButtonPressEvent("KeyboardOk");
 		}
@@ -479,8 +479,8 @@ internal class KeyboardViewUI
 
 	private void OnCancelButtonPress(object sender, EventArgs e)
 	{
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		if (service != null && service.GetCurrentSession() != null)
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		if (shoppingSessionService != null && shoppingSessionService.GetCurrentSession() != null)
 		{
 			ServiceLocator.Instance.GetService<IAnalyticsService>()?.AddButtonPressEvent("KeyboardCancel");
 		}

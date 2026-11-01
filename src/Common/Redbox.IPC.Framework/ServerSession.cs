@@ -225,14 +225,14 @@ public abstract class ServerSession : ISession, IMessageSink
 	{
 		try
 		{
-			int num = Stream.EndRead(result);
-			if (num == 0)
+			int bytesRead = Stream.EndRead(result);
+			if (bytesRead == 0)
 			{
 				InternalClose();
 				return;
 			}
-			Interlocked.Add(ref Statistics.Instance.NumberOfBytesReceived, num);
-			ReadBuilder.Append(Encoding.ASCII.GetString(ReadBuffer, 0, num));
+			Interlocked.Add(ref Statistics.Instance.NumberOfBytesReceived, bytesRead);
+			ReadBuilder.Append(Encoding.ASCII.GetString(ReadBuffer, 0, bytesRead));
 			if (ServiceHost.WorkerPool.QueueWorkItem(delegate
 			{
 				ProcessReadBuilder();
@@ -395,11 +395,11 @@ public abstract class ServerSession : ISession, IMessageSink
 	private string GetNextBufferLine()
 	{
 		string text = ReadBuilder.ToString();
-		int num = text.IndexOf(Environment.NewLine);
-		if (num != -1)
+		int index = text.IndexOf(Environment.NewLine);
+		if (index != -1)
 		{
-			string text2 = text.Substring(0, num + Environment.NewLine.Length);
-			ReadBuilder.Remove(0, num + Environment.NewLine.Length);
+			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			ReadBuilder.Remove(0, index + Environment.NewLine.Length);
 			return text2.Trim();
 		}
 		return string.Empty;

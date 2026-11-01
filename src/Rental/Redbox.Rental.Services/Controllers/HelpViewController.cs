@@ -28,13 +28,13 @@ public class HelpViewController : BaseViewController
 		helpViewControllerParameters.GoBackAction = delegate
 		{
 			BaseViewController.AnalyticsService?.AddButtonPressEvent("HelpBack");
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			string obj = service?.Peek(1);
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			string obj = viewService?.Peek(1);
 			if (restartTimer)
 			{
 				OrchestrationService.ResetApplicationIdleTimerTimeout();
 			}
-			if (obj == service?.GetStartOverViewName() && !OrchestrationService.IsPersonalizationSessionSignedIn())
+			if (obj == viewService?.GetStartOverViewName() && !OrchestrationService.IsPersonalizationSessionSignedIn())
 			{
 				ServiceLocator.Instance.GetService<IRedboxRental>()?.CloseOpenSessionAndStartNewRentalSession(null);
 			}
@@ -219,7 +219,7 @@ public class HelpViewController : BaseViewController
 			return;
 		}
 		string.IsNullOrWhiteSpace(parameters.AnalysisContext);
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		HelpViewModel viewModel = (HelpViewModel)helpViewUserControl.DataContext;
 		if (viewModel == null)
 		{
@@ -263,9 +263,9 @@ public class HelpViewController : BaseViewController
 			arg = $"{arg}{viewModel.TitleText}";
 			BaseViewController.AnalyticsService?.AddButtonPressEvent("HelpPageChange", arg);
 		};
-		if (service != null)
+		if (macroService != null)
 		{
-			viewModel.StoreNumberText = service["StoreNumber"];
+			viewModel.StoreNumberText = macroService["StoreNumber"];
 		}
 		viewModel.BackButtonText = Resources.back_button.ToUpper();
 		viewModel.ContactText = Resources.contact_redbox_label;
@@ -300,8 +300,8 @@ public class HelpViewController : BaseViewController
 			DocumentToShow = HelpDocuments.Faq,
 			IsEnabled = (currentHelpDoc != HelpDocuments.Faq)
 		});
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.MobileFaqDocument) != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.MobileFaqDocument) != null)
 		{
 			viewModel.ButtonList.Add(new HelpButtonData
 			{
@@ -325,7 +325,7 @@ public class HelpViewController : BaseViewController
 				IsEnabled = (currentHelpDoc != HelpDocuments.TermsReboxCard)
 			});
 		}
-		if (service.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.SubscriptionsDocument) != null)
+		if (resourceBundleService.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.SubscriptionsDocument) != null)
 		{
 			viewModel.ButtonList.Add(new HelpButtonData
 			{
@@ -334,7 +334,7 @@ public class HelpViewController : BaseViewController
 				IsEnabled = (currentHelpDoc != HelpDocuments.Subscriptions)
 			});
 		}
-		if (service.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.RedboxPlusDocument) != null)
+		if (resourceBundleService.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.RedboxPlusDocument) != null)
 		{
 			viewModel.ButtonList.Add(new HelpButtonData
 			{
@@ -349,7 +349,7 @@ public class HelpViewController : BaseViewController
 			DocumentToShow = HelpDocuments.Privacy,
 			IsEnabled = (currentHelpDoc != HelpDocuments.Privacy)
 		});
-		if (service.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.CAPrivacyNoticeDocument) != null)
+		if (resourceBundleService.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.CAPrivacyNoticeDocument) != null)
 		{
 			viewModel.ButtonList.Add(new HelpButtonData
 			{
@@ -358,7 +358,7 @@ public class HelpViewController : BaseViewController
 				IsEnabled = (currentHelpDoc != HelpDocuments.CAPrivacyNotice)
 			});
 		}
-		if (service.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.DoNotSellDocument) != null)
+		if (resourceBundleService.GetResource(Redbox.Rental.Services.Configuration.Configuration.Instance.DoNotSellDocument) != null)
 		{
 			viewModel.ButtonList.Add(new HelpButtonData
 			{
@@ -489,16 +489,16 @@ public class HelpViewController : BaseViewController
 		XpsDocument xpsDocument = null;
 		if (helpDocumentInfo != null)
 		{
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			if (service != null)
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			if (resourceBundleService != null)
 			{
-				xpsDocument = service.GetXpsDocument(helpDocumentInfo.DocumentName);
+				xpsDocument = resourceBundleService.GetXpsDocument(helpDocumentInfo.DocumentName);
 				if (xpsDocument == null)
 				{
 					LogHelper.Instance.Log("Unable to get Xps document {0}", helpDocumentInfo.DocumentName);
 					if (!helpDocumentInfo.DocumentName.Equals(helpDocumentInfo.DefaultDocumentName, StringComparison.CurrentCultureIgnoreCase))
 					{
-						xpsDocument = service.GetXpsDocument(helpDocumentInfo.DefaultDocumentName);
+						xpsDocument = resourceBundleService.GetXpsDocument(helpDocumentInfo.DefaultDocumentName);
 						if (xpsDocument == null)
 						{
 							LogHelper.Instance.Log("Unable to get default Xps document {0}", helpDocumentInfo.DefaultDocumentName);
@@ -526,8 +526,8 @@ public class HelpViewController : BaseViewController
 
 	private static void ConfigureTTS(HelpViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => HelpViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}

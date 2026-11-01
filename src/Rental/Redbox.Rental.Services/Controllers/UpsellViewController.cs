@@ -54,14 +54,14 @@ public class UpsellViewController : BaseLoyaltyController
 
 	private static void ConfigureUpsellViewIdleTimer(UpsellViewModel upsellViewModel)
 	{
-		IIdleTimer obj = IdleTimerService?.CreateIdleTimer(Constants.UpsellIdleTimerName);
-		obj?.Initialize(Constants.UpsellIdleTimerDuration, delegate
+		IIdleTimer idleTimer = IdleTimerService?.CreateIdleTimer(Constants.UpsellIdleTimerName);
+		idleTimer?.Initialize(Constants.UpsellIdleTimerDuration, delegate
 		{
 			OrchestrationService.StopIdleTimer(Constants.UpsellIdleTimerName);
 			LogHelper.Instance.Log("upsell view: idle timer expired");
 			UpsellViewIdleTimerExpired(upsellViewModel);
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void ConfigureTTS(UpsellViewModel upsellViewModel)
@@ -73,7 +73,7 @@ public class UpsellViewController : BaseLoyaltyController
 		BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart.UpsellInfo.AddMissingUpsellItems(upsellViewModel.UpsellFromTitleType);
 		List<IKioskProduct> list = new List<IKioskProduct>();
 		List<DisplayUpsellProductModel> list2 = new List<DisplayUpsellProductModel>();
-		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
+		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IUpsellItem> list3 = new List<IUpsellItem>();
 		list3.AddRange(BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart?.UpsellInfo.Items.Where((IUpsellItem x) => x.OfferResponse == UpsellItemOfferResponse.none));
@@ -106,7 +106,7 @@ public class UpsellViewController : BaseLoyaltyController
 					list.Add(kioskProduct2);
 				}
 				ITitleProduct titleProduct = kioskProduct2 as ITitleProduct;
-				IList<IPricingRecord> list4 = service?.GetProductPricingRecords(titleProduct?.ProductId ?? 0);
+				IList<IPricingRecord> list4 = pricingService?.GetProductPricingRecords(titleProduct?.ProductId ?? 0);
 				IPricingRecord pricingRecord = (((list4?.Count ?? 0) > 0) ? list4[0] : null);
 				displayUpsellProductModel.PriceText = ((pricingRecord != null) ? $"{pricingRecord.InitialNight:c2}" : null);
 				BannerType bannerType = BannerType.None;

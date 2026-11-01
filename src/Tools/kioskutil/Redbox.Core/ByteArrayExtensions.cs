@@ -53,7 +53,7 @@ public static class ByteArrayExtensions
 	public static string ToASCIISHA1Hash(this byte[] inputArray)
 	{
 		SHA1 sHA = SHA1.Create();
-		byte[] array = sHA.ComputeHash(inputArray);
-		return BitConverter.ToString(array).Replace("-", string.Empty);
+		byte[] hash = sHA.ComputeHash(inputArray);
+		return BitConverter.ToString(hash).Replace("-", string.Empty);
 	}
 }

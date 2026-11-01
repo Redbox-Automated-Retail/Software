@@ -18,8 +18,8 @@ internal class EngineCommand
 			context.Errors.Add(Redbox.IPC.Framework.Error.NewError("D999", $"{Path.GetDirectoryName(path)} does not exists.", "Supply a valid directory and try again."));
 			return;
 		}
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ExportQueue(path).ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ExportQueue(path).ToIPCErrors());
 	}
 
 	[CommandForm(Name = "export-sessions")]
@@ -31,51 +31,51 @@ internal class EngineCommand
 			context.Errors.Add(Redbox.IPC.Framework.Error.NewError("D999", $"{Path.GetDirectoryName(path)} does not exists.", "Supply a valid directory and try again."));
 			return;
 		}
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ExportSessions(path).ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ExportSessions(path).ToIPCErrors());
 	}
 
 	[CommandForm(Name = "load-bundle")]
 	[Usage("engine load-bundle bundle:")]
 	public void LoadBundle(CommandContext context, [CommandKeyValue(IsRequired = true)] string bundle)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ChangeBundle(bundle).ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ChangeBundle(bundle).ToIPCErrors());
 	}
 
 	[CommandForm(Name = "show-offline-screen")]
 	[Usage("engine show-offline-screen")]
 	public void ShowOfflineScreen(CommandContext context)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ShowOfflineScreen().ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ShowOfflineScreen().ToIPCErrors());
 	}
 
 	[CommandForm(Name = "reset-bundle")]
 	[Usage("engine reset-bundle")]
 	public void ResetBundle(CommandContext context)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ReloadBundle().ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ReloadBundle().ToIPCErrors());
 	}
 
 	[CommandForm(Name = "bring-to-front")]
 	[Usage("engine bring-to-front")]
 	public void BringToFront(CommandContext context)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.BringToFront().ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.BringToFront().ToIPCErrors());
 	}
 
 	[CommandForm(Name = "shutdown")]
 	[Usage("engine shutdown")]
 	public void Shutdown(CommandContext context)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		service.IsEngineRunning(out var isRunning);
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		kioskEngineService.IsEngineRunning(out var isRunning);
 		if (isRunning)
 		{
-			context.Errors.AddRange(service.Shutdown().ToIPCErrors());
+			context.Errors.AddRange(kioskEngineService.Shutdown().ToIPCErrors());
 		}
 	}
 
@@ -84,14 +84,14 @@ internal class EngineCommand
 	public void Start(CommandContext context, string bundle)
 	{
 		LogHelper.Instance.Log("Starting engine at location: {0}", UpdateManagerService.Instance.KioskEnginePath);
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
 		if (string.IsNullOrEmpty(bundle))
 		{
-			context.Errors.AddRange(service.StartEngine().ToIPCErrors());
+			context.Errors.AddRange(kioskEngineService.StartEngine().ToIPCErrors());
 		}
 		else
 		{
-			context.Errors.AddRange(service.StartEngine(bundle).ToIPCErrors());
+			context.Errors.AddRange(kioskEngineService.StartEngine(bundle).ToIPCErrors());
 		}
 	}
 
@@ -99,7 +99,7 @@ internal class EngineCommand
 	[Usage("engine execute-script path:")]
 	public void ExecuteScript(CommandContext context, [CommandKeyValue(IsRequired = true)] string path)
 	{
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		context.Errors.AddRange(service.ExecuteScript(path).ToIPCErrors());
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		context.Errors.AddRange(kioskEngineService.ExecuteScript(path).ToIPCErrors());
 	}
 }

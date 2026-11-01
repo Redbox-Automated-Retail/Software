@@ -167,10 +167,10 @@ public class ReservationFunctions
 			LogHelper.Instance.Log("Setting expire time back a day since current time is before expire time");
 		}
 		dateTime = dateTime.Date;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		if (reservations == null)
 		{
-			reservations = service?.GetAllReservations();
+			reservations = dataService?.GetAllReservations();
 		}
 		List<IReservationDetails> list = new List<IReservationDetails>();
 		foreach (IReservation reservation in reservations)
@@ -185,7 +185,7 @@ public class ReservationFunctions
 				ServiceLocator.Instance.GetService<IReservationServices>();
 				if (long.TryParse(reservation.ReservationDetails?.ReferenceNumber, out var result))
 				{
-					ServiceLocator.Instance.GetService<IKioskClientService>().Transaction.ExpireReservation(service?.GetStore()?.StoreId.ToString(), result, null);
+					ServiceLocator.Instance.GetService<IKioskClientService>().Transaction.ExpireReservation(dataService?.GetStore()?.StoreId.ToString(), result, null);
 				}
 				list.Add(reservation.ReservationDetails);
 			}
@@ -261,8 +261,8 @@ public class ReservationFunctions
 
 	public static void SyncReservations()
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service != null && service.GetReservations("deddie") == null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService != null && dataService.GetReservations("deddie") == null)
 		{
 			LogHelper.Instance.Log("ReservationFunctions.SyncReservations: downloading reservations from server.");
 			ServiceLocator.Instance.GetService<IInventoryService>();
@@ -292,10 +292,10 @@ public class ReservationFunctions
 	public static void SetValidatedReservations(List<string> validatedRefNumbers)
 	{
 		List<IReservation> list = new List<IReservation>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		foreach (string validatedRefNumber in validatedRefNumbers)
 		{
-			IReservation reservation = service.GetReservation(validatedRefNumber);
+			IReservation reservation = dataService.GetReservation(validatedRefNumber);
 			if (reservation != null)
 			{
 				list.Add(reservation);
@@ -306,11 +306,11 @@ public class ReservationFunctions
 
 	public static void InitializeExpireReservationTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		ITimer timer = service.GetTimer("reservation-expire-timer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimer timer = timerService.GetTimer("reservation-expire-timer");
 		if (timer == null)
 		{
-			timer = service.CreateTimer("reservation-expire-timer", 30000, 7200000, delegate
+			timer = timerService.CreateTimer("reservation-expire-timer", 30000, 7200000, delegate
 			{
 				ExpireReservations();
 			});
@@ -341,8 +341,8 @@ public class ReservationFunctions
 		List<IKioskProduct> recommendedProducts = GetRecommendedProducts();
 		recommendedProducts.Select((IKioskProduct x) => (x as ITitleProduct)?.ProductId.ToString()).Join(",");
 		IRentalShoppingCart obj = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-		IAnalyticsService service = ServiceLocator.Instance.GetService<IAnalyticsService>();
-		if (obj == null || service == null)
+		IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
+		if (obj == null || analyticsService == null)
 		{
 			return;
 		}
@@ -355,7 +355,7 @@ public class ReservationFunctions
 				products.Add(ProductData.ToProductData(titleProduct));
 			}
 		});
-		service?.CurrentSession?.AddData(new ROPRecommendedProducts
+		analyticsService?.CurrentSession?.AddData(new ROPRecommendedProducts
 		{
 			RecommendedProducts = products,
 			RecommendationsFlow = true
@@ -379,10 +379,10 @@ public class ReservationFunctions
 			});
 		});
 		bool flag = false;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		foreach (string item in GetReservedBarcodesToVend(reservations))
 		{
-			service.GetProductByBarcode(item, out var kioskProduct);
+			dataService.GetProductByBarcode(item, out var kioskProduct);
 			if (kioskProduct is ITitleProduct titleProduct)
 			{
 				excludeProducts.Add(titleProduct.ProductId);
@@ -733,9 +733,9 @@ public class ReservationFunctions
 		LogHelper.Instance.Log("ReservationFunctions:CancelReservation called for Reference Number: " + referenceNumber);
 		lock (_reservationSyncObject)
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			List<IReservationDetails> list = new List<IReservationDetails>();
-			IReservation reservation = service?.GetReservation(referenceNumber);
+			IReservation reservation = dataService?.GetReservation(referenceNumber);
 			if (reservation != null)
 			{
 				LogHelper.Instance.Log("ReservationFunctions.CancelReservation removed reservation for Reference Number " + referenceNumber + ":");
@@ -748,7 +748,7 @@ public class ReservationFunctions
 			}
 			else
 			{
-				DeleteReservationDetails(list, service?.GetAllReservations());
+				DeleteReservationDetails(list, dataService?.GetAllReservations());
 			}
 		}
 		return result;
@@ -768,7 +768,7 @@ public class ReservationFunctions
 	{
 		LogHelper.Instance.Log(logHeaderText + " Begin");
 		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		Dictionary<string, List<IProductItem>> itemsByAction = new Dictionary<string, List<IProductItem>>();
 		List<string> list = new List<string>();
@@ -783,7 +783,7 @@ public class ReservationFunctions
 			{
 				Inventory inventory = inventoryService.GetInventory(eachReservedTitle.Barcode);
 				IKioskProduct kioskProduct = null;
-				service?.GetProduct(inventory?.TitleId ?? 0, excludeTitleRollup: false, out kioskProduct);
+				dataService?.GetProduct(inventory?.TitleId ?? 0, excludeTitleRollup: false, out kioskProduct);
 				MDVProduct mDVProduct = kioskProduct as MDVProduct;
 				LineItemStatus result = defaultLineItemStatus;
 				if (vendResultList != null)
@@ -898,9 +898,9 @@ public class ReservationFunctions
 	private static void RegisterWithLegacyBrokerService()
 	{
 		LogHelper.Instance.Log("ReservationFunctions.RegisterWithBrokerService");
-		IReservationServices service = ServiceLocator.Instance.GetService<IReservationServices>();
+		IReservationServices reservationServices = ServiceLocator.Instance.GetService<IReservationServices>();
 		string storeNumber = ServiceLocator.Instance.GetService<IDataService>()?.GetStore()?.StoreId.ToString();
-		service?.Register(storeNumber, GetpricesForBrokerService(isForRecommendationOnPickup: false), CreateReservationCallback, CancelReservationCallback);
+		reservationServices?.Register(storeNumber, GetpricesForBrokerService(isForRecommendationOnPickup: false), CreateReservationCallback, CancelReservationCallback);
 	}
 
 	public static IReservationResult CreateReservationCallback(string cardId, string email, long referenceNumber, DateTime reserveDate, IDictionary<string, List<int>> productsToReserve, bool appliedCredit, bool appliedHiveOnlinePromotion, bool appliedTitleMarketing, string customerNumber, decimal discountedSubTotal, decimal grandTotal, List<int> historyTitleIDs, decimal hiveOnlinePromotionDiscount, bool isMultiNightPricing, int numberOfCreditsRemaining, string promoCode, decimal subTotal, decimal tax, List<ReservationTitle3> reservationTitles, bool isGc, List<string> gcIds, List<string> ccIds, decimal taxRate, string zip, bool isMdv, bool isLoyaltyRedemption, decimal defaultServiceFee, decimal actualServiceFee, bool authorizeAtPickup, ReservationCardHash cardHashData, List<ReservationCardHash> alternateCardHashes)
@@ -976,14 +976,14 @@ public class ReservationFunctions
 			ReservationCardHash = reservationCardHash,
 			AlternateCardHashes = requestCardHashes
 		});
-		IReservationServices service = ServiceLocator.Instance.GetService<IReservationServices>();
-		IReservationResult reservationResult = service.NewReservationResult();
+		IReservationServices reservationServices = ServiceLocator.Instance.GetService<IReservationServices>();
+		IReservationResult reservationResult = reservationServices.NewReservationResult();
 		reservationResult.Success = reservationRequestResult.Status == ReservationRequestStatus.ReservationCreated;
 		reservationResult.ErrorMessage = ((reservationRequestResult.Status == ReservationRequestStatus.TitleNotAvailable) ? null : reservationRequestResult.ErrorMessage);
 		reservationResult.Items = new List<IReservedItem>();
 		foreach (IReservationRequestResultItem resultItem in reservationRequestResult.Items)
 		{
-			IReservedItem reservedItem = service.NewReservedItem();
+			IReservedItem reservedItem = reservationServices.NewReservedItem();
 			reservedItem.Barcode = resultItem.Barcode;
 			reservedItem.ProductId = resultItem.ProductId;
 			reservationResult.Items.Add(reservedItem);
@@ -1095,9 +1095,9 @@ public class ReservationFunctions
 
 	private static List<string> GetBarcodesAlreadyInPlay()
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart rentalShoppingCart = service?.CurrentRentalShoppingCart;
-		List<string> cartBarcodes = service?.AssignBarcodesToVend(rentalShoppingCart);
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.CurrentRentalShoppingCart;
+		List<string> cartBarcodes = rentalShoppingCartService?.AssignBarcodesToVend(rentalShoppingCart);
 		AddBarcodesForMDVProducts(rentalShoppingCart, cartBarcodes);
 		List<long> userVisibleProducts = new List<long>();
 		switch (ServiceLocator.Instance.GetService<IViewService>()?.Peek())
@@ -1263,7 +1263,7 @@ public class ReservationFunctions
 		List<string> barcodes = new List<string>();
 		if (userVisibleProducts != null)
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			List<ISearchBarcodeForProduct> searches = new List<ISearchBarcodeForProduct>();
 			foreach (long userVisibleProduct in userVisibleProducts)
 			{
@@ -1273,7 +1273,7 @@ public class ReservationFunctions
 					Action = RentalShoppingCartItemAction.rental
 				});
 			}
-			foreach (IBarcodeForProductResult item in service?.GetBarcodesForProducts(searches, excludeBarcodes))
+			foreach (IBarcodeForProductResult item in dataService?.GetBarcodesForProducts(searches, excludeBarcodes))
 			{
 				if (item.BarcodeAssigned)
 				{
@@ -1408,16 +1408,16 @@ public class ReservationFunctions
 
 	private static IPricingSet GetPriceSetForBrokerService(bool isForRecommendationOnPickup)
 	{
-		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
+		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		return new PricingSet
 		{
 			PriceSetId = "1",
 			PriceRecords = 
 			{
-				service.GetProductTypePricingRecord(TitleFamily.Movies, TitleType.DVD, isForRecommendationOnPickup),
-				service.GetProductTypePricingRecord(TitleFamily.Movies, TitleType.Bluray, isForRecommendationOnPickup),
-				service.GetProductTypePricingRecord(TitleFamily.Movies, TitleType._4KUHD, isForRecommendationOnPickup),
-				service.GetProductTypePricingRecord(TitleFamily.Games, TitleType.All, isForRecommendationOnPickup)
+				pricingService.GetProductTypePricingRecord(TitleFamily.Movies, TitleType.DVD, isForRecommendationOnPickup),
+				pricingService.GetProductTypePricingRecord(TitleFamily.Movies, TitleType.Bluray, isForRecommendationOnPickup),
+				pricingService.GetProductTypePricingRecord(TitleFamily.Movies, TitleType._4KUHD, isForRecommendationOnPickup),
+				pricingService.GetProductTypePricingRecord(TitleFamily.Games, TitleType.All, isForRecommendationOnPickup)
 			}
 		};
 	}
@@ -1453,9 +1453,9 @@ public class ReservationFunctions
 		IReservation reservation = reservations.FirstOrDefault((IReservation r) => r.ReferenceNumber == referenceNumber);
 		if (IsAuthorizeAtPickup(referenceNumber, reservations))
 		{
-			IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			LogHelper.Instance.Log("ReservationFunctions.ReservationPrepositionVend: Calling KioskClientService.Transaction.ReservationPickup()");
-			service.Transaction.ReservationPickup(rentalShoppingCart.ShoppingSessionId.ToString(), Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.CustomerProfileNumber, reservation?.ReservationDetails?.EmailAddress, result, new Dictionary<string, ReadOnlyCollection<IProductItem>>(), null);
+			kioskClientService.Transaction.ReservationPickup(rentalShoppingCart.ShoppingSessionId.ToString(), Redbox.Rental.Services.Session.Session.Instance?.PersonalizationSession?.CustomerProfileNumber, reservation?.ReservationDetails?.EmailAddress, result, new Dictionary<string, ReadOnlyCollection<IProductItem>>(), null);
 			return;
 		}
 		LogHelper.Instance.Log("ReservationFunctions.ReservationPrepositionVend: Calling MerchantServices.ModResvPickup()");

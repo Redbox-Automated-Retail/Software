@@ -8,25 +8,25 @@ internal sealed class MarkBarcodesUnknownJobs : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		if (num == 0)
+		int operand = base.Context.PopTop<int>();
+		if (operand == 0)
 		{
 			return;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		List<ILocation> list = new List<ILocation>();
 		using (new DisposeableList<ILocation>(list))
 		{
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < operand; i++)
 			{
 				string id = base.Context.PopTop<string>();
-				ILocation location = service.Lookup(id);
+				ILocation location = inventoryService.Lookup(id);
 				if (location != null)
 				{
 					location.ID = "UNKNOWN";
 				}
 			}
-			if (list.Count > 0 && !service.Save(list))
+			if (list.Count > 0 && !inventoryService.Save(list))
 			{
 				AddError("FAILED TO UPDATE");
 			}

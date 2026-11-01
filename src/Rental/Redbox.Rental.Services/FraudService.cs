@@ -24,14 +24,14 @@ public class FraudService : IFraudService
 			LogHelper.Instance.Log("AddToFraudStatistics No fraud barcodes data provided.", LogEntryType.Info);
 			return;
 		}
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null)
 		{
 			LogHelper.Instance.Log("Enqueuing Statistic FraudCleanSync Failed.", LogEntryType.Info);
 			return;
 		}
 		LogHelper.Instance.Log("Enqueuing Statistic FraudCleanSync with value: " + fraudBarcodes, LogEntryType.Info);
-		service.EnqueueStatistic("FraudCleanSync", fraudBarcodes);
+		healthServices.EnqueueStatistic("FraudCleanSync", fraudBarcodes);
 	}
 
 	private void DeleteImage(string imageName)

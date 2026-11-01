@@ -15,13 +15,13 @@ public class UpdateClientServiceKioskHealth : BaseUpdateClientService, IUpdateCl
 	public async Task<PingResponse> SendPing(IPingRequest pingRequest)
 	{
 		LogHelper.Instance.Log("UpdateClientServiceKioskHealth.SendPing");
-		IHttpService service = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service.GenerateRequest(base.UpdateClientServiceBaseUrl, "api/Broker/Ping", pingRequest, HttpMethod.Post, new List<Header>
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(base.UpdateClientServiceBaseUrl, "api/Broker/Ping", pingRequest, HttpMethod.Post, new List<Header>
 		{
 			new Header("app-name", pingRequest?.AppName),
 			new Header("x-redbox-activityid", pingRequest?.MessageId.ToString())
 		});
-		APIResponse<HttpResponseMessage> aPIResponse = await service.SendRequestAsync<HttpResponseMessage>(request, null, "SendPing", "c:\\build\\Redbox.Rental.Services\\UpdateClientService\\KioskHealth\\UpdateClientServiceKioskHealth.cs", pingRequest);
+		APIResponse<HttpResponseMessage> aPIResponse = await httpService.SendRequestAsync<HttpResponseMessage>(request, null, "SendPing", "c:\\build\\Redbox.Rental.Services\\UpdateClientService\\KioskHealth\\UpdateClientServiceKioskHealth.cs", pingRequest);
 		PingResponse pingResponse = new PingResponse
 		{
 			StatusCode = (int)aPIResponse.StatusCode,

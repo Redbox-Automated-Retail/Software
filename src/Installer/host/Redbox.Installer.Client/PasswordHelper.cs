@@ -31,14 +31,14 @@ public static class PasswordHelper
 
 	public static string Decrypt(string base64encrypted)
 	{
-		byte[] array = Convert.FromBase64String(base64encrypted);
+		byte[] decoded = Convert.FromBase64String(base64encrypted);
 		TripleDESCryptoServiceProvider tripleDESCryptoServiceProvider = new TripleDESCryptoServiceProvider();
 		tripleDESCryptoServiceProvider.Key = Key;
 		tripleDESCryptoServiceProvider.Mode = Mode;
 		tripleDESCryptoServiceProvider.Padding = Padding;
 		using TripleDESCryptoServiceProvider tripleDESCryptoServiceProvider2 = tripleDESCryptoServiceProvider;
 		ICryptoTransform cryptoTransform = tripleDESCryptoServiceProvider2.CreateDecryptor();
-		byte[] bytes = cryptoTransform.TransformFinalBlock(array, 0, array.Length);
+		byte[] bytes = cryptoTransform.TransformFinalBlock(decoded, 0, decoded.Length);
 		return Encoding.UTF8.GetString(bytes);
 	}
 }

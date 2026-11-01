@@ -173,10 +173,10 @@ public abstract class ClientSession : IDisposable
 	{
 		if (ServerEvent != null)
 		{
-			int num = line.IndexOf("]");
-			if (num != -1)
+			int index = line.IndexOf("]");
+			if (index != -1)
 			{
-				ServerEvent(line.Substring(num + 1).Trim());
+				ServerEvent(line.Substring(index + 1).Trim());
 			}
 		}
 	}
@@ -219,11 +219,11 @@ public abstract class ClientSession : IDisposable
 	private string GetNextBufferLine()
 	{
 		string text = ReadBuilder.ToString();
-		int num = text.IndexOf(Environment.NewLine);
-		if (num != -1)
+		int index = text.IndexOf(Environment.NewLine);
+		if (index != -1)
 		{
-			string text2 = text.Substring(0, num + Environment.NewLine.Length);
-			ReadBuilder.Remove(0, num + Environment.NewLine.Length);
+			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			ReadBuilder.Remove(0, index + Environment.NewLine.Length);
 			return text2.Trim();
 		}
 		return string.Empty;
@@ -239,13 +239,13 @@ public abstract class ClientSession : IDisposable
 		try
 		{
 			List<string> messages = (List<string>)result.AsyncState;
-			int num = Stream.EndRead(result);
-			if (num == 0)
+			int bytesRead = Stream.EndRead(result);
+			if (bytesRead == 0)
 			{
 				SafeSetEvent();
 				return;
 			}
-			string text = Encoding.ASCII.GetString(ReadBuffer, 0, num);
+			string text = Encoding.ASCII.GetString(ReadBuffer, 0, bytesRead);
 			ReadBuilder.Append(text);
 			if (text.IndexOf(Environment.NewLine) == -1 && text.IndexOf("\n") == -1)
 			{

@@ -23,7 +23,7 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 
 	private ErrorCodes OnReject()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int attempts = Attempts;
 		int ms = 1000;
 		if (OpenDoorChecked() != ErrorCodes.Success)
@@ -54,7 +54,7 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 				if (flag)
 				{
 					ControllerService.PushOut();
-					service.Wait(ms);
+					runtimeService.Wait(ms);
 					continue;
 				}
 				if (Controller.RollerToPosition(RollerPosition.Position3, 8000).Success)
@@ -77,12 +77,12 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 						return ErrorCodes.PickerFull;
 					}
 				}
-				service.Wait(ms);
+				runtimeService.Wait(ms);
 			}
 			else if (flag)
 			{
 				ControllerService.PushOut();
-				service.Wait(1500);
+				runtimeService.Wait(1500);
 			}
 		}
 		pickerSensorReadResult = Controller.ReadPickerSensors();

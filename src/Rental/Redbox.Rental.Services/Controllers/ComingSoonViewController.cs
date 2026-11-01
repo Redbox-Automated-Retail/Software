@@ -60,9 +60,9 @@ public class ComingSoonViewController : BaseViewController
 	{
 		int count = 3;
 		List<IComingSoonTitle> list = new List<IComingSoonTitle>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IKioskProduct> products = null;
-		service?.GetProducts(BrowseViewFilter.ComingSoon, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.ComingSoon, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 		if (rentalShoppingCart != null && products != null)
 		{

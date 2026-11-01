@@ -14,7 +14,7 @@ public class ActorFunctions
 		{
 			return null;
 		}
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IScene scene = ServiceLocator.Instance.GetService<IRenderingService>().GetScene("Default");
 		if (scene == null)
 		{
@@ -74,7 +74,7 @@ public class ActorFunctions
 		}
 		if (!string.IsNullOrEmpty(font))
 		{
-			actor.Font = service.GetFont(font, out var resourceFound);
+			actor.Font = resourceBundleService.GetFont(font, out var resourceFound);
 			if (!resourceFound)
 			{
 				actor.OptionFlags |= RenderOptionFlags.DrawBorder;
@@ -108,7 +108,7 @@ public class ActorFunctions
 			}
 			else
 			{
-				Image bitmap = service.GetBitmap(image);
+				Image bitmap = resourceBundleService.GetBitmap(image);
 				if (bitmap == null)
 				{
 					actor.OptionFlags |= RenderOptionFlags.DrawBorder;

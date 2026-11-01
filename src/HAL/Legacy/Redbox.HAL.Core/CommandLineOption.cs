@@ -19,12 +19,12 @@ public static class CommandLineOption
 		{
 			return string.Empty;
 		}
-		string[] array = option.Split(new string[1] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
-		if (array.Length != 2)
+		string[] parts = option.Split(new string[1] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
+		if (parts.Length != 2)
 		{
 			return string.Empty;
 		}
-		return array[1];
+		return parts[1];
 	}
 
 	public static T GetOptionVal<T>(string option, T defVal)

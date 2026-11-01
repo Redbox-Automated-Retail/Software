@@ -34,8 +34,8 @@ internal sealed class GetOperation : AbstractOperation<GetResult>
 	{
 		Observer = observer;
 		Log = log;
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		Deck = service.GetFrom(location);
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		Deck = decksService.GetFrom(location);
 		Slot = location.Slot;
 		Location = location;
 		Result = new GetResult(Location);
@@ -79,10 +79,10 @@ internal sealed class GetOperation : AbstractOperation<GetResult>
 			errorCodes = PullFrom(Location, 1);
 		}
 		RuntimeService.SpinWait(300);
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (Controller.RollerToPosition(RollerPosition.Position4, 6000, logSensors: false).Success)
 		{
-			service.Reset(Location);
+			inventoryService.Reset(Location);
 			return;
 		}
 		IPickerSensorReadResult pickerSensorReadResult2 = Controller.ReadPickerSensors();
@@ -103,7 +103,7 @@ internal sealed class GetOperation : AbstractOperation<GetResult>
 		Result.Update(ErrorCodes.SlotEmpty);
 		if (Observer.OnEmpty(Result))
 		{
-			service.Reset(Location);
+			inventoryService.Reset(Location);
 		}
 	}
 

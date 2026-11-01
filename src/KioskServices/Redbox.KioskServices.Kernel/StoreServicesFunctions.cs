@@ -110,9 +110,9 @@ internal static class StoreServicesFunctions
 	{
 		try
 		{
-			string[] array = File.ReadAllLines(path);
-			string text = Array.Find(array, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
-			string text2 = Array.Find(array, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
+			string[] lines = File.ReadAllLines(path);
+			string text = Array.Find(lines, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
+			string text2 = Array.Find(lines, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
 			LogHelper.Instance.Log("KaseyaD.ini values: User_Name = {0}, Server_Name = {1}", text, text2);
 			char[] separator = new char[1] { '.' };
 			string text3 = text.Split(separator, 3, StringSplitOptions.None)[1];

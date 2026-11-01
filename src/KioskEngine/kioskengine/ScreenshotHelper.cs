@@ -11,13 +11,13 @@ public static class ScreenshotHelper
 {
 	public static void Capture(Form form)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		using Bitmap bitmap = new Bitmap(form.Bounds.Width, form.Bounds.Height);
 		using (Graphics graphics = Graphics.FromImage(bitmap))
 		{
 			graphics.CopyFromScreen(form.Bounds.X, form.Bounds.Y, 0, 0, form.Bounds.Size);
 		}
-		string text = Path.Combine(service.ExpandProperties("${RunningPath}"), "..\\screenshots");
+		string text = Path.Combine(macroService.ExpandProperties("${RunningPath}"), "..\\screenshots");
 		if (!Directory.Exists(text))
 		{
 			Directory.CreateDirectory(text);
@@ -28,8 +28,8 @@ public static class ScreenshotHelper
 		for (int i = 0; i < array.Length; i++)
 		{
 			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(array[i]);
-			int num2 = fileNameWithoutExtension.IndexOf("_");
-			if (num2 >= 0 && int.TryParse(fileNameWithoutExtension.Substring(num2 + 1), out var result) && result > num)
+			int index = fileNameWithoutExtension.IndexOf("_");
+			if (index >= 0 && int.TryParse(fileNameWithoutExtension.Substring(index + 1), out var result) && result > num)
 			{
 				num = result;
 			}

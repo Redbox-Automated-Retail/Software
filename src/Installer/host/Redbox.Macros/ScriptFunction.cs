@@ -44,12 +44,12 @@ public static class ScriptFunction
 		{
 			return string.Empty;
 		}
-		int num = source.IndexOf(toRemove);
-		if (num < 0)
+		int index = source.IndexOf(toRemove);
+		if (index < 0)
 		{
 			return source;
 		}
-		return source.Remove(num, toRemove.Length);
+		return source.Remove(index, toRemove.Length);
 	}
 
 	[ScriptFunction("string::remove-at")]

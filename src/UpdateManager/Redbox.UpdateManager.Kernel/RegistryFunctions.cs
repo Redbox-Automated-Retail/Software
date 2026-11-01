@@ -129,27 +129,27 @@ public static class RegistryFunctions
 	[KernelFunction(Name = "kernel.getregistrykey")]
 	internal static object GetKey(string path, string name)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		return Registry.GetValue(service.ExpandProperties(path), service.ExpandProperties(name), string.Empty);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		return Registry.GetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), string.Empty);
 	}
 
 	[KernelFunction(Name = "kernel.setregistrykey")]
 	internal static void SetKey(string path, string name, object value)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		object value2 = value;
 		if (value is string)
 		{
-			value2 = service.ExpandProperties((string)value);
+			value2 = macroService.ExpandProperties((string)value);
 		}
-		Registry.SetValue(service.ExpandProperties(path), service.ExpandProperties(name), value2);
+		Registry.SetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), value2);
 	}
 
 	[KernelFunction(Name = "kernel.setdwordregistrykey")]
 	internal static void SetDWORDKey(string path, string name, int value)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		Registry.SetValue(service.ExpandProperties(path), service.ExpandProperties(name), value, RegistryValueKind.DWord);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		Registry.SetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), value, RegistryValueKind.DWord);
 	}
 
 	[KernelFunction(Name = "kernel.getdotnetversions")]
@@ -197,9 +197,9 @@ public static class RegistryFunctions
 	[KernelFunction(Name = "kernel.exportregistryfile")]
 	internal static void ExportRegistryKey(string fileName, string key)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		string text = service.ExpandProperties(key);
-		string text2 = service.ExpandProperties(fileName);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		string text = macroService.ExpandProperties(key);
+		string text2 = macroService.ExpandProperties(fileName);
 		if (!string.IsNullOrEmpty(text) && !string.IsNullOrEmpty(text2))
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo

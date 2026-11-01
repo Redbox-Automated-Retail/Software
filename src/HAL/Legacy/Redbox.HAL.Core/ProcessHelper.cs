@@ -62,10 +62,10 @@ public static class ProcessHelper
 
 	private static string ProcessName(string name)
 	{
-		int num = name.LastIndexOf(".exe");
-		if (-1 != num)
+		int lastIndex = name.LastIndexOf(".exe");
+		if (-1 != lastIndex)
 		{
-			return name.Substring(0, num);
+			return name.Substring(0, lastIndex);
 		}
 		return name;
 	}

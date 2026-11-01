@@ -77,13 +77,13 @@ internal sealed class DecksManager : IDecksService
 
 	public void ForAllReverseDecksDo(Predicate<IDeck> predicate)
 	{
-		int num = Decks.Count;
-		while (num >= 1)
+		int count = Decks.Count;
+		while (count >= 1)
 		{
-			IDeck obj = Decks[num - 1];
+			IDeck obj = Decks[count - 1];
 			if (predicate(obj))
 			{
-				num--;
+				count--;
 				continue;
 			}
 			break;

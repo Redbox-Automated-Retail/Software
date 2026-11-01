@@ -82,8 +82,8 @@ public sealed class BundleCollection
 		{
 			list.Add(targetVersion);
 			list.Sort((IBundleSpecifier lhs, IBundleSpecifier rhs) => lhs.Version.CompareTo(rhs.Version));
-			int num = list.IndexOf(targetVersion);
-			bundle = ((num == 0) ? null : list[num - 1].Instance);
+			int index = list.IndexOf(targetVersion);
+			bundle = ((index == 0) ? null : list[index - 1].Instance);
 		}
 		if (bundle != null)
 		{

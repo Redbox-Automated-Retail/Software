@@ -204,9 +204,9 @@ public class RepositoryService : IRepositoryService, IDisposable
 		try
 		{
 			List<IRevLog> list = new List<IRevLog>();
-			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
+			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
 			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
-			Redbox.UpdateManager.ComponentModel.ErrorList jobs = service.GetJobs(out var jobs2, allUsers: false);
+			Redbox.UpdateManager.ComponentModel.ErrorList jobs = transferService.GetJobs(out var jobs2, allUsers: false);
 			if (jobs.ContainsError())
 			{
 				jobs.ForEach(delegate(Redbox.UpdateManager.ComponentModel.Error e)
@@ -891,8 +891,8 @@ public class RepositoryService : IRepositoryService, IDisposable
 
 	public void Initialize(string rootPath)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		Root = service.ExpandProperties(rootPath);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		Root = macroService.ExpandProperties(rootPath);
 		if (!Path.IsPathRooted(Root))
 		{
 			Root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), rootPath);

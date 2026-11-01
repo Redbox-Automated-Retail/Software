@@ -44,8 +44,8 @@ public class UpsellInfo : IUpsellInfo
 
 	public bool GetDialogNeedsToBeShown(TitleType titleType)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (GetUpsellEnabled(titleType) && !GetDoNotShowAgain(titleType) && CheckForInCartOffer() && (service == null || !service.TTSEnabled))
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (GetUpsellEnabled(titleType) && !GetDoNotShowAgain(titleType) && CheckForInCartOffer() && (textToSpeechService == null || !textToSpeechService.TTSEnabled))
 		{
 			return CreateUpsellItems(titleType, GetUpsellTitleType(titleType)).Count > 0;
 		}
@@ -118,13 +118,13 @@ public class UpsellInfo : IUpsellInfo
 		upsellItem.OfferResponse = offerResponse;
 		if (offerResponse == UpsellItemOfferResponse.accepted)
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 			IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = _rentalShoppingCart.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem x) => x.ProductId == upsellItem.OriginalProductId);
 			if (rentalShoppingCartTitleItem != null)
 			{
 				_rentalShoppingCart.RemoveItem(rentalShoppingCartTitleItem, userRemoved: false);
 			}
-			IRentalShoppingCartTitleItem rentalShoppingCartTitleItem2 = service.CreateRentalShoppingCartItemFromProductId(upsellItem.UpsellProductId);
+			IRentalShoppingCartTitleItem rentalShoppingCartTitleItem2 = rentalShoppingCartService.CreateRentalShoppingCartItemFromProductId(upsellItem.UpsellProductId);
 			rentalShoppingCartTitleItem2.Quantity = 1m;
 			rentalShoppingCartTitleItem2.Action = RentalShoppingCartItemAction.rental;
 			rentalShoppingCartTitleItem2.SourceType = GetUpsellItemSourceType(rentalShoppingCartTitleItem2.TitleType);

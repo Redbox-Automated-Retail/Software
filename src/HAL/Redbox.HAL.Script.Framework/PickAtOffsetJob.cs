@@ -12,11 +12,11 @@ internal sealed class PickAtOffsetJob : NativeJobAdapter
 		int slot = base.Context.PopTop<int>();
 		Axis axis = base.Context.PopTop<Axis>();
 		int value = base.Context.PopTop<int>();
-		IFormattedLogFactoryService service = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
+		IFormattedLogFactoryService formattedLogFactoryService = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation location = inventoryService.Get(deck, slot);
 		OffsetMoveData data = ((axis == Axis.X) ? new OffsetMoveData(value, 0) : new OffsetMoveData(0, value));
-		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(location, MoveMode.None, service.NilLog, ref data);
+		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(location, MoveMode.None, formattedLogFactoryService.NilLog, ref data);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			base.Context.CreateInfoResult("MoveError", $"MOVE failed with status {errorCodes.ToString().ToUpper()}");

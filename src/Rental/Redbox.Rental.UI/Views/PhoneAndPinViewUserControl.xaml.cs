@@ -29,10 +29,10 @@ public partial class PhoneAndPinViewUserControl : TextToSpeechUserControl, IWPFA
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(StartButton);
-		obj?.SetStyle(SignInButton);
-		obj?.SetStyle(TermsButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(StartButton);
+		theme?.SetStyle(SignInButton);
+		theme?.SetStyle(TermsButton);
 	}
 
 	private void PhoneDisplayCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

@@ -8,11 +8,11 @@ internal sealed class PushInDVDJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		try
 		{
 			base.ControlSystem.StartRollerIn();
-			service.Wait(500);
+			runtimeService.Wait(500);
 			base.ControlSystem.StopRoller();
 			if (!base.ControlSystem.TrackOpen().Success)
 			{

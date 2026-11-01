@@ -9,8 +9,8 @@ internal static class ImageFunctions
 	[KernelFunction(Name = "kernel.registerimagefromcache")]
 	internal static bool RegisterImageFromCache(string name, string cacheName)
 	{
-		IDataCacheService service = ServiceLocator.Instance.GetService<IDataCacheService>();
-		if (service == null)
+		IDataCacheService dataCacheService = ServiceLocator.Instance.GetService<IDataCacheService>();
+		if (dataCacheService == null)
 		{
 			throw new SystemException("IDataCacheService is not registered.");
 		}
@@ -23,7 +23,7 @@ internal static class ImageFunctions
 		{
 			return true;
 		}
-		byte[] content = service.GetContent(DataCacheType.Image, cacheName);
+		byte[] content = dataCacheService.GetContent(DataCacheType.Image, cacheName);
 		if (content == null)
 		{
 			LogHelper.Instance.Log("*** IDataCacheService was not able to read any data for: '{0}'", cacheName);
@@ -35,8 +35,8 @@ internal static class ImageFunctions
 	[KernelFunction(Name = "kernel.createthumbnail")]
 	internal static void CreateThumbnail(string name, string thumbName, int width, int height)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		if (service == null)
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		if (bitmapCacheService == null)
 		{
 			throw new SystemException("IBitmapCacheService is not registered.");
 		}
@@ -50,7 +50,7 @@ internal static class ImageFunctions
 			{
 				name = name.Substring(6);
 			}
-			service.RegisterThumbnailImage(name, thumbName, width, height);
+			bitmapCacheService.RegisterThumbnailImage(name, thumbName, width, height);
 		}
 	}
 

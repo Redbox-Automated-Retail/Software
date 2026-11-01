@@ -7,7 +7,7 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
+		int operand = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
 		ErrorCodes errorCodes = base.MotionService.MoveVend(MoveMode.Get, base.Context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
@@ -15,8 +15,8 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 			HandleHWError(errorCodes.ToString());
 			return;
 		}
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		ErrorCodes errorCodes2 = service.AcceptDiskAtDoor();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		ErrorCodes errorCodes2 = controllerService.AcceptDiskAtDoor();
 		switch (errorCodes2)
 		{
 		case ErrorCodes.PickerEmpty:
@@ -27,16 +27,16 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 			break;
 		case ErrorCodes.PickerFull:
 		{
-			errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(num, num2, MoveMode.Put, base.Context.AppLog);
+			errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(operand, num2, MoveMode.Put, base.Context.AppLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				HandleHWError(errorCodes.ToString());
 				break;
 			}
 			base.ControlSystem.TrackCycle();
-			if (service.Put("UNKNOWN").Success)
+			if (controllerService.Put("UNKNOWN").Success)
 			{
-				base.Context.CreateResult("ItemReturned", "The marker disk was filed.", num, num2, "UNKNOWN", null, null);
+				base.Context.CreateResult("ItemReturned", "The marker disk was filed.", operand, num2, "UNKNOWN", null, null);
 				break;
 			}
 			errorCodes = base.MotionService.MoveVend(MoveMode.None, base.Context.AppLog);
@@ -45,7 +45,7 @@ internal sealed class FileMarkerDiskJob : NativeJobAdapter
 				HandleHWError(errorCodes.ToString());
 				break;
 			}
-			IVendItemResult vendItemResult = service.VendItemInPicker();
+			IVendItemResult vendItemResult = controllerService.VendItemInPicker();
 			if (vendItemResult.Status == ErrorCodes.PickerEmpty)
 			{
 				base.Context.CreateInfoResult("ItemTakenByMerchandizer", "The disk was taken by the merchandizer.");

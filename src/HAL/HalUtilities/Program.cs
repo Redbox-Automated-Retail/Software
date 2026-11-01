@@ -821,14 +821,14 @@ internal sealed class Program
 				SyncOptions options = SyncOptions.None;
 				if (string.Empty != optionVal9)
 				{
-					string[] array2 = optionVal9.Split(';');
-					if (array2.Length == 1)
+					string[] parts = optionVal9.Split(';');
+					if (parts.Length == 1)
 					{
-						options = Enum<SyncOptions>.ParseIgnoringCase(array2[0], SyncOptions.None);
+						options = Enum<SyncOptions>.ParseIgnoringCase(parts[0], SyncOptions.None);
 					}
 					else
 					{
-						Array.ForEach(array2, delegate(string option)
+						Array.ForEach(parts, delegate(string option)
 						{
 							SyncOptions syncOptions = Enum<SyncOptions>.ParseIgnoringCase(option, SyncOptions.None);
 							options |= syncOptions;
@@ -1143,11 +1143,11 @@ internal sealed class Program
 					Console.WriteLine("please specify a valid file.");
 					break;
 				}
-				string[] array3 = File.ReadAllLines(optionVal14);
+				string[] lines = File.ReadAllLines(optionVal14);
 				List<FraudLocInfo> list3 = new List<FraudLocInfo>();
 				FraudLocInfo fraudLocInfo = null;
 				char[] separator2 = new char[1] { ' ' };
-				string[] array = array3;
+				string[] array = lines;
 				foreach (string text2 in array)
 				{
 					if (text2.Contains("GET Deck"))

@@ -56,8 +56,8 @@ public class PromoConfirmationViewController : BaseViewController
 
 	private static void ConfigureTTS(PromoConfirmationViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => PromoConfirmationViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}
@@ -75,9 +75,9 @@ public class PromoConfirmationViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("long", 40000);
-		(service?.CreateTimer("PromoConfirmationViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("PromoConfirmationViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("PromoConfirmationViewController time out", popOnly: false);
@@ -86,8 +86,8 @@ public class PromoConfirmationViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("PromoConfirmationViewTimer"))?.Stop();
-		service?.RemoveTimer("PromoConfirmationViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("PromoConfirmationViewTimer"))?.Stop();
+		timerService?.RemoveTimer("PromoConfirmationViewTimer");
 	}
 }

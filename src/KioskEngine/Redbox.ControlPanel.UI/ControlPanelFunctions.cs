@@ -28,15 +28,15 @@ public class ControlPanelFunctions
 	private static void AuthenticateUser(UserData userData)
 	{
 		bool flag = true;
-		IAuthenticationServices service = ServiceLocator.Instance.GetService<IAuthenticationServices>();
-		if (service != null)
+		IAuthenticationServices authenticationServices = ServiceLocator.Instance.GetService<IAuthenticationServices>();
+		if (authenticationServices != null)
 		{
 			ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
-			IMachineSettingsStore service3 = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (callbackService != null && service3 != null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (callbackService != null && machineSettingsStore != null)
 			{
-				userData.StoreNumber = service3.StoreNumberString();
-				service.Authenticate(userData.StoreNumber, userData.Id, userData.Password, useLdapAuthentication: true, remoteServiceCallback);
+				userData.StoreNumber = machineSettingsStore.StoreNumberString();
+				authenticationServices.Authenticate(userData.StoreNumber, userData.Id, userData.Password, useLdapAuthentication: true, remoteServiceCallback);
 				flag = false;
 			}
 		}

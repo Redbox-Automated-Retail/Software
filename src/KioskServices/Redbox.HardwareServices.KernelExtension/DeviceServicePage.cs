@@ -79,7 +79,7 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		panelLoading.Visible = true;
 		ValidateVersionModel validateVersionModel = null;
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		bool supportsEMV = false;
 		Task.Factory.StartNew(delegate
 		{
@@ -91,7 +91,7 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 			checkBoxDeviceServiceCardReaderConnected.Checked = deviceServiceClientHelper?.IsCardReaderConnected ?? false;
 			checkBoxSupportsEMV.Checked = supportsEMV;
 			panelLoading.Visible = false;
-		}, CancellationToken.None, TaskContinuationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler);
 		textBoxDeviceServiceVersion.Text = deviceServiceClientHelper?.DeviceServiceVersion?.ToString();
 		textBoxDeviceServiceClientVersion.Text = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString();
 		checkBoxDeviceServiceConnected.Checked = deviceServiceClientHelper?.IsConnectedToDeviceService ?? false;
@@ -100,20 +100,20 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 	private void buttonDeviceServiceShutdown_Click(object sender, EventArgs e)
 	{
 		bool result = false;
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		ShutDownReason shutDownReason = ShutDownReason.None;
 		Enum.TryParse<ShutDownReason>(comboBoxShutdownReason.SelectedItem.ToString(), out shutDownReason);
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		Task.Factory.StartNew(delegate
 		{
 			textBoxResult.Text = "processing...";
-		}, CancellationToken.None, TaskCreationOptions.None, service.UITaskScheduler).ContinueWith(delegate
+		}, CancellationToken.None, TaskCreationOptions.None, viewService.UITaskScheduler).ContinueWith(delegate
 		{
 			result = deviceServiceClientHelper?.ShutDownDeviceService(checkBoxForceShutdown.Checked, shutDownReason) ?? false;
 		}).ContinueWith(delegate
 		{
 			textBoxResult.Text = result.ToString();
-		}, service.UITaskScheduler);
+		}, viewService.UITaskScheduler);
 	}
 
 	private void buttonDeviceServiceSendTamperedAlert_Click(object sender, EventArgs e)

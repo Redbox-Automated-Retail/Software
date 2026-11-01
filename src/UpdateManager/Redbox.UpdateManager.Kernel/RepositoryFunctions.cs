@@ -128,11 +128,11 @@ public static class RepositoryFunctions
 	[KernelFunction(Name = "kernel.repositorypendingactivations")]
 	internal static LuaTable GetPendingActivations(string name)
 	{
-		IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
+		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
 		List<IRevLog> logs = new List<IRevLog>();
 		try
 		{
-			logs = service.GetPendingActivations(name);
+			logs = repositoryService.GetPendingActivations(name);
 		}
 		catch (Exception e)
 		{
@@ -158,14 +158,14 @@ public static class RepositoryFunctions
 	[KernelFunction(Name = "kernel.repositoryisactivated")]
 	internal static bool IsRepositoryActivated(string name)
 	{
-		IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
-		if (service == null)
+		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+		if (repositoryService == null)
 		{
 			return false;
 		}
 		try
 		{
-			return service.GetActiveRevision(name) != "0000000000000000000000000000000000000000";
+			return repositoryService.GetActiveRevision(name) != "0000000000000000000000000000000000000000";
 		}
 		catch (Exception)
 		{

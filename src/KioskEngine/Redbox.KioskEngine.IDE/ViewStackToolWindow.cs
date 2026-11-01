@@ -47,10 +47,10 @@ public class ViewStackToolWindow : ToolWindow
 	public ViewStackToolWindow()
 	{
 		InitializeComponent();
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			service.ViewStateChanged += delegate
+			viewService.ViewStateChanged += delegate
 			{
 				RefreshStackList();
 			};

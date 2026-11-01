@@ -20,19 +20,19 @@ public partial class KeypadUserControl : UserControl, IComponentConnector
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(OneButton);
-		obj?.SetStyle(TwoButton);
-		obj?.SetStyle(ThreeButton);
-		obj?.SetStyle(FourButton);
-		obj?.SetStyle(FiveButton);
-		obj?.SetStyle(SixButton);
-		obj?.SetStyle(SevenButton);
-		obj?.SetStyle(EightButton);
-		obj?.SetStyle(NineButton);
-		obj?.SetStyle(ZeroButton);
-		obj?.SetStyle(ClearAllButton);
-		obj?.SetStyle(BackButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(OneButton);
+		theme?.SetStyle(TwoButton);
+		theme?.SetStyle(ThreeButton);
+		theme?.SetStyle(FourButton);
+		theme?.SetStyle(FiveButton);
+		theme?.SetStyle(SixButton);
+		theme?.SetStyle(SevenButton);
+		theme?.SetStyle(EightButton);
+		theme?.SetStyle(NineButton);
+		theme?.SetStyle(ZeroButton);
+		theme?.SetStyle(ClearAllButton);
+		theme?.SetStyle(BackButton);
 	}
 
 	private void NumberCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

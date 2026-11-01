@@ -11,9 +11,9 @@ internal class DumpBinThinHelper : ThinHelper
 
 	internal override MerchandizeResult ThinDisk(string id, MerchFlags flags)
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service.IsFull())
+		if (dumpbinService.IsFull())
 		{
 			base.Context.CreateInfoResult("DumpBinIsFull", "The dump bin is filled to capacity.");
 			return MerchandizeResult.DumpBinFull;
@@ -31,7 +31,7 @@ internal class DumpBinThinHelper : ThinHelper
 		case MerchandizeResult.EmptyStuck:
 			return merchandizeResult;
 		case MerchandizeResult.Success:
-			return ThinDiskToLocation(location, service.PutLocation, id, MerchFlags.Thin);
+			return ThinDiskToLocation(location, dumpbinService.PutLocation, id, MerchFlags.Thin);
 		default:
 		{
 			MerchandizeResult merchandizeResult2 = ReturnToSource(location, id);
@@ -46,13 +46,13 @@ internal class DumpBinThinHelper : ThinHelper
 
 	protected override ILocation FindEmptyTarget(MerchFlags flags, out MerchandizeResult result)
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		if (service.IsFull())
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+		if (dumpbinService.IsFull())
 		{
 			result = MerchandizeResult.DumpBinFull;
 			return null;
 		}
 		result = MerchandizeResult.Success;
-		return service.PutLocation;
+		return dumpbinService.PutLocation;
 	}
 }

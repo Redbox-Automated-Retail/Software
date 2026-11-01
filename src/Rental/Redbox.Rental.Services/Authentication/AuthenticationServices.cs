@@ -66,7 +66,7 @@ public class AuthenticationServices : IAuthenticationServices
 				LogHelper.Instance.Log("Live call to KioskClientService Authenticate, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
 				if (!ServiceLocator.Instance.GetService<IStoreServices>().IsStandAlone)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					AuthenticateRequest request = new AuthenticateRequest
 					{
 						KioskId = int.Parse(storeNumber),
@@ -74,7 +74,7 @@ public class AuthenticationServices : IAuthenticationServices
 						Password = EncryptionHelper.Encrypt(password),
 						Username = userName
 					};
-					AuthenticateResponse authenticateResponse = service.Authentication.Authenticate(request);
+					AuthenticateResponse authenticateResponse = kioskClientService.Authentication.Authenticate(request);
 					if (authenticateResponse == null)
 					{
 						remoteServiceResult.Properties["response"] = AuthenticationResponse.Error.ToString();

@@ -107,12 +107,12 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		try
 		{
 			CloseKiosk.Visibility = Visibility.Hidden;
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 			if (_idleTimer != null)
 			{
 				_idleTimer.Stop();
 			}
-			service.ActivateDefaultBundle();
+			resourceBundleService.ActivateDefaultBundle();
 		}
 		catch (Exception ex)
 		{
@@ -168,10 +168,10 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 
 	private void GetMaintenanceMode()
 	{
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 		string path = "Field Maintenance";
 		string key = "MaintenanceMode";
-		bool.TryParse(service.GetValue<string>(path, key), out _maintenancemodestate);
+		bool.TryParse(machineSettingsStore.GetValue<string>(path, key), out _maintenancemodestate);
 		string text = toggle_maintenance_mode_button.Content.ToString();
 		text = ((!_maintenancemodestate) ? text.Replace("Off", "On") : text.Replace("On", "Off"));
 		toggle_maintenance_mode_button.Content = text;
@@ -179,10 +179,10 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 
 	private void SetMaintenanceMode()
 	{
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 		string path = "Field Maintenance";
 		string key = "MaintenanceMode";
-		service.SetValue(path, key, _maintenancemodestate.ToString().ToLower());
+		machineSettingsStore.SetValue(path, key, _maintenancemodestate.ToString().ToLower());
 		string text = toggle_maintenance_mode_button.Content.ToString();
 		text = ((!_maintenancemodestate) ? text.Replace("Off", "On") : text.Replace("On", "Off"));
 		toggle_maintenance_mode_button.Content = text;

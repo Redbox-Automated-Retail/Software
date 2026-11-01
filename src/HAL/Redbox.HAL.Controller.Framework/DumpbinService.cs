@@ -91,8 +91,8 @@ internal sealed class DumpbinService : IDumpbinService
 
 	public bool AddBinItem(string matrix)
 	{
-		ITableTypeFactory service = ServiceLocator.Instance.GetService<ITableTypeFactory>();
-		return AddBinItem(service.NewBinItem(matrix, DateTime.Now));
+		ITableTypeFactory tableTypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
+		return AddBinItem(tableTypeFactory.NewBinItem(matrix, DateTime.Now));
 	}
 
 	public bool AddBinItem(IDumpBinInventoryItem item)
@@ -118,7 +118,7 @@ internal sealed class DumpbinService : IDumpbinService
 
 	public void ResetState(XmlDocument xmlDocument, ErrorList errors)
 	{
-		ITableTypeFactory service = ServiceLocator.Instance.GetService<ITableTypeFactory>();
+		ITableTypeFactory tableTypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
 		ClearItems();
 		XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes("bin-item");
 		if (xmlNodeList == null || xmlNodeList.Count <= 0)
@@ -145,7 +145,7 @@ internal sealed class DumpbinService : IDumpbinService
 						timestamp = DateTime.Now;
 					}
 				}
-				list.Add(service.NewBinItem(attributeValue, timestamp));
+				list.Add(tableTypeFactory.NewBinItem(attributeValue, timestamp));
 			}
 			if (list.Count > 0)
 			{
@@ -157,8 +157,8 @@ internal sealed class DumpbinService : IDumpbinService
 
 	internal DumpbinService()
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		Deck = service.Last.Number;
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		Deck = decksService.Last.Number;
 		Slots = new Range(82, 84);
 		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
 		Table = dataTableService.GetTable<IDumpBinInventoryItem>();

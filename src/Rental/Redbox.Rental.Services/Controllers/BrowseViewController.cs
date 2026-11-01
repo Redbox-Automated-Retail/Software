@@ -66,14 +66,14 @@ public class BrowseViewController : BaseViewController
 
 	public static void CacheProductImages()
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IKioskProduct> products = null;
-		service?.GetProducts(BrowseViewFilter.All, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.All, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		foreach (IKioskProduct item in products)
 		{
 			OrchestrationService.GetProductBitmapImage(item);
 		}
-		service?.GetProducts(BrowseViewFilter.ComingSoon, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.ComingSoon, TitleFamily.All, TitleType.All, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		foreach (IKioskProduct product in products)
 		{
 			OrchestrationService.GetProductBitmapImage(product);
@@ -620,9 +620,9 @@ public class BrowseViewController : BaseViewController
 
 	private static void ConfigureTTS(BrowseViewModel browseViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			browseViewModel.OnGetSpeechControl = () => BrowseViewTextToSpeech.GetSpeechControl(BaseViewController.GetViewModel<BrowseViewModel>);
 		}
@@ -826,9 +826,9 @@ public class BrowseViewController : BaseViewController
 			if (BrowseState.IsNonBrowseView)
 			{
 				BrowseState?.PopBrowseStateSet();
-				IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-				service?.GoBackSafe("back_buton_press", popOnly: false);
-				service?.Show();
+				IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+				viewService?.GoBackSafe("back_buton_press", popOnly: false);
+				viewService?.Show();
 			}
 			else
 			{
@@ -1189,8 +1189,8 @@ public class BrowseViewController : BaseViewController
 
 	private static bool CanShowForSaleButton()
 	{
-		IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
-		if (service != null && service.CanSellUsedMovies && BrowseState.TitleFamily == TitleFamily.Movies)
+		IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+		if (storeManager != null && storeManager.CanSellUsedMovies && BrowseState.TitleFamily == TitleFamily.Movies)
 		{
 			return !BrowseFunctions.IsRedboxPlusBrowseMode;
 		}
@@ -1810,10 +1810,10 @@ public class BrowseViewController : BaseViewController
 		{
 			return;
 		}
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (BrowseState != null && service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (BrowseState != null && viewService != null)
 		{
-			BrowseState.ProductDetailShownFromView = service.Peek();
+			BrowseState.ProductDetailShownFromView = viewService.Peek();
 		}
 		PrepareToLeaveBrowseView();
 		BaseViewController.AnalyticsService?.AddButtonPressEvent("BrowseViewDisplayProductButton")?.AddData(ProductData.ToProductData(titleProduct));
@@ -2132,8 +2132,8 @@ public class BrowseViewController : BaseViewController
 	{
 		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
 		IRentalShoppingCart rentalShoppingCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (rentalShoppingCart != null && service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (rentalShoppingCart != null && dataService != null)
 		{
 			foreach (IBaseRentalShoppingCartItem item in rentalShoppingCart.Items)
 			{
@@ -2142,7 +2142,7 @@ public class BrowseViewController : BaseViewController
 				IRentalShoppingCartSubscriptionItem rentalShoppingCartSubscriptionItem = item as IRentalShoppingCartSubscriptionItem;
 				if (rentalShoppingCartTitleItem != null)
 				{
-					service.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
+					dataService.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
 				}
 				else if (rentalShoppingCartSubscriptionItem != null)
 				{
@@ -2163,7 +2163,7 @@ public class BrowseViewController : BaseViewController
 				IKioskProduct kioskProduct2 = null;
 				if (rentalShoppingCartTitleItem != null)
 				{
-					service.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: false, out kioskProduct2);
+					dataService.GetProduct(rentalShoppingCartTitleItem.ProductId, excludeTitleRollup: false, out kioskProduct2);
 				}
 				MDVProduct mDVProduct = kioskProduct2 as MDVProduct;
 				bool flag = item.Action == RentalShoppingCartItemAction.purchase;
@@ -2596,7 +2596,7 @@ public class BrowseViewController : BaseViewController
 		LogHelper.Instance.Log("RentalGetProducts by browseMode: {0}, family: {1}, familyType: {2}, selectedBrowseSort: {3}, selectedGenre: {4}, selectedRating: {5}, selectedSort: {6}, isADAView: {7}, priceFilterLow: {8}, priceFilterHigh {9}, studio {10}", browseState.BrowseMode, browseState.TitleFamily, browseState.TitleType, browseState.BrowseSelectedSort, browseState.Genre, browseState.Rating, browseState.Sort, BaseViewController.IsADAMode, browseState.BrowsePriceRangeFilter?.PriceRangeLow, browseState.BrowsePriceRangeFilter?.PriceRangeHigh, browseState.BrowseStudio);
 		try
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			BrowseSort browseSort = GetBrowseSort();
 			List<long> include = new List<long>();
 			List<long> exclude = new List<long>();
@@ -2610,7 +2610,7 @@ public class BrowseViewController : BaseViewController
 				excludeTitleTypes = PromotionService.Instance.GetInCartExcludeTitleTypeList();
 				excludeDiscountRestriction = PromotionService.Instance.GetInCartExcludeDiscountRestriction();
 			}
-			ErrorList products = service.GetProducts(browseState.BrowseMode, browseState.TitleFamily, browseState.TitleType, browseSort, (long?)browseState.Genre, (long?)browseState.Rating, include, exclude, BaseViewController.IsADAMode, browseState.BrowsePriceRangeFilter?.PriceRangeLow, browseState.BrowsePriceRangeFilter?.PriceRangeHigh, out var products2, browseState.BrowseStudio, excludeTitleTypes, excludeDiscountRestriction);
+			ErrorList products = dataService.GetProducts(browseState.BrowseMode, browseState.TitleFamily, browseState.TitleType, browseSort, (long?)browseState.Genre, (long?)browseState.Rating, include, exclude, BaseViewController.IsADAMode, browseState.BrowsePriceRangeFilter?.PriceRangeLow, browseState.BrowsePriceRangeFilter?.PriceRangeHigh, out var products2, browseState.BrowseStudio, excludeTitleTypes, excludeDiscountRestriction);
 			if (products.Count > 0)
 			{
 				products.ToLogHelper();
@@ -2633,9 +2633,9 @@ public class BrowseViewController : BaseViewController
 
 	private static bool IsTitleTypeAvailable(TitleType titleType)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IKioskProduct> products = null;
-		service?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		if (products == null)
 		{
 			return false;

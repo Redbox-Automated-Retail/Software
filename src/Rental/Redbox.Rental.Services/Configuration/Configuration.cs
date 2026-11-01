@@ -46,10 +46,10 @@ public class Configuration : IConfiguration
 		get
 		{
 			KioskConfiguration kioskConfiguration = null;
-			IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
-			if (service != null)
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
+			if (kioskClientService != null)
 			{
-				kioskConfiguration = service.Configuration?.GetCurrentKioskConfiguration(KioskClientServiceBaseUrl);
+				kioskConfiguration = kioskClientService.Configuration?.GetCurrentKioskConfiguration(KioskClientServiceBaseUrl);
 				if (kioskConfiguration == null)
 				{
 					LogHelper.Instance.Log("Unable to get current KioskConfiguration from KioskClientService");
@@ -106,36 +106,36 @@ public class Configuration : IConfiguration
 		{
 			if (_enabledGameTypes == null)
 			{
-				IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
+				IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 				_enabledGameTypes = new Dictionary<TitleType, bool>
 				{
 					{
 						TitleType.Xbox360,
-						GetGameConfig(service, "GameEnableXbox360")
+						GetGameConfig(configurationService, "GameEnableXbox360")
 					},
 					{
 						TitleType.XboxOne,
-						GetGameConfig(service, "GameEnableXboxOne")
+						GetGameConfig(configurationService, "GameEnableXboxOne")
 					},
 					{
 						TitleType.PS3,
-						GetGameConfig(service, "GameEnablePS3")
+						GetGameConfig(configurationService, "GameEnablePS3")
 					},
 					{
 						TitleType.PS4,
-						GetGameConfig(service, "GameEnablePS4")
+						GetGameConfig(configurationService, "GameEnablePS4")
 					},
 					{
 						TitleType.Wii,
-						GetGameConfig(service, "GameEnableWii")
+						GetGameConfig(configurationService, "GameEnableWii")
 					},
 					{
 						TitleType.WiiU,
-						GetGameConfig(service, "GameEnableWiiU")
+						GetGameConfig(configurationService, "GameEnableWiiU")
 					},
 					{
 						TitleType.NintendoSwitch,
-						GetGameConfig(service, "GameEnableNintendoSwitch")
+						GetGameConfig(configurationService, "GameEnableNintendoSwitch")
 					}
 				};
 			}
@@ -149,36 +149,36 @@ public class Configuration : IConfiguration
 		{
 			if (_gameHasContentTypes == null)
 			{
-				IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+				IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 				_gameHasContentTypes = new Dictionary<TitleType, bool>
 				{
 					{
 						TitleType.Xbox360,
-						GetMachineSetting(service, "GameHasContentXbox360")
+						GetMachineSetting(machineSettingsStore, "GameHasContentXbox360")
 					},
 					{
 						TitleType.XboxOne,
-						GetMachineSetting(service, "GameHasContentXboxOne")
+						GetMachineSetting(machineSettingsStore, "GameHasContentXboxOne")
 					},
 					{
 						TitleType.PS3,
-						GetMachineSetting(service, "GameHasContentPS3")
+						GetMachineSetting(machineSettingsStore, "GameHasContentPS3")
 					},
 					{
 						TitleType.PS4,
-						GetMachineSetting(service, "GameHasContentPS4")
+						GetMachineSetting(machineSettingsStore, "GameHasContentPS4")
 					},
 					{
 						TitleType.Wii,
-						GetMachineSetting(service, "GameHasContentWii")
+						GetMachineSetting(machineSettingsStore, "GameHasContentWii")
 					},
 					{
 						TitleType.WiiU,
-						GetMachineSetting(service, "GameHasContentWiiU")
+						GetMachineSetting(machineSettingsStore, "GameHasContentWiiU")
 					},
 					{
 						TitleType.NintendoSwitch,
-						GetMachineSetting(service, "GameHasContentNintendoSwitch")
+						GetMachineSetting(machineSettingsStore, "GameHasContentNintendoSwitch")
 					}
 				};
 			}
@@ -371,15 +371,15 @@ public class Configuration : IConfiguration
 	private void Initialize()
 	{
 		ResetCachedIsDefaultCulture();
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		BurnInTimeout = ConfigGetValue(service, "system", "General", "BurnInTimeout", 1800000);
-		BurnInViewDuration = ConfigGetValue(service, "system", "General", "BurnInViewDuration", 30000);
-		SignInTimeout = ConfigGetValue(service, "system", "Personalization", "SignInTimeout", 20000);
-		SignInADATimeout = ConfigGetValue(service, "system", "Personalization", "SignInADATimeout", 90000);
-		EnablePricingEngine = ConfigGetValue(service, "system", "General", "EnablePricingEngine", defaultValue: true);
-		KioskClientServiceBaseUrl = ConfigGetValue(service, "system", "KioskClientService", "KioskClientServiceBaseUrl", "http://localhost:9001");
-		UpdateClientServiceBaseUrl = ConfigGetValue(service, "system", "UpdateClientService", "UpdateClientServiceBaseUrl", "http://localhost:6001");
-		KioskEngineApiServiceBaseUrl = ConfigGetValue(service, "system", "KioskEngineApiService", "KioskEngineApiServiceBaseUrl", "http://localhost:9002");
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		BurnInTimeout = ConfigGetValue(configurationService, "system", "General", "BurnInTimeout", 1800000);
+		BurnInViewDuration = ConfigGetValue(configurationService, "system", "General", "BurnInViewDuration", 30000);
+		SignInTimeout = ConfigGetValue(configurationService, "system", "Personalization", "SignInTimeout", 20000);
+		SignInADATimeout = ConfigGetValue(configurationService, "system", "Personalization", "SignInADATimeout", 90000);
+		EnablePricingEngine = ConfigGetValue(configurationService, "system", "General", "EnablePricingEngine", defaultValue: true);
+		KioskClientServiceBaseUrl = ConfigGetValue(configurationService, "system", "KioskClientService", "KioskClientServiceBaseUrl", "http://localhost:9001");
+		UpdateClientServiceBaseUrl = ConfigGetValue(configurationService, "system", "UpdateClientService", "UpdateClientServiceBaseUrl", "http://localhost:6001");
+		KioskEngineApiServiceBaseUrl = ConfigGetValue(configurationService, "system", "KioskEngineApiService", "KioskEngineApiServiceBaseUrl", "http://localhost:9002");
 		_lifetimeKioskConfiguration = new KioskClientServiceConfiguration()?.GetCurrentKioskConfiguration(KioskClientServiceBaseUrl);
 		LogHelper.Instance.Log("Loaded static KioskConfiguration");
 		_lifetimeKioskConfiguration?.Log();
@@ -399,74 +399,74 @@ public class Configuration : IConfiguration
 			_sessionKioskConfiguration?.Log();
 		}
 		ResetCachedIsDefaultCulture();
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		AnimatedDiscReturnEnabled = ConfigGetValue(service, "system", "General", "AnimatedDiscReturnEnabled", defaultValue: false);
-		ComingSoonOptInEnabled = ConfigGetValue(service, "system", "General", "ComingSoonOptIn", defaultValue: true);
-		MarketingOptInEnabled = ConfigGetValue(service, "system", "General", "MarketingOptInEnabled", defaultValue: true);
-		RecommendationOnPickup = ConfigGetValue(service, "system", "General", "RecommendationOnPickup", defaultValue: true);
-		ServiceFeeEnabled = ConfigGetValue(service, "system", "General", "ServiceFeeEnabled", defaultValue: false);
-		BlurayUpsellEnabled = ConfigGetValue(service, "system", "General", "BluRayUpsellEnabled", defaultValue: false);
-		_4KUpsellEnabled = ConfigGetValue(service, "system", "General", "4KUpsellEnabled", defaultValue: false);
-		OfflineItemsLimit = ConfigGetValue(service, "system", "General", "OfflineItemsLimit", 3);
-		OfflineGameRentalLimit = ConfigGetValue(service, "system", "General", "OfflineGameRentalLimit", 1);
-		OfflineGamePurchaseLimit = ConfigGetValue(service, "system", "General", "OfflineGamePurchaseLimit", 2);
-		KioskAnalyticsMessagePriority = ConfigGetValue(service, "system", "QueueService", "KioskAnalyticsMessagePriority", 0);
-		UseTimerToInvokeCallbackEntries = ConfigGetValue(service, "system", "General", "UseTimerToInvokeCallbackEntries", defaultValue: true);
-		GiftCardsEnabled = ConfigGetValue(service, "system", "General", "GiftCardsEnabled", defaultValue: true);
-		TextToSpeechVolume = ConfigGetValue(service, "system", "General", "TextToSpeechVolume", 100);
-		ButtonAnimationEnabled = ConfigGetValue(service, "system", "General", "ButtonAnimationEnabled", defaultValue: true);
-		UseLowestPriceSortOrder = ConfigGetValue(service, "system", "General", "UserLowestPriceSortOrder", defaultValue: false);
-		EarlyIdEnabled = ConfigGetValue(service, "system", "Personalization", "EarlyIDEnabled", defaultValue: false);
-		LoyaltyEnabled = ConfigGetValue(service, "system", "Personalization", "LoyaltyEnabled", defaultValue: false);
-		PerksPassEnabled = ConfigGetValue(service, "system", "Personalization", "PerksPassEnabled", defaultValue: false);
-		_loyaltySignupAfterSwipeEnabled = ConfigGetValue(service, "system", "Personalization", "LoyaltySignUpAfterSwipeEnabled", defaultValue: false);
-		string timeSpan = ConfigGetValue<string>(service, "system", "Personalization", "SignUpAfterSwipeStartEndTime", null);
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		AnimatedDiscReturnEnabled = ConfigGetValue(configurationService, "system", "General", "AnimatedDiscReturnEnabled", defaultValue: false);
+		ComingSoonOptInEnabled = ConfigGetValue(configurationService, "system", "General", "ComingSoonOptIn", defaultValue: true);
+		MarketingOptInEnabled = ConfigGetValue(configurationService, "system", "General", "MarketingOptInEnabled", defaultValue: true);
+		RecommendationOnPickup = ConfigGetValue(configurationService, "system", "General", "RecommendationOnPickup", defaultValue: true);
+		ServiceFeeEnabled = ConfigGetValue(configurationService, "system", "General", "ServiceFeeEnabled", defaultValue: false);
+		BlurayUpsellEnabled = ConfigGetValue(configurationService, "system", "General", "BluRayUpsellEnabled", defaultValue: false);
+		_4KUpsellEnabled = ConfigGetValue(configurationService, "system", "General", "4KUpsellEnabled", defaultValue: false);
+		OfflineItemsLimit = ConfigGetValue(configurationService, "system", "General", "OfflineItemsLimit", 3);
+		OfflineGameRentalLimit = ConfigGetValue(configurationService, "system", "General", "OfflineGameRentalLimit", 1);
+		OfflineGamePurchaseLimit = ConfigGetValue(configurationService, "system", "General", "OfflineGamePurchaseLimit", 2);
+		KioskAnalyticsMessagePriority = ConfigGetValue(configurationService, "system", "QueueService", "KioskAnalyticsMessagePriority", 0);
+		UseTimerToInvokeCallbackEntries = ConfigGetValue(configurationService, "system", "General", "UseTimerToInvokeCallbackEntries", defaultValue: true);
+		GiftCardsEnabled = ConfigGetValue(configurationService, "system", "General", "GiftCardsEnabled", defaultValue: true);
+		TextToSpeechVolume = ConfigGetValue(configurationService, "system", "General", "TextToSpeechVolume", 100);
+		ButtonAnimationEnabled = ConfigGetValue(configurationService, "system", "General", "ButtonAnimationEnabled", defaultValue: true);
+		UseLowestPriceSortOrder = ConfigGetValue(configurationService, "system", "General", "UserLowestPriceSortOrder", defaultValue: false);
+		EarlyIdEnabled = ConfigGetValue(configurationService, "system", "Personalization", "EarlyIDEnabled", defaultValue: false);
+		LoyaltyEnabled = ConfigGetValue(configurationService, "system", "Personalization", "LoyaltyEnabled", defaultValue: false);
+		PerksPassEnabled = ConfigGetValue(configurationService, "system", "Personalization", "PerksPassEnabled", defaultValue: false);
+		_loyaltySignupAfterSwipeEnabled = ConfigGetValue(configurationService, "system", "Personalization", "LoyaltySignUpAfterSwipeEnabled", defaultValue: false);
+		string timeSpan = ConfigGetValue<string>(configurationService, "system", "Personalization", "SignUpAfterSwipeStartEndTime", null);
 		ParseTimeRange(timeSpan, out _loyaltySignupAfterSwipeStartTime, out _loyaltySignupAfterSwipeEndTime, "SignUpAfterSwipeStartEndTime");
-		KeepHalImagesForNumberOfDays = ConfigGetValue(service, "system", "Fraud", "KeepHalImagesForNumberOfDays", 30);
+		KeepHalImagesForNumberOfDays = ConfigGetValue(configurationService, "system", "Fraud", "KeepHalImagesForNumberOfDays", 30);
 		_priceFiltersOnBrowseABTestVersion = GetABTestValue(KioskSession.MarketingGeneral.PriceFiltersOnBrowse);
 		_oosTitleDetailsABTestVersion = GetABTestValue(KioskSession.ABTesting.OutOfStockTitleDetails);
-		AuthorizeAtPickup = ConfigGetValue(service, "system", "General", "AuthorizeAtPickup", defaultValue: false);
-		StartViewDarkModeEnabled = ConfigGetValue(service, "system", "General", "StartViewDarkModeEnabled", defaultValue: false);
-		StartViewDarkModeStartTime = ConfigGetValue(service, "system", "General", "StartViewDarkModeStartTime", "19:0:0");
-		StartViewDarkModeEndTime = ConfigGetValue(service, "system", "General", "StartViewDarkModeEndTime", "7:0:0");
-		KioskDataServicesUrl = ConfigGetValue<string>(service, "system", "General", "KioskDataServicesUrl", null);
-		PublicWebsiteUrl = ConfigGetValue(service, "system", "General", "PublicWebsiteUrl", "https://www.kiosk-backend.invalid").TrimEnd('/');
-		KioskDataServicesKey = ConfigGetValue<string>(service, "system", "General", "KioskDataServicesKey", null);
-		SendJsonKioskAnalyticsToKioskDataService = ConfigGetValue(service, "system", "General", "SendJsonKioskAnalyticsToKioskDataService", defaultValue: true);
-		ForcedAirExchangerConfigured = ConfigGetValue(service, "system", "General", "ForcedAirExchangerConfigured", defaultValue: true);
-		FAQDocument = ConfigGetValue(service, "system", "Documents", "FAQDocument", "document-faqs");
-		TermsDocument = ConfigGetValue(service, "system", "Documents", "TermsDocument", "document-terms");
-		RedboxCardDocument = ConfigGetValue(service, "system", "Documents", "RedboxCardDocument", "document-terms-redbox-card");
-		PrivacyDocument = ConfigGetValue(service, "system", "Documents", "PrivacyDocument", "document-privacy-policy");
-		PerksDocument = ConfigGetValue(service, "system", "Documents", "PerksDocument", "document-perks");
-		MobileFaqDocument = ConfigGetValue(service, "system", "Documents", "MobileFAQDocument", "document-mobile-faqs");
-		CAPrivacyNoticeDocument = ConfigGetValue(service, "system", "Documents", "CAPrivacyNoticeDocument", string.Empty);
-		DoNotSellDocument = ConfigGetValue(service, "system", "Documents", "DoNotSellDocument", string.Empty);
-		SubscriptionsDocument = ConfigGetValue(service, "system", "Documents", "SubscriptionsDocument", string.Empty);
-		RedboxPlusDocument = ConfigGetValue(service, "system", "Documents", "RedboxPlusDocument", string.Empty);
-		UseMerchOrdersForThinning = ConfigGetValue(service, "system", "General", "UseMerchOrdersForThinning", defaultValue: false);
-		KioskClientServiceGetMerchandizingOrdersTimeout = ConfigGetValue(service, "system", "General", "KioskClientServiceGetMerchandizingOrdersTimeout", 60000);
-		string timeSpan2 = ConfigGetValue(service, "system", "General", "ThinJobTimeRange", "03:00:00-04:30:00");
+		AuthorizeAtPickup = ConfigGetValue(configurationService, "system", "General", "AuthorizeAtPickup", defaultValue: false);
+		StartViewDarkModeEnabled = ConfigGetValue(configurationService, "system", "General", "StartViewDarkModeEnabled", defaultValue: false);
+		StartViewDarkModeStartTime = ConfigGetValue(configurationService, "system", "General", "StartViewDarkModeStartTime", "19:0:0");
+		StartViewDarkModeEndTime = ConfigGetValue(configurationService, "system", "General", "StartViewDarkModeEndTime", "7:0:0");
+		KioskDataServicesUrl = ConfigGetValue<string>(configurationService, "system", "General", "KioskDataServicesUrl", null);
+		PublicWebsiteUrl = ConfigGetValue(configurationService, "system", "General", "PublicWebsiteUrl", "https://www.kiosk-backend.invalid").TrimEnd('/');
+		KioskDataServicesKey = ConfigGetValue<string>(configurationService, "system", "General", "KioskDataServicesKey", null);
+		SendJsonKioskAnalyticsToKioskDataService = ConfigGetValue(configurationService, "system", "General", "SendJsonKioskAnalyticsToKioskDataService", defaultValue: true);
+		ForcedAirExchangerConfigured = ConfigGetValue(configurationService, "system", "General", "ForcedAirExchangerConfigured", defaultValue: true);
+		FAQDocument = ConfigGetValue(configurationService, "system", "Documents", "FAQDocument", "document-faqs");
+		TermsDocument = ConfigGetValue(configurationService, "system", "Documents", "TermsDocument", "document-terms");
+		RedboxCardDocument = ConfigGetValue(configurationService, "system", "Documents", "RedboxCardDocument", "document-terms-redbox-card");
+		PrivacyDocument = ConfigGetValue(configurationService, "system", "Documents", "PrivacyDocument", "document-privacy-policy");
+		PerksDocument = ConfigGetValue(configurationService, "system", "Documents", "PerksDocument", "document-perks");
+		MobileFaqDocument = ConfigGetValue(configurationService, "system", "Documents", "MobileFAQDocument", "document-mobile-faqs");
+		CAPrivacyNoticeDocument = ConfigGetValue(configurationService, "system", "Documents", "CAPrivacyNoticeDocument", string.Empty);
+		DoNotSellDocument = ConfigGetValue(configurationService, "system", "Documents", "DoNotSellDocument", string.Empty);
+		SubscriptionsDocument = ConfigGetValue(configurationService, "system", "Documents", "SubscriptionsDocument", string.Empty);
+		RedboxPlusDocument = ConfigGetValue(configurationService, "system", "Documents", "RedboxPlusDocument", string.Empty);
+		UseMerchOrdersForThinning = ConfigGetValue(configurationService, "system", "General", "UseMerchOrdersForThinning", defaultValue: false);
+		KioskClientServiceGetMerchandizingOrdersTimeout = ConfigGetValue(configurationService, "system", "General", "KioskClientServiceGetMerchandizingOrdersTimeout", 60000);
+		string timeSpan2 = ConfigGetValue(configurationService, "system", "General", "ThinJobTimeRange", "03:00:00-04:30:00");
 		ParseTimeRange(timeSpan2, out _thinJobStartTime, out _thinJobEndTime, "ThinJobTimeRange");
-		MerchOrderExpirationDays = ConfigGetValue(service, "system", "General", "MerchOrderExpirationDays", 7);
-		ZeroTouchReadTimeout = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchReadTimeout", 600000);
-		ZeroTouchPickupEnabled = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchPickupEnabled", defaultValue: true);
-		ZeroTouchVasEnabled = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchVasEnabled", defaultValue: false);
-		ZeroTouchContactlessEnabled = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchContactlessEnabled", defaultValue: true) && KioskSession.DeviceService.ContactlessEnabled;
-		ZeroTouchEnabled = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchEnabled", defaultValue: false) && ZeroTouchPickupEnabled;
-		ZeroTouchGoogleTwoTap = ConfigGetValue(service, "system", "ZeroTouch", "ZeroTouchGoogleTwoTap", defaultValue: true);
-		AuthorizeTimeout = ConfigGetValue(service, "system", "General", "AuthorizeTimeout", 60000);
-		KioskClientServiceInventorySnapshotTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceInventorySnapshotTimeout", 60000);
-		UseLegacyBrokerService = ConfigGetValue(service, "kioskengine", "Jarvis", "UseLegacyBrokerService", defaultValue: true);
-		UseAWSBrokerService = ConfigGetValue(service, "kioskengine", "Jarvis", "UseAWSBrokerService", defaultValue: true);
-		KioskClientServiceDiscActionTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceDiscActionTimeout", 5000);
-		KioskClientServiceDiscFraudTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceDiscFraudTimeout", 5000);
-		KioskClientServiceEstimateAccrualTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceEstimateAccrualTimeout", 5000);
-		KioskClientServiceEstimateRedemptionTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceEstimateRedemptionTimeout", 5000);
-		UseKCSPricing = ConfigGetValue(service, "kioskengine", "Jarvis", "UseKCSPricing", defaultValue: true);
-		KioskClientServicePromoCodeValidationTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServicePromoCodeValidationTimeout", 5000);
-		KioskClientServiceUpdateAccountTimeout = ConfigGetValue(service, "kioskengine", "Jarvis", "KioskClientServiceUpdateAccountTimeout", 3000);
-		LoginLockoutMinutes = ConfigGetValue(service, "kioskengine", "FMACP", "LoginLockoutMinutes", 5);
+		MerchOrderExpirationDays = ConfigGetValue(configurationService, "system", "General", "MerchOrderExpirationDays", 7);
+		ZeroTouchReadTimeout = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchReadTimeout", 600000);
+		ZeroTouchPickupEnabled = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchPickupEnabled", defaultValue: true);
+		ZeroTouchVasEnabled = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchVasEnabled", defaultValue: false);
+		ZeroTouchContactlessEnabled = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchContactlessEnabled", defaultValue: true) && KioskSession.DeviceService.ContactlessEnabled;
+		ZeroTouchEnabled = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchEnabled", defaultValue: false) && ZeroTouchPickupEnabled;
+		ZeroTouchGoogleTwoTap = ConfigGetValue(configurationService, "system", "ZeroTouch", "ZeroTouchGoogleTwoTap", defaultValue: true);
+		AuthorizeTimeout = ConfigGetValue(configurationService, "system", "General", "AuthorizeTimeout", 60000);
+		KioskClientServiceInventorySnapshotTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceInventorySnapshotTimeout", 60000);
+		UseLegacyBrokerService = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "UseLegacyBrokerService", defaultValue: true);
+		UseAWSBrokerService = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "UseAWSBrokerService", defaultValue: true);
+		KioskClientServiceDiscActionTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceDiscActionTimeout", 5000);
+		KioskClientServiceDiscFraudTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceDiscFraudTimeout", 5000);
+		KioskClientServiceEstimateAccrualTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceEstimateAccrualTimeout", 5000);
+		KioskClientServiceEstimateRedemptionTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceEstimateRedemptionTimeout", 5000);
+		UseKCSPricing = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "UseKCSPricing", defaultValue: true);
+		KioskClientServicePromoCodeValidationTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServicePromoCodeValidationTimeout", 5000);
+		KioskClientServiceUpdateAccountTimeout = ConfigGetValue(configurationService, "kioskengine", "Jarvis", "KioskClientServiceUpdateAccountTimeout", 3000);
+		LoginLockoutMinutes = ConfigGetValue(configurationService, "kioskengine", "FMACP", "LoginLockoutMinutes", 5);
 	}
 
 	private bool GetMachineSetting(IMachineSettingsStore machineSettingStore, string key)
@@ -519,11 +519,11 @@ public class Configuration : IConfiguration
 		}
 		try
 		{
-			string[] array = timeSpan.Split('-');
-			if (array.Count() == 2)
+			string[] parts = timeSpan.Split('-');
+			if (parts.Count() == 2)
 			{
-				startTime = DateTime.ParseExact(array[0], "H:m:s", DateTimeFormatInfo.InvariantInfo).TimeOfDay;
-				endTime = DateTime.ParseExact(array[1], "H:m:s", DateTimeFormatInfo.InvariantInfo).TimeOfDay;
+				startTime = DateTime.ParseExact(parts[0], "H:m:s", DateTimeFormatInfo.InvariantInfo).TimeOfDay;
+				endTime = DateTime.ParseExact(parts[1], "H:m:s", DateTimeFormatInfo.InvariantInfo).TimeOfDay;
 			}
 			else
 			{

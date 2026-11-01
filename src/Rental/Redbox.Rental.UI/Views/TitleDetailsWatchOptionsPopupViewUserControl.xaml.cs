@@ -23,9 +23,9 @@ public partial class TitleDetailsWatchOptionsPopupViewUserControl : TextToSpeech
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(SeeFullDetailsButton);
-		obj?.SetStyle(CloseButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(SeeFullDetailsButton);
+		theme?.SetStyle(CloseButton);
 	}
 
 	private void SeeFullDetailsCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

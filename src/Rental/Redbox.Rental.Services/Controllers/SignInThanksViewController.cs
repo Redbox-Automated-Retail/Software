@@ -34,10 +34,10 @@ public class SignInThanksViewController : BaseViewController
 			return string.Empty;
 		}
 		string result = emailAddress;
-		int num = emailAddress.IndexOf('@');
-		if (num > 2)
+		int index = emailAddress.IndexOf('@');
+		if (index > 2)
 		{
-			result = emailAddress.Substring(0, 2) + new string('*', num - 2) + emailAddress.Substring(num);
+			result = emailAddress.Substring(0, 2) + new string('*', index - 2) + emailAddress.Substring(index);
 		}
 		return result;
 	}
@@ -49,9 +49,9 @@ public class SignInThanksViewController : BaseViewController
 
 	private static void CreateAndStartTimer(Action continueAction, int delaySeconds, bool popOnly)
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = delaySeconds * 1000;
-		(service?.CreateTimer("SignInThanksViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("SignInThanksViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("SignInThanksViewTimeout", popOnly);
@@ -61,8 +61,8 @@ public class SignInThanksViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("SignInThanksViewTimer"))?.Stop();
-		service?.RemoveTimer("SignInThanksViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("SignInThanksViewTimer"))?.Stop();
+		timerService?.RemoveTimer("SignInThanksViewTimer");
 	}
 }

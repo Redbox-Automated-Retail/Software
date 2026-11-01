@@ -11,8 +11,8 @@ internal sealed class GetHardwareStatisticsJob : NativeJobAdapter
 		HardwareCorrectionStatistic hardwareCorrectionStatistic = Enum<HardwareCorrectionStatistic>.ParseIgnoringCase(base.Context.PopTop<string>(), HardwareCorrectionStatistic.None);
 		if (hardwareCorrectionStatistic != HardwareCorrectionStatistic.None)
 		{
-			IHardwareCorrectionStatisticService service = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
-			using StatsFormatter statsFormatter = new StatsFormatter(service.GetStats(hardwareCorrectionStatistic));
+			IHardwareCorrectionStatisticService hardwareCorrectionStatisticService = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
+			using StatsFormatter statsFormatter = new StatsFormatter(hardwareCorrectionStatisticService.GetStats(hardwareCorrectionStatistic));
 			statsFormatter.Format(base.Context);
 		}
 	}

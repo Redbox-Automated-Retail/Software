@@ -25,8 +25,8 @@ public static class ConversionHelper
 		{
 			if (value is string)
 			{
-				FlagsAttribute[] array = (FlagsAttribute[])convertToType.GetCustomAttributes(typeof(FlagsAttribute), inherit: false);
-				if (array != null && array.Length > 0)
+				FlagsAttribute[] flagsAttributes = (FlagsAttribute[])convertToType.GetCustomAttributes(typeof(FlagsAttribute), inherit: false);
+				if (flagsAttributes != null && flagsAttributes.Length > 0)
 				{
 					int num = 0;
 					string text = (string)value;

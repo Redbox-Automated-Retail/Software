@@ -18,17 +18,17 @@ internal sealed class CortexDecoderFile
 			char[] splitchar = new char[1] { ',' };
 			Array.ForEach(File.ReadAllLines(Source), delegate(string line)
 			{
-				string[] array = line.Split(splitchar);
+				string[] parts = line.Split(splitchar);
 				Results.Add(new CortexDecode
 				{
-					Image = array[0],
-					Matrix = array[6],
-					MatrixCount = Convert.ToInt32(array[7]),
-					SecureCount = Convert.ToInt32(array[8]),
+					Image = parts[0],
+					Matrix = parts[6],
+					MatrixCount = Convert.ToInt32(parts[7]),
+					SecureCount = Convert.ToInt32(parts[8]),
 					Location = new Location
 					{
-						Deck = Convert.ToInt32(array[9]),
-						Slot = Convert.ToInt32(array[10])
+						Deck = Convert.ToInt32(parts[9]),
+						Slot = Convert.ToInt32(parts[10])
 					}
 				});
 			});

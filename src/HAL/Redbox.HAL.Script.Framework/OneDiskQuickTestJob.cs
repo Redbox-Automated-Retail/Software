@@ -15,9 +15,9 @@ internal sealed class OneDiskQuickTestJob : NativeJobAdapter
 			AddError("Misconfigured test");
 			return;
 		}
-		int num = base.Context.PopTop<int>();
+		int operand = base.Context.PopTop<int>();
 		int slot = base.Context.PopTop<int>();
-		if (!MoveAndGet(num, slot))
+		if (!MoveAndGet(operand, slot))
 		{
 			AddError("Failure to retrieve disk from start position.");
 			return;
@@ -32,7 +32,7 @@ internal sealed class OneDiskQuickTestJob : NativeJobAdapter
 			{
 				break;
 			}
-			int[] array3 = ((i == num) ? array : array2);
+			int[] array3 = ((i == operand) ? array : array2);
 			foreach (int slot2 in array3)
 			{
 				if (!MoveAndPut(i, slot2, "UNKNOWN"))
@@ -51,7 +51,7 @@ internal sealed class OneDiskQuickTestJob : NativeJobAdapter
 		}
 		if (!flag)
 		{
-			if (!MoveAndPut(num, slot, "UNKNOWN"))
+			if (!MoveAndPut(operand, slot, "UNKNOWN"))
 			{
 				AddError("Unable to place the disk at a test location.");
 			}

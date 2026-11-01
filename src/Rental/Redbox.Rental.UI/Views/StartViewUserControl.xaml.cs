@@ -35,15 +35,15 @@ public partial class StartViewUserControl : TextToSpeechUserControl, IWPFActor, 
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(all_movies_button);
-		obj?.SetStyle(buy_movies_button);
-		obj?.SetStyle(online_pickup_button);
-		obj?.SetStyle(return_button);
-		obj?.SetStyle(sign_in_button);
-		obj?.SetStyle(handicap_button);
-		obj?.SetStyle(espanol_button);
-		obj?.SetStyle(help_button);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(all_movies_button);
+		theme?.SetStyle(buy_movies_button);
+		theme?.SetStyle(online_pickup_button);
+		theme?.SetStyle(return_button);
+		theme?.SetStyle(sign_in_button);
+		theme?.SetStyle(handicap_button);
+		theme?.SetStyle(espanol_button);
+		theme?.SetStyle(help_button);
 	}
 
 	private void RentOrBuyMoviesCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

@@ -24,15 +24,15 @@ internal sealed class SyncLocationDecorator : SyncDecorator, IGetObserver
 			HandleStuck(result);
 			return false;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (!peekResult.IsFull)
 		{
 			UpdateSymbol("MSTESTER-SYMBOL-EMPTY-SLOT-MSG", $"The location Deck={SyncLocation.Deck} Slot={SyncLocation.Slot} is empty.");
 			SyncLocation.ReturnDate = null;
-			service.Save(SyncLocation);
+			inventoryService.Save(SyncLocation);
 			return true;
 		}
-		HandleStuck(result, service);
+		HandleStuck(result, inventoryService);
 		return false;
 	}
 
@@ -86,8 +86,8 @@ internal sealed class SyncLocationDecorator : SyncDecorator, IGetObserver
 
 	private void HandleStuck(IGetResult result)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		HandleStuck(result, service);
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		HandleStuck(result, inventoryService);
 	}
 
 	private void HandleStuck(IGetResult result, IInventoryService service)

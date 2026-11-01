@@ -7,14 +7,14 @@ internal sealed class AirExchangerStatusJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IAirExchangerService service = ServiceLocator.Instance.GetService<IAirExchangerService>();
-		if (!service.Configured)
+		IAirExchangerService airExchangerService = ServiceLocator.Instance.GetService<IAirExchangerService>();
+		if (!airExchangerService.Configured)
 		{
 			base.Context.CreateInfoResult("AirExchangerNotConfigured", "There is no air exchanger configured.");
 			return;
 		}
 		base.Context.CreateInfoResult("AirExchangerConfigured", "There is an air exchanger configured.");
-		if (!service.ShouldRetry())
+		if (!airExchangerService.ShouldRetry())
 		{
 			base.Context.CreateInfoResult("PersistentErrorStatus", "The board is in an persistent error state.");
 		}

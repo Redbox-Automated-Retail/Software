@@ -54,8 +54,8 @@ public static class ValidationServices
 			errorMessage = "email address is empty";
 			return false;
 		}
-		int num = emailAddress.IndexOf("@");
-		if (num < 0)
+		int index = emailAddress.IndexOf("@");
+		if (index < 0)
 		{
 			errorMessage = "Missing @ symbol";
 			return false;
@@ -70,12 +70,12 @@ public static class ValidationServices
 			errorMessage = "Contiguous periods found";
 			return false;
 		}
-		if (num < 1)
+		if (index < 1)
 		{
 			errorMessage = "Handle nil value";
 			return false;
 		}
-		string text = emailAddress.Substring(0, num);
+		string text = emailAddress.Substring(0, index);
 		if (emailAddress.Contains(" "))
 		{
 			errorMessage = "Spaces found";
@@ -96,13 +96,13 @@ public static class ValidationServices
 			errorMessage = "Ending period found";
 			return false;
 		}
-		int num2 = emailAddress.LastIndexOf(".");
-		if (!ValidateTopLevelDomain(emailAddress.Substring(Math.Min(num2 + 1, emailAddress.Length - 1))))
+		int lastIndex = emailAddress.LastIndexOf(".");
+		if (!ValidateTopLevelDomain(emailAddress.Substring(Math.Min(lastIndex + 1, emailAddress.Length - 1))))
 		{
 			errorMessage = "Invalid Top-Level Domain";
 			return false;
 		}
-		string text2 = emailAddress.Substring(num + 1);
+		string text2 = emailAddress.Substring(index + 1);
 		string[] array = text2.Substring(0, text2.LastIndexOf(".")).Split('.');
 		if (array != null)
 		{

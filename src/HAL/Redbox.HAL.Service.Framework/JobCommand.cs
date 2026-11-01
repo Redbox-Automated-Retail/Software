@@ -208,10 +208,10 @@ public sealed class JobCommand
 	{
 		bool flag = context.Parameters.ContainsKey("resume-now");
 		bool num = context.Parameters.ContainsKey("no-duplicates");
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
 		if (num && label != null)
 		{
-			IExecutionContext[] byLabel = service.GetByLabel(label);
+			IExecutionContext[] byLabel = executionService.GetByLabel(label);
 			if (byLabel.Length != 0)
 			{
 				context.Errors.Add(Error.NewWarning("S998", $"A job with the label '{label}' already exists and the no-duplicates flag was specified.", "Issue the JOB schedule command again passing in a non-duplicate label: or remove the no-duplicates parameter."));
@@ -252,8 +252,8 @@ public sealed class JobCommand
 	[Usage("JOB init-status")]
 	public void StartupInitSucceeded(CommandContext context)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		context.Messages.Add(service.GetInitJobStatus().ToString().ToUpper());
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		context.Messages.Add(executionService.GetInitJobStatus().ToString().ToUpper());
 	}
 
 	[CommandForm(Name = "quick-return-status")]
@@ -270,20 +270,20 @@ public sealed class JobCommand
 
 	private static void OnExecuteImmediate(byte[] statement, CommandContext context)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		if (service.IsImmediateJobPending)
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		if (executionService.IsImmediateJobPending)
 		{
 			context.Errors.Add(Error.NewError("S001", "An immediate command is already scheduled to execute.  Only one immediate job can be scheduled at a time.", "Use the JOB wait-for-completion command and then resubmit the immediate job."));
 			return;
 		}
 		using MemoryStream stream = new MemoryStream(statement);
-		IExecutionResult executionResult = service.CompileImmediate(stream);
+		IExecutionResult executionResult = executionService.CompileImmediate(stream);
 		if (executionResult.Errors.ContainsError())
 		{
 			context.Errors.AddRange(executionResult.Errors);
 			return;
 		}
-		IExecutionContext executionContext = service.ExecuteImmediate();
+		IExecutionContext executionContext = executionService.ExecuteImmediate();
 		executionContext.WaitForCompletion();
 		CommandHelper.FormatJob(executionContext, context);
 		context.Errors.AddRange(executionContext.Result.Errors);

@@ -51,8 +51,8 @@ internal struct UnloadHelper : IFileDiskHandler
 
 	internal void CheckAndClearPicker(ExecutionResult result)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IPickerSensorReadResult pickerSensorReadResult = service.ReadPickerSensors();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		IPickerSensorReadResult pickerSensorReadResult = controlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
 		{
 			result.Errors.Add(Error.NewError("E001", "Item stuck", "There is an item stuck in the gripper; can't continue."));
@@ -70,7 +70,7 @@ internal struct UnloadHelper : IFileDiskHandler
 				result.Errors.Add(Error.NewError("E001", "Item stuck", "There is an item stuck in the gripper; can't continue."));
 				return;
 			}
-			pickerSensorReadResult = service.ReadPickerSensors();
+			pickerSensorReadResult = controlSystem.ReadPickerSensors();
 			if (!pickerSensorReadResult.Success)
 			{
 				result.Errors.Add(Error.NewError("E001", "Item stuck", "There is an item stuck in the gripper; can't continue."));
@@ -95,10 +95,10 @@ internal struct UnloadHelper : IFileDiskHandler
 	{
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
 		ServiceLocator.Instance.GetService<IPersistentCounterService>();
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		ErrorCodes errorCodes = ErrorCodes.Success;
-		errorCodes = service.MoveTo(srcDeck, srcSlot, MoveMode.Get, Context.AppLog);
+		errorCodes = motionControlService.MoveTo(srcDeck, srcSlot, MoveMode.Get, Context.AppLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			MerchandizingHelper.Instance.CleanupJob(Result, Context, errorCodes);
@@ -150,7 +150,7 @@ internal struct UnloadHelper : IFileDiskHandler
 		Context.CreateResult("QlmUnloadBarcodeFromQlm", string.Format("The item pulled from the {0} has the following barcode.", isVMZMachine ? "VMZ" : "QLM"), srcDeck, srcSlot, text, null, null);
 		if (ControllerConfiguration.Instance.IsVMZMachine)
 		{
-			errorCodes = service.MoveTo(srcDeck, srcSlot, MoveMode.Put, Context.AppLog);
+			errorCodes = motionControlService.MoveTo(srcDeck, srcSlot, MoveMode.Put, Context.AppLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				MerchandizingHelper.Instance.CleanupJob(Result, Context, errorCodes);

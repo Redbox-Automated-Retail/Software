@@ -132,7 +132,7 @@ public class TransferService : ITransferService
 	public ErrorList GetRepositoriesInTransit(out HashSet<string> inTransit)
 	{
 		inTransit = new HashSet<string>();
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 		ErrorList errorList = new ErrorList();
 		errorList.AddRange(GetJobs(out var jobs, allUsers: false));
 		if (errorList.ContainsError())
@@ -143,7 +143,7 @@ public class TransferService : ITransferService
 		{
 			if (item.Status != TransferStatus.Error)
 			{
-				ChangeSet changeSet = service.Get<ChangeSet>(item.ID);
+				ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
 				if (changeSet != null && !inTransit.Contains(changeSet.Name))
 				{
 					inTransit.Add(changeSet.Name);

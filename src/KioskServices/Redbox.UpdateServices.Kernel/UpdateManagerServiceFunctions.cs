@@ -10,23 +10,23 @@ public static class UpdateManagerServiceFunctions
 	[KernelFunction(Name = "kernel.updmgrsvc_forcesubscriptionpublish")]
 	internal static LuaTable ForceSubscriptionPublish()
 	{
-		IUpdateManagerService service = ServiceLocator.Instance.GetService<IUpdateManagerService>();
-		if (service == null)
+		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
+		if (updateManagerService == null)
 		{
 			return null;
 		}
-		return CreateResultTable(service.ForceSubscriptionPublish());
+		return CreateResultTable(updateManagerService.ForceSubscriptionPublish());
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_forcescheduleevent")]
 	internal static LuaTable ForceScheduleEvent(string name)
 	{
-		IUpdateManagerService service = ServiceLocator.Instance.GetService<IUpdateManagerService>();
-		if (service == null)
+		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
+		if (updateManagerService == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(service.ForceScheduleEvent(name, out var isRunning));
+		LuaTable luaTable = CreateResultTable(updateManagerService.ForceScheduleEvent(name, out var isRunning));
 		luaTable["is_running"] = isRunning;
 		return luaTable;
 	}
@@ -34,12 +34,12 @@ public static class UpdateManagerServiceFunctions
 	[KernelFunction(Name = "kernel.updmgrsvc_getsubscriptionstate")]
 	internal static LuaTable GetSubscriptionState()
 	{
-		IUpdateManagerService service = ServiceLocator.Instance.GetService<IUpdateManagerService>();
-		if (service == null)
+		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
+		if (updateManagerService == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(service.GetSubscriptionState(out var lastRun, out var subscriptionState));
+		LuaTable luaTable = CreateResultTable(updateManagerService.GetSubscriptionState(out var lastRun, out var subscriptionState));
 		luaTable["last_run"] = lastRun.ToString();
 		luaTable["state"] = subscriptionState;
 		return luaTable;
@@ -48,12 +48,12 @@ public static class UpdateManagerServiceFunctions
 	[KernelFunction(Name = "kernel.updmgrsvc_executecommand")]
 	internal static LuaTable ExecuteCommand(string command)
 	{
-		IUpdateManagerService service = ServiceLocator.Instance.GetService<IUpdateManagerService>();
-		if (service == null)
+		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
+		if (updateManagerService == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(service.ExecuteCommand(command, out var messages));
+		LuaTable luaTable = CreateResultTable(updateManagerService.ExecuteCommand(command, out var messages));
 		LuaTable luaTable2 = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
 		int num = 1;
 		foreach (string item in messages)
@@ -67,12 +67,12 @@ public static class UpdateManagerServiceFunctions
 	[KernelFunction(Name = "kernel.updmgrsvc_getdownloads")]
 	internal static LuaTable GetDownloads()
 	{
-		IUpdateManagerService service = ServiceLocator.Instance.GetService<IUpdateManagerService>();
-		if (service == null)
+		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
+		if (updateManagerService == null)
 		{
 			return null;
 		}
-		LuaTable luaTable = CreateResultTable(service.GetDownloadState(out var downloads));
+		LuaTable luaTable = CreateResultTable(updateManagerService.GetDownloadState(out var downloads));
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		int num = 1;
@@ -97,10 +97,10 @@ public static class UpdateManagerServiceFunctions
 
 	private static LuaTable CreateResultTable(ErrorList errors)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = (LuaTable)service.NewTable();
+		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 		{
 			luaTable2[error.Code] = error.Description;

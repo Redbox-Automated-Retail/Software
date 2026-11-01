@@ -95,11 +95,11 @@ public class ManageScheduleEvents : Form
 	{
 		UpdateManagerApplication.Instance.AsyncButtonAction(null, delegate
 		{
-			ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+			ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 			List<ITask> tasks;
 			try
 			{
-				service.List(out tasks);
+				taskScheduler.List(out tasks);
 			}
 			catch (Exception exception)
 			{

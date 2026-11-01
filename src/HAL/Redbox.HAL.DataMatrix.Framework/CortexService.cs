@@ -182,8 +182,8 @@ internal sealed class CortexService : ScannerAdapter, IScannerDevice, IDisposabl
 
 	internal CortexService()
 	{
-		IPortManagerService service = ServiceLocator.Instance.GetService<IPortManagerService>();
-		Configuration = service.CreateConfiguration();
+		IPortManagerService portManagerService = ServiceLocator.Instance.GetService<IPortManagerService>();
+		Configuration = portManagerService.CreateConfiguration();
 		int cortexPortBufferSize = BarcodeConfiguration.Instance.CortexPortBufferSize;
 		Configuration.ReceiveBufferSize = cortexPortBufferSize;
 		LogHelper.Instance.Log("[CortexService] Receive buffer size = {0}", cortexPortBufferSize);

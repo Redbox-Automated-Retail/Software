@@ -13,8 +13,8 @@ public static class LuaExtensions
 {
 	public static LuaTable ToLuaTable(this Dictionary<string, object> value)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable table = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable table = (LuaTable)kernelService.NewTable();
 		value.ForEach(delegate(KeyValuePair<string, object> row)
 		{
 			if (row.Value is ICollection)
@@ -46,8 +46,8 @@ public static class LuaExtensions
 
 	public static LuaTable ToLuaTable(this Dictionary<long, object> value)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable table = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable table = (LuaTable)kernelService.NewTable();
 		value.ForEach(delegate(KeyValuePair<long, object> row)
 		{
 			if (row.Value is ICollection)

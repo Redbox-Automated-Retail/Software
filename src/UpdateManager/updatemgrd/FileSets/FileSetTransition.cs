@@ -317,11 +317,11 @@ internal class FileSetTransition
 		{
 			return errorList;
 		}
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LogHelper.Instance.Log("FileSetTransition.RunScript for FileSet: ", _revision.FileSetName);
 		try
 		{
-			service.ExecuteChunkNoLock(script, reset: true, "Results", out var result2, out scriptCompleted);
+			kernelService.ExecuteChunkNoLock(script, reset: true, "Results", out var result2, out scriptCompleted);
 			if (result2 != null)
 			{
 				Dictionary<string, object> list = new Dictionary<string, object>();

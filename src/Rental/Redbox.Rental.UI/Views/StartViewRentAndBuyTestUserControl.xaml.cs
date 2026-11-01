@@ -23,14 +23,14 @@ public partial class StartViewRentAndBuyTestUserControl : TextToSpeechUserContro
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(rent_and_buy_movies_button);
-		obj?.SetStyle(pick_up_button);
-		obj?.SetStyle(return_button);
-		obj?.SetStyle(handicap_button);
-		obj?.SetStyle(help_button);
-		obj?.SetStyle(sign_in_button);
-		obj?.SetStyle(espanol_button);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(rent_and_buy_movies_button);
+		theme?.SetStyle(pick_up_button);
+		theme?.SetStyle(return_button);
+		theme?.SetStyle(handicap_button);
+		theme?.SetStyle(help_button);
+		theme?.SetStyle(sign_in_button);
+		theme?.SetStyle(espanol_button);
 	}
 
 	private void BannerClickCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

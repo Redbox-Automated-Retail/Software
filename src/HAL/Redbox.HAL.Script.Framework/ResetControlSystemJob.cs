@@ -8,10 +8,10 @@ internal class ResetControlSystemJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		service.Shutdown();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		controlSystem.Shutdown();
 		Thread.Sleep(500);
-		IControlResponse controlResponse = service.Initialize();
+		IControlResponse controlResponse = controlSystem.Initialize();
 		string message = $"RESET returned {controlResponse.ToString()}";
 		base.Context.CreateInfoResult("ResetStatus", message);
 		if (!controlResponse.Success)

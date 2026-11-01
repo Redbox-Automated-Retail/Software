@@ -60,8 +60,8 @@ internal class SyncCheck
 				IsEmpty = true;
 				return;
 			}
-			int num = statement.IndexOf("ID=");
-			string text = statement.Substring(num + "ID=".Length);
+			int index = statement.IndexOf("ID=");
+			string text = statement.Substring(index + "ID=".Length);
 			if (flag2)
 			{
 				GetMatrix = text;
@@ -74,16 +74,16 @@ internal class SyncCheck
 
 		private void ExtractDeckSlot(string statement)
 		{
-			int num = statement.IndexOf("Deck =");
-			if (-1 == num)
+			int index = statement.IndexOf("Deck =");
+			if (-1 == index)
 			{
 				throw new ArgumentException($"Unrecognized line '{statement}'");
 			}
 			int result = -1;
-			string s = statement.Substring(num + "Deck =".Length + 1, 1);
+			string s = statement.Substring(index + "Deck =".Length + 1, 1);
 			Deck = int.Parse(s);
-			num = statement.IndexOf("Slot =");
-			string text = statement.Substring(num + "Slot =".Length + 1);
+			index = statement.IndexOf("Slot =");
+			string text = statement.Substring(index + "Slot =".Length + 1);
 			char[] array = text.ToCharArray();
 			for (int i = 0; i < array.Length; i++)
 			{
@@ -194,13 +194,13 @@ internal class SyncCheck
 					{
 						string text2 = "Deck = ";
 						string text3 = "Slot = ";
-						int num = text.IndexOf(text2);
-						if (-1 != num)
+						int index = text.IndexOf(text2);
+						if (-1 != index)
 						{
 							int result = -1;
-							int deck = int.Parse(text.Substring(num + text2.Length, 1));
-							num = text.IndexOf(text3);
-							string text4 = text.Substring(num + text3.Length).TrimEnd();
+							int deck = int.Parse(text.Substring(index + text2.Length, 1));
+							index = text.IndexOf(text3);
+							string text4 = text.Substring(index + text3.Length).TrimEnd();
 							if (!int.TryParse(text4, out result))
 							{
 								streamWriter.WriteLine("Unable to parse {0}", text4);

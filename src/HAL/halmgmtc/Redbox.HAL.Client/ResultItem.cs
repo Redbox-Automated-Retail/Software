@@ -64,24 +64,24 @@ public sealed class ResultItem
 		{
 			return false;
 		}
-		string[] array = item.Split('(');
-		if (array[0].Equals("UNKNOWN", StringComparison.CurrentCultureIgnoreCase) || array[0].Equals("EMPTY", StringComparison.CurrentCultureIgnoreCase) || array[0].Equals("redbox", StringComparison.CurrentCultureIgnoreCase))
+		string[] parts = item.Split('(');
+		if (parts[0].Equals("UNKNOWN", StringComparison.CurrentCultureIgnoreCase) || parts[0].Equals("EMPTY", StringComparison.CurrentCultureIgnoreCase) || parts[0].Equals("redbox", StringComparison.CurrentCultureIgnoreCase))
 		{
-			Metadata = array[0];
+			Metadata = parts[0];
 		}
 		else
 		{
-			Barcode = array[0].TrimEnd();
-			if (array.Length > 1)
+			Barcode = parts[0].TrimEnd();
+			if (parts.Length > 1)
 			{
-				int num = array[1].IndexOf(')');
+				int num = parts[1].IndexOf(')');
 				if (num != -1)
 				{
-					Metadata = array[1].Substring(0, num);
+					Metadata = parts[1].Substring(0, num);
 				}
 				else
 				{
-					Metadata = array[1];
+					Metadata = parts[1];
 				}
 			}
 		}

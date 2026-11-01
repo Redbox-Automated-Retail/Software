@@ -184,10 +184,10 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 
 	public IReadCardJob StartCardRead(DeviceInputType deviceInputType, Action<BaseResponseEvent> readCardResponseHandler, Action<BaseResponseEvent> readCardEventHandler, int commandTimeout, VasMode vasMode)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		IShoppingSession currentSession = ServiceLocator.Instance.GetService<IShoppingSessionService>().GetCurrentSession();
 		IEnumerable<CardBrandAndSource> deactivatedCardBrandSources = GetDeactivatedCardBrandSources();
-		decimal valueOrDefault = (service?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
+		decimal valueOrDefault = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
 		valueOrDefault = Math.Round(valueOrDefault, 2);
 		CardReadRequest request = new CardReadRequest
 		{
@@ -411,12 +411,12 @@ public class DeviceServiceClientHelper : IDeviceServiceClientHelper
 		if (IsConnectedToDeviceService)
 		{
 			LogHelper.Instance.Log("CheckDeviceStatus: Sending CheckDeviceStatus command to Device Service Client.");
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service2 != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
 				DeviceStatusRequest request = new DeviceStatusRequest
 				{
-					KioskId = service2.KioskId,
+					KioskId = storeManager.KioskId,
 					ApiUrl = service.KioskDataServicesUrl,
 					ApiKey = service.KioskDataServicesKey
 				};

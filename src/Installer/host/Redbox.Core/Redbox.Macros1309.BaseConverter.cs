@@ -205,16 +205,16 @@ internal class Redbox_002EMacros1309_002EBaseConverter
 		long num2 = 0L;
 		while (stringBuilder.Length > 0)
 		{
-			int num3 = Array.IndexOf(characters.ToCharArray(), stringBuilder[stringBuilder.Length - 1]);
-			if (num3 < 0)
+			int index = Array.IndexOf(characters.ToCharArray(), stringBuilder[stringBuilder.Length - 1]);
+			if (index < 0)
 			{
 				throw new FormatException("Unsupported character in value string");
 			}
-			if (num3 >= maxFromSchemeCharacter)
+			if (index >= maxFromSchemeCharacter)
 			{
 				throw new FormatException("Value contains character not valid for number base");
 			}
-			num2 += num3 * (long)Math.Pow(fromBase, num);
+			num2 += index * (long)Math.Pow(fromBase, num);
 			if (num2 < 0)
 			{
 				throw new OverflowException();

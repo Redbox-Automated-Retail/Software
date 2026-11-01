@@ -55,16 +55,16 @@ public class CreditCard
 		CardId = null;
 		Track2 = null;
 		Number = null;
-		IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-		FirstName = service?.ObfuscateStringData(FirstName, 1, 0);
-		LastName = service?.ObfuscateStringData(LastName, 2, 0);
-		BIN = service?.ObfuscateNumericData(BIN, 0, 0);
-		KSN = service?.ObfuscateNumericData(KSN, 0, 0);
-		ICEncryptedData = service?.ObfuscateStringData(ICEncryptedData, 0, 0);
-		ReaderSerialNumber = service?.ObfuscateStringData(ReaderSerialNumber, 0, 0);
-		LastFour = service?.ObfuscateNumericData(LastFour, 0, 1);
-		PostalCode = service?.ObfuscateNumericData(PostalCode, 0, 1);
-		ExpirationMonth = service?.ObfuscateNumericData(ExpirationMonth, 0, 0);
-		ExpirationYear = service?.ObfuscateNumericData(ExpirationYear, 0, 0);
+		IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
+		FirstName = obfuscationService?.ObfuscateStringData(FirstName, 1, 0);
+		LastName = obfuscationService?.ObfuscateStringData(LastName, 2, 0);
+		BIN = obfuscationService?.ObfuscateNumericData(BIN, 0, 0);
+		KSN = obfuscationService?.ObfuscateNumericData(KSN, 0, 0);
+		ICEncryptedData = obfuscationService?.ObfuscateStringData(ICEncryptedData, 0, 0);
+		ReaderSerialNumber = obfuscationService?.ObfuscateStringData(ReaderSerialNumber, 0, 0);
+		LastFour = obfuscationService?.ObfuscateNumericData(LastFour, 0, 1);
+		PostalCode = obfuscationService?.ObfuscateNumericData(PostalCode, 0, 1);
+		ExpirationMonth = obfuscationService?.ObfuscateNumericData(ExpirationMonth, 0, 0);
+		ExpirationYear = obfuscationService?.ObfuscateNumericData(ExpirationYear, 0, 0);
 	}
 }

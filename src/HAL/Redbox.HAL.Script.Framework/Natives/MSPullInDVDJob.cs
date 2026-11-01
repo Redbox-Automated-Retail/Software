@@ -24,9 +24,9 @@ internal sealed class MSPullInDVDJob : NativeJobAdapter
 		}
 		try
 		{
-			IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+			IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 			GripperFingerState finger = GripperFingerState.Rent;
-			ILocation currentLocation = service.CurrentLocation;
+			ILocation currentLocation = motionControlService.CurrentLocation;
 			if (currentLocation != null && ServiceLocator.Instance.GetService<IDecksService>().GetFrom(currentLocation).IsSlotSellThru(currentLocation.Slot))
 			{
 				finger = GripperFingerState.Open;

@@ -33,7 +33,7 @@ public sealed class RollerInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		GetWaitFlag();
 		int? num = GetTimeOutValue(result.Errors, context);
 		Token token = base.Operands[0];
@@ -49,21 +49,21 @@ public sealed class RollerInstruction : Instruction
 			{
 				num = 8000;
 			}
-			HandleError(service.RollerToPosition(position, num.Value), context);
+			HandleError(controlSystem.RollerToPosition(position, num.Value), context);
 		}
 		else if (token.Type == TokenType.Symbol)
 		{
 			if (string.Compare(token.Value, "IN", ignoreCase: true) == 0)
 			{
-				HandleError(service.StartRollerIn(), context);
+				HandleError(controlSystem.StartRollerIn(), context);
 			}
 			else if (string.Compare(token.Value, "OUT", ignoreCase: true) == 0)
 			{
-				HandleError(service.StartRollerOut(), context);
+				HandleError(controlSystem.StartRollerOut(), context);
 			}
 			else if (string.Compare(token.Value, "STOP", ignoreCase: true) == 0)
 			{
-				HandleError(service.StopRoller(), context);
+				HandleError(controlSystem.StopRoller(), context);
 			}
 		}
 	}

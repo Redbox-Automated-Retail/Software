@@ -305,12 +305,12 @@ public class BitmapCacheService : IBitmapCacheService, IDisposable
 		}
 		LogHelper.Instance.Log("Trim the image cache:");
 		List<ImageUsage> list = new List<ImageUsage>();
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService != null)
 		{
 			foreach (KeyValuePair<string, ImageTracker> image in m_images)
 			{
-				if (!service.IsBitmapReferenced(image.Value.Instance))
+				if (!renderingService.IsBitmapReferenced(image.Value.Instance))
 				{
 					list.Add(new ImageUsage
 					{

@@ -129,7 +129,7 @@ public class HALService : ServiceBase, ILogger
 	protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
 	{
 		LogHelper.Instance.Log("OnPowerEvent powerStatus = {0} State = {1}.", powerStatus.ToString(), State.ToString());
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		IScannerDeviceService scannerDeviceService = ServiceLocator.Instance.GetService<IScannerDeviceService>();
 		lock (PowerStateLock)
@@ -139,14 +139,14 @@ public class HALService : ServiceBase, ILogger
 				if (State == PowerState.Normal)
 				{
 					State = PowerState.Suspended;
-					service.Suspend();
+					executionService.Suspend();
 					controllerService.Shutdown();
 					scannerDeviceService.Shutdown();
 				}
 			}
 			else if (PowerBroadcastStatus.ResumeSuspend == powerStatus && PowerState.Suspended == State)
 			{
-				service.Restart();
+				executionService.Restart();
 				State = PowerState.Normal;
 			}
 		}

@@ -22,11 +22,11 @@ internal sealed class KioskFunctionCheckHelper : IDisposable
 
 	internal void DumpSessions(OutputModes mode)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		TextWriter textWriter = Console.Out;
 		if (mode == OutputModes.File)
 		{
-			service.SafeDelete("KFCSessions.txt");
+			runtimeService.SafeDelete("KFCSessions.txt");
 			textWriter = new StreamWriter("KFCSessions.txt");
 		}
 		DumpSessions(textWriter);

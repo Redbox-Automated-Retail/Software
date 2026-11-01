@@ -112,11 +112,11 @@ public class ResourceEditorWindow : DockContent
 					XmlNode xmlNode = (Resource.GetAspect(eachAspect.Name).GetContent() as XmlLinkedNode).SelectSingleNode("scene");
 					_ = xmlNode.Attributes["name"].Value;
 					ServiceLocator.Instance.GetService<IRenderingService>();
-					IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-					service.Push(m_resource.Name);
+					IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+					viewService.Push(m_resource.Name);
 					int num = 0;
 					int num2 = 0;
-					IViewFrame viewFrame = service.GetViewFrame(m_resource.Name) as IViewFrame;
+					IViewFrame viewFrame = viewService.GetViewFrame(m_resource.Name) as IViewFrame;
 					int num3;
 					int num4;
 					if (viewFrame != null && viewFrame.ViewWindow.HasValue)
@@ -133,7 +133,7 @@ public class ResourceEditorWindow : DockContent
 					}
 					Rectangle targetRectangle = new Rectangle(0, 0, num4 + num, num3 + num2);
 					IScene scene = viewFrame.Scene;
-					service.ShowFrameInDebug();
+					viewService.ShowFrameInDebug();
 					System.Windows.Forms.PictureBox pictureBox = new System.Windows.Forms.PictureBox();
 					Bitmap bitmap = new Bitmap(num4 + num, num3 + num2);
 					Graphics targetGraphics = Graphics.FromImage(bitmap);
@@ -155,8 +155,8 @@ public class ResourceEditorWindow : DockContent
 					pictureBox.Dock = DockStyle.Fill;
 					pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
 					m_panel.Controls.Add(pictureBox);
-					service.PopDiscard();
-					service.Show();
+					viewService.PopDiscard();
+					viewService.Show();
 				}
 				else if (!(eachAspect["editor_type"] == "schema"))
 				{

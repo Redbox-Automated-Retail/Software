@@ -58,12 +58,12 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		m_loading = true;
 		m_configFileComboBox.Items.Clear();
 		string value = preferencePage.GetValue("SelectedConfig", string.Empty);
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service == null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService == null)
 		{
 			return;
 		}
-		List<ConfigurationClientItem> items = service.GetItems();
+		List<ConfigurationClientItem> items = configurationService.GetItems();
 		foreach (ConfigurationClientItem item in items)
 		{
 			m_configFileComboBox.Items.Add(item.Key);
@@ -86,14 +86,14 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 	{
 		m_categoriesListBox.Items.Clear();
 		m_categoriesListBox.SuspendLayout();
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service != null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService != null)
 		{
 			string text = (string)m_configFileComboBox.SelectedItem;
 			if (text != null && text != string.Empty)
 			{
 				List<string> list = new List<string>();
-				if (service.GetCategoryNames(text, out list))
+				if (configurationService.GetCategoryNames(text, out list))
 				{
 					foreach (string item in list)
 					{
@@ -116,26 +116,26 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		string text = (string)m_configFileComboBox.SelectedItem;
 		if (text != null && text != string.Empty)
 		{
-			IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-			if (service != null)
+			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+			if (configurationService != null)
 			{
 				foreach (string checkedItem in m_categoriesListBox.CheckedItems)
 				{
 					List<string> list = new List<string>();
-					service.GetSettingNames(text, checkedItem, out list);
+					configurationService.GetSettingNames(text, checkedItem, out list);
 					foreach (string item in list)
 					{
 						if (m_checkboxActiveOnly.Checked)
 						{
 							ConfigurationData value = new ConfigurationData();
-							if (service.TryGetConfigurationData(text, checkedItem, item, out value))
+							if (configurationService.TryGetConfigurationData(text, checkedItem, item, out value))
 							{
 								m_configValuesListView.Items.Add(CreateListItem(value));
 							}
 							continue;
 						}
 						List<ConfigurationData> list2 = new List<ConfigurationData>();
-						service.GetAllConfigurationData(text, checkedItem, item, out list2);
+						configurationService.GetAllConfigurationData(text, checkedItem, item, out list2);
 						foreach (ConfigurationData item2 in list2)
 						{
 							m_configValuesListView.Items.Add(CreateListItem(item2));

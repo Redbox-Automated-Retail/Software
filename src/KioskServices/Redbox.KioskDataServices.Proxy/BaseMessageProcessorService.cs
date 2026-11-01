@@ -29,8 +29,8 @@ internal abstract class BaseMessageProcessorService : IQueueMessageProcessorServ
 	private bool OnProcessMessage(IMessage message, out IDictionary<string, object> response)
 	{
 		response = new Dictionary<string, object>();
-		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-		if (service == null || service.IsStandAlone)
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		if (applicationState == null || applicationState.IsStandAlone)
 		{
 			LogHelper.Instance.Log("Unable to process message type " + message.Type + " because application is in stand alone mode");
 		}

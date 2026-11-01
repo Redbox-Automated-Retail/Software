@@ -88,7 +88,7 @@ public abstract class AbstractDeviceDescriptor : IDeviceDescriptor
 	{
 		UsbService = service;
 		RuntimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
-		IDeviceSetupClassFactory service2 = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service2.Get(clazz);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(clazz);
 	}
 }

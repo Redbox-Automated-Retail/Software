@@ -135,10 +135,10 @@ public partial class RedboxClassicProductCarouselUserControl : UserControl, ICom
 		_nextCarouselDirection = CarouselDirection.Left;
 		foreach (DisplayProductModel rotatingCarouselProduct in _rotatingCarouselProducts)
 		{
-			int num = _rotatingCarouselProducts.IndexOf(rotatingCarouselProduct);
-			if (num < _carouselPositions.Count)
+			int index = _rotatingCarouselProducts.IndexOf(rotatingCarouselProduct);
+			if (index < _carouselPositions.Count)
 			{
-				CarouselPosition carouselPosition = _carouselPositions[num];
+				CarouselPosition carouselPosition = _carouselPositions[index];
 				DisplayProductUserControl displayProductUserControl = new DisplayProductUserControl
 				{
 					DataContext = rotatingCarouselProduct,
@@ -146,11 +146,11 @@ public partial class RedboxClassicProductCarouselUserControl : UserControl, ICom
 					Width = carouselPosition.Width,
 					Height = carouselPosition.Height
 				};
-				if (num < _carouselPositions.CenterCarouselPositionIndex)
+				if (index < _carouselPositions.CenterCarouselPositionIndex)
 				{
 					displayProductUserControl.Tag = CarouselDirection.Right;
 				}
-				else if (num > _carouselPositions.CenterCarouselPositionIndex)
+				else if (index > _carouselPositions.CenterCarouselPositionIndex)
 				{
 					displayProductUserControl.Tag = CarouselDirection.Left;
 				}

@@ -11,7 +11,7 @@ internal sealed class KioskConfigurationJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		IScannerDevice configuredDevice = ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice();
-		IDoorSensorService service = ServiceLocator.Instance.GetService<IDoorSensorService>();
+		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
 		IDeck first = base.DecksService.First;
 		base.Context.CreateInfoResult("MachineConfig", (first.NumberOfSlots == 90) ? "Dense" : "Sparse");
 		base.Context.CreateInfoResult("DeckCount", base.DecksService.DeckCount.ToString());
@@ -27,10 +27,10 @@ internal sealed class KioskConfigurationJob : NativeJobAdapter
 		base.Context.CreateInfoResult("CameraConfig", configuredDevice.Service.ToString());
 		base.Context.CreateInfoResult("AuxRelayBoard", "Not Configured");
 		base.Context.CreateInfoResult("MerchMode", ControllerConfiguration.Instance.IsVMZMachine ? "VMZ" : "QLM");
-		base.Context.CreateInfoResult("DoorSensors", service.SensorsEnabled ? "On" : "Off");
-		if (service.SensorsEnabled)
+		base.Context.CreateInfoResult("DoorSensors", doorSensorService.SensorsEnabled ? "On" : "Off");
+		if (doorSensorService.SensorsEnabled)
 		{
-			base.Context.CreateInfoResult("DoorSensorStatus", service.Query().ToString().ToUpper());
+			base.Context.CreateInfoResult("DoorSensorStatus", doorSensorService.Query().ToString().ToUpper());
 		}
 		base.Context.CreateInfoResult("QuickReturn", "Not configured");
 		IAirExchangerService airExchangerService = ServiceLocator.Instance.GetService<IAirExchangerService>();

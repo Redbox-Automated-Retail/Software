@@ -15,13 +15,13 @@ internal class VMZHelperFunctions
 
 	internal MerchandizeResult UnloadDisc(ExecutionResult result, ExecutionContext context)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation loc = null;
 		ServiceLocator.Instance.GetService<IDecksService>().ForAllDecksDo(delegate(IDeck deck)
 		{
 			for (int i = 1; i <= deck.NumberOfSlots; i++)
 			{
-				ILocation location = service.Get(deck.Number, i);
+				ILocation location = inventoryService.Get(deck.Number, i);
 				if (location.Flags == MerchFlags.Unload)
 				{
 					loc = location;

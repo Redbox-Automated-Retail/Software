@@ -25,9 +25,9 @@ public partial class SignInViewUserControl : TextToSpeechUserControl, IWPFActor,
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(EmailAndPasswordButton);
-		obj?.SetStyle(PhoneAndPinButton);
-		obj?.SetStyle(CancelButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(EmailAndPasswordButton);
+		theme?.SetStyle(PhoneAndPinButton);
+		theme?.SetStyle(CancelButton);
 	}
 }

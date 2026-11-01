@@ -186,10 +186,10 @@ public class RedboxPlusFunctions
 		IPromotion promotion = CreateRedboxPlusPromotion(rentalShoppingCartItem);
 		if (promotion != null)
 		{
-			IPromotionService service = ServiceLocator.Instance.GetService<IPromotionService>();
+			IPromotionService promotionService = ServiceLocator.Instance.GetService<IPromotionService>();
 			rentalShoppingCartItem.IsRedboxPlusFreeOneNightRental = true;
 			LogHelper.Instance.Log($"Setting Redbox+ Free 1 night rental on product id {rentalShoppingCartItem?.ProductId}");
-			service?.SetPromotion(promotion);
+			promotionService?.SetPromotion(promotion);
 			IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 			if (rentalShoppingCart != null && rentalShoppingCart.Items.Any((IBaseRentalShoppingCartItem x) => x == rentalShoppingCartItem))
 			{

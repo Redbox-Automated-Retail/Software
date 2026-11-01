@@ -26,10 +26,10 @@ public class Theme : ITheme
 		Type themedControlType = GetThemedControlType(controlName);
 		if (themedControlType != null)
 		{
-			object obj = Activator.CreateInstance(themedControlType);
-			if (obj != null)
+			object instance = Activator.CreateInstance(themedControlType);
+			if (instance != null)
 			{
-				result = obj as FrameworkElement;
+				result = instance as FrameworkElement;
 			}
 		}
 		return result;

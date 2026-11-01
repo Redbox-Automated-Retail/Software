@@ -128,13 +128,13 @@ public class BaseViewController
 
 	protected static BitmapImage GetBundleBitmapImage(string resourceName)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
 		BitmapImage result = null;
 		Image image = null;
-		image = ((!resourceName.StartsWith("cache:")) ? ServiceLocator.Instance.GetService<IResourceBundleService>().GetBitmap(resourceName) : service?.GetImage(resourceName.Substring(6)));
+		image = ((!resourceName.StartsWith("cache:")) ? ServiceLocator.Instance.GetService<IResourceBundleService>().GetBitmap(resourceName) : bitmapCacheService?.GetImage(resourceName.Substring(6)));
 		if (image != null)
 		{
-			result = service?.ToBitmapImage(image);
+			result = bitmapCacheService?.ToBitmapImage(image);
 		}
 		return result;
 	}

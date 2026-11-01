@@ -12,9 +12,9 @@ public static class TaskSchedulerFunctions
 	internal static string GetRandomNumber(int min, int max)
 	{
 		RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
-		byte[] array = new byte[4];
-		rNGCryptoServiceProvider.GetBytes(array);
-		int num = BitConverter.ToInt32(array, 0);
+		byte[] buffer = new byte[4];
+		rNGCryptoServiceProvider.GetBytes(buffer);
+		int num = BitConverter.ToInt32(buffer, 0);
 		return (min + Math.Abs(num % (max - min))).ToString();
 	}
 
@@ -47,12 +47,12 @@ public static class TaskSchedulerFunctions
 	[KernelFunction(Name = "kernel.schedulesimplejob")]
 	internal static LuaTable ScheduleSimpleJob(string name, string payload, string payloadTypeString, int startOffset, string repeatIntervalString)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		if (!TimeSpan.TryParse(repeatIntervalString, out var result))
 		{
 			return CreateResultTable(new ErrorList { Redbox.UpdateManager.ComponentModel.Error.NewError("I001", "Could not parse time interval", "Please use a parsable time interval") });
 		}
-		ErrorList errorList = service.ScheduleSimpleJob(name, payload, payloadTypeString, (startOffset > 0) ? new TimeSpan?(new TimeSpan(0, 0, startOffset)) : ((TimeSpan?)null), null, null, result);
+		ErrorList errorList = taskScheduler.ScheduleSimpleJob(name, payload, payloadTypeString, (startOffset > 0) ? new TimeSpan?(new TimeSpan(0, 0, startOffset)) : ((TimeSpan?)null), null, null, result);
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.UpdateManager.ComponentModel.Error e)
@@ -66,12 +66,12 @@ public static class TaskSchedulerFunctions
 	[KernelFunction(Name = "kernel.scheduleonetimescript")]
 	internal static LuaTable ScheduleSimpleJob(string name, string script, int startOffset, string timeString)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		if (!TimeSpan.TryParse(timeString, out var result))
 		{
 			return CreateResultTable(new ErrorList { Redbox.UpdateManager.ComponentModel.Error.NewError("I001", "Could not parse time interval", "Please use a parsable time interval") });
 		}
-		ErrorList errorList = service.ScheduleSimpleJob(name, script, "script", (startOffset > 0) ? new TimeSpan?(new TimeSpan(0, 0, startOffset)) : ((TimeSpan?)null), DateTime.MinValue.Add(result), null, TimeSpan.Zero);
+		ErrorList errorList = taskScheduler.ScheduleSimpleJob(name, script, "script", (startOffset > 0) ? new TimeSpan?(new TimeSpan(0, 0, startOffset)) : ((TimeSpan?)null), DateTime.MinValue.Add(result), null, TimeSpan.Zero);
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.UpdateManager.ComponentModel.Error e)
@@ -134,12 +134,12 @@ public static class TaskSchedulerFunctions
 	[KernelFunction(Name = "kernel.eraseschedule")]
 	internal static void Erase()
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		if (service == null)
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		if (taskScheduler == null)
 		{
 			return;
 		}
-		ErrorList errorList = service.Clear();
+		ErrorList errorList = taskScheduler.Clear();
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.UpdateManager.ComponentModel.Error e)
@@ -155,11 +155,11 @@ public static class TaskSchedulerFunctions
 		try
 		{
 			ErrorList errorList = new ErrorList();
-			ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-			errorList.AddRange(service.List(out var tasks));
+			ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+			errorList.AddRange(taskScheduler.List(out var tasks));
 			foreach (ITask item in tasks)
 			{
-				errorList.AddRange(service.Delete(item.Name));
+				errorList.AddRange(taskScheduler.Delete(item.Name));
 			}
 			if (errorList.ContainsError())
 			{

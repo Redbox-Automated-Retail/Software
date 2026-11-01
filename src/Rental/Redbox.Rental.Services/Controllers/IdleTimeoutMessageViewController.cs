@@ -50,9 +50,9 @@ public class IdleTimeoutMessageViewController : BaseViewController
 			idleTimeoutMessageViewModel.OnButtonNoClicked = idleTimeoutMessageViewParameter.NoAction;
 			idleTimeoutMessageViewModel.OnButtonYesClicked = idleTimeoutMessageViewParameter.YesAction;
 			idleTimeoutMessageViewModel.OnGetSpeechControl = () => GetSpeechControl(idleTimeoutMessageViewModel);
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 			int num = 15000;
-			num = service?.GetTimeout("medium", num) ?? num;
+			num = textToSpeechService?.GetTimeout("medium", num) ?? num;
 			ConfigureTimeoutMessageViewIdleTimer(num, idleTimeoutMessageViewParameter.NoAction);
 			viewUserControl.DataContext = idleTimeoutMessageViewModel;
 			CommandManager.InvalidateRequerySuggested();
@@ -61,14 +61,14 @@ public class IdleTimeoutMessageViewController : BaseViewController
 
 	private static void ConfigureTimeoutMessageViewIdleTimer(int timeout, Action timeoutAction)
 	{
-		IIdleTimer obj = IdleTimerService?.CreateIdleTimer("idle_timeout_view_timer");
-		obj?.Initialize(timeout, delegate
+		IIdleTimer idleTimer = IdleTimerService?.CreateIdleTimer("idle_timeout_view_timer");
+		idleTimer?.Initialize(timeout, delegate
 		{
 			OrchestrationService.StopIdleTimer("idle_timeout_view_timer");
 			LogHelper.Instance.Log("Idle timeout message view: idle timer expired");
 			timeoutAction();
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static ISpeechControl GetSpeechControl(IdleTimeoutMessageViewModel idleTimeoutMessageViewModel)

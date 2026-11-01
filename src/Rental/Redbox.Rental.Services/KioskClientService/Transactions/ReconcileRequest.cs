@@ -61,8 +61,8 @@ internal class ReconcileRequest : MessageBase
 	public override void ScrubData()
 	{
 		base.ScrubData();
-		IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-		Email = service.ObfuscateStringData(Email, 1, 0);
+		IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
+		Email = obfuscationService.ObfuscateStringData(Email, 1, 0);
 		CreditCard.ScrubData();
 	}
 }

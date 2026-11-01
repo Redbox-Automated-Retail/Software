@@ -68,13 +68,13 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 		{
 			OrchestrationService.ViewShow("please_wait_view", null);
 			_continueAction = callbackAction;
-			IPromotionService service = ServiceLocator.Instance.GetService<IPromotionService>();
-			_previousPromotion = service.GetPromotion();
+			IPromotionService promotionService = ServiceLocator.Instance.GetService<IPromotionService>();
+			_previousPromotion = promotionService.GetPromotion();
 			_newProduct = null;
 			Redbox.Rental.Services.Session.Session.Instance.PromoOfferState = new PromoOfferState();
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
 			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			int num = (int)(service2?.KioskId ?? 0);
+			int num = (int)(storeManager?.KioskId ?? 0);
 			string languageCode = OrchestrationService.GetCulture()?.Substring(0, 2);
 			GetOffers(num.ToString(), languageCode, StorefrontEventType.OnSwipe.ToString(), rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId.ToString(), ProcessCustomerOffers);
 		}
@@ -312,9 +312,9 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 		ITitleProduct result = null;
 		if (customerOffer.RequiresProductInCart)
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			SetPromoForSelectedOffer(null, service, customerOffer);
-			IPromotion promotion = service.CurrentRentalShoppingCart.Promotion;
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			SetPromoForSelectedOffer(null, rentalShoppingCartService, customerOffer);
+			IPromotion promotion = rentalShoppingCartService.CurrentRentalShoppingCart.Promotion;
 			if (promotion?.PromotionItems?.Count == 1)
 			{
 				result = promotion.PromotionItems[0].RentalShoppingCartItem.TitleProduct;
@@ -464,12 +464,12 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 	{
 		_newProduct = newProduct;
 		Redbox.Rental.Services.Session.Session.Instance.PromoOfferState.SelectedProduct = newProduct;
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		service.RemoveMultiDiscDiscsFromRentalShoppingCart(service.CurrentRentalShoppingCart.ShoppingSessionId);
-		SetPromoForSelectedOffer(newProduct, service, _selectedOffer);
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		rentalShoppingCartService.RemoveMultiDiscDiscsFromRentalShoppingCart(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId);
+		SetPromoForSelectedOffer(newProduct, rentalShoppingCartService, _selectedOffer);
 		NewCartConfirmviewParameters parameter = new NewCartConfirmviewParameters
 		{
-			NewCart = service.CurrentRentalShoppingCart,
+			NewCart = rentalShoppingCartService.CurrentRentalShoppingCart,
 			promoProduct = newProduct,
 			CancelAction = ContinueWithOriginalCart,
 			ContinueAction = ContinueWithCurrentCart,
@@ -492,16 +492,16 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 	{
 		IRentalShoppingCart currentRentalShoppingCart = shoppingCartService.CurrentRentalShoppingCart;
 		IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = currentRentalShoppingCart.TitleItems.FirstOrDefault((IRentalShoppingCartTitleItem i) => i.ProductId == newProduct?.ProductId);
-		IPromotionService service = ServiceLocator.Instance.GetService<IPromotionService>();
+		IPromotionService promotionService = ServiceLocator.Instance.GetService<IPromotionService>();
 		if (selectedOffer.ShouldAdjustPrice(Redbox.Rental.Services.Configuration.Configuration.Instance) && selectedOffer.ActionCode == ActionCode.Purchase)
 		{
 			LogHelper.Instance.Log("AfterSwipeOfferService.SetPromoForSelectedOffer: Adjusting price for PRM offer.");
-			shoppingCartService.SetPurchasePriceForSelectedItem(selectedOffer, rentalShoppingCartTitleItem, service);
+			shoppingCartService.SetPurchasePriceForSelectedItem(selectedOffer, rentalShoppingCartTitleItem, promotionService);
 		}
 		else if (selectedOffer.DiscountType != OfferDiscountType.MultiNightPrice || Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.UseDiscountsForPmnpOffers)
 		{
 			LogHelper.Instance.Log("AfterSwipeOfferService.SetPromoForSelectedOffer: Creating promo for the offer.");
-			service.SetPromoFromCustomerOffer(currentRentalShoppingCart, selectedOffer, rentalShoppingCartTitleItem);
+			promotionService.SetPromoFromCustomerOffer(currentRentalShoppingCart, selectedOffer, rentalShoppingCartTitleItem);
 		}
 		if (selectedOffer.DiscountType == OfferDiscountType.MultiNightPrice)
 		{
@@ -538,7 +538,7 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 
 	private void SetApplicableProducts(CustomerOffer offer)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<ITitleProduct> products = null;
 		List<long> include = null;
 		List<long> exclude = null;
@@ -550,7 +550,7 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 		{
 			exclude = offer.TitleIds;
 		}
-		ErrorList errorList = service.GetProductsForCustomerOffer(titleTypes: CustomerOfferFunctions.GetTitleTypesFromFormatIds(offer.FormatIds), titleFamily: offer.TitleFamily.GetValueOrDefault(), includeTitleTypes: offer.IncludeFormats, include: include, exclude: exclude, includeOlderThan: offer.IncludeOlderThan, isAdaView: ApplicationState.Instance.IsADAAccessible, isPurchase: offer.ActionCode == ActionCode.Purchase, products: out products);
+		ErrorList errorList = dataService.GetProductsForCustomerOffer(titleTypes: CustomerOfferFunctions.GetTitleTypesFromFormatIds(offer.FormatIds), titleFamily: offer.TitleFamily.GetValueOrDefault(), includeTitleTypes: offer.IncludeFormats, include: include, exclude: exclude, includeOlderThan: offer.IncludeOlderThan, isAdaView: ApplicationState.Instance.IsADAAccessible, isPurchase: offer.ActionCode == ActionCode.Purchase, products: out products);
 		if (errorList.Count > 0)
 		{
 			errorList.ToLogHelper();
@@ -584,13 +584,13 @@ public class AfterSwipeOfferService : IAfterSwipeOfferService
 
 	private void ResetCartOffer()
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		if (_newProduct != null)
 		{
-			service.RemoveItemFromRentalShoppingCartByProductId(service.CurrentRentalShoppingCart.ShoppingSessionId, _newProduct.ProductId, userRemoved: true);
+			rentalShoppingCartService.RemoveItemFromRentalShoppingCartByProductId(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId, _newProduct.ProductId, userRemoved: true);
 			_newProduct = null;
 		}
-		service.RemovePromoOfferFromCart(service.CurrentRentalShoppingCart.ShoppingSessionId, force: true);
+		rentalShoppingCartService.RemovePromoOfferFromCart(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId, force: true);
 		Redbox.Rental.Services.Session.Session.Instance.PromoOfferState.WasOfferAccepted = false;
 		ServiceLocator.Instance.GetService<IPromotionService>().SetPromotion(_previousPromotion);
 	}

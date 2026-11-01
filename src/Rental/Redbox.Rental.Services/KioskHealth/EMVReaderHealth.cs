@@ -113,10 +113,10 @@ public class EMVReaderHealth : IKioskHealthItem, IEMVReaderHealth
 			{
 				if (_EMVReaderActive)
 				{
-					IPersistentDataCacheService service = ServiceLocator.Instance.GetService<IPersistentDataCacheService>();
-					if (service != null && service.Exists("EMVDisconnectData"))
+					IPersistentDataCacheService persistentDataCacheService = ServiceLocator.Instance.GetService<IPersistentDataCacheService>();
+					if (persistentDataCacheService != null && persistentDataCacheService.Exists("EMVDisconnectData"))
 					{
-						PersistentDataWrapper<EMVDisconnectData> persistentDataWrapper = service.Read<EMVDisconnectData>("EMVDisconnectData");
+						PersistentDataWrapper<EMVDisconnectData> persistentDataWrapper = persistentDataCacheService.Read<EMVDisconnectData>("EMVDisconnectData");
 						if (persistentDataWrapper != null && persistentDataWrapper.Data.SerialNumberSameAs(FetchReaderSerialNumber()))
 						{
 							result = _EMVReaderDisconnectAlertActive && persistentDataWrapper.Data.ContactlessOff;
@@ -329,14 +329,14 @@ public class EMVReaderHealth : IKioskHealthItem, IEMVReaderHealth
 				return;
 			}
 			LogHelper.Instance.Log("EMVReaderHealth.TrackCardReaderDisconnects - Found serial number");
-			IPersistentDataCacheService service = ServiceLocator.Instance.GetService<IPersistentDataCacheService>();
-			if (service != null)
+			IPersistentDataCacheService persistentDataCacheService = ServiceLocator.Instance.GetService<IPersistentDataCacheService>();
+			if (persistentDataCacheService != null)
 			{
 				EMVDisconnectData eMVDisconnectData;
-				if (service.Exists("EMVDisconnectData"))
+				if (persistentDataCacheService.Exists("EMVDisconnectData"))
 				{
 					LogHelper.Instance.Log("EMVReaderHealth.TrackCardReaderDisconnects - cache file exists");
-					eMVDisconnectData = service.Read<EMVDisconnectData>("EMVDisconnectData").Data;
+					eMVDisconnectData = persistentDataCacheService.Read<EMVDisconnectData>("EMVDisconnectData").Data;
 				}
 				else
 				{
@@ -347,7 +347,7 @@ public class EMVReaderHealth : IKioskHealthItem, IEMVReaderHealth
 				eMVDisconnectData.Trim(_EMVReaderDisconnectSampleSizeHours);
 				eMVDisconnectData.Increment();
 				CheckDisconnectAlertAndContactlessOffThreshold(eMVDisconnectData);
-				service.Write(eMVDisconnectData, "EMVDisconnectData");
+				persistentDataCacheService.Write(eMVDisconnectData, "EMVDisconnectData");
 			}
 		}
 		catch (Exception e)

@@ -24,9 +24,9 @@ internal abstract class BaseQueueMessageProcessorService : IQueueMessageProcesso
 
 	private static void OnBeforeMessageProcessing(IMessage message, out object clientData)
 	{
-		IFraudService service = ServiceLocator.Instance.GetService<IFraudService>();
+		IFraudService fraudService = ServiceLocator.Instance.GetService<IFraudService>();
 		object obj = null;
-		service?.HandleBeforeReturnMessageProcessing(message, out obj);
+		fraudService?.HandleBeforeReturnMessageProcessing(message, out obj);
 		clientData = obj;
 	}
 

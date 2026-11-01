@@ -12,8 +12,8 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 
 	protected override void ExecuteInner()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		base.Context.CreateInfoResult("KioskId", service.KioskId);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		base.Context.CreateInfoResult("KioskId", runtimeService.KioskId);
 		IUsbDeviceService usbDeviceService = ServiceLocator.Instance.GetService<IUsbDeviceService>();
 		base.Context.CreateInfoResult("AuxRelayBoard", "Not Configured");
 		base.Context.CreateInfoResult("QuickReturnStatus", DeviceStatus.None.ToString());
@@ -41,8 +41,8 @@ internal sealed class HardwareSurveyJob : NativeJobAdapter
 		ITouchscreenDescriptor touchscreenDescriptor = usbDeviceService.FindTouchScreen();
 		base.Context.CreateInfoResult("TouchscreenDevice", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.Friendlyname);
 		base.Context.CreateInfoResult("TouchscreenFirmware", (touchscreenDescriptor == null) ? "UNKNOWN" : touchscreenDescriptor.ReadFirmware());
-		IControlSystem service4 = ServiceLocator.Instance.GetService<IControlSystem>();
-		base.Context.CreateInfoResult("ControllerFirmware", service4.GetBoardVersion(ControlBoards.Serial).Version);
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		base.Context.CreateInfoResult("ControllerFirmware", controlSystem.GetBoardVersion(ControlBoards.Serial).Version);
 		List<IDeviceDescriptor> list = usbDeviceService.FindDevices(DeviceClass.Monitor);
 		string message = "UNKNOWN";
 		foreach (IDeviceDescriptor item in list)

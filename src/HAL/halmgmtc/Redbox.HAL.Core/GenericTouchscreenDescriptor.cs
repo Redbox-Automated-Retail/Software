@@ -67,7 +67,7 @@ internal sealed class GenericTouchscreenDescriptor : ITouchscreenDescriptor, IDe
 		Product = p;
 		Friendlyname = f;
 		DriverDesc = desc;
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(clazz);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(clazz);
 	}
 }

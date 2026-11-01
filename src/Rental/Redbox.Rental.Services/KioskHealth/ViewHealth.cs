@@ -387,13 +387,13 @@ public class ViewHealth : IViewHealth, IKioskHealthItem
 
 	private void SendAlert(KioskEvent kioskEvent, Action action = null)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service != null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices != null)
 		{
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service2 != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
-				service.SendAlert(service2.KioskId.ToString(), "ApplicationCrash", "ViewTimeout", kioskEvent.Data, DateTime.Now, null, action, skipQueue: true);
+				healthServices.SendAlert(storeManager.KioskId.ToString(), "ApplicationCrash", "ViewTimeout", kioskEvent.Data, DateTime.Now, null, action, skipQueue: true);
 			}
 		}
 	}

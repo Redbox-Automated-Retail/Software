@@ -44,14 +44,14 @@ internal class DataStoreCommand
 	[Usage("data cleanup [extension:]")]
 	public void CleanUp(CommandContext context, [CommandKeyValue(IsRequired = false)] string extension)
 	{
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 		if (string.IsNullOrEmpty(extension))
 		{
-			service.CleanUp();
+			dataStoreService.CleanUp();
 		}
 		else
 		{
-			service.CleanUp(extension);
+			dataStoreService.CleanUp(extension);
 		}
 	}
 }

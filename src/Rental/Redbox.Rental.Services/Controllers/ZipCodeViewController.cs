@@ -108,8 +108,8 @@ public class ZipCodeViewController : BaseViewController
 
 	private static void ConfigureTTS(ZipCodeViewModel zipCodeViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			zipCodeViewModel.OnGetSpeechControl = () => ZipCodeViewTextToSpeech.GetSpeechControl(GetZipCodeViewModel);
 		}

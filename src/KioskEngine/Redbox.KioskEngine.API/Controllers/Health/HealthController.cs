@@ -22,11 +22,11 @@ public class HealthController : ApiController
 		HealthPingResponse response = new HealthPingResponse();
 		await Task.Run(delegate
 		{
-			IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-			IStoreServices service2 = ServiceLocator.Instance.GetService<IStoreServices>();
-			if (service != null && service2 != null)
+			IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+			IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+			if (healthServices != null && storeServices != null)
 			{
-				service.Ping(service2.StoreNumberString);
+				healthServices.Ping(storeServices.StoreNumberString);
 			}
 			else
 			{
@@ -51,11 +51,11 @@ public class HealthController : ApiController
 		HealthAlertResponse response = new HealthAlertResponse();
 		await Task.Run(delegate
 		{
-			IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-			IStoreServices service2 = ServiceLocator.Instance.GetService<IStoreServices>();
-			if (service != null && service2 != null)
+			IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+			IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+			if (healthServices != null && storeServices != null)
 			{
-				service.SendAlert(service2.StoreNumberString, "QLM", "TestSubAlertType", "Test Kiosk Alert generated thru the F4 menu", DateTime.Now, null);
+				healthServices.SendAlert(storeServices.StoreNumberString, "QLM", "TestSubAlertType", "Test Kiosk Alert generated thru the F4 menu", DateTime.Now, null);
 			}
 			else
 			{

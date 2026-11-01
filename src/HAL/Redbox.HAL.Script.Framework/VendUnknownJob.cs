@@ -48,16 +48,16 @@ internal sealed class VendUnknownJob : NativeJobAdapter, IGetObserver
 				return;
 			}
 		}
-		int num = base.Context.PopTop<int>();
+		int operand = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		ILocation location = service.Get(num, num2);
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		ILocation location = inventoryService.Get(operand, num2);
 		LogHelper.Instance.Log("Move to {0} to pick requested item.", location.ToString());
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
-		if (motionControlService.MoveTo(num, num2, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
+		if (motionControlService.MoveTo(operand, num2, MoveMode.Get, base.Context.AppLog) != ErrorCodes.Success)
 		{
 			base.Context.Send("MachineError");
-			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
@@ -67,26 +67,26 @@ internal sealed class VendUnknownJob : NativeJobAdapter, IGetObserver
 		{
 			if (!ControllerConfiguration.Instance.RotateDrumDuringUnknownRemoval2)
 			{
-				base.Context.CreateResult("SlotEmpty", "The slot is empty.", num, num2, null, null, null);
+				base.Context.CreateResult("SlotEmpty", "The slot is empty.", operand, num2, null, null, null);
 				VendEnd();
 			}
 			else if (getResult.IsSlotEmpty)
 			{
 				base.Context.AppLog.WriteFormatted("Slot is empty, moving to next.");
-				base.Context.CreateResult("SlotEmpty", "The slot is empty.", num, num2, null, null, null);
+				base.Context.CreateResult("SlotEmpty", "The slot is empty.", operand, num2, null, null, null);
 				VendEnd();
 			}
 			else
 			{
 				LogHelper.Instance.Log("Disc stuck in slot, moving to next.");
-				base.Context.CreateResult("GetAfterPeekShowsFull", "This Location was NOT updated in inventory.", num, num2, getResult.Previous, getResult.ReturnTime, null);
+				base.Context.CreateResult("GetAfterPeekShowsFull", "This Location was NOT updated in inventory.", operand, num2, getResult.Previous, getResult.ReturnTime, null);
 				ShowEmptyStuck(location);
 			}
 			return;
 		}
 		if (!getResult.Success)
 		{
-			base.Context.CreateResult("GetError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("GetError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
@@ -94,7 +94,7 @@ internal sealed class VendUnknownJob : NativeJobAdapter, IGetObserver
 		if (base.MotionService.MoveVend(MoveMode.None, base.Context.AppLog) != ErrorCodes.Success)
 		{
 			base.Context.Send("MachineError");
-			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
@@ -104,7 +104,7 @@ internal sealed class VendUnknownJob : NativeJobAdapter, IGetObserver
 		{
 			base.Context.Send("ItemVended");
 			base.Context.AppLog.Write("The item was taken.");
-			base.Context.CreateResult("ItemVended", "The item was successfully vended.", num, num2, getResult.Previous, getResult.ReturnTime, null);
+			base.Context.CreateResult("ItemVended", "The item was successfully vended.", operand, num2, getResult.Previous, getResult.ReturnTime, null);
 			VendEnd();
 			return;
 		}
@@ -119,27 +119,27 @@ internal sealed class VendUnknownJob : NativeJobAdapter, IGetObserver
 		ErrorCodes errorCodes = controllerService.AcceptDiskAtDoor();
 		if (ErrorCodes.PickerFull != errorCodes)
 		{
-			base.Context.CreateResult("RollInToSensor3TimedOut", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("RollInToSensor3TimedOut", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
 		if (motionControlService.MoveTo(location, MoveMode.Put, base.Context.AppLog) != ErrorCodes.Success)
 		{
 			base.Context.Send("MachineError");
-			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("MoveError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
 		base.ControlSystem.TrackCycle();
 		if (!controllerService.Put("UNKNOWN").Success)
 		{
-			base.Context.CreateResult("PutError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", num, num2, null, null, null);
+			base.Context.CreateResult("PutError", "Unable to remove unknown due to hardware errors. Inspect the slot after completing the process.", operand, num2, null, null, null);
 			AddError("MACHINE ERROR");
 			return;
 		}
 		location.ReturnDate = getResult.ReturnTime;
-		service.Save(location);
-		base.Context.CreateResult("UnclaimedVend", "The vend request failed because the item was not taken.  It has been returned.", num, num2, getResult.Previous, null, null);
+		inventoryService.Save(location);
+		base.Context.CreateResult("UnclaimedVend", "The vend request failed because the item was not taken.  It has been returned.", operand, num2, getResult.Previous, null, null);
 		VendEnd();
 	}
 

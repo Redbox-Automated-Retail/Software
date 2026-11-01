@@ -15,12 +15,12 @@ internal sealed class RandomSync : NativeJobAdapter
 			AddError("Unsupported configuration.");
 			return;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		int num = base.Context.PopTop<int>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		int operand = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
-		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, num);
+		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, operand);
 		base.Context.AppLog.Write("Random sync test start.");
-		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, service);
+		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, inventoryService);
 		int num3 = 0;
 		int num4 = 0;
 		bool flag = true;
@@ -35,7 +35,7 @@ internal sealed class RandomSync : NativeJobAdapter
 			base.Context.AppLog.WriteFormatted("Sync {0}", location.ToString());
 			num4++;
 			bool vend = false;
-			if (num != 0 && num4 % num == 0)
+			if (operand != 0 && num4 % operand == 0)
 			{
 				vend = true;
 			}

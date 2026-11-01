@@ -35,7 +35,7 @@ public sealed class DumpBinInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		ExpectedOperand expectedOperand = Enum<ExpectedOperand>.ParseIgnoringCase(base.Operands[0].Value, ExpectedOperand.None);
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		switch (expectedOperand)
 		{
 		case ExpectedOperand.None:
@@ -49,16 +49,16 @@ public sealed class DumpBinInstruction : Instruction
 			context.PushTop(ControllerConfiguration.Instance.IsVMZMachine);
 			break;
 		case ExpectedOperand.GetCapacity:
-			context.PushTop(service.Capacity);
+			context.PushTop(dumpbinService.Capacity);
 			break;
 		case ExpectedOperand.SetCapacity:
 			result.Errors.Add(Error.NewError("E011", "Unsupported operand.", "The SetCapacity operand is no longer supported."));
 			break;
 		case ExpectedOperand.GetCurrentCount:
-			context.PushTop(service.CurrentCount());
+			context.PushTop(dumpbinService.CurrentCount());
 			break;
 		case ExpectedOperand.ResetCounter:
-			service.ClearItems();
+			dumpbinService.ClearItems();
 			break;
 		case ExpectedOperand.FileDisk:
 		{
@@ -73,11 +73,11 @@ public sealed class DumpBinInstruction : Instruction
 			break;
 		}
 		case ExpectedOperand.ResetCounterMove:
-			service.ClearItems();
+			dumpbinService.ClearItems();
 			VMZHelperFunctions.MoveViewable(context);
 			break;
 		case ExpectedOperand.DumpInventory:
-			service.DumpContents(context.AppLog);
+			dumpbinService.DumpContents(context.AppLog);
 			break;
 		}
 	}

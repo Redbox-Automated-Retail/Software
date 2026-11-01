@@ -57,19 +57,19 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 			return null;
 		}
 		hwid = hwid.ToLower();
-		string[] array = hwid.Split('\\');
-		if (array.Length != 2)
+		string[] parts = hwid.Split('\\');
+		if (parts.Length != 2)
 		{
 			return null;
 		}
-		_ = array[0];
-		string text = array[1];
-		int num = text.IndexOf("vid");
-		if (-1 == num)
+		_ = parts[0];
+		string text = parts[1];
+		int index = text.IndexOf("vid");
+		if (-1 == index)
 		{
 			return Create(string.Empty, text, clazz);
 		}
-		text = text.Substring(num);
+		text = text.Substring(index);
 		string[] array2 = text.Split(HwidSeparator, StringSplitOptions.RemoveEmptyEntries);
 		if (array2.Length < 2)
 		{
@@ -87,8 +87,8 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 		};
 		if (clazz != DeviceClass.None)
 		{
-			IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-			genericDeviceDescriptor.SetupClass = service.Get(clazz);
+			IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+			genericDeviceDescriptor.SetupClass = deviceSetupClassFactory.Get(clazz);
 		}
 		return genericDeviceDescriptor;
 	}

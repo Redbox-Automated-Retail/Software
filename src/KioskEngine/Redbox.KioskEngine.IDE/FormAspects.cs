@@ -18,10 +18,10 @@ public static class FormAspects
 			string value = store.GetValue<string>("Shell", $"{form.GetType().FullName}_State");
 			if (value != null)
 			{
-				string[] array = value.Split("|".ToCharArray());
-				if (array.Length == 3)
+				string[] parts = value.Split("|".ToCharArray());
+				if (parts.Length == 3)
 				{
-					if (array[0] == "Maximized")
+					if (parts[0] == "Maximized")
 					{
 						form.WindowState = FormWindowState.Maximized;
 					}
@@ -29,7 +29,7 @@ public static class FormAspects
 					{
 						TypeConverter converter = TypeDescriptor.GetConverter(typeof(Size));
 						TypeConverter converter2 = TypeDescriptor.GetConverter(typeof(Point));
-						Rectangle rectangle = new Rectangle((Point)converter2.ConvertFromString(array[1]), (Size)converter.ConvertFromString(array[2]));
+						Rectangle rectangle = new Rectangle((Point)converter2.ConvertFromString(parts[1]), (Size)converter.ConvertFromString(parts[2]));
 						bool flag = false;
 						Screen[] allScreens = Screen.AllScreens;
 						for (int i = 0; i < allScreens.Length; i++)

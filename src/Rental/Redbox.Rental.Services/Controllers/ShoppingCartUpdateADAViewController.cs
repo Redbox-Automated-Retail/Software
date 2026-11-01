@@ -35,9 +35,9 @@ public class ShoppingCartUpdateADAViewController : BaseViewController
 
 	private static void ConfigureTTS(ShoppingCartUpdateADAViewModel shoppingCartUpdateADAViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			shoppingCartUpdateADAViewModel.ProcessGetSpeechControl = () => ShoppingCartUpdateADAViewTextToSpeech.GetSpeechControl(GetShoppingCartViewModelFromView);
 		}
@@ -62,12 +62,12 @@ public class ShoppingCartUpdateADAViewController : BaseViewController
 	{
 		List<DisplayProductModel> list = new List<DisplayProductModel>();
 		IRentalShoppingCart rentalShoppingCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (rentalShoppingCart != null && service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (rentalShoppingCart != null && dataService != null)
 		{
 			foreach (IRentalShoppingCartTitleItem titleItem in rentalShoppingCart.TitleItems)
 			{
-				service.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out var kioskProduct);
+				dataService.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out var kioskProduct);
 				if (kioskProduct != null)
 				{
 					DisplayProductModel displayProductModel = new DisplayProductModel

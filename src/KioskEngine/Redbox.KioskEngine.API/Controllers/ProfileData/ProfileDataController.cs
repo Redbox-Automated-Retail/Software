@@ -23,10 +23,10 @@ public class ProfileDataController : ApiController
 		GetKioskProductIdsResponse response = new GetKioskProductIdsResponse();
 		await Task.Run(delegate
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService != null)
 			{
-				response.Content = service.GetCachedTitleIds();
+				response.Content = dataService.GetCachedTitleIds();
 			}
 			else
 			{

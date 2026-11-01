@@ -333,7 +333,7 @@ internal static class ProcessFunctions
 
 	internal static void CreateTimer(string name, object dueTime, object period, TimerFiredHandler timerHandler)
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int? dueTime2 = null;
 		if (dueTime != null)
 		{
@@ -344,7 +344,7 @@ internal static class ProcessFunctions
 		{
 			period2 = Convert.ToInt32(period);
 		}
-		service.CreateTimer(name, dueTime2, period2, delegate
+		timerService.CreateTimer(name, dueTime2, period2, delegate
 		{
 			timerHandler();
 		});
@@ -380,10 +380,10 @@ internal static class ProcessFunctions
 
 	internal static void ToggleTouchScreen()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			service.ToggleTouchScreen();
+			environmentNotificationService.ToggleTouchScreen();
 		}
 		catch (Exception e)
 		{
@@ -393,10 +393,10 @@ internal static class ProcessFunctions
 
 	internal static string TouchScreenStatus()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			return service.TouchScreenStatus().ToString();
+			return environmentNotificationService.TouchScreenStatus().ToString();
 		}
 		catch (Exception e)
 		{
@@ -407,10 +407,10 @@ internal static class ProcessFunctions
 
 	internal static string TouchScreenDriver()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			return service.TouchScreenDriver();
+			return environmentNotificationService.TouchScreenDriver();
 		}
 		catch (Exception e)
 		{
@@ -421,9 +421,9 @@ internal static class ProcessFunctions
 
 	internal static void LaunchSecureBrowser(Dictionary<string, object> approvedUrls, NavigateUrlCallback navigateUrlCallback)
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		bool value = false;
-		bool flag = service?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
+		bool flag = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
 		Dictionary<string, string> dictionary = new Dictionary<string, string>();
 		for (int i = 0; i <= approvedUrls.Keys.Count - 1; i++)
 		{
@@ -510,23 +510,23 @@ internal static class ProcessFunctions
 
 	internal static void GetOpsMarket(string storeNumber, RemoteServiceCallback completeCallback)
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service != null && ServiceLocator.Instance.GetService<ICallbackService>() != null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices != null && ServiceLocator.Instance.GetService<ICallbackService>() != null)
 		{
-			service.GetOpsMarket(storeNumber, completeCallback);
+			storeServices.GetOpsMarket(storeNumber, completeCallback);
 		}
 	}
 
 	internal static List<IHardwareResult> HardwareGetProgramResults(string jobId)
 	{
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service == null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService == null)
 		{
 			return null;
 		}
 		ReadOnlyCollection<IHardwareResult> hardwareResults = null;
 		List<IHardwareResult> result = null;
-		service.GetProgramResults(jobId, out hardwareResults);
+		hardwareService.GetProgramResults(jobId, out hardwareResults);
 		if (hardwareResults != null)
 		{
 			result = hardwareResults.ToList();
@@ -536,10 +536,10 @@ internal static class ProcessFunctions
 
 	internal static void DeleteFileFromRelativePath(string relativeFilePath)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		if (service != null)
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		if (macroService != null)
 		{
-			string path = Path.Combine(service.ExpandProperties("${RunningPath}\\..\\"), relativeFilePath);
+			string path = Path.Combine(macroService.ExpandProperties("${RunningPath}\\..\\"), relativeFilePath);
 			if (File.Exists(path))
 			{
 				File.Delete(path);
@@ -561,8 +561,8 @@ internal static class ProcessFunctions
 
 	internal static void InnerSnapshot(string storeNumber, List<Item> items, List<IInventoryItem> inventoryItems)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null || items == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null || items == null)
 		{
 			return;
 		}
@@ -584,7 +584,7 @@ internal static class ProcessFunctions
 			else
 			{
 				InventoryItemStatus status = Enum<InventoryItemStatus>.ParseIgnoringCase(item.status, InventoryItemStatus.In);
-				inventoryItems.Add(service.CreateInventoryItem(barcode, num2, num3, status));
+				inventoryItems.Add(inventoryService.CreateInventoryItem(barcode, num2, num3, status));
 				num++;
 			}
 		}
@@ -592,13 +592,13 @@ internal static class ProcessFunctions
 
 	internal static void GetPendingStates()
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service == null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices == null)
 		{
 			LogHelper.Instance.Log("Unexpected error, unable to get StoreServices!");
 		}
 		RemoteServiceCallback completeCallback = GetPendingStateResult;
-		service.GetPendingStates(completeCallback);
+		storeServices.GetPendingStates(completeCallback);
 	}
 
 	public static void GetPendingStateResult(IRemoteServiceResult result)
@@ -614,24 +614,24 @@ internal static class ProcessFunctions
 
 	internal static void GetPendingBanners(int stateId, RemoteServiceCallback resultCallback)
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service == null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices == null)
 		{
 			LogHelper.Instance.Log("No Pending Banners were returned, unable to get StoreServices!");
 		}
 		new List<IBanner>();
-		service.GetPendingBanners(stateId, resultCallback);
+		storeServices.GetPendingBanners(stateId, resultCallback);
 	}
 
 	internal static void GetPendingStores(int bannerId, int stateId, RemoteServiceCallback resultCallback)
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service == null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices == null)
 		{
 			LogHelper.Instance.Log("No Stores were returned, unable to get StoreServices!");
 		}
 		new List<IStore>();
-		service.GetPendingStores(bannerId, stateId, resultCallback);
+		storeServices.GetPendingStores(bannerId, stateId, resultCallback);
 	}
 
 	private static void TaskKill(int processId)

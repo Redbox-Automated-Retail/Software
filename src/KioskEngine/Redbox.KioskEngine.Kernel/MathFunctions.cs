@@ -17,9 +17,9 @@ internal static class MathFunctions
 	internal static int GetRandomNumber(int min, int max)
 	{
 		RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
-		byte[] array = new byte[4];
-		rNGCryptoServiceProvider.GetBytes(array);
-		int num = BitConverter.ToInt32(array, 0);
+		byte[] buffer = new byte[4];
+		rNGCryptoServiceProvider.GetBytes(buffer);
+		int num = BitConverter.ToInt32(buffer, 0);
 		return min + Math.Abs(num % (max - min));
 	}
 

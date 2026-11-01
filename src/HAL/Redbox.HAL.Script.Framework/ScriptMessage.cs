@@ -15,8 +15,8 @@ internal class ScriptMessage
 
 	internal static ScriptMessage Parse(string message)
 	{
-		string[] array = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		return new ScriptMessage(DateTime.Parse(array[0]), array[1]);
+		string[] parts = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		return new ScriptMessage(DateTime.Parse(parts[0]), parts[1]);
 	}
 
 	internal ScriptMessage(DateTime time, string msg)

@@ -163,23 +163,23 @@ public class ScriptKernelObject : KernelObject
 
 	public bool validateUser(string username, string password)
 	{
-		string[] array = username.Split('\\');
+		string[] parts = username.Split('\\');
 		ContextType contextType;
 		string name;
-		if (array.Length == 1)
+		if (parts.Length == 1)
 		{
 			contextType = ContextType.Machine;
 			name = Environment.MachineName;
 		}
 		else
 		{
-			if (array.Length != 2)
+			if (parts.Length != 2)
 			{
 				return false;
 			}
 			contextType = ContextType.Domain;
-			name = array[0];
-			username = array[1];
+			name = parts[0];
+			username = parts[1];
 		}
 		using PrincipalContext principalContext = new PrincipalContext(contextType, name);
 		return principalContext.ValidateCredentials(username, password);

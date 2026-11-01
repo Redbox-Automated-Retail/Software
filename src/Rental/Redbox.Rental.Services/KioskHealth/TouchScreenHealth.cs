@@ -270,13 +270,13 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 
 	private void SendAlert(KioskEvent kioskEvent, Action action = null)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service != null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices != null)
 		{
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service2 != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
-				service.SendAlert(service2.KioskId.ToString(), "ApplicationCrash", "TouchScreenInactivity", kioskEvent.Data, DateTime.Now, null, action);
+				healthServices.SendAlert(storeManager.KioskId.ToString(), "ApplicationCrash", "TouchScreenInactivity", kioskEvent.Data, DateTime.Now, null, action);
 			}
 		}
 	}
@@ -290,8 +290,8 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 			bool flag = true;
 			string error = string.Empty;
 			int? elapsed = null;
-			IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-			if (service == null)
+			IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+			if (hardwareService == null)
 			{
 				LogHelper.Instance.Log("TouchScreenHealth.CorrectProblem - IHardwareService is not available.");
 				flag = false;
@@ -300,7 +300,7 @@ public class TouchScreenHealth : ITouchScreenHealth, IKioskHealthItem
 			{
 				DateTime now = DateTime.Now;
 				string jobId = null;
-				ErrorList errorList = service.ResetTouchScreenController(delegate
+				ErrorList errorList = hardwareService.ResetTouchScreenController(delegate
 				{
 				}, delegate(string jobIdentity, string status)
 				{

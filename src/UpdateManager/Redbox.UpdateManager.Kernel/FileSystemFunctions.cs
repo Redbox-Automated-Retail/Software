@@ -37,9 +37,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = service.ExpandProperties(source);
-			string text2 = service.ExpandProperties(target);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			string text = macroService.ExpandProperties(source);
+			string text2 = macroService.ExpandProperties(target);
 			LogHelper.Instance.Log("TAR: source={0}, target={1}", text, text2);
 			TarHelper.Archive(text, text2);
 			return true;
@@ -56,8 +56,8 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			TarHelper.Unpack(service.ExpandProperties(source), service.ExpandProperties(target));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			TarHelper.Unpack(macroService.ExpandProperties(source), macroService.ExpandProperties(target));
 			return true;
 		}
 		catch (Exception e)
@@ -72,11 +72,11 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = service.ExpandProperties(source);
-			string text2 = service.ExpandProperties(target);
-			string text3 = service.ExpandProperties(fileFilter);
-			string text4 = service.ExpandProperties(dirFilter);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			string text = macroService.ExpandProperties(source);
+			string text2 = macroService.ExpandProperties(target);
+			string text3 = macroService.ExpandProperties(fileFilter);
+			string text4 = macroService.ExpandProperties(dirFilter);
 			LogHelper.Instance.Log("ZIP: source={0}, target={1}, recurse={2}, fileFilter={3}, dirFilter={4}", text, text2, recurse, text3, text4);
 			if (string.IsNullOrEmpty(dirFilter))
 			{
@@ -100,9 +100,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = service.ExpandProperties(source);
-			string text2 = service.ExpandProperties(target);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			string text = macroService.ExpandProperties(source);
+			string text2 = macroService.ExpandProperties(target);
 			LogHelper.Instance.Log("UNZIP: source={0}, target={1}", text, text2);
 			ZipHelper.ExtractAllFiles(text, text2);
 			return true;
@@ -119,9 +119,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = service.ExpandProperties(source);
-			string path = service.ExpandProperties(target);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			string text = macroService.ExpandProperties(source);
+			string path = macroService.ExpandProperties(target);
 			if (!File.Exists(text))
 			{
 				throw new FileNotFoundException("File does not exists and can not be decompressed.", text);
@@ -146,9 +146,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			string text = service.ExpandProperties(source);
-			string path = service.ExpandProperties(target);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			string text = macroService.ExpandProperties(source);
+			string path = macroService.ExpandProperties(target);
 			if (!File.Exists(text))
 			{
 				throw new FileNotFoundException("File does not exists and can not be decompressed.", text);
@@ -197,9 +197,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			DirectoryInfo source2 = new DirectoryInfo(service.ExpandProperties(source));
-			DirectoryInfo target2 = new DirectoryInfo(service.ExpandProperties(target));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			DirectoryInfo source2 = new DirectoryInfo(macroService.ExpandProperties(source));
+			DirectoryInfo target2 = new DirectoryInfo(macroService.ExpandProperties(target));
 			DirectoryCopyInternal(source2, target2);
 			return true;
 		}
@@ -215,8 +215,8 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			File.Copy(service.ExpandProperties(source), service.ExpandProperties(target), overwrite: true);
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			File.Copy(macroService.ExpandProperties(source), macroService.ExpandProperties(target), overwrite: true);
 			return true;
 		}
 		catch (Exception e)
@@ -231,8 +231,8 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			File.Move(service.ExpandProperties(source), service.ExpandProperties(target));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			File.Move(macroService.ExpandProperties(source), macroService.ExpandProperties(target));
 			return true;
 		}
 		catch (Exception e)
@@ -247,9 +247,9 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			File.Delete(service.ExpandProperties(target));
-			File.Move(service.ExpandProperties(source), service.ExpandProperties(target));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			File.Delete(macroService.ExpandProperties(target));
+			File.Move(macroService.ExpandProperties(source), macroService.ExpandProperties(target));
 			return true;
 		}
 		catch (Exception e)
@@ -276,12 +276,12 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (!Directory.Exists(service.ExpandProperties(path)))
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (!Directory.Exists(macroService.ExpandProperties(path)))
 			{
 				return false;
 			}
-			Directory.Delete(service.ExpandProperties(path), recurse);
+			Directory.Delete(macroService.ExpandProperties(path), recurse);
 			return true;
 		}
 		catch (Exception e)
@@ -311,8 +311,8 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			File.WriteAllText(service.ExpandProperties(file), service.ExpandProperties(text));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			File.WriteAllText(macroService.ExpandProperties(file), macroService.ExpandProperties(text));
 			return true;
 		}
 		catch (Exception e)
@@ -327,8 +327,8 @@ public static class FileSystemFunctions
 	{
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			File.AppendAllText(service.ExpandProperties(file), service.ExpandProperties(text));
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			File.AppendAllText(macroService.ExpandProperties(file), macroService.ExpandProperties(text));
 			return true;
 		}
 		catch (Exception e)
@@ -355,11 +355,11 @@ public static class FileSystemFunctions
 	[KernelFunction(Name = "kernel.filereadalllines")]
 	internal static LuaTable FileReadAllLinesText(string file)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		try
 		{
-			string[] array = File.ReadAllLines(service.ExpandProperties(file));
+			string[] array = File.ReadAllLines(macroService.ExpandProperties(file));
 			int num = 1;
 			foreach (string value in array)
 			{
@@ -383,18 +383,18 @@ public static class FileSystemFunctions
 	[KernelFunction(Name = "kernel.pathcombine")]
 	internal static string PathCombine(string path1, string path2)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		return Path.Combine(service.ExpandProperties(path1), service.ExpandProperties(path2));
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		return Path.Combine(macroService.ExpandProperties(path1), macroService.ExpandProperties(path2));
 	}
 
 	[KernelFunction(Name = "kernel.directorygetfiles")]
 	internal static LuaTable GetFiles(string path, string pattern, bool recurse)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		try
 		{
-			string[] files = Directory.GetFiles(service.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+			string[] files = Directory.GetFiles(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			int num = 1;
 			string[] array = files;
 			foreach (string value in array)
@@ -412,11 +412,11 @@ public static class FileSystemFunctions
 	[KernelFunction(Name = "kernel.directorygetdirectories")]
 	internal static LuaTable GetDirectories(string path, string pattern, bool recurse)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		try
 		{
-			string[] directories = Directory.GetDirectories(service.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+			string[] directories = Directory.GetDirectories(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			int num = 1;
 			string[] array = directories;
 			foreach (string value in array)
@@ -434,9 +434,9 @@ public static class FileSystemFunctions
 	[KernelFunction(Name = "kernel.editxmlfile")]
 	internal static LuaTable EditXmlFile(string path, bool editAllMatches, bool raiseErrors, object xmlNamespaces, object xmlEdits)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		XmlFileEditor xmlFileEditor = new XmlFileEditor(service.ExpandProperties(path))
+		XmlFileEditor xmlFileEditor = new XmlFileEditor(macroService.ExpandProperties(path))
 		{
 			EditAllMatches = editAllMatches,
 			RaiseErrors = raiseErrors
@@ -457,7 +457,7 @@ public static class FileSystemFunctions
 			{
 				if (luaTable4[key2] is LuaTable luaTable5)
 				{
-					XmlEdit xmlEdit = new XmlEdit(service.ExpandProperties((string)luaTable5["xpath"]), service.ExpandProperties((string)luaTable5["value"]));
+					XmlEdit xmlEdit = new XmlEdit(macroService.ExpandProperties((string)luaTable5["xpath"]), macroService.ExpandProperties((string)luaTable5["value"]));
 					LogHelper.Instance.Log("xpath = {0}, value = {1}", xmlEdit.XPath, xmlEdit.Value);
 					xmlFileEditor.Edits.Add(xmlEdit);
 				}

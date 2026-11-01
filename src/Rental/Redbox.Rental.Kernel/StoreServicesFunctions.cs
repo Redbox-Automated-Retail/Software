@@ -13,15 +13,15 @@ internal static class StoreServicesFunctions
 	[KernelFunction(Name = "kernel.storesvcs_getopsmarket")]
 	internal static void GetOpsMarket(string storeNumber, LuaFunction completeCallback)
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service == null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices == null)
 		{
 			return;
 		}
 		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 		if (callbackService != null)
 		{
-			service.GetOpsMarket(storeNumber, delegate(IRemoteServiceResult r)
+			storeServices.GetOpsMarket(storeNumber, delegate(IRemoteServiceResult r)
 			{
 				ICallbackService callbackService2 = callbackService;
 				ResultCallbackEntry resultCallbackEntry = new ResultCallbackEntry
@@ -38,12 +38,12 @@ internal static class StoreServicesFunctions
 	[KernelFunction(Name = "kernel.storesvcs_shouldreboot")]
 	internal static bool ShouldReboot()
 	{
-		IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-		if (service == null)
+		IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+		if (storeServices == null)
 		{
 			return false;
 		}
-		DateTime? rebootTime = service.GetRebootTime();
+		DateTime? rebootTime = storeServices.GetRebootTime();
 		if (!rebootTime.HasValue)
 		{
 			return false;
@@ -77,10 +77,10 @@ internal static class StoreServicesFunctions
 		{
 			if (callback != null)
 			{
-				IStoreServices service = ServiceLocator.Instance.GetService<IStoreServices>();
-				if (service != null && store == "machine" && action == "set" && path == "Store" && (key == "RunInitialSync" || key == "InitialSyncType"))
+				IStoreServices storeServices = ServiceLocator.Instance.GetService<IStoreServices>();
+				if (storeServices != null && store == "machine" && action == "set" && path == "Store" && (key == "RunInitialSync" || key == "InitialSyncType"))
 				{
-					callback.Call(service.ShouldRunInitialSync(), service.GetInitialSyncType());
+					callback.Call(storeServices.ShouldRunInitialSync(), storeServices.GetInitialSyncType());
 				}
 			}
 		});
@@ -109,9 +109,9 @@ internal static class StoreServicesFunctions
 	{
 		try
 		{
-			string[] array = File.ReadAllLines(path);
-			string text = Array.Find(array, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
-			string text2 = Array.Find(array, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
+			string[] lines = File.ReadAllLines(path);
+			string text = Array.Find(lines, (string p) => p.StartsWith("User_Name")).RemoveString("User_Name").TrimStart();
+			string text2 = Array.Find(lines, (string p) => p.StartsWith("Server_Name")).RemoveString("Server_Name").TrimStart();
 			LogHelper.Instance.Log("KaseyaD.ini values: User_Name = {0}, Server_Name = {1}", text, text2);
 			char[] separator = new char[1] { '.' };
 			string text3 = text.Split(separator, 3, StringSplitOptions.None)[1];

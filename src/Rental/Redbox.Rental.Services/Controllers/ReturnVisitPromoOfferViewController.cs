@@ -62,9 +62,9 @@ public class ReturnVisitPromoOfferViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("long", 40000);
-		(service?.CreateTimer("ReturnVisitPromoOfferViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("ReturnVisitPromoOfferViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			_closeAction?.Invoke();
@@ -73,9 +73,9 @@ public class ReturnVisitPromoOfferViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("ReturnVisitPromoOfferViewTimer"))?.Stop();
-		service?.RemoveTimer("ReturnVisitPromoOfferViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("ReturnVisitPromoOfferViewTimer"))?.Stop();
+		timerService?.RemoveTimer("ReturnVisitPromoOfferViewTimer");
 	}
 
 	private static void ReturnVisitPromoOfferViewModel_OnCloseButtonClicked()
@@ -95,10 +95,10 @@ public class ReturnVisitPromoOfferViewController : BaseViewController
 			Redbox.Rental.Services.Session.Session.Instance?.BrowseState?.SetDefaultBrowseStateSet();
 			OrchestrationService.ViewShow("browse_view", BrowseFunctions.GetBrowseViewparameters());
 			PromotionService.Instance?.SetPromotion(promotion);
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			service?.CurrentRentalShoppingCart?.ValidateAndUpdatePromoCode();
-			service?.CurrentRentalShoppingCart?.UpdateServiceFee();
-			service?.CurrentRentalShoppingCart?.ClearLoyaltyPointsToBeEarned();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.ValidateAndUpdatePromoCode();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.UpdateServiceFee();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.ClearLoyaltyPointsToBeEarned();
 		}
 	}
 

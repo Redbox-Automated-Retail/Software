@@ -142,10 +142,10 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 		_nextCarouselDirection = CarouselDirection.Right;
 		foreach (DisplayProductModel rotatingCarouselProduct in _rotatingCarouselProducts)
 		{
-			int num = _rotatingCarouselProducts.IndexOf(rotatingCarouselProduct);
-			if (num < _carouselPositions.Count)
+			int index = _rotatingCarouselProducts.IndexOf(rotatingCarouselProduct);
+			if (index < _carouselPositions.Count)
 			{
-				CarouselPosition carouselPosition = _carouselPositions[num];
+				CarouselPosition carouselPosition = _carouselPositions[index];
 				DisplayProductCarouselUserControl displayProductCarouselUserControl = new DisplayProductCarouselUserControl
 				{
 					DataContext = rotatingCarouselProduct,
@@ -155,15 +155,15 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 					BorderThickness = new Thickness(0.0),
 					ShaderOpacity = 0.5
 				};
-				if (num < _carouselPositions.CenterCarouselPositionIndex)
+				if (index < _carouselPositions.CenterCarouselPositionIndex)
 				{
 					displayProductCarouselUserControl.Tag = CarouselDirection.Right;
-					Panel.SetZIndex(displayProductCarouselUserControl, num);
+					Panel.SetZIndex(displayProductCarouselUserControl, index);
 				}
-				else if (num > _carouselPositions.CenterCarouselPositionIndex)
+				else if (index > _carouselPositions.CenterCarouselPositionIndex)
 				{
 					displayProductCarouselUserControl.Tag = CarouselDirection.Left;
-					Panel.SetZIndex(displayProductCarouselUserControl, _carouselPositions.Count - num);
+					Panel.SetZIndex(displayProductCarouselUserControl, _carouselPositions.Count - index);
 				}
 				else
 				{
@@ -656,18 +656,18 @@ public partial class RedboxProductCarouselUserControl : BaseUserControl, ICompon
 		_rotatingCarouselProducts = list;
 		foreach (DisplayProductCarouselUserControl displayProductUserControl in _displayProductUserControlList)
 		{
-			int num = _displayProductUserControlList.IndexOf(displayProductUserControl);
+			int index = _displayProductUserControlList.IndexOf(displayProductUserControl);
 			displayProductUserControl.RenderTransform = null;
-			displayProductUserControl.DataContext = _rotatingCarouselProducts[num];
+			displayProductUserControl.DataContext = _rotatingCarouselProducts[index];
 			displayProductUserControl.ShaderOpacity = 0.5;
-			if (num < _carouselPositions.CenterCarouselPositionIndex)
+			if (index < _carouselPositions.CenterCarouselPositionIndex)
 			{
-				Panel.SetZIndex(displayProductUserControl, num);
+				Panel.SetZIndex(displayProductUserControl, index);
 				continue;
 			}
-			if (num > _carouselPositions.CenterCarouselPositionIndex)
+			if (index > _carouselPositions.CenterCarouselPositionIndex)
 			{
-				Panel.SetZIndex(displayProductUserControl, _carouselPositions.Count - num);
+				Panel.SetZIndex(displayProductUserControl, _carouselPositions.Count - index);
 				continue;
 			}
 			Panel.SetZIndex(displayProductUserControl, _carouselPositions.Count);

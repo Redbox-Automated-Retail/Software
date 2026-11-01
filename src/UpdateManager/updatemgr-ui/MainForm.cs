@@ -113,8 +113,8 @@ public class MainForm : Form
 		}
 		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
 		{
-			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-			ErrorList errors = service.CancelAll();
+			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+			ErrorList errors = transferService.CancelAll();
 			if (errors.ContainsError())
 			{
 				UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
@@ -131,8 +131,8 @@ public class MainForm : Form
 	{
 		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
 		{
-			IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-			ErrorList errors = service.Poll();
+			IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+			ErrorList errors = updateService.Poll();
 			if (errors.ContainsError())
 			{
 				UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
@@ -167,17 +167,17 @@ public class MainForm : Form
 			m_repositories.BeginUpdate();
 			m_repositories.Items.Clear();
 		});
-		IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
-		List<string> allRepositories = service.GetAllRepositories();
+		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+		List<string> allRepositories = repositoryService.GetAllRepositories();
 		Stopwatch stopwatch = new Stopwatch();
 		foreach (string item in allRepositories)
 		{
 			stopwatch.Start();
 			string repository = item;
-			string activeLabel = service.GetActiveLabel(repository);
-			string activeRevision = service.GetActiveRevision(repository);
-			string stagedRevision = service.GetStagedRevision(repository);
-			bool subscribed = service.Subscribed(repository);
+			string activeLabel = repositoryService.GetActiveLabel(repository);
+			string activeRevision = repositoryService.GetActiveRevision(repository);
+			string stagedRevision = repositoryService.GetStagedRevision(repository);
+			bool subscribed = repositoryService.Subscribed(repository);
 			UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
 			{
 				ListViewItem listViewItem = new ListViewItem
@@ -241,10 +241,10 @@ public class MainForm : Form
 			{
 				return;
 			}
-			IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
-			List<IRevLog> changes = service.GetAllChanges(repositoryName);
-			string activeRevision = service.GetActiveRevision(repositoryName);
-			string stagedRevision = service.GetStagedRevision(repositoryName);
+			IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+			List<IRevLog> changes = repositoryService.GetAllChanges(repositoryName);
+			string activeRevision = repositoryService.GetActiveRevision(repositoryName);
+			string stagedRevision = repositoryService.GetStagedRevision(repositoryName);
 			changes.Reverse();
 			UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
 			{
@@ -591,15 +591,15 @@ public class MainForm : Form
 			{
 				if (selectedItem is ListViewItem listViewItem)
 				{
-					IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
+					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
 					string name = (string)listViewItem.Tag;
-					if (service.Subscribed(name))
+					if (repositoryService.Subscribed(name))
 					{
-						service.DisableSubscription(name);
+						repositoryService.DisableSubscription(name);
 					}
 					else
 					{
-						service.EndableSubscription(name);
+						repositoryService.EndableSubscription(name);
 					}
 				}
 			}
@@ -678,8 +678,8 @@ public class MainForm : Form
 	{
 		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
 		{
-			IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-			ErrorList errors = service.ServerPoll();
+			IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+			ErrorList errors = updateService.ServerPoll();
 			if (errors.ContainsError())
 			{
 				UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate

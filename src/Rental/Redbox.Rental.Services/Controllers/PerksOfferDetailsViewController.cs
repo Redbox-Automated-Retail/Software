@@ -57,8 +57,8 @@ public class PerksOfferDetailsViewController : BaseViewController
 
 	private static void ConfigureTTS(PerksOfferDetailsViewModel perksOfferDetailsViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			perksOfferDetailsViewModel.OnGetSpeechControl = () => PerksOfferDetailsViewTextToSpeech.GetSpeechControl(GetPerksOfferDetailsViewModel);
 		}
@@ -66,9 +66,9 @@ public class PerksOfferDetailsViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("long", 40000);
-		(service?.CreateTimer("PerksOfferDetailsViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("PerksOfferDetailsViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("PerksOfferDetailsViewController time out", popOnly: false);
@@ -77,9 +77,9 @@ public class PerksOfferDetailsViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("PerksOfferDetailsViewTimer"))?.Stop();
-		service?.RemoveTimer("PerksOfferDetailsViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("PerksOfferDetailsViewTimer"))?.Stop();
+		timerService?.RemoveTimer("PerksOfferDetailsViewTimer");
 	}
 
 	private static void PerksOfferDetailsViewModel_OnCancelButtonClicked()

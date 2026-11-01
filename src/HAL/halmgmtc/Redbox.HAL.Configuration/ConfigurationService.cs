@@ -255,21 +255,21 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			return null;
 		}
-		string[] array = path.Split(PropertyPathSeparators);
-		if (array.Length == 0 || rootObject == null)
+		string[] pathParts = path.Split(PropertyPathSeparators);
+		if (pathParts.Length == 0 || rootObject == null)
 		{
 			return null;
 		}
-		int num = array.Length;
+		int length = pathParts.Length;
 		if (depthAdjust.HasValue)
 		{
-			num -= depthAdjust.Value;
+			length -= depthAdjust.Value;
 		}
 		object obj = rootObject;
-		for (int i = 0; i < num; i++)
+		for (int i = 0; i < length; i++)
 		{
 			object[] args = null;
-			string text = array[i];
+			string text = pathParts[i];
 			object obj2 = ExtractIndexInternal(text);
 			if (obj2 != null)
 			{
@@ -297,8 +297,8 @@ public sealed class ConfigurationService : IConfigurationService
 		object objectFromPath = GetObjectFromPath(path, rootObject, 1);
 		if (objectFromPath != null)
 		{
-			string[] array = path.Split(PropertyPathSeparators);
-			PropertyInfo property = objectFromPath.GetType().GetProperty(array[array.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			string[] pathParts = path.Split(PropertyPathSeparators);
+			PropertyInfo property = objectFromPath.GetType().GetProperty(pathParts[pathParts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
 			property?.SetValue(objectFromPath, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}

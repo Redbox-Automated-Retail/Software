@@ -24,8 +24,8 @@ internal sealed class VendDiskInPickerJob : NativeJobAdapter
 			base.Context.CreateInfoResult("HardwareError", $"MOVEVEND returned error {errorCodes.ToString().ToUpper()}");
 			return;
 		}
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		IVendItemResult vendItemResult = service.VendItemInPicker();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IVendItemResult vendItemResult = controllerService.VendItemInPicker();
 		if (ErrorCodes.PickerEmpty == vendItemResult.Status)
 		{
 			base.Context.CreateInfoResult("ItemVended", "The item was vended.");
@@ -36,7 +36,7 @@ internal sealed class VendDiskInPickerJob : NativeJobAdapter
 			base.Context.CreateInfoResult("HardwareError", vendItemResult.Presented ? $"VendItem returned {vendItemResult.Status.ToString().ToUpper()}" : "The disk was not presented.");
 			return;
 		}
-		ErrorCodes errorCodes2 = service.AcceptDiskAtDoor();
+		ErrorCodes errorCodes2 = controllerService.AcceptDiskAtDoor();
 		if (ErrorCodes.PickerFull != errorCodes2)
 		{
 			base.Context.CreateInfoResult("TakeDiskError", $"Take disk returned error {errorCodes2.ToString().ToUpper()}");

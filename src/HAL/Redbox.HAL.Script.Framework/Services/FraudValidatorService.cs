@@ -14,9 +14,9 @@ public sealed class FraudValidatorService : IFraudService
 	{
 		get
 		{
-			IScannerDeviceService service = ServiceLocator.Instance.GetService<IScannerDeviceService>();
+			IScannerDeviceService scannerDeviceService = ServiceLocator.Instance.GetService<IScannerDeviceService>();
 			BarcodeConfiguration.NewInstance();
-			IScannerDevice configuredDevice = service.GetConfiguredDevice();
+			IScannerDevice configuredDevice = scannerDeviceService.GetConfiguredDevice();
 			LogHelper.Instance.Log($"IsLegacy: {configuredDevice.IsLegacy}, Camera Generation: {configuredDevice.CurrentCameraGeneration.ToString()}");
 			LogHelper.Instance.Log($"Device.SupportsSecureReads: {configuredDevice.SupportsSecureReads}, EnablePhotocopyScan: {ControllerConfiguration.Instance.EnablePhotocopyScan} - IsConfigured: {configuredDevice.SupportsSecureReads && ControllerConfiguration.Instance.EnablePhotocopyScan}");
 			if (configuredDevice.SupportsSecureReads)
@@ -33,8 +33,8 @@ public sealed class FraudValidatorService : IFraudService
 		{
 			if (string.IsNullOrEmpty(m_fraudImagesPath))
 			{
-				IBarcodeReaderFactory service = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>();
-				m_fraudImagesPath = service.ImagePath;
+				IBarcodeReaderFactory barcodeReaderFactory = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>();
+				m_fraudImagesPath = barcodeReaderFactory.ImagePath;
 				if (!Directory.Exists(m_fraudImagesPath))
 				{
 					try

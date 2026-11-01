@@ -199,9 +199,9 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 			{
 				RemoveItemFromRentalShoppingCartByProductId(shoppingSessionId, promoOfferState.SelectedProduct.ProductId, userRemoved: true);
 			}
-			IPromotionService service = ServiceLocator.Instance.GetService<IPromotionService>();
+			IPromotionService promotionService = ServiceLocator.Instance.GetService<IPromotionService>();
 			RemoveOfferDiscountsFromCart(shoppingSessionId, promoOfferState);
-			service.ClearPromotion();
+			promotionService.ClearPromotion();
 			promoOfferState.SelectedOffer = null;
 			promoOfferState.SelectedProduct = null;
 			promoOfferState.WasOfferAccepted = false;
@@ -323,7 +323,7 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 	{
 		LogHelper.Instance.Log("RentalShoppingCartService.AssignBarcodesToVend");
 		List<string> list = new List<string>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<ISearchBarcodeForProduct> list2 = new List<ISearchBarcodeForProduct>();
 		if (rentalShoppingCart != null)
 		{
@@ -336,7 +336,7 @@ public class RentalShoppingCartService : IRentalShoppingCartService
 					Action = titleItem.Action
 				});
 			}
-			List<IBarcodeForProductResult> list3 = service?.GetBarcodesForProducts(list2, null);
+			List<IBarcodeForProductResult> list3 = dataService?.GetBarcodesForProducts(list2, null);
 			if (list3 != null)
 			{
 				foreach (IBarcodeForProductResult eachBarcodeForProductResult in list3)

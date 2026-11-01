@@ -100,8 +100,8 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 
 	public ErrorCodes MoveTo(int deck, int slot, MoveMode mode)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		return MoveTo(deck, slot, mode, service.GetActiveContext().ContextLog);
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		return MoveTo(deck, slot, mode, executionService.GetActiveContext().ContextLog);
 	}
 
 	public ErrorCodes MoveTo(int deck, int slot, MoveMode mode, IFormattedLog log)
@@ -200,16 +200,16 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		if (errorCodes2 == ErrorCodes.Success)
 		{
 			AtVendDoor = false;
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-			CurrentLocation = service.Get(deck, slot);
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+			CurrentLocation = inventoryService.Get(deck, slot);
 		}
 		return errorCodes2;
 	}
 
 	public ErrorCodes MoveTo(ILocation location, MoveMode mode)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		return MoveTo(location.Deck, location.Slot, mode, service.GetActiveContext().ContextLog);
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		return MoveTo(location.Deck, location.Slot, mode, executionService.GetActiveContext().ContextLog);
 	}
 
 	public ErrorCodes MoveTo(ILocation location, MoveMode mode, IFormattedLog log)
@@ -312,12 +312,12 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 	public string GetPrintableLocation()
 	{
 		string result = "Location unknown";
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
-		if (service.CurrentLocation != null)
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		if (motionControlService.CurrentLocation != null)
 		{
-			result = service.CurrentLocation.ToString();
+			result = motionControlService.CurrentLocation.ToString();
 		}
-		else if (service.AtVendDoor)
+		else if (motionControlService.AtVendDoor)
 		{
 			result = "Vend Door";
 		}

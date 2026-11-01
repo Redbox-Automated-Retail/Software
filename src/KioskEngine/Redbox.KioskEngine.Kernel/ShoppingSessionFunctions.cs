@@ -46,11 +46,11 @@ internal static class ShoppingSessionFunctions
 	[KernelFunction(Name = "kernel.sessionstartnew2")]
 	internal static string StartNewSession2(string storeNumber)
 	{
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
 		string result = null;
-		if (service != null)
+		if (shoppingSessionService != null)
 		{
-			result = service.StartNewSession(storeNumber, null);
+			result = shoppingSessionService.StartNewSession(storeNumber, null);
 		}
 		return result;
 	}

@@ -822,10 +822,10 @@ public class StartViewController : BaseViewController
 		(TimerService?.GetTimer(Constants.BurnInViewDurationTimerName))?.Stop();
 		(IdleTimerService?.CreateIdleTimer(Constants.StartIdleTimerName))?.Stop();
 		(IdleTimerService?.GetIdleTimer(Constants.AdaIdleTimerName))?.Stop();
-		ITrackDataService service = ServiceLocator.Instance.GetService<ITrackDataService>();
+		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
 		if (!_cardReadUserInteractionStarted)
 		{
-			service?.StopCardRead(CancelReason.LeavingStartView);
+			trackDataService?.StopCardRead(CancelReason.LeavingStartView);
 			_cardReadComplete.WaitOne(3000);
 		}
 		StopZeroTouchDisconnectedCardReaderTimer();
@@ -840,8 +840,8 @@ public class StartViewController : BaseViewController
 		int value = KioskClientService?.Campaign?.LoadCampaignTimerDuration ?? Constants.LoadCampaignTimerDuration;
 		(TimerService?.CreateTimer(Constants.LoadCampaignTimerName, value, value, delegate
 		{
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			if (service != null && service.Peek() == service.GetStartOverViewName())
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			if (viewService != null && viewService.Peek() == viewService.GetStartOverViewName())
 			{
 				LogHelper.Instance.Log("StartViewController.ConfigureLoadCampaignTimer");
 				BaseViewController.ProcessWPFHit();
@@ -941,8 +941,8 @@ public class StartViewController : BaseViewController
 	{
 		(IdleTimerService?.CreateIdleTimer(Constants.AdaIdleTimerName)).Initialize(Constants.AdaIdleTimerDuration, delegate
 		{
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			if (service != null && !service.TTSEnabled)
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			if (textToSpeechService != null && !textToSpeechService.TTSEnabled)
 			{
 				TurnAdaOff();
 				ConfigureCarousel(GetStartViewModelFromView());
@@ -955,8 +955,8 @@ public class StartViewController : BaseViewController
 		IIdleTimer startIdleTimer = IdleTimerService?.CreateIdleTimer(Constants.StartIdleTimerName);
 		startIdleTimer?.Initialize(Constants.StartIdleTimerDuration, delegate
 		{
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			if (service?.Peek() == service?.GetStartOverViewName())
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			if (viewService?.Peek() == viewService?.GetStartOverViewName())
 			{
 				OrchestrationService.InvokeStartIdleTimerCallback();
 				LogHelper.Instance.Log("Current Culture: {0} Default Culture: {1}", OrchestrationService.GetCulture(), OrchestrationService.GetDefaultCulture());
@@ -1067,8 +1067,8 @@ public class StartViewController : BaseViewController
 	private static void ToggleAdaMode()
 	{
 		CloseTitleRollupOverlay();
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled)
 		{
 			if (BaseViewController.ApplicationState.IsABEOn)
 			{
@@ -1484,10 +1484,10 @@ public class StartViewController : BaseViewController
 			Redbox.Rental.Services.Session.Session.Instance.BrowseState.SetDefaultBrowseStateSet();
 			OrchestrationService.ViewShow("browse_view", BrowseFunctions.GetBrowseViewparameters());
 			PromotionService.Instance?.SetPromotion(promotion);
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			service?.CurrentRentalShoppingCart?.ValidateAndUpdatePromoCode();
-			service?.CurrentRentalShoppingCart?.UpdateServiceFee();
-			service?.CurrentRentalShoppingCart?.ClearLoyaltyPointsToBeEarned();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.ValidateAndUpdatePromoCode();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.UpdateServiceFee();
+			rentalShoppingCartService?.CurrentRentalShoppingCart?.ClearLoyaltyPointsToBeEarned();
 		}
 	}
 
@@ -1614,10 +1614,10 @@ public class StartViewController : BaseViewController
 				PersonalizationFunctions.ShowLogoutDialog();
 				return;
 			}
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 			Redbox.Rental.Services.Session.Session.Instance.BrowseState.SetDefaultBrowseStateSet();
 			BaseViewController.AnalyticsService?.AddButtonPressEvent("StartSignInHome");
-			service.Push("browse_view", BrowseFunctions.GetBrowseViewparameters());
+			viewService.Push("browse_view", BrowseFunctions.GetBrowseViewparameters());
 			PersonalizationFunctions.ShowRegularSignInSignUpDialog();
 		}
 	}

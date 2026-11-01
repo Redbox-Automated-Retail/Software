@@ -83,8 +83,8 @@ public class CardFunctions
 			{
 				Redbox.Rental.Services.Session.Session.Instance.TrackData = trackData;
 			}
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			if (service?.UITaskScheduler != null)
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			if (viewService?.UITaskScheduler != null)
 			{
 				Task.Factory.StartNew(delegate
 				{
@@ -189,7 +189,7 @@ public class CardFunctions
 					{
 						LogHelper.Instance.Log("An unhandled exception was raised in CardFunctions.CardReadComplete.", e2);
 					}
-				}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+				}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 			}
 			else
 			{

@@ -20,10 +20,10 @@ public class ProxyMessageHelper
 {
 	public static CartMessage CreateCartMessage(string customerProfileNumber, string messageType)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		if (service?.CurrentRentalShoppingCart != null)
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		if (rentalShoppingCartService?.CurrentRentalShoppingCart != null)
 		{
-			return CreateCartMessage(service.CurrentRentalShoppingCart.ShoppingSessionId, customerProfileNumber, messageType);
+			return CreateCartMessage(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId, customerProfileNumber, messageType);
 		}
 		return null;
 	}

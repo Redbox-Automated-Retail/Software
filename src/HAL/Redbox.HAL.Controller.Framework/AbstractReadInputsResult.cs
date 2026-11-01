@@ -109,8 +109,8 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 
 	private void FromValidated()
 	{
-		int num = RawResponse.OpCodeResponse.IndexOf("R");
-		if (21 != num || !char.IsWhiteSpace(RawResponse.OpCodeResponse[16]))
+		int index = RawResponse.OpCodeResponse.IndexOf("R");
+		if (21 != index || !char.IsWhiteSpace(RawResponse.OpCodeResponse[16]))
 		{
 			OnBogusResponse();
 			return;
@@ -118,7 +118,7 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 		int num2 = 0;
 		try
 		{
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < index; i++)
 			{
 				switch (RawResponse.OpCodeResponse[i])
 				{

@@ -15,7 +15,7 @@ internal sealed class LocationTestResult : IPeekResult
 	internal LocationTestResult(int deck, int slot)
 	{
 		Error = ErrorCodes.Success;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		PeekLocation = service.Get(deck, slot);
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		PeekLocation = inventoryService.Get(deck, slot);
 	}
 }

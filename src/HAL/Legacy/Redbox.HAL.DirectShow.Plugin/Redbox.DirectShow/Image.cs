@@ -72,8 +72,8 @@ public static class Image
 		{
 			ColorPalette palette = source.Palette;
 			ColorPalette palette2 = bitmap.Palette;
-			int num = palette.Entries.Length;
-			for (int i = 0; i < num; i++)
+			int length = palette.Entries.Length;
+			for (int i = 0; i < length; i++)
 			{
 				ref Color reference = ref palette2.Entries[i];
 				reference = palette.Entries[i];
@@ -105,12 +105,12 @@ public static class Image
 			byte[] buffer = new byte[10000];
 			while (true)
 			{
-				int num = fileStream.Read(buffer, 0, 10000);
-				if (num == 0)
+				int bytesRead = fileStream.Read(buffer, 0, 10000);
+				if (bytesRead == 0)
 				{
 					break;
 				}
-				memoryStream.Write(buffer, 0, num);
+				memoryStream.Write(buffer, 0, bytesRead);
 			}
 			return (Bitmap)System.Drawing.Image.FromStream(memoryStream);
 		}

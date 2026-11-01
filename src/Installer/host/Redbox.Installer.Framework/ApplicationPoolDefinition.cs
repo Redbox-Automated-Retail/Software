@@ -172,10 +172,10 @@ public class ApplicationPoolDefinition : Definition
 			string[] array = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
 			foreach (string text in array)
 			{
-				string[] array3 = text.Split('|');
-				if (!(array3[0] != "pool"))
+				string[] parts = text.Split('|');
+				if (!(parts[0] != "pool"))
 				{
-					IIsApplicationPool.GetByName(array3[1])?.Delete();
+					IIsApplicationPool.GetByName(parts[1])?.Delete();
 				}
 			}
 		}

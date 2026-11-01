@@ -40,40 +40,40 @@ public sealed class ControlSystemInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		Ops ops = Enum<Ops>.ParseIgnoringCase(base.Operands[0].Value, Ops.None);
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IControlResponse controlResponse = null;
 		IFormattedLogFactoryService formattedLogFactoryService = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>();
 		switch (ops)
 		{
 		case Ops.Center:
-			context.PushTop(service.Center(CenterDiskMethod.VendDoorAndBack).ToString());
+			context.PushTop(controlSystem.Center(CenterDiskMethod.VendDoorAndBack).ToString());
 			break;
 		case Ops.RinglightOn:
-			controlResponse = service.ToggleRingLight(on: true, null);
+			controlResponse = controlSystem.ToggleRingLight(on: true, null);
 			break;
 		case Ops.RinglightOff:
-			controlResponse = service.ToggleRingLight(on: false, null);
+			controlResponse = controlSystem.ToggleRingLight(on: false, null);
 			break;
 		case Ops.PickerSensorsOn:
-			controlResponse = service.SetSensors(on: true);
+			controlResponse = controlSystem.SetSensors(on: true);
 			break;
 		case Ops.PickerSensorsOff:
-			controlResponse = service.SetSensors(on: false);
+			controlResponse = controlSystem.SetSensors(on: false);
 			break;
 		case Ops.EngageQlm:
-			context.PushTop(service.EngageQlm(formattedLogFactoryService.NilLog).ToString().ToUpper());
+			context.PushTop(controlSystem.EngageQlm(formattedLogFactoryService.NilLog).ToString().ToUpper());
 			break;
 		case Ops.DisengageQlm:
-			context.PushTop(service.DisengageQlm(home: true, formattedLogFactoryService.NilLog).ToString().ToUpper());
+			context.PushTop(controlSystem.DisengageQlm(home: true, formattedLogFactoryService.NilLog).ToString().ToUpper());
 			break;
 		case Ops.DropQlm:
-			controlResponse = service.DropQlm();
+			controlResponse = controlSystem.DropQlm();
 			break;
 		case Ops.LiftQlm:
-			controlResponse = service.LiftQlm();
+			controlResponse = controlSystem.LiftQlm();
 			break;
 		case Ops.HaltQlmOperation:
-			controlResponse = service.HaltQlmLifter();
+			controlResponse = controlSystem.HaltQlmLifter();
 			break;
 		default:
 			result.AddError(ExecutionErrors.InvalidSymbolValue, $"The value {base.Operands[0].Value} is unrecognized.");

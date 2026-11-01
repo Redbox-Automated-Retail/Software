@@ -327,9 +327,9 @@ public class Task : IDisposable
 		get
 		{
 			iTask.GetWorkItemData(out var DataLen, out var Data);
-			byte[] array = new byte[DataLen];
-			Marshal.Copy(Data, array, 0, DataLen);
-			MemoryStream serializationStream = new MemoryStream(array, writable: false);
+			byte[] buffer = new byte[DataLen];
+			Marshal.Copy(Data, buffer, 0, DataLen);
+			MemoryStream serializationStream = new MemoryStream(buffer, writable: false);
 			BinaryFormatter binaryFormatter = new BinaryFormatter();
 			return binaryFormatter.Deserialize(serializationStream);
 		}

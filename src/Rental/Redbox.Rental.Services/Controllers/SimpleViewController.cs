@@ -319,8 +319,8 @@ public class SimpleViewController : BaseViewController
 
 	private static void ConfigureTTS(SimpleModel viewModel, Action<SpeechPart> speechPartRefreshAction)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || viewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || viewModel == null)
 		{
 			return;
 		}

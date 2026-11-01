@@ -126,10 +126,10 @@ public static class RentalShoppingCartFunctions
 	public static int ItemCount()
 	{
 		int result = 0;
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		if (service != null)
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		if (rentalShoppingCartService != null)
 		{
-			result = service.CurrentRentalShoppingCart.Count;
+			result = rentalShoppingCartService.CurrentRentalShoppingCart.Count;
 		}
 		return result;
 	}

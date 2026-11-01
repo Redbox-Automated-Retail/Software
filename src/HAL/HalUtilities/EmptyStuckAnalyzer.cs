@@ -62,13 +62,13 @@ internal class EmptyStuckAnalyzer
 			int num = 0;
 			string text = "GET Deck=";
 			string text2 = "Slot=";
-			IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-			string path = service.RuntimePath("EmptyStuckAnalysis.log");
+			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+			string path = runtimeService.RuntimePath("EmptyStuckAnalysis.log");
 			if (File.Exists(path))
 			{
 				try
 				{
-					service.CreateBackup(path, BackupAction.Move);
+					runtimeService.CreateBackup(path, BackupAction.Move);
 				}
 				catch (Exception ex)
 				{
@@ -110,9 +110,9 @@ internal class EmptyStuckAnalyzer
 							list.Find((TypeStat each) => each.Type == type).Increment();
 							if (type == StuckType.LookupFail)
 							{
-								int num3 = text3.IndexOf("item") + 5;
+								int index = text3.IndexOf("item") + 5;
 								int num4 = text3.IndexOf("returned") - 1;
-								string _bc = text3.Substring(num3, num4 - num3);
+								string _bc = text3.Substring(index, num4 - index);
 								LookupFailStat lookupFailStat = list2.Find((LookupFailStat each) => each.Matrix == _bc);
 								if (lookupFailStat == null)
 								{

@@ -115,7 +115,7 @@ public class Task : ITask, IJob
 		}
 		try
 		{
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 			using ExecutionTimer executionTimer = new ExecutionTimer();
 			LogHelper.Instance.Log($"SCHEDULER: *** Begin Schedule Event: {task.Payload}", LogEntryType.Info);
 			try
@@ -127,7 +127,7 @@ public class Task : ITask, IJob
 					string text3 = task.Payload;
 					if (!Path.IsPathRooted(text3))
 					{
-						text3 = Path.Combine(service.ExpandProperties("${Scripts}"), task.Payload);
+						text3 = Path.Combine(macroService.ExpandProperties("${Scripts}"), task.Payload);
 					}
 					if (!File.Exists(text3))
 					{
@@ -168,7 +168,7 @@ public class Task : ITask, IJob
 					LogHelper.Instance.Log("Executing shell command process: {0} arguments: {1}", text, text2);
 					using (Process process = Process.Start(new ProcessStartInfo
 					{
-						WorkingDirectory = service.ExpandProperties("${RunningPath}"),
+						WorkingDirectory = macroService.ExpandProperties("${RunningPath}"),
 						ErrorDialog = false,
 						UseShellExecute = false,
 						Arguments = text2,

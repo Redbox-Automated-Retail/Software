@@ -18,8 +18,8 @@ public class TrackDataEncryptionService : ITrackDataEncryptionService
 	public void RefreshCertificate()
 	{
 		int num = 0;
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service != null && service.TryGetValue<int>("system", "General", "CertificateName", out var value))
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService != null && configurationService.TryGetValue<int>("system", "General", "CertificateName", out var value))
 		{
 			num = value;
 		}

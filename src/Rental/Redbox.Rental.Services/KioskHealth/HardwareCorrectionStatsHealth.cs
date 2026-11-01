@@ -65,13 +65,13 @@ public class HardwareCorrectionStatsHealth : IKioskHealthItem
 		{
 			return;
 		}
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service == null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService == null)
 		{
 			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - IHardwareService is not available.");
 			return;
 		}
-		ErrorList hardwareCorrectionStats = service.GetHardwareCorrectionStats(out var stats);
+		ErrorList hardwareCorrectionStats = hardwareService.GetHardwareCorrectionStats(out var stats);
 		if (hardwareCorrectionStats == null)
 		{
 			return;
@@ -103,7 +103,7 @@ public class HardwareCorrectionStatsHealth : IKioskHealthItem
 		if (num > 0)
 		{
 			LogHelper.Instance.Log("HardwareCorrectionStats.SendStatsToEvents - Removing {0} Stats.", num);
-			service.RemoveHardwareCorrectionStats(delegate
+			hardwareService.RemoveHardwareCorrectionStats(delegate
 			{
 			}, delegate(string jobIdentity, string status)
 			{

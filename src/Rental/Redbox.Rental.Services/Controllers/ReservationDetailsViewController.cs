@@ -44,8 +44,8 @@ public class ReservationDetailsViewController : BaseViewController
 			ConfigureTTS(reservationDetailsViewModel);
 			viewUserControl.DataContext = reservationDetailsViewModel;
 			reservationDetailsViewModel.OkayButtonVisibility = (Redbox.Rental.Services.Session.Session.Instance.IsInZeroTouchMode ? Visibility.Hidden : Visibility.Visible);
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			int value = ((service != null && service.TTSEnabled) ? 25000 : 15000);
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			int value = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 25000 : 15000);
 			if (Redbox.Rental.Services.Session.Session.Instance.IsInZeroTouchMode)
 			{
 				value = 5000;
@@ -67,15 +67,15 @@ public class ReservationDetailsViewController : BaseViewController
 		if (accountReservations != null)
 		{
 			num = accountReservations.Sum((IReservation x) => x.ReservationDetails.ReservedTitles.Count);
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService != null)
 			{
 				foreach (IReservation item in accountReservations)
 				{
 					foreach (IReservedTitle reservedTitle in item.ReservationDetails.ReservedTitles)
 					{
 						IKioskProduct kioskProduct = null;
-						service?.GetProductByBarcode(reservedTitle.Barcode, out kioskProduct);
+						dataService?.GetProductByBarcode(reservedTitle.Barcode, out kioskProduct);
 						if (kioskProduct is MDVProduct { DiscNumber: var discNumber } mDVProduct && discNumber == 1)
 						{
 							num3++;
@@ -115,8 +115,8 @@ public class ReservationDetailsViewController : BaseViewController
 
 	private static void ConfigureTTS(ReservationDetailsViewModel multiDiscVendViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || multiDiscVendViewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || multiDiscVendViewModel == null)
 		{
 			return;
 		}

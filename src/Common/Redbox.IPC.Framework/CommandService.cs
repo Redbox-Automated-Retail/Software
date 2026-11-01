@@ -32,9 +32,9 @@ public class CommandService
 		string text;
 		while ((text = streamReader.ReadLine()) != null)
 		{
-			string[] array = text.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
-			string command = array[0].Trim();
-			string filter = array[1].Trim();
+			string[] parts = text.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+			string command = parts[0].Trim();
+			string filter = parts[1].Trim();
 			SetAccessFilter(command, filter);
 		}
 	}
@@ -52,11 +52,11 @@ public class CommandService
 			{
 				return new byte[0];
 			}
-			string[] array = str.Split(new string[1] { "." }, StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = str.Split(new string[1] { "." }, StringSplitOptions.RemoveEmptyEntries);
 			List<byte> list = new List<byte>();
-			for (int i = 0; i < array.Length && !(array[i] == "*"); i++)
+			for (int i = 0; i < parts.Length && !(parts[i] == "*"); i++)
 			{
-				list.Add(Convert.ToByte(array[i]));
+				list.Add(Convert.ToByte(parts[i]));
 			}
 			return list.ToArray();
 		}));
@@ -224,18 +224,18 @@ public class CommandService
 		{
 			return true;
 		}
-		string[] array = origin.Split('.');
-		byte[] array2 = new byte[array.Length];
-		for (int i = 0; i < array.Length; i++)
+		string[] parts = origin.Split('.');
+		byte[] buffer = new byte[parts.Length];
+		for (int i = 0; i < parts.Length; i++)
 		{
-			array2[i] = Convert.ToByte(array[i]);
+			buffer[i] = Convert.ToByte(parts[i]);
 		}
 		foreach (byte[] item in m_accessFilter[command])
 		{
 			bool flag = true;
 			for (int j = 0; j < item.Length; j++)
 			{
-				if (item[j] != array2[j])
+				if (item[j] != buffer[j])
 				{
 					flag = false;
 					break;

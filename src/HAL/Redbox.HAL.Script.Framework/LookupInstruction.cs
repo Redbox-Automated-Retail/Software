@@ -22,7 +22,7 @@ public sealed class LookupInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		string text = null;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (base.Operands.Count == 1)
 		{
 			Token token = base.Operands[0];
@@ -45,7 +45,7 @@ public sealed class LookupInstruction : Instruction
 		}
 		if (text != null)
 		{
-			ILocation location = service.Lookup(text);
+			ILocation location = inventoryService.Lookup(text);
 			if (location == null)
 			{
 				context.PushTop("NOT FOUND");

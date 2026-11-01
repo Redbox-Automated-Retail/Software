@@ -87,14 +87,14 @@ public class EmailOptInViewController : BaseViewController
 
 	public static void SendKioskOptinForEmailCampaign()
 	{
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-		IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-		IOptInItem optInItem = service.NewOptInItem();
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+		IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+		IOptInItem optInItem = marketingServices.NewOptInItem();
 		optInItem.Item_Type = KioskOptIntItemType.Non_Item_Specific;
 		optInItem.ItemId = 0L;
 		optInItem.OptInMethodData = Redbox.Rental.Services.Session.Session.Instance?.UserInfo?.Email;
 		optInItem.OptInMethodType = OptInMethodType.EmailAddress;
-		service.KioskOptIn(optInItems: new List<IOptInItem> { optInItem }, kioskId: service2.KioskId, callback: null);
+		marketingServices.KioskOptIn(optInItems: new List<IOptInItem> { optInItem }, kioskId: storeManager.KioskId, callback: null);
 	}
 
 	private static void ConfigureTextAndVisibility(EmailOptInViewModel emailOptInViewModel)

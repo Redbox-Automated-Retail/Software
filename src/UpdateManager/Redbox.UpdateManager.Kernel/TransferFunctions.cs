@@ -20,8 +20,8 @@ public static class TransferFunctions
 	internal static LuaTable SetPriority(string id, string priority)
 	{
 		ErrorList errorList = new ErrorList();
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		errorList.AddRange(service.GetJob(new Guid(id), out var job));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		errorList.AddRange(transferService.GetJob(new Guid(id), out var job));
 		if (errorList.ContainsError())
 		{
 			return CreateResultTable(errorList);

@@ -8,26 +8,26 @@ internal sealed class MarkLocationsUnknownJobs : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		if (num == 0)
+		int operand = base.Context.PopTop<int>();
+		if (operand == 0)
 		{
 			return;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		List<ILocation> list = new List<ILocation>();
 		using (new DisposeableList<ILocation>(list))
 		{
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < operand; i++)
 			{
 				int deck = base.Context.PopTop<int>();
 				int slot = base.Context.PopTop<int>();
-				ILocation location = service.Get(deck, slot);
+				ILocation location = inventoryService.Get(deck, slot);
 				if (location != null)
 				{
 					location.ID = "UNKNOWN";
 				}
 			}
-			if (!service.Save(list))
+			if (!inventoryService.Save(list))
 			{
 				AddError("FAILED TO UPDATE");
 			}

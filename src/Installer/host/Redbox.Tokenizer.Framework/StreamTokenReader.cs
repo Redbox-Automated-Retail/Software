@@ -78,8 +78,8 @@ internal class StreamTokenReader : ITokenReader, IDisposable
 			return m_buffer[m_index + i];
 		}
 		Array.Copy(m_buffer, m_index, m_buffer, 0, m_bufferSize - m_index);
-		int num = m_stream.ReadBlock(m_buffer, m_bufferSize - m_index, m_index);
-		m_bufferSize = num + (m_bufferSize - m_index);
+		int bytesRead = m_stream.ReadBlock(m_buffer, m_bufferSize - m_index, m_index);
+		m_bufferSize = bytesRead + (m_bufferSize - m_index);
 		m_index = 0;
 		if (i >= m_bufferSize)
 		{

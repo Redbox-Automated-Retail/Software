@@ -61,9 +61,9 @@ public class PricingData : IPricingData
 		_kernelService = kernelService;
 		_storeManagerService = storeManagerService;
 		_kioskId = _storeManagerService.KioskId;
-		IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-		_runningPath = service.RunningPath;
-		_dataPath = service.DataPath;
+		IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+		_runningPath = engineApplication.RunningPath;
+		_dataPath = engineApplication.DataPath;
 		_versionStagedPath = Path.Combine(_dataPath, "PricingVersion.staged");
 		_versionPendingPath = Path.Combine(_dataPath, "PricingVersion.pending");
 		_versionActivePath = Path.Combine(_dataPath, "PricingVersion.active");

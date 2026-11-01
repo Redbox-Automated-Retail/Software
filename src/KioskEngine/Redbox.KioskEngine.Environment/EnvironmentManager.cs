@@ -39,14 +39,14 @@ public class EnvironmentManager : IEnvironmentNotificationService
 		get
 		{
 			bool result = false;
-			IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-			if (service != null)
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			if (deviceServiceClientHelper != null)
 			{
-				if (!service.IsConnectedToDeviceService)
+				if (!deviceServiceClientHelper.IsConnectedToDeviceService)
 				{
-					service?.ConnectToDeviceService();
+					deviceServiceClientHelper?.ConnectToDeviceService();
 				}
-				result = service?.IsCardReaderConnected ?? false;
+				result = deviceServiceClientHelper?.IsCardReaderConnected ?? false;
 			}
 			return result;
 		}
@@ -338,8 +338,8 @@ public class EnvironmentManager : IEnvironmentNotificationService
 		{
 			if (!IsTrackDataServiceRegistered || IsClassicTrackDataServiceRegistered)
 			{
-				IClassicTrackDataService service = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
-				SetTrackDataService(service);
+				IClassicTrackDataService classicTrackDataService = ServiceLocator.Instance.GetService<IClassicTrackDataService>();
+				SetTrackDataService(classicTrackDataService);
 				HasValidCardReader = true;
 				HandleConnectedCardReader();
 			}
@@ -358,8 +358,8 @@ public class EnvironmentManager : IEnvironmentNotificationService
 			{
 				if (!IsTrackDataServiceRegistered || IsDeviceServiceTrackDataServiceRegistered)
 				{
-					IDeviceServiceTrackDataService service = ServiceLocator.Instance.GetService<IDeviceServiceTrackDataService>();
-					SetTrackDataService(service);
+					IDeviceServiceTrackDataService deviceServiceTrackDataService = ServiceLocator.Instance.GetService<IDeviceServiceTrackDataService>();
+					SetTrackDataService(deviceServiceTrackDataService);
 					HasValidCardReader = true;
 					HandleConnectedCardReader();
 				}

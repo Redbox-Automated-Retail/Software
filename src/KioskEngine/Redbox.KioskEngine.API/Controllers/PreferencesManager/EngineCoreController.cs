@@ -184,10 +184,10 @@ public class EngineCoreController : ApiController
 		};
 		await Task.Run(delegate
 		{
-			IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
+			IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
 			if (settingName == "IsStandAlone")
 			{
-				response.Content = service.IsStandAlone.ToString();
+				response.Content = applicationState.IsStandAlone.ToString();
 			}
 			LogHelper.Instance.Log("EngineCoreController.GetApplicationStateValue settingName=" + settingName + ", result=" + response.Content);
 		});
@@ -208,11 +208,11 @@ public class EngineCoreController : ApiController
 		};
 		await Task.Run(delegate
 		{
-			IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
+			IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
 			if (settingName == "IsStandAlone" && bool.TryParse(value, out var result))
 			{
-				service.IsStandAlone = result;
-				response.Content = service.IsStandAlone.ToString();
+				applicationState.IsStandAlone = result;
+				response.Content = applicationState.IsStandAlone.ToString();
 			}
 			LogHelper.Instance.Log("EngineCoreController.SetApplicationStateValue settingName=" + settingName + ", value=" + response.Content);
 		});

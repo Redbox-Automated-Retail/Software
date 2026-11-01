@@ -32,8 +32,8 @@ internal sealed class PluginLoader
 
 	private PluginLoader()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		PluginsDirectory = service.RuntimePath("camera.plugins");
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		PluginsDirectory = runtimeService.RuntimePath("camera.plugins");
 		string[] files = Directory.GetFiles(PluginsDirectory, "*.xml");
 		PluginDescriptors = new List<CameraPluginDescriptor>();
 		if (files.Length == 0)

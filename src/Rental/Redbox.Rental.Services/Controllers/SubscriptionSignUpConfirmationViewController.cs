@@ -71,10 +71,10 @@ public class SubscriptionSignUpConfirmationViewController : BaseViewController
 	private static void CreateTimer()
 	{
 		int num = 8000;
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null)
 		{
-			num = service.GetTimeout("shorter", num);
+			num = textToSpeechService.GetTimeout("shorter", num);
 		}
 		(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("subscription_signup_confirmation_timer", num, num, delegate
 		{
@@ -95,9 +95,9 @@ public class SubscriptionSignUpConfirmationViewController : BaseViewController
 			{
 				viewModel.HasActionExecuted = true;
 				OrchestrationService.ViewGoBackSafe("Subscription sign up confiration view continue", popOnly: false);
-				ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-				service.GetTimer("subscription_signup_confirmation_timer")?.Stop();
-				service?.RemoveTimer("subscription_signup_confirmation_timer");
+				ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+				timerService.GetTimer("subscription_signup_confirmation_timer")?.Stop();
+				timerService?.RemoveTimer("subscription_signup_confirmation_timer");
 				viewModel?.ContinueAction();
 			}
 		}

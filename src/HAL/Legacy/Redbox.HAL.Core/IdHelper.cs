@@ -14,8 +14,8 @@ public class IdHelper
 
 	public static string GeneratePseudoUniqueId(int numberOfBytes)
 	{
-		byte[] array = new byte[numberOfBytes];
-		m_provider.GetBytes(array);
-		return BaseConverter.Convert(10, 36, Math.Abs(BitConverter.ToInt32(array, 0)).ToString());
+		byte[] buffer = new byte[numberOfBytes];
+		m_provider.GetBytes(buffer);
+		return BaseConverter.Convert(10, 36, Math.Abs(BitConverter.ToInt32(buffer, 0)).ToString());
 	}
 }

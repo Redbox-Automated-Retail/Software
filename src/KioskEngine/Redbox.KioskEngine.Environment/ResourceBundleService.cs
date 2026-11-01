@@ -81,10 +81,10 @@ public class ResourceBundleService : IResourceBundleService
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service != null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (machineSettingsStore != null)
 			{
-				return service.GetValue("Core", "BundleSearchPath", new string[1] { "..\\bundles" });
+				return machineSettingsStore.GetValue("Core", "BundleSearchPath", new string[1] { "..\\bundles" });
 			}
 			return new string[1] { "..\\bundles" };
 		}
@@ -112,8 +112,8 @@ public class ResourceBundleService : IResourceBundleService
 	{
 		get
 		{
-			IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-			if (service != null && service.TryGetObject("system", "Store", "DefaultBundle", out var value))
+			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+			if (configurationService != null && configurationService.TryGetObject("system", "Store", "DefaultBundle", out var value))
 			{
 				return value.ToString();
 			}
@@ -515,7 +515,7 @@ public class ResourceBundleService : IResourceBundleService
 	public Font GetFont(string resourceName, out bool resourceFound)
 	{
 		resourceFound = false;
-		IFontCacheService service = ServiceLocator.Instance.GetService<IFontCacheService>();
+		IFontCacheService fontCacheService = ServiceLocator.Instance.GetService<IFontCacheService>();
 		IResource resource = GetResource(resourceName);
 		if (resource != null)
 		{
@@ -536,16 +536,16 @@ public class ResourceBundleService : IResourceBundleService
 				if (content != null)
 				{
 					resourceFound = true;
-					return service.RegisterFont(resource.GetFullName(), (string)resource["font_family"], size, style, (byte[])content);
+					return fontCacheService.RegisterFont(resource.GetFullName(), (string)resource["font_family"], size, style, (byte[])content);
 				}
 			}
 			if (resource["font_family"] != null)
 			{
 				resourceFound = true;
-				return service.RegisterFont(resource.GetFullName(), (string)resource["font_family"], size, style);
+				return fontCacheService.RegisterFont(resource.GetFullName(), (string)resource["font_family"], size, style);
 			}
 		}
-		return service.RegisterFont("default", "Arial", 12f, FontStyle.Bold);
+		return fontCacheService.RegisterFont("default", "Arial", 12f, FontStyle.Bold);
 	}
 
 	public IResource GetManifest(out IManifestInfo manifestInfo)
@@ -633,23 +633,23 @@ public class ResourceBundleService : IResourceBundleService
 
 	public Image GetBitmap(string resourceName)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
 		IResource resource = GetResource(resourceName);
 		if (resource == null)
 		{
 			return null;
 		}
-		return service.RegisterImage(resource.GetFullName(), (byte[])resource.GetAspect("content").GetContent());
+		return bitmapCacheService.RegisterImage(resource.GetFullName(), (byte[])resource.GetAspect("content").GetContent());
 	}
 
 	public BitmapImage GetBitmapImage(string resourceName)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		BitmapImage bitmapImage = service.GetBitmapImage(resourceName);
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		BitmapImage bitmapImage = bitmapCacheService.GetBitmapImage(resourceName);
 		if (bitmapImage == null)
 		{
 			GetBitmap(resourceName);
-			bitmapImage = service.GetBitmapImage(resourceName);
+			bitmapImage = bitmapCacheService.GetBitmapImage(resourceName);
 		}
 		return bitmapImage;
 	}
@@ -665,7 +665,7 @@ public class ResourceBundleService : IResourceBundleService
 
 	private static void ResetServices(List<Redbox.KioskEngine.ComponentModel.Error> errors)
 	{
-		ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
+		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
@@ -695,7 +695,7 @@ public class ResourceBundleService : IResourceBundleService
 		inputService.Reset();
 		environmentNotificationService.Reset();
 		shoppingSessionService.Reset();
-		service.Reset();
+		callbackService.Reset();
 		dataStoreService.CloseAllStores();
 	}
 

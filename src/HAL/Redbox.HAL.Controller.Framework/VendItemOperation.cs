@@ -23,7 +23,7 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 
 	private VendItemResult OnExecute()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		VendItemResult vendItemResult = new VendItemResult
 		{
 			Presented = true,
@@ -70,7 +70,7 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 				LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Error, "[VendItemInPicker] Disc was pushed to the drum - push it back out.");
 				Controller.TrackCycle();
 				ControllerService.PushOut();
-				service.Wait(ms);
+				runtimeService.Wait(ms);
 				continue;
 			}
 			num = 0;
@@ -80,7 +80,7 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 				{
 					LogHelper.Instance.WithContext(toFormattedLog: false, LogEntryType.Info, "[VendItemInPicker] The item is still blocking sensor 5.");
 				}
-				service.Wait(ms);
+				runtimeService.Wait(ms);
 				continue;
 			}
 			if (!pickerSensorReadResult.IsInputActive(PickerInputs.Sensor6))
@@ -88,7 +88,7 @@ internal sealed class VendItemOperation : AbstractOperation<VendItemResult>
 				vendItemResult.Status = ErrorCodes.PickerEmpty;
 				return vendItemResult;
 			}
-			service.Wait(ms);
+			runtimeService.Wait(ms);
 		}
 		pickerSensorReadResult = Controller.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)

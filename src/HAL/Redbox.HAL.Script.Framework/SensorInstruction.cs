@@ -39,23 +39,23 @@ public sealed class SensorInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		Token token = base.Operands[0];
 		if (string.Compare(token.Value, "PICKER-ON", ignoreCase: true) == 0)
 		{
-			context.PushTop(service.SetSensors(on: true).Success);
+			context.PushTop(controlSystem.SetSensors(on: true).Success);
 		}
 		else if (string.Compare(token.Value, "PICKER-OFF", ignoreCase: true) == 0)
 		{
-			context.PushTop(service.SetSensors(on: false).Success);
+			context.PushTop(controlSystem.SetSensors(on: false).Success);
 		}
 		else if (string.Compare(token.Value, "READ-AUX-INPUTS", ignoreCase: true) == 0)
 		{
-			PushInputs(context, service.ReadAuxInputs());
+			PushInputs(context, controlSystem.ReadAuxInputs());
 		}
 		else if (string.Compare(token.Value, "READ-PICKER-INPUTS", ignoreCase: true) == 0)
 		{
-			PushInputs(context, service.ReadPickerInputs());
+			PushInputs(context, controlSystem.ReadPickerInputs());
 		}
 		else
 		{
@@ -63,7 +63,7 @@ public sealed class SensorInstruction : Instruction
 			{
 				return;
 			}
-			IPickerSensorReadResult sensorReadResult = service.ReadPickerSensors(forceTrackClose: false);
+			IPickerSensorReadResult sensorReadResult = controlSystem.ReadPickerSensors(forceTrackClose: false);
 			if (!sensorReadResult.Success)
 			{
 				context.PushTop(0);

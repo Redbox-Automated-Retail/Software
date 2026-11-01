@@ -200,7 +200,7 @@ internal class DownloadFileService : IPollRequestReply, IDownloadFileService
 	private ErrorList Reboot()
 	{
 		ErrorList errorList = new ErrorList();
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
 		errorList.AddRange(kioskEngineService.Shutdown(15000, 2));
 		if (errorList.ContainsError())
@@ -211,8 +211,8 @@ internal class DownloadFileService : IPollRequestReply, IDownloadFileService
 			});
 			return errorList;
 		}
-		service.ShutdownType = ShutdownType.Reboot;
-		service.PerformShutdown();
+		kernelService.ShutdownType = ShutdownType.Reboot;
+		kernelService.PerformShutdown();
 		return errorList;
 	}
 }

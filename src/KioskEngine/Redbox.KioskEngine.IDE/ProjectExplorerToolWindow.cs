@@ -94,10 +94,10 @@ public class ProjectExplorerToolWindow : ToolWindow
 
 	private void OnAfterSelect(object sender, TreeViewEventArgs e)
 	{
-		IIdeService service = ServiceLocator.Instance.GetService<IIdeService>();
-		if (service != null)
+		IIdeService ideService = ServiceLocator.Instance.GetService<IIdeService>();
+		if (ideService != null)
 		{
-			((IdeMainForm)service.MainForm).PropertiesWindow.SetObject(e.Node.Tag);
+			((IdeMainForm)ideService.MainForm).PropertiesWindow.SetObject(e.Node.Tag);
 		}
 	}
 
@@ -107,10 +107,10 @@ public class ProjectExplorerToolWindow : ToolWindow
 		{
 			return;
 		}
-		IIdeService service = ServiceLocator.Instance.GetService<IIdeService>();
-		if (service != null)
+		IIdeService ideService = ServiceLocator.Instance.GetService<IIdeService>();
+		if (ideService != null)
 		{
-			IdeMainForm ideMainForm = (IdeMainForm)service.MainForm;
+			IdeMainForm ideMainForm = (IdeMainForm)ideService.MainForm;
 			if (m_exploreBundle.Checked && m_treeView.SelectedNode.Tag is IResource resource)
 			{
 				ideMainForm.OpenResourceEditor(resource);
@@ -200,10 +200,10 @@ public class ProjectExplorerToolWindow : ToolWindow
 	private SortedDictionary<string, object> GetAPIDictionary()
 	{
 		SortedDictionary<string, object> sortedDictionary = new SortedDictionary<string, object>();
-		IKernelFunctionRegistryService service = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
-		if (service != null)
+		IKernelFunctionRegistryService kernelFunctionRegistryService = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
+		if (kernelFunctionRegistryService != null)
 		{
-			foreach (KernelFunctionInfo kernelFunction in service.GetKernelFunctions())
+			foreach (KernelFunctionInfo kernelFunction in kernelFunctionRegistryService.GetKernelFunctions())
 			{
 				if (!sortedDictionary.ContainsKey(kernelFunction.Extension))
 				{

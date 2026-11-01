@@ -155,8 +155,8 @@ public class BrowseFunctions
 			{
 				AnalyticsService?.AddButtonPressEvent("BrowseFunctionsShoppingCartAddItem")?.AddData(ProductData.ToProductData(addProductToCartParameters.TitleProduct));
 			}
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			Redbox.Rental.Services.Session.Session.Instance.BrowseState.ItemAddedFromView = service?.Peek();
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			Redbox.Rental.Services.Session.Session.Instance.BrowseState.ItemAddedFromView = viewService?.Peek();
 			_purchaseWarningShown = false;
 			_adaPurchaseWarningShown = false;
 			_digitalCodeWarningShown = false;
@@ -180,12 +180,12 @@ public class BrowseFunctions
 		};
 		MessagePopupViewController.ShowMessageCartFull(delegate
 		{
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 			BrowseState.IsShoppingCartFullMessagesOpen = true;
-			service?.GoBackSafe("MessagePopupViewController.ShowMessageCartFull", popOnly: false);
+			viewService?.GoBackSafe("MessagePopupViewController.ShowMessageCartFull", popOnly: false);
 			BrowseState.IsShoppingCartFullMessagesOpen = false;
-			service.Push("idle_timeout_message_view");
-			service.Show();
+			viewService.Push("idle_timeout_message_view");
+			viewService.Show();
 		}, continueAction);
 	}
 
@@ -416,29 +416,29 @@ public class BrowseFunctions
 				Redbox.Rental.Services.Session.Session.Instance.IsInAddProductFlow = false;
 			}
 		}
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		IBrowseState browseState = BrowseState;
 		if (browseState != null && browseState.ProductAddedFromCarousel)
 		{
 			OrchestrationService.ViewShow("browse_view", GetBrowseViewparameters());
 			BrowseState.ProductAddedFromCarousel = false;
 		}
-		bool flag = service?.Stack.Any((IViewFrameInstance vf) => vf.ViewFrame?.ViewName == "recommended_titles_popup_view") ?? false;
+		bool flag = viewService?.Stack.Any((IViewFrameInstance vf) => vf.ViewFrame?.ViewName == "recommended_titles_popup_view") ?? false;
 		if (BrowseState?.ItemAddedFromView == "recommended_titles_popup_view" || ((BrowseState?.ItemAddedFromView == "product_detail_view") & flag))
 		{
-			service?.UnwindToSafe("browse_view", discard: true, "recommended_titles_popup_view");
+			viewService?.UnwindToSafe("browse_view", discard: true, "recommended_titles_popup_view");
 		}
 		else if (BrowseState?.ItemAddedFromView == "product_detail_view")
 		{
-			service?.GoBack("Item Added", popOnly: false);
+			viewService?.GoBack("Item Added", popOnly: false);
 		}
 		if (BrowseState?.ItemAddedFromView == "multi_night_pricing_popup_view")
 		{
-			service?.UnwindToSafe("browse_view", discard: true, "multi_night_pricing_popup_view");
+			viewService?.UnwindToSafe("browse_view", discard: true, "multi_night_pricing_popup_view");
 		}
 		if (BrowseState?.ItemAddedFromView == "option_selection_dialog_view")
 		{
-			service?.UnwindToSafe("browse_view", discard: true, "option_selection_dialog_view");
+			viewService?.UnwindToSafe("browse_view", discard: true, "option_selection_dialog_view");
 		}
 		IRentalShoppingCartService rentalShoppingCartService = RentalShoppingCartService;
 		if (rentalShoppingCartService != null && rentalShoppingCartService.CurrentRentalShoppingCartIsFull)
@@ -521,13 +521,13 @@ public class BrowseFunctions
 			{
 				string title = string.Format(Resources.multi_disc_warning_title, addProductToCartParameters.TitleProduct.RequiredAdditionalTitles.Count + 1);
 				string empty = string.Empty;
-				IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
+				IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 				IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-				IPricingRecord oneDayProductPricingRecord = service.GetOneDayProductPricingRecord(addProductToCartParameters.TitleProduct.ProductId);
+				IPricingRecord oneDayProductPricingRecord = pricingService.GetOneDayProductPricingRecord(addProductToCartParameters.TitleProduct.ProductId);
 				decimal initialNight = oneDayProductPricingRecord.InitialNight;
 				foreach (long requiredAdditionalTitle2 in addProductToCartParameters.TitleProduct.RequiredAdditionalTitles)
 				{
-					oneDayProductPricingRecord = service.GetOneDayProductPricingRecord(requiredAdditionalTitle2);
+					oneDayProductPricingRecord = pricingService.GetOneDayProductPricingRecord(requiredAdditionalTitle2);
 					if (oneDayProductPricingRecord != null)
 					{
 						initialNight += oneDayProductPricingRecord.InitialNight;
@@ -599,11 +599,11 @@ public class BrowseFunctions
 			{
 				value3 = (ApplicationState.Instance.IsABEOn ? string.Format(abe_purchase_price_message, arg, Resources.currency_symbol, arg2) : null);
 			}
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (service != null)
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (macroService != null)
 			{
-				service["ADAPurchaseWarning:Header"] = value2;
-				service["ABEPurchaseMessage:Header"] = value3;
+				macroService["ADAPurchaseWarning:Header"] = value2;
+				macroService["ABEPurchaseMessage:Header"] = value3;
 			}
 			MessagePopupViewController.ShowADAPurchaseWarning(delegate
 			{
@@ -635,11 +635,11 @@ public class BrowseFunctions
 		if (addProductToCartParameters.TitleProduct.TitleType == TitleType._4KUHD && !BrowseState._4kWarningShown)
 		{
 			result = false;
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (service != null)
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (macroService != null)
 			{
-				service["MatureWarning:Header"] = Resources.four_k_alert_title;
-				service["Bluray:Message"] = Resources.four_k_alert;
+				macroService["MatureWarning:Header"] = Resources.four_k_alert_title;
+				macroService["Bluray:Message"] = Resources.four_k_alert;
 			}
 			MessagePopupViewController.Show4KAlert(delegate
 			{
@@ -681,9 +681,9 @@ public class BrowseFunctions
 					_ = titleProduct2.ProductTypeId;
 					if (true)
 					{
-						IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-						SubPlatform subPlatform = service?.GetSubPlatforms()?.FirstOrDefault((SubPlatform x) => x.SubPlatformId == addProductToCartParameters.TitleProduct.SubPlatformId);
-						ProductType productType = service?.GetProductTypes()?.FirstOrDefault((ProductType x) => x.ProductTypeId == addProductToCartParameters.TitleProduct.ProductTypeId);
+						IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+						SubPlatform subPlatform = dataService?.GetSubPlatforms()?.FirstOrDefault((SubPlatform x) => x.SubPlatformId == addProductToCartParameters.TitleProduct.SubPlatformId);
+						ProductType productType = dataService?.GetProductTypes()?.FirstOrDefault((ProductType x) => x.ProductTypeId == addProductToCartParameters.TitleProduct.ProductTypeId);
 						if (subPlatform != null)
 						{
 							if (productType != null)
@@ -743,11 +743,11 @@ public class BrowseFunctions
 		if (!_purchaseWarningShown && addProductToCartParameters.IsPurchase && addProductToCartParameters.TitleProduct.ProductId != 1139 && addProductToCartParameters.TitleProduct.ProductTypeId != 17)
 		{
 			result = false;
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (service != null)
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (macroService != null)
 			{
-				service["PurchaseWarning:Header"] = Resources.products_used;
-				service["PurchaseWarning:Message"] = Resources.purchase_warning;
+				macroService["PurchaseWarning:Header"] = Resources.products_used;
+				macroService["PurchaseWarning:Message"] = Resources.purchase_warning;
 			}
 			MessagePopupViewController.ShowPurchaseWarning(delegate
 			{
@@ -817,24 +817,24 @@ public class BrowseFunctions
 			Ratings result2 = Ratings.None;
 			Enum.TryParse<Ratings>(addProductToCartParameters.TitleProduct?.RatingId?.ToString() ?? string.Empty, out result2);
 			RatingsProperty ratingsProperty = ((result2 != Ratings.None) ? RatingsProperties.Properties[result2] : null);
-			IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-			if (service != null)
+			IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+			if (macroService != null)
 			{
 				if (addProductToCartParameters.TitleProduct.TitleFamily == TitleFamily.Movies)
 				{
 					string mature_movie_warning = Resources.mature_movie_warning;
 					mature_movie_warning = string.Format(mature_movie_warning, ratingsProperty?.Name);
-					service["MatureWarning:Header"] = string.Format(Resources.esrb_mature_name, ratingsProperty?.Name);
-					service["MatureWarning:Message"] = mature_movie_warning;
-					service["MatureWarning:TTSMessage"] = mature_movie_warning.Replace("OK", "Enter");
+					macroService["MatureWarning:Header"] = string.Format(Resources.esrb_mature_name, ratingsProperty?.Name);
+					macroService["MatureWarning:Message"] = mature_movie_warning;
+					macroService["MatureWarning:TTSMessage"] = mature_movie_warning.Replace("OK", "Enter");
 				}
 				else if (addProductToCartParameters.TitleProduct.TitleFamily == TitleFamily.Games)
 				{
 					string mature_game_warning = Resources.mature_game_warning;
 					mature_game_warning = string.Format(mature_game_warning, ratingsProperty?.Name).Replace("M", Resources.esrb_mature);
-					service["MatureWarning:Header"] = string.Format(Resources.esrb_mature_game_name, ratingsProperty?.Code);
-					service["MatureWarning:Message"] = mature_game_warning;
-					service["MatureWarning:TTSMessage"] = mature_game_warning.Replace("OK", "Enter");
+					macroService["MatureWarning:Header"] = string.Format(Resources.esrb_mature_game_name, ratingsProperty?.Code);
+					macroService["MatureWarning:Message"] = mature_game_warning;
+					macroService["MatureWarning:TTSMessage"] = mature_game_warning.Replace("OK", "Enter");
 				}
 			}
 			MessagePopupViewController.ShowMatureWarning(delegate
@@ -1032,10 +1032,10 @@ public class BrowseFunctions
 		long productGroupId = ((titleProduct is ITitleRollupProduct titleRollupProduct) ? titleRollupProduct.ProductGroupId : titleProduct.TitleRollupProductGroupId);
 		(ServiceLocator.Instance.GetService<IKioskClientService>()?.ProductGroups?.GetMoreLikeThis(productGroupId))?.ForEach(delegate(long eachMoreLikeThis)
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService != null)
 			{
-				service.GetTitleRollupProduct(eachMoreLikeThis, out var kioskProduct);
+				dataService.GetTitleRollupProduct(eachMoreLikeThis, out var kioskProduct);
 				if (kioskProduct != null)
 				{
 					ITitleRollupProduct moreLikeThisTitleRollupProduct = kioskProduct as ITitleRollupProduct;

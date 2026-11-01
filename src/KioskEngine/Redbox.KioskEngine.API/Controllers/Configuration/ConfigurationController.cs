@@ -23,10 +23,10 @@ public class ConfigurationController : ApiController
 		GetConfigurationChangesResponse response = new GetConfigurationChangesResponse();
 		await Task.Run(async delegate
 		{
-			IUpdateClientService service = ServiceLocator.Instance.GetService<IUpdateClientService>();
-			if (service != null)
+			IUpdateClientService updateClientService = ServiceLocator.Instance.GetService<IUpdateClientService>();
+			if (updateClientService != null)
 			{
-				response = await service.Configuration.GetConfigurationChanges();
+				response = await updateClientService.Configuration.GetConfigurationChanges();
 			}
 			else
 			{

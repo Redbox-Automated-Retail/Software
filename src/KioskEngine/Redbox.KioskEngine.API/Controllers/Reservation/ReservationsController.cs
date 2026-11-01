@@ -24,10 +24,10 @@ public class ReservationsController : ApiController
 		GetReservationServiceStatusResponse response = new GetReservationServiceStatusResponse();
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.GetReservationServiceStatus();
+				response = await reservationService.GetReservationServiceStatus();
 			}
 			else
 			{
@@ -54,10 +54,10 @@ public class ReservationsController : ApiController
 		GetReservationsResponse response = new GetReservationsResponse();
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.GetReservations();
+				response = await reservationService.GetReservations();
 			}
 			else
 			{
@@ -84,10 +84,10 @@ public class ReservationsController : ApiController
 		GetReservableTitlesResponse response = new GetReservableTitlesResponse();
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.GetReservableTitles();
+				response = await reservationService.GetReservableTitles();
 			}
 			else
 			{
@@ -115,10 +115,10 @@ public class ReservationsController : ApiController
 		CreateReservationResponse response = new CreateReservationResponse();
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.CreateReservation(reservationRequest);
+				response = await reservationService.CreateReservation(reservationRequest);
 			}
 			else
 			{
@@ -149,10 +149,10 @@ public class ReservationsController : ApiController
 		};
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.CancelReservation(referenceNumber);
+				response = await reservationService.CancelReservation(referenceNumber);
 			}
 			else
 			{
@@ -182,10 +182,10 @@ public class ReservationsController : ApiController
 		};
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.UnRegisterFromAWSBrokerServiceAsync(UnRegisterFromBrokerServiceReason.KioskEngineApiCall);
+				response = await reservationService.UnRegisterFromAWSBrokerServiceAsync(UnRegisterFromBrokerServiceReason.KioskEngineApiCall);
 			}
 			else
 			{
@@ -214,10 +214,10 @@ public class ReservationsController : ApiController
 		};
 		await Task.Run(async delegate
 		{
-			IReservationService service = ServiceLocator.Instance.GetService<IReservationService>();
-			if (service != null)
+			IReservationService reservationService = ServiceLocator.Instance.GetService<IReservationService>();
+			if (reservationService != null)
 			{
-				response = await service.RegisterWithAWSBrokerServiceAsync();
+				response = await reservationService.RegisterWithAWSBrokerServiceAsync();
 			}
 			else
 			{

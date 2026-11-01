@@ -220,13 +220,13 @@ internal class VistaDbDataStoreProvider : DataStoreProvider
 			{
 				vistaDBTable = workStore.OpenTable(tableName, exclusive: false, readOnly: false);
 			}
-			IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			if (InternalGet(vistaDBTable, keyName) == null)
 			{
 				vistaDBTable.Insert();
 				vistaDBTable.PutString("Key", keyName);
 			}
-			vistaDBTable.PutString("Value", service.FormatLuaValue(data));
+			vistaDBTable.PutString("Value", kernelService.FormatLuaValue(data));
 			vistaDBTable.Post();
 		}
 		catch (Exception e)
@@ -247,7 +247,7 @@ internal class VistaDbDataStoreProvider : DataStoreProvider
 		{
 			return;
 		}
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		IVistaDBTable vistaDBTable = null;
 		try
 		{
@@ -270,7 +270,7 @@ internal class VistaDbDataStoreProvider : DataStoreProvider
 					vistaDBTable.Insert();
 					vistaDBTable.PutString("Key", value.Key);
 				}
-				vistaDBTable.PutString("Value", service.FormatLuaValue(value.Value));
+				vistaDBTable.PutString("Value", kernelService.FormatLuaValue(value.Value));
 				vistaDBTable.Post();
 			}
 		}

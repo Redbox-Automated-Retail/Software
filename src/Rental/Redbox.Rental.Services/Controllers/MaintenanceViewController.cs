@@ -108,11 +108,11 @@ public class MaintenanceViewController : BaseViewController
 
 	private static ITimer CreateMaintenanceTimer(MaintenanceViewModel model)
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		model.MinutesInMaintenance = 0;
 		Random random = new Random();
 		int value = 600000 + random.Next(100, 1000);
-		return service.CreateTimer("minutes-in-maintenance", value, 600000, delegate
+		return timerService.CreateTimer("minutes-in-maintenance", value, 600000, delegate
 		{
 			UpdateMaintenanceStatistics(model);
 		});
@@ -129,18 +129,18 @@ public class MaintenanceViewController : BaseViewController
 
 	private static void RefreshHardwareState()
 	{
-		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
-		if (service == null)
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
+		if (hardwareState == null)
 		{
 			LogHelper.Instance.Log("Hardware State was not found.");
 		}
-		else if (service.IsInitialized)
+		else if (hardwareState.IsInitialized)
 		{
-			service.Refresh();
+			hardwareState.Refresh();
 		}
 		else
 		{
-			service.Initialize();
+			hardwareState.Initialize();
 		}
 	}
 }

@@ -58,12 +58,12 @@ public static class OrchestrationService
 
 	public static bool IsRentalSessionActive()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		if (!PersonalizationFunctions.IsSignedIn)
 		{
-			if (service?.Peek() != service?.GetStartOverViewName())
+			if (viewService?.Peek() != viewService?.GetStartOverViewName())
 			{
-				return service?.Peek() != "maintenance_view";
+				return viewService?.Peek() != "maintenance_view";
 			}
 			return false;
 		}
@@ -77,11 +77,11 @@ public static class OrchestrationService
 
 	public static void CloseShoppingCartAnalytics(Guid sessionId, bool isSessionAbandoned)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart rentalShoppingCart = service?.GetRentalShoppingCart(sessionId);
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.GetRentalShoppingCart(sessionId);
 		if (rentalShoppingCart != null)
 		{
-			service.SendRentalShoppingCartToAnalytics(rentalShoppingCart);
+			rentalShoppingCartService.SendRentalShoppingCartToAnalytics(rentalShoppingCart);
 			CloseAnalytics(sessionId, isSessionAbandoned);
 		}
 	}
@@ -201,9 +201,9 @@ public static class OrchestrationService
 		{
 			num = Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout;
 		}
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null && viewService != null)
+		if (textToSpeechService != null && viewService != null)
 		{
 			num = TTSGetTimeout((viewService.Peek() == "help_document_view") ? "help" : "long", num);
 		}
@@ -212,8 +212,8 @@ public static class OrchestrationService
 
 	public static int TTSGetTimeout(string timeoutType, int defaultTimeout)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			if (Redbox.Rental.Services.Configuration.Configuration.Instance.EarlyIdEnabled && Redbox.Rental.Services.Configuration.Configuration.Instance.SignInTimeout > 0)
 			{
@@ -224,7 +224,7 @@ public static class OrchestrationService
 					goto IL_005f;
 				}
 			}
-			defaultTimeout = service.GetTimeout(timeoutType, defaultTimeout);
+			defaultTimeout = textToSpeechService.GetTimeout(timeoutType, defaultTimeout);
 		}
 		goto IL_005f;
 		IL_005f:
@@ -233,10 +233,10 @@ public static class OrchestrationService
 
 	public static void ResetApplicationIdleTimerTimeout()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		if (service != null)
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		if (idleTimerService != null)
 		{
-			IIdleTimer idleTimer = service.GetIdleTimer("idle_timer");
+			IIdleTimer idleTimer = idleTimerService.GetIdleTimer("idle_timer");
 			if (idleTimer != null && idleTimer.Timeout.GetValueOrDefault() != GetIdleTimerTimeout())
 			{
 				idleTimer.Timeout = GetIdleTimerTimeout();
@@ -246,13 +246,13 @@ public static class OrchestrationService
 
 	public static void SetThemeAnimationState()
 	{
-		IThemeService service = ServiceLocator.Instance.GetService<IThemeService>();
-		IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
+		IThemeService themeService = ServiceLocator.Instance.GetService<IThemeService>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
-		if (service?.CurrentTheme != null && service2 != null)
+		if (themeService?.CurrentTheme != null && configuration != null)
 		{
-			service.CurrentTheme.IsAnimated = service2.ButtonAnimationEnabled;
-			RoundedButton.DefaultIsAnimated = service2.ButtonAnimationEnabled;
+			themeService.CurrentTheme.IsAnimated = configuration.ButtonAnimationEnabled;
+			RoundedButton.DefaultIsAnimated = configuration.ButtonAnimationEnabled;
 			RoundedButton.UITaskScheduler = viewService?.UITaskScheduler;
 		}
 	}
@@ -303,18 +303,18 @@ public static class OrchestrationService
 	public static void ComingSoonKioskOptIn()
 	{
 		string s = ServiceLocator.Instance.GetService<IMachineSettingsStore>()?.GetValue<string>("Store", "ID");
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
 		List<IOptInItem> list = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart?.ComingSoonOptInInfo.OptInItems;
 		if (list != null && list.Count > 0)
 		{
-			service.KioskOptIn(long.Parse(s), list, null);
+			marketingServices.KioskOptIn(long.Parse(s), list, null);
 		}
 	}
 
 	public static bool DataServiceRegisterImage(string name, string cacheName)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		if (service.GetImage(name) != null)
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		if (bitmapCacheService.GetImage(name) != null)
 		{
 			return true;
 		}
@@ -324,13 +324,13 @@ public static class OrchestrationService
 			LogHelper.Instance.Log("OrchestrationService.RegisterImageFromCache was not able to read any data for name: {0} cacheName {1}", name, cacheName);
 			return false;
 		}
-		return service.RegisterImage(name, image) != null;
+		return bitmapCacheService.RegisterImage(name, image) != null;
 	}
 
 	public static bool DataServiceRegisterBitmapImage(string name, string cacheName)
 	{
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		if (service.GetBitmapImage(name) != null)
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		if (bitmapCacheService.GetBitmapImage(name) != null)
 		{
 			return true;
 		}
@@ -340,18 +340,18 @@ public static class OrchestrationService
 			LogHelper.Instance.Log("OrchestrationService.DataServiceRegisterBitmapImage was not able to read any data for name: {0} cacheName {1}", name, cacheName);
 			return false;
 		}
-		return service.RegisterBitmapImage(name, image) != null;
+		return bitmapCacheService.RegisterBitmapImage(name, image) != null;
 	}
 
 	public static void RegisterPricingService(Action pricingSetChangeCallback)
 	{
-		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
-		if (service == null)
+		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
+		if (pricingService == null)
 		{
 			return;
 		}
-		service.ClearOnPricingSetChange();
-		service.OnPricingSetChange += delegate
+		pricingService.ClearOnPricingSetChange();
+		pricingService.OnPricingSetChange += delegate
 		{
 			LogHelper.Instance.Log(">  Price change detected; force web broker to re-register");
 			if (pricingSetChangeCallback != null)
@@ -451,11 +451,11 @@ public static class OrchestrationService
 
 	private static void ViewShow(string viewName, bool showSafe, object parameter)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (!showSafe || (service != null && service.IsSafeToChangeView()))
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (!showSafe || (viewService != null && viewService.IsSafeToChangeView()))
 		{
-			service?.Push(viewName, parameter);
-			service?.Show();
+			viewService?.Push(viewName, parameter);
+			viewService?.Show();
 		}
 		else
 		{
@@ -475,16 +475,16 @@ public static class OrchestrationService
 
 	public static void ViewShow(string viewName, object parameter)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		service?.Push(viewName, parameter);
-		service?.Show();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		viewService?.Push(viewName, parameter);
+		viewService?.Show();
 	}
 
 	public static void ShowCriticalErrorView(string viewName, ShowMessagePopupViewParameter parameter)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		service?.PushCriticalErrorView(viewName, parameter);
-		service?.Show();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		viewService?.PushCriticalErrorView(viewName, parameter);
+		viewService?.Show();
 	}
 
 	public static string PeekView()
@@ -499,9 +499,9 @@ public static class OrchestrationService
 
 	public static IViewFrameInstance PeekViewFrameByName(string viewName, out int index)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		int index2 = -1;
-		IViewFrameInstance result = service?.PeekViewFrameByName(viewName, out index2);
+		IViewFrameInstance result = viewService?.PeekViewFrameByName(viewName, out index2);
 		index = index2;
 		return result;
 	}
@@ -523,9 +523,9 @@ public static class OrchestrationService
 
 	public static void ResetCurrentView()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		service.ClearCache(clearResourceViewsOnly: true);
-		service.Show();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		viewService.ClearCache(clearResourceViewsOnly: true);
+		viewService.Show();
 	}
 
 	public static bool IsCurrentViewValid(string expectedViewName, bool logError = true)
@@ -638,13 +638,13 @@ public static class OrchestrationService
 			}
 			Redbox.Rental.Services.Session.Session.Instance?.SessionStartTriggerActions?.Add(userTriggerAction);
 		}
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		if (!service.StartUserInteraction())
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		if (!shoppingSessionService.StartUserInteraction())
 		{
 			LogHelper.Instance.Log("OrchestrationService.StartUserInteraction - session already started");
 			return;
 		}
-		IShoppingSession currentSession = service.GetCurrentSession();
+		IShoppingSession currentSession = shoppingSessionService.GetCurrentSession();
 		if (currentSession != null)
 		{
 			_ = currentSession.Id;
@@ -671,9 +671,9 @@ public static class OrchestrationService
 		Redbox.Rental.Services.Session.Session.Instance.BrowseState.ShowBrowseMessagePopup = Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.MarketingGeneral.EnableBrowseMessagePopup;
 		RentalRefreshIfNeeded();
 		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
-		IConfiguration service3 = ServiceLocator.Instance.GetService<IConfiguration>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
-		if (kioskClientService?.Kiosk?.HasDual == true && service3 != null && service3.KioskSession.Browse.ShowDualInStock && viewService != null)
+		if (kioskClientService?.Kiosk?.HasDual == true && configuration != null && configuration.KioskSession.Browse.ShowDualInStock && viewService != null)
 		{
 			Task.Run(delegate
 			{
@@ -697,10 +697,10 @@ public static class OrchestrationService
 
 	public static void SetMacro(string name, string value)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		if (service != null)
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		if (macroService != null)
 		{
-			service[name] = value;
+			macroService[name] = value;
 		}
 	}
 
@@ -712,10 +712,10 @@ public static class OrchestrationService
 	public static object[] ExecuteScript(string name)
 	{
 		List<object> list = new List<object>();
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		if (service != null)
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		if (kernelService != null)
 		{
-			ReadOnlyCollection<object> readOnlyCollection = service.ExecuteScript(name);
+			ReadOnlyCollection<object> readOnlyCollection = kernelService.ExecuteScript(name);
 			if (readOnlyCollection != null)
 			{
 				list.AddRange(readOnlyCollection);
@@ -761,11 +761,11 @@ public static class OrchestrationService
 
 	public static IIdleTimer CreateIdleTimer(string idleTimerName)
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		IIdleTimer idleTimer = service?.GetIdleTimer(idleTimerName);
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimer idleTimer = idleTimerService?.GetIdleTimer(idleTimerName);
 		if (idleTimer == null)
 		{
-			idleTimer = service?.CreateIdleTimer(idleTimerName);
+			idleTimer = idleTimerService?.CreateIdleTimer(idleTimerName);
 		}
 		return idleTimer;
 	}

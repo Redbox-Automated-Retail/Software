@@ -320,8 +320,8 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 			{
 				item.Delete();
 			});
-			IDownloadService service = ServiceLocator.Instance.GetService<IDownloadService>();
-			List<IDownloader> downloads = service.GetDownloads();
+			IDownloadService downloadService = ServiceLocator.Instance.GetService<IDownloadService>();
+			List<IDownloader> downloads = downloadService.GetDownloads();
 			if (bothGood.Count() == 0 && downloads.Count() == 0)
 			{
 				return;
@@ -500,7 +500,7 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 	private ErrorList Reboot()
 	{
 		ErrorList errorList = new ErrorList();
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
 		errorList.AddRange(kioskEngineService.Shutdown(15000, 2));
 		if (errorList.ContainsError())
@@ -511,8 +511,8 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 			});
 			return errorList;
 		}
-		service.ShutdownType = ShutdownType.Reboot;
-		service.PerformShutdown();
+		kernelService.ShutdownType = ShutdownType.Reboot;
+		kernelService.PerformShutdown();
 		return errorList;
 	}
 }

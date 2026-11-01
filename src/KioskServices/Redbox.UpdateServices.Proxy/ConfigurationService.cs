@@ -162,8 +162,8 @@ public class ConfigurationService : IConfigurationService
 		bool flag = false;
 		if (ConfigurationClient.Instance.TryGetValue<string>(key, category, setting, out value))
 		{
-			string[] array = value.Split('-');
-			if (array.Length == 2 && TimeSpan.TryParseExact(array[0], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result) && TimeSpan.TryParseExact(array[1], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result2))
+			string[] parts = value.Split('-');
+			if (parts.Length == 2 && TimeSpan.TryParseExact(parts[0], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result) && TimeSpan.TryParseExact(parts[1], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var result2))
 			{
 				if (result <= result2)
 				{

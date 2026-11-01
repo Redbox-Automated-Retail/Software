@@ -25,8 +25,8 @@ internal sealed class LoadBinJob : NativeJobAdapter
 			AddError(text2);
 			return;
 		}
-		int num = base.Context.PopTop<int>();
-		for (int i = 0; i < num; i++)
+		int operand = base.Context.PopTop<int>();
+		for (int i = 0; i < operand; i++)
 		{
 			if (base.DumpbinService.IsFull())
 			{
@@ -53,8 +53,8 @@ internal sealed class LoadBinJob : NativeJobAdapter
 				AddError("There was an error during the move.");
 				return;
 			}
-			IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-			IGetResult getResult = service.Get();
+			IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+			IGetResult getResult = controllerService.Get();
 			if (!getResult.Success)
 			{
 				AddError("Unable to fetch disk from drum.");
@@ -65,7 +65,7 @@ internal sealed class LoadBinJob : NativeJobAdapter
 				AddError("There was an error during the move.");
 				return;
 			}
-			if (!service.Put(getResult.Previous).Success)
+			if (!controllerService.Put(getResult.Previous).Success)
 			{
 				AddError("Unable to place disk into drum.");
 				return;

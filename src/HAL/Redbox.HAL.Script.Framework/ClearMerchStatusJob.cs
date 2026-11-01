@@ -9,23 +9,23 @@ internal sealed class ClearMerchStatusJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		int num = 0;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		try
 		{
 			if (!ControllerConfiguration.Instance.IsVMZMachine)
 			{
 				return;
 			}
-			int num2 = base.Context.PopTop<int>();
-			for (int i = 0; i < num2; i++)
+			int operand = base.Context.PopTop<int>();
+			for (int i = 0; i < operand; i++)
 			{
 				string id = base.Context.PopTop<string>();
-				ILocation location = service.Lookup(id);
+				ILocation location = inventoryService.Lookup(id);
 				if (location != null && SegmentManager.Instance.InCompressedZone(location) && !SegmentManager.Instance.IsNonThinType(location.Flags))
 				{
 					LogHelper.Instance.WithContext("The flags at {0} are changed from {1} -> None", location.ToString(), location.Flags.ToString());
 					location.Flags = MerchFlags.None;
-					service.Save(location);
+					inventoryService.Save(location);
 					num++;
 				}
 			}

@@ -251,10 +251,10 @@ public class AnalyticsSession : IAnalyticsSession
 				Formatting = Formatting.Indented
 			};
 			string contents = JsonConvert.SerializeObject(this, settings);
-			IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-			if (service != null)
+			IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+			if (engineApplication != null)
 			{
-				string text = Path.Combine(service.DataPath, "AnalyticsSessions");
+				string text = Path.Combine(engineApplication.DataPath, "AnalyticsSessions");
 				if (!Directory.Exists(text))
 				{
 					_logger.Log("AnalyticsService.WriteJsonFile: {0} not found, creating directory.", text);

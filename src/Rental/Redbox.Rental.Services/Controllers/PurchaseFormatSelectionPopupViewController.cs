@@ -28,7 +28,7 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 	{
 		BaseViewController.StopIdleTimer();
 		CreateAndStartTimer();
-		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
+		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
 		if (viewUserControl == null)
 		{
@@ -84,7 +84,7 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 		};
 		foreach (ITitleProduct item in rollupProduct.KioskProducts.OrderBy((ITitleProduct p) => (int)((p.TitleType != TitleType.DigitalCode) ? p.TitleType : ((TitleType)999))))
 		{
-			AddFormatButtonData(formatSelectionPopupViewModel, item, service, isPurchase, parameter.DiscountedPriceCalc, parameter.RedboxPlusBenefitId, viewUserControl);
+			AddFormatButtonData(formatSelectionPopupViewModel, item, pricingService, isPurchase, parameter.DiscountedPriceCalc, parameter.RedboxPlusBenefitId, viewUserControl);
 		}
 		if (parameter.ShowPurchaseButton && rollupProduct.IsSellableAndInStock && rollupProduct.PurchasePrice > 0m)
 		{
@@ -138,8 +138,8 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 
 	private static void ConfigureTTS(FormatSelectionPopupViewModel formatSelectionPopupViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			formatSelectionPopupViewModel.OnGetSpeechControl = () => PurchaseFormatSelectionPopupViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}
@@ -147,9 +147,9 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 
 	private static bool IsTitleTypeAvailable(TitleType titleType)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IKioskProduct> products = null;
-		service?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		if (products != null)
 		{
 			return products.Count > 0;
@@ -310,9 +310,9 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("medium", 15000);
-		(service?.CreateTimer("RentalFormatSelectionPopupViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("RentalFormatSelectionPopupViewTimer", timeOut, timeOut, delegate
 		{
 			if (Redbox.Rental.Services.Session.Session.Instance != null)
 			{
@@ -325,9 +325,9 @@ public class PurchaseFormatSelectionPopupViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("RentalFormatSelectionPopupViewTimer"))?.Stop();
-		service?.RemoveTimer("RentalFormatSelectionPopupViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("RentalFormatSelectionPopupViewTimer"))?.Stop();
+		timerService?.RemoveTimer("RentalFormatSelectionPopupViewTimer");
 	}
 
 	public static void LeaveRentalFormatSelectionPopupView()

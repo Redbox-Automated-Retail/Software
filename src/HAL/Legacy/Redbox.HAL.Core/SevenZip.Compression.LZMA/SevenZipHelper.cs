@@ -47,8 +47,8 @@ public static class SevenZipHelper
 		Decoder decoder = new Decoder();
 		memoryStream.Seek(0L, SeekOrigin.Begin);
 		MemoryStream memoryStream2 = new MemoryStream();
-		byte[] array = new byte[5];
-		if (memoryStream.Read(array, 0, 5) != 5)
+		byte[] buffer = new byte[5];
+		if (memoryStream.Read(buffer, 0, 5) != 5)
 		{
 			throw new Exception("input .lzma is too short");
 		}
@@ -62,7 +62,7 @@ public static class SevenZipHelper
 			}
 			num |= (long)((ulong)(byte)num2 << 8 * i);
 		}
-		decoder.SetDecoderProperties(array);
+		decoder.SetDecoderProperties(buffer);
 		long inSize = memoryStream.Length - memoryStream.Position;
 		decoder.Code(memoryStream, memoryStream2, inSize, num, null);
 		return memoryStream2.ToArray();

@@ -39,7 +39,7 @@ public sealed class TransferInstruction : Instruction
 			LogHelper.Instance.Log("XFER: the picker is full - bail.");
 			return;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("SRC-DECK");
 		int? keyValuePairValue = GetKeyValuePairValue<int?>(keyValuePair, result.Errors, context);
 		if (!keyValuePairValue.HasValue)
@@ -67,8 +67,8 @@ public sealed class TransferInstruction : Instruction
 				AddError("E004", "Expected key value pair SRC-DECK=y, SRC-SLOT=x, DEST-DECK=y, DEST-SLOT=x. The values of x and y may be numeric literals or symbols.", result.Errors);
 				return;
 			}
-			ILocation location = service.Get(value, value2);
-			ILocation location2 = service.Get(keyValuePairValue3.Value, keyValuePairValue4.Value);
+			ILocation location = inventoryService.Get(value, value2);
+			ILocation location2 = inventoryService.Get(keyValuePairValue3.Value, keyValuePairValue4.Value);
 			LogHelper.Instance.Log("XFER: {0} to {1}", location.ToString(), location2.ToString());
 			_ = context.AppLog;
 			ITransferResult transferResult = ServiceLocator.Instance.GetService<IControllerService>().Transfer(location, location2, preserveFlags: false);

@@ -10,12 +10,12 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 	protected override void ExecuteInner()
 	{
 		ApplicationLog applicationLog = ApplicationLog.ConfigureLog(base.Context, logAppends: false, "RandomSync", flushOnWrite: true, null);
-		int num = base.Context.PopTop<int>();
+		int operand = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
-		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, num);
+		base.Context.AppLog.WriteFormatted("Vend time is set to {0}s, vend frequency = {1}", num2, operand);
 		base.Context.AppLog.Write("One disk random sync test start.");
 		RandomLocationSelector randomLocationSelector = new RandomLocationSelector(base.DecksService, base.InventoryService);
 		bool isVMZMachine = ControllerConfiguration.Instance.IsVMZMachine;
@@ -61,14 +61,14 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 				}
 				base.Context.AppLog.WriteFormatted("Sync {0}", location.ToString());
 				base.Context.Send($"Iteration {++num3}");
-				if (num != 0)
+				if (operand != 0)
 				{
-					_ = num3 % num == 0;
+					_ = num3 % operand == 0;
 				}
 				else
 					_ = 0;
 				string id = "UNKNOWN";
-				using (Scanner scanner = new Scanner(CenterDiskMethod.VendDoorAndBack, service))
+				using (Scanner scanner = new Scanner(CenterDiskMethod.VendDoorAndBack, controlSystem))
 				{
 					using ScanResult scanResult = scanner.Read();
 					id = scanResult.ScannedMatrix;
@@ -132,8 +132,8 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 		{
 			return errorCodes;
 		}
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		IVendItemResult vendItemResult = service.VendItemInPicker(vendTime);
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IVendItemResult vendItemResult = controllerService.VendItemInPicker(vendTime);
 		if (!vendItemResult.Presented)
 		{
 			return ErrorCodes.PickerObstructed;
@@ -142,7 +142,7 @@ internal sealed class OneDiskRandomSyncJob : NativeJobAdapter
 		{
 			return vendItemResult.Status;
 		}
-		ErrorCodes errorCodes2 = service.AcceptDiskAtDoor();
+		ErrorCodes errorCodes2 = controllerService.AcceptDiskAtDoor();
 		if (ErrorCodes.PickerFull != errorCodes2)
 		{
 			return errorCodes2;

@@ -53,13 +53,13 @@ public class ClassicTrackDataService : IClassicTrackDataService, ITrackDataServi
 		if (_allowTrackDataParsing)
 		{
 			_allowTrackDataParsing = false;
-			ICCReaderHealth service = ServiceLocator.Instance.GetService<ICCReaderHealth>();
+			ICCReaderHealth cCReaderHealth = ServiceLocator.Instance.GetService<ICCReaderHealth>();
 			ITrackData trackData = (ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession())?.TrackData;
 			if (cancelReason == CancelReason.LeavingSwipeView)
 			{
 				bool flag = trackData != null || (trackData?.HasValidData() ?? false);
 				bool hasError = !flag;
-				service?.EventOccurred(flag, hasError);
+				cCReaderHealth?.EventOccurred(flag, hasError);
 			}
 		}
 	}
@@ -94,10 +94,10 @@ public class ClassicTrackDataService : IClassicTrackDataService, ITrackDataServi
 					}
 					if (unencryptedTrackData != null && unencryptedTrackData.HasValidData())
 					{
-						ITrackDataEncryptionService service = ServiceLocator.Instance.GetService<ITrackDataEncryptionService>();
-						unencryptedTrackData.EncryptionCerificateKeyId = service.KeyId;
-						unencryptedTrackData.EncryptedAccountNumber = service.GetEncryptedAccountNumber(unencryptedTrackData);
-						unencryptedTrackData.EncryptedTrack2 = service.GetEncryptedTrack2(unencryptedTrackData);
+						ITrackDataEncryptionService trackDataEncryptionService = ServiceLocator.Instance.GetService<ITrackDataEncryptionService>();
+						unencryptedTrackData.EncryptionCerificateKeyId = trackDataEncryptionService.KeyId;
+						unencryptedTrackData.EncryptedAccountNumber = trackDataEncryptionService.GetEncryptedAccountNumber(unencryptedTrackData);
+						unencryptedTrackData.EncryptedTrack2 = trackDataEncryptionService.GetEncryptedTrack2(unencryptedTrackData);
 					}
 					unencryptedTrackData?.LockData();
 					_onCardReadComplete?.Invoke(_cardReadRequest, new CardReadCompleteDetails

@@ -1003,11 +1003,11 @@ public class RentalShoppingCart : IRentalShoppingCart
 			List<IRentalShoppingCartTitleItem> list = (from x in GetTitleItemsByCriteria(promoEligibleItemsFilterCriteria)
 				orderby x.PricingRecord.InitialNight descending, x.ProductId
 				select x).ToList();
-			IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
-			IPricingRecord pricingRecord = service?.GetActiveProductTypePricingRecord(TitleFamily.Movies, titleType);
+			IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
+			IPricingRecord pricingRecord = pricingService?.GetActiveProductTypePricingRecord(TitleFamily.Movies, titleType);
 			if (pricingRecord == null)
 			{
-				pricingRecord = service?.GetProductTypePricingRecord(TitleFamily.Movies, titleType, useAdjustedPrices: true);
+				pricingRecord = pricingService?.GetProductTypePricingRecord(TitleFamily.Movies, titleType, useAdjustedPrices: true);
 			}
 			promoCodeValidationInfo.IsCartValid = list.Any();
 			decimal promoValue = pricingRecord?.PromoValue ?? 0m;
@@ -1055,11 +1055,11 @@ public class RentalShoppingCart : IRentalShoppingCart
 			List<IRentalShoppingCartTitleItem> list = (from x in GetTitleItemsByCriteria(promoEligibleItemsFilterCriteria)
 				orderby x.PricingRecord.InitialNight descending, x.ProductId
 				select x).ToList();
-			IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
-			IPricingRecord pricingRecord = service?.GetActiveProductTypePricingRecord(TitleFamily.Games, TitleType.All);
+			IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
+			IPricingRecord pricingRecord = pricingService?.GetActiveProductTypePricingRecord(TitleFamily.Games, TitleType.All);
 			if (pricingRecord == null)
 			{
-				pricingRecord = service?.GetProductTypePricingRecord(TitleFamily.Games, TitleType.All, useAdjustedPrices: true);
+				pricingRecord = pricingService?.GetProductTypePricingRecord(TitleFamily.Games, TitleType.All, useAdjustedPrices: true);
 			}
 			promoCodeValidationInfo.IsCartValid = list.Any();
 			decimal promoValue = pricingRecord?.PromoValue ?? 0m;

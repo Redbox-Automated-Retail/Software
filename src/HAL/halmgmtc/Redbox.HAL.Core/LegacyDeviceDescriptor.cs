@@ -36,13 +36,13 @@ internal sealed class LegacyDeviceDescriptor : IDeviceDescriptor
 
 	public bool ResetDriver()
 	{
-		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
-		if (!service.ChangeByHWID(this, DeviceState.Disable))
+		IUsbDeviceService usbDeviceService = ServiceLocator.Instance.GetService<IUsbDeviceService>();
+		if (!usbDeviceService.ChangeByHWID(this, DeviceState.Disable))
 		{
 			return false;
 		}
 		PerfFunctions.Wait(1500);
-		bool result = service.ChangeByHWID(this, DeviceState.Enable);
+		bool result = usbDeviceService.ChangeByHWID(this, DeviceState.Enable);
 		PerfFunctions.SpinWait(1500);
 		return result;
 	}
@@ -53,7 +53,7 @@ internal sealed class LegacyDeviceDescriptor : IDeviceDescriptor
 		Product = product.ToLower();
 		Friendlyname = friendly;
 		DriverDescriptor = driver;
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(DeviceClass.Image);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(DeviceClass.Image);
 	}
 }

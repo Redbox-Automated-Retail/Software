@@ -24,8 +24,8 @@ public class PleaseWaitMessageViewController : BaseViewController
 
 	private static void ConfigureTTS(PleaseWaitMessageViewModel pleaseWaitMessageViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || pleaseWaitMessageViewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || pleaseWaitMessageViewModel == null)
 		{
 			return;
 		}

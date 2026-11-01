@@ -47,10 +47,10 @@ public class BaseControlPanelController : BaseViewController
 
 	protected static void UpdateUserName(string userName)
 	{
-		IControlPanelService service = ServiceLocator.Instance.GetService<IControlPanelService>();
-		if (service != null)
+		IControlPanelService controlPanelService = ServiceLocator.Instance.GetService<IControlPanelService>();
+		if (controlPanelService != null)
 		{
-			service.LoggedInUser = userName;
+			controlPanelService.LoggedInUser = userName;
 		}
 	}
 
@@ -82,12 +82,12 @@ public class BaseControlPanelController : BaseViewController
 
 	protected static bool SecurityIsAccountLocked(string userName)
 	{
-		ISecurityService service = ServiceLocator.Instance.GetService<ISecurityService>();
-		if (service == null)
+		ISecurityService securityService = ServiceLocator.Instance.GetService<ISecurityService>();
+		if (securityService == null)
 		{
 			return false;
 		}
-		service.UserExists(userName, out var isAccountLocked);
+		securityService.UserExists(userName, out var isAccountLocked);
 		return isAccountLocked;
 	}
 

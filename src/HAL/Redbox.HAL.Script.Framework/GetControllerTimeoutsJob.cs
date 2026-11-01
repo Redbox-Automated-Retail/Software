@@ -8,12 +8,12 @@ internal sealed class GetControllerTimeoutsJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IPersistentCounterService service = ServiceLocator.Instance.GetService<IPersistentCounterService>();
+		IPersistentCounterService persistentCounterService = ServiceLocator.Instance.GetService<IPersistentCounterService>();
 		foreach (TimeoutCounters value in Enum.GetValues(typeof(TimeoutCounters)))
 		{
-			MakeResult(service.Find(value));
+			MakeResult(persistentCounterService.Find(value));
 		}
-		MakeResult(service.Find("EmptyOrStuckCount"));
+		MakeResult(persistentCounterService.Find("EmptyOrStuckCount"));
 	}
 
 	internal GetControllerTimeoutsJob(ExecutionResult result, ExecutionContext ctx)

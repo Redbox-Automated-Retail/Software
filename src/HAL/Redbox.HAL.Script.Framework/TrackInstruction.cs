@@ -39,20 +39,20 @@ public sealed class TrackInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		Token token = base.Operands[0];
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		switch (Enum<Commands>.ParseIgnoringCase(token.Value, Commands.None))
 		{
 		case Commands.Status:
-			context.PushTop(service.TrackState.ToString().ToUpper());
+			context.PushTop(controlSystem.TrackState.ToString().ToUpper());
 			break;
 		case Commands.Open:
-			HandleError(service.TrackOpen(), context);
+			HandleError(controlSystem.TrackOpen(), context);
 			break;
 		case Commands.Close:
-			HandleError(service.TrackClose(), context);
+			HandleError(controlSystem.TrackClose(), context);
 			break;
 		case Commands.Cycle:
-			context.PushTop(service.TrackCycle().ToString().ToUpper());
+			context.PushTop(controlSystem.TrackCycle().ToString().ToUpper());
 			break;
 		}
 	}

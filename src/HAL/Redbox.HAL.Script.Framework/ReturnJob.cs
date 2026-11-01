@@ -50,9 +50,9 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 		base.Context.CreateResult("ItemReturned", "The item was successfully returned.", putResult.PutLocation.Deck, putResult.PutLocation.Slot, putResult.StoredMatrix, null, null);
 		if (InventoryConstants.CodeIsUnknown(putResult.StoredMatrix))
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			putResult.PutLocation.ReturnDate = DateTime.Now;
-			service.Save(putResult.PutLocation);
+			inventoryService.Save(putResult.PutLocation);
 		}
 	}
 
@@ -193,8 +193,8 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 		{
 			if (ControllerConfiguration.Instance.IsVMZMachine)
 			{
-				IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-				base.Context.CreateInfoResult("EmptySlotCount", service.GetMachineEmptyCount().ToString());
+				IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+				base.Context.CreateInfoResult("EmptySlotCount", inventoryService.GetMachineEmptyCount().ToString());
 				IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 				base.Context.CreateInfoResult("DumpBinRemainingCapacity", dumpbinService.RemainingSpace().ToString());
 				base.Context.CreateInfoResult("ReturnSlotBufferValue", ControllerConfiguration.Instance.ReturnSlotBuffer.ToString());
@@ -214,8 +214,8 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 			return;
 		}
 		LogHelper.Instance.WithContext("Start pushing item out of picker.");
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		IVendItemResult vendItemResult = service.VendItemInPicker();
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IVendItemResult vendItemResult = controllerService.VendItemInPicker();
 		if (ErrorCodes.PickerEmpty == vendItemResult.Status)
 		{
 			onDiskReturned(barcode);
@@ -229,7 +229,7 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 			return;
 		}
 		LogHelper.Instance.WithContext("Disk not taken; accepting disk into kiosk.");
-		ErrorCodes errorCodes = service.AcceptDiskAtDoor();
+		ErrorCodes errorCodes = controllerService.AcceptDiskAtDoor();
 		if (ErrorCodes.PickerEmpty == errorCodes)
 		{
 			onDiskReturned(barcode);
@@ -261,13 +261,13 @@ internal sealed class ReturnJob : NativeJobAdapter, IFileDiskHandler
 		ApplicationLog appLog = base.Context.AppLog;
 		if (ControllerConfiguration.Instance.IsVMZMachine)
 		{
-			IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-			if (service.IsFull())
+			IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+			if (dumpbinService.IsFull())
 			{
 				FileDiskInKiosk("UNKNOWN");
 				return;
 			}
-			ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(service.PutLocation, MoveMode.Put, appLog);
+			ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(dumpbinService.PutLocation, MoveMode.Put, appLog);
 			if (errorCodes != ErrorCodes.Success)
 			{
 				base.Context.CreateInfoResult("MachineError", $"MOVE failed with error {errorCodes.ToString()}");

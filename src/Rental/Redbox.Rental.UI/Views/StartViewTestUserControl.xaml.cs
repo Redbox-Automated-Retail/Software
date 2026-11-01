@@ -24,14 +24,14 @@ public partial class StartViewTestUserControl : TextToSpeechUserControl, ICompon
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(rent_movies_button);
-		obj?.SetStyle(buy_movies_button);
-		obj?.SetStyle(return_button);
-		obj?.SetStyle(pick_up_button);
-		obj?.SetStyle(handicap_button);
-		obj?.SetStyle(espanol_button);
-		obj?.SetStyle(help_button);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(rent_movies_button);
+		theme?.SetStyle(buy_movies_button);
+		theme?.SetStyle(return_button);
+		theme?.SetStyle(pick_up_button);
+		theme?.SetStyle(handicap_button);
+		theme?.SetStyle(espanol_button);
+		theme?.SetStyle(help_button);
 	}
 
 	private void RentOrBuyMoviesCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

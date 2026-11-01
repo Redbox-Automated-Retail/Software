@@ -46,11 +46,11 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 		get
 		{
 			bool result = false;
-			IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-			if (service == null || service.KioskSession.DeviceService.CardReadTechnicalFallbackEnabled)
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+			if (configuration == null || configuration.KioskSession.DeviceService.CardReadTechnicalFallbackEnabled)
 			{
 				int num = (ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession())?.CardReadTechnicalFallbackCount ?? 0;
-				int num2 = service?.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit ?? 3;
+				int num2 = configuration?.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit ?? 3;
 				result = num >= num2;
 			}
 			return result;
@@ -354,9 +354,9 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 		{
 			return;
 		}
-		IRentalSessionService service = ServiceLocator.Instance.GetService<IRentalSessionService>();
-		IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
-		ISession session = service?.GetCurrentSession();
+		IRentalSessionService rentalSessionService = ServiceLocator.Instance.GetService<IRentalSessionService>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		ISession session = rentalSessionService?.GetCurrentSession();
 		switch (trackData.FallbackStatusAction)
 		{
 		case FallbackStatusAction.IncrementFallbackCounter:
@@ -377,9 +377,9 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 			}
 			break;
 		case FallbackStatusAction.ImmediateFallback:
-			if (session != null && service2 != null)
+			if (session != null && configuration != null)
 			{
-				session.CardReadTechnicalFallbackCount = service2.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit;
+				session.CardReadTechnicalFallbackCount = configuration.KioskSession.DeviceService.CardReadTechnicalFallbackCountLimit;
 				session.LastFallbackType = trackData?.FallbackReason;
 			}
 			break;
@@ -408,8 +408,8 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 	{
 		if (trackData != null && trackData.IsInTechnicalFallback && trackData.CardSourceType == CardSourceType.Swipe && trackData.CardHasChip && trackData.CardType == Redbox.Core.CardType.AmericanExpress)
 		{
-			IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-			if (trackData != null && trackData.ChipEnabledAndSupportsEmv && (service == null || service.KioskSession.DeviceService.CardReadTechnicalFallbackEnabled))
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+			if (trackData != null && trackData.ChipEnabledAndSupportsEmv && (configuration == null || configuration.KioskSession.DeviceService.CardReadTechnicalFallbackEnabled))
 			{
 				trackData.Errors.Add(CardHelper.ErrorCodes.NewAmexCannotFallbackError());
 				trackData.FallbackStatusAction = FallbackStatusAction.ResetFallbackCounter;
@@ -557,10 +557,10 @@ public class DeviceServiceTrackDataService : IDeviceServiceTrackDataService, ITr
 				if (unencryptedTrackData != null && unencryptedTrackData.HasValidData())
 				{
 					unencryptedTrackData.CardSourceType = data.CardSource;
-					ITrackDataEncryptionService service = ServiceLocator.Instance.GetService<ITrackDataEncryptionService>();
-					unencryptedTrackData.EncryptionCerificateKeyId = service.KeyId;
-					unencryptedTrackData.EncryptedAccountNumber = service.GetEncryptedAccountNumber(unencryptedTrackData);
-					unencryptedTrackData.EncryptedTrack2 = service.GetEncryptedTrack2(unencryptedTrackData);
+					ITrackDataEncryptionService trackDataEncryptionService = ServiceLocator.Instance.GetService<ITrackDataEncryptionService>();
+					unencryptedTrackData.EncryptionCerificateKeyId = trackDataEncryptionService.KeyId;
+					unencryptedTrackData.EncryptedAccountNumber = trackDataEncryptionService.GetEncryptedAccountNumber(unencryptedTrackData);
+					unencryptedTrackData.EncryptedTrack2 = trackDataEncryptionService.GetEncryptedTrack2(unencryptedTrackData);
 				}
 				unencryptedTrackData?.LockData();
 			}

@@ -20,9 +20,9 @@ internal sealed class VMZ
 	{
 		get
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
-			return service.Get(decksService.Last.Number, m_slots.Start);
+			return inventoryService.Get(decksService.Last.Number, m_slots.Start);
 		}
 	}
 
@@ -30,9 +30,9 @@ internal sealed class VMZ
 	{
 		get
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
-			return service.Get(decksService.First.Number, m_slots.End);
+			return inventoryService.Get(decksService.First.Number, m_slots.End);
 		}
 	}
 
@@ -40,10 +40,10 @@ internal sealed class VMZ
 	{
 		int reserved = 0;
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		using (ExecutionTimer executionTimer = new ExecutionTimer())
 		{
-			service.ForAllDecksDo(delegate(IDeck deck)
+			decksService.ForAllDecksDo(delegate(IDeck deck)
 			{
 				if (deck.Number <= lowDeck)
 				{
@@ -96,10 +96,10 @@ internal sealed class VMZ
 
 	internal ILocation FindFirstLocation(MerchFlags flags)
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		IInventoryService inventory = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation found = null;
-		service.ForAllReverseDecksDo(delegate(IDeck deck)
+		decksService.ForAllReverseDecksDo(delegate(IDeck deck)
 		{
 			for (int i = m_slots.Start; i <= m_slots.End; i++)
 			{
@@ -117,10 +117,10 @@ internal sealed class VMZ
 
 	internal ILocation FindHighestLocation(MerchFlags flags)
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		IInventoryService inventory = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation found = null;
-		service.ForAllDecksDo(delegate(IDeck deck)
+		decksService.ForAllDecksDo(delegate(IDeck deck)
 		{
 			for (int num = m_slots.End; num >= m_slots.Start; num--)
 			{
@@ -139,7 +139,7 @@ internal sealed class VMZ
 	internal int ResetCompressedZone(ILocation high)
 	{
 		int num = 0;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		List<ILocation> updates = new List<ILocation>();
 		using (new DisposeableList<ILocation>(updates))
 		{
@@ -155,7 +155,7 @@ internal sealed class VMZ
 				return true;
 			}, First, high);
 			num = updates.Count;
-			service.Save(updates);
+			inventoryService.Save(updates);
 			executionTimer.Stop();
 			LogHelper.Instance.Log("VMZ.ClearZone: reset {0} locations ( time = {1}ms ).", num, executionTimer.ElapsedMilliseconds);
 			return num;
@@ -170,8 +170,8 @@ internal sealed class VMZ
 		{
 			num = m_slots.Start;
 			num2--;
-			IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-			if (num2 < service.First.Number)
+			IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+			if (num2 < decksService.First.Number)
 			{
 				return null;
 			}

@@ -71,8 +71,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 		};
 		authorizeResult.IsOnline = true;
 		ITrackData trackData = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession()?.TrackData;
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IShoppingSession session = service.GetSession(sessionId.ToString());
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IShoppingSession session = shoppingSessionService.GetSession(sessionId.ToString());
 		string errorString = AuthorizeResponse.Error.ToString();
 		if (session == null)
 		{
@@ -187,8 +187,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 		};
 		authorizeResult.IsOnline = true;
 		ITrackData trackData = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession()?.TrackData;
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IShoppingSession session = service.GetSession(sessionIdString);
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IShoppingSession session = shoppingSessionService.GetSession(sessionIdString);
 		string errorString = AuthorizeResponse.Error.ToString();
 		if (session == null)
 		{
@@ -304,8 +304,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 		};
 		authorizeResult.IsOnline = true;
 		ITrackData trackData = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession()?.TrackData;
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IShoppingSession session = service.GetSession(sessionIdString);
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IShoppingSession session = shoppingSessionService.GetSession(sessionIdString);
 		string errorString = AuthorizeResponse.Error.ToString();
 		if (session == null)
 		{
@@ -451,7 +451,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	public async Task<ICancelReservationResult> CancelReservationAsync(string storeNumber, long referenceNumber, string reasonCode)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		CancelReservationRequest cancelReservationRequest = new CancelReservationRequest
 		{
 			KioskId = long.Parse(storeNumber),
@@ -460,7 +460,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 			ReasonCode = reasonCode
 		};
 		LogHelper.Instance.Log("Calling KCS api/transaction/CancelReservation with " + cancelReservationRequest.ToJson());
-		WebResult<CancelReservationResponse> webResult = await ExecuteAsyncWebRequest<CancelReservationResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/CancelReservation"), cancelReservationRequest, "POST", service.AuthorizeTimeout);
+		WebResult<CancelReservationResponse> webResult = await ExecuteAsyncWebRequest<CancelReservationResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/CancelReservation"), cancelReservationRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.CancelReservation", webResult);
 		return webResult?.Response;
 	}
@@ -482,7 +482,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	public async Task<IExpireReservationResult> ExpireReservationAsync(string storeNumber, long referenceNumber)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		ExpireReservationRequest expireReservationRequest = new ExpireReservationRequest
 		{
 			KioskId = long.Parse(storeNumber),
@@ -490,7 +490,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 			MessageId = Guid.NewGuid()
 		};
 		LogHelper.Instance.Log("Calling KCS api/transaction/ExpireReservation with " + expireReservationRequest.ToJson());
-		WebResult<ExpireReservationResponse> webResult = await ExecuteAsyncWebRequest<ExpireReservationResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ExpireReservation"), expireReservationRequest, "POST", service.AuthorizeTimeout);
+		WebResult<ExpireReservationResponse> webResult = await ExecuteAsyncWebRequest<ExpireReservationResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ExpireReservation"), expireReservationRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.ExpireReservation", webResult);
 		return webResult?.Response;
 	}
@@ -513,8 +513,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 		{
 			IsOnline = true
 		};
-		IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-		IShoppingSession session = service.GetSession(sessionId);
+		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+		IShoppingSession session = shoppingSessionService.GetSession(sessionId);
 		try
 		{
 			Interlocked.Increment(ref m_working);
@@ -651,8 +651,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	private async Task<ReconcileResult> CallReconcileAsync(ReconcileRequest request)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<ReconcileResult> webResult = await ExecuteAsyncWebRequest<ReconcileResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/Reconcile"), request, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<ReconcileResult> webResult = await ExecuteAsyncWebRequest<ReconcileResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/Reconcile"), request, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.Reconcile", webResult);
 		LogHelper.Instance.Log($"Reconcile Response: {webResult?.Response?.Scrub()} ");
 		return webResult?.Response;
@@ -744,8 +744,8 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	private async Task<ReconcileResult> CallReservationPickupAsync(ReservationPickupRequest request)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<ReconcileResult> webResult = await ExecuteAsyncWebRequest<ReconcileResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ReservationPickup"), request, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<ReconcileResult> webResult = await ExecuteAsyncWebRequest<ReconcileResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ReservationPickup"), request, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.Reconcile", webResult);
 		LogHelper.Instance.Log($"Reconcile Response: {webResult?.Response?.Scrub()} ");
 		return webResult?.Response;
@@ -832,7 +832,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	public async Task<ReturnVisitPromotionInfo> ReturnPromoCheckAsync(string barcode)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		ReturnVisitPromotionInfo result = new ReturnVisitPromotionInfo
 		{
 			Success = false
@@ -840,7 +840,7 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 		try
 		{
 			LogHelper.Instance.Log("KioskClientServiceTransaction.ReturnPromoCheckAsync - sending request for barcode: " + barcode);
-			WebResult<ReturnPromoCheckResponse> webResult = await ExecuteAsyncWebRequest<ReturnPromoCheckResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/return/" + barcode + "/promocheck"), null, "GET", service.KioskSession.MarketingReturn.ReturnVisitPromoCheckTimeout);
+			WebResult<ReturnPromoCheckResponse> webResult = await ExecuteAsyncWebRequest<ReturnPromoCheckResponse>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/return/" + barcode + "/promocheck"), null, "GET", configuration.KioskSession.MarketingReturn.ReturnVisitPromoCheckTimeout);
 			if (webResult.IsSuccessStatusCode)
 			{
 				result.Promo = webResult.Response.Promotion;
@@ -872,16 +872,16 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	private async Task<AuthorizeResult> CallAuthorizeAsync(AuthorizeRequest authorizeRequest)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/Authorize"), authorizeRequest, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/Authorize"), authorizeRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.Authorize", webResult);
 		return webResult?.Response;
 	}
 
 	private async Task<AuthorizeResult> CallGiftCardAuthorizeAsync(AuthorizeRequest authorizeRequest)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<GCAuthResult> webResult = await ExecuteAsyncWebRequest<GCAuthResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/GiftCardAuthorize"), authorizeRequest, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<GCAuthResult> webResult = await ExecuteAsyncWebRequest<GCAuthResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/GiftCardAuthorize"), authorizeRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.GiftCArdAuthorize", webResult);
 		GCAuthResult gCAuthResult = webResult?.Response;
 		if (gCAuthResult == null)
@@ -922,24 +922,24 @@ public class KioskClientServiceTransaction : BaseKioskClientService, IKioskClien
 
 	private async Task<AuthorizeResult> CallPickupAuthorizeAsync(PickupAuthRequest authorizeRequest)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/PickupAuthorize"), authorizeRequest, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/PickupAuthorize"), authorizeRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.PickupAuthorize", webResult);
 		return webResult?.Response;
 	}
 
 	private async Task<AuthorizeResult> CallReservationAuthorizeAsync(ResvAuthRequest authorizeRequest)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ReservationAuthorize"), authorizeRequest, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<AuthorizeResult> webResult = await ExecuteAsyncWebRequest<AuthorizeResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ReservationAuthorize"), authorizeRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.ReservationAuthorize", webResult);
 		return webResult?.Response;
 	}
 
 	private async Task<DeserializablePickupValidationResult> CallPickupValidationAsync(PickupValidationRequest validationRequest)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		WebResult<DeserializablePickupValidationResult> webResult = await ExecuteAsyncWebRequest<DeserializablePickupValidationResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ValidatePickup"), validationRequest, "POST", service.AuthorizeTimeout);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		WebResult<DeserializablePickupValidationResult> webResult = await ExecuteAsyncWebRequest<DeserializablePickupValidationResult>(new Uri(base.KioskClientServiceBaseUrl + "/api/transaction/ValidatePickup"), validationRequest, "POST", configuration.AuthorizeTimeout);
 		LogResponse("KioskClientServiceTransactions.CallPickupValidationAsync", webResult);
 		return webResult?.Response;
 	}

@@ -43,10 +43,10 @@ public class CustomerProfileLoginRequest : MessageBase, ICustomerProfileLoginReq
 	public override void ScrubData()
 	{
 		base.ScrubData();
-		IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-		EmailAddress = service?.ObfuscateStringData(EmailAddress, 1, 0);
-		Password = service?.ObfuscateStringData(Password, 0, 0);
-		PhoneNumber = service?.ObfuscateStringData(PhoneNumber, 0, 0);
-		Pin = service?.ObfuscateStringData(Pin, 0, 0);
+		IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
+		EmailAddress = obfuscationService?.ObfuscateStringData(EmailAddress, 1, 0);
+		Password = obfuscationService?.ObfuscateStringData(Password, 0, 0);
+		PhoneNumber = obfuscationService?.ObfuscateStringData(PhoneNumber, 0, 0);
+		Pin = obfuscationService?.ObfuscateStringData(Pin, 0, 0);
 	}
 }

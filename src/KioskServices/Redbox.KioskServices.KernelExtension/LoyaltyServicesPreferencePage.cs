@@ -49,19 +49,19 @@ public class LoyaltyServicesPreferencePage : UserControl, IPreferencePageHost
 	{
 		SuspendLayout();
 		dgv_accrualsRedemptions.ClearSelection();
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null && ServiceLocator.Instance.GetService<IRentalShoppingCartService>() != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null && ServiceLocator.Instance.GetService<IRentalShoppingCartService>() != null)
 		{
 			cbb_accrualErrors.DataSource = Enum.GetValues(typeof(EstimateAccrualErrors));
-			cbb_accrualErrors.SelectedItem = service.AccrualError;
+			cbb_accrualErrors.SelectedItem = loyaltyServices.AccrualError;
 			cbb_redemptionErrors.DataSource = Enum.GetValues(typeof(EstimateRedemptionErrors));
-			cbb_redemptionErrors.SelectedItem = service.RedemptionError;
-			tb_accrualDefault.Text = service.DefaultAccrualPoints.ToString();
-			tb_redemptionDefault.Text = service.DefaultRedemptionPoints.ToString();
-			cb_LiveCall.Checked = service.LiveCall;
-			cb_simulateAccrualSuccess.Checked = service.SimulateAccrualSuccess;
-			cb_simulateRedemptionSuccess.Checked = service.SimulateRedemptionSuccess;
-			dgv_accrualsRedemptions.DataSource = service.Items;
+			cbb_redemptionErrors.SelectedItem = loyaltyServices.RedemptionError;
+			tb_accrualDefault.Text = loyaltyServices.DefaultAccrualPoints.ToString();
+			tb_redemptionDefault.Text = loyaltyServices.DefaultRedemptionPoints.ToString();
+			cb_LiveCall.Checked = loyaltyServices.LiveCall;
+			cb_simulateAccrualSuccess.Checked = loyaltyServices.SimulateAccrualSuccess;
+			cb_simulateRedemptionSuccess.Checked = loyaltyServices.SimulateRedemptionSuccess;
+			dgv_accrualsRedemptions.DataSource = loyaltyServices.Items;
 			dgv_accrualsRedemptions.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			ResumeLayout();
 		}
@@ -78,28 +78,28 @@ public class LoyaltyServicesPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnLiveCallChanged(object sender, EventArgs e)
 	{
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
-			service.LiveCall = cb_LiveCall.Checked;
+			loyaltyServices.LiveCall = cb_LiveCall.Checked;
 		}
 	}
 
 	private void OnAccrualErrorChanged(object sender, EventArgs e)
 	{
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
-			service.AccrualError = (EstimateAccrualErrors)cbb_accrualErrors.SelectedItem;
+			loyaltyServices.AccrualError = (EstimateAccrualErrors)cbb_accrualErrors.SelectedItem;
 		}
 	}
 
 	private void OnRedemptionErrorChanged(object sender, EventArgs e)
 	{
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
-			service.RedemptionError = (EstimateRedemptionErrors)cbb_redemptionErrors.SelectedItem;
+			loyaltyServices.RedemptionError = (EstimateRedemptionErrors)cbb_redemptionErrors.SelectedItem;
 		}
 	}
 
@@ -116,35 +116,35 @@ public class LoyaltyServicesPreferencePage : UserControl, IPreferencePageHost
 			textBox.Text = text.Substring(text.Length - 2, 1);
 			return;
 		}
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
 			if (textBox.Name.Contains("accrual"))
 			{
-				service.DefaultAccrualPoints = result;
+				loyaltyServices.DefaultAccrualPoints = result;
 			}
 			else
 			{
-				service.DefaultRedemptionPoints = result;
+				loyaltyServices.DefaultRedemptionPoints = result;
 			}
 		}
 	}
 
 	private void OnSimulateAccrualSuccessChanged(object sender, EventArgs e)
 	{
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
-			service.SimulateAccrualSuccess = cb_simulateAccrualSuccess.Checked;
+			loyaltyServices.SimulateAccrualSuccess = cb_simulateAccrualSuccess.Checked;
 		}
 	}
 
 	private void OnSimulateRedemptionSuccessChanged(object sender, EventArgs e)
 	{
-		ILoyaltyServices service = ServiceLocator.Instance.GetService<ILoyaltyServices>();
-		if (service != null)
+		ILoyaltyServices loyaltyServices = ServiceLocator.Instance.GetService<ILoyaltyServices>();
+		if (loyaltyServices != null)
 		{
-			service.SimulateRedemptionSuccess = cb_simulateRedemptionSuccess.Checked;
+			loyaltyServices.SimulateRedemptionSuccess = cb_simulateRedemptionSuccess.Checked;
 		}
 	}
 

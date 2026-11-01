@@ -222,13 +222,13 @@ public class CCReaderHealth : IKioskHealthItem, ICCReaderHealth
 
 	private void SendAlert(KioskEvent kioskEvent, string subType, Action action = null)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service != null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices != null)
 		{
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service2 != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
-				service.SendAlert(service2.KioskId.ToString(), "ApplicationCrash", subType, kioskEvent.Data, DateTime.Now, null, action);
+				healthServices.SendAlert(storeManager.KioskId.ToString(), "ApplicationCrash", subType, kioskEvent.Data, DateTime.Now, null, action);
 			}
 		}
 	}

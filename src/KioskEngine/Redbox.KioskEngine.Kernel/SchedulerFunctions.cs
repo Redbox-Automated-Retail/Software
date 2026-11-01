@@ -35,8 +35,8 @@ internal static class SchedulerFunctions
 	[KernelFunction(Name = "scheduler_services.add_entry")]
 	internal static void AddScheduleEntry(string jobname, string label, object startTime, object endTime, string cronExpression, string functionName, string programName, string misfireInstruction, object parameters)
 	{
-		ISchedulerService service = ServiceLocator.Instance.GetService<ISchedulerService>();
-		if (service == null)
+		ISchedulerService schedulerService = ServiceLocator.Instance.GetService<ISchedulerService>();
+		if (schedulerService == null)
 		{
 			return;
 		}
@@ -65,7 +65,7 @@ internal static class SchedulerFunctions
 				list.Add(parameters);
 			}
 		}
-		service.AddScheduleEntry(jobname, label, dateTime ?? DateTime.UtcNow, endTime2, cronExpression, functionName, programName, misfireInstruction, list.ToArray());
+		schedulerService.AddScheduleEntry(jobname, label, dateTime ?? DateTime.UtcNow, endTime2, cronExpression, functionName, programName, misfireInstruction, list.ToArray());
 	}
 
 	[KernelFunction(Name = "scheduler_services.get_entries")]
@@ -75,14 +75,14 @@ internal static class SchedulerFunctions
 		{
 			return null;
 		}
-		ISchedulerService service = ServiceLocator.Instance.GetService<ISchedulerService>();
-		if (service == null)
+		ISchedulerService schedulerService = ServiceLocator.Instance.GetService<ISchedulerService>();
+		if (schedulerService == null)
 		{
 			return null;
 		}
 		int num = 1;
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		foreach (ISchedulerEntry scheduleEntry in service.GetScheduleEntries())
+		foreach (ISchedulerEntry scheduleEntry in schedulerService.GetScheduleEntries())
 		{
 			new ErrorList();
 			CreateResultTable(scheduleEntry.JobName)["results"] = luaTable;
@@ -108,12 +108,12 @@ internal static class SchedulerFunctions
 		{
 			return null;
 		}
-		ISchedulerService service = ServiceLocator.Instance.GetService<ISchedulerService>();
-		if (service == null)
+		ISchedulerService schedulerService = ServiceLocator.Instance.GetService<ISchedulerService>();
+		if (schedulerService == null)
 		{
 			return null;
 		}
-		ISchedulerEntry scheduleEntry = service.GetScheduleEntry(jobname);
+		ISchedulerEntry scheduleEntry = schedulerService.GetScheduleEntry(jobname);
 		if (scheduleEntry == null)
 		{
 			return null;

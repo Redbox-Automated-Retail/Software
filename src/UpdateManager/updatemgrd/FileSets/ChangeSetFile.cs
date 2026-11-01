@@ -257,8 +257,8 @@ internal class ChangeSetFile
 		_downloads.Clear();
 		downloads.ForEach(delegate(IDownloader d)
 		{
-			string[] array = d.DownloadData.Key.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Count() > 1 && Convert.ToInt64(array[1]) == FileSetId)
+			string[] parts = d.DownloadData.Key.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Count() > 1 && Convert.ToInt64(parts[1]) == FileSetId)
 			{
 				_downloads.Add(d);
 			}

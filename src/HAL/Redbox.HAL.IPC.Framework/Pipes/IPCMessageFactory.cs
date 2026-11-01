@@ -50,9 +50,9 @@ public sealed class IPCMessageFactory : IIPCMessageFactory
 		int num2 = 0;
 		int num3 = BitConverter.ToInt32(array, num2);
 		num2 += num;
-		byte[] array2 = new byte[num3];
-		Array.Copy(array, num2, array2, 0, num3);
-		Guid uID = new Guid(array2);
+		byte[] buffer = new byte[num3];
+		Array.Copy(array, num2, buffer, 0, num3);
+		Guid uID = new Guid(buffer);
 		num2 += num3;
 		MessageType type = (MessageType)BitConverter.ToInt32(array, num2);
 		num2 += num;

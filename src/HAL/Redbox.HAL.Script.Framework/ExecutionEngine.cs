@@ -436,8 +436,8 @@ public sealed class ExecutionEngine : IExecutionService, IConfigurationObserver
 		Mode = EngineModes.Normal;
 		ScriptsPath = scriptsPath;
 		RebootWakeupTimer = new RedboxTimer("Reboot Wakeup", OnRebootWakeup);
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		DataDirectory = service.RuntimePath("data");
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		DataDirectory = runtimeService.RuntimePath("data");
 		ImmediateModeContext = new ExecutionContext("IMMEDIATE", "$$$immediate$$$", null, ProgramPriority.Immediate, "HAL Script Immediate Mode")
 		{
 			IsImmediate = true

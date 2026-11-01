@@ -30,9 +30,9 @@ public partial class ApplyPromoViewUserControl : TextToSpeechUserControl, ICompo
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(CancelButton);
-		obj?.SetStyle(EnterPromoButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(CancelButton);
+		theme?.SetStyle(EnterPromoButton);
 	}
 
 	public override ISpeechControl GetSpeechControl()

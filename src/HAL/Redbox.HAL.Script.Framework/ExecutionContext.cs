@@ -811,10 +811,10 @@ public class ExecutionContext : IMessageSink, ISerializable, IExecutionContext, 
 
 	internal void CleanupHardware()
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		service.SetSensors(on: false);
-		service.StopRoller();
-		service.ToggleRingLight(on: false, null);
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		controlSystem.SetSensors(on: false);
+		controlSystem.StopRoller();
+		controlSystem.ToggleRingLight(on: false, null);
 	}
 
 	internal void OnMoveVendError(ErrorCodes error)

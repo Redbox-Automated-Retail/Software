@@ -10,10 +10,10 @@ public static class InputFunctions
 	[KernelFunction(Name = "kernel.inputyesno")]
 	internal static string AskYesNoQuestion(string title, string message)
 	{
-		IInputService service = ServiceLocator.Instance.GetService<IInputService>();
-		if (service != null)
+		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
+		if (inputService != null)
 		{
-			return service.AskYesNoQuestion(title, message).ToString("G").ToLower();
+			return inputService.AskYesNoQuestion(title, message).ToString("G").ToLower();
 		}
 		return null;
 	}
@@ -21,12 +21,12 @@ public static class InputFunctions
 	[KernelFunction(Name = "kernel.inputfindfile")]
 	internal static LuaTable FindFile()
 	{
-		IInputService service = ServiceLocator.Instance.GetService<IInputService>();
-		if (service == null)
+		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
+		if (inputService == null)
 		{
 			return null;
 		}
-		FileInfo fileInfo = service.LocateFile();
+		FileInfo fileInfo = inputService.LocateFile();
 		if (fileInfo == null)
 		{
 			return null;

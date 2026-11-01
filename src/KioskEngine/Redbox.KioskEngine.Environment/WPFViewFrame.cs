@@ -65,8 +65,8 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 
 	public static void CacheWPFViewFrames(string assemblyName)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service == null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService == null)
 		{
 			return;
 		}
@@ -93,7 +93,7 @@ public class WPFViewFrame : BaseViewFrame, IWPFViewFrame, IBaseViewFrame
 							ViewDefinition = viewDefinition,
 							Scene = renderingService?.GetScene("Default")
 						};
-						service.CacheViewFrame(baseViewFrame);
+						viewService.CacheViewFrame(baseViewFrame);
 					}
 				}
 				return;

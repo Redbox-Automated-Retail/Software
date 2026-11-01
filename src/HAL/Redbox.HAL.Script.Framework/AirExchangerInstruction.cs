@@ -38,33 +38,33 @@ public sealed class AirExchangerInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		ExpectedOperand expectedOperand = Enum<ExpectedOperand>.ParseIgnoringCase(base.Operands[0].Value, ExpectedOperand.None);
-		IAirExchangerService service = ServiceLocator.Instance.GetService<IAirExchangerService>();
+		IAirExchangerService airExchangerService = ServiceLocator.Instance.GetService<IAirExchangerService>();
 		switch (expectedOperand)
 		{
 		case ExpectedOperand.None:
 			LogHelper.Instance.WithContext(LogEntryType.Error, "{0} instruction: converted '{1}' to operand None", Mnemonic, base.Operands[0].Value);
 			break;
 		case ExpectedOperand.IsConfigured:
-			context.PushTop(service.Configured);
+			context.PushTop(airExchangerService.Configured);
 			break;
 		case ExpectedOperand.FanOn:
-			service.TurnOnFan();
+			airExchangerService.TurnOnFan();
 			break;
 		case ExpectedOperand.FanOff:
-			service.TurnOffFan();
+			airExchangerService.TurnOffFan();
 			break;
 		case ExpectedOperand.FanStatus:
-			context.PushTop(service.FanStatus.ToString().ToUpper());
+			context.PushTop(airExchangerService.FanStatus.ToString().ToUpper());
 			break;
 		case ExpectedOperand.ResetFailureCounter:
-			service.ResetFailureCount();
-			context.PushTop(service.PersistentFailureCount());
+			airExchangerService.ResetFailureCount();
+			context.PushTop(airExchangerService.PersistentFailureCount());
 			break;
 		case ExpectedOperand.BoardStatus:
-			context.PushTop(service.CheckStatus().ToString().ToUpper());
+			context.PushTop(airExchangerService.CheckStatus().ToString().ToUpper());
 			break;
 		case ExpectedOperand.Reset:
-			context.PushTop(service.Reset().ToString().ToUpper());
+			context.PushTop(airExchangerService.Reset().ToString().ToUpper());
 			break;
 		}
 	}

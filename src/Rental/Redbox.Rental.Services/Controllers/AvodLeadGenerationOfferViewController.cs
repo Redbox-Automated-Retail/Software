@@ -53,9 +53,9 @@ public class AvodLeadGenerationOfferViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = 40000;
-		(service?.CreateTimer("AvodLeadGenerationOfferViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("AvodLeadGenerationOfferViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			_continueAction?.Invoke();
@@ -64,25 +64,25 @@ public class AvodLeadGenerationOfferViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("AvodLeadGenerationOfferViewTimer"))?.Stop();
-		service?.RemoveTimer("AvodLeadGenerationOfferViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("AvodLeadGenerationOfferViewTimer"))?.Stop();
+		timerService?.RemoveTimer("AvodLeadGenerationOfferViewTimer");
 	}
 
 	private static void ShowPleaseWaitViewAndSendEmailConfirm()
 	{
 		if (!string.IsNullOrEmpty(_emailAddress))
 		{
-			IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service != null && service2 != null)
+			IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (marketingServices != null && storeManager != null)
 			{
 				OrchestrationService.ViewShow("please_wait_view");
 				SendEmailConfirmCallback completeCallback = delegate(IEmailConfirmResult emailConfirmResult)
 				{
 					ProcessEmailConfirmResult(emailConfirmResult);
 				};
-				service.SendEmailConfirm(service2.KioskId, _emailAddress, null, completeCallback);
+				marketingServices.SendEmailConfirm(storeManager.KioskId, _emailAddress, null, completeCallback);
 			}
 		}
 		else
@@ -109,11 +109,11 @@ public class AvodLeadGenerationOfferViewController : BaseViewController
 		if (!string.IsNullOrEmpty(_emailAddress))
 		{
 			SignupFunctions.SendKioskOptInForMarketingCampaignMessages(KioskOptInItemId.Yes, (ConfirmationStatus)_optInConfirmationStatus, _emailAddress);
-			IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-			IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service != null && service2 != null)
+			IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (marketingServices != null && storeManager != null)
 			{
-				IOptInItem optInItem = service.NewOptInItem();
+				IOptInItem optInItem = marketingServices.NewOptInItem();
 				optInItem.Item_Type = KioskOptIntItemType.Non_Item_Specific;
 				optInItem.ItemId = 0L;
 				optInItem.OptInMethodData = _emailAddress;
@@ -121,7 +121,7 @@ public class AvodLeadGenerationOfferViewController : BaseViewController
 				optInItem.TemplateName = "AvodLeadGenerationOfferOptInTemplate";
 				optInItem.CampaignName = "AvodLeadGenerationOfferOptInCampaign";
 				List<IOptInItem> optInItems = new List<IOptInItem> { optInItem };
-				service.KioskOptIn(service2.KioskId, optInItems, null);
+				marketingServices.KioskOptIn(storeManager.KioskId, optInItems, null);
 			}
 			OrchestrationService.ViewShow("lead_generation_offer_confirmation_view", new LeadGenerationOfferConfirmationViewParameters
 			{

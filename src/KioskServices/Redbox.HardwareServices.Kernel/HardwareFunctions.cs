@@ -379,18 +379,18 @@ public static class HardwareFunctions
 	internal static LuaTable HardwareGetMachineInfo()
 	{
 		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
-		IMachineSettingsStore service2 = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 		if (!string.IsNullOrEmpty(hardwareState.QlmDeckAsString))
 		{
-			service2.SetValue("Store", "QlmDeck", hardwareState.QlmDeckAsString);
+			machineSettingsStore.SetValue("Store", "QlmDeck", hardwareState.QlmDeckAsString);
 		}
 		if (hardwareState.MaxDeck > 0)
 		{
-			service2.SetValue("Store", "MaxDecks", hardwareState.MaxDeck.ToString());
+			machineSettingsStore.SetValue("Store", "MaxDecks", hardwareState.MaxDeck.ToString());
 		}
 		if (hardwareState.MaxSlot > 0)
 		{
-			service2.SetValue("Store", "MaxSlots", hardwareState.MaxSlot.ToString());
+			machineSettingsStore.SetValue("Store", "MaxSlots", hardwareState.MaxSlot.ToString());
 		}
 		LuaTable value = ServiceLocator.Instance.GetService<IKernelService>().NewTable() as LuaTable;
 		value["QlmDeck"] = hardwareState.QlmDeckAsString;
@@ -891,12 +891,12 @@ public static class HardwareFunctions
 	internal static void EnqueueHardwareProperties()
 	{
 		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
-		IHealthServices service2 = ServiceLocator.Instance.GetService<IHealthServices>();
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
 		if (hardwareState == null)
 		{
 			LogHelper.Instance.Log("Hardware State was not found.");
 		}
-		if (service2 == null)
+		if (healthServices == null)
 		{
 			LogHelper.Instance.Log("Health Service was not found.");
 		}
@@ -904,7 +904,7 @@ public static class HardwareFunctions
 		LogHelper.Instance.Log("Camera: " + hardwareState.CurrentCameraGeneration + ", Decoder: " + hardwareState.BarcodeDecoder);
 		if (hardwareState.CurrentCameraGeneration >= 3)
 		{
-			service2.EnqueueProperty("CameraType", hardwareState.CurrentCameraGeneration.ToString());
+			healthServices.EnqueueProperty("CameraType", hardwareState.CurrentCameraGeneration.ToString());
 		}
 	}
 

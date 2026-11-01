@@ -30,10 +30,10 @@ internal struct MoveDecoratorService : IDisposable
 		}
 		else
 		{
-			IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-			service.SetFinger(GripperFingerState.Rent);
-			service.TimedExtend();
-			service.SetSensors(on: true);
+			IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+			controlSystem.SetFinger(GripperFingerState.Rent);
+			controlSystem.TimedExtend();
+			controlSystem.SetSensors(on: true);
 			if (!Context.IsImmediate)
 			{
 				Context.CreateInfoResult("MoveOffsetOk", "The damaged disk is located 5 slots left, starting at the disk next to the extended gripper fingers.");

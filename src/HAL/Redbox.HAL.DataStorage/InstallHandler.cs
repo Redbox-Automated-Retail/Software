@@ -12,8 +12,8 @@ internal sealed class InstallHandler : IPackageInstallHandler
 
 	public void OnUpgrade(ErrorList errors, TextWriter writer)
 	{
-		IDataTableService service = ServiceLocator.Instance.GetService<IDataTableService>();
-		IDataTable<IDumpBinInventoryItem> table = service.GetTable<IDumpBinInventoryItem>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
+		IDataTable<IDumpBinInventoryItem> table = dataTableService.GetTable<IDumpBinInventoryItem>();
 		if (table.Exists)
 		{
 			writer.WriteLine("[InventoryService.Upgrade] The bin table already exists.");
@@ -24,7 +24,7 @@ internal sealed class InstallHandler : IPackageInstallHandler
 		}
 		else
 		{
-			IDataTable<IDumpBinInventoryItem> legacyTable = service.GetLegacyTable<IDumpBinInventoryItem>();
+			IDataTable<IDumpBinInventoryItem> legacyTable = dataTableService.GetLegacyTable<IDumpBinInventoryItem>();
 			if (legacyTable.Exists)
 			{
 				List<IDumpBinInventoryItem> list = legacyTable.LoadEntries();
@@ -47,12 +47,12 @@ internal sealed class InstallHandler : IPackageInstallHandler
 
 	public void OnNewInstall(ErrorList errors, TextWriter writer)
 	{
-		IDataTableService service = ServiceLocator.Instance.GetService<IDataTableService>();
-		IDataTable<IKioskFunctionCheckData> table = service.GetTable<IKioskFunctionCheckData>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
+		IDataTable<IKioskFunctionCheckData> table = dataTableService.GetTable<IKioskFunctionCheckData>();
 		TestAndCreate(table, errors, writer);
-		IDataTable<IHardwareCorrectionStatistic> table2 = service.GetTable<IHardwareCorrectionStatistic>();
+		IDataTable<IHardwareCorrectionStatistic> table2 = dataTableService.GetTable<IHardwareCorrectionStatistic>();
 		TestAndCreate(table2, errors, writer);
-		IDataTable<IHardwareCorrectionStatistic> legacyTable = service.GetLegacyTable<IHardwareCorrectionStatistic>();
+		IDataTable<IHardwareCorrectionStatistic> legacyTable = dataTableService.GetLegacyTable<IHardwareCorrectionStatistic>();
 		if (legacyTable != null && legacyTable.Exists)
 		{
 			legacyTable.Drop();

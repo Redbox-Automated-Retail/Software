@@ -82,10 +82,10 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 			{
 				return;
 			}
-			int num = Port.Read(ReadBuffer, 0, bytesToRead);
-			if (num != bytesToRead)
+			int bytesRead = Port.Read(ReadBuffer, 0, bytesToRead);
+			if (bytesRead != bytesToRead)
 			{
-				LogHelper.Instance.Log("[CallbackReadPort, {0}] !! The bytes to read {1} doesn't match the read count {2} !!", base.DisplayName, num, bytesToRead);
+				LogHelper.Instance.Log("[CallbackReadPort, {0}] !! The bytes to read {1} doesn't match the read count {2} !!", base.DisplayName, bytesRead, bytesToRead);
 			}
 			if (ReadingFlag.IsSet)
 			{

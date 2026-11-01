@@ -48,12 +48,12 @@ internal sealed class ResetCountersJob : NativeJobAdapter
 		{
 			LastCounterReset = now;
 			LogHelper.Instance.Log("Watchdog resetting counters.");
-			IPersistentCounterService service = ServiceLocator.Instance.GetService<IPersistentCounterService>();
-			service.Reset("EmptyOrStuckCount");
+			IPersistentCounterService persistentCounterService = ServiceLocator.Instance.GetService<IPersistentCounterService>();
+			persistentCounterService.Reset("EmptyOrStuckCount");
 			if (now.DayOfWeek == DayOfWeek.Sunday)
 			{
 				LogHelper.Instance.Log("Reset timeout counters.", LogEntryType.Info);
-				service.ResetWeekly();
+				persistentCounterService.ResetWeekly();
 			}
 		}
 		IKioskFunctionCheckService kioskFunctionCheckService = ServiceLocator.Instance.GetService<IKioskFunctionCheckService>();

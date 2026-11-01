@@ -17,8 +17,8 @@ public class TransferStatisticService : IPollRequestReply
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-			for (TransferStatisticReport transferStatisticReport = service.Peek<TransferStatisticReport>("statistic"); transferStatisticReport != null; transferStatisticReport = service.Peek<TransferStatisticReport>("statistic"))
+			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+			for (TransferStatisticReport transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"); transferStatisticReport != null; transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"))
 			{
 				PollRequest item = new PollRequest
 				{
@@ -27,7 +27,7 @@ public class TransferStatisticService : IPollRequestReply
 				};
 				pollRequestList.Add(item);
 				LogHelper.Instance.Log("Enqueued transfer statistics for revision: {0}", transferStatisticReport.ChangeSet);
-				service.Dequeue("statistic");
+				queueService.Dequeue("statistic");
 			}
 		}
 		catch (Exception e)

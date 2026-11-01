@@ -13,14 +13,14 @@ public static class EncryptionHelper
 
 	public static string Decrypt(string data)
 	{
-		byte[] array = Convert.FromBase64String(data);
+		byte[] decoded = Convert.FromBase64String(data);
 		TripleDESCryptoServiceProvider tripleDESCryptoServiceProvider = new TripleDESCryptoServiceProvider();
 		try
 		{
 			using ICryptoTransform transform = ((SymmetricAlgorithm)(object)tripleDESCryptoServiceProvider).CreateDecryptor(m_keyValue, m_initialVector);
 			using MemoryStream memoryStream = new MemoryStream();
 			using CryptoStream cryptoStream = new CryptoStream(memoryStream, transform, CryptoStreamMode.Write);
-			cryptoStream.Write(array, 0, array.Length);
+			cryptoStream.Write(decoded, 0, decoded.Length);
 			cryptoStream.FlushFinalBlock();
 			return Encoding.Default.GetString(memoryStream.ToArray());
 		}

@@ -52,8 +52,8 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 			return;
 		}
 		_qlmDeck = service.QlmDeckAsNumber;
-		IEngineApplication service2 = ServiceLocator.Instance.GetService<IEngineApplication>();
-		_dataPath = Path.Combine(service2.DataPath, "SyncUnknowns");
+		IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+		_dataPath = Path.Combine(engineApplication.DataPath, "SyncUnknowns");
 		_fileService = new DataFileStoreService();
 		_fileService.Initialize("SyncUnknownCounts", _dataPath, "json", "corrupt", useEncryption: false);
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
@@ -100,11 +100,11 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 		DateTime value = ScheduleSyncTime(_timespanBegin, _timespanEnd, startIfInwindow: true, 0);
 		if (!forceSync)
 		{
-			IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
-				_ = service.KioskId;
-				if (0 == 0 && service.KioskId != 0L)
+				_ = storeManager.KioskId;
+				if (0 == 0 && storeManager.KioskId != 0L)
 				{
 					DateTime result;
 					if (IsJobAlreadyScheduled(new List<string> { "SyncUnknowns", "SyncUnknownLocations" }))

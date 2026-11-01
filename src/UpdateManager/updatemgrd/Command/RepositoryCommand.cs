@@ -316,7 +316,7 @@ internal class RepositoryCommand
 	[Usage("repository get-label name: revision:")]
 	public void GetLabel(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, [CommandKeyValue(IsRequired = true)] string revision)
 	{
-		IRepositoryService service = ServiceLocator.Instance.GetService<IRepositoryService>();
-		context.Messages.Add(service.GetLabel(name, revision).ToJson());
+		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
+		context.Messages.Add(repositoryService.GetLabel(name, revision).ToJson());
 	}
 }

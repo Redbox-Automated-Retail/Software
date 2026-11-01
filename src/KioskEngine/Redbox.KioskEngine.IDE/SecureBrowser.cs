@@ -104,16 +104,16 @@ public class SecureBrowser : Form
 
 	private void NavigateToUrl(string urlName)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		string text = (m_approvedUrls.ContainsKey(urlName) ? m_approvedUrls[urlName] : string.Empty);
 		if (!string.IsNullOrEmpty(text))
 		{
-			m_browser.Navigate(service.ExpandProperties(text));
+			m_browser.Navigate(macroService.ExpandProperties(text));
 			return;
 		}
 		if (IsUrlAddressAllowed(urlName) || IsWebsiteApproved(urlName))
 		{
-			m_browser.Navigate(service.ExpandProperties(urlName));
+			m_browser.Navigate(macroService.ExpandProperties(urlName));
 			return;
 		}
 		m_browser.Navigate(string.Empty);

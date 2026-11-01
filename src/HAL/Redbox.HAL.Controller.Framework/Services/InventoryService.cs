@@ -30,14 +30,14 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 	public void NotifyConfigurationLoaded()
 	{
 		LogHelper.Instance.Log("[InventoryService] Notify configuration load");
-		IEmptySearchPatternService service = ServiceLocator.Instance.GetService<IEmptySearchPatternService>();
+		IEmptySearchPatternService emptySearchPatternService = ServiceLocator.Instance.GetService<IEmptySearchPatternService>();
 		if (ControllerConfiguration.Instance.IsVMZMachine)
 		{
-			service.AddObserver(new VmzExcludePolicy());
+			emptySearchPatternService.AddObserver(new VmzExcludePolicy());
 		}
 		else
 		{
-			service.AddObserver(new QlmExcludePolicy());
+			emptySearchPatternService.AddObserver(new QlmExcludePolicy());
 		}
 		using (new WithWriteLock(Lock))
 		{
@@ -504,8 +504,8 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	internal InventoryService()
 	{
-		IDataTableService service = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = service.GetTable<ILocation>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
+		Table = dataTableService.GetTable<ILocation>();
 		string path = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>().CreateSubpath("ErrorLogs");
 		EmptyStuckLogFile = Path.Combine(path, "ErrorLocationsHistory.txt");
 		ControllerConfiguration.Instance.AddObserver(this);
@@ -576,11 +576,11 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	private void ForeachUnderLock(Predicate<ILocation> action, bool excludeQLM)
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		int length = LocationInfo.GetLength(0);
 		for (int i = 0; i < length; i++)
 		{
-			IDeck byNumber = service.GetByNumber(i + 1);
+			IDeck byNumber = decksService.GetByNumber(i + 1);
 			if (excludeQLM && byNumber.IsQlm)
 			{
 				continue;
@@ -664,13 +664,13 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	private ILocation[] InitializeDeck(IDeck deck)
 	{
-		ITableTypeFactory service = ServiceLocator.Instance.GetService<ITableTypeFactory>();
+		ITableTypeFactory tableTypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
 		List<ILocation> list = new List<ILocation>();
 		using (new DisposeableList<ILocation>(list))
 		{
 			for (int i = 1; i <= deck.NumberOfSlots; i++)
 			{
-				ILocation location = service.NewLocation(deck.Number, i);
+				ILocation location = tableTypeFactory.NewLocation(deck.Number, i);
 				location.ID = "UNKNOWN";
 				list.Add(location);
 			}

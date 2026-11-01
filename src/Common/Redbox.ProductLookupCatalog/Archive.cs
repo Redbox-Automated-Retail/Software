@@ -207,12 +207,12 @@ public class Archive : IDisposable
 			binaryWriter.Write(Encoding.ASCII.GetBytes(machineName));
 		}
 		binaryWriter.Write(Encoding.ASCII.GetBytes(createdOn.ToString("yyyyMMddHHmmss")));
-		byte[] array = new byte[256];
-		for (int i = 0; i < array.Length; i++)
+		byte[] buffer = new byte[256];
+		for (int i = 0; i < buffer.Length; i++)
 		{
-			array[i] = 0;
+			buffer[i] = 0;
 		}
-		binaryWriter.Write(array);
+		binaryWriter.Write(buffer);
 	}
 
 	private string ReadBarcode(long index)

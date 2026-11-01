@@ -9,10 +9,10 @@ public static class ComObjectFunctions
 	[KernelFunction(Name = "kernel.ismoduleselfregistering")]
 	internal static bool IsModuleSelfRegistering(string fileName)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		if (service != null)
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		if (macroService != null)
 		{
-			return SelfRegistrationTool.IsModuleSelfRegistering(service.ExpandProperties(fileName));
+			return SelfRegistrationTool.IsModuleSelfRegistering(macroService.ExpandProperties(fileName));
 		}
 		return false;
 	}

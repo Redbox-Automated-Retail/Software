@@ -266,14 +266,14 @@ public class PerksSignupService : IPerksSignupService
 
 	private void ValidateEmail(string email)
 	{
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
 		long kioskid = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
 		SendEmailConfirmCallback completeCallback = delegate(IEmailConfirmResult emailConfirmResult)
 		{
 			ProcessConfirmEmailResult(emailConfirmResult);
 		};
 		_emailAddress = email;
-		service.SendEmailConfirm(kioskid, email, _accountNumber, completeCallback);
+		marketingServices.SendEmailConfirm(kioskid, email, _accountNumber, completeCallback);
 	}
 
 	private void ProcessConfirmEmailResult(IEmailConfirmResult result)
@@ -306,9 +306,9 @@ public class PerksSignupService : IPerksSignupService
 			ExitSignupFlow();
 			return;
 		}
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		IViewFrameInstance viewFrameInstance = service?.PeekViewFrame();
-		if (service != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame?.ViewName == "keyboard_perks_signup_view")
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		IViewFrameInstance viewFrameInstance = viewService?.PeekViewFrame();
+		if (viewService != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame?.ViewName == "keyboard_perks_signup_view")
 		{
 			LogHelper.Instance.Log("returning to keyboard view to display error");
 			if (viewFrameInstance.Parameter is KeyboardInfo keyboardInfo)
@@ -319,7 +319,7 @@ public class PerksSignupService : IPerksSignupService
 				keyboardInfo.KeyboardCode = string.Empty;
 			}
 			IdleTimer.Start();
-			service.Show();
+			viewService.Show();
 		}
 	}
 
@@ -799,9 +799,9 @@ public class PerksSignupService : IPerksSignupService
 
 	private void ShowUpdateAccountErrorOnPhoneAndPinView(IUpdateAccountResult result)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		IViewFrameInstance viewFrameInstance = service?.PeekViewFrame();
-		if (service != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame.ViewName == "phone_and_pin_view")
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		IViewFrameInstance viewFrameInstance = viewService?.PeekViewFrame();
+		if (viewService != null && viewFrameInstance != null && viewFrameInstance?.ViewFrame.ViewName == "phone_and_pin_view")
 		{
 			LogHelper.Instance.Log("returning to phone and pin view to display error");
 			PhoneAndPinInfo phoneAndPinInfo = viewFrameInstance.Parameter as PhoneAndPinInfo;
@@ -812,7 +812,7 @@ public class PerksSignupService : IPerksSignupService
 				phoneAndPinInfo.PhoneAndPinViewModel.PinConfirmDisplayText = Resources.phone_and_pin_default_pin_display;
 			}
 			IdleTimer?.Start();
-			service.Show();
+			viewService.Show();
 		}
 		else
 		{
@@ -873,9 +873,9 @@ public class PerksSignupService : IPerksSignupService
 	{
 		if (_signupFlowResult.AcceptedPerksSignup)
 		{
-			IPersonalizationService service = ServiceLocator.Instance.GetService<IPersonalizationService>();
+			IPersonalizationService personalizationService = ServiceLocator.Instance.GetService<IPersonalizationService>();
 			LogHelper.Instance.Log("Putting the call to UpdateAccount on the queue.");
-			service.UpdateAccount(_customerProfileNumber, _emailAddress, mobilePhoneNumber, pin, _signupFlowResult.AcceptedPerksSignup, textClubEnabled, null, queued: true);
+			personalizationService.UpdateAccount(_customerProfileNumber, _emailAddress, mobilePhoneNumber, pin, _signupFlowResult.AcceptedPerksSignup, textClubEnabled, null, queued: true);
 		}
 	}
 
@@ -921,8 +921,8 @@ public class PerksSignupService : IPerksSignupService
 	{
 		IdleTimer = ServiceLocator.Instance.GetService<IIdleTimerService>().CreateIdleTimer("perks_signup_idle_timer");
 		int num = OrchestrationService.TTSGetTimeout("Medium", 60000);
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		num = ((service != null && service.TTSEnabled) ? 90000 : num);
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		num = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : num);
 		IdleTimer.Initialize(num, ShowTimeoutDialog);
 	}
 

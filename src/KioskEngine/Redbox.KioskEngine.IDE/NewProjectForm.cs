@@ -58,10 +58,10 @@ public class NewProjectForm : Form
 
 	private void OnLoad(object sender, EventArgs e)
 	{
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-		if (service != null)
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		if (machineSettingsStore != null)
 		{
-			m_locationTextBox.Text = service.GetValue("Ide", "DefaultProjectLocation", "C:\\Projects");
+			m_locationTextBox.Text = machineSettingsStore.GetValue("Ide", "DefaultProjectLocation", "C:\\Projects");
 		}
 	}
 

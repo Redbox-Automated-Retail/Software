@@ -22,10 +22,10 @@ public class KernelExtensionService : IKernelExtensionService
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service != null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (machineSettingsStore != null)
 			{
-				return service.GetValue("Core", "KernelExtensionSearchPath", new string[1] { "..\\kext" });
+				return machineSettingsStore.GetValue("Core", "KernelExtensionSearchPath", new string[1] { "..\\kext" });
 			}
 			return new string[1] { "..\\kext" };
 		}

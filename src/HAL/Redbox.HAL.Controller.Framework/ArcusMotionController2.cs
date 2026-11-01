@@ -170,8 +170,8 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	internal ArcusMotionController2()
 	{
-		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
-		ArcusDescriptor = new ArcusDeviceDescriptor(service);
+		IUsbDeviceService usbDeviceService = ServiceLocator.Instance.GetService<IUsbDeviceService>();
+		ArcusDescriptor = new ArcusDeviceDescriptor(usbDeviceService);
 		SerialPort port = new SerialPort(ControllerConfiguration.Instance.MotionControllerPortName, 115200, Parity.None, 8, StopBits.One);
 		IPortManagerService portManagerService = ServiceLocator.Instance.GetService<IPortManagerService>();
 		Port = portManagerService.Create(port);
@@ -236,7 +236,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	private ErrorCodes OnWaitMotor(int timeout, Axis axis, MoveOperation operation)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		TimeSpan timespan = new TimeSpan(0, 0, 0, 0, ControllerConfiguration.Instance.ArcusMotorQueryPause);
 		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
 		using ExecutionTimer executionTimer = new ExecutionTimer();
@@ -268,7 +268,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 				}
 				return motorWaitDecoder.Error;
 			}
-			service.SpinWait(timespan);
+			runtimeService.SpinWait(timespan);
 		}
 		while (executionTimer.ElapsedMilliseconds < timeout);
 		string text3 = motorWaitDecoder.FormatError(axis, text);

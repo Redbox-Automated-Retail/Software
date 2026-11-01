@@ -59,11 +59,11 @@ public sealed class GampHelper
 
 	public GampBackupResult WriteSystemData(IDictionary<string, int> data, bool createBackup)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		GampBackupResult gampBackupResult = new GampBackupResult();
 		if (createBackup)
 		{
-			gampBackupResult.BackupFile = service.CreateBackup("C:\\gamp\\SystemData.dat", BackupAction.Move);
+			gampBackupResult.BackupFile = runtimeService.CreateBackup("C:\\gamp\\SystemData.dat", BackupAction.Move);
 		}
 		using (StreamWriter streamWriter = new StreamWriter("C:\\gamp\\SystemData.dat"))
 		{
@@ -79,10 +79,10 @@ public sealed class GampHelper
 	public GampBackupResult WriteSlotDataFile(List<List<int>> data, bool createBackup)
 	{
 		GampBackupResult gampBackupResult = new GampBackupResult();
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		if (createBackup)
 		{
-			gampBackupResult.BackupFile = service.CreateBackup("C:\\gamp\\SlotData.dat", BackupAction.Move);
+			gampBackupResult.BackupFile = runtimeService.CreateBackup("C:\\gamp\\SlotData.dat", BackupAction.Move);
 		}
 		using (StreamWriter streamWriter = new StreamWriter("C:\\gamp\\SlotData.dat"))
 		{
@@ -220,10 +220,10 @@ public sealed class GampHelper
 		{
 			return;
 		}
-		string[] array = File.ReadAllLines("C:\\gamp\\SystemData.dat");
-		for (int i = 0; i < array.Length; i++)
+		string[] lines = File.ReadAllLines("C:\\gamp\\SystemData.dat");
+		for (int i = 0; i < lines.Length; i++)
 		{
-			string[] array2 = array[i].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			string[] array2 = lines[i].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			if (array2.Length >= 2 && int.TryParse(array2[1], out var result))
 			{
 				action(array2[0], result);

@@ -17,8 +17,8 @@ public class MessagePopupViewFunctions
 	[KernelFunction(Name = "kernel.show_message_popup_view_return_backward_inserted")]
 	internal static void ShowMessagePopupViewReturnBackwardInserted(Action timeOutAction, Action continueAction)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		if (service != null && service.AnimatedDiscReturnEnabled)
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		if (configuration != null && configuration.AnimatedDiscReturnEnabled)
 		{
 			AnimatedDiscReturnViewController.ShowAnimatedDiscReturnView(timeOutAction, continueAction);
 		}

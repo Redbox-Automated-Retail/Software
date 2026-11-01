@@ -46,11 +46,11 @@ public class HardwareStatePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
 		cmb_cameraGeneration.DataSource = Enum.GetValues(typeof(CameraGeneration));
-		cmb_cameraGeneration.SelectedItem = (CameraGeneration)service.CurrentCameraGeneration;
+		cmb_cameraGeneration.SelectedItem = (CameraGeneration)hardwareState.CurrentCameraGeneration;
 		cmb_barcodeDecoder.DataSource = Enum.GetValues(typeof(BarcodeServices));
-		cmb_barcodeDecoder.SelectedItem = (BarcodeServices)service.BarcodeDecoder;
+		cmb_barcodeDecoder.SelectedItem = (BarcodeServices)hardwareState.BarcodeDecoder;
 		textBoxBarcodesRead.Text = TestHardwareService.Instance.CameraReadStatsBarcodesRead.ToString();
 		textBoxReadAttempts.Text = TestHardwareService.Instance.CameraReadStatsReadAttemps.ToString();
 		textBoxSecureBarcodesRead.Text = TestHardwareService.Instance.CameraReadStatsSecureBarcodesRead.ToString();

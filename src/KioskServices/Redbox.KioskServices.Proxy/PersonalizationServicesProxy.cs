@@ -50,9 +50,9 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
 					Guid messageId = Guid.NewGuid();
-					IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-					bool sendUpdateAccountToKioskClientService = service.SendUpdateAccountToKioskClientService;
-					string arg = (sendUpdateAccountToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+					IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+					bool sendUpdateAccountToKioskClientService = configuration.SendUpdateAccountToKioskClientService;
+					string arg = (sendUpdateAccountToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 					LogHelper.Instance.Log($"Live call to remote IPersonalization.UpdateAccount, URL: {arg}");
 					IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 					IDictionary<string, object> dictionary;
@@ -150,9 +150,9 @@ public class PersonalizationServicesProxy : IPersonalizationServices
 			{
 				Interlocked.Increment(ref m_working);
 				Guid messageId = Guid.NewGuid();
-				IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-				bool sendUpdateAccountToKioskClientService = service.SendUpdateAccountToKioskClientService;
-				string arg = (sendUpdateAccountToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+				IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+				bool sendUpdateAccountToKioskClientService = configuration.SendUpdateAccountToKioskClientService;
+				string arg = (sendUpdateAccountToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 				LogHelper.Instance.Log($"Enqueue call to remote IPersonalizationServices.QueueAccountUpdate, URL: {arg}");
 				if (sendUpdateAccountToKioskClientService)
 				{

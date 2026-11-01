@@ -26,7 +26,7 @@ public sealed class AudioInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		AudioChannelState audio = Enum<AudioChannelState>.ParseIgnoringCase(base.Operands[0].Value, AudioChannelState.None);
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		HandleError(service.SetAudio(audio), context);
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		HandleError(controlSystem.SetAudio(audio), context);
 	}
 }

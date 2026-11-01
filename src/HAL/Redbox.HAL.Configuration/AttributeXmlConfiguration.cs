@@ -170,10 +170,10 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 		XmlNode xmlNode = parent.SelectSingleNode(singleNode);
 		try
 		{
-			IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 			if (xmlNode != null && !string.IsNullOrEmpty(xmlNode.InnerText))
 			{
-				return (T)ConversionHelper.ChangeType(service.ExpandConstantMacros(xmlNode.InnerText), typeof(T));
+				return (T)ConversionHelper.ChangeType(runtimeService.ExpandConstantMacros(xmlNode.InnerText), typeof(T));
 			}
 		}
 		catch (ArgumentException)

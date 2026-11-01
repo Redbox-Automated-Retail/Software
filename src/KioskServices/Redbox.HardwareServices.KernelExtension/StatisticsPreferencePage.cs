@@ -48,11 +48,11 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		m_routerResetEnabled.Checked = ((TestHardwareService)service).IsRouterResetEnabled;
-		m_routerResetSuccessful.Checked = ((TestHardwareService)service).RouterResetSuccessful;
-		m_touchScreenResetSuccessful.Checked = ((TestHardwareService)service).TouchScreenResetSuccessful;
-		_data = ((TestHardwareService)service).HardwareCorrectionStatistics;
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		m_routerResetEnabled.Checked = ((TestHardwareService)hardwareService).IsRouterResetEnabled;
+		m_routerResetSuccessful.Checked = ((TestHardwareService)hardwareService).RouterResetSuccessful;
+		m_touchScreenResetSuccessful.Checked = ((TestHardwareService)hardwareService).TouchScreenResetSuccessful;
+		_data = ((TestHardwareService)hardwareService).HardwareCorrectionStatistics;
 		m_statsList.DataSource = _data;
 	}
 
@@ -93,9 +93,9 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnResetTouchScreen(object sender, EventArgs e)
 	{
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		string jobId = null;
-		service.ResetTouchScreenController(delegate
+		hardwareService.ResetTouchScreenController(delegate
 		{
 		}, delegate(string jobIdentity, string status)
 		{
@@ -105,9 +105,9 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 
 	private void OnResetRouter(object sender, EventArgs e)
 	{
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		string jobId = null;
-		service.PowerCycleRouter(delegate
+		hardwareService.PowerCycleRouter(delegate
 		{
 		}, delegate(string jobIdentity, string status)
 		{

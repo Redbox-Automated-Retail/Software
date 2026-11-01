@@ -91,8 +91,8 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 	public static IRecommendedTitles UnrollRecommendedTitles(IRecommendedTitles recommendedTitles)
 	{
 		List<IRecommendedTitleId> list = new List<IRecommendedTitleId>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService != null)
 		{
 			foreach (IRecommendedTitleId recommendedTitle in recommendedTitles)
 			{
@@ -106,7 +106,7 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 					{
 						continue;
 					}
-					service.GetTitleRollupProduct(recommendedTitle.Id, out var kioskProduct);
+					dataService.GetTitleRollupProduct(recommendedTitle.Id, out var kioskProduct);
 					if (kioskProduct == null)
 					{
 						continue;
@@ -135,12 +135,12 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 
 	public static IRecommendedTitles GenerateRecommendedTitles(ITitleProduct titleProduct)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service == null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService == null)
 		{
 			return null;
 		}
-		ErrorList products = service.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleProduct.TitleType, BrowseSort.SortDate, null, null, null, null, isADAView: true, null, null, out var products2);
+		ErrorList products = dataService.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleProduct.TitleType, BrowseSort.SortDate, null, null, null, null, isADAView: true, null, null, out var products2);
 		if (products.Count > 0)
 		{
 			products.ToLogHelper();
@@ -169,19 +169,19 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 	public static List<IBrowseItemModel> CreateBrowseItemsFromRecommendedTitles(IRecommendedTitles recommendedTitles, int numberOfTitlesToShow)
 	{
 		List<IBrowseItemModel> list = new List<IBrowseItemModel>();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService != null)
 		{
 			foreach (IRecommendedTitleId recommendedTitle in recommendedTitles)
 			{
 				IKioskProduct kioskProduct = null;
 				if (recommendedTitle.IdType == RecommendedTitlesIdType.TitleID)
 				{
-					service.GetProduct(recommendedTitle.Id, excludeTitleRollup: true, out kioskProduct);
+					dataService.GetProduct(recommendedTitle.Id, excludeTitleRollup: true, out kioskProduct);
 				}
 				else if (recommendedTitle.IdType == RecommendedTitlesIdType.ProductGroupID)
 				{
-					service.GetTitleRollupProduct(recommendedTitle.Id, out kioskProduct);
+					dataService.GetTitleRollupProduct(recommendedTitle.Id, out kioskProduct);
 				}
 				if (kioskProduct == null)
 				{
@@ -242,8 +242,8 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 
 	private static void ConfigureTTS(RecommendedTitlesPopupViewModel recommendedTitlesPopupViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			recommendedTitlesPopupViewModel.OnGetSpeechControl = () => RecommendedTitlesPopupViewTextToSpeech.GetSpeechControl(GetRecommendedTitlesPopupViewModel);
 		}
@@ -251,22 +251,22 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("long", 40000);
-		IIdleTimer obj = service?.CreateIdleTimer("RecommendedTitlesPopupViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("RecommendedTitlesPopupViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("RecommendedTitlesPopupViewController time out", popOnly: false);
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("RecommendedTitlesPopupViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("RecommendedTitlesPopupViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("RecommendedTitlesPopupViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("RecommendedTitlesPopupViewTimer");
 	}
 
 	private static void ConfigureRecommendedTitlesBrowse(RecommendedTitlesPopupViewModel recommendedTitlesPopupViewModel, IRecommendedTitles recommendedTitles, int numberOfTitlesToShow)
@@ -307,8 +307,8 @@ public class RecommendedTitlesPopupViewController : BaseViewController
 			if (titleProduct != null)
 			{
 				Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseSelectionSelectedProduct = kioskProduct;
-				IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-				Redbox.Rental.Services.Session.Session.Instance.BrowseState.ProductDetailShownFromView = service?.Peek();
+				IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+				Redbox.Rental.Services.Session.Session.Instance.BrowseState.ProductDetailShownFromView = viewService?.Peek();
 				OrchestrationService.ViewShow("product_detail_view");
 			}
 		}

@@ -129,10 +129,10 @@ public class Resource : IResource
 			string attributeValue3 = document.DocumentElement.GetAttributeValue<string>("depends");
 			if (!string.IsNullOrEmpty(attributeValue3))
 			{
-				string[] array = attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < array.Length; i++)
+				string[] parts = attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < parts.Length; i++)
 				{
-					string text = array[i].Trim();
+					string text = parts[i].Trim();
 					if (!(text == resource.Name))
 					{
 						resource.AddDependency(text);

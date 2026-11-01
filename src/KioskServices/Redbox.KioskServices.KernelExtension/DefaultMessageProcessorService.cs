@@ -20,8 +20,8 @@ internal class DefaultMessageProcessorService : BaseQueueMessageProcessorService
 	private static bool OnProcessMessage(IMessage message, out IDictionary<string, object> response)
 	{
 		response = new Dictionary<string, object>();
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null || service.IsServerBusy || ServiceLocator.Instance.GetService<IStoreServices>().IsStandAlone)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null || healthServices.IsServerBusy || ServiceLocator.Instance.GetService<IStoreServices>().IsStandAlone)
 		{
 			return false;
 		}

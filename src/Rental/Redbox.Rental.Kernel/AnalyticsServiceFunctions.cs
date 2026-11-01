@@ -21,9 +21,9 @@ public static class AnalyticsServiceFunctions
 	[KernelFunction(Name = "kernel.analyticsserviceaddeventviewshown")]
 	internal static void AddEventViewShown(string sessionId)
 	{
-		IAnalyticsService service = ServiceLocator.Instance.GetService<IAnalyticsService>();
+		IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
-		service?.AddView(viewService?.GetCurrentViewAnalyticsName());
+		analyticsService?.AddView(viewService?.GetCurrentViewAnalyticsName());
 	}
 
 	[KernelFunction(Name = "kernel.analyticsserviceaddbuttonpressevent")]

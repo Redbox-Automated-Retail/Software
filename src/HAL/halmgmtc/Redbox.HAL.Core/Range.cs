@@ -20,18 +20,18 @@ public sealed class Range : IRange<int>
 
 	public Range(string value)
 	{
-		string[] array = value.Split("..".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		if (array.Length < 2)
+		string[] parts = value.Split("..".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		if (parts.Length < 2)
 		{
 			throw new ArgumentException("A range must be formatted as x..y");
 		}
 		End = 0;
 		Start = 0;
-		if (int.TryParse(array[1], out var result))
+		if (int.TryParse(parts[1], out var result))
 		{
 			End = result;
 		}
-		if (int.TryParse(array[0], out var result2))
+		if (int.TryParse(parts[0], out var result2))
 		{
 			Start = result2;
 		}

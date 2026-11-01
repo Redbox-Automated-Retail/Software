@@ -78,8 +78,8 @@ public class MainForm : Form
 		TunerLogInstance = log;
 		ImageGrabbedWaiter = new AutoResetEvent(initialState: false);
 		ImageSize = new Size(640, 480);
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		ImagesFolder = service.InstallPath("Video");
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		ImagesFolder = runtimeService.InstallPath("Video");
 		try
 		{
 			if (!Directory.Exists(ImagesFolder))

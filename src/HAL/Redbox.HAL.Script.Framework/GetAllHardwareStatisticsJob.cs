@@ -7,8 +7,8 @@ internal sealed class GetAllHardwareStatisticsJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IHardwareCorrectionStatisticService service = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
-		using StatsFormatter statsFormatter = new StatsFormatter(service.GetStats());
+		IHardwareCorrectionStatisticService hardwareCorrectionStatisticService = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
+		using StatsFormatter statsFormatter = new StatsFormatter(hardwareCorrectionStatisticService.GetStats());
 		statsFormatter.Format(base.Context);
 	}
 

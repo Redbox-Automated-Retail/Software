@@ -40,8 +40,8 @@ public static class MaintenanceViewFunctions
 	[KernelFunction(Name = "kernel.update_minutes_in_maintenance_mode")]
 	public static void UpdateMinutesInMaintenanceMode(string value)
 	{
-		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-		if (service != null && service.IsInMaintenanceMode && service.HasMinutesInMaintenanceModeSource)
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		if (applicationState != null && applicationState.IsInMaintenanceMode && applicationState.HasMinutesInMaintenanceModeSource)
 		{
 			ServiceLocator.Instance.GetService<IHealthServices>()?.EnqueueStatistic("MinutesInMaintenance", value);
 		}
@@ -49,10 +49,10 @@ public static class MaintenanceViewFunctions
 
 	private static void ClearMaintenanceMode(MaintenanceModeSource source)
 	{
-		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-		if (service != null && service.IsInMaintenanceMode)
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		if (applicationState != null && applicationState.IsInMaintenanceMode)
 		{
-			service.RemoveMaintenanceModeReason(source);
+			applicationState.RemoveMaintenanceModeReason(source);
 		}
 	}
 }

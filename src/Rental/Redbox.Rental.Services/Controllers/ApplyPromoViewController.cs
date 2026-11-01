@@ -198,8 +198,8 @@ public class ApplyPromoViewController : BaseViewController
 
 	private static void ConfigureTTS(ApplyPromoViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => ApplyPromoViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}

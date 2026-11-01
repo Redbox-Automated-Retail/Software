@@ -17,9 +17,9 @@ public static class RixFunctions
 		{
 			text += $" -D:{key}=\"{parameters[key]}\"";
 		}
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		Process process = new Process();
-		process.StartInfo = new ProcessStartInfo(service.ExpandProperties(path), text)
+		process.StartInfo = new ProcessStartInfo(macroService.ExpandProperties(path), text)
 		{
 			CreateNoWindow = true,
 			WindowStyle = ProcessWindowStyle.Hidden,
@@ -38,9 +38,9 @@ public static class RixFunctions
 		{
 			text += $" -D:{key}=\"{parameters[key]}\"";
 		}
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		Process process = new Process();
-		process.StartInfo = new ProcessStartInfo(service.ExpandProperties(path), text)
+		process.StartInfo = new ProcessStartInfo(macroService.ExpandProperties(path), text)
 		{
 			CreateNoWindow = true,
 			WindowStyle = ProcessWindowStyle.Hidden,
@@ -88,9 +88,9 @@ public static class RixFunctions
 		{
 			return -1;
 		}
-		int num = text.IndexOf(".exe");
-		string text2 = text.Substring(0, num + 5);
-		string arguments = text.Substring(num + 5);
+		int index = text.IndexOf(".exe");
+		string text2 = text.Substring(0, index + 5);
+		string arguments = text.Substring(index + 5);
 		if (!File.Exists(text2))
 		{
 			LogHelper.Instance.Log("In rixuninstallproduct, {0} does not exists from product {1}.", text2, productGuid);

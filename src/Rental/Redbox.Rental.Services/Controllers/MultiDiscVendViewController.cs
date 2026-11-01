@@ -40,8 +40,8 @@ public class MultiDiscVendViewController : BaseViewController
 			PopulateModelText(multiDiscVendViewModel);
 			ConfigureTTS(multiDiscVendViewModel);
 			viewUserControl.DataContext = multiDiscVendViewModel;
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			int value = ((service != null && service.TTSEnabled) ? 35000 : 15000);
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			int value = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 35000 : 15000);
 			(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("multi_disc_vend_view_timer", value, value, delegate
 			{
 				LogHelper.Instance.Log("multi_disc_vend_view_timer executed");
@@ -124,8 +124,8 @@ public class MultiDiscVendViewController : BaseViewController
 
 	private static void ConfigureTTS(MultiDiscVendViewModel multiDiscVendViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || multiDiscVendViewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || multiDiscVendViewModel == null)
 		{
 			return;
 		}

@@ -110,10 +110,10 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 		}
 		try
 		{
-			int num = Port.Read(ReadBuffer, 0, bytesToRead);
-			if (num != bytesToRead)
+			int bytesRead = Port.Read(ReadBuffer, 0, bytesToRead);
+			if (bytesRead != bytesToRead)
 			{
-				LogHelper.Instance.Log("[DataReceived ERROR] {0} The bytes to read {1} doesn't match the read count {2}", string.IsNullOrEmpty(FriendlyName) ? base.Name : FriendlyName, num, bytesToRead);
+				LogHelper.Instance.Log("[DataReceived ERROR] {0} The bytes to read {1} doesn't match the read count {2}", string.IsNullOrEmpty(FriendlyName) ? base.Name : FriendlyName, bytesRead, bytesToRead);
 			}
 			if (!ReadingFlag.IsSet)
 			{
@@ -121,7 +121,7 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 			}
 			if (Current == null)
 			{
-				LogHelper.Instance.Log("[DataReceived] {0} called outside of a send; {1} bytes read.", string.IsNullOrEmpty(FriendlyName) ? base.Name : FriendlyName, num);
+				LogHelper.Instance.Log("[DataReceived] {0} called outside of a send; {1} bytes read.", string.IsNullOrEmpty(FriendlyName) ? base.Name : FriendlyName, bytesRead);
 				return;
 			}
 			Current.Accumulate(ReadBuffer, bytesToRead);

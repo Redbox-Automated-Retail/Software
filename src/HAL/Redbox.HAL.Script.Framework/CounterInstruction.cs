@@ -32,7 +32,7 @@ public sealed class CounterInstruction : Instruction
 	{
 		KeyValuePair keyValuePair = base.Operands.GetKeyValuePair("NAME");
 		string keyValuePairValue = GetKeyValuePairValue<string>(keyValuePair, result.Errors, context);
-		IPersistentCounterService service = ServiceLocator.Instance.GetService<IPersistentCounterService>();
+		IPersistentCounterService persistentCounterService = ServiceLocator.Instance.GetService<IPersistentCounterService>();
 		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		string value = base.Operands[1].Value;
 		switch (Enum<Ops>.ParseIgnoringCase(value, Ops.None))
@@ -44,11 +44,11 @@ public sealed class CounterInstruction : Instruction
 			break;
 		}
 		case Ops.Create:
-			context.PushTop((service.Find(keyValuePairValue) != null) ? base.SuccessMessage : "FAILURE");
+			context.PushTop((persistentCounterService.Find(keyValuePairValue) != null) ? base.SuccessMessage : "FAILURE");
 			break;
 		case Ops.Decrement:
 		{
-			IPersistentCounter persistentCounter = service.Decrement(keyValuePairValue);
+			IPersistentCounter persistentCounter = persistentCounterService.Decrement(keyValuePairValue);
 			if (persistentCounter == null)
 			{
 				context.PushTop("FAILURE");
@@ -60,7 +60,7 @@ public sealed class CounterInstruction : Instruction
 		}
 		case Ops.Increment:
 		{
-			IPersistentCounter persistentCounter = service.Find(keyValuePairValue);
+			IPersistentCounter persistentCounter = persistentCounterService.Find(keyValuePairValue);
 			if (persistentCounter == null)
 			{
 				context.PushTop("FAILURE");
@@ -78,7 +78,7 @@ public sealed class CounterInstruction : Instruction
 				context.PushTop(base.SuccessMessage);
 				break;
 			}
-			IPersistentCounter persistentCounter = service.Find(keyValuePairValue);
+			IPersistentCounter persistentCounter = persistentCounterService.Find(keyValuePairValue);
 			if (persistentCounter == null)
 			{
 				context.PushTop("FAILURE");
@@ -89,7 +89,7 @@ public sealed class CounterInstruction : Instruction
 			break;
 		}
 		case Ops.Reset:
-			context.PushTop(service.Reset(keyValuePairValue) ? base.SuccessMessage : "FAILURE");
+			context.PushTop(persistentCounterService.Reset(keyValuePairValue) ? base.SuccessMessage : "FAILURE");
 			break;
 		}
 	}

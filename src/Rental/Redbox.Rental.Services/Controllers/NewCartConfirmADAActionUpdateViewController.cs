@@ -41,9 +41,9 @@ public class NewCartConfirmADAActionUpdateViewController : BaseViewController
 
 	private static void ConfigureTTS(NewCartConfirmADAActionUpdateViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			viewModel.ProcessGetSpeechControl = () => NewCartConfirmADAActionUpdateViewTextToSpeech.GetSpeechControl(GetShoppingCartViewModelFromView);
 		}
@@ -68,13 +68,13 @@ public class NewCartConfirmADAActionUpdateViewController : BaseViewController
 	{
 		List<DisplayCheckoutProductModel> list = new List<DisplayCheckoutProductModel>();
 		IRentalShoppingCart rentalShoppingCart = BaseViewController.RentalShoppingCartService?.CurrentRentalShoppingCart;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (rentalShoppingCart != null && service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (rentalShoppingCart != null && dataService != null)
 		{
 			foreach (IRentalShoppingCartTitleItem eachRentalShoppingCartItem in rentalShoppingCart.TitleItems)
 			{
 				IKioskProduct kioskProduct = null;
-				service.GetProduct(eachRentalShoppingCartItem.ProductId, excludeTitleRollup: true, out kioskProduct);
+				dataService.GetProduct(eachRentalShoppingCartItem.ProductId, excludeTitleRollup: true, out kioskProduct);
 				if (kioskProduct == null)
 				{
 					continue;

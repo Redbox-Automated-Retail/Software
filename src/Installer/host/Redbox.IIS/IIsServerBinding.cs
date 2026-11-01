@@ -14,12 +14,12 @@ public class IIsServerBinding
 
 	public IIsServerBinding(string value)
 	{
-		string[] array = value.Split(':');
-		if (array.Length == 3)
+		string[] parts = value.Split(':');
+		if (parts.Length == 3)
 		{
-			IpAddress = array[0];
-			TcpPort = array[1];
-			HostHeader = array[2];
+			IpAddress = parts[0];
+			TcpPort = parts[1];
+			HostHeader = parts[2];
 		}
 		SetDefaults();
 	}

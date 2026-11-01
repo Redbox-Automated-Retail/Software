@@ -511,15 +511,15 @@ public class WebsiteDefinition : Definition
 			{
 				try
 				{
-					string[] array3 = text.Split('|');
-					if (array3[0] == "vdir")
+					string[] parts = text.Split('|');
+					if (parts[0] == "vdir")
 					{
-						string[] array4 = array3[1].Split('/');
+						string[] array4 = parts[1].Split('/');
 						IIsWebsite.GetByID(int.Parse(array4[0]))?.GetVirtualDirectoryByName(array4[1])?.Delete();
 					}
 					else
 					{
-						IIsWebsite.GetByID(int.Parse(array3[1]))?.Delete();
+						IIsWebsite.GetByID(int.Parse(parts[1]))?.Delete();
 					}
 				}
 				catch

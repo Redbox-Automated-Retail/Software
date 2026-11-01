@@ -20,7 +20,7 @@ internal sealed class InitJob : NativeJobAdapter
 
 	protected override void ExecuteInner()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		ApplicationLog applicationLog = ApplicationLog.ConfigureLog(base.Context, logAppends: false, "init", flushOnWrite: true, null);
 		applicationLog.Write("Init start.");
 		applicationLog.Write("RESET controller boards.");
@@ -40,7 +40,7 @@ internal sealed class InitJob : NativeJobAdapter
 			{
 				ExposureFixer.ResetCameraProperties();
 			}
-			service.Wait(ControllerConfiguration.Instance.MinInitWakeupTime);
+			runtimeService.Wait(ControllerConfiguration.Instance.MinInitWakeupTime);
 			LogHelper.Instance.Log("Wait for COM ports complete.");
 		}
 		try
@@ -48,7 +48,7 @@ internal sealed class InitJob : NativeJobAdapter
 			if (ServiceLocator.Instance.GetService<IControlSystemService>().IsInitialized)
 			{
 				base.ControlSystem.Shutdown();
-				service.Wait(2000);
+				runtimeService.Wait(2000);
 			}
 			if (!base.ControlSystem.Initialize().Success)
 			{
@@ -79,23 +79,23 @@ internal sealed class InitJob : NativeJobAdapter
 			base.Context.CreateInfoResult("VERSION INFO", revision.Revision);
 			base.Context.Send("TEST TRACK");
 			base.ControlSystem.TrackOpen();
-			service.Wait(200);
+			runtimeService.Wait(200);
 			base.ControlSystem.TrackClose();
-			service.Wait(200);
+			runtimeService.Wait(200);
 			if (!base.ControlSystem.TrackOpen().Success)
 			{
 				base.Context.CreateInfoResult("TRACK OPEN FAILED", "The TRACK OPEN instruction timed out.");
 				AddError("TRACK OPEN instruction failed.");
 				return;
 			}
-			service.Wait(200);
+			runtimeService.Wait(200);
 			if (!base.ControlSystem.TrackClose().Success)
 			{
 				base.Context.CreateInfoResult("TRACK CLOSE FAILED", "The TRACK CLOSE instruction timed out.");
 				AddError("TRACK CLOSE instruction failed.");
 				return;
 			}
-			service.Wait(200);
+			runtimeService.Wait(200);
 			applicationLog.Write("Ensure the gripper is not obstructed.");
 			base.Context.Send("CHECK OBSTRUCTIONS");
 			ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IControllerService>().ClearGripper();
@@ -141,7 +141,7 @@ internal sealed class InitJob : NativeJobAdapter
 			StartCamera();
 			if (flag)
 			{
-				CheckShutdown(base.Context, service);
+				CheckShutdown(base.Context, runtimeService);
 			}
 			applicationLog.Write("Initialization complete.");
 			base.Context.Send("INIT STOP");
@@ -182,8 +182,8 @@ internal sealed class InitJob : NativeJobAdapter
 			EventLogEntry e = list[0];
 			if (e.InstanceId == 41)
 			{
-				IHardwareCorrectionStatisticService service = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
-				List<IHardwareCorrectionStatistic> stats = service.GetStats(HardwareCorrectionStatistic.UnexpectedPowerLoss);
+				IHardwareCorrectionStatisticService hardwareCorrectionStatisticService = ServiceLocator.Instance.GetService<IHardwareCorrectionStatisticService>();
+				List<IHardwareCorrectionStatistic> stats = hardwareCorrectionStatisticService.GetStats(HardwareCorrectionStatistic.UnexpectedPowerLoss);
 				if (stats.Count > 0)
 				{
 					IHardwareCorrectionStatistic hardwareCorrectionStatistic = stats.Find((IHardwareCorrectionStatistic each) => each.CorrectionTime == e.TimeGenerated && each.ProgramName == "init");
@@ -194,7 +194,7 @@ internal sealed class InitJob : NativeJobAdapter
 					}
 				}
 				LogHelper.Instance.Log("[init, {0}] Kiosk shutdown due to power event ( id = {1} timestamp = {2} )", ctx.ID, e.InstanceId, e.TimeGenerated);
-				service.Insert(HardwareCorrectionStatistic.UnexpectedPowerLoss, ctx, correctionOk: false, e.TimeGenerated);
+				hardwareCorrectionStatisticService.Insert(HardwareCorrectionStatistic.UnexpectedPowerLoss, ctx, correctionOk: false, e.TimeGenerated);
 			}
 			else
 			{

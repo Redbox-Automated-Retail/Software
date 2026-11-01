@@ -12,15 +12,15 @@ internal static class AuthenticationServicesFunctions
 	[KernelFunction(Name = "kernel.authsvcs_authenticateuser")]
 	internal static void AuthenticateUser(string storeNumber, string userName, string password, bool useLdapAuthentication, LuaFunction authenticationCallback)
 	{
-		IAuthenticationServices service = ServiceLocator.Instance.GetService<IAuthenticationServices>();
-		if (service == null)
+		IAuthenticationServices authenticationServices = ServiceLocator.Instance.GetService<IAuthenticationServices>();
+		if (authenticationServices == null)
 		{
 			return;
 		}
 		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 		if (callbackService != null)
 		{
-			service.Authenticate(storeNumber, userName, password, useLdapAuthentication, delegate(IRemoteServiceResult r)
+			authenticationServices.Authenticate(storeNumber, userName, password, useLdapAuthentication, delegate(IRemoteServiceResult r)
 			{
 				ICallbackService callbackService2 = callbackService;
 				ResultCallbackEntry resultCallbackEntry = new ResultCallbackEntry

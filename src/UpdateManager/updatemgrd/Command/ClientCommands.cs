@@ -13,10 +13,10 @@ internal class ClientCommands
 	[Usage("client poll")]
 	public void Poll(CommandContext context)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service != null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService != null)
 		{
-			context.Errors.AddRange(service.Poll().ToIPCErrors());
+			context.Errors.AddRange(updateService.Poll().ToIPCErrors());
 		}
 	}
 
@@ -24,10 +24,10 @@ internal class ClientCommands
 	[Usage("client serverpoll")]
 	public void ServerPoll(CommandContext context)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service != null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService != null)
 		{
-			context.Errors.AddRange(service.ServerPoll().ToIPCErrors());
+			context.Errors.AddRange(updateService.ServerPoll().ToIPCErrors());
 		}
 	}
 
@@ -35,8 +35,8 @@ internal class ClientCommands
 	[Usage("client execute-script script: [reset:]")]
 	public void ExecuteScript(CommandContext context, [CommandKeyValue(IsRequired = true)] string script, [CommandKeyValue(IsRequired = true)] bool? reset)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service == null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService == null)
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ internal class ClientCommands
 			context.Errors.Add(Redbox.IPC.Framework.Error.NewError("CC999", "Client Command execute-script requires the script parameter.", "Add a script parameter and retry."));
 			return;
 		}
-		Redbox.UpdateManager.ComponentModel.ErrorList errorList = service.ExecuteScript(script, out var result, reset ?? false);
+		Redbox.UpdateManager.ComponentModel.ErrorList errorList = updateService.ExecuteScript(script, out var result, reset ?? false);
 		if (errorList.ContainsError())
 		{
 			context.Errors.AddRange(errorList.ToIPCErrors());
@@ -60,8 +60,8 @@ internal class ClientCommands
 	[Usage("client execute-scriptfile file: [reset:]")]
 	public void ExecuteScriptFile(CommandContext context, [CommandKeyValue(IsRequired = true)] string file, [CommandKeyValue(IsRequired = true)] bool? reset)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service == null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService == null)
 		{
 			return;
 		}
@@ -70,7 +70,7 @@ internal class ClientCommands
 			context.Errors.Add(Redbox.IPC.Framework.Error.NewError("CC998", "Client Command execute-script requires the file path parameter.", "Add a script path parameter and retry."));
 			return;
 		}
-		Redbox.UpdateManager.ComponentModel.ErrorList errorList = service.ExecuteScriptFile(file, out var result, reset ?? false);
+		Redbox.UpdateManager.ComponentModel.ErrorList errorList = updateService.ExecuteScriptFile(file, out var result, reset ?? false);
 		if (errorList.ContainsError())
 		{
 			context.Errors.AddRange(errorList.ToIPCErrors());
@@ -85,10 +85,10 @@ internal class ClientCommands
 	[Usage("client force-data-files")]
 	public void ForceDataFiles(CommandContext context)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service != null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService != null)
 		{
-			context.Errors.AddRange(service.ForcePublish("dvd-data").ToIPCErrors());
+			context.Errors.AddRange(updateService.ForcePublish("dvd-data").ToIPCErrors());
 		}
 	}
 
@@ -96,10 +96,10 @@ internal class ClientCommands
 	[Usage("client get-dvd-data-state")]
 	public void GetDvdDataState(CommandContext context)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
-		if (service != null)
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
+		if (updateService != null)
 		{
-			context.Errors.AddRange(service.GetSubscriptionState("dvd-data", out var lastRun, out var state).ToIPCErrors());
+			context.Errors.AddRange(updateService.GetSubscriptionState("dvd-data", out var lastRun, out var state).ToIPCErrors());
 			if (!context.Errors.ContainsError())
 			{
 				context.Messages.Add(lastRun.ToJson());
@@ -112,10 +112,10 @@ internal class ClientCommands
 	[Usage("client list-current-downloads")]
 	public void ListCurrentDownloads(CommandContext context)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		if (service != null)
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		if (transferService != null)
 		{
-			context.Errors.AddRange(service.GetJobs(out var jobs, allUsers: false).ToIPCErrors());
+			context.Errors.AddRange(transferService.GetJobs(out var jobs, allUsers: false).ToIPCErrors());
 			if (!context.Errors.ContainsError())
 			{
 				context.Messages.Add(jobs.ToJson());

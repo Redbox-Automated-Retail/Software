@@ -15,8 +15,8 @@ public class LogHelper
 
 	public void Log(string fmt, params object[] stuff)
 	{
-		ILogger service = ServiceLocator.Instance.GetService<ILogger>();
-		if (service != null)
+		ILogger logger = ServiceLocator.Instance.GetService<ILogger>();
+		if (logger != null)
 		{
 			string message = string.Format(fmt, stuff);
 			Log(message, LogEntryType.Info);
@@ -40,11 +40,11 @@ public class LogHelper
 
 	public void Log(LogEntryType type, string message, params object[] args)
 	{
-		ILogger service = ServiceLocator.Instance.GetService<ILogger>();
-		if (service != null && IsLevelEnabled(type))
+		ILogger logger = ServiceLocator.Instance.GetService<ILogger>();
+		if (logger != null && IsLevelEnabled(type))
 		{
 			string message2 = string.Format(message, args);
-			service.Log(message2, type);
+			logger.Log(message2, type);
 		}
 	}
 

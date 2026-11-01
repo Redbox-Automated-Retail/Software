@@ -24,9 +24,9 @@ public class KioskCustomer
 
 	public virtual void ScrubData()
 	{
-		IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-		FirstName = service?.ObfuscateStringData(FirstName, 1, 0);
-		LoginEmail = service?.ObfuscateStringData(LoginEmail, 1, 0);
-		MobilePhoneNumber = service?.ObfuscateNumericData(MobilePhoneNumber, 1, 0);
+		IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
+		FirstName = obfuscationService?.ObfuscateStringData(FirstName, 1, 0);
+		LoginEmail = obfuscationService?.ObfuscateStringData(LoginEmail, 1, 0);
+		MobilePhoneNumber = obfuscationService?.ObfuscateNumericData(MobilePhoneNumber, 1, 0);
 	}
 }

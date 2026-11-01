@@ -387,13 +387,13 @@ public class DebuggerForm : Form
 
 	private void OnToggleDebugging(object sender, EventArgs e)
 	{
-		IUserSettingsStore service = ServiceLocator.Instance.GetService<IUserSettingsStore>();
-		bool value = service.GetValue<bool>("Debugger", "Enabled");
+		IUserSettingsStore userSettingsStore = ServiceLocator.Instance.GetService<IUserSettingsStore>();
+		bool value = userSettingsStore.GetValue<bool>("Debugger", "Enabled");
 		if (value)
 		{
 			OnDeleteAllBreakpoints(sender, e);
 		}
-		service.SetValue("Debugger", "Enabled", !value);
+		userSettingsStore.SetValue("Debugger", "Enabled", !value);
 		SetDebuggerState();
 		SetBreakpointState();
 	}
@@ -574,9 +574,9 @@ public class DebuggerForm : Form
 		{
 			return;
 		}
-		string[] array = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] pathParts = path.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		int num = 0;
-		TreeNode[] array2 = m_treeView.Nodes.Find(array[num++], searchAllChildren: false);
+		TreeNode[] array2 = m_treeView.Nodes.Find(pathParts[num++], searchAllChildren: false);
 		if (array2.Length == 0)
 		{
 			return;
@@ -585,11 +585,11 @@ public class DebuggerForm : Form
 		for (treeNode = array2[0]; treeNode != null; treeNode = array2[0])
 		{
 			treeNode.Expand();
-			if (num >= array.Length)
+			if (num >= pathParts.Length)
 			{
 				break;
 			}
-			array2 = treeNode.Nodes.Find(array[num++], searchAllChildren: false);
+			array2 = treeNode.Nodes.Find(pathParts[num++], searchAllChildren: false);
 			if (array2.Length == 0)
 			{
 				break;
@@ -600,8 +600,8 @@ public class DebuggerForm : Form
 
 	private void SetDebuggerState()
 	{
-		IUserSettingsStore service = ServiceLocator.Instance.GetService<IUserSettingsStore>();
-		bool flag = Debugger != null && service.GetValue<bool>("Debugger", "Enabled");
+		IUserSettingsStore userSettingsStore = ServiceLocator.Instance.GetService<IUserSettingsStore>();
+		bool flag = Debugger != null && userSettingsStore.GetValue<bool>("Debugger", "Enabled");
 		m_enableDebuggingToolStripMenuItem.Checked = flag;
 		m_enableDebuggingToolStripMenuItem.Text = (flag ? "Disable Debugging" : "Enable Debugging");
 		m_enableDebuggingToolStripButton.Checked = flag;
@@ -621,12 +621,12 @@ public class DebuggerForm : Form
 
 	private void SetBreakpointState()
 	{
-		IUserSettingsStore service = ServiceLocator.Instance.GetService<IUserSettingsStore>();
+		IUserSettingsStore userSettingsStore = ServiceLocator.Instance.GetService<IUserSettingsStore>();
 		m_codeEditor.AllowBreakPoints = false;
 		m_breakpointsToolStripMenuItem.Visible = false;
 		m_toggleBreakpointToolStripMenuItem.Enabled = false;
 		m_deleteAllBreakpointToolStripMenuItem.Enabled = false;
-		if (Debugger == null || !service.GetValue<bool>("Debugger", "Enabled"))
+		if (Debugger == null || !userSettingsStore.GetValue<bool>("Debugger", "Enabled"))
 		{
 			return;
 		}

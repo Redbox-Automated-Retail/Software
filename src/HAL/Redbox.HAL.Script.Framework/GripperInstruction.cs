@@ -73,7 +73,7 @@ public sealed class GripperInstruction : Instruction
 		{
 			text = text2;
 		}
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
 		switch (text)
@@ -98,7 +98,7 @@ public sealed class GripperInstruction : Instruction
 			break;
 		case "STATUS":
 		{
-			IPickerSensorReadResult pickerSensorReadResult = service.ReadPickerSensors();
+			IPickerSensorReadResult pickerSensorReadResult = controlSystem.ReadPickerSensors();
 			if (!pickerSensorReadResult.Success || pickerSensorReadResult.IsFull)
 			{
 				context.PushTop("FULL");
@@ -111,10 +111,10 @@ public sealed class GripperInstruction : Instruction
 		}
 		case "EXTEND":
 		{
-			IControlResponse controlResponse = service.ExtendArm();
+			IControlResponse controlResponse = controlSystem.ExtendArm();
 			if (controlResponse.TimedOut)
 			{
-				service.RetractArm();
+				controlSystem.RetractArm();
 			}
 			HandleError(controlResponse, context);
 			break;
@@ -122,16 +122,16 @@ public sealed class GripperInstruction : Instruction
 		case "EXTEND-FOR-TIME":
 			if (timeOutValue.HasValue)
 			{
-				service.TimedExtend(timeOutValue.Value);
+				controlSystem.TimedExtend(timeOutValue.Value);
 			}
 			else
 			{
-				service.TimedExtend();
+				controlSystem.TimedExtend();
 			}
 			break;
 		case "RETRACT":
 		{
-			IControlResponse response = service.RetractArm();
+			IControlResponse response = controlSystem.RetractArm();
 			HandleError(response, context);
 			break;
 		}

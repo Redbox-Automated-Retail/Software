@@ -41,11 +41,11 @@ public partial class TitleRollupOverlayUserControl : UserControl, IComponentConn
 
 	public void ApplyStyle()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(DVDButton);
-		obj?.SetStyle(BlurayButton);
-		obj?.SetStyle(_4kUhdButton);
-		obj?.SetStyle(CancelButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(DVDButton);
+		theme?.SetStyle(BlurayButton);
+		theme?.SetStyle(_4kUhdButton);
+		theme?.SetStyle(CancelButton);
 	}
 
 	private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

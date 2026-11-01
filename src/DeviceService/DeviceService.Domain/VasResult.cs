@@ -67,19 +67,19 @@ public class VasResult
 		string result = null;
 		foreach (string datum in Data)
 		{
-			string[] array = datum.Split(VasStringSeperator);
-			if (array[0] != 0.ToString() || array[1] != "0")
+			string[] parts = datum.Split(VasStringSeperator);
+			if (parts[0] != 0.ToString() || parts[1] != "0")
 			{
 				continue;
 			}
-			_ = array[2];
-			_ = array[3];
-			string text = array[4];
+			_ = parts[2];
+			_ = parts[3];
+			string text = parts[4];
 			if (string.IsNullOrEmpty(text) || text == "0")
 			{
 				continue;
 			}
-			string text2 = array[5];
+			string text2 = parts[5];
 			if (!string.IsNullOrEmpty(text2) && text2 != "0")
 			{
 				string text3 = ParseTags.ConvertHexToString(text2, context?.Errors);
@@ -108,13 +108,13 @@ public class VasResult
 		_ = array[4];
 		foreach (string item in Data.Skip(1))
 		{
-			string[] array2 = item.Split(VasStringSeperator);
-			if (!(array2[0] != 0.ToString()) && !(array2[1] != 0.ToString()))
+			string[] parts = item.Split(VasStringSeperator);
+			if (!(parts[0] != 0.ToString()) && !(parts[1] != 0.ToString()))
 			{
-				text = array2[2];
+				text = parts[2];
 				if (!string.IsNullOrWhiteSpace(text))
 				{
-					Enum.TryParse<VasCardType>(array2[3], out var _);
+					Enum.TryParse<VasCardType>(parts[3], out var _);
 				}
 			}
 		}

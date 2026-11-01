@@ -11,10 +11,10 @@ public static class ControlPanelFunctions
 	[KernelFunction(Name = "kernel.update_user_name")]
 	internal static void UpdateUserName(string userName)
 	{
-		IControlPanelService service = ServiceLocator.Instance.GetService<IControlPanelService>();
-		if (service != null)
+		IControlPanelService controlPanelService = ServiceLocator.Instance.GetService<IControlPanelService>();
+		if (controlPanelService != null)
 		{
-			service.LoggedInUser = userName;
+			controlPanelService.LoggedInUser = userName;
 		}
 	}
 

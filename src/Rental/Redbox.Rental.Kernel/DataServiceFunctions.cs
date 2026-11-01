@@ -47,12 +47,12 @@ public static class DataServiceFunctions
 		{
 			if (dataStore.Equals(CacheTableName))
 			{
-				IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-				if (service == null)
+				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+				if (dataStoreService == null)
 				{
 					return null;
 				}
-				Dictionary<string, object> all = service.GetAll(dataStore, tableName);
+				Dictionary<string, object> all = dataStoreService.GetAll(dataStore, tableName);
 				if (all == null)
 				{
 					return null;
@@ -87,12 +87,12 @@ public static class DataServiceFunctions
 			if (dataStore.Equals(CacheTableName))
 			{
 				LuaTable luaTable = (LuaTable)ServiceLocator.Instance.GetService<IKernelService>().NewTable();
-				IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-				if (service == null)
+				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+				if (dataStoreService == null)
 				{
 					return luaTable;
 				}
-				ReadOnlyCollection<string> keys = service.GetKeys(dataStore, tableName);
+				ReadOnlyCollection<string> keys = dataStoreService.GetKeys(dataStore, tableName);
 				int num = 1;
 				foreach (string item in keys)
 				{
@@ -145,10 +145,10 @@ public static class DataServiceFunctions
 		{
 			if (dataStore.Equals(CacheTableName))
 			{
-				IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-				if (service != null)
+				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+				if (dataStoreService != null)
 				{
-					service.Remove(dataStore, tableName, keyName);
+					dataStoreService.Remove(dataStore, tableName, keyName);
 					ServiceLocator.Instance.GetService<IDataService>().CacheTablesRemove(tableName, keyName);
 				}
 			}
@@ -182,10 +182,10 @@ public static class DataServiceFunctions
 		{
 			if (dataStore.Equals(CacheTableName))
 			{
-				IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-				if (service != null)
+				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+				if (dataStoreService != null)
 				{
-					service.Set(dataStore, tableName, keyName, data);
+					dataStoreService.Set(dataStore, tableName, keyName, data);
 					ServiceLocator.Instance.GetService<IDataService>().CacheTablesUpdate(tableName, keyName, data);
 				}
 			}

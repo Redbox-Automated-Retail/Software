@@ -179,10 +179,10 @@ public sealed class KernelService : IKernelService, IDisposable
 		}
 		ExecuteScript(m_startupScriptResourceName);
 		IsApplicationRunning = true;
-		IDebugService service = ServiceLocator.Instance.GetService<IDebugService>();
-		if (service != null)
+		IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+		if (debugService != null)
 		{
-			service.IsApplicationRunning = true;
+			debugService.IsApplicationRunning = true;
 		}
 	}
 
@@ -192,8 +192,8 @@ public sealed class KernelService : IKernelService, IDisposable
 		{
 			return;
 		}
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		XmlNode xml = service.GetXml(resourceName);
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		XmlNode xml = resourceBundleService.GetXml(resourceName);
 		if (xml == null)
 		{
 			LogHelper.Instance.LogTo("TestServices", "Test Control resource not found; Integration tests aborted.");
@@ -218,8 +218,8 @@ public sealed class KernelService : IKernelService, IDisposable
 			XmlNode testStageNode2 = item.SelectSingleNode("execution");
 			RunTestScripts(testStageNode2);
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Deactivate Bundle Application");
-			service.SetSwitchToBundle(service.ActiveBundle);
-			service.Switch(out var _);
+			resourceBundleService.SetSwitchToBundle(resourceBundleService.ActiveBundle);
+			resourceBundleService.Switch(out var _);
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Teardown");
 			XmlNode testStageNode3 = item.SelectSingleNode("teardown");
 			RunTestScripts(testStageNode3);
@@ -287,13 +287,13 @@ public sealed class KernelService : IKernelService, IDisposable
 	{
 		try
 		{
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			IResource resource = service.GetResource(resourceName);
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			IResource resource = resourceBundleService.GetResource(resourceName);
 			if (resource == null)
 			{
 				return null;
 			}
-			if (!LoadDependentScripts(resource.Dependencies, service))
+			if (!LoadDependentScripts(resource.Dependencies, resourceBundleService))
 			{
 				return null;
 			}
@@ -422,11 +422,11 @@ public sealed class KernelService : IKernelService, IDisposable
 		{
 			return;
 		}
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		foreach (XmlNode item in xmlNodeList)
 		{
 			string attributeValue = item.GetAttributeValue<string>("value");
-			string chunk = Encoding.UTF8.GetString(service.ActiveBundle.Storage.GetEntryContent(attributeValue));
+			string chunk = Encoding.UTF8.GetString(resourceBundleService.ActiveBundle.Storage.GetEntryContent(attributeValue));
 			ExecuteChunk(chunk);
 		}
 	}
@@ -437,9 +437,9 @@ public sealed class KernelService : IKernelService, IDisposable
 		{
 			DateTime now = DateTime.Now;
 			ManualResetEvent manualResetEvent = new ManualResetEvent(initialState: false);
-			IKernelExtensionService service = ServiceLocator.Instance.GetService<IKernelExtensionService>();
+			IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
 			Redbox.KioskEngine.ComponentModel.ErrorList errors;
-			while (!service.CanSwitch(out errors))
+			while (!kernelExtensionService.CanSwitch(out errors))
 			{
 				LogHelper.Instance.Log("Unsafe for shut down; wait for 15 seconds before next check.");
 				manualResetEvent.WaitOne(15000);

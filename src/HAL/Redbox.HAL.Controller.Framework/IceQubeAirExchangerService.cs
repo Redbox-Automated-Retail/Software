@@ -41,8 +41,8 @@ internal class IceQubeAirExchangerService : IAirExchangerService, IConfiguration
 		{
 			return AirExchangerStatus.NotConfigured;
 		}
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		return CheckStatusInner(service);
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		return CheckStatusInner(controlSystem);
 	}
 
 	public void TurnOnFan()
@@ -54,10 +54,10 @@ internal class IceQubeAirExchangerService : IAirExchangerService, IConfiguration
 				LogHelper.Instance.Log("Fan is already on - bypass.");
 				return;
 			}
-			IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-			TurnOnFanChecked(service);
+			IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+			TurnOnFanChecked(controlSystem);
 			Thread.Sleep(500);
-			ResetChecked(service);
+			ResetChecked(controlSystem);
 		}
 	}
 
@@ -70,8 +70,8 @@ internal class IceQubeAirExchangerService : IAirExchangerService, IConfiguration
 				LogHelper.Instance.WithContext("Air exchanger fan is already off - bypass.");
 				return;
 			}
-			IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-			TurnOffFanChecked(service);
+			IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+			TurnOffFanChecked(controlSystem);
 			Thread.Sleep(10500);
 		}
 	}
@@ -82,8 +82,8 @@ internal class IceQubeAirExchangerService : IAirExchangerService, IConfiguration
 		{
 			return AirExchangerStatus.NotConfigured;
 		}
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		return ResetChecked(service);
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		return ResetChecked(controlSystem);
 	}
 
 	public int PersistentFailureCount()

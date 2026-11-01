@@ -32,7 +32,7 @@ public class TitleDevDetailsController : BaseViewController
 
 	public static TitleDetailDevModel GetModel()
 	{
-		IPricingService service = ServiceLocator.Instance.GetService<IPricingService>();
+		IPricingService pricingService = ServiceLocator.Instance.GetService<IPricingService>();
 		ServiceLocator.Instance.GetService<IStoreManager>();
 		TitleDetailDevModel titleDetailDevModel = new TitleDetailDevModel();
 		ITitleProduct titleProductObj = (ITitleProduct)Redbox.Rental.Services.Session.Session.Instance.BrowseState.BrowseSelectionSelectedProduct;
@@ -42,7 +42,7 @@ public class TitleDevDetailsController : BaseViewController
 		titleDetailDevModel.OnTitleRollupButtonClicked = (Action)Delegate.Combine(titleDetailDevModel.OnTitleRollupButtonClicked, new Action(TitleRollUpAction));
 		titleDetailDevModel.OnDigitalButtonClicked = (Action)Delegate.Combine(titleDetailDevModel.OnDigitalButtonClicked, new Action(DigitalCodeAction));
 		titleDetailDevModel.On4KUhdButtonClicked = (Action)Delegate.Combine(titleDetailDevModel.On4KUhdButtonClicked, new Action(FourKUhdAction));
-		SetTitleProductDetails(titleDetailDevModel, titleProductObj, service);
+		SetTitleProductDetails(titleDetailDevModel, titleProductObj, pricingService);
 		titleDetailDevModel.OnAddProductWithCustomPriceButtonClicked = OnAddProductWithCustomPriceButtonClicked;
 		return titleDetailDevModel;
 	}
@@ -140,8 +140,8 @@ public class TitleDevDetailsController : BaseViewController
 		titleProductDetailDevModel.TitleRollupProductGroupId = TitleProductObj.TitleRollupProductGroupId;
 		titleProductDetailDevModel.DisplayAddProductWithCustomPriceButtonVisibility = ((!titleProductDetailDevModel.InStock) ? Visibility.Collapsed : Visibility.Visible);
 		titleProductDetailDevModel.AddProductWithCustomPriceButtonVisibility = Visibility.Collapsed;
-		IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		titleProductDetailDevModel.ImgFile = service.GetBitmapImage(TitleProductObj.ImageFile);
+		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+		titleProductDetailDevModel.ImgFile = bitmapCacheService.GetBitmapImage(TitleProductObj.ImageFile);
 		return titleProductDetailDevModel;
 	}
 

@@ -67,8 +67,8 @@ public class PollService : IPollService
 			{
 				errorList.AddRange(pollRequest5);
 			}
-			IFileSetService service = ServiceLocator.Instance.GetService<IFileSetService>();
-			ErrorList pollRequest6 = ((IPollRequestReply)service).GetPollRequest(out var pollRequestList5);
+			IFileSetService fileSetService = ServiceLocator.Instance.GetService<IFileSetService>();
+			ErrorList pollRequest6 = ((IPollRequestReply)fileSetService).GetPollRequest(out var pollRequestList5);
 			if (pollRequest6.ContainsError())
 			{
 				errorList.AddRange(pollRequest6);
@@ -111,7 +111,7 @@ public class PollService : IPollService
 				IEnumerable<PollReply> source = pollReplyList.Where((PollReply pr) => pr.PollReplyType == PollReplyType.StoreFileChangeSet);
 				errorList.AddRange(StoreFileService.Instance.ProcessPollReply(source.ToList()));
 				IEnumerable<PollReply> source2 = pollReplyList.Where((PollReply pr) => pr.PollReplyType == PollReplyType.FileSetChangeSet);
-				errorList.AddRange(service.ProcessPollReply(source2.ToList()));
+				errorList.AddRange(fileSetService.ProcessPollReply(source2.ToList()));
 			}
 		}
 		finally

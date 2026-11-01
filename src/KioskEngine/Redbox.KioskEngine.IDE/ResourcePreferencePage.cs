@@ -56,13 +56,13 @@ public class ResourcePreferencePage : UserControl, IPreferencePageHost
 	public void LoadValues(IPreferencePage preferencePage)
 	{
 		m_resourceNameTextBox.Text = preferencePage.GetValue("ResourceName", string.Empty);
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return;
 		}
 		m_resourceTypeCombo.Items.Clear();
-		foreach (KeyValuePair<string, IResourceType> resourceType in service.GetResourceTypes())
+		foreach (KeyValuePair<string, IResourceType> resourceType in resourceBundleService.GetResourceTypes())
 		{
 			m_resourceTypeCombo.Items.Add(resourceType.Key);
 		}
@@ -81,15 +81,15 @@ public class ResourcePreferencePage : UserControl, IPreferencePageHost
 			return;
 		}
 		m_scoredResourceListView.Items.Clear();
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return;
 		}
-		IEnumerable<IResource> enumerable = from r in service.GetResourcesUnfiltered(m_resourceTypeCombo.Text)
+		IEnumerable<IResource> enumerable = from r in resourceBundleService.GetResourcesUnfiltered(m_resourceTypeCombo.Text)
 			where r.Name == m_resourceNameTextBox.Text
 			select r;
-		IResourceBundleFilter filter = service.Filter;
+		IResourceBundleFilter filter = resourceBundleService.Filter;
 		List<ScoredResource> list = new List<ScoredResource>();
 		foreach (IResource each in enumerable)
 		{

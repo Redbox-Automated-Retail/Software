@@ -55,11 +55,11 @@ public sealed class NamedPipeClientSession : AbstractPipeClientSession
 	private string GetNextBufferLine()
 	{
 		string text = base.ReadBuilder.ToString();
-		int num = text.IndexOf(Environment.NewLine);
-		if (num != -1)
+		int index = text.IndexOf(Environment.NewLine);
+		if (index != -1)
 		{
-			string text2 = text.Substring(0, num + Environment.NewLine.Length);
-			base.ReadBuilder.Remove(0, num + Environment.NewLine.Length);
+			string text2 = text.Substring(0, index + Environment.NewLine.Length);
+			base.ReadBuilder.Remove(0, index + Environment.NewLine.Length);
 			return text2.Trim();
 		}
 		return string.Empty;
@@ -79,10 +79,10 @@ public sealed class NamedPipeClientSession : AbstractPipeClientSession
 			{
 				if (ServerEvent != null)
 				{
-					int num = nextBufferLine.IndexOf("]");
-					if (num != -1)
+					int index = nextBufferLine.IndexOf("]");
+					if (index != -1)
 					{
-						ServerEvent(nextBufferLine.Substring(num + 1).Trim());
+						ServerEvent(nextBufferLine.Substring(index + 1).Trim());
 					}
 				}
 			}

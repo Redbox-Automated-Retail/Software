@@ -74,8 +74,8 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		m_refreshRateToolStripTextBox.Text = service.QueueReadPeriod.ToString();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		m_refreshRateToolStripTextBox.Text = queueService.QueueReadPeriod.ToString();
 		SetButtonState();
 		RefreshList();
 	}
@@ -100,11 +100,11 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnClear(object sender, EventArgs e)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		try
 		{
 			Cursor = Cursors.WaitCursor;
-			service.Clear();
+			queueService.Clear();
 			RefreshList();
 		}
 		finally
@@ -115,11 +115,11 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnExport(object sender, EventArgs e)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		bool flag = service.IsWorkerStarted();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		bool flag = queueService.IsWorkerStarted();
 		if (flag)
 		{
-			service.StopQueueWorker();
+			queueService.StopQueueWorker();
 		}
 		try
 		{
@@ -132,14 +132,14 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 			};
 			if (saveFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				service.ExportToXml(saveFileDialog.FileName);
+				queueService.ExportToXml(saveFileDialog.FileName);
 			}
 		}
 		finally
 		{
 			if (flag)
 			{
-				service.StartQueueWorker();
+				queueService.StartQueueWorker();
 			}
 			Cursor = Cursors.Default;
 			SetButtonState();
@@ -148,7 +148,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnRemove(object sender, EventArgs e)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		if (m_queueListView.SelectedItems.Count == 0)
 		{
 			return;
@@ -158,7 +158,7 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 			Cursor = Cursors.WaitCursor;
 			foreach (ListViewItem selectedItem in m_queueListView.SelectedItems)
 			{
-				service.DeleteMessage(int.Parse(selectedItem.Text));
+				queueService.DeleteMessage(int.Parse(selectedItem.Text));
 			}
 			RefreshList();
 		}
@@ -170,12 +170,12 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnStopQueueWorker(object sender, EventArgs e)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		try
 		{
 			Cursor = Cursors.WaitCursor;
 			m_stopQueueWorkerToolStripButton.Enabled = false;
-			service.StopQueueWorker();
+			queueService.StopQueueWorker();
 			m_startQueueWorkerToolStripButton.Enabled = true;
 		}
 		finally
@@ -186,12 +186,12 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void OnStartQueueWorker(object sender, EventArgs e)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		try
 		{
 			Cursor = Cursors.WaitCursor;
 			m_startQueueWorkerToolStripButton.Enabled = false;
-			service.StartQueueWorker();
+			queueService.StartQueueWorker();
 			m_stopQueueWorkerToolStripButton.Enabled = true;
 		}
 		finally
@@ -207,12 +207,12 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 
 	private void RefreshList()
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		m_queueListView.SuspendLayout();
 		m_queueListView.BeginUpdate();
 		m_queueListView.Items.Clear();
 		m_codeEditor.ClearText();
-		service.ForEach(delegate(IMessage m)
+		queueService.ForEach(delegate(IMessage m)
 		{
 			ListViewItem listViewItem = new ListViewItem(m.ID.ToString());
 			if (m.Type != "Reconcile")
@@ -251,9 +251,9 @@ public class QueuePreferencePage : UserControl, IPreferencePageHost
 	{
 		if (m_queueListView.SelectedItems.Count != 0)
 		{
-			IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 			string s = m_queueListView.SelectedItems[0].SubItems[0].Text;
-			service.Update(int.Parse(s), m_codeEditor.Text);
+			queueService.Update(int.Parse(s), m_codeEditor.Text);
 			RefreshList();
 		}
 	}

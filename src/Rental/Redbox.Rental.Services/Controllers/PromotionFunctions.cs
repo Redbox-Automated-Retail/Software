@@ -55,7 +55,7 @@ public class PromotionFunctions
 			};
 			if (promoCodeValidationResult.Success)
 			{
-				IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+				IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 				IPromotion newPromotion = CreatePromotionFromPromoCodeValidationResult(promoCodeValidationResult);
 				IPromoCodeValidationInfo promoCodeValidationInfo = SetAndValidateAndUpdatePromotion(newPromotion);
 				if (promoCodeValidationResult.IntentCode == PromotionIntentCode.FirstNightGameGameRequired && !promoCodeValidationInfo.IsCartValid && !promoCodeValidationInfo.IsCartInvalidBecauseOfMultiNightPricing)
@@ -146,7 +146,7 @@ public class PromotionFunctions
 						doneAction();
 					}
 				}
-				else if (newPromotion.ActionCode == PromotionActionCode.Rental && service.CurrentRentalShoppingCart.HasItemAction(RentalShoppingCartItemAction.purchase))
+				else if (newPromotion.ActionCode == PromotionActionCode.Rental && rentalShoppingCartService.CurrentRentalShoppingCart.HasItemAction(RentalShoppingCartItemAction.purchase))
 				{
 					if (!promoCodeValidationInfo.IsCartValid)
 					{
@@ -157,7 +157,7 @@ public class PromotionFunctions
 						doneAction();
 					}
 				}
-				else if (newPromotion.ActionCode == PromotionActionCode.Purchase && service.CurrentRentalShoppingCart.HasItemAction(RentalShoppingCartItemAction.rental))
+				else if (newPromotion.ActionCode == PromotionActionCode.Purchase && rentalShoppingCartService.CurrentRentalShoppingCart.HasItemAction(RentalShoppingCartItemAction.rental))
 				{
 					if (!promoCodeValidationInfo.IsCartValid)
 					{
@@ -325,10 +325,10 @@ public class PromotionFunctions
 	private static IPromoCodeValidationInfo SetAndValidateAndUpdatePromotion(IPromotion promotion)
 	{
 		PromotionService.Instance?.SetPromotion(promotion);
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IPromoCodeValidationInfo result = service.CurrentRentalShoppingCart.ValidateAndUpdatePromoCode();
-		service.CurrentRentalShoppingCart.UpdateServiceFee();
-		service.CurrentRentalShoppingCart.ClearLoyaltyPointsToBeEarned();
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IPromoCodeValidationInfo result = rentalShoppingCartService.CurrentRentalShoppingCart.ValidateAndUpdatePromoCode();
+		rentalShoppingCartService.CurrentRentalShoppingCart.UpdateServiceFee();
+		rentalShoppingCartService.CurrentRentalShoppingCart.ClearLoyaltyPointsToBeEarned();
 		return result;
 	}
 

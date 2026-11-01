@@ -52,10 +52,10 @@ public class HardwareHelper
 			LogHelper.Instance.Log("No Results to process.");
 			return;
 		}
-		IHardwareState service = ServiceLocator.Instance.GetService<IHardwareState>();
+		IHardwareState hardwareState = ServiceLocator.Instance.GetService<IHardwareState>();
 		IBarcodeTrackingService barcodeTrackingService = ServiceLocator.Instance.GetService<IBarcodeTrackingService>();
-		BarcodeServices decoderUsed = (Enum.TryParse<BarcodeServices>(service?.BarcodeDecoder.ToString(), out var result) ? result : BarcodeServices.None);
-		CameraGeneration cameraType = (Enum.TryParse<CameraGeneration>(service?.CurrentCameraGeneration.ToString(), out var result2) ? result2 : CameraGeneration.Unknown);
+		BarcodeServices decoderUsed = (Enum.TryParse<BarcodeServices>(hardwareState?.BarcodeDecoder.ToString(), out var result) ? result : BarcodeServices.None);
+		CameraGeneration cameraType = (Enum.TryParse<CameraGeneration>(hardwareState?.CurrentCameraGeneration.ToString(), out var result2) ? result2 : CameraGeneration.Unknown);
 		string kioskId = ServiceLocator.Instance.GetService<IDataService>()?.GetStore().StoreId.ToString() ?? null;
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		string kioskClientSoftwareVersion = macroService["EngineVersion"] ?? "Not Found";
@@ -94,9 +94,9 @@ public class HardwareHelper
 			LogHelper.Instance.Log("JobId wasn't provided.");
 			return null;
 		}
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		ReadOnlyCollection<IHardwareResult> hardwareResults = null;
-		service?.GetProgramResults(jobId, out hardwareResults);
+		hardwareService?.GetProgramResults(jobId, out hardwareResults);
 		return hardwareResults;
 	}
 }

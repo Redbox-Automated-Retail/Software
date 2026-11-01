@@ -14,13 +14,13 @@ public class ServiceType
 
 	public ServiceType(string type)
 	{
-		string[] array = type.Split(',');
-		ClassName = array[0];
-		Assembly = array[1];
-		if (array.Length > 2)
+		string[] parts = type.Split(',');
+		ClassName = parts[0];
+		Assembly = parts[1];
+		if (parts.Length > 2)
 		{
-			Version = array[2];
-			PublicKeyToken = array[4];
+			Version = parts[2];
+			PublicKeyToken = parts[4];
 		}
 	}
 

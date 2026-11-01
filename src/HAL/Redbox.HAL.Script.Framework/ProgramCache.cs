@@ -44,10 +44,10 @@ internal sealed class ProgramCache : IDisposable
 		}
 		JobToOperand["return"] = "RETURN";
 		JobToOperand["quick-return"] = "QUICKRETURN";
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		using (ExecutionTimer executionTimer = new ExecutionTimer())
 		{
-			string scriptAssembly = service.RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
+			string scriptAssembly = runtimeService.RuntimePath(Assembly.GetExecutingAssembly().GetName().Name + ".dll");
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(scriptAssembly);

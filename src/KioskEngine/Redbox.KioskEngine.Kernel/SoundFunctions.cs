@@ -20,20 +20,20 @@ internal static class SoundFunctions
 	[KernelFunction(Name = "kernel.soundplaysync")]
 	internal static void PlaySoundSync(string resourceName)
 	{
-		ISoundService service = ServiceLocator.Instance.GetService<ISoundService>();
+		ISoundService soundService = ServiceLocator.Instance.GetService<ISoundService>();
 		byte[] sound = ServiceLocator.Instance.GetService<IResourceBundleService>().GetSound(resourceName);
 		if (sound != null)
 		{
-			service.PlaySync(sound);
+			soundService.PlaySync(sound);
 		}
 	}
 
 	[KernelFunction(Name = "kernel.soundplayasync")]
 	internal static void PlaySoundAsync(string resourceName)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		ISoundService soundService = ServiceLocator.Instance.GetService<ISoundService>();
-		byte[] sound = service.GetSound(resourceName);
+		byte[] sound = resourceBundleService.GetSound(resourceName);
 		if (sound != null)
 		{
 			soundService.PlayAsync(sound);

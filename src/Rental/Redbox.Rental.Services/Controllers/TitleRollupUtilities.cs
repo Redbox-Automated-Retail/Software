@@ -204,8 +204,8 @@ public class TitleRollupUtilities
 		titleRollupFormatButtonProperties.StyleName = "button_light_large_primary_style";
 		string titleTypeText = GetTitleTypeText(titleProduct.TitleType);
 		decimal purchasePrice = titleProduct.PurchasePrice;
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = service?.CurrentRentalShoppingCart?.GetTitleItemsByCriteria(new RentalShoppingCartFilterCriteria
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = rentalShoppingCartService?.CurrentRentalShoppingCart?.GetTitleItemsByCriteria(new RentalShoppingCartFilterCriteria
 		{
 			IncludeProducts = new List<long> { titleProduct.ProductId }
 		}).FirstOrDefault();
@@ -213,7 +213,7 @@ public class TitleRollupUtilities
 		{
 			titleRollupFormatButtonProperties.HideAndDisableButton();
 		}
-		else if (service?.CurrentRentalShoppingCart?.HasTitleItem(titleProduct.ProductId) == true)
+		else if (rentalShoppingCartService?.CurrentRentalShoppingCart?.HasTitleItem(titleProduct.ProductId) == true)
 		{
 			titleRollupFormatButtonProperties.ButtonText = titleTypeText;
 			titleRollupFormatButtonProperties.ButtonTextLine2 = (string.IsNullOrEmpty(buttonTextValues.InCartText) ? buttonTextValues.InCartFormat : buttonTextValues.InCartText);

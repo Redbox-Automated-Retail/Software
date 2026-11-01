@@ -26,14 +26,14 @@ public class Planogram
 			logger.LogErrorWithSource("Invalid filename for planogram: " + fileName, "Create");
 			return null;
 		}
-		string[] array = fileName.Split('_');
-		string name = array[0];
-		if (array.Length > 2)
+		string[] parts = fileName.Split('_');
+		string name = parts[0];
+		if (parts.Length > 2)
 		{
 			logger.LogErrorWithSource("Too many underscores for planogram: " + fileName, "Create");
 			return null;
 		}
-		string[] array2 = array[1].Split('.');
+		string[] array2 = parts[1].Split('.');
 		if (array2.Length > 2)
 		{
 			logger.LogErrorWithSource("Too many periods for planogram: " + fileName, "Create");

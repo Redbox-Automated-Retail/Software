@@ -96,10 +96,10 @@ public class SelectBundleForm : Form
 	private void OnLoad(object sender, EventArgs e)
 	{
 		Cursor.Show();
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService != null)
 		{
-			m_unloadActiveBundleToolStripButton.Enabled = service.HasActiveBundle();
+			m_unloadActiveBundleToolStripButton.Enabled = resourceBundleService.HasActiveBundle();
 		}
 		if (m_appBundlesListView.Items.Count == 0)
 		{
@@ -113,8 +113,8 @@ public class SelectBundleForm : Form
 		{
 			if (string.Compare(m_appBundlesListView.SelectedItems[0].SubItems[0].Text, BundleType.Application.ToString(), ignoreCase: true) != 0)
 			{
-				IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-				MessageBox.Show("Only bundles of type Application may be activated.", service.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+				MessageBox.Show("Only bundles of type Application may be activated.", macroService.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
 			else
 			{
@@ -153,19 +153,19 @@ public class SelectBundleForm : Form
 
 	private void OnUnloadActiveBundle(object sender, EventArgs e)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService != null)
 		{
 			try
 			{
 				Cursor = Cursors.WaitCursor;
-				service.Deactivate();
+				resourceBundleService.Deactivate();
 			}
 			finally
 			{
 				Cursor = Cursors.Default;
 			}
-			m_unloadActiveBundleToolStripButton.Enabled = service.HasActiveBundle();
+			m_unloadActiveBundleToolStripButton.Enabled = resourceBundleService.HasActiveBundle();
 		}
 	}
 
@@ -205,12 +205,12 @@ public class SelectBundleForm : Form
 		try
 		{
 			Cursor = Cursors.WaitCursor;
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			service.SearchPath = m_searchPathToolStripTextBox.Text.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			service.LoadBundles();
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			resourceBundleService.SearchPath = m_searchPathToolStripTextBox.Text.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			resourceBundleService.LoadBundles();
 			m_appBundlesListView.Items.Clear();
 			m_sharedBundlesListView.Items.Clear();
-			foreach (IBundleSpecifier bundle in service.Bundles)
+			foreach (IBundleSpecifier bundle in resourceBundleService.Bundles)
 			{
 				ListViewItem listViewItem = new ListViewItem(bundle.Type.ToString());
 				listViewItem.SubItems.Add(bundle.Name);

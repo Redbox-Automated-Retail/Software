@@ -15,10 +15,10 @@ public static class RemovedQueueItemExtensions
 		else
 		{
 			list = new List<IInventoryItem>();
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			foreach (RemovedQueueItem item in source)
 			{
-				list.Add(service.CreateInventoryItem(item.Barcode, null, null, InventoryItemStatus.Removed));
+				list.Add(inventoryService.CreateInventoryItem(item.Barcode, null, null, InventoryItemStatus.Removed));
 			}
 		}
 		return list;

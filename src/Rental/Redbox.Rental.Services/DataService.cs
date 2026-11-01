@@ -899,9 +899,9 @@ public class DataService : IDataService
 	private void RefreshView()
 	{
 		Store store = GetStore();
-		IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
-		service.SellThru = store.Sellthru;
-		service.PurchasePrice = store.PurchasePrice;
-		_kioskProductView = new KioskProductView(store, _dataServiceInstance.ProfileDataInstance, _dataServiceInstance.CacheDataInstance, service);
+		IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+		storeManager.SellThru = store.Sellthru;
+		storeManager.PurchasePrice = store.PurchasePrice;
+		_kioskProductView = new KioskProductView(store, _dataServiceInstance.ProfileDataInstance, _dataServiceInstance.CacheDataInstance, storeManager);
 	}
 }

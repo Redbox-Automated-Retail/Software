@@ -54,7 +54,7 @@ public class NewServerpollEvent : Form
 		m_errors.SetError(m_initial_sec, string.Empty);
 		m_errors.SetError(m_initial_sec_adv, string.Empty);
 		bool flag = false;
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		ErrorList errorList = new ErrorList();
 		if (tabControl1.SelectedTab == BasicPage)
 		{
@@ -91,7 +91,7 @@ public class NewServerpollEvent : Form
 			{
 				return;
 			}
-			errorList.AddRange(service.ScheduleSimpleJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset, null, null, timeSpan.GetValueOrDefault()));
+			errorList.AddRange(taskScheduler.ScheduleSimpleJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset, null, null, timeSpan.GetValueOrDefault()));
 		}
 		else
 		{
@@ -117,7 +117,7 @@ public class NewServerpollEvent : Form
 			{
 				return;
 			}
-			errorList.AddRange(service.ScheduleCronJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset2, null, null, m_cron.Text));
+			errorList.AddRange(taskScheduler.ScheduleCronJob("Serverpoll", "Serverpoll", PayloadType.ServerPoll, startOffset2, null, null, m_cron.Text));
 		}
 		if (errorList.ContainsError())
 		{

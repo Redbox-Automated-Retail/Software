@@ -159,8 +159,8 @@ public class PersonalizationService : IPersonalizationService
 			{
 				try
 				{
-					ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-					if (callback != null && service != null)
+					ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+					if (callback != null && callbackService != null)
 					{
 						RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 						{
@@ -171,7 +171,7 @@ public class PersonalizationService : IPersonalizationService
 							remoteServiceResult.Errors.AddRange(errors);
 							remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 						}
-						service.EnqueueCallback(new RemoteServiceCallbackEntry
+						callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 						{
 							Callback = callback,
 							Result = remoteServiceResult,

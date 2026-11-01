@@ -8,9 +8,9 @@ internal sealed class LookupBarcodeJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		string[] array = new string[num];
-		for (int i = 0; i < num; i++)
+		int operand = base.Context.PopTop<int>();
+		string[] array = new string[operand];
+		for (int i = 0; i < operand; i++)
 		{
 			array[i] = base.Context.PopTop<string>();
 		}

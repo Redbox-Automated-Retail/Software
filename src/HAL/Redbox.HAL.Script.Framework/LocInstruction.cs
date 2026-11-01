@@ -61,7 +61,7 @@ public sealed class LocInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		if (base.Operands.Count >= 1)
 		{
@@ -78,7 +78,7 @@ public sealed class LocInstruction : Instruction
 				}
 				else
 				{
-					context.PushTop(service.UpdateEmptyStuck(location) ? "SUCCESS" : "ERROR");
+					context.PushTop(inventoryService.UpdateEmptyStuck(location) ? "SUCCESS" : "ERROR");
 				}
 			}
 			else if (base.Operands[0].Value.Equals("CLEAR-STUCK"))
@@ -89,12 +89,12 @@ public sealed class LocInstruction : Instruction
 					return;
 				}
 				location.StuckCount = 0;
-				context.PushTop(service.Save(location) ? "SUCCESS" : "ERROR");
+				context.PushTop(inventoryService.Save(location) ? "SUCCESS" : "ERROR");
 			}
 			else if (base.Operands[0].Value.Equals("RESET"))
 			{
 				GetLocation(result, context, out var location2);
-				context.PushTop(service.Reset(location2) ? "SUCCESS" : "ERROR");
+				context.PushTop(inventoryService.Reset(location2) ? "SUCCESS" : "ERROR");
 			}
 			else if (base.Operands[0].Value.Equals("GET-INFO"))
 			{
@@ -156,7 +156,7 @@ public sealed class LocInstruction : Instruction
 					context.PushTop("FAILURE");
 				}
 				location5.ID = keyValuePairValue;
-				service.Save(location5);
+				inventoryService.Save(location5);
 				context.PushTop("SUCCESS");
 			}
 			else if (base.Operands[0].Value.Equals("RESETRT"))
@@ -259,9 +259,9 @@ public sealed class LocInstruction : Instruction
 			context.PushTop("ERROR");
 			return;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		location.ReturnDate = newTime;
-		bool flag = service.Save(location);
+		bool flag = inventoryService.Save(location);
 		if (leaveResult)
 		{
 			context.PushTop(flag);

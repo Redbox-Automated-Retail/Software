@@ -52,10 +52,10 @@ internal static class FileFunctions
 	[KernelFunction(Name = "kernel.deletefilefromrelativepath")]
 	internal static void DeleteFileFromRelativePath(string relativeFilePath)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		if (service != null)
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		if (macroService != null)
 		{
-			string path = Path.Combine(service.ExpandProperties("${RunningPath}\\..\\"), relativeFilePath);
+			string path = Path.Combine(macroService.ExpandProperties("${RunningPath}\\..\\"), relativeFilePath);
 			if (File.Exists(path))
 			{
 				File.Delete(path);

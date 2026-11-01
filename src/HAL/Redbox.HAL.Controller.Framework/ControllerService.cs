@@ -15,8 +15,8 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public ErrorCodes CanMove()
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		if (VendDoorState.Closed != service.VendDoorState && !service.VendDoorClose().Success)
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		if (VendDoorState.Closed != controlSystem.VendDoorState && !controlSystem.VendDoorClose().Success)
 		{
 			return ErrorCodes.VendDoorNotClosed;
 		}
@@ -24,18 +24,18 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 		{
 			return ErrorCodes.ObstructionDetected;
 		}
-		IReadInputsResult<PickerInputs> readInputsResult = service.ReadPickerInputs();
+		IReadInputsResult<PickerInputs> readInputsResult = controlSystem.ReadPickerInputs();
 		if (!readInputsResult.Success)
 		{
 			return ErrorCodes.SensorReadError;
 		}
 		if (!readInputsResult.IsInputActive(PickerInputs.Retract))
 		{
-			if (ControllerConfiguration.Instance.GripperRentOnMove && !readInputsResult.IsInputActive(PickerInputs.FingerRent) && !service.SetFinger(GripperFingerState.Rent).Success)
+			if (ControllerConfiguration.Instance.GripperRentOnMove && !readInputsResult.IsInputActive(PickerInputs.FingerRent) && !controlSystem.SetFinger(GripperFingerState.Rent).Success)
 			{
 				return ErrorCodes.GripperRentTimeout;
 			}
-			if (!service.RetractArm().Success)
+			if (!controlSystem.RetractArm().Success)
 			{
 				return ErrorCodes.GripperRetractTimeout;
 			}
@@ -52,13 +52,13 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 	public void Initialize(ErrorList errors, IDictionary<string, object> initProperties)
 	{
 		ControllerConfiguration.Instance.Initialize();
-		IDataTableService service = ServiceLocator.Instance.GetService<IDataTableService>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
 		ServiceLocator.Instance.AddService<IKioskConfiguration>(new KioskConfigurationService());
 		IInventoryService inventoryService = new InventoryService();
 		ServiceLocator.Instance.AddService<IInventoryService>(inventoryService);
-		PersistentCounterService persistentCounterService = new PersistentCounterService(service);
+		PersistentCounterService persistentCounterService = new PersistentCounterService(dataTableService);
 		ServiceLocator.Instance.AddService<IPersistentCounterService>(persistentCounterService);
-		ServiceLocator.Instance.AddService<IHardwareCorrectionStatisticService>(new HardwareCorrectionStatisticService(service));
+		ServiceLocator.Instance.AddService<IHardwareCorrectionStatisticService>(new HardwareCorrectionStatisticService(dataTableService));
 		ServiceLocator.Instance.AddService<IKioskFunctionCheckService>(new KioskFunctionCheckService());
 		ServiceLocator.Instance.AddService<IEmptySearchPatternService>(new EmptySearchPatternService(inventoryService));
 		MotionControlService_v2 motionControlService_v = new MotionControlService_v2();
@@ -87,8 +87,8 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public IGetResult Get(IGetObserver observer)
 	{
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
-		return OnGet(observer, service.CurrentLocation);
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		return OnGet(observer, motionControlService.CurrentLocation);
 	}
 
 	public IGetFromResult GetFrom(ILocation location)
@@ -98,9 +98,9 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public IGetFromResult GetFrom(IGetFromObserver observer, ILocation location)
 	{
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		GetFromResult getFromResult = new GetFromResult();
-		getFromResult.MoveResult = service.MoveTo(location, MoveMode.Get);
+		getFromResult.MoveResult = motionControlService.MoveTo(location, MoveMode.Get);
 		if (getFromResult.MoveResult == ErrorCodes.Success)
 		{
 			getFromResult.GetResult = OnGet(observer, location);
@@ -114,10 +114,10 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public IPutResult Put(string id)
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IPutObserver observer = PutObserver;
-		if (service.IsBin(motionControlService.CurrentLocation))
+		if (dumpbinService.IsBin(motionControlService.CurrentLocation))
 		{
 			observer = DumpObserver;
 		}
@@ -126,15 +126,15 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public IPutResult Put(IPutObserver observer, string id)
 	{
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
-		return OnPut(observer, id, service.CurrentLocation);
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		return OnPut(observer, id, motionControlService.CurrentLocation);
 	}
 
 	public IPutToResult PutTo(string id, ILocation location)
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		IPutToObserver observer = PutObserver;
-		if (service.IsBin(location))
+		if (dumpbinService.IsBin(location))
 		{
 			observer = DumpObserver;
 		}
@@ -143,9 +143,9 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	public IPutToResult PutTo(IPutToObserver observer, string id, ILocation location)
 	{
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		PutToResult putToResult = new PutToResult();
-		putToResult.MoveResult = service.MoveTo(location, MoveMode.Put);
+		putToResult.MoveResult = motionControlService.MoveTo(location, MoveMode.Put);
 		if (putToResult.MoveResult == ErrorCodes.Success)
 		{
 			ServiceLocator.Instance.GetService<IControlSystem>().TrackCycle();
@@ -267,9 +267,9 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	private void OnCheckInventory(string expected, IFormattedLog log)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
-		ILocation location = service.Get(currentLocation.Deck, currentLocation.Slot);
+		ILocation location = inventoryService.Get(currentLocation.Deck, currentLocation.Slot);
 		if (location.ID != expected)
 		{
 			LogHelper.Instance.WithContext(false, LogEntryType.Error, "** INVENTORY CHECK ERROR** - location shows ID {0} expected {1}", location.ID, expected);
@@ -307,8 +307,8 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 
 	private PutResult OnPut(IPutObserver observer, string id, ILocation location)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IPickerSensorReadResult pickerSensorReadResult = service.ReadPickerSensors();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		IPickerSensorReadResult pickerSensorReadResult = controlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
 		{
 			return new PutResult(id, location)
@@ -319,8 +319,8 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 		if (!pickerSensorReadResult.IsFull)
 		{
 			LogHelper.Instance.WithContext(LogEntryType.Error, "PUT: picker is empty.");
-			service.LogPickerSensorState();
-			service.LogInputs(ControlBoards.Picker, LogEntryType.Info);
+			controlSystem.LogPickerSensorState();
+			controlSystem.LogInputs(ControlBoards.Picker, LogEntryType.Info);
 			return new PutResult(id, location)
 			{
 				Code = ErrorCodes.PickerEmpty

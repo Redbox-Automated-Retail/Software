@@ -201,7 +201,7 @@ public class KioskProductView
 		if (searchProducts != null && searchProducts.Count > 0)
 		{
 			LogHelper.Instance.Log("GetBarcodesForProducts Begin.  searching for products: " + searchProducts.Select((ISearchBarcodeForProduct x) => x.ProductId).ToList().Join(", "));
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			foreach (ISearchBarcodeForProduct searchProduct in searchProducts)
 			{
 				IBarcodeForProductResult barcodeForProductResult = new BarcodeForProductResult
@@ -225,7 +225,7 @@ public class KioskProductView
 						{
 							if (!list.Any((IBarcodeForProductResult x) => x.Barcode == eachBarcodeProduct.Barcode) && (excludeBarcodesList == null || !excludeBarcodesList.Contains(eachBarcodeProduct.Barcode)))
 							{
-								int rentalCount = (int)(service.GetInventory(eachBarcodeProduct.Barcode)?.TotalRentalCount ?? 0);
+								int rentalCount = (int)(inventoryService.GetInventory(eachBarcodeProduct.Barcode)?.TotalRentalCount ?? 0);
 								BarcodeAndTotalRents item = new BarcodeAndTotalRents
 								{
 									Barcode = eachBarcodeProduct.Barcode,
@@ -852,7 +852,7 @@ public class KioskProductView
 		IEnumerable<KeyValuePair<long, ProductGroup>> enumerable = ProfileDataInstance.ProductGroups.Where((KeyValuePair<long, ProductGroup> x) => x.Value.ProductGroupTypeId == 3);
 		if (enumerable != null)
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			foreach (KeyValuePair<long, ProductGroup> item in enumerable)
 			{
 				if (item.Value?.ProductIds == null)
@@ -860,7 +860,7 @@ public class KioskProductView
 					continue;
 				}
 				List<long> productIds = item.Value?.ProductIds;
-				List<ProductAndBarcodes> productGroupBarcodes = GetProductGroupBarcodes(service, productIds);
+				List<ProductAndBarcodes> productGroupBarcodes = GetProductGroupBarcodes(inventoryService, productIds);
 				int minimumBarcodeCount = productGroupBarcodes.Min((ProductAndBarcodes x) => x.BarcodesAndRentalCounts.Count);
 				if (productGroupBarcodes.Count <= 1 || !productGroupBarcodes.Any((ProductAndBarcodes x) => x.BarcodesAndRentalCounts.Count != minimumBarcodeCount))
 				{
@@ -1068,36 +1068,36 @@ public class KioskProductView
 
 	private Dictionary<TitleType, bool> GetEnabledGameTypes()
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		return new Dictionary<TitleType, bool>
 		{
 			{
 				TitleType.Xbox360,
-				GetGameConfig(service, "GameEnableXbox360")
+				GetGameConfig(configurationService, "GameEnableXbox360")
 			},
 			{
 				TitleType.XboxOne,
-				GetGameConfig(service, "GameEnableXboxOne")
+				GetGameConfig(configurationService, "GameEnableXboxOne")
 			},
 			{
 				TitleType.PS3,
-				GetGameConfig(service, "GameEnablePS3")
+				GetGameConfig(configurationService, "GameEnablePS3")
 			},
 			{
 				TitleType.PS4,
-				GetGameConfig(service, "GameEnablePS4")
+				GetGameConfig(configurationService, "GameEnablePS4")
 			},
 			{
 				TitleType.Wii,
-				GetGameConfig(service, "GameEnableWii")
+				GetGameConfig(configurationService, "GameEnableWii")
 			},
 			{
 				TitleType.WiiU,
-				GetGameConfig(service, "GameEnableWiiU")
+				GetGameConfig(configurationService, "GameEnableWiiU")
 			},
 			{
 				TitleType.NintendoSwitch,
-				GetGameConfig(service, "GameEnableNintendoSwitch")
+				GetGameConfig(configurationService, "GameEnableNintendoSwitch")
 			}
 		};
 	}
@@ -1131,9 +1131,9 @@ public class KioskProductView
 		{
 			LogHelper.Instance.Log("Sending productGroupIds to KCS for morelikethis.");
 			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
-			IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			List<long> productGroupIds = _movieProducts.Select((ITitleProduct x) => dataService.GetProductGroupId(x)).ToList();
-			service.ProductGroups.RefreshAllMLTData(productGroupIds);
+			kioskClientService.ProductGroups.RefreshAllMLTData(productGroupIds);
 		}
 		catch (Exception e)
 		{

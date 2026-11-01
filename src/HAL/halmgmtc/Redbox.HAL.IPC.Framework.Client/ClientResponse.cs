@@ -31,10 +31,10 @@ internal sealed class ClientResponse : AbstractIPCResponse
 			{
 				if (Session.SupportsEvents)
 				{
-					int num = nextBufferLine.IndexOf("]");
-					if (num != -1)
+					int index = nextBufferLine.IndexOf("]");
+					if (index != -1)
 					{
-						Session.OnServerEvent(nextBufferLine.Substring(num + 1).Trim());
+						Session.OnServerEvent(nextBufferLine.Substring(index + 1).Trim());
 					}
 				}
 			}

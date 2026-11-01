@@ -135,7 +135,7 @@ public static class KioskProductExtensions
 		default:
 		{
 			ProductGroupSortOrder sortOrder = ServiceLocator.Instance.GetService<IProductGroupService>()?.GetSortOrder();
-			IAnalyticsService service = ServiceLocator.Instance.GetService<IAnalyticsService>();
+			IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
 			try
 			{
 				if (sortOrder != null && sortOrder.SortOrderType > 0 && sortOrder.SortOrders != null && sortOrder.SortOrders.Count > 0)
@@ -145,7 +145,7 @@ public static class KioskProductExtensions
 						item.SortOrderPosition = 0;
 						item.SortOrderType = 0;
 					});
-					service?.AddSessionProperty("SortOrderType", sortOrder.SortOrderType);
+					analyticsService?.AddSessionProperty("SortOrderType", sortOrder.SortOrderType);
 					var list = (from p in source
 						join so in sortOrder.SortOrders on p.TitleRollupProductGroupId equals so.ProductGroupId into xso
 						from subso in xso.DefaultIfEmpty()
@@ -193,7 +193,7 @@ public static class KioskProductExtensions
 			{
 				LogHelper.Instance.Log("KioskProduct.OrderList - an exception occurred, skipping SortOrderPosition", e2);
 			}
-			service?.AddSessionProperty("SortOrderType", 0);
+			analyticsService?.AddSessionProperty("SortOrderType", 0);
 			return (from item in source
 				orderby item.ShowOutOfStock, item.SortDate descending, item.SortBoxOfficeGross descending, item.SortName descending
 				select item).ToList();

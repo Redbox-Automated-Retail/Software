@@ -12,14 +12,14 @@ internal sealed class BackupHelper
 
 	internal string MakeNewBackup()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		string path = string.Format("{0}-{1}", BackupPrefix, service.GenerateUniqueFile("xml"));
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		string path = string.Format("{0}-{1}", BackupPrefix, runtimeService.GenerateUniqueFile("xml"));
 		return Path.Combine(BackupPath, path);
 	}
 
 	internal void Trim()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int num = 5;
 		List<BackupEntry> sorted = GetSorted();
 		using (new DisposeableList<BackupEntry>(sorted))
@@ -28,7 +28,7 @@ internal sealed class BackupHelper
 			{
 				for (int i = 0; i < sorted.Count - num; i++)
 				{
-					service.SafeDelete(sorted[i].FullPath);
+					runtimeService.SafeDelete(sorted[i].FullPath);
 				}
 			}
 		}

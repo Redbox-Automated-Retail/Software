@@ -31,9 +31,9 @@ public class LeadGenerationOfferConfirmationViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = 8000;
-		(service?.CreateTimer("LeadGenerationOfferConfirmationViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("LeadGenerationOfferConfirmationViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			_continueAction?.Invoke();
@@ -42,9 +42,9 @@ public class LeadGenerationOfferConfirmationViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("LeadGenerationOfferConfirmationViewTimer"))?.Stop();
-		service?.RemoveTimer("LeadGenerationOfferConfirmationViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("LeadGenerationOfferConfirmationViewTimer"))?.Stop();
+		timerService?.RemoveTimer("LeadGenerationOfferConfirmationViewTimer");
 	}
 
 	private static void LeadGenerationOfferConfirmationViewModel_OnGotItButtonClicked()

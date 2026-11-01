@@ -68,9 +68,9 @@ public class EncryptionService : IEncryptionService
 		{
 			throw new ArgumentNullException("key");
 		}
-		byte[] array = Convert.FromBase64String(ciphertext);
-		byte[] salt = array.Take(_saltSize).ToArray();
-		byte[] buffer = array.Skip(_saltSize).Take(array.Length - _saltSize).ToArray();
+		byte[] decoded = Convert.FromBase64String(ciphertext);
+		byte[] salt = decoded.Take(_saltSize).ToArray();
+		byte[] buffer = decoded.Skip(_saltSize).Take(decoded.Length - _saltSize).ToArray();
 		using Rfc2898DeriveBytes keyDerivationFunction = new Rfc2898DeriveBytes(_key, salt);
 		byte[] bytes = keyDerivationFunction.GetBytes(32);
 		byte[] bytes2 = keyDerivationFunction.GetBytes(16);

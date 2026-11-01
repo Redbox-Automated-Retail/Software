@@ -67,10 +67,10 @@ public class FilterInfo : IComparable
 			moniker.BindToStorage(null, null, ref riid, out ppvObj);
 			IPropertyBag obj = (IPropertyBag)ppvObj;
 			object pVar = "";
-			int num = obj.Read("FriendlyName", ref pVar, IntPtr.Zero);
-			if (num != 0)
+			int bytesRead = obj.Read("FriendlyName", ref pVar, IntPtr.Zero);
+			if (bytesRead != 0)
 			{
-				Marshal.ThrowExceptionForHR(num);
+				Marshal.ThrowExceptionForHR(bytesRead);
 			}
 			string text = (string)pVar;
 			if (text == null || text.Length < 1)

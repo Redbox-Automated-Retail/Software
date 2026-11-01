@@ -37,9 +37,9 @@ public class QueuePrioritiesPreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		listViewQueuePriorities.Items.Clear();
-		service?.ForEachPriority(delegate(IQueueServicePriority eachQueueServicePriority)
+		queueService?.ForEachPriority(delegate(IQueueServicePriority eachQueueServicePriority)
 		{
 			ListViewItem listViewItem = new ListViewItem
 			{

@@ -45,8 +45,8 @@ internal static class IPAddressHelper
 			if (networkInterface.Description == "Microsoft TV/Video Connection")
 			{
 				byte[] addressBytes = networkInterface.GetPhysicalAddress().GetAddressBytes();
-				byte[] array = new byte[6];
-				if (addressBytes == array)
+				byte[] buffer = new byte[6];
+				if (addressBytes == buffer)
 				{
 					continue;
 				}

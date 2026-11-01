@@ -22,7 +22,7 @@ public class VersionInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		if (base.Operands.Count == 1)
 		{
 			Token token = base.Operands[0];
@@ -32,11 +32,11 @@ public class VersionInstruction : Instruction
 				result.Errors.Add(Error.NewError("E001", "Unrecognized board option.", $"The option {token.Value} is not a board."));
 				return;
 			}
-			IBoardVersionResponse boardVersion = service.GetBoardVersion(controlBoards);
+			IBoardVersionResponse boardVersion = controlSystem.GetBoardVersion(controlBoards);
 			context.PushTop(boardVersion);
 			return;
 		}
-		IControlSystemRevision revision = service.GetRevision();
+		IControlSystemRevision revision = controlSystem.GetRevision();
 		if (!revision.Success)
 		{
 			context.PushTop(ErrorCodes.CommunicationError.ToString().ToUpper());

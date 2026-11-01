@@ -201,10 +201,10 @@ public class CustomerOfferProxy : ICustomerOfferService
 			string value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Customer Offer Services", "MnpProductIds", "");
 			if (!string.IsNullOrEmpty(value))
 			{
-				string[] array = value.Split(',');
-				for (int i = 0; i < array.Length; i++)
+				string[] parts = value.Split(',');
+				for (int i = 0; i < parts.Length; i++)
 				{
-					if (long.TryParse(array[i], out var result))
+					if (long.TryParse(parts[i], out var result))
 					{
 						list.Add(result);
 					}
@@ -239,10 +239,10 @@ public class CustomerOfferProxy : ICustomerOfferService
 			string value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Customer Offer Services", "ForamtIds", "");
 			if (!string.IsNullOrEmpty(value))
 			{
-				string[] array = value.Split(',');
-				for (int i = 0; i < array.Length; i++)
+				string[] parts = value.Split(',');
+				for (int i = 0; i < parts.Length; i++)
 				{
-					if (int.TryParse(array[i], out var result))
+					if (int.TryParse(parts[i], out var result))
 					{
 						list.Add(result);
 					}
@@ -253,8 +253,8 @@ public class CustomerOfferProxy : ICustomerOfferService
 		set
 		{
 			value.Join(",");
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			service.SetValue("Remote Services\\Customer Offer Services", "FormatIds", service);
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			machineSettingsStore.SetValue("Remote Services\\Customer Offer Services", "FormatIds", machineSettingsStore);
 		}
 	}
 

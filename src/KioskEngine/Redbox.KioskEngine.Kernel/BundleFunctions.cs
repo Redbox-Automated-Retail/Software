@@ -42,8 +42,8 @@ public static class BundleFunctions
 	[KernelFunction(Name = "kernel.getresourcestoragename")]
 	internal static string GetResourceStorageName(string name)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return null;
 		}
@@ -51,14 +51,14 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		return service.GetResource(name)?.StorageEntry.Path;
+		return resourceBundleService.GetResource(name)?.StorageEntry.Path;
 	}
 
 	[KernelFunction(Name = "kernel.getresourceaspectproperty")]
 	internal static string GetResourceAspectProperty(string resourceName, string aspectName, string propertyName)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return null;
 		}
@@ -66,7 +66,7 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		IResource resource = service.GetResource(resourceName);
+		IResource resource = resourceBundleService.GetResource(resourceName);
 		if (resource == null)
 		{
 			return null;
@@ -86,8 +86,8 @@ public static class BundleFunctions
 	[KernelFunction(Name = "kernel.isresourceoverridden")]
 	internal static bool IsResourceOverridden(string name, object exclusions)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return false;
 		}
@@ -110,7 +110,7 @@ public static class BundleFunctions
 				}
 			}
 		}
-		return service.GetResource(name)?.IsOverriden(list.AsReadOnly()) ?? false;
+		return resourceBundleService.GetResource(name)?.IsOverriden(list.AsReadOnly()) ?? false;
 	}
 
 	[KernelFunction(Name = "kernel.executescript")]
@@ -350,8 +350,8 @@ public static class BundleFunctions
 
 	private static void ResetCurrentView()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		service.ClearCache(clearResourceViewsOnly: true);
-		service.Show();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		viewService.ClearCache(clearResourceViewsOnly: true);
+		viewService.Show();
 	}
 }

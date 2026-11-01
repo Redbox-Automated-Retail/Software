@@ -76,8 +76,8 @@ public sealed class ConfigurationCommand
 	[Usage("config get-inventory-state")]
 	public void GetInventoryState(CommandContext context)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service.CheckIntegrity() != ErrorCodes.Success)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService.CheckIntegrity() != ErrorCodes.Success)
 		{
 			context.Errors.Add(Error.NewError("S005", "Inventory error.", "The inventory table is in an invalid state."));
 			return;
@@ -89,7 +89,7 @@ public sealed class ConfigurationCommand
 		};
 		xmlTextWriter.WriteStartDocument();
 		xmlTextWriter.WriteStartElement("inventory-items");
-		service.GetState(xmlTextWriter);
+		inventoryService.GetState(xmlTextWriter);
 		ServiceLocator.Instance.GetService<IDumpbinService>().GetState(xmlTextWriter);
 		xmlTextWriter.WriteEndElement();
 		xmlTextWriter.WriteEndDocument();
@@ -106,11 +106,11 @@ public sealed class ConfigurationCommand
 			context.Errors.Add(Error.NewError("S001", "The parameter data: is required.", "Specify the data: parameter when calling the CONFIG set-inventory-state command form."));
 			return;
 		}
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		string text = service.GenerateUniqueFile("xml");
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		string text = runtimeService.GenerateUniqueFile("xml");
 		try
 		{
-			File.WriteAllText(Path.Combine(service.DataPath, text), Encoding.ASCII.GetString(data));
+			File.WriteAllText(Path.Combine(runtimeService.DataPath, text), Encoding.ASCII.GetString(data));
 			IExecutionContext executionContext = ServiceLocator.Instance.GetService<IExecutionService>().ScheduleJob("reset-inventory-job", string.Empty, DateTime.Now, ProgramPriority.Low);
 			executionContext.Push(text, StackEnd.Top);
 			LogHelper.Instance.Log("Reset-Inventory job ( job ID = {0} ).", executionContext.ID);

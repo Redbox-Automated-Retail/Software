@@ -31,10 +31,10 @@ public class SignInViewController : BaseViewController
 	{
 		get
 		{
-			IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 			if (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.DeviceService.ContactlessEnabled && Redbox.Rental.Services.Configuration.Configuration.Instance.PerksPassEnabled)
 			{
-				return service?.SupportsVas ?? false;
+				return deviceServiceClientHelper?.SupportsVas ?? false;
 			}
 			return false;
 		}
@@ -143,8 +143,8 @@ public class SignInViewController : BaseViewController
 
 	private static void ConfigureTTS(SignInViewModel signInViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			signInViewModel.OnGetSpeechControl = () => SignInViewTextToSpeech.GetSpeechControl(GetSignInViewModel);
 		}

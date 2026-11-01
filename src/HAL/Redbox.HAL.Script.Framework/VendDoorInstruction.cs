@@ -41,20 +41,20 @@ public sealed class VendDoorInstruction : Instruction
 		Token token = base.Operands[0];
 		if (token.Type == TokenType.Symbol)
 		{
-			IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+			IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 			switch (Enum<DoorCommands>.ParseIgnoringCase(token.Value, DoorCommands.None))
 			{
 			case DoorCommands.Status:
-				context.PushTop(service.ReadVendDoorPosition().ToString().ToUpper());
+				context.PushTop(controlSystem.ReadVendDoorPosition().ToString().ToUpper());
 				break;
 			case DoorCommands.Open:
 				context.PushTop(base.TimeoutMessage);
 				break;
 			case DoorCommands.Rent:
-				HandleError(service.VendDoorRent(), context);
+				HandleError(controlSystem.VendDoorRent(), context);
 				break;
 			case DoorCommands.Close:
-				HandleError(service.VendDoorClose(), context);
+				HandleError(controlSystem.VendDoorClose(), context);
 				break;
 			default:
 				result.AddError(ExecutionErrors.InvalidSymbolValue, $"The value {token.Value} is unrecognized.");

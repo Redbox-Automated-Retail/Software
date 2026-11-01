@@ -20,7 +20,7 @@ public sealed class SerialBoardInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		ExpectedOperand expectedOperand = Enum<ExpectedOperand>.ParseIgnoringCase(base.Operands[0].Value, ExpectedOperand.None);
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		switch (expectedOperand)
 		{
 		case ExpectedOperand.None:
@@ -28,14 +28,14 @@ public sealed class SerialBoardInstruction : Instruction
 			break;
 		case ExpectedOperand.ClosePort:
 		{
-			string instance = (service.Shutdown() ? base.SuccessMessage : base.TimeoutMessage);
+			string instance = (controlSystem.Shutdown() ? base.SuccessMessage : base.TimeoutMessage);
 			Thread.Sleep(500);
 			context.PushTop(instance);
 			break;
 		}
 		case ExpectedOperand.Reset:
 		{
-			IControlResponse response = service.Initialize();
+			IControlResponse response = controlSystem.Initialize();
 			HandleError(response, context);
 			break;
 		}

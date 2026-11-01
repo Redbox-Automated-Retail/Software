@@ -721,7 +721,7 @@ internal class CortexDecoder : AbstractBarcodeReader
 
 	private unsafe int Decode(Bitmap bmp)
 	{
-		byte[] array = new byte[bmp.Width * bmp.Height];
+		byte[] buffer = new byte[bmp.Width * bmp.Height];
 		Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
 		BitmapData bitmapData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 		byte* ptr = (byte*)(void*)bitmapData.Scan0;
@@ -732,14 +732,14 @@ internal class CortexDecoder : AbstractBarcodeReader
 			int num3 = num2;
 			for (int j = 0; j < bmp.Width; j++)
 			{
-				array[num++] = ptr[num3];
+				buffer[num++] = ptr[num3];
 				num3 += 3;
 			}
 			num2 += bitmapData.Stride;
 		}
 		bmp.UnlockBits(bitmapData);
 		int num4;
-		fixed (byte* data = &array[0])
+		fixed (byte* data = &buffer[0])
 		{
 			SetProperty(0, data);
 			SetProperty(1, (void*)bmp.Width);

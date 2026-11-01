@@ -19,8 +19,8 @@ internal sealed class TestQlmJob : NativeJobAdapter
 			AddError("The kiosk is not configured for a QLM.");
 			return;
 		}
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		if (service.QlmDeck == null)
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		if (decksService.QlmDeck == null)
 		{
 			applicationLog.Write("The kiosk is not configured with a QLM.");
 			base.Context.CreateInfoResult("SyncFailure", "Kiosk is not configured for a QLM.");
@@ -49,7 +49,7 @@ internal sealed class TestQlmJob : NativeJobAdapter
 			return;
 		}
 		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
-		int number = service.QlmDeck.Number;
+		int number = decksService.QlmDeck.Number;
 		int[] targetSlots = TargetSlots;
 		foreach (int num in targetSlots)
 		{

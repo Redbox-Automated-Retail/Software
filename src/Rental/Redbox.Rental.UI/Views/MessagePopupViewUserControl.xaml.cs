@@ -62,11 +62,11 @@ public partial class MessagePopupViewUserControl : TextToSpeechUserControl, ICom
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(Button1);
-		obj?.SetStyle(FloatingButton1);
-		obj?.SetStyle(Button2);
-		obj?.SetStyle(FloatingButton2);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(Button1);
+		theme?.SetStyle(FloatingButton1);
+		theme?.SetStyle(Button2);
+		theme?.SetStyle(FloatingButton2);
 	}
 
 	public void StopTimer()

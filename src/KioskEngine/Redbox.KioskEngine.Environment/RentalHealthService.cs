@@ -21,8 +21,8 @@ public class RentalHealthService : IRentalHealthService
 	{
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		ServiceLocator.Instance.GetService<ILogger>();
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		string storeNumber = service["StoreNumber"];
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		string storeNumber = macroService["StoreNumber"];
 		string timerName = "KioskFunctionCheckTimer";
 		timerService.CreateTimer(timerName, 1200000, null, delegate
 		{

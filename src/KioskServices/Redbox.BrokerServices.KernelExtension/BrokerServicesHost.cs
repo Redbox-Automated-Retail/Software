@@ -47,11 +47,11 @@ public class BrokerServicesHost : IKernelExtensionHost, IDisposable
 	{
 		ErrorList result = new ErrorList();
 		LogHelper.Instance.Log("Broker Services Kernel Extension Reset:");
-		IKernelFunctionRegistryService service = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
-		if (service != null)
+		IKernelFunctionRegistryService kernelFunctionRegistryService = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
+		if (kernelFunctionRegistryService != null)
 		{
 			LogHelper.Instance.Log("...Register Broker Services kernel functions.");
-			service.RegisterKernelFunctions(typeof(KernelRegistrationObject).Assembly, "Broker Services");
+			kernelFunctionRegistryService.RegisterKernelFunctions(typeof(KernelRegistrationObject).Assembly, "Broker Services");
 		}
 		LogHelper.Instance.Log("...Reset Reservation Services Proxy.");
 		ReservationServicesProxy.Instance.Reset();

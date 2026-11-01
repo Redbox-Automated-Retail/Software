@@ -35,14 +35,14 @@ public class ReservationServicesProxy : IReservationServices
 		dictionary["PricingPolicy"] = prices;
 		dictionary["GiftCardsEnabled"] = false;
 		dictionary["RecoOnPickup"] = false;
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service != null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService != null)
 		{
-			if (service.TryGetValue<bool>("system", "General", "GiftCardsEnabled", out var value))
+			if (configurationService.TryGetValue<bool>("system", "General", "GiftCardsEnabled", out var value))
 			{
 				dictionary["GiftCardsEnabled"] = value;
 			}
-			if (service.TryGetValue<bool>("system", "General", "RecommendationOnPickup", out var value2))
+			if (configurationService.TryGetValue<bool>("system", "General", "RecommendationOnPickup", out var value2))
 			{
 				dictionary["RecoOnPickup"] = value2;
 			}

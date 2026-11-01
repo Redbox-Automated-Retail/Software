@@ -35,14 +35,14 @@ public sealed class GampHelper
 		{
 			return dictionary;
 		}
-		string[] array = File.ReadAllLines(path);
-		string[] array2 = array;
+		string[] lines = File.ReadAllLines(path);
+		string[] array2 = lines;
 		foreach (string text in array2)
 		{
-			string[] array3 = text.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			if (array3.Length >= 2 && int.TryParse(array3[1], out var result))
+			string[] parts = text.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Length >= 2 && int.TryParse(parts[1], out var result))
 			{
-				dictionary[array3[0]] = result;
+				dictionary[parts[0]] = result;
 			}
 		}
 		return dictionary;
@@ -104,8 +104,8 @@ public sealed class GampHelper
 		int num = 1;
 		bool flag = false;
 		StringBuilder stringBuilder = new StringBuilder();
-		string[] array = File.ReadAllLines(path);
-		string[] array2 = array;
+		string[] lines = File.ReadAllLines(path);
+		string[] array2 = lines;
 		foreach (string text in array2)
 		{
 			List<int> list2 = new List<int>();

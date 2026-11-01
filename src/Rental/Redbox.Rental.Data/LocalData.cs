@@ -168,12 +168,12 @@ public class LocalData : ILocalData
 		Dictionary<string, string> dict = new Dictionary<string, string>();
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service == null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService == null)
 			{
 				return dict;
 			}
-			Dictionary<string, object> all = service.GetAll("Local", tableName);
+			Dictionary<string, object> all = dataStoreService.GetAll("Local", tableName);
 			if (all == null)
 			{
 				return dict;
@@ -223,16 +223,16 @@ public class LocalData : ILocalData
 	{
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service != null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService != null)
 			{
-				if (service.Get("Local", tableName, keyName) == null)
+				if (dataStoreService.Get("Local", tableName, keyName) == null)
 				{
 					LogHelper.Instance.Log("LocalData.RemoveIfExists" + tableName + " - keyName " + keyName + " does not exist");
 				}
 				else
 				{
-					service.Remove("Local", tableName, keyName);
+					dataStoreService.Remove("Local", tableName, keyName);
 				}
 			}
 		}

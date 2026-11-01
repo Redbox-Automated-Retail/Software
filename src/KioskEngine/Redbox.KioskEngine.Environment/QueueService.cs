@@ -494,8 +494,8 @@ public class QueueService : IQueueService, IDisposable
 
 	private void GetQueueServiceConfigurationValues()
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service.TryGetTimeSpanRangeValue("system", "QueueService", "PeakPriorityOnlyTimeRange", out var startTime, out var endTime))
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService.TryGetTimeSpanRangeValue("system", "QueueService", "PeakPriorityOnlyTimeRange", out var startTime, out var endTime))
 		{
 			_peakPriorityStartTime = startTime.Value;
 			_peakPriorityEndTime = endTime.Value;
@@ -505,7 +505,7 @@ public class QueueService : IQueueService, IDisposable
 			_peakPriorityStartTime = QueueServiceConstants.PeakPriorityStartTimeDefault;
 			_peakPriorityEndTime = QueueServiceConstants.PeakPriorityEndTimeDefault;
 		}
-		if (service.TryGetTimeSpanRangeValue("system", "QueueService", "OvernightPriorityTimeRange", out startTime, out endTime))
+		if (configurationService.TryGetTimeSpanRangeValue("system", "QueueService", "OvernightPriorityTimeRange", out startTime, out endTime))
 		{
 			_overnightPriorityStartTime = startTime.Value;
 			_overnightPriorityEndTime = endTime.Value;
@@ -532,7 +532,7 @@ public class QueueService : IQueueService, IDisposable
 
 	private void HandleCorruptDatabase()
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		bool num = ServiceLocator.Instance.GetService<IApplicationState>()?.HasMaintenanceModeReason(MaintenanceModeSource.Database, "SOFT-FILE01") ?? false;
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>()?.RaiseCorruptDb();
@@ -547,8 +547,8 @@ public class QueueService : IQueueService, IDisposable
 				MessageType = "KioskAlert",
 				MessageId = Guid.NewGuid(),
 				KioskId = int.Parse(resourceBundleService.Filter["store_number"]),
-				EngineVersion = service["EngineVersion"],
-				BundleVersion = service["ProductVersion"],
+				EngineVersion = macroService["EngineVersion"],
+				BundleVersion = macroService["ProductVersion"],
 				SubType = "mm:DataStoreError, SOFT-FILE01",
 				Detail = "<h2>Kiosk Engine Data File Error</h2><p>There was an error accessing or updating the database: [ message.data ] <br><br>Placing Kiosk into Maintenance Mode.<br>SOFT-FILE01</p>",
 				Type = "ApplicationCrash",
@@ -583,10 +583,10 @@ public class QueueService : IQueueService, IDisposable
 	private static int GetRandomNumber(int min, int max)
 	{
 		RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
-		byte[] array = new byte[4];
-		rNGCryptoServiceProvider.GetBytes(array);
+		byte[] buffer = new byte[4];
+		rNGCryptoServiceProvider.GetBytes(buffer);
 		rNGCryptoServiceProvider.Dispose();
-		int num = BitConverter.ToInt32(array, 0);
+		int num = BitConverter.ToInt32(buffer, 0);
 		if (min != max)
 		{
 			return min + Math.Abs(num % (max - min));
@@ -614,9 +614,9 @@ public class QueueService : IQueueService, IDisposable
 		byte[] bytes = Encoding.ASCII.GetBytes("RedboxEncrypted");
 		if (data.Length > bytes.Length)
 		{
-			byte[] array = new byte[bytes.Length];
-			Buffer.BlockCopy(data, 0, array, 0, array.Length);
-			string value = Encoding.ASCII.GetString(array);
+			byte[] buffer = new byte[bytes.Length];
+			Buffer.BlockCopy(data, 0, buffer, 0, buffer.Length);
+			string value = Encoding.ASCII.GetString(buffer);
 			if ("RedboxEncrypted".Equals(value))
 			{
 				byte[] array2 = new byte[data.Length - bytes.Length];

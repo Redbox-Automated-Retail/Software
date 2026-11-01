@@ -19,8 +19,8 @@ public class MultiNightPricingPopupViewController : BaseViewController
 	{
 		BaseViewController.StopIdleTimer();
 		CreateAndStartTimer();
-		IAnalyticsService service = ServiceLocator.Instance.GetService<IAnalyticsService>();
-		service?.AddData(ProductData.ToProductData(multiNightPricingPopupInfo.TitleProduct));
+		IAnalyticsService analyticsService = ServiceLocator.Instance.GetService<IAnalyticsService>();
+		analyticsService?.AddData(ProductData.ToProductData(multiNightPricingPopupInfo.TitleProduct));
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
 		if (viewUserControl != null)
 		{
@@ -60,7 +60,7 @@ public class MultiNightPricingPopupViewController : BaseViewController
 				multiNightPopupData.ShowBuyButton = true;
 				multiNightPopupData.PurchasePrice = multiNightPricingPopupInfo.TitleProduct.PurchasePrice;
 			}
-			service?.AddData(multiNightPopupData);
+			analyticsService?.AddData(multiNightPopupData);
 			multiNightPricingPopupViewModel.CancelButtonText = Resources.multi_night_pricing_popup_cancel_button_text.ToUpper();
 			multiNightPricingPopupViewModel.DisclaimerText = ((!flag3 & flag) ? GetDisclaimerText(list[0], flag, flag3) : (flag3 ? GetDisclaimerText(list[1], flag, flag3) : string.Empty));
 			multiNightPricingPopupViewModel.OnOneNightButtonClicked = (Action)Delegate.Combine(multiNightPricingPopupViewModel.OnOneNightButtonClicked, new Action(MultiNightPricingPopupViewModel_OnOneNightButtonClicked));
@@ -90,8 +90,8 @@ public class MultiNightPricingPopupViewController : BaseViewController
 
 	private static void ConfigureTTS(MultiNightPricingPopupViewModel multiNightPricingPopupViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			multiNightPricingPopupViewModel.OnGetSpeechControl = () => MultiNightPricingPopupViewTextToSpeech.GetSpeechControl(GetMultiNightPricingPopupViewModel);
 		}
@@ -99,9 +99,9 @@ public class MultiNightPricingPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("medium", 15000);
-		(service?.CreateTimer("MultiNightPricingPopupViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("MultiNightPricingPopupViewTimer", timeOut, timeOut, delegate
 		{
 			if (Redbox.Rental.Services.Session.Session.Instance != null)
 			{
@@ -114,9 +114,9 @@ public class MultiNightPricingPopupViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("MultiNightPricingPopupViewTimer"))?.Stop();
-		service?.RemoveTimer("MultiNightPricingPopupViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("MultiNightPricingPopupViewTimer"))?.Stop();
+		timerService?.RemoveTimer("MultiNightPricingPopupViewTimer");
 	}
 
 	private static bool ShowBuyButton(string shownFromView, ITitleProduct titleProduct)

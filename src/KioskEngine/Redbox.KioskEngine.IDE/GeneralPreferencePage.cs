@@ -50,10 +50,10 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 
 	public bool SaveValues(IPreferencePage preferencePage)
 	{
-		IDebugService service = ServiceLocator.Instance.GetService<IDebugService>();
-		if (service != null)
+		IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+		if (debugService != null)
 		{
-			service.IsEnabled = m_allowDebuggingCheckBox.Checked;
+			debugService.IsEnabled = m_allowDebuggingCheckBox.Checked;
 		}
 		preferencePage.SetValue("Environment", m_environmentComboBox.Text);
 		preferencePage.SetValue("Application", m_applicationComboBox.Text);
@@ -75,14 +75,14 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 		m_environmentComboBox.Text = preferencePage.GetValue<string>("Environment");
 		m_applicationComboBox.Text = preferencePage.GetValue<string>("Application");
 		m_rebootTimeMaskedTextBox.Text = GetRebootTime(preferencePage);
-		IDebugService service = ServiceLocator.Instance.GetService<IDebugService>();
-		if (service == null)
+		IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
+		if (debugService == null)
 		{
 			m_allowDebuggingCheckBox.Enabled = false;
 		}
 		else
 		{
-			m_allowDebuggingCheckBox.Checked = service.IsEnabled;
+			m_allowDebuggingCheckBox.Checked = debugService.IsEnabled;
 		}
 		m_enableMouseCursorCheckBox.Checked = preferencePage.GetValue("EnableMouseCursor", defaultValue: true);
 		m_sendAnalyticsOffPeakCheckbox.Checked = preferencePage.GetValue("SendAnalyticsOffPeak", defaultValue: true);

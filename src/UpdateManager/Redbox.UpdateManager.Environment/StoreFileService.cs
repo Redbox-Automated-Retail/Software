@@ -285,8 +285,8 @@ public class StoreFileService : IPollRequestReply
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			byte[] array = Convert.FromBase64String(changeSet.Base64Data);
-			if (!string.Equals(array.ToASCIISHA1Hash(), changeSet.DataHash, StringComparison.Ordinal))
+			byte[] decoded = Convert.FromBase64String(changeSet.Base64Data);
+			if (!string.Equals(decoded.ToASCIISHA1Hash(), changeSet.DataHash, StringComparison.Ordinal))
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("USF03", "Hash check failed for storefile changeset " + changeSet.Name, "Aborting storefile update"));
 				return errorList;
@@ -303,7 +303,7 @@ public class StoreFileService : IPollRequestReply
 					SyncId = changeSet.SyncId
 				}
 			};
-			File.WriteAllBytes(stagedFilePath, array);
+			File.WriteAllBytes(stagedFilePath, decoded);
 			File.WriteAllText(statePath, instance.ToJson());
 			errorList.AddRange(Activate(changeSet.StoreFile));
 		}

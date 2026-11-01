@@ -51,11 +51,11 @@ public class UpdateServicesHost : IKernelExtensionHost, IDisposable
 		{
 			LogHelper.Instance.Log("Update Services Kernel Extension Load:");
 			errorList.AddRange(UpdateManagerServiceProxy.Instance.Initialize());
-			IPreferenceService service = ServiceLocator.Instance.GetService<IPreferenceService>();
-			if (service != null)
+			IPreferenceService preferenceService = ServiceLocator.Instance.GetService<IPreferenceService>();
+			if (preferenceService != null)
 			{
-				service.AddPreferencePage("UpdateServices_General", "Remote Services\\Store Services", "Update Services/General", PreferencePageTarget.LocalSystem, new GeneralPreferencePage());
-				service.AddPreferencePage("UpdateServices_Config", "Local Services\\Update Services", "Update Services/Configuration", PreferencePageTarget.LocalSystem, new ConfigPreferencePage());
+				preferenceService.AddPreferencePage("UpdateServices_General", "Remote Services\\Store Services", "Update Services/General", PreferencePageTarget.LocalSystem, new GeneralPreferencePage());
+				preferenceService.AddPreferencePage("UpdateServices_Config", "Local Services\\Update Services", "Update Services/Configuration", PreferencePageTarget.LocalSystem, new ConfigPreferencePage());
 				_thread = new Thread(ExecuteListener);
 				_thread.TrySetApartmentState(ApartmentState.MTA);
 				_thread.Start();
@@ -73,11 +73,11 @@ public class UpdateServicesHost : IKernelExtensionHost, IDisposable
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList result = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		LogHelper.Instance.Log("Update Services Kernel Extension Reset:");
-		IKernelFunctionRegistryService service = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
-		if (service != null)
+		IKernelFunctionRegistryService kernelFunctionRegistryService = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
+		if (kernelFunctionRegistryService != null)
 		{
-			service.RegisterKernelFunctions(typeof(UpdateManagerServiceFunctions).Assembly, "Update Services");
-			service.RegisterKernelFunctions(typeof(ConfigurationServiceFunctions).Assembly, "Configuration Services");
+			kernelFunctionRegistryService.RegisterKernelFunctions(typeof(UpdateManagerServiceFunctions).Assembly, "Update Services");
+			kernelFunctionRegistryService.RegisterKernelFunctions(typeof(ConfigurationServiceFunctions).Assembly, "Configuration Services");
 		}
 		LogHelper.Instance.Log("...Reset.");
 		return result;

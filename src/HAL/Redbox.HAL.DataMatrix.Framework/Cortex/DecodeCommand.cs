@@ -79,15 +79,15 @@ internal sealed class DecodeCommand : AbstractCortexCommand
 						continue;
 					}
 					DataPackets.Add(packet.PacketNumber);
-					string[] array = text.Split(Separator);
-					if ((int)Convert.ChangeType(array[2], typeof(int)) == 0)
+					string[] parts = text.Split(Separator);
+					if ((int)Convert.ChangeType(parts[2], typeof(int)) == 0)
 					{
 						DecodeFailure = true;
 						continue;
 					}
-					for (int num = 3; num < array.Length; num++)
+					for (int num = 3; num < parts.Length; num++)
 					{
-						FoundCodes.Add(array[num]);
+						FoundCodes.Add(parts[num]);
 					}
 				}
 				else

@@ -77,9 +77,9 @@ internal class ReturnUnknownJob : NativeJobAdapter, IFileDiskHandler
 			}
 			else
 			{
-				IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+				IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 				putResult.PutLocation.ReturnDate = result2;
-				service.Save(putResult.PutLocation);
+				inventoryService.Save(putResult.PutLocation);
 			}
 		}
 	}

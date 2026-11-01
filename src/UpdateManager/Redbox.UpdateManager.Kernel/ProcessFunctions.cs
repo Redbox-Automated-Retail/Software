@@ -120,15 +120,15 @@ public static class ProcessFunctions
 	[KernelFunction(Name = "kernel.executestring")]
 	internal static int Execute(string process, string arguments, string workingDirectory, object timeout)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ProcessStartInfo startInfo = new ProcessStartInfo
 		{
 			CreateNoWindow = true,
 			UseShellExecute = false,
 			WindowStyle = ProcessWindowStyle.Hidden,
-			FileName = service.ExpandProperties(process),
-			Arguments = service.ExpandProperties(arguments),
-			WorkingDirectory = service.ExpandProperties(workingDirectory)
+			FileName = macroService.ExpandProperties(process),
+			Arguments = macroService.ExpandProperties(arguments),
+			WorkingDirectory = macroService.ExpandProperties(workingDirectory)
 		};
 		Process process2 = new Process
 		{

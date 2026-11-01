@@ -26,8 +26,8 @@ internal class KioskTestAdapter : IDisposable
 
 	protected virtual bool OnVendDisk(string matrix)
 	{
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		IVendItemResult vendItemResult = service.VendItemInPicker(2);
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IVendItemResult vendItemResult = controllerService.VendItemInPicker(2);
 		if (ErrorCodes.PickerEmpty == vendItemResult.Status)
 		{
 			LogHelper.Instance.WithContext(LogEntryType.Error, "The item {0} was taken.", matrix);
@@ -37,7 +37,7 @@ internal class KioskTestAdapter : IDisposable
 		{
 			return false;
 		}
-		ErrorCodes errorCodes = service.AcceptDiskAtDoor();
+		ErrorCodes errorCodes = controllerService.AcceptDiskAtDoor();
 		return ErrorCodes.PickerFull == errorCodes;
 	}
 
@@ -54,8 +54,8 @@ internal class KioskTestAdapter : IDisposable
 			HandleMachineError();
 			return;
 		}
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		if (!service.Get().Success)
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		if (!controllerService.Get().Success)
 		{
 			Context.CreateInfoResult("GetError", "Failed to pull disc from slot");
 			HandleMachineError();
@@ -74,7 +74,7 @@ internal class KioskTestAdapter : IDisposable
 			return;
 		}
 		ControlSystem.TrackCycle();
-		if (!service.Put(text).Success)
+		if (!controllerService.Put(text).Success)
 		{
 			Context.CreateInfoResult("PutFailed", "Kiosk failed to put disc into slot");
 			HandleMachineError();

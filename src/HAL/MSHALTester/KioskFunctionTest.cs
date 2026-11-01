@@ -104,12 +104,12 @@ internal sealed class KioskFunctionTest : JobExecutor, IKioskFunctionCheckData
 							string text = symbols[key];
 							LogHelper.Instance.Log("[TestCameraSnap] val = {0}", text);
 							int num = (HasCortex ? 1 : 3);
-							int num2 = text.IndexOf(':');
-							text = text.Substring(num2 + 1);
-							string[] array = text.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-							_ = array[0];
-							int num3 = Convert.ToInt32(array[2].Substring(1, 1));
-							TimeSpan timeSpan = TimeSpan.Parse(array[5]);
+							int index = text.IndexOf(':');
+							text = text.Substring(index + 1);
+							string[] parts = text.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+							_ = parts[0];
+							int num3 = Convert.ToInt32(parts[2].Substring(1, 1));
+							TimeSpan timeSpan = TimeSpan.Parse(parts[5]);
 							SnapDecodeStatus = ((num3 >= num && timeSpan.Seconds <= 0) ? TestState.Success : TestState.Failure);
 							break;
 						}
@@ -127,11 +127,11 @@ internal sealed class KioskFunctionTest : JobExecutor, IKioskFunctionCheckData
 	internal TestState TestVendDoor()
 	{
 		VendDoorStatus = TestState.Failure;
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		if (service.VendDoorRent().Success)
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		if (controlSystem.VendDoorRent().Success)
 		{
 			Thread.Sleep(500);
-			VendDoorStatus = (service.VendDoorClose().Success ? TestState.Success : TestState.Failure);
+			VendDoorStatus = (controlSystem.VendDoorClose().Success ? TestState.Success : TestState.Failure);
 		}
 		return VendDoorStatus;
 	}

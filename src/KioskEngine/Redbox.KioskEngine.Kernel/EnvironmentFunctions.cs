@@ -21,9 +21,9 @@ public static class EnvironmentFunctions
 		{
 			return false;
 		}
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IManifestInfo manifestInfo = null;
-		service?.GetManifest(out manifestInfo);
+		resourceBundleService?.GetManifest(out manifestInfo);
 		string message = "Kiosk Engine is checking if it can shut-down";
 		if (manifestInfo?.ProductName == "Field Maintenance Application" || manifestInfo?.ProductName == "Control Panel Application")
 		{
@@ -32,11 +32,11 @@ public static class EnvironmentFunctions
 			return false;
 		}
 		LogHelper.Instance.Log(message);
-		IApplicationState service2 = ServiceLocator.Instance.GetService<IApplicationState>();
-		IRedboxRental service3 = ServiceLocator.Instance.GetService<IRedboxRental>();
-		if (service3 == null || service3.IsRentalSessionActive())
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		IRedboxRental redboxRental = ServiceLocator.Instance.GetService<IRedboxRental>();
+		if (redboxRental == null || redboxRental.IsRentalSessionActive())
 		{
-			return service2?.IsInMaintenanceMode ?? false;
+			return applicationState?.IsInMaintenanceMode ?? false;
 		}
 		return true;
 	}
@@ -48,26 +48,26 @@ public static class EnvironmentFunctions
 			return false;
 		}
 		LogHelper.Instance.Log("Kiosk Engine is requesting a restart");
-		IRedboxRental service = ServiceLocator.Instance.GetService<IRedboxRental>();
-		if (service == null)
+		IRedboxRental redboxRental = ServiceLocator.Instance.GetService<IRedboxRental>();
+		if (redboxRental == null)
 		{
 			return false;
 		}
-		return !service.IsRentalSessionActive();
+		return !redboxRental.IsRentalSessionActive();
 	}
 
 	public static bool CanSwitch()
 	{
 		LogHelper.Instance.Log("Start CanSwitch Check");
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
 		bool flag = ServiceLocator.Instance.GetService<IEngineApplication>()?.AppStarting ?? false;
 		LogHelper.Instance.Log("Performing Startup: {0}", flag);
 		bool flag2 = true;
-		if (service != null && service.IsRentalRunning)
+		if (resourceBundleService != null && resourceBundleService.IsRentalRunning)
 		{
-			IRedboxRental service3 = ServiceLocator.Instance.GetService<IRedboxRental>();
-			if (service3 != null && service3.IsRentalSessionActive())
+			IRedboxRental redboxRental = ServiceLocator.Instance.GetService<IRedboxRental>();
+			if (redboxRental != null && redboxRental.IsRentalSessionActive())
 			{
 				LogHelper.Instance.Log("CanSwitch Check: Rental Session Active: true");
 				flag2 = false;
@@ -140,12 +140,12 @@ public static class EnvironmentFunctions
 	[KernelFunction(Name = "kernel.hasvalidcardreader")]
 	internal static bool HasValidCardReader()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		if (service != null)
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		if (environmentNotificationService != null)
 		{
-			if (service.CheckCardReader)
+			if (environmentNotificationService.CheckCardReader)
 			{
-				return service.HasValidCardReader;
+				return environmentNotificationService.HasValidCardReader;
 			}
 			return true;
 		}

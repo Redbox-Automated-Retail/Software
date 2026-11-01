@@ -9,12 +9,12 @@ public class AttentionSequenceCommand : IHotKeyCommand
 	public void Execute()
 	{
 		LogHelper.Instance.Log("AttentionSequenceCommand.Execute() - start");
-		IKioskEngineService service = ServiceLocator.Instance.GetService<IKioskEngineService>();
-		if (service == null)
+		IKioskEngineService kioskEngineService = ServiceLocator.Instance.GetService<IKioskEngineService>();
+		if (kioskEngineService == null)
 		{
 			return;
 		}
-		ErrorList errorList = service.IsEngineRunning(out var isRunning);
+		ErrorList errorList = kioskEngineService.IsEngineRunning(out var isRunning);
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.Shell.ComponentModel.Error e)
@@ -24,7 +24,7 @@ public class AttentionSequenceCommand : IHotKeyCommand
 			return;
 		}
 		LogHelper.Instance.Log("AttentionSequenceCommand.Execute() - running: " + isRunning);
-		errorList = (isRunning ? service.ActivateControlPanel() : service.StartEngineWithControlPanel());
+		errorList = (isRunning ? kioskEngineService.ActivateControlPanel() : kioskEngineService.StartEngineWithControlPanel());
 		if (errorList.ContainsError())
 		{
 			errorList.ForEach(delegate(Redbox.Shell.ComponentModel.Error e)

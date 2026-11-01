@@ -103,9 +103,9 @@ public class PromotionServices : IPromotionServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-				bool sendPromoCodeValidationToKioskClientService = service.SendPromoCodeValidationToKioskClientService;
-				string arg = (sendPromoCodeValidationToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+				IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+				bool sendPromoCodeValidationToKioskClientService = configuration.SendPromoCodeValidationToKioskClientService;
+				string arg = (sendPromoCodeValidationToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
 					LogHelper.Instance.Log($"Live call to remote IPromotionServices.ValidatePromotionCode, URL: {arg}");

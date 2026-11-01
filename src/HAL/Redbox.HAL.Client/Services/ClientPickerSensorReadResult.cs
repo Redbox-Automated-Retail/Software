@@ -40,12 +40,12 @@ internal sealed class ClientPickerSensorReadResult : IPickerSensorReadResult, IR
 
 	public bool IsInputActive(PickerInputs input)
 	{
-		int num = Array.IndexOf(PickerSensors, input);
-		if (-1 == num)
+		int index = Array.IndexOf(PickerSensors, input);
+		if (-1 == index)
 		{
 			throw new ArgumentException();
 		}
-		return m_sensors[num];
+		return m_sensors[index];
 	}
 
 	public bool IsInState(PickerInputs input, InputState state)

@@ -43,7 +43,7 @@ internal struct FileDiskOperation : IDisposable
 			Handler.MachineFull(result, idInPicker);
 			return ErrorCodes.MachineFull;
 		}
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		ServiceLocator.Instance.GetService<IInventoryService>().IsBarcodeDuplicate(idInPicker, out var _);
 		int num = ((emptySearchResult.FoundEmpty > 1) ? (emptySearchResult.FoundEmpty - 1) : 0);
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
@@ -79,7 +79,7 @@ internal struct FileDiskOperation : IDisposable
 			{
 				return ErrorCodes.DiskNotFiled;
 			}
-			service.TrackCycle();
+			controlSystem.TrackCycle();
 		}
 		Handler.FailedToFileDisk(result, idInPicker);
 		return ErrorCodes.DiskNotFiled;

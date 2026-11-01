@@ -51,11 +51,11 @@ public class ServerEnginePreferencePage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IServerEngineService service = ServiceLocator.Instance.GetService<IServerEngineService>();
-		if (service != null)
+		IServerEngineService serverEngineService = ServiceLocator.Instance.GetService<IServerEngineService>();
+		if (serverEngineService != null)
 		{
-			m_serverEngineUrlTextBox.Text = service.Url;
-			m_serverEngineTmeoutTextBox.Text = service.Timeout.ToString();
+			m_serverEngineUrlTextBox.Text = serverEngineService.Url;
+			m_serverEngineTmeoutTextBox.Text = serverEngineService.Timeout.ToString();
 		}
 	}
 

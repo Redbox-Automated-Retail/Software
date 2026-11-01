@@ -60,10 +60,10 @@ public static class RentalDataFunctions
 		try
 		{
 			LuaTable result = null;
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService != null)
 			{
-				result = service.GetAllUnmatchedMultiDiscBarcodes().ToLuaTable();
+				result = dataService.GetAllUnmatchedMultiDiscBarcodes().ToLuaTable();
 			}
 			return result;
 		}
@@ -195,13 +195,13 @@ public static class RentalDataFunctions
 		try
 		{
 			LuaTable result = null;
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service?.ProfileDataVersion != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService?.ProfileDataVersion != null)
 			{
 				result = new Dictionary<string, object>
 				{
-					["origin_machine"] = service.ProfileDataVersion.OriginMachine,
-					["generated_on"] = service.ProfileDataVersion.GeneratedOn
+					["origin_machine"] = dataService.ProfileDataVersion.OriginMachine,
+					["generated_on"] = dataService.ProfileDataVersion.GeneratedOn
 				}.ToLuaTable();
 			}
 			return result;

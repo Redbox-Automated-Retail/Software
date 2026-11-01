@@ -72,10 +72,10 @@ internal class Options
 			{
 				break;
 			}
-			string[] array = text.Split(',');
-			if (array.Length == 2)
+			string[] parts = text.Split(',');
+			if (parts.Length == 2)
 			{
-				m_options[array[0]] = array[1];
+				m_options[parts[0]] = parts[1];
 			}
 		}
 	}

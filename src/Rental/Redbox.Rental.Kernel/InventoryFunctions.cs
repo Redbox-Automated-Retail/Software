@@ -133,16 +133,16 @@ public static class InventoryFunctions
 	{
 		try
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-			if (service == null)
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+			if (inventoryService == null)
 			{
 				return null;
 			}
-			if (!service.InventoryActionModificationTime.HasValue)
+			if (!inventoryService.InventoryActionModificationTime.HasValue)
 			{
 				return null;
 			}
-			return service.InventoryActionModificationTime.Value.ToLocalTime().ToString(format);
+			return inventoryService.InventoryActionModificationTime.Value.ToLocalTime().ToString(format);
 		}
 		catch (Exception e)
 		{
@@ -156,16 +156,16 @@ public static class InventoryFunctions
 	{
 		try
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-			if (service == null)
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+			if (inventoryService == null)
 			{
 				return null;
 			}
-			if (!service.RapidStatusModificationTime.HasValue)
+			if (!inventoryService.RapidStatusModificationTime.HasValue)
 			{
 				return null;
 			}
-			return service.RapidStatusModificationTime.Value.ToLocalTime().ToString(format);
+			return inventoryService.RapidStatusModificationTime.Value.ToLocalTime().ToString(format);
 		}
 		catch (Exception e)
 		{
@@ -179,13 +179,13 @@ public static class InventoryFunctions
 	{
 		try
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			List<string> list = new List<string>();
 			foreach (LuaTable value in unmerchandizedBarcodesTable.Values)
 			{
 				list.Add(value["barcode"].ToString());
 			}
-			service?.ReportUnmerchandizedBarcodes(list);
+			inventoryService?.ReportUnmerchandizedBarcodes(list);
 		}
 		catch (Exception e)
 		{
@@ -195,12 +195,12 @@ public static class InventoryFunctions
 
 	private static Dictionary<string, object> GetAllRapidStatusAsLuaFormat(string filter)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return null;
 		}
-		ProductLookupCatalogModel rapidStatus = service.GetRapidStatus();
+		ProductLookupCatalogModel rapidStatus = inventoryService.GetRapidStatus();
 		if (rapidStatus == null)
 		{
 			return null;
@@ -230,12 +230,12 @@ public static class InventoryFunctions
 
 	private static List<Inventory> GetAllInventory(string filter)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return null;
 		}
-		ProductLookupCatalogModel rapidStatus = service.GetRapidStatus();
+		ProductLookupCatalogModel rapidStatus = inventoryService.GetRapidStatus();
 		if (rapidStatus == null)
 		{
 			return null;
@@ -258,12 +258,12 @@ public static class InventoryFunctions
 
 	private static Dictionary<string, object> GetRapidStatusAsLuaFormat(string barcode)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return null;
 		}
-		Inventory rapidStatus = service.GetRapidStatus(barcode);
+		Inventory rapidStatus = inventoryService.GetRapidStatus(barcode);
 		if (rapidStatus == null)
 		{
 			return null;
@@ -284,12 +284,12 @@ public static class InventoryFunctions
 
 	private static List<Dictionary<string, object>> GetRebalancesInAsLuaFormat()
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return null;
 		}
-		List<RebalancesInModel> rebalancesIn = service.GetRebalancesIn();
+		List<RebalancesInModel> rebalancesIn = inventoryService.GetRebalancesIn();
 		if (rebalancesIn == null)
 		{
 			return null;
@@ -321,8 +321,8 @@ public static class InventoryFunctions
 
 	private static void InnerReturn(string storeNumber, string returnType, string barcode, int deck, int slot, string returnTime, bool failedSecurityRead, string fileName, LuaFunction callback)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return;
 		}
@@ -356,25 +356,25 @@ public static class InventoryFunctions
 			LogHelper.Instance.Log("Invalid date time passed to InnerReturn : {0}.", returnTime);
 			result = DateTime.Now;
 		}
-		service.Return(storeNumber, Enum<ReturnType>.ParseIgnoringCase(returnType, ReturnType.KioskReturn), barcode, deck, slot, result.ToString(), failedSecurityRead, fileName, callback2);
+		inventoryService.Return(storeNumber, Enum<ReturnType>.ParseIgnoringCase(returnType, ReturnType.KioskReturn), barcode, deck, slot, result.ToString(), failedSecurityRead, fileName, callback2);
 	}
 
 	[KernelFunction(Name = "kernel.invsvcs_snapshot")]
 	internal static void Snapshot(string storeNumber, LuaTable items)
 	{
 		List<IInventoryItem> list = new List<IInventoryItem>();
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service != null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService != null)
 		{
 			InnerSnapshot(items, list);
-			service.Snapshot(storeNumber, list.AsReadOnly(), null);
+			inventoryService.Snapshot(storeNumber, list.AsReadOnly(), null);
 		}
 	}
 
 	private static void InnerSnapshot(LuaTable items, List<IInventoryItem> inventoryItems)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null || items == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null || items == null)
 		{
 			return;
 		}
@@ -404,7 +404,7 @@ public static class InventoryFunctions
 				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {num} and slot = {num2}; skipping this item.", LogEntryType.Error);
 				continue;
 			}
-			inventoryItems.Add(service.CreateInventoryItem(text, num, num2, Enum<InventoryItemStatus>.ParseIgnoringCase(Convert.ToString(luaTable["status"]), InventoryItemStatus.In)));
+			inventoryItems.Add(inventoryService.CreateInventoryItem(text, num, num2, Enum<InventoryItemStatus>.ParseIgnoringCase(Convert.ToString(luaTable["status"]), InventoryItemStatus.In)));
 			luaTable.Dispose();
 		}
 		items.Dispose();
@@ -413,15 +413,15 @@ public static class InventoryFunctions
 	[KernelFunction(Name = "kernel.updatefraudstatus")]
 	internal static void UpdateFraudStatus(string storeNumber, string barcode, string isFraud, string readTime, LuaFunction completeCallback)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return;
 		}
 		ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
 		if (callbackService != null)
 		{
-			service.UpdateFraudStatus(storeNumber, barcode, isFraud, readTime, delegate(IRemoteServiceResult r)
+			inventoryService.UpdateFraudStatus(storeNumber, barcode, isFraud, readTime, delegate(IRemoteServiceResult r)
 			{
 				ICallbackService callbackService2 = callbackService;
 				ResultCallbackEntry resultCallbackEntry = new ResultCallbackEntry
@@ -438,8 +438,8 @@ public static class InventoryFunctions
 	[KernelFunction(Name = "kernel.fmadiscaction")]
 	internal static void FmaDiscAction(string storeNumber, string username, string jobName, string jobTimeStamp, LuaTable barcode_list, LuaFunction completeCallback)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service == null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService == null)
 		{
 			return;
 		}
@@ -455,7 +455,7 @@ public static class InventoryFunctions
 				dictionary.Add("Action", luaTable[2] as string);
 				list.Add(dictionary);
 			}
-			service.FmaDiscAction(storeNumber, username, jobName, jobTimeStamp, list, delegate(IRemoteServiceResult r)
+			inventoryService.FmaDiscAction(storeNumber, username, jobName, jobTimeStamp, list, delegate(IRemoteServiceResult r)
 			{
 				ICallbackService callbackService2 = callbackService;
 				ResultCallbackEntry resultCallbackEntry = new ResultCallbackEntry

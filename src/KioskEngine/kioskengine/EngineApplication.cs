@@ -425,7 +425,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		base.MainForm.BackColor = RenderingService.Instance.BackgroundColor;
 		BufferedGraphicsManager.Current.MaximumBuffer = base.MainForm.DisplayRectangle.Size;
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>().Register(base.MainForm.Handle);
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		ElementHost elementHost = new ElementHost
 		{
 			Parent = base.MainForm,
@@ -434,11 +434,11 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		};
 		elementHost.BackColor = Color.Red;
 		_elementHost = elementHost;
-		IScene scene = service.CreateScene("Default", base.MainForm.ClientSize.Width, base.MainForm.ClientSize.Height, RenderingService.Instance.BackgroundColor, elementHost);
+		IScene scene = renderingService.CreateScene("Default", base.MainForm.ClientSize.Width, base.MainForm.ClientSize.Height, RenderingService.Instance.BackgroundColor, elementHost);
 		scene.OnWPFHit += Scene_OnWPFHit;
 		scene.OnWPFKeyDown += Scene_OnWPFKeyDown;
 		scene.OnWPFKeyUp += Scene_OnWPFKeyUp;
-		service.ActiveScene = scene;
+		renderingService.ActiveScene = scene;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		try
 		{
@@ -537,21 +537,21 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		FirewallHelper.CreateFirewallExemptions();
 		ConfigureDefaultMacros();
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		LogHelper.Instance.Log("Engine start up.");
-		LogHelper.Instance.Log(service.ExpandProperties("Engine: ${ProductName} ${ProductVersion}"));
+		LogHelper.Instance.Log(macroService.ExpandProperties("Engine: ${ProductName} ${ProductVersion}"));
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		m_instanceLockWin7 = new NamedLock(m_applicationGuidWin7.ToString(), LockScope.Local);
 		if (!m_instanceLockWin7.Exists())
 		{
-			return SingleInstanceError(service);
+			return SingleInstanceError(macroService);
 		}
 		string name = string.Format(CultureInfo.InvariantCulture, "Global\\{0}", new object[1] { m_applicationGuidWin10 });
 		new MutexSecurity().AddAccessRule(new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow));
 		m_instanceLockWin10 = new Mutex(initiallyOwned: true, name, out var createdNew);
 		if (!createdNew)
 		{
-			return SingleInstanceError(service);
+			return SingleInstanceError(macroService);
 		}
 		if (CommandLine.Errors.Count > 0)
 		{
@@ -696,7 +696,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		try
 		{
 			AddService(typeof(IRentalSessionService), new RentalSessionService());
-			IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 			IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 			AddService(instance: new ControlPanelService(), serviceType: typeof(IControlPanelService));
@@ -718,13 +718,13 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 			RedboxRentalService redboxRentalService = new RedboxRentalService();
 			AddService(typeof(IRedboxRental), redboxRentalService);
 			errorList.AddRange(redboxRentalService.Initialize());
-			DataService dataService = new DataService(service, new DataServiceInstance(), new ProfileData(DataPath, "ProfileImages\\"), new CacheData(), new LocalData(), new ReservationData(DataPath), this);
+			DataService dataService = new DataService(kernelService, new DataServiceInstance(), new ProfileData(DataPath, "ProfileImages\\"), new CacheData(), new LocalData(), new ReservationData(DataPath), this);
 			AddService(typeof(IDataService), dataService);
 			dataService.Initialize();
 			dataService.Start();
 			dataService.RefreshIfNeeded();
 			AddService(instance: new KioskClientServicePricing(), serviceType: typeof(IKioskClientServicePricing));
-			PricingService pricingService = new PricingService(service, storeManagerService);
+			PricingService pricingService = new PricingService(kernelService, storeManagerService);
 			AddService(typeof(IPricingService), pricingService);
 			pricingService.Start();
 			ServiceLocator.Instance.GetService<IResourceBundleService>().RegisterAssemblyFunctions("Rental Kernel", typeof(RentalDataFunctions).Assembly);
@@ -879,8 +879,8 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 			ResourceBundleService.Instance.ShowDebugger = selectBundleForm.ShowDebugger;
 			return result;
 		}
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-		if (service != null && service.GetValue<string>("Core", "DefaultBundle") != "NONE")
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		if (machineSettingsStore != null && machineSettingsStore.GetValue<string>("Core", "DefaultBundle") != "NONE")
 		{
 			ResourceBundleService.Instance.ActivateDefaultBundle();
 			checkMainFormStatus = false;
@@ -1007,23 +1007,23 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 
 	internal bool RenderScene()
 	{
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service == null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService == null)
 		{
 			return false;
 		}
-		if (service.ActiveScene == null)
+		if (renderingService.ActiveScene == null)
 		{
 			return false;
 		}
 		using (BufferedGraphics bufferedGraphics = BufferedGraphicsManager.Current.Allocate(base.MainForm.CreateGraphics(), base.MainForm.DisplayRectangle))
 		{
-			service.ActiveScene.Render(bufferedGraphics.Graphics, out var changed);
+			renderingService.ActiveScene.Render(bufferedGraphics.Graphics, out var changed);
 			if (!changed)
 			{
 				return false;
 			}
-			if (service.ActiveScene.SceneRenderType == RenderType.WPF)
+			if (renderingService.ActiveScene.SceneRenderType == RenderType.WPF)
 			{
 				return true;
 			}
@@ -1141,12 +1141,12 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 
 	private static void InitializePreferencePages()
 	{
-		IPreferenceService service = ServiceLocator.Instance.GetService<IPreferenceService>();
-		if (service != null)
+		IPreferenceService preferenceService = ServiceLocator.Instance.GetService<IPreferenceService>();
+		if (preferenceService != null)
 		{
-			service.AddPreferencePage("EngineCore_General", "Store", "Engine Core/General", PreferencePageTarget.LocalSystem, new Redbox.KioskEngine.IDE.GeneralPreferencePage());
-			service.AddPreferencePage("EngineCore_Ide", "Ide", "Engine Core/IDE", PreferencePageTarget.LocalSystem, new IdePreferencePage());
-			service.AddPreferencePage("EngineCore_Resource", "Resource", "Engine Core/Resource", PreferencePageTarget.LocalSystem, new ResourcePreferencePage());
+			preferenceService.AddPreferencePage("EngineCore_General", "Store", "Engine Core/General", PreferencePageTarget.LocalSystem, new Redbox.KioskEngine.IDE.GeneralPreferencePage());
+			preferenceService.AddPreferencePage("EngineCore_Ide", "Ide", "Engine Core/IDE", PreferencePageTarget.LocalSystem, new IdePreferencePage());
+			preferenceService.AddPreferencePage("EngineCore_Resource", "Resource", "Engine Core/Resource", PreferencePageTarget.LocalSystem, new ResourcePreferencePage());
 		}
 	}
 

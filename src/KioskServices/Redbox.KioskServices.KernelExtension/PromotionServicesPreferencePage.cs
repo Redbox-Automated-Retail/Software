@@ -82,15 +82,15 @@ public class PromotionServicesPreferencePage : UserControl, IPreferencePageHost
 		{
 			m_promoIntentComboBox.Items.Add(item2);
 		}
-		IPromotionServices service = ServiceLocator.Instance.GetService<IPromotionServices>();
+		IPromotionServices promotionServices = ServiceLocator.Instance.GetService<IPromotionServices>();
 		m_responseTypeComboBox.SelectedIndex = 0;
 		m_promoIntentComboBox.SelectedIndex = 0;
-		m_liveCallCheckBox.Checked = service.LiveCall;
-		m_simulateServerBusyCheckBox.Checked = service.SimulateServerBusyError;
-		m_simulateCommunicationsFailureCheckBox.Checked = service.SimulateCommunicationsFailure;
+		m_liveCallCheckBox.Checked = promotionServices.LiveCall;
+		m_simulateServerBusyCheckBox.Checked = promotionServices.SimulateServerBusyError;
+		m_simulateCommunicationsFailureCheckBox.Checked = promotionServices.SimulateCommunicationsFailure;
 		m_promoCodeListView.BeginUpdate();
 		m_promoCodeListView.Items.Clear();
-		names = service.PromoCodes;
+		names = promotionServices.PromoCodes;
 		for (int i = 0; i < names.Length; i++)
 		{
 			string[] array = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);

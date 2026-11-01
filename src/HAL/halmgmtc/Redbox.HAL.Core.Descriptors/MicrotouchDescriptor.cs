@@ -30,12 +30,12 @@ internal sealed class MicrotouchDescriptor : ITouchscreenDescriptor, IDeviceDesc
 
 	public bool HardReset()
 	{
-		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
+		IUsbDeviceService usbDeviceService = ServiceLocator.Instance.GetService<IUsbDeviceService>();
 		bool result = false;
-		if (service.SetDeviceState(this, DeviceState.Disable))
+		if (usbDeviceService.SetDeviceState(this, DeviceState.Disable))
 		{
 			Thread.Sleep(2000);
-			result = service.SetDeviceState(this, DeviceState.Enable);
+			result = usbDeviceService.SetDeviceState(this, DeviceState.Enable);
 			Thread.Sleep(2000);
 		}
 		return result;
@@ -75,7 +75,7 @@ internal sealed class MicrotouchDescriptor : ITouchscreenDescriptor, IDeviceDesc
 	internal MicrotouchDescriptor(DeviceClass clazz)
 	{
 		DriverVersion = new Version("7.13.14.0");
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(clazz);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(clazz);
 	}
 }

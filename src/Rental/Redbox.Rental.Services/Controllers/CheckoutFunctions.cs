@@ -102,10 +102,10 @@ public class CheckoutFunctions
 	{
 		get
 		{
-			IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 			if (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.DeviceService.ContactlessEnabled && Redbox.Rental.Services.Configuration.Configuration.Instance.PerksPassEnabled)
 			{
-				return service?.SupportsEMV ?? false;
+				return deviceServiceClientHelper?.SupportsEMV ?? false;
 			}
 			return false;
 		}
@@ -114,13 +114,13 @@ public class CheckoutFunctions
 	public static void BeginCheckout()
 	{
 		LogHelper.Instance.Log("BeginCheckout");
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart currentRentalShoppingCart = service.CurrentRentalShoppingCart;
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart currentRentalShoppingCart = rentalShoppingCartService.CurrentRentalShoppingCart;
 		if (currentRentalShoppingCart == null)
 		{
 			return;
 		}
-		List<string> list = service?.AssignBarcodesToVend(currentRentalShoppingCart);
+		List<string> list = rentalShoppingCartService?.AssignBarcodesToVend(currentRentalShoppingCart);
 		if ((list != null && list.Count > 0 && currentRentalShoppingCart.TitleItems.All((IRentalShoppingCartTitleItem i) => !string.IsNullOrEmpty(i.Barcode))) || currentRentalShoppingCart.SubscriptionItems.Count > 0)
 		{
 			if (currentRentalShoppingCart.Promotion != null)
@@ -220,7 +220,7 @@ public class CheckoutFunctions
 			ITrackData trackData = details.TrackData;
 			if (trackData != null && trackData.HasVas)
 			{
-				IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+				IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 				Task.Factory.StartNew(delegate
 				{
 					if (details.Success)
@@ -237,7 +237,7 @@ public class CheckoutFunctions
 							KioskLoginResponseError = KioskLoginResponseErrors.MobilePassReadError
 						});
 					}
-				}, CancellationToken.None, TaskCreationOptions.None, service.UITaskScheduler);
+				}, CancellationToken.None, TaskCreationOptions.None, viewService.UITaskScheduler);
 				return;
 			}
 		}
@@ -299,10 +299,10 @@ public class CheckoutFunctions
 
 	public static void SwipeViewContinue()
 	{
-		IAfterSwipeOfferService service = ServiceLocator.Instance.GetService<IAfterSwipeOfferService>();
-		if (service != null)
+		IAfterSwipeOfferService afterSwipeOfferService = ServiceLocator.Instance.GetService<IAfterSwipeOfferService>();
+		if (afterSwipeOfferService != null)
 		{
-			service.StartOfferFlow(ContinueAfterOfferFlow);
+			afterSwipeOfferService.StartOfferFlow(ContinueAfterOfferFlow);
 		}
 		else
 		{
@@ -316,11 +316,11 @@ public class CheckoutFunctions
 		{
 			return;
 		}
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart rentalShoppingCart = service?.CurrentRentalShoppingCart;
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.CurrentRentalShoppingCart;
 		if (rentalShoppingCart != null)
 		{
-			service?.AddMultiDiscDiscsToRentalShoppingCart(rentalShoppingCart.ShoppingSessionId);
+			rentalShoppingCartService?.AddMultiDiscDiscsToRentalShoppingCart(rentalShoppingCart.ShoppingSessionId);
 			if (rentalShoppingCart.TitleItems.Count > 0)
 			{
 				Redbox.Rental.Services.Session.Session.Instance.IsVendProcessStarted = true;
@@ -332,10 +332,10 @@ public class CheckoutFunctions
 			}
 			if (rentalShoppingCart.Count > 0)
 			{
-				IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
+				IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 				if (OrchestrationService.IsGiftCard())
 				{
-					if (service2 != null && service2.GiftCardsEnabled && rentalShoppingCart.SubscriptionItems.Count == 0)
+					if (configuration != null && configuration.GiftCardsEnabled && rentalShoppingCart.SubscriptionItems.Count == 0)
 					{
 						OrchestrationService.ViewGoBackSafe("gift card enabled. perform gc authorize", popOnly: true);
 						Authorize(AuthorizeType.GiftCardAuthorize);
@@ -612,9 +612,9 @@ public class CheckoutFunctions
 		response = null;
 		IConfiguration instance = Redbox.Rental.Services.Configuration.Configuration.Instance;
 		QueuedPendingCounts pendingCounts = QueueFunctions.GetPendingCounts();
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		ISession session = ServiceLocator.Instance.GetService<IRentalSessionService>()?.GetCurrentSession();
-		IRentalShoppingCart rentalShoppingCart = service?.CurrentRentalShoppingCart;
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.CurrentRentalShoppingCart;
 		int valueOrDefault = (rentalShoppingCart?.SubscriptionItems?.Count).GetValueOrDefault();
 		int num = rentalShoppingCart.TitleItems.Count((IRentalShoppingCartTitleItem x) => x.Action == RentalShoppingCartItemAction.rental && x.TitleFamily == TitleFamily.Games);
 		int num2 = rentalShoppingCart.TitleItems.Count((IRentalShoppingCartTitleItem x) => x.Action == RentalShoppingCartItemAction.purchase && x.TitleFamily == TitleFamily.Games);
@@ -706,7 +706,7 @@ public class CheckoutFunctions
 
 	public static void ShowPleaseWaitBecauseOfDisconnectedCardReader()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		Task.Factory.StartNew(delegate
 		{
 			LogHelper.Instance.Log("Showing please_wait_view while waiting for card reader reconnection.");
@@ -720,21 +720,21 @@ public class CheckoutFunctions
 			{
 				RemovePleaseWaitTimer();
 				LogHelper.Instance.Log("please_wait_view timed out.  Attempt to enter maintenance mode");
-				IRedboxRental service2 = ServiceLocator.Instance.GetService<IRedboxRental>();
+				IRedboxRental redboxRental = ServiceLocator.Instance.GetService<IRedboxRental>();
 				Redbox.Rental.Services.Session.Session.Instance.WaitingForCardReaderConnection = false;
-				service2?.EnterMaintenanceModeBecauseOfDisconnectedCardReader();
+				redboxRental?.EnterMaintenanceModeBecauseOfDisconnectedCardReader();
 			})?.Start();
-		}, CancellationToken.None, TaskCreationOptions.None, service.UITaskScheduler).Wait();
+		}, CancellationToken.None, TaskCreationOptions.None, viewService.UITaskScheduler).Wait();
 	}
 
 	private static void RemovePleaseWaitTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		ITimer timer = service.GetTimer("PleaseWaitTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimer timer = timerService.GetTimer("PleaseWaitTimer");
 		if (timer != null)
 		{
 			timer?.Stop();
-			service.RemoveTimer("PleaseWaitTimer");
+			timerService.RemoveTimer("PleaseWaitTimer");
 		}
 	}
 
@@ -789,13 +789,13 @@ public class CheckoutFunctions
 					};
 					AddEventAuthorization(rentalShoppingCart.ShoppingSessionId, "preauth", preauthorizeResult.IsOnline, null, null);
 					SetPreauthorizeValues(rentalShoppingCart.ShoppingSessionId, preauthorizeResult.PromptRequired, preauthorizeResult.AuthRuleId, preauthorizeResult.AuthAmount, preauthorizeResult.SkipAuthRule);
-					IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-					if (service?.UITaskScheduler != null)
+					IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+					if (viewService?.UITaskScheduler != null)
 					{
 						Task.Factory.StartNew(delegate
 						{
 							GetZipCodeIfRequired();
-						}, CancellationToken.None, TaskCreationOptions.None, service.UITaskScheduler);
+						}, CancellationToken.None, TaskCreationOptions.None, viewService.UITaskScheduler);
 					}
 				}
 				else
@@ -816,8 +816,8 @@ public class CheckoutFunctions
 
 	public static void Authorize(AuthorizeType authorizeType)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		IRentalShoppingCart rentalShoppingCart = service?.CurrentRentalShoppingCart;
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCart rentalShoppingCart = rentalShoppingCartService?.CurrentRentalShoppingCart;
 		if (rentalShoppingCart != null)
 		{
 			LogHelper.Instance.Log($"{authorizeType} for Session ID: {rentalShoppingCart?.ShoppingSessionId}");
@@ -826,7 +826,7 @@ public class CheckoutFunctions
 			{
 				SetShoppingSessionPostalCode(rentalShoppingCart.ShoppingSessionId, instance?.UserInfo?.PostalCode);
 			}
-			service?.AssignBarcodesToVend(rentalShoppingCart);
+			rentalShoppingCartService?.AssignBarcodesToVend(rentalShoppingCart);
 			bool flag = false;
 			foreach (IRentalShoppingCartTitleItem titleItem in rentalShoppingCart.TitleItems)
 			{
@@ -876,8 +876,8 @@ public class CheckoutFunctions
 				IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.CurrentRentalShoppingCart;
 				if (rentalShoppingCart != null && rentalShoppingCart.ShoppingSessionId == authorizeResult.SessionId)
 				{
-					IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-					if (service == null || !service.IsInMaintenanceMode)
+					IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+					if (applicationState == null || !applicationState.IsInMaintenanceMode)
 					{
 						bool num = authorizeResult.AuthorizeType == AuthorizeType.Authorize;
 						bool flag = authorizeResult.AuthorizeType == AuthorizeType.GiftCardAuthorize;
@@ -1050,7 +1050,7 @@ public class CheckoutFunctions
 			if (flag)
 			{
 				OrchestrationService.ViewShowSafe("please_wait_message_view");
-				IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
+				IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
 				SendEmailConfirmCallback completeCallback = delegate(IEmailConfirmResult emailConfirmResult)
 				{
 					try
@@ -1089,7 +1089,7 @@ public class CheckoutFunctions
 					}
 				};
 				long kioskid = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-				service.SendEmailConfirm(kioskid, enteredEmailAddress, Redbox.Rental.Services.Session.Session.Instance?.UserInfo?.AccountNumber, completeCallback);
+				marketingServices.SendEmailConfirm(kioskid, enteredEmailAddress, Redbox.Rental.Services.Session.Session.Instance?.UserInfo?.AccountNumber, completeCallback);
 			}
 			else
 			{
@@ -1196,12 +1196,12 @@ public class CheckoutFunctions
 		}
 		else
 		{
-			IPerksSignupService service = ServiceLocator.Instance.GetService<IPerksSignupService>();
+			IPerksSignupService perksSignupService = ServiceLocator.Instance.GetService<IPerksSignupService>();
 			Action<ISignupFlowResult> action = delegate
 			{
 				ShowSubscriptionSignUpConfirmationViewIfNeeded();
 			};
-			service.StartSignupFlow(action, SignUpFlowContext.AfterSwipe, action);
+			perksSignupService.StartSignupFlow(action, SignUpFlowContext.AfterSwipe, action);
 		}
 	}
 
@@ -1246,12 +1246,12 @@ public class CheckoutFunctions
 	{
 		if (PromptNewRedboxPlusCustomerForSignups())
 		{
-			IPerksSignupService service = ServiceLocator.Instance.GetService<IPerksSignupService>();
+			IPerksSignupService perksSignupService = ServiceLocator.Instance.GetService<IPerksSignupService>();
 			Action<ISignupFlowResult> action = delegate
 			{
 				ContinueCheckoutFlow();
 			};
-			service.StartSignupFlow(action, SignUpFlowContext.AfterSwipeAndRedboxPlusSignup, action);
+			perksSignupService.StartSignupFlow(action, SignUpFlowContext.AfterSwipeAndRedboxPlusSignup, action);
 		}
 		else
 		{
@@ -1273,9 +1273,9 @@ public class CheckoutFunctions
 
 	public static void SendKioskOptinForMarketingCampaign(KioskOptIntItemType itemType, KioskOptInItemId itemId, string email)
 	{
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-		IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-		IOptInItem optInItem = service.NewOptInItem();
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+		IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+		IOptInItem optInItem = marketingServices.NewOptInItem();
 		optInItem.Item_Type = itemType;
 		optInItem.ItemId = (long)itemId;
 		optInItem.OptInMethodData = email;
@@ -1283,7 +1283,7 @@ public class CheckoutFunctions
 		optInItem.TemplateName = "MarketingOptInTemplate";
 		optInItem.CampaignName = "MarketingOptInCampaign";
 		List<IOptInItem> optInItems = new List<IOptInItem> { optInItem };
-		service?.KioskOptIn(service2.KioskId, optInItems, null);
+		marketingServices?.KioskOptIn(storeManager.KioskId, optInItems, null);
 	}
 
 	private static void PrcoessOfflineOrStandAloneAuthorizeResult(IAuthorizeResult authorizeResult)

@@ -34,9 +34,9 @@ public sealed class ProgramCommand
 	[Usage("PROGRAM get name: program-name")]
 	public void Get(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		string fileName = service.ExpandConstantMacros($"$(RunningPath)\\..\\scripts\\{name}.hs");
-		ProtocolHelper.FormatCompressedBytes(service.ReadToBuffer(fileName), context);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		string fileName = runtimeService.ExpandConstantMacros($"$(RunningPath)\\..\\scripts\\{name}.hs");
+		ProtocolHelper.FormatCompressedBytes(runtimeService.ReadToBuffer(fileName), context);
 	}
 
 	[CommandForm(Name = "set")]
@@ -59,8 +59,8 @@ public sealed class ProgramCommand
 	[Usage("PROGRAM list")]
 	public void List(CommandContext context)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		context.Messages.AddRange(service.GetProgramList());
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		context.Messages.AddRange(executionService.GetProgramList());
 	}
 
 	private static void CompileProgram(ErrorList errors, string programName, string path)
@@ -74,9 +74,9 @@ public sealed class ProgramCommand
 		{
 			programName = Path.GetFileNameWithoutExtension(path);
 		}
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
 		using MemoryStream stream = new MemoryStream(ServiceLocator.Instance.GetService<IRuntimeService>().ReadToBuffer(path));
-		IExecutionResult executionResult = service.Compile(stream, programName);
+		IExecutionResult executionResult = executionService.Compile(stream, programName);
 		errors.AddRange(executionResult.Errors);
 	}
 }

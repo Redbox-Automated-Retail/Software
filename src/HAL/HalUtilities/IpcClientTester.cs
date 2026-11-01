@@ -83,9 +83,9 @@ internal sealed class IpcClientTester : IDisposable
 	private void TestGuid()
 	{
 		byte[] array = Guid.NewGuid().ToByteArray();
-		byte[] array2 = new byte[64];
-		Array.Copy(array, array2, array.Length);
-		new Guid(array2);
+		byte[] buffer = new byte[64];
+		Array.Copy(array, buffer, array.Length);
+		new Guid(buffer);
 	}
 
 	private void RunMessageClient(string pipeName)
@@ -111,9 +111,9 @@ internal sealed class IpcClientTester : IDisposable
 		{
 			string arg = Encoding.ASCII.GetString(clientPipeChannel.Read());
 			Console.WriteLine("Received message {0} from server.", arg);
-			byte[] array = new byte[65536];
-			rNGCryptoServiceProvider.GetBytes(array);
-			bool flag = clientPipeChannel.Write(array);
+			byte[] buffer = new byte[65536];
+			rNGCryptoServiceProvider.GetBytes(buffer);
+			bool flag = clientPipeChannel.Write(buffer);
 			Console.WriteLine("[PipeClient] {0} Message sent {1}", DateTime.Now.ToString(), flag ? "successfully" : "failed");
 			arg = Encoding.ASCII.GetString(clientPipeChannel.Read());
 			Console.WriteLine("[PipeClient] {0} Received message '{0}' from server", DateTime.Now, arg);

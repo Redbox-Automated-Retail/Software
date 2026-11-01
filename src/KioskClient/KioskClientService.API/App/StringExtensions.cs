@@ -9,8 +9,8 @@ public static class StringExtensions
 	public static string ToSHA512Hash(this string input)
 	{
 		using SHA512 sHA = SHA512.Create();
-		byte[] array = sHA.ComputeHash(Encoding.UTF8.GetBytes(input));
-		return BitConverter.ToString(array).Replace("-", "").ToLower();
+		byte[] hash = sHA.ComputeHash(Encoding.UTF8.GetBytes(input));
+		return BitConverter.ToString(hash).Replace("-", "").ToLower();
 	}
 
 	public static string MaskLogValue(this string source, int visibleChars)

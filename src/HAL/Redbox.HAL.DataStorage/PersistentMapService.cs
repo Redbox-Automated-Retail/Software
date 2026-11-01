@@ -80,8 +80,8 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 
 	public PersistentMapService()
 	{
-		IDataTableService service = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = service.GetTable<IPersistentOption>();
+		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
+		Table = dataTableService.GetTable<IPersistentOption>();
 		Options = Table.LoadEntries();
 	}
 

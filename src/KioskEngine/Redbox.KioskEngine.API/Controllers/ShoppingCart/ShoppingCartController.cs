@@ -26,10 +26,10 @@ public class ShoppingCartController : ApiController
 		GetLoyaltyTestShoppingCartItemsResponse response = new GetLoyaltyTestShoppingCartItemsResponse();
 		await Task.Run(delegate
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			if (service != null)
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			if (rentalShoppingCartService != null)
 			{
-				IRentalShoppingCart currentRentalShoppingCart = service.CurrentRentalShoppingCart;
+				IRentalShoppingCart currentRentalShoppingCart = rentalShoppingCartService.CurrentRentalShoppingCart;
 				List<LoyaltyTestShoppingCartItem> list = new List<LoyaltyTestShoppingCartItem>();
 				foreach (IRentalShoppingCartTitleItem eachRentalShoppingCartTitleItem in currentRentalShoppingCart.TitleItems)
 				{

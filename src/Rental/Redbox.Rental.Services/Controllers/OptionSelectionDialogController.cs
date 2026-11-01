@@ -42,8 +42,8 @@ public class OptionSelectionDialogController : BaseViewController
 
 	private static void ConfigureTTS(OptionSelectionDialogViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => OptionSelectionDialogViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}
@@ -61,9 +61,9 @@ public class OptionSelectionDialogController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("medium", 15000);
-		(service?.CreateTimer("OptionSelectionDialogViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("OptionSelectionDialogViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("OptionSelectionDialogViewController time out", popOnly: false);
@@ -72,9 +72,9 @@ public class OptionSelectionDialogController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("OptionSelectionDialogViewTimer"))?.Stop();
-		service?.RemoveTimer("OptionSelectionDialogViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("OptionSelectionDialogViewTimer"))?.Stop();
+		timerService?.RemoveTimer("OptionSelectionDialogViewTimer");
 	}
 
 	public static void LeaveDialog()

@@ -50,22 +50,22 @@ public class RatingSelectionPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		int timeOut = 20000;
-		IIdleTimer obj = service?.CreateIdleTimer("RatingSelectionPopupViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("RatingSelectionPopupViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("RatingSelectionPopupViewController time out", popOnly: false);
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("RatingSelectionPopupViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("RatingSelectionPopupViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("RatingSelectionPopupViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("RatingSelectionPopupViewTimer");
 	}
 
 	private static RatingButtonModel CreateRatingButtonModel(Ratings rating)

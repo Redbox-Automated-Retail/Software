@@ -23,7 +23,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 
 	public bool OnEmpty(IGetResult result)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (ControllerConfiguration.Instance.PeekDuringVend)
 		{
 			using (PeekOperation peekOperation = new PeekOperation())
@@ -32,14 +32,14 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				if (!peekResult.TestOk || peekResult.IsFull)
 				{
 					result.Update(ErrorCodes.ItemStuck);
-					service.UpdateEmptyStuck(result.Location);
+					inventoryService.UpdateEmptyStuck(result.Location);
 					return false;
 				}
 				return true;
 			}
 		}
 		result.Update(ErrorCodes.ItemStuck);
-		service.UpdateEmptyStuck(result.Location);
+		inventoryService.UpdateEmptyStuck(result.Location);
 		return false;
 	}
 
@@ -63,8 +63,8 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 			});
 			LogHelper.Instance.WithContext("Vend start, Method = {0}", Method);
 			base.Context.Send("VendStart");
-			int num = base.Context.PopTop<int>();
-			int num2 = num;
+			int operand = base.Context.PopTop<int>();
+			int num2 = operand;
 			if (VendMethod.Location == Method)
 			{
 				using CheckPickerOperation checkPickerOperation = new CheckPickerOperation(base.Context);
@@ -74,11 +74,11 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					return;
 				}
 			}
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			string text = null;
-			while (num > 0)
+			while (operand > 0)
 			{
-				if (num2 != num)
+				if (num2 != operand)
 				{
 					base.Context.Send("VendGraphicDisplay");
 					if (ContextSwitchRequested())
@@ -90,7 +90,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				{
 					int deck = base.Context.PopTop<int>();
 					int slot = base.Context.PopTop<int>();
-					location = service.Get(deck, slot);
+					location = inventoryService.Get(deck, slot);
 					text = location.ID;
 				}
 				else
@@ -111,12 +111,12 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					{
 						base.Context.Send("FindItemToVend");
 					}
-					location = service.Lookup(text);
+					location = inventoryService.Lookup(text);
 					if (location == null)
 					{
 						base.Context.Send("ItemNotFound");
 						base.Context.CreateLookupErrorResult("VendError", text);
-						if (--num <= 0)
+						if (--operand <= 0)
 						{
 							WaitForSignal();
 							break;
@@ -134,7 +134,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 				}
 				if (TransactionResult.ContinueToNext == transactionResult)
 				{
-					if (--num <= 0)
+					if (--operand <= 0)
 					{
 						WaitForSignal();
 						break;
@@ -169,7 +169,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 					base.Context.Send("ItemVended");
 					LogHelper.Instance.WithContext("The item {0} was taken.", text);
 					base.Context.CreateResult("ItemVended", "The item was successfully vended.", location.Deck, location.Slot, text, null, null);
-					num--;
+					operand--;
 					continue;
 				}
 				if (ErrorCodes.PickerFull != vendItemResult.Status)
@@ -313,10 +313,10 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 		}
 		if (CurrentGetResult != null)
 		{
-			IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+			IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 			location.Flags = CurrentGetResult.Flags;
 			location.ReturnDate = CurrentGetResult.ReturnTime;
-			service.Save(location);
+			inventoryService.Save(location);
 		}
 		return true;
 	}
@@ -352,8 +352,8 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 			return TransactionResult.MachineError;
 		case ErrorCodes.Success:
 		{
-			IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-			CurrentGetResult = service.Get(this);
+			IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+			CurrentGetResult = controllerService.Get(this);
 			if (CurrentGetResult.Success)
 			{
 				return TransactionResult.Success;
@@ -368,7 +368,7 @@ internal sealed class VendJob : NativeJobAdapter, IGetObserver
 			{
 				ServiceLocator.Instance.GetService<IPersistentCounterService>().Increment("EmptyOrStuckCount");
 			}
-			service.ClearGripper();
+			controllerService.ClearGripper();
 			IPickerSensorReadResult pickerSensorReadResult = base.ControlSystem.ReadPickerSensors();
 			if (!pickerSensorReadResult.Success)
 			{

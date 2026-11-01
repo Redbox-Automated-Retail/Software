@@ -34,12 +34,12 @@ public class RenderingService : IRenderingService
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service == null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (machineSettingsStore == null)
 			{
 				return Color.FromArgb(153, 153, 152);
 			}
-			return (Color)ConversionHelper.ChangeType(service.GetValue("Core", "BackgroundColor", "153,153,152"), typeof(Color));
+			return (Color)ConversionHelper.ChangeType(machineSettingsStore.GetValue("Core", "BackgroundColor", "153,153,152"), typeof(Color));
 		}
 		set
 		{

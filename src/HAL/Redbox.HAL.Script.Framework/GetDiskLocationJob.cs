@@ -7,8 +7,8 @@ internal sealed class GetDiskLocationJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		int num = base.Context.PopTop<int>();
-		for (int i = 0; i < num; i++)
+		int operand = base.Context.PopTop<int>();
+		for (int i = 0; i < operand; i++)
 		{
 			string text = base.Context.PopTop<string>();
 			ILocation location = base.InventoryService.Lookup(text);

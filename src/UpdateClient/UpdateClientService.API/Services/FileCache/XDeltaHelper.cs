@@ -163,12 +163,12 @@ public static class XDeltaHelper
 
 	private static void BufferedWriteToFile(Stream s, string target)
 	{
-		byte[] array = new byte[65536];
+		byte[] buffer = new byte[65536];
 		using (FileStream fileStream = File.Create(target))
 		{
-			for (int num = s.Read(array, 0, array.Length); num > 0; num = s.Read(array, 0, array.Length))
+			for (int bytesRead = s.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = s.Read(buffer, 0, buffer.Length))
 			{
-				fileStream.Write(array, 0, num);
+				fileStream.Write(buffer, 0, bytesRead);
 			}
 		}
 		if (s.CanSeek)
@@ -179,12 +179,12 @@ public static class XDeltaHelper
 
 	private static void BufferedReadFromFile(string source, Stream target)
 	{
-		byte[] array = new byte[65536];
+		byte[] buffer = new byte[65536];
 		using (FileStream fileStream = File.OpenRead(source))
 		{
-			for (int num = fileStream.Read(array, 0, array.Length); num > 0; num = fileStream.Read(array, 0, array.Length))
+			for (int bytesRead = fileStream.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = fileStream.Read(buffer, 0, buffer.Length))
 			{
-				target.Write(array, 0, num);
+				target.Write(buffer, 0, bytesRead);
 			}
 		}
 		if (target.CanSeek)

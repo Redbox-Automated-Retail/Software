@@ -64,10 +64,10 @@ public class RemoveCardViewController : BaseViewController
 		{
 			if (OrchestrationService.PeekView() == "remove_card_view")
 			{
-				IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-				if (removeCardViewModel != null && !removeCardViewModel.CardHasBeenRemoved && service != null)
+				IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+				if (removeCardViewModel != null && !removeCardViewModel.CardHasBeenRemoved && deviceServiceClientHelper != null)
 				{
-					service.GetCardInsertedStatus(delegate(GetCardInsertedStatusResponseEvent getCardInsertedStatusResponseEvent)
+					deviceServiceClientHelper.GetCardInsertedStatus(delegate(GetCardInsertedStatusResponseEvent getCardInsertedStatusResponseEvent)
 					{
 						bool obj = false;
 						lock (_lockObject)

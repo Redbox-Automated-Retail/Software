@@ -21,8 +21,8 @@ public class NotDefaultAttribute : ValidationAttribute
 		Type type = value.GetType();
 		if (type.IsValueType)
 		{
-			object obj = Activator.CreateInstance(type);
-			return !value.Equals(obj);
+			object instance = Activator.CreateInstance(type);
+			return !value.Equals(instance);
 		}
 		return true;
 	}

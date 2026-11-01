@@ -69,7 +69,7 @@ public sealed class MoveInstruction : Instruction
 		{
 			mode = Enum<MoveMode>.ParseIgnoringCase(keyValuePair.Value, MoveMode.None);
 		}
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		KeyValuePair keyValuePair2 = base.Operands.GetKeyValuePair("SLOT-OFFSET");
 		if (base.Operands.Count == 1 && keyValuePair2 != null)
 		{
@@ -79,13 +79,13 @@ public sealed class MoveInstruction : Instruction
 				context.PushTop(ErrorCodes.InvalidLocation.ToString().ToUpper());
 				return;
 			}
-			if (service.CurrentLocation == null)
+			if (motionControlService.CurrentLocation == null)
 			{
 				context.PushTop(ErrorCodes.InvalidLocation.ToString().ToUpper());
 				return;
 			}
 			using MoveDecoratorService moveDecoratorService = new MoveDecoratorService(context);
-			ErrorCodes errorCodes = moveDecoratorService.ShowEmptyStuck(service.CurrentLocation, keyValuePairValue);
+			ErrorCodes errorCodes = moveDecoratorService.ShowEmptyStuck(motionControlService.CurrentLocation, keyValuePairValue);
 			if (errorCodes == ErrorCodes.Success)
 			{
 				context.PushTop(keyValuePairValue);
@@ -117,11 +117,11 @@ public sealed class MoveInstruction : Instruction
 				return;
 			}
 			OffsetMoveData data = ((Enum<Axis>.ParseIgnoringCase(keyValuePair3.Value, Axis.X) == Axis.X) ? new OffsetMoveData(keyValuePairValue2.Value, 0) : new OffsetMoveData(0, keyValuePairValue2.Value));
-			errorCodes2 = service.MoveTo(location, mode, context.AppLog, ref data);
+			errorCodes2 = motionControlService.MoveTo(location, mode, context.AppLog, ref data);
 		}
 		else
 		{
-			errorCodes2 = service.MoveTo(location, mode, context.AppLog);
+			errorCodes2 = motionControlService.MoveTo(location, mode, context.AppLog);
 		}
 		context.PushTop(errorCodes2.ToString().ToUpper());
 	}

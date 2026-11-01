@@ -319,12 +319,12 @@ public abstract class TrackData : ITrackData
 	public TrackData()
 	{
 		Errors = new ErrorList();
-		IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		if (service != null && service.SupportsEMV)
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		if (deviceServiceClientHelper != null && deviceServiceClientHelper.SupportsEMV)
 		{
-			IConfiguration service2 = ServiceLocator.Instance.GetService<IConfiguration>();
-			_chipEnabled = service2.KioskSession.DeviceService.ChipEnabled;
-			_contactlessEnabled = service2.KioskSession.DeviceService.ContactlessEnabled;
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+			_chipEnabled = configuration.KioskSession.DeviceService.ChipEnabled;
+			_contactlessEnabled = configuration.KioskSession.DeviceService.ContactlessEnabled;
 		}
 	}
 

@@ -323,8 +323,8 @@ public class Instruction : ICloneable<Instruction>
 		{
 			return false;
 		}
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		location = service.Get(deck, slot);
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		location = inventoryService.Get(deck, slot);
 		return true;
 	}
 

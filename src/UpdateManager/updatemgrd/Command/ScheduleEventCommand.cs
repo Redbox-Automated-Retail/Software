@@ -13,8 +13,8 @@ internal class ScheduleEventCommand
 	[Usage("SCHEDULE-EVENT list")]
 	public void List(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.List(out var tasks)));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.List(out var tasks)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(tasks.ToJson());
@@ -25,15 +25,15 @@ internal class ScheduleEventCommand
 	[Usage("SCHEDULE-EVENT isRunning")]
 	public void IsRunning(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Messages.Add(service.IsRunning.ToJson());
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Messages.Add(taskScheduler.IsRunning.ToJson());
 	}
 
 	[CommandForm(Name = "create")]
 	[Usage("SCHEDULE-EVENT create name: payload: payloadType:{script, shell, work} [startOffset:(sec)] [startTime:] [endTime:] [[repeatInterval:] [cronExpression:]]")]
 	public void Create(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, [CommandKeyValue(IsRequired = true)] string payload, [CommandKeyValue(IsRequired = true)] string payloadType, [CommandKeyValue(IsRequired = false)] int startOffset, [CommandKeyValue(IsRequired = false)] string startTime, [CommandKeyValue(IsRequired = false)] string endTime, [CommandKeyValue(IsRequired = false)] string cronExpression, [CommandKeyValue(IsRequired = false)] string repeatInterval)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		TimeSpan? startOffset2 = null;
 		if (startOffset > 0)
 		{
@@ -71,15 +71,15 @@ internal class ScheduleEventCommand
 				context.Errors.Add(Redbox.IPC.Framework.Error.NewError("C437", "Could not parse repeatInterval.", "Please enter a timespan that can be parsed."));
 				return;
 			}
-			context.Errors.AddRange(ConvertToIPCErrors(service.ScheduleSimpleJob(name, payload, payloadType, startOffset2, startTime2, endTime2, result3)));
+			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleSimpleJob(name, payload, payloadType, startOffset2, startTime2, endTime2, result3)));
 		}
 		else
 		{
-			context.Errors.AddRange(ConvertToIPCErrors(service.ScheduleCronJob(name, payload, payloadType, startOffset2, startTime2, endTime2, cronExpression)));
+			context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ScheduleCronJob(name, payload, payloadType, startOffset2, startTime2, endTime2, cronExpression)));
 		}
 		if (!context.Errors.ContainsError())
 		{
-			service.Restart();
+			taskScheduler.Restart();
 			context.Messages.Add("Success");
 		}
 	}
@@ -88,48 +88,48 @@ internal class ScheduleEventCommand
 	[Usage("SCHEDULE-EVENT delete name:")]
 	public void Delete(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.Delete(name)));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.Delete(name)));
 	}
 
 	[CommandForm(Name = "clear")]
 	[Usage("SCHEDULE-EVENT clear")]
 	public void Delete(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.Clear()));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.Clear()));
 	}
 
 	[CommandForm(Name = "stop")]
 	[Usage("SCHEDULE-EVENT stop")]
 	public void Stop(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.Stop()));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.Stop()));
 	}
 
 	[CommandForm(Name = "start")]
 	[Usage("SCHEDULE-EVENT start")]
 	public void Start(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.Start()));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.Start()));
 	}
 
 	[CommandForm(Name = "restart")]
 	[Usage("SCHEDULE-EVENT restart")]
 	public void Restart(CommandContext context)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.Restart()));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.Restart()));
 	}
 
 	[CommandForm(Name = "force")]
 	[Usage("SCHEDULE-EVENT force name:")]
 	public void Force(CommandContext context, string name)
 	{
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
-		context.Errors.AddRange(ConvertToIPCErrors(service.ForceTask(name, out var success)));
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		context.Errors.AddRange(ConvertToIPCErrors(taskScheduler.ForceTask(name, out var success)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(success.ToJson());

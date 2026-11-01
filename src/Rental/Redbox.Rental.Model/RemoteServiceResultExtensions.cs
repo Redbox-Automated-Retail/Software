@@ -11,16 +11,16 @@ public static class RemoteServiceResultExtensions
 {
 	public static LuaTable AsTable(this IRemoteServiceResult result)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = result.Success;
-		LuaTable luaTable2 = (LuaTable)service.NewTable();
+		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		luaTable2["hours"] = result.ExecutionTime.Hours;
 		luaTable2["minutes"] = result.ExecutionTime.Minutes;
 		luaTable2["seconds"] = result.ExecutionTime.Seconds;
 		luaTable2["milliseconds"] = result.ExecutionTime.Milliseconds;
 		luaTable["execution_time"] = luaTable2;
-		LuaTable luaTable3 = (LuaTable)service.NewTable();
+		LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 		foreach (string key in result.Properties.Keys)
 		{
 			object obj = result.Properties[key];
@@ -31,10 +31,10 @@ public static class RemoteServiceResultExtensions
 		}
 		luaTable["properties"] = luaTable3;
 		int num = 1;
-		LuaTable luaTable4 = (LuaTable)service.NewTable();
+		LuaTable luaTable4 = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in result.Errors)
 		{
-			LuaTable luaTable5 = (LuaTable)service.NewTable();
+			LuaTable luaTable5 = (LuaTable)kernelService.NewTable();
 			luaTable5["code"] = error.Code;
 			luaTable5["is_warning"] = error.IsWarning;
 			luaTable5["description"] = error.Description;
@@ -47,10 +47,10 @@ public static class RemoteServiceResultExtensions
 
 	public static LuaTable AsTableExtended(this IRemoteServiceResult result)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = result.Success;
-		LuaTable luaTable2 = (LuaTable)service.NewTable();
+		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		luaTable2["hours"] = result.ExecutionTime.Hours;
 		luaTable2["minutes"] = result.ExecutionTime.Minutes;
 		luaTable2["seconds"] = result.ExecutionTime.Seconds;
@@ -63,13 +63,13 @@ public static class RemoteServiceResultExtensions
 		else
 		{
 			LogHelper.Instance.Log("IRemoteServiceResult: IRemoteServiceResult.Properties could not be cast as Dictionary");
-			luaTable["properties"] = (LuaTable)service.NewTable();
+			luaTable["properties"] = (LuaTable)kernelService.NewTable();
 		}
 		int num = 1;
-		LuaTable luaTable3 = (LuaTable)service.NewTable();
+		LuaTable luaTable3 = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in result.Errors)
 		{
-			LuaTable luaTable4 = (LuaTable)service.NewTable();
+			LuaTable luaTable4 = (LuaTable)kernelService.NewTable();
 			luaTable4["code"] = error.Code;
 			luaTable4["is_warning"] = error.IsWarning;
 			luaTable4["description"] = error.Description;

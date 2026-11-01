@@ -65,31 +65,31 @@ public static class Utils
 			{
 				return BitsVersion.Bits0_0;
 			}
-			byte[] array = new byte[fileVersionInfoSize];
-			if (!NativeMethods.GetFileVersionInfo(sFileName, handle, fileVersionInfoSize, array))
+			byte[] buffer = new byte[fileVersionInfoSize];
+			if (!NativeMethods.GetFileVersionInfo(sFileName, handle, fileVersionInfoSize, buffer))
 			{
 				return BitsVersion.Bits0_0;
 			}
 			IntPtr pValue = IntPtr.Zero;
 			uint len = 0u;
-			if (!NativeMethods.VerQueryValue(array, "\\VarFileInfo\\Translation", out pValue, out len))
+			if (!NativeMethods.VerQueryValue(buffer, "\\VarFileInfo\\Translation", out pValue, out len))
 			{
 				return BitsVersion.Bits0_0;
 			}
 			int num = Marshal.ReadInt16(pValue);
 			int num2 = Marshal.ReadInt16((IntPtr)((int)pValue + 2));
 			string pSubBlock = $"\\StringFileInfo\\{num:X4}{num2:X4}\\ProductVersion";
-			if (!NativeMethods.VerQueryValue(array, pSubBlock, out string pValue2, out len))
+			if (!NativeMethods.VerQueryValue(buffer, pSubBlock, out string pValue2, out len))
 			{
 				return BitsVersion.Bits0_0;
 			}
-			string[] array2 = pValue2.Split('.');
-			if (array2 == null || array2.Length < 2)
+			string[] parts = pValue2.Split('.');
+			if (parts == null || parts.Length < 2)
 			{
 				return BitsVersion.Bits0_0;
 			}
-			int num3 = int.Parse(array2[0]);
-			int num4 = int.Parse(array2[1]);
+			int num3 = int.Parse(parts[0]);
+			int num4 = int.Parse(parts[1]);
 			return num3 switch
 			{
 				6 => num4 switch

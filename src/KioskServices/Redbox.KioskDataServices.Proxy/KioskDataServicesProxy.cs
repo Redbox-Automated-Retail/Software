@@ -78,11 +78,11 @@ internal class KioskDataServicesProxy
 			webRequest.ContentType = "application/json";
 			webRequest.ContentLength = jsonRequest.Length;
 			webRequest.Headers.Add("Authorization: Bearer " + authorizationKey);
-			IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
-			if (service != null)
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+			if (storeManager != null)
 			{
-				webRequest.Headers.Add("x-redbox-kioskid", service.KioskId.ToString());
-				LogHelper.Instance.Log(string.Format("Added {0} header where KioskId = '{1}'", "x-redbox-kioskid", service.KioskId));
+				webRequest.Headers.Add("x-redbox-kioskid", storeManager.KioskId.ToString());
+				LogHelper.Instance.Log(string.Format("Added {0} header where KioskId = '{1}'", "x-redbox-kioskid", storeManager.KioskId));
 			}
 			else
 			{
@@ -124,14 +124,14 @@ internal class KioskDataServicesProxy
 		{
 			return;
 		}
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		if (service == null)
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		if (configuration == null)
 		{
 			return;
 		}
 		Uri uri = null;
-		string kioskDataServicesUrl = service.KioskDataServicesUrl;
-		string kioskDataServicesKey = service.KioskDataServicesKey;
+		string kioskDataServicesUrl = configuration.KioskDataServicesUrl;
+		string kioskDataServicesKey = configuration.KioskDataServicesKey;
 		if (!string.IsNullOrEmpty(kioskDataServicesUrl))
 		{
 			kioskDataServicesUrl = kioskDataServicesUrl.TrimEnd('/') + "/";

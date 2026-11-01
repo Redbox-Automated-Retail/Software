@@ -10,13 +10,13 @@ public static class ConfigurationServiceFunctions
 	[KernelFunction(Name = "kernel.config_getsettingdata")]
 	internal static LuaTable ConfigGetResultTable(string configFile, string categoryName, string settingName)
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service == null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService == null)
 		{
 			return null;
 		}
 		LuaTable luaTable = CreateResultTable(new ErrorList());
-		if (service.TryGetConfigurationData(configFile, categoryName, settingName, out var value))
+		if (configurationService.TryGetConfigurationData(configFile, categoryName, settingName, out var value))
 		{
 			luaTable["value"] = value.Value;
 			luaTable["success"] = true;
@@ -33,12 +33,12 @@ public static class ConfigurationServiceFunctions
 	[KernelFunction(Name = "kernel.config_getvalue")]
 	internal static object ConfigGetValue(string configFile, string categoryName, string settingName)
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service == null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService == null)
 		{
 			return null;
 		}
-		if (service.TryGetObject(configFile, categoryName, settingName, out var value))
+		if (configurationService.TryGetObject(configFile, categoryName, settingName, out var value))
 		{
 			return value;
 		}
@@ -48,21 +48,21 @@ public static class ConfigurationServiceFunctions
 	[KernelFunction(Name = "kernel.config_getvalidconfigdata")]
 	internal static LuaTable ConfigGetTable(string configFile, string categoryName)
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
-		if (service == null)
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
+		if (configurationService == null)
 		{
 			return null;
 		}
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LuaTable luaTable = (LuaTable)kernelService.NewTable();
-		service.GetSettingNames(configFile, categoryName, out var list);
+		configurationService.GetSettingNames(configFile, categoryName, out var list);
 		if (list == null)
 		{
 			return null;
 		}
 		for (int i = 0; i < list.Count; i++)
 		{
-			if (service.TryGetConfigurationData(configFile, categoryName, list[i], out var value))
+			if (configurationService.TryGetConfigurationData(configFile, categoryName, list[i], out var value))
 			{
 				_ = value.EffectiveTime;
 				if (!(value.EffectiveTime > DateTime.Now) && (value == null || !(value.ExpireTime < DateTime.Now)))
@@ -80,10 +80,10 @@ public static class ConfigurationServiceFunctions
 
 	private static LuaTable CreateResultTable(ErrorList errors)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		LuaTable luaTable = (LuaTable)service.NewTable();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		LuaTable luaTable = (LuaTable)kernelService.NewTable();
 		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = (LuaTable)service.NewTable();
+		LuaTable luaTable2 = (LuaTable)kernelService.NewTable();
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 		{
 			luaTable2[error.Code] = error.Description;

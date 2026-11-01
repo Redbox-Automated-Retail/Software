@@ -159,10 +159,10 @@ public sealed class VMZInstruction : Instruction
 
 	private void FetchLast(MerchFlags flags, ExecutionContext context)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		ErrorList errors = new ErrorList();
-		service.Wait(GetTimeOutValue(errors, context) ?? 8000);
+		runtimeService.Wait(GetTimeOutValue(errors, context) ?? 8000);
 		ILocation location = VMZ.Instance.FindHighestLocation(flags);
 		if (location == null)
 		{

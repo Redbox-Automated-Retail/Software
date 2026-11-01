@@ -155,8 +155,8 @@ public class HealthService : IHealthServices
 					action?.Invoke();
 					if (callback != null)
 					{
-						ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-						if (service != null)
+						ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+						if (callbackService != null)
 						{
 							RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 							{
@@ -170,7 +170,7 @@ public class HealthService : IHealthServices
 								}
 								remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 							}
-							service.EnqueueCallback(new RemoteServiceCallbackEntry
+							callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 							{
 								Callback = callback,
 								Result = remoteServiceResult,
@@ -219,8 +219,8 @@ public class HealthService : IHealthServices
 				{
 					if (callback != null)
 					{
-						ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-						if (service != null)
+						ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+						if (callbackService != null)
 						{
 							RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 							{
@@ -231,7 +231,7 @@ public class HealthService : IHealthServices
 								remoteServiceResult.Errors.AddRange(errors);
 								remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 							}
-							service.EnqueueCallback(new RemoteServiceCallbackEntry
+							callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 							{
 								Callback = callback,
 								Result = remoteServiceResult,
@@ -280,8 +280,8 @@ public class HealthService : IHealthServices
 				{
 					if (callback != null)
 					{
-						ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-						if (service != null)
+						ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+						if (callbackService != null)
 						{
 							RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 							{
@@ -292,7 +292,7 @@ public class HealthService : IHealthServices
 								remoteServiceResult.Errors.AddRange(errors);
 								remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 							}
-							service.EnqueueCallback(new RemoteServiceCallbackEntry
+							callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 							{
 								Callback = callback,
 								Result = remoteServiceResult,
@@ -360,14 +360,14 @@ public class HealthService : IHealthServices
 		}
 		m_pingTimer = new Timer(delegate
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 			try
 			{
 				if (m_pingTimer != null)
 				{
 					m_pingTimer.Change(-1, -1);
 				}
-				Ping(service.GetValue<string>("Store", "ID"));
+				Ping(machineSettingsStore.GetValue<string>("Store", "ID"));
 			}
 			finally
 			{
@@ -429,9 +429,9 @@ public class HealthService : IHealthServices
 			dictionary["Hal Service"] = service["HALServiceVersion"] ?? "Not Found";
 			dictionary["Hal Client"] = service["HALVersion"] ?? "Not Found";
 			dictionary["Kiosk Engine"] = service["EngineVersion"];
-			IDeviceServiceClientHelper service2 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-			dictionary["Device Service"] = service2?.DeviceServiceVersion?.ToString() ?? "Not Found";
-			dictionary["Device Service Client"] = service2?.DeviceServiceClientVersion?.ToString() ?? "Not Found";
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			dictionary["Device Service"] = deviceServiceClientHelper?.DeviceServiceVersion?.ToString() ?? "Not Found";
+			dictionary["Device Service Client"] = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString() ?? "Not Found";
 			foreach (IBundleSpecifier bundle in ServiceLocator.Instance.GetService<IResourceBundleService>().Bundles)
 			{
 				dictionary[bundle.Name] = bundle.Version.ToString();
@@ -444,10 +444,10 @@ public class HealthService : IHealthServices
 	{
 		if (!string.IsNullOrEmpty(number) && string.Compare(number, "unconfigured", ignoreCase: true) == 0)
 		{
-			IObjectCacheService service = ServiceLocator.Instance.GetService<IObjectCacheService>();
-			if (service != null)
+			IObjectCacheService objectCacheService = ServiceLocator.Instance.GetService<IObjectCacheService>();
+			if (objectCacheService != null)
 			{
-				number = service.GetObject<string>("NullKioskId") ?? "1";
+				number = objectCacheService.GetObject<string>("NullKioskId") ?? "1";
 			}
 		}
 		return int.Parse(number);

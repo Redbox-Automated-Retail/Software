@@ -17,9 +17,9 @@ public class FormatFilterPopupViewController : BaseViewController
 	{
 		get
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			List<IKioskProduct> products = null;
-			service?.GetProducts(BrowseViewFilter.ForSale, TitleFamily.Movies, TitleType.DigitalCode, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+			dataService?.GetProducts(BrowseViewFilter.ForSale, TitleFamily.Movies, TitleType.DigitalCode, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 			if (products != null)
 			{
 				return products.Count > 0;
@@ -89,8 +89,8 @@ public class FormatFilterPopupViewController : BaseViewController
 
 	private static void ConfigureTTS(FormatSelectionPopupViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			viewModel.OnGetSpeechControl = () => FormatFilterPopupViewTextToSpeech.GetSpeechControl(GetViewModel);
 		}
@@ -108,9 +108,9 @@ public class FormatFilterPopupViewController : BaseViewController
 
 	private static bool IsTitleTypeAvailable(TitleType titleType)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<IKioskProduct> products = null;
-		service?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+		dataService?.GetProducts(BrowseViewFilter.All, TitleFamily.Movies, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 		if (products != null)
 		{
 			return products.Count > 0;
@@ -151,10 +151,10 @@ public class FormatFilterPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int timeOut = OrchestrationService.TTSGetTimeout("medium", 15000);
 		ServiceLocator.Instance.GetService<IViewService>()?.GetCurrentViewAnalyticsName();
-		(service?.CreateTimer("FormatFilterPopupViewTimer", timeOut, timeOut, delegate
+		(timerService?.CreateTimer("FormatFilterPopupViewTimer", timeOut, timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("FormatFilterPopupViewController time out", popOnly: false);
@@ -163,9 +163,9 @@ public class FormatFilterPopupViewController : BaseViewController
 
 	private static void StopAndRemoveTimer()
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		(service?.GetTimer("FormatFilterPopupViewTimer"))?.Stop();
-		service?.RemoveTimer("FormatFilterPopupViewTimer");
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		(timerService?.GetTimer("FormatFilterPopupViewTimer"))?.Stop();
+		timerService?.RemoveTimer("FormatFilterPopupViewTimer");
 	}
 
 	public static void LeaveFormatFilterPopupView()

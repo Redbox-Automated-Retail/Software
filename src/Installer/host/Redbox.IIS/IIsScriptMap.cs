@@ -33,19 +33,19 @@ public class IIsScriptMap
 		{
 			return null;
 		}
-		string[] array = metabaseEntry.Split(",".ToCharArray(), 4);
-		if (array.Length < 2)
+		string[] parts = metabaseEntry.Split(",".ToCharArray(), 4);
+		if (parts.Length < 2)
 		{
 			return null;
 		}
 		IIsScriptMap isScriptMap = new IIsScriptMap();
-		isScriptMap.Extension = array[0];
-		isScriptMap.ExecutablePath = array[1];
-		isScriptMap.Options = (IIsScriptMapOption)int.Parse(array[2]);
+		isScriptMap.Extension = parts[0];
+		isScriptMap.ExecutablePath = parts[1];
+		isScriptMap.Options = (IIsScriptMapOption)int.Parse(parts[2]);
 		IIsScriptMap isScriptMap2 = isScriptMap;
-		if (array.Length == 4)
+		if (parts.Length == 4)
 		{
-			isScriptMap2.Verbs.AddRange(array[3].Split(",".ToCharArray()));
+			isScriptMap2.Verbs.AddRange(parts[3].Split(",".ToCharArray()));
 		}
 		return isScriptMap2;
 	}

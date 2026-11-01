@@ -229,10 +229,10 @@ public class KeyboardLogic : BaseLogic
 	{
 		if (Model.KeyboardText != null)
 		{
-			int num = Model.KeyboardText.IndexOf('@');
-			if (num > -1)
+			int index = Model.KeyboardText.IndexOf('@');
+			if (index > -1)
 			{
-				Model.KeyboardText = Model.KeyboardText.Remove(num);
+				Model.KeyboardText = Model.KeyboardText.Remove(index);
 			}
 			if (Model.KeyboardText.Length > 0)
 			{
@@ -250,12 +250,12 @@ public class KeyboardLogic : BaseLogic
 			return;
 		}
 		BaseLogic.SetCurrentUICulture();
-		int num = Model.KeyboardText.IndexOf('@');
-		if (num == -1)
+		int index = Model.KeyboardText.IndexOf('@');
+		if (index == -1)
 		{
 			Model.KeyboardError = Resources.email_error_message;
 		}
-		string text2 = Model.KeyboardText.Substring(num + 1);
+		string text2 = Model.KeyboardText.Substring(index + 1);
 		if (text2.Length == 0)
 		{
 			Model.KeyboardError = Resources.email_error_message;
@@ -265,7 +265,7 @@ public class KeyboardLogic : BaseLogic
 			int num2 = text2.IndexOf('.') + 1;
 			if (num2 > 0)
 			{
-				Model.KeyboardText = Model.KeyboardText.Remove(num + num2);
+				Model.KeyboardText = Model.KeyboardText.Remove(index + num2);
 			}
 			Model.KeyboardText += text;
 			SetControlTextMode(mode: false);

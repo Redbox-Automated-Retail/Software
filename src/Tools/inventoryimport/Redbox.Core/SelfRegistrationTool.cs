@@ -40,18 +40,18 @@ public static class SelfRegistrationTool
 			{
 				return false;
 			}
-			byte[] array = new byte[fileVersionInfoSize];
-			if (!GetFileVersionInfo(fileName, handle, fileVersionInfoSize, array))
+			byte[] buffer = new byte[fileVersionInfoSize];
+			if (!GetFileVersionInfo(fileName, handle, fileVersionInfoSize, buffer))
 			{
 				return false;
 			}
-			if (!VerQueryValue(array, "\\VarFileInfo\\Translation", out short* pValue, out uint len))
+			if (!VerQueryValue(buffer, "\\VarFileInfo\\Translation", out short* pValue, out uint len))
 			{
 				return false;
 			}
 			string pSubBlock = "\\StringFileInfo\\" + pValue->ToString("X4") + pValue[1].ToString("X4") + "\\OLESelfRegister";
 			string pValue2;
-			return VerQueryValue(array, pSubBlock, out pValue2, out len);
+			return VerQueryValue(buffer, pSubBlock, out pValue2, out len);
 		}
 		catch (Exception)
 		{

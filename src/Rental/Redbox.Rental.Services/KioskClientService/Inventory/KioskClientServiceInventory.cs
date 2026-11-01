@@ -28,10 +28,10 @@ public class KioskClientServiceInventory : BaseKioskClientService, IKioskClientS
 
 	public KioskClientServiceInventory()
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
-			service.RegisterMessageProcessorService(new KcsUpdateMerchStatusMessageProcessorService());
+			queueService.RegisterMessageProcessorService(new KcsUpdateMerchStatusMessageProcessorService());
 		}
 		else
 		{

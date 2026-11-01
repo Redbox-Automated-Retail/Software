@@ -19,9 +19,9 @@ public partial class PromoConfirmationViewUserControl : TextToSpeechUserControl,
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(CancelButton);
-		obj?.SetStyle(ApplyButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(CancelButton);
+		theme?.SetStyle(ApplyButton);
 	}
 
 	public override ISpeechControl GetSpeechControl()

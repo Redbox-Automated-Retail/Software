@@ -129,14 +129,14 @@ internal class DownloadFileBase : IDownloadFile
 		{
 			return errorList;
 		}
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		string text = string.Empty;
 		string text2 = Encoding.Unicode.GetString(DownloadFileData.ActivateScript.Base64ToBytes());
 		LogHelper.Instance.Log("DownloadFileBase.RunScript: DownloadFile Id {0} Name {1} running attached script", DownloadFileData.Id, DownloadFileData.Name);
 		Exception ex = null;
 		try
 		{
-			service.ExecuteChunkNoLock(text2, reset: true, "Results", out var result, out scriptCompleted);
+			kernelService.ExecuteChunkNoLock(text2, reset: true, "Results", out var result, out scriptCompleted);
 			if (result != null)
 			{
 				text = result.ToJson();
@@ -159,7 +159,7 @@ internal class DownloadFileBase : IDownloadFile
 			return errorList;
 		}
 		bool flag = text2.IndexOf("kernel.markscriptcomplete", StringComparison.CurrentCultureIgnoreCase) > -1;
-		if (service.ScriptCompleted || !flag)
+		if (kernelService.ScriptCompleted || !flag)
 		{
 			scriptCompleted = true;
 			if (!string.IsNullOrEmpty(text))

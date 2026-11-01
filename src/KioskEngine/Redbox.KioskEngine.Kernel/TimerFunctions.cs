@@ -15,7 +15,7 @@ internal static class TimerFunctions
 	[KernelFunction(Name = "kernel.timercreate")]
 	internal static void CreateTimer(string name, object dueTime, object period, TimerFiredHandler timerHandler)
 	{
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		int? dueTime2 = null;
 		if (dueTime != null)
 		{
@@ -26,7 +26,7 @@ internal static class TimerFunctions
 		{
 			period2 = Convert.ToInt32(period);
 		}
-		service.CreateTimer(name, dueTime2, period2, delegate
+		timerService.CreateTimer(name, dueTime2, period2, delegate
 		{
 			timerHandler();
 		});

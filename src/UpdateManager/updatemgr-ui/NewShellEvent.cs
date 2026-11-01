@@ -78,7 +78,7 @@ public class NewShellEvent : Form
 		m_errors.SetError(m_initial_sec, string.Empty);
 		m_errors.SetError(m_initial_sec_adv, string.Empty);
 		bool flag = false;
-		ITaskScheduler service = ServiceLocator.Instance.GetService<ITaskScheduler>();
+		ITaskScheduler taskScheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
 		ErrorList errorList = new ErrorList();
 		if (tabControl1.SelectedTab == BasicPage)
 		{
@@ -116,7 +116,7 @@ public class NewShellEvent : Form
 			}
 			TimeSpan repeatInterval = new TimeSpan(0, 0, int.Parse(m_recurrance_sec.Text));
 			string payload = m_path.Text.Escaped() + " " + m_args_basic.Text.Escaped();
-			errorList.AddRange(service.ScheduleSimpleJob(Simple_name.Text, payload, PayloadType.Shell, startOffset, null, null, repeatInterval));
+			errorList.AddRange(taskScheduler.ScheduleSimpleJob(Simple_name.Text, payload, PayloadType.Shell, startOffset, null, null, repeatInterval));
 		}
 		else
 		{
@@ -153,7 +153,7 @@ public class NewShellEvent : Form
 				return;
 			}
 			string payload2 = m_pathAdvanced.Text.Escaped() + " " + m_arguments_adv.Text.Escaped();
-			errorList.AddRange(service.ScheduleCronJob(m_adv_name.Text, payload2, PayloadType.Shell, startOffset2, null, null, m_cron.Text));
+			errorList.AddRange(taskScheduler.ScheduleCronJob(m_adv_name.Text, payload2, PayloadType.Shell, startOffset2, null, null, m_cron.Text));
 		}
 		if (errorList.ContainsError())
 		{

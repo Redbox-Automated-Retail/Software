@@ -88,8 +88,8 @@ public class HealthServicesPreferencePage : UserControl, IPreferencePageHost
 	{
 		if (m_isLoaded)
 		{
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert(service.Filter["store_number"], "QLM", "TestSubAlertType", "Test Kiosk Alert generated thru the F4 menu", DateTime.Now, null);
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			ServiceLocator.Instance.GetService<IHealthServices>().SendAlert(resourceBundleService.Filter["store_number"], "QLM", "TestSubAlertType", "Test Kiosk Alert generated thru the F4 menu", DateTime.Now, null);
 		}
 	}
 

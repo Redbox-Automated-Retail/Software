@@ -98,11 +98,11 @@ public class EditSearchPathForm : Form
 		object selectedItem = m_listBox.SelectedItem;
 		if (selectedItem != null)
 		{
-			int num = m_listBox.Items.IndexOf(selectedItem);
-			if (num != 0)
+			int index = m_listBox.Items.IndexOf(selectedItem);
+			if (index != 0)
 			{
-				m_listBox.Items.RemoveAt(num);
-				m_listBox.Items.Insert(num - 1, selectedItem);
+				m_listBox.Items.RemoveAt(index);
+				m_listBox.Items.Insert(index - 1, selectedItem);
 				m_listBox.SelectedItem = selectedItem;
 			}
 		}
@@ -113,11 +113,11 @@ public class EditSearchPathForm : Form
 		object selectedItem = m_listBox.SelectedItem;
 		if (selectedItem != null)
 		{
-			int num = m_listBox.Items.IndexOf(selectedItem);
-			if (num != -1 && num < m_listBox.Items.Count - 1)
+			int index = m_listBox.Items.IndexOf(selectedItem);
+			if (index != -1 && index < m_listBox.Items.Count - 1)
 			{
-				m_listBox.Items.RemoveAt(num);
-				m_listBox.Items.Insert(num + 1, selectedItem);
+				m_listBox.Items.RemoveAt(index);
+				m_listBox.Items.Insert(index + 1, selectedItem);
 				m_listBox.SelectedItem = selectedItem;
 			}
 		}

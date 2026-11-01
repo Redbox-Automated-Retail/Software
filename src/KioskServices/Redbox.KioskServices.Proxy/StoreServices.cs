@@ -120,10 +120,10 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 		set
 		{
 			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Store", "Environment", value);
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			if (service != null)
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			if (resourceBundleService != null)
 			{
-				service.Filter["environment"] = value;
+				resourceBundleService.Filter["environment"] = value;
 			}
 		}
 	}
@@ -137,10 +137,10 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 		set
 		{
 			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Store", "Application", value);
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			if (service != null)
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			if (resourceBundleService != null)
 			{
-				service.Filter["application"] = value;
+				resourceBundleService.Filter["application"] = value;
 			}
 		}
 	}
@@ -149,14 +149,14 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			string text = service.GetValue<string>("Store", "RebootTime", null);
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			string text = machineSettingsStore.GetValue<string>("Store", "RebootTime", null);
 			if (string.IsNullOrEmpty(text))
 			{
 				string s = IdHelper.GeneratePseudoUniqueId(1, "12345");
 				string s2 = IdHelper.GeneratePseudoUniqueId(2, "012345");
 				text = $"{int.Parse(s):00}:{int.Parse(s2):00}";
-				service.SetValue("Store", "RebootTime", text);
+				machineSettingsStore.SetValue("Store", "RebootTime", text);
 			}
 			return text;
 		}
@@ -230,8 +230,8 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 	{
 		get
 		{
-			IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-			if (service != null && !service.IsServerBusy)
+			IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+			if (healthServices != null && !healthServices.IsServerBusy)
 			{
 				return !IsStandAlone;
 			}
@@ -343,9 +343,9 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 				Interlocked.Increment(ref m_working);
 				if (LiveCall)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					LogHelper.Instance.Log("Live call to KioskClientService GetPendingStates, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-					PendingStatesResponse pendingStates = service.Installer.GetPendingStates();
+					PendingStatesResponse pendingStates = kioskClientService.Installer.GetPendingStates();
 					if (pendingStates == null)
 					{
 						LogHelper.Instance.Log("ProxyService GetPendingStates api returned a null response");
@@ -412,13 +412,13 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 					if (IsServicesOnline)
 					{
 						LogHelper.Instance.Log("Live call to KioskServices GetPendingStates, URL: {0}", KioskServicesProxy.Instance.Url);
-						IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 						IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							MessageType = "GetPendingStates",
 							MessageId = Guid.NewGuid(),
-							EngineVersion = service["EngineVersion"],
-							BundleVersion = service["ProductVersion"]
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"]
 						});
 						remoteServiceResult.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
 						if (dictionary.ContainsKey("ServerName"))
@@ -489,9 +489,9 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 				Interlocked.Increment(ref m_working);
 				if (LiveCall)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					LogHelper.Instance.Log("Live call to KioskClientService GetPendingBanners, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-					PendingBannersResponse pendingBannersForState = service.Installer.GetPendingBannersForState(stateId);
+					PendingBannersResponse pendingBannersForState = kioskClientService.Installer.GetPendingBannersForState(stateId);
 					if (pendingBannersForState == null)
 					{
 						LogHelper.Instance.Log("ProxyService GetPendingBanners api returned a null response");
@@ -558,14 +558,14 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 					if (IsServicesOnline)
 					{
 						LogHelper.Instance.Log("Live call to KioskServices GetPendingBanners, URL: {0}", KioskServicesProxy.Instance.Url);
-						IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 						IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							MessageType = "GetPendingBanners",
 							MessageId = Guid.NewGuid(),
 							StateId = stateId,
-							EngineVersion = service["EngineVersion"],
-							BundleVersion = service["ProductVersion"]
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"]
 						});
 						remoteServiceResult.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
 						if (dictionary.ContainsKey("ServerName"))
@@ -636,9 +636,9 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 				Interlocked.Increment(ref m_working);
 				if (LiveCall)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					LogHelper.Instance.Log("Live call to KioskClientService GetPendingStores, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-					PendingKiosksResponse pendingKiosksForStateAndBanner = service.Installer.GetPendingKiosksForStateAndBanner(stateId, bannerId);
+					PendingKiosksResponse pendingKiosksForStateAndBanner = kioskClientService.Installer.GetPendingKiosksForStateAndBanner(stateId, bannerId);
 					if (pendingKiosksForStateAndBanner == null)
 					{
 						LogHelper.Instance.Log("ProxyService GetPendingKiosksForStateAndBanner api returned a null response");
@@ -711,15 +711,15 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 					if (IsServicesOnline)
 					{
 						LogHelper.Instance.Log("Live call to KioskServices GetPendingStores, URL: {0}", KioskServicesProxy.Instance.Url);
-						IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 						IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							MessageType = "GetPendingKiosks",
 							MessageId = Guid.NewGuid(),
 							BannerId = bannerId,
 							StateId = stateId,
-							EngineVersion = service["EngineVersion"],
-							BundleVersion = service["ProductVersion"]
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"]
 						});
 						remoteServiceResult.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];
 						if (dictionary.ContainsKey("ServerName"))
@@ -794,9 +794,9 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 				Interlocked.Increment(ref m_working);
 				if (LiveCall)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					LogHelper.Instance.Log("Live call to KioskClientService GetOpsMarket, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-					OpsMarketResponse opsMarketForKiosk = service.Installer.GetOpsMarketForKiosk(int.Parse(storeNumber));
+					OpsMarketResponse opsMarketForKiosk = kioskClientService.Installer.GetOpsMarketForKiosk(int.Parse(storeNumber));
 					remoteServiceResult.Success = opsMarketForKiosk.Success;
 					remoteServiceResult.Properties["is_online"] = true;
 					remoteServiceResult.Properties["ops_market"] = opsMarketForKiosk.OpsMarket;
@@ -854,13 +854,13 @@ internal class StoreServices : Redbox.KioskServices.Proxy.ComponentModel.IStoreS
 					if (IsServicesOnline)
 					{
 						LogHelper.Instance.Log("Live call to KioskServices GetOpsMarket, URL: {0}", KioskServicesProxy.Instance.Url);
-						IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+						IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 						IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
 						{
 							MessageType = "GetOpsMarket",
 							MessageId = Guid.NewGuid(),
-							EngineVersion = service["EngineVersion"],
-							BundleVersion = service["ProductVersion"],
+							EngineVersion = macroService["EngineVersion"],
+							BundleVersion = macroService["ProductVersion"],
 							KioskId = int.Parse(storeNumber)
 						});
 						remoteServiceResult.Success = dictionary.ContainsKey("Success") && (bool)dictionary["Success"];

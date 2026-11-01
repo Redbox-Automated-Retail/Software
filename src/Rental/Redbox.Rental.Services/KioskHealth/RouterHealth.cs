@@ -245,8 +245,8 @@ public class RouterHealth : IRouterHealth, IKioskHealthItem
 		string text = string.Empty;
 		int? elapsed = null;
 		bool flag2 = true;
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service == null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService == null)
 		{
 			text = $"RouterHealth.CorrectProblem - IHardwareService is not available.";
 			LogHelper.Instance.Log(text);
@@ -254,13 +254,13 @@ public class RouterHealth : IRouterHealth, IKioskHealthItem
 		}
 		else
 		{
-			flag2 = SupportsRouterReset(service);
+			flag2 = SupportsRouterReset(hardwareService);
 			if (flag2)
 			{
 				string jobId = null;
 				Stopwatch stopwatch = new Stopwatch();
 				stopwatch.Start();
-				ErrorList errorList = service.PowerCycleRouter(delegate
+				ErrorList errorList = hardwareService.PowerCycleRouter(delegate
 				{
 				}, delegate(string jobIdentity, string status)
 				{

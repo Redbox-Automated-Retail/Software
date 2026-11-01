@@ -98,9 +98,9 @@ public class InventoryData : IInventoryData
 	public InventoryData(IKernelHelperService kernelHelperService)
 	{
 		_kernelHelperService = kernelHelperService;
-		IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-		_runningPath = service.RunningPath;
-		_dataPath = service.DataPath;
+		IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+		_runningPath = engineApplication.RunningPath;
+		_dataPath = engineApplication.DataPath;
 		_rapidStatusStagedPath = Path.Combine(_dataPath, "RapidStatus.data");
 		_rapidStatusActivePath = Path.Combine(_dataPath, "RapidStatus.active");
 		_inventoryActionStagedPath = Path.Combine(_dataPath, "InventoryAction.data");
@@ -722,11 +722,11 @@ public class InventoryData : IInventoryData
 	private bool CheckForNewMerchandizingOrders()
 	{
 		bool result = false;
-		IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 		DateTime date = DateTime.Now.Date;
 		if ((!_lastMerchOrderDate.HasValue || _lastMerchOrderDate < DateTime.UtcNow.Date) && DateTime.Now > date + Configuration.Instance.ThinJobRangeStart && DateTime.Now < date + Configuration.Instance.ThinJobRangeEnd)
 		{
-			IGetMerchandizingOrdersResponse currentMerchandizingOrders = service.Inventory.GetCurrentMerchandizingOrders();
+			IGetMerchandizingOrdersResponse currentMerchandizingOrders = kioskClientService.Inventory.GetCurrentMerchandizingOrders();
 			if (currentMerchandizingOrders != null && currentMerchandizingOrders.Success)
 			{
 				LogHelper.Instance.Log($"InventoryData.CheckForNewMerchandizingOrders - retrieved new merch orders. {currentMerchandizingOrders.MerchandizingOrders?.Count ?? 0} orders received.");
@@ -795,7 +795,7 @@ public class InventoryData : IInventoryData
 
 	private List<BarcodeForProductResult> GetBarcodesForMerchOrders(List<MerchandizingOrder> searchOrders, List<string> excludeBarcodesList, List<Redbox.KioskEngine.ComponentModel.InventoryStatusCode> statusSearchList)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		List<BarcodeForProductResult> list = new List<BarcodeForProductResult>();
 		if (searchOrders != null && searchOrders.Count > 0)
 		{
@@ -813,7 +813,7 @@ public class InventoryData : IInventoryData
 			foreach (MerchandizingOrder searchOrder in searchOrders)
 			{
 				Dictionary<Redbox.KioskEngine.ComponentModel.InventoryStatusCode, List<BarcodeAndTotalRents>> dictionary = new Dictionary<Redbox.KioskEngine.ComponentModel.InventoryStatusCode, List<BarcodeAndTotalRents>>();
-				service.GetProduct(searchOrder.TitleId, excludeTitleRollup: true, out var kioskProduct);
+				dataService.GetProduct(searchOrder.TitleId, excludeTitleRollup: true, out var kioskProduct);
 				if (kioskProduct is ITitleProduct titleProduct)
 				{
 					if (titleProduct.BarCodeProducts == null)

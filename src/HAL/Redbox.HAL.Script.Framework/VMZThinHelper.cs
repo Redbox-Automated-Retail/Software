@@ -31,8 +31,8 @@ internal sealed class VMZThinHelper : ThinHelper
 		{
 			return null;
 		}
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		if (service.IsFull())
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+		if (dumpbinService.IsFull())
 		{
 			LogHelper.Instance.Log("[FindEmptyTarget] MoveLowPriorityToBin: the dump bin is full.");
 			result = MerchandizeResult.VMZFull;
@@ -62,7 +62,7 @@ internal sealed class VMZThinHelper : ThinHelper
 				LogHelper.Instance.Log("Thin: cannot move low at {0}; bail.", location3.ToString());
 				continue;
 			}
-			ILocation location4 = ((location2 == null) ? service.PutLocation : location2);
+			ILocation location4 = ((location2 == null) ? dumpbinService.PutLocation : location2);
 			MerchandizeResult merchandizeResult = ThinDiskToLocation(location3, location4, iD, flags2);
 			if (ThinHelper.Debug)
 			{
@@ -102,14 +102,14 @@ internal sealed class VMZThinHelper : ThinHelper
 			result = MerchandizeResult.MachineFull;
 			return null;
 		}
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		if (service.IsFull())
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+		if (dumpbinService.IsFull())
 		{
 			base.Context.CreateInfoResult("DumpBinIsFull", "The dump bin is filled to capacity.");
 			result = MerchandizeResult.MachineFull;
 			return null;
 		}
 		result = MerchandizeResult.Success;
-		return service.PutLocation;
+		return dumpbinService.PutLocation;
 	}
 }

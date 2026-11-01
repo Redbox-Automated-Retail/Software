@@ -78,8 +78,8 @@ public class StatusMessageService : IPollRequestReply, IStatusMessageService
 		}
 		try
 		{
-			IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-			for (StatusMessage statusMessage = service.Peek<StatusMessage>(QueueLabel); statusMessage != null; statusMessage = service.Peek<StatusMessage>(QueueLabel))
+			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+			for (StatusMessage statusMessage = queueService.Peek<StatusMessage>(QueueLabel); statusMessage != null; statusMessage = queueService.Peek<StatusMessage>(QueueLabel))
 			{
 				PollRequest item = new PollRequest
 				{
@@ -88,7 +88,7 @@ public class StatusMessageService : IPollRequestReply, IStatusMessageService
 				};
 				pollRequests.Add(item);
 				LogHelper.Instance.Log("Dequeued status message key: {0}", statusMessage.Key);
-				service.Dequeue(QueueLabel);
+				queueService.Dequeue(QueueLabel);
 			}
 		}
 		catch (Exception e)

@@ -102,8 +102,8 @@ public class Actor : IActor, IDisposable
 		{
 			if (_mainForm == null)
 			{
-				IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-				_mainForm = (service as ApplicationContext).MainForm;
+				IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+				_mainForm = (engineApplication as ApplicationContext).MainForm;
 			}
 			return _mainForm.Handle;
 		}
@@ -165,10 +165,10 @@ public class Actor : IActor, IDisposable
 		{
 			if (m_font == null)
 			{
-				IFontCacheService service = ServiceLocator.Instance.GetService<IFontCacheService>();
-				if (service != null)
+				IFontCacheService fontCacheService = ServiceLocator.Instance.GetService<IFontCacheService>();
+				if (fontCacheService != null)
 				{
-					m_font = service.RegisterFont("DefaultActorFont", "Arial", 16f, System.Drawing.FontStyle.Regular);
+					m_font = fontCacheService.RegisterFont("DefaultActorFont", "Arial", 16f, System.Drawing.FontStyle.Regular);
 				}
 			}
 			return m_font;
@@ -674,7 +674,7 @@ public class Actor : IActor, IDisposable
 
 	public MeasureTextResult MeasureText()
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		using Graphics graphics = Graphics.FromHwnd(MainHandle);
 		graphics.PixelOffsetMode = PixelOffsetMode.Half;
 		graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
@@ -682,7 +682,7 @@ public class Actor : IActor, IDisposable
 		StringFormat stringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
 		int charactersFitted;
 		int linesFilled;
-		return new MeasureTextResult(graphics.MeasureString(service.ExpandProperties(Text), Font, new SizeF(textRegion.Width, textRegion.Height), stringFormat, out charactersFitted, out linesFilled), charactersFitted, linesFilled);
+		return new MeasureTextResult(graphics.MeasureString(macroService.ExpandProperties(Text), Font, new SizeF(textRegion.Width, textRegion.Height), stringFormat, out charactersFitted, out linesFilled), charactersFitted, linesFilled);
 	}
 
 	public void CenterHorizontally()
@@ -1203,8 +1203,8 @@ public class Actor : IActor, IDisposable
 							string text = obj as string;
 							if (text != null && text.StartsWith("cache:"))
 							{
-								IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-								Image = service.GetImage(text.Substring(6));
+								IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+								Image = bitmapCacheService.GetImage(text.Substring(6));
 							}
 							else if (text != null)
 							{

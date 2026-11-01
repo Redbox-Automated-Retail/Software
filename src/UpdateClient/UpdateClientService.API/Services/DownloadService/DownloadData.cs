@@ -44,10 +44,10 @@ public class DownloadData : IPersistentData
 	public long ParseFileSetIdFromDownloadDataKey()
 	{
 		long result = 0L;
-		string[] array = Key.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
-		if (array.Count() > 1)
+		string[] parts = Key.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+		if (parts.Count() > 1)
 		{
-			result = Convert.ToInt64(array[1]);
+			result = Convert.ToInt64(parts[1]);
 		}
 		return result;
 	}

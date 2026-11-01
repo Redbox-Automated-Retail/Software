@@ -394,22 +394,22 @@ public class DeviceHelper : IDisposable
 			string text = QueryHardwareId(devInfo, ref did, out lastError);
 			if (!text.ToLower().StartsWith("vid"))
 			{
-				int num = text.IndexOf("vid");
-				if (num == -1)
+				int index = text.IndexOf("vid");
+				if (index == -1)
 				{
 					errors.Add("Invalid string.");
 					return ProcessDeviceInfoResult.Error;
 				}
-				text = text.Substring(num).ToLower();
+				text = text.Substring(index).ToLower();
 			}
-			string[] array = text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length < 2)
+			string[] parts = text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+			if (parts.Length < 2)
 			{
 				LogHelper.Instance.Log("The HWID '{0}' is malformed.", text);
 				return ProcessDeviceInfoResult.Continue;
 			}
-			string text2 = array[0].Substring(4);
-			string s = array[1].Substring(4);
+			string text2 = parts[0].Substring(4);
+			string s = parts[1].Substring(4);
 			if (text2 == vid)
 			{
 				int num2 = int.Parse(s);

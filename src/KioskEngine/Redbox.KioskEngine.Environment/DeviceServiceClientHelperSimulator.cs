@@ -177,10 +177,10 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 
 	public IReadCardJob StartCardRead(DeviceInputType deviceInputType, Action<BaseResponseEvent> readCardResponseHandler, Action<BaseResponseEvent> readCardEventHandler, int commandTimeout, VasMode vasMode)
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 		IShoppingSession currentSession = ServiceLocator.Instance.GetService<IShoppingSessionService>().GetCurrentSession();
 		IEnumerable<CardBrandAndSource> deactivatedCardBrandSources = GetDeactivatedCardBrandSources();
-		decimal valueOrDefault = (service?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
+		decimal valueOrDefault = (rentalShoppingCartService?.CurrentRentalShoppingCart?.Totals.GrandTotal).GetValueOrDefault();
 		valueOrDefault = Math.Round(valueOrDefault, 2);
 		CardReadRequest cardReadRequest = new CardReadRequest
 		{
@@ -320,8 +320,8 @@ public class DeviceServiceClientHelperSimulator : IDeviceServiceClientHelper
 
 	private DeviceServiceClientHelperSimulator()
 	{
-		IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-		_fileDir = service.DataPath;
+		IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+		_fileDir = engineApplication.DataPath;
 		ReadConfigFile();
 	}
 

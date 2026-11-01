@@ -159,10 +159,10 @@ public class BundleBasedPricingService : IBundleBasedPricingService
 	public IPricingRecord GetProductPricingRecord(long productId)
 	{
 		IPricingRecord result = null;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		if (productId != 0L)
 		{
-			service.GetProduct(productId, excludeTitleRollup: true, out var kioskProduct);
+			dataService.GetProduct(productId, excludeTitleRollup: true, out var kioskProduct);
 			if (kioskProduct != null)
 			{
 				if (kioskProduct is ITitleProduct titleProduct)

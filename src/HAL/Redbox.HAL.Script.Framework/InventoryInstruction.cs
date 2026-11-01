@@ -39,7 +39,7 @@ public sealed class InventoryInstruction : Instruction
 	{
 		InventoryOperands inventoryOperands = Enum<InventoryOperands>.ParseIgnoringCase(base.Operands[0].Value, InventoryOperands.None);
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		ILocation location;
 		if (inventoryOperands == InventoryOperands.None && base.Operands[0].Value.Equals("MARK-EMPTY-UNKNOWN", StringComparison.CurrentCultureIgnoreCase))
 		{
@@ -48,7 +48,7 @@ public sealed class InventoryInstruction : Instruction
 			{
 				context.PushTop("ERROR");
 			}
-			IDeck byNumber = service.GetByNumber(deckOperand.Value);
+			IDeck byNumber = decksService.GetByNumber(deckOperand.Value);
 			Range slotRange = new Range(1, byNumber.NumberOfSlots);
 			List<int> list = inventoryService.SwapEmptyWith(byNumber, "UNKNOWN", MerchFlags.None, slotRange);
 			context.PushTop(list);
@@ -69,7 +69,7 @@ public sealed class InventoryInstruction : Instruction
 		}
 		else if (InventoryOperands.ClearAll == inventoryOperands)
 		{
-			service.ForAllDecksDo(delegate(IDeck _d0)
+			decksService.ForAllDecksDo(delegate(IDeck _d0)
 			{
 				inventoryService.MarkDeckInventory(_d0, "EMPTY");
 				return true;

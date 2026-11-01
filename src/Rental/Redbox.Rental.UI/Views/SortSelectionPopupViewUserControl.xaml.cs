@@ -20,9 +20,9 @@ public partial class SortSelectionPopupViewUserControl : TextToSpeechUserControl
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(CancelButton);
-		obj?.SetStyle(ApplyButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(CancelButton);
+		theme?.SetStyle(ApplyButton);
 	}
 
 	private void CancelCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

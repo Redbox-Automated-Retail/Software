@@ -192,10 +192,10 @@ public class GridExt : Grid
 
 	private void ConvertToDefinitions(string value, Type defType)
 	{
-		string[] array = value.Split(',');
-		for (int i = 0; i < array.Length; i++)
+		string[] parts = value.Split(',');
+		for (int i = 0; i < parts.Length; i++)
 		{
-			value = array[i].Trim().ToLower();
+			value = parts[i].Trim().ToLower();
 			if (double.TryParse(value, out var result))
 			{
 				SetTypeValue(defType, new GridLength(result, GridUnitType.Pixel));

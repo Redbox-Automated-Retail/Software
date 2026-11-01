@@ -17,13 +17,13 @@ public static class Win32TaskSchedulerFunctions
 	internal static LuaTable GetScheduledTaskNames()
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		IWindowsTaskScheduler service = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
-		if (service == null)
+		IWindowsTaskScheduler windowsTaskScheduler = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
+		if (windowsTaskScheduler == null)
 		{
 			return luaTable;
 		}
 		int num = 1;
-		foreach (string scheduledTask in service.GetScheduledTasks())
+		foreach (string scheduledTask in windowsTaskScheduler.GetScheduledTasks())
 		{
 			luaTable[num++] = scheduledTask;
 		}
@@ -39,8 +39,8 @@ public static class Win32TaskSchedulerFunctions
 	[KernelFunction(Name = "kernel.win32addonidletrigger")]
 	internal static void AddOnIdleTrigger(string name, object beginDate, object endDate, object idleWaitMinutes)
 	{
-		IWindowsTaskScheduler service = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
-		if (service == null)
+		IWindowsTaskScheduler windowsTaskScheduler = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
+		if (windowsTaskScheduler == null)
 		{
 			return;
 		}
@@ -61,15 +61,15 @@ public static class Win32TaskSchedulerFunctions
 			{
 				idleWaitMinutes2 = Convert.ToInt16(idleWaitMinutes);
 			}
-			service.AddOnIdleTrigger(name, dateTime.Value, endDate2, idleWaitMinutes2);
+			windowsTaskScheduler.AddOnIdleTrigger(name, dateTime.Value, endDate2, idleWaitMinutes2);
 		}
 	}
 
 	[KernelFunction(Name = "kernel.win32addondailytrigger")]
 	internal static void AddDailyTrigger(string name, object beginDate, object endDate, object hours, object minutes, object daysInterval, object minutesInterval)
 	{
-		IWindowsTaskScheduler service = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
-		if (service == null)
+		IWindowsTaskScheduler windowsTaskScheduler = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
+		if (windowsTaskScheduler == null)
 		{
 			return;
 		}
@@ -105,15 +105,15 @@ public static class Win32TaskSchedulerFunctions
 			{
 				minutesInterval2 = Convert.ToInt32(minutesInterval);
 			}
-			service.AddDailyTrigger(name, dateTime.Value, endDate2, (short)num, (short)num2, (short)num3, minutesInterval2);
+			windowsTaskScheduler.AddDailyTrigger(name, dateTime.Value, endDate2, (short)num, (short)num2, (short)num3, minutesInterval2);
 		}
 	}
 
 	[KernelFunction(Name = "kernel.win32addonsystemstartuptrigger")]
 	internal static void AddSystemStartupTrigger(string name, object beginDate, object endDate)
 	{
-		IWindowsTaskScheduler service = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
-		if (service == null)
+		IWindowsTaskScheduler windowsTaskScheduler = ServiceLocator.Instance.GetService<IWindowsTaskScheduler>();
+		if (windowsTaskScheduler == null)
 		{
 			return;
 		}
@@ -129,7 +129,7 @@ public static class Win32TaskSchedulerFunctions
 			{
 				endDate2 = luaTable2.ToDateTime();
 			}
-			service.AddSystemStartupTrigger(name, dateTime.Value, endDate2);
+			windowsTaskScheduler.AddSystemStartupTrigger(name, dateTime.Value, endDate2);
 		}
 	}
 }

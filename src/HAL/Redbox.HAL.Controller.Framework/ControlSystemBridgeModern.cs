@@ -196,12 +196,12 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 	public IControlResponse ExtendArm()
 	{
 		int timeout = ControllerConfiguration.Instance.GripperArmExtendRetractTimeout;
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
 		bool flag = false;
 		if (currentLocation != null)
 		{
-			flag = service.GetByNumber(currentLocation.Deck).IsQlm;
+			flag = decksService.GetByNumber(currentLocation.Deck).IsQlm;
 		}
 		if (flag)
 		{
@@ -236,17 +236,17 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 		CoreResponse coreResponse = Implementor.SetFinger(state);
 		if (!coreResponse.Success)
 		{
-			IPersistentCounterService service = ServiceLocator.Instance.GetService<IPersistentCounterService>();
+			IPersistentCounterService persistentCounterService = ServiceLocator.Instance.GetService<IPersistentCounterService>();
 			switch (state)
 			{
 			case GripperFingerState.Closed:
-				service.Increment(TimeoutCounters.FingerClose);
+				persistentCounterService.Increment(TimeoutCounters.FingerClose);
 				return coreResponse;
 			case GripperFingerState.Open:
-				service.Increment(TimeoutCounters.FingerOpen);
+				persistentCounterService.Increment(TimeoutCounters.FingerOpen);
 				return coreResponse;
 			}
-			service.Increment(TimeoutCounters.FingerRent);
+			persistentCounterService.Increment(TimeoutCounters.FingerRent);
 		}
 		return coreResponse;
 	}
@@ -258,7 +258,7 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 		{
 			return result;
 		}
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int milliseconds = 250;
 		RollerPosition rollerPosition = ((CenterDiskMethod.DrumAndBack == method) ? RollerPosition.Position1 : RollerPosition.Position6);
 		if (!RollerToPosition(rollerPosition, ControllerConfiguration.Instance.DefaultRollSensorTimeout, logSensors: false).Success)
@@ -266,14 +266,14 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 			result = ((RollerPosition.Position1 == rollerPosition) ? ErrorCodes.RollerToPos1Timeout : ErrorCodes.RollerToPos6Timeout);
 			LogHelper.Instance.WithContext(false, LogEntryType.Error, "Center disk: Roller {0} timed out.", rollerPosition);
 		}
-		service.SpinWait(milliseconds);
+		runtimeService.SpinWait(milliseconds);
 		rollerPosition = ((CenterDiskMethod.DrumAndBack == method) ? RollerPosition.Position5 : RollerPosition.Position3);
 		if (!RollerToPosition(rollerPosition, ControllerConfiguration.Instance.DefaultRollSensorTimeout, logSensors: false).Success)
 		{
 			result = ((RollerPosition.Position5 == rollerPosition) ? ErrorCodes.RollerToPos5Timeout : ErrorCodes.RollerToPos3Timeout);
 			LogHelper.Instance.WithContext(false, LogEntryType.Error, "Center disk: Roller {0} timed out.", rollerPosition);
 		}
-		service.SpinWait(milliseconds);
+		runtimeService.SpinWait(milliseconds);
 		TrackCycle();
 		return result;
 	}

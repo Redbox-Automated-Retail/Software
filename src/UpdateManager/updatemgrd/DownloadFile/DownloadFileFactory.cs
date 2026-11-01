@@ -50,12 +50,12 @@ internal class DownloadFileFactory
 		lock (_lock)
 		{
 			List<IDownloadFile> list = new List<IDownloadFile>();
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			foreach (Guid downLoad in GetDownLoadList())
 			{
 				try
 				{
-					DownloadFileData downloadFileData = service.Get<DownloadFileData>(string.Concat(downLoad, ".downloaddat"));
+					DownloadFileData downloadFileData = dataStoreService.Get<DownloadFileData>(string.Concat(downLoad, ".downloaddat"));
 					if (downloadFileData == null)
 					{
 						DeleteDownloadFile(downLoad);

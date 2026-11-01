@@ -11,9 +11,9 @@ internal static class SecureBrowserFunctions
 	[KernelFunction(Name = "kernel.launchsecurebrowser")]
 	internal static void LaunchSecureBrowser(LuaTable approvedUrls, NavigateUrlCallback navigateUrlCallback)
 	{
-		IConfigurationService service = ServiceLocator.Instance.GetService<IConfigurationService>();
+		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		bool value = false;
-		bool flag = service?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
+		bool flag = configurationService?.TryGetValue<bool>("system", "General", "DisableFieldVisitForm", out value) ?? false;
 		Dictionary<string, string> dictionary = new Dictionary<string, string>();
 		for (int i = 1; i <= approvedUrls.Keys.Count; i++)
 		{

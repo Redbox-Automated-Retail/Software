@@ -48,14 +48,14 @@ public class KernelFunctionAttribute : Attribute
 		StringBuilder stringBuilder = new StringBuilder();
 		if (!string.IsNullOrEmpty(Name))
 		{
-			string[] array = Name.Split(".".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			for (int i = 0; i < array.Length - 1; i++)
+			string[] parts = Name.Split(".".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < parts.Length - 1; i++)
 			{
 				if (i > 0)
 				{
 					stringBuilder.Append(".");
 				}
-				stringBuilder.Append(array[i]);
+				stringBuilder.Append(parts[i]);
 			}
 		}
 		return stringBuilder.ToString();

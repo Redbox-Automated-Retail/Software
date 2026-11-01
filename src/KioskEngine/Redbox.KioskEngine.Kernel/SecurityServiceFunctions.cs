@@ -33,12 +33,12 @@ internal static class SecurityServiceFunctions
 	[KernelFunction(Name = "kernel.securityisaccountlocked")]
 	internal static bool IsAccountLocked(string userName)
 	{
-		ISecurityService service = ServiceLocator.Instance.GetService<ISecurityService>();
-		if (service == null)
+		ISecurityService securityService = ServiceLocator.Instance.GetService<ISecurityService>();
+		if (securityService == null)
 		{
 			return false;
 		}
-		service.UserExists(userName, out var isAccountLocked);
+		securityService.UserExists(userName, out var isAccountLocked);
 		return isAccountLocked;
 	}
 

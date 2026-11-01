@@ -25,7 +25,7 @@ public class SubscriptionPlans : ISubscriptionPlans
 		Active = getSubscriptionPlanResponse.Active;
 		if (getSubscriptionPlanResponse.SubscriptionPlans != null)
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			foreach (SubscriptionPlan subscriptionPlan in getSubscriptionPlanResponse.SubscriptionPlans)
 			{
 				if (subscriptionPlan.SubscriptionId == "STARZ")
@@ -34,7 +34,7 @@ public class SubscriptionPlans : ISubscriptionPlans
 				}
 				else if (subscriptionPlan.SubscriptionId == "RBPLUS")
 				{
-					CreateRedboxPlusSubscriptionProduct(service, subscriptionPlan);
+					CreateRedboxPlusSubscriptionProduct(dataService, subscriptionPlan);
 				}
 				else
 				{

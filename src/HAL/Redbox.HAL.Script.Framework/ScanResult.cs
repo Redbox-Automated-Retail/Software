@@ -63,8 +63,8 @@ internal sealed class ScanResult : IDisposable
 			}
 			text = snapResult.Path;
 		}
-		IFraudService service = ServiceLocator.Instance.GetService<IFraudService>();
-		string text2 = Path.Combine(path2: $"{ScannedMatrix}_{Path.GetFileName(text)}", path1: service.FraudImagesPath);
+		IFraudService fraudService = ServiceLocator.Instance.GetService<IFraudService>();
+		string text2 = Path.Combine(path2: $"{ScannedMatrix}_{Path.GetFileName(text)}", path1: fraudService.FraudImagesPath);
 		bool num = ServiceLocator.Instance.GetService<IRuntimeService>().SafeMove(text, text2);
 		string path = (num ? text2 : text);
 		IExecutionContext executionContext = ServiceLocator.Instance.GetService<IExecutionService>()?.GetActiveContext();

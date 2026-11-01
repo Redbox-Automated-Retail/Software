@@ -39,8 +39,8 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 
 	public void Initialize(string rootPath)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		_root = service.ExpandProperties(rootPath);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		_root = macroService.ExpandProperties(rootPath);
 		if (!Path.IsPathRooted(_root))
 		{
 			_root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), rootPath);

@@ -24,9 +24,9 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 	{
 		get
 		{
-			IScannerDeviceService service = ServiceLocator.Instance.GetService<IScannerDeviceService>();
+			IScannerDeviceService scannerDeviceService = ServiceLocator.Instance.GetService<IScannerDeviceService>();
 			bool flag = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>().GetConfiguredReader().Service == BarcodeServices.Cortex;
-			if (service.IRHardwareInstall.HasValue & flag)
+			if (scannerDeviceService.IRHardwareInstall.HasValue & flag)
 			{
 				if (CurrentCameraGeneration != CameraGeneration.Fifth)
 				{

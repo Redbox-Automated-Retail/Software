@@ -106,8 +106,8 @@ public class SchedulerService : ISchedulerService
 			{
 				return m_entries;
 			}
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			m_entries = ((service == null) ? new List<SchedulerEntry>() : service.GetValue("Core", "SchedulerEntries", "[]").ToObject<List<SchedulerEntry>>());
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			m_entries = ((machineSettingsStore == null) ? new List<SchedulerEntry>() : machineSettingsStore.GetValue("Core", "SchedulerEntries", "[]").ToObject<List<SchedulerEntry>>());
 			return m_entries ?? new List<SchedulerEntry>();
 		}
 		set
@@ -217,12 +217,12 @@ public class SchedulerService : ISchedulerService
 
 	internal bool SaveEntries()
 	{
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-		if (service == null)
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		if (machineSettingsStore == null)
 		{
 			return false;
 		}
-		service.SetValue("Core", "SchedulerEntries", m_entries.ToJson());
+		machineSettingsStore.SetValue("Core", "SchedulerEntries", m_entries.ToJson());
 		return true;
 	}
 

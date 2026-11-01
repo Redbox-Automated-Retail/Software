@@ -154,8 +154,8 @@ public class KioskEventService : IKioskEventService
 
 	private void PerformUnload()
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null)
 		{
 			LogHelper.Instance.Log("KioskEventService.PerformUnload - IHealthServices was not found");
 			return;
@@ -169,7 +169,7 @@ public class KioskEventService : IKioskEventService
 			{
 				List<KioskEvent> list = _kioskEvents.Take(count).ToList();
 				_kioskEvents.RemoveRange(0, list.Count());
-				service.SendKioskEvents(_storeManagerService.KioskId, list);
+				healthServices.SendKioskEvents(_storeManagerService.KioskId, list);
 				LogHelper.Instance.Log("KioskEventService.PerformUnload - unloading {0} events", list.Count());
 			}
 			catch (Exception e)

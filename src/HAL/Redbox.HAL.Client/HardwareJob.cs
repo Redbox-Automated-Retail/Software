@@ -131,13 +131,13 @@ public sealed class HardwareJob
 		IIpcClientSession session = Service.GetSession();
 		session.ServerEvent += delegate(string message)
 		{
-			string[] array = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = message.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			DateTime result2 = DateTime.Now;
-			if (array.Length > 1)
+			if (parts.Length > 1)
 			{
-				DateTime.TryParse(array[0], out result2);
+				DateTime.TryParse(parts[0], out result2);
 			}
-			string text = ((array.Length > 1) ? array[1] : array[0]);
+			string text = ((parts.Length > 1) ? parts[1] : parts[0]);
 			if (text.StartsWith(">STATUS CHANGE<"))
 			{
 				HardwareJobStatus status = Enum<HardwareJobStatus>.ParseIgnoringCase(text.Substring(text.IndexOf("<") + 1).Trim(), HardwareJobStatus.Completed);
@@ -257,8 +257,8 @@ public sealed class HardwareJob
 		{
 			foreach (string commandMessage in hardwareCommandResult.CommandMessages)
 			{
-				string[] array = commandMessage.Split(":".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
-				symbols[array[0]] = ((array.Length == 2) ? array[1].Trim() : string.Empty);
+				string[] parts = commandMessage.Split(":".ToCharArray(), 2, StringSplitOptions.RemoveEmptyEntries);
+				symbols[parts[0]] = ((parts.Length == 2) ? parts[1].Trim() : string.Empty);
 			}
 		}
 		return hardwareCommandResult;

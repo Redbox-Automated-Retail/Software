@@ -71,9 +71,9 @@ public class DebugService : IDebugService
 
 	public void SetDebuggerInstance(object instance)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		DebuggerInstance = instance;
-		service.SetDebuggingState(IsEnabled);
+		kernelService.SetDebuggingState(IsEnabled);
 	}
 
 	private DebugService()

@@ -138,7 +138,7 @@ public class RepositoryPollService : IPollRequestReply
 		try
 		{
 			IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
-			ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
+			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
 			List<string> allRepositories = repositoryService.GetAllRepositories();
 			currentClientRepositoryDataDTO = allRepositories.Select((string repositoryName) => new ClientRepositoryDataDTO
 			{
@@ -148,11 +148,11 @@ public class RepositoryPollService : IPollRequestReply
 				S = repositoryService.GetStagedRevision(repositoryName),
 				I = "0000000000000000000000000000000000000000"
 			}).ToList();
-			errorList.AddRange(service.AreJobsRunning(out var isRunning));
+			errorList.AddRange(transferService.AreJobsRunning(out var isRunning));
 			if (isRunning)
 			{
 				IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
-				errorList.AddRange(service.GetJobs(out var jobs, allUsers: true));
+				errorList.AddRange(transferService.GetJobs(out var jobs, allUsers: true));
 				foreach (ITransferJob item in jobs)
 				{
 					ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);

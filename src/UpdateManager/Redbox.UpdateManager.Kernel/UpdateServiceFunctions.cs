@@ -127,9 +127,9 @@ public static class UpdateServiceFunctions
 	[KernelFunction(Name = "kernel.startinstaller")]
 	internal static LuaTable StartInstaller(string repositoryHash, string frontEndVersion)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		ErrorList errorList = service.StartInstaller(repositoryHash, frontEndVersion, out var response);
+		ErrorList errorList = updateService.StartInstaller(repositoryHash, frontEndVersion, out var response);
 		if (errorList.ContainsError())
 		{
 			LogErrors(errorList);
@@ -150,13 +150,13 @@ public static class UpdateServiceFunctions
 	[KernelFunction(Name = "kernel.finishinstaller")]
 	internal static bool FinishInstaller(string guid, LuaTable data)
 	{
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
 		string text = data.Keys.Cast<object>().ToDictionary((object k) => k as string, (object v) => data[v] as string).ToJson();
 		if (text.Length > 252)
 		{
 			text = string.Empty;
 		}
-		ErrorList errorList = service.FinishInstaller(guid, "FinishInstallerData", text);
+		ErrorList errorList = updateService.FinishInstaller(guid, "FinishInstallerData", text);
 		if (errorList.ContainsError())
 		{
 			LogErrors(errorList);

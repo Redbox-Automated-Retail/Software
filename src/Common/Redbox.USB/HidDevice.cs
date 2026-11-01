@@ -236,13 +236,13 @@ public class HidDevice
 	internal byte[] _ReadFile(int inputReportByteLength, ref OVERLAPPED ovl)
 	{
 		int lpNumberOfBytesRead = 0;
-		byte[] array = new byte[inputReportByteLength];
-		if (!ReadFile(Handle, array, inputReportByteLength, ref lpNumberOfBytesRead, ref ovl))
+		byte[] buffer = new byte[inputReportByteLength];
+		if (!ReadFile(Handle, buffer, inputReportByteLength, ref lpNumberOfBytesRead, ref ovl))
 		{
 			return null;
 		}
 		byte[] array2 = new byte[lpNumberOfBytesRead];
-		Array.Copy(array, array2, lpNumberOfBytesRead);
+		Array.Copy(buffer, array2, lpNumberOfBytesRead);
 		return array2;
 	}
 

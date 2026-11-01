@@ -29,12 +29,12 @@ internal static class DataStoreFunctions
 	{
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service == null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService == null)
 			{
 				return null;
 			}
-			Dictionary<string, object> all = service.GetAll(dataStore, tableName);
+			Dictionary<string, object> all = dataStoreService.GetAll(dataStore, tableName);
 			if (all == null)
 			{
 				return null;
@@ -63,14 +63,14 @@ internal static class DataStoreFunctions
 	[KernelFunction(Name = "kernel.datastoreclear")]
 	internal static void Clear(string dataStore, string tableName)
 	{
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-		if (service == null)
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		if (dataStoreService == null)
 		{
 			return;
 		}
 		try
 		{
-			service.Clear(dataStore, tableName);
+			dataStoreService.Clear(dataStore, tableName);
 		}
 		catch (Exception e)
 		{
@@ -128,12 +128,12 @@ internal static class DataStoreFunctions
 		try
 		{
 			LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service == null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService == null)
 			{
 				return luaTable;
 			}
-			ReadOnlyCollection<string> keys = service.GetKeys(dataStore, tableName);
+			ReadOnlyCollection<string> keys = dataStoreService.GetKeys(dataStore, tableName);
 			int num = 1;
 			foreach (string item in keys)
 			{

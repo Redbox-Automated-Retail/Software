@@ -26,10 +26,10 @@ internal sealed class WatchdogPoller : ScriptPoller
 	protected override bool CoreExecute()
 	{
 		TrimLogs();
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
 		if (ControllerConfiguration.Instance.ResetTimeoutCountersWeekly)
 		{
-			IExecutionContext executionContext = service.ScheduleJob("reset-counters-job", string.Empty, null, ProgramPriority.Low);
+			IExecutionContext executionContext = executionService.ScheduleJob("reset-counters-job", string.Empty, null, ProgramPriority.Low);
 			executionContext.Pend();
 			executionContext.WaitForCompletion();
 			executionContext.Trash();
@@ -38,7 +38,7 @@ internal sealed class WatchdogPoller : ScriptPoller
 		{
 			LogHelper.Instance.Log("Watchdog is not configured to reset timeout counters weekly.");
 		}
-		if (++m_gcCount > 2 && service.GetActiveContext() == null)
+		if (++m_gcCount > 2 && executionService.GetActiveContext() == null)
 		{
 			GC.Collect();
 			m_gcCount = 0;

@@ -9,10 +9,10 @@ internal static class TouchScreenFunctions
 	[KernelFunction(Name = "kernel.toggletouchscreen")]
 	internal static void ToggleTouchScreen()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			service.ToggleTouchScreen();
+			environmentNotificationService.ToggleTouchScreen();
 		}
 		catch (Exception e)
 		{
@@ -23,10 +23,10 @@ internal static class TouchScreenFunctions
 	[KernelFunction(Name = "kernel.touchscreenstatus")]
 	internal static string TouchScreenStatus()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			return service.TouchScreenStatus().ToString();
+			return environmentNotificationService.TouchScreenStatus().ToString();
 		}
 		catch (Exception e)
 		{
@@ -38,10 +38,10 @@ internal static class TouchScreenFunctions
 	[KernelFunction(Name = "kernel.touchscreendriver")]
 	internal static string TouchScreenDriver()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		try
 		{
-			return service.TouchScreenDriver();
+			return environmentNotificationService.TouchScreenDriver();
 		}
 		catch (Exception e)
 		{

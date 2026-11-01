@@ -66,10 +66,10 @@ public class TitleDetailsController : BaseViewController
 
 	private static void ConfigureTTS()
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
 		TitleDetailModel titleDetailModel = viewUserControl.DataContext as TitleDetailModel;
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			titleDetailModel.OnGetSpeechControl = () => TitleDetailViewTextToSpeech.GetSpeechControl(GetModelFromView);
 		}
@@ -304,9 +304,9 @@ public class TitleDetailsController : BaseViewController
 
 	private static void GoBack(string reason, bool popOnly = false)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		Redbox.Rental.Services.Session.Session.Instance.BrowseState.ProductSelectedFromCarousel = false;
-		service.GoBack(reason, popOnly: false);
+		viewService.GoBack(reason, popOnly: false);
 	}
 
 	public static void OnSeeFullDetails(IBrowseItemModel browseItemModel)

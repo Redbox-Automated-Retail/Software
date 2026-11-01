@@ -37,8 +37,8 @@ internal sealed class KioskTestLogger : ILogger, IDisposable
 
 	internal KioskTestLogger()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		string path = string.Format("kioskTest-{0}", service.GenerateUniqueFile(".log"));
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		string path = string.Format("kioskTest-{0}", runtimeService.GenerateUniqueFile(".log"));
 		string text = "c:\\Program Files\\Redbox\\KioskLogs\\KioskTest";
 		bool flag = true;
 		if (!Directory.Exists(text))

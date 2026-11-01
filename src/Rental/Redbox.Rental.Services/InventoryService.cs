@@ -285,8 +285,8 @@ public class InventoryService : IInventoryService
 			{
 				if (callback != null)
 				{
-					ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-					if (service != null)
+					ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+					if (callbackService != null)
 					{
 						RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 						{
@@ -297,7 +297,7 @@ public class InventoryService : IInventoryService
 							remoteServiceResult.Errors.AddRange(errors);
 							remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 						}
-						service.EnqueueCallback(new RemoteServiceCallbackEntry
+						callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 						{
 							Callback = callback,
 							Result = remoteServiceResult,

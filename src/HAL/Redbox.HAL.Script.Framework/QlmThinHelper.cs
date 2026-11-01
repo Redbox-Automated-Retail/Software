@@ -7,18 +7,18 @@ internal class QlmThinHelper : ThinHelper
 	protected override MerchandizeResult ThinDiskInner(string id, ILocation source, ILocation notUsed, MerchFlags mf)
 	{
 		int thinSlot = GetThinSlot();
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		try
 		{
 			MerchandizeResult merchandizeResult;
 			do
 			{
-				if (thinSlot > service.QlmDeck.NumberOfSlots)
+				if (thinSlot > decksService.QlmDeck.NumberOfSlots)
 				{
 					return MerchandizeResult.QLMFull;
 				}
-				ILocation target = inventoryService.Get(service.QlmDeck.Number, thinSlot++);
+				ILocation target = inventoryService.Get(decksService.QlmDeck.Number, thinSlot++);
 				merchandizeResult = ThinDiskToLocation(source, target, id, mf);
 			}
 			while (MerchandizeResult.SlotInUse == merchandizeResult);

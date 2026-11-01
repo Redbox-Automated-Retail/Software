@@ -131,16 +131,16 @@ public class AnalyticsService : IAnalyticsService
 				return;
 			}
 			IAnalyticsSession analyticsSession = _analyticsSessions[sessionId];
-			IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-			if (service != null)
+			IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+			if (applicationState != null)
 			{
-				if (service.IsADAAccessible)
+				if (applicationState.IsADAAccessible)
 				{
-					analyticsSession.AddProperty("IsADA", service.IsADAAccessible);
+					analyticsSession.AddProperty("IsADA", applicationState.IsADAAccessible);
 				}
-				if (service.IsABEOn)
+				if (applicationState.IsABEOn)
 				{
-					analyticsSession.AddProperty("IsABE", service.IsABEOn);
+					analyticsSession.AddProperty("IsABE", applicationState.IsABEOn);
 				}
 			}
 			analyticsSession.End();
@@ -355,10 +355,10 @@ public class AnalyticsService : IAnalyticsService
 	{
 		try
 		{
-			IEngineApplication service = ServiceLocator.Instance.GetService<IEngineApplication>();
-			if (service != null)
+			IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
+			if (engineApplication != null)
 			{
-				string text = Path.Combine(service.DataPath, _analyticsSessionsPath);
+				string text = Path.Combine(engineApplication.DataPath, _analyticsSessionsPath);
 				if (!Directory.Exists(text))
 				{
 					_logger.Log("AnalyticsService.WriteToFile: {0} not found, creating directory.", text);
@@ -386,10 +386,10 @@ public class AnalyticsService : IAnalyticsService
 				return;
 			}
 			IAnalyticsSession analyticsSession = _analyticsSessions[sessionId];
-			IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
+			IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
 			ServiceLocator.Instance.GetService<IQueueService>()?.Enqueue((byte)Redbox.Rental.Services.Configuration.Configuration.Instance.KioskAnalyticsMessagePriority, "AddKioskSessionJson", new AddKioskSessionRequest
 			{
-				KioskId = (int)(service?.KioskId ?? 0),
+				KioskId = (int)(storeManager?.KioskId ?? 0),
 				SessionId = sessionId,
 				StartTime = analyticsSession.StartTime.ToString("yyyy/MM/dd HH:mm:ss"),
 				EndTime = analyticsSession.EndTime.ToString("yyyy/MM/dd HH:mm:ss"),

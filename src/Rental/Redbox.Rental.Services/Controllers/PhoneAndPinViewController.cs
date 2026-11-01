@@ -127,8 +127,8 @@ public class PhoneAndPinViewController : BaseViewController
 
 	private static void ConfigureTTS(PhoneAndPinViewModel phoneAndPinViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
 			phoneAndPinViewModel.OnGetSpeechControl = () => PhoneAndPinViewTextToSpeech.GetSpeechControl(GetPhoneAndPinViewModel);
 		}

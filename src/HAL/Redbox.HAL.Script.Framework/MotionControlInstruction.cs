@@ -37,12 +37,12 @@ public sealed class MotionControlInstruction : Instruction
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
 		Operand operand = Enum<Operand>.ParseIgnoringCase(base.Operands[0].Value, Operand.None);
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		switch (operand)
 		{
 		case Operand.Readlimits:
 		{
-			IMotionControlLimitResponse motionControlLimitResponse = service.ReadLimits();
+			IMotionControlLimitResponse motionControlLimitResponse = motionControlService.ReadLimits();
 			if (motionControlLimitResponse.ReadOk)
 			{
 				IMotionControlLimit[] limits = motionControlLimitResponse.Limits;
@@ -60,17 +60,17 @@ public sealed class MotionControlInstruction : Instruction
 			break;
 		}
 		case Operand.ComCheck:
-			context.PushTop((!service.CommunicationOk()) ? ErrorCodes.CommunicationError : ErrorCodes.Success);
+			context.PushTop((!motionControlService.CommunicationOk()) ? ErrorCodes.CommunicationError : ErrorCodes.Success);
 			break;
 		case Operand.Comstatus:
-			context.PushTop(service.CommunicationOk() ? "OK" : "COMM ERROR");
+			context.PushTop(motionControlService.CommunicationOk() ? "OK" : "COMM ERROR");
 			break;
 		case Operand.Initstatus:
-			context.PushTop(service.IsInitialized ? "OK" : "ERROR");
+			context.PushTop(motionControlService.IsInitialized ? "OK" : "ERROR");
 			break;
 		case Operand.Positions:
 		{
-			IControllerPosition controllerPosition = service.ReadPositions();
+			IControllerPosition controllerPosition = motionControlService.ReadPositions();
 			if (!controllerPosition.ReadOk)
 			{
 				context.PushTop("MOTIONCONTROL ERROR");
@@ -83,7 +83,7 @@ public sealed class MotionControlInstruction : Instruction
 		}
 		case Operand.XPos:
 		{
-			IControllerPosition controllerPosition = service.ReadPositions();
+			IControllerPosition controllerPosition = motionControlService.ReadPositions();
 			if (!controllerPosition.ReadOk)
 			{
 				context.PushTop("MOTIONCONTROL ERROR");
@@ -96,7 +96,7 @@ public sealed class MotionControlInstruction : Instruction
 		}
 		case Operand.YPos:
 		{
-			IControllerPosition controllerPosition = service.ReadPositions();
+			IControllerPosition controllerPosition = motionControlService.ReadPositions();
 			if (!controllerPosition.ReadOk)
 			{
 				context.PushTop("MOTIONCONTROL ERROR");
@@ -109,20 +109,20 @@ public sealed class MotionControlInstruction : Instruction
 		}
 		case Operand.Homeall:
 		{
-			if (!service.CommunicationOk() && service.Reset(quick: true) != ErrorCodes.Success)
+			if (!motionControlService.CommunicationOk() && motionControlService.Reset(quick: true) != ErrorCodes.Success)
 			{
 				context.PushTop(false);
 				break;
 			}
-			ErrorCodes errorCodes = service.InitAxes();
+			ErrorCodes errorCodes = motionControlService.InitAxes();
 			context.PushTop(errorCodes == ErrorCodes.Success);
 			break;
 		}
 		case Operand.Restart:
-			context.PushTop((service.Reset(quick: true) == ErrorCodes.Success) ? base.SuccessMessage : base.TimeoutMessage);
+			context.PushTop((motionControlService.Reset(quick: true) == ErrorCodes.Success) ? base.SuccessMessage : base.TimeoutMessage);
 			break;
 		case Operand.TestAndReset:
-			context.PushTop(service.TestAndReset(quick: true) ? base.SuccessMessage : base.TimeoutMessage);
+			context.PushTop(motionControlService.TestAndReset(quick: true) ? base.SuccessMessage : base.TimeoutMessage);
 			break;
 		}
 	}

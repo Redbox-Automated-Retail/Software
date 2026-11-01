@@ -82,8 +82,8 @@ public class PerksConfirmViewController : BaseViewController
 
 	private static void ConfigureTTS(PerksConfirmViewModel viewModel, string email)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || viewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || viewModel == null)
 		{
 			return;
 		}

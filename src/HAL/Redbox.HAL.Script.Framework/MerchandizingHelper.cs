@@ -23,10 +23,10 @@ internal class MerchandizingHelper
 				return false;
 			}
 		}
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		IControlSystem service2 = ServiceLocator.Instance.GetService<IControlSystem>();
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
-		IDeck qlmDeck = service.QlmDeck;
+		IDeck qlmDeck = decksService.QlmDeck;
 		if (qlmDeck == null)
 		{
 			LogHelper.Instance.WithContext("There is no QLM deck on this machine.");
@@ -39,7 +39,7 @@ internal class MerchandizingHelper
 			context.CreateInfoResult("QlmNoMaxSlots", "There is no QLM max slots defined for this machine.");
 			return false;
 		}
-		QlmStatus qlmStatus = service2.GetQlmStatus();
+		QlmStatus qlmStatus = controlSystem.GetQlmStatus();
 		if (QlmStatus.AuxNotResponsive == qlmStatus)
 		{
 			context.CreateInfoResult("MachineError", "The QLM status query did not get an AUX response.");
@@ -66,10 +66,10 @@ internal class MerchandizingHelper
 		else
 		{
 			context.AppLog.Write("Engage the QLM.");
-			if (service2.EngageQlm(home: false, context.AppLog) != ErrorCodes.Success)
+			if (controlSystem.EngageQlm(home: false, context.AppLog) != ErrorCodes.Success)
 			{
 				context.CreateInfoResult("QlmDeckEngageFailure", "The QLM engage failed.");
-				if (service2.DisengageQlm(home: false, context.AppLog) != ErrorCodes.Success)
+				if (controlSystem.DisengageQlm(home: false, context.AppLog) != ErrorCodes.Success)
 				{
 					context.CreateInfoResult("QlmDeckDisengageFailure", "The QLM disengage failed.");
 				}
@@ -90,18 +90,18 @@ internal class MerchandizingHelper
 		{
 			context.CreateInfoResult("QlmMoveError", $"The MOVE instruction failed with code {failCode.ToString().ToUpper()}.");
 		}
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
-		if (service.InitAxes() != ErrorCodes.Success)
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
+		if (motionControlService.InitAxes() != ErrorCodes.Success)
 		{
 			context.CreateInfoResult("MachineError", "There was an error initializing the axes.");
 			context.CreateInfoResult("QlmDeckStillEngaged", "The QLM deck is still engaged.");
 			result.Errors.Add(Error.NewError("E999", "Execution context error.", "Init axes failed."));
 			return false;
 		}
-		IControlSystem service2 = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		if (!ControllerConfiguration.Instance.IsVMZMachine)
 		{
-			if (service2.DisengageQlm(home: false, context.AppLog) != ErrorCodes.Success)
+			if (controlSystem.DisengageQlm(home: false, context.AppLog) != ErrorCodes.Success)
 			{
 				context.CreateInfoResult("QlmDeckDisengageFailure", "The QLM disengage failed.");
 				result.Errors.Add(Error.NewError("E999", "Execution context error.", "The QLM Case didn't disengage."));
@@ -111,13 +111,13 @@ internal class MerchandizingHelper
 			context.CreateInfoResult("QlmDeckDisengageSuccess", "The QLM disengaged successfully.");
 		}
 		bool result2 = true;
-		if (!service.TestAndReset(quick: false))
+		if (!motionControlService.TestAndReset(quick: false))
 		{
 			context.AppLog.WriteFormatted("The job completed; however, communication with the motion controller isn't working.", LogEntryType.Error);
 			result.Errors.Add(Error.NewError("E231", "Motion control error.", "The motion controller is not responding."));
 			result2 = false;
 		}
-		else if (service.MoveVend(MoveMode.Get, context.AppLog) != ErrorCodes.Success)
+		else if (motionControlService.MoveVend(MoveMode.Get, context.AppLog) != ErrorCodes.Success)
 		{
 			context.CreateInfoResult("MachineError", "There was an error executing the MOVEVEND instruction.");
 			result.Errors.Add(Error.NewError("E999", "Execution context error.", "The MOVEVEND instruction failed."));
@@ -144,8 +144,8 @@ internal class MerchandizingHelper
 
 	private void ClearQlmInventory()
 	{
-		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
-		ServiceLocator.Instance.GetService<IInventoryService>().MarkDeckInventory(service.QlmDeck, "UNKNOWN");
+		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
+		ServiceLocator.Instance.GetService<IInventoryService>().MarkDeckInventory(decksService.QlmDeck, "UNKNOWN");
 	}
 
 	private MerchandizingHelper()

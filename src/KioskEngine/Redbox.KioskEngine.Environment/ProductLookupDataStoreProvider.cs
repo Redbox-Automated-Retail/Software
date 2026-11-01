@@ -39,12 +39,12 @@ internal class ProductLookupDataStoreProvider : DataStoreProvider
 	protected override object OnGet(string dataStore, string tableName, string keyName)
 	{
 		object result = null;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
-		if (service != null)
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
+		if (inventoryService != null)
 		{
 			if (tableName == "BarcodeToProduct")
 			{
-				Inventory inventory = service.GetInventory(keyName);
+				Inventory inventory = inventoryService.GetInventory(keyName);
 				if (inventory != null)
 				{
 					string arg = inventory.Code.ToString();
@@ -61,12 +61,12 @@ internal class ProductLookupDataStoreProvider : DataStoreProvider
 				{
 					if (keyName == "generated_on")
 					{
-						result = "{ date = '" + service.GetInventoryDataCreatedOn()?.Trim() + "' }";
+						result = "{ date = '" + inventoryService.GetInventoryDataCreatedOn()?.Trim() + "' }";
 					}
 				}
 				else
 				{
-					result = "{ name = '" + service.GetInventoryDataMachineOrigin()?.Trim() + "' }";
+					result = "{ name = '" + inventoryService.GetInventoryDataMachineOrigin()?.Trim() + "' }";
 				}
 			}
 		}

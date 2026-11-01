@@ -66,12 +66,12 @@ public abstract class AbstractOperation<T> : IDisposable
 
 	protected bool ClearDiskFromPicker()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		int clearSensorPauseDelay = ControllerConfiguration.Instance.ClearSensorPauseDelay;
 		bool flag = WaitToClear(8000);
 		if (!flag)
 		{
-			service.SpinWait(clearSensorPauseDelay);
+			runtimeService.SpinWait(clearSensorPauseDelay);
 			bool flag2 = true;
 			IPickerSensorReadResult pickerSensorReadResult;
 			for (int i = 0; (i < 3) & flag2; i++)
@@ -90,7 +90,7 @@ public abstract class AbstractOperation<T> : IDisposable
 					return true;
 				}
 				flag2 = ClearPickerBlockedCount(pickerSensorReadResult) > 0;
-				service.SpinWait(clearSensorPauseDelay);
+				runtimeService.SpinWait(clearSensorPauseDelay);
 			}
 			pickerSensorReadResult = Controller.ReadPickerSensors();
 			if (!pickerSensorReadResult.Success)

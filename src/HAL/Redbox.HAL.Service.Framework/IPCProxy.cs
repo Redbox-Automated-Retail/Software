@@ -55,9 +55,9 @@ public sealed class IPCProxy : IDisposable
 			throw new Exception("Expected a parsed protocol.");
 		}
 		Assembly assembly = typeof(ProgramCommand).Assembly;
-		IIpcServiceHostFactory service = ServiceLocator.Instance.GetService<IIpcServiceHostFactory>();
-		IHostInfo info = service.Create(assembly);
-		m_listener = service.Create(Protocol, info);
+		IIpcServiceHostFactory ipcServiceHostFactory = ServiceLocator.Instance.GetService<IIpcServiceHostFactory>();
+		IHostInfo info = ipcServiceHostFactory.Create(assembly);
+		m_listener = ipcServiceHostFactory.Create(Protocol, info);
 		m_listener.Start();
 	}
 

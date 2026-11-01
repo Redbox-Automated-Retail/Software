@@ -41,8 +41,8 @@ internal struct Scanner : IDisposable
 
 	internal static ScanResult SmartReadDisk(CenterDiskMethod[] methods)
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		ScanResult result = (ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice().SupportsSecureReads ? OnIRScan(service, methods) : OnNonIRScan(service, methods));
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		ScanResult result = (ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice().SupportsSecureReads ? OnIRScan(controlSystem, methods) : OnNonIRScan(controlSystem, methods));
 		CreateJsonResult(result);
 		return result;
 	}
@@ -50,8 +50,8 @@ internal struct Scanner : IDisposable
 	internal static string ReadDiskInPicker(ReadDiskOptions options, ExecutionContext context)
 	{
 		string result = "UNKNOWN";
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		using (Scanner scanner = new Scanner(CenterDiskMethod.VendDoorAndBack, service))
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		using (Scanner scanner = new Scanner(CenterDiskMethod.VendDoorAndBack, controlSystem))
 		{
 			using ScanResult scanResult = scanner.Read();
 			result = scanResult.ScannedMatrix;

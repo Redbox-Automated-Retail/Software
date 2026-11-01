@@ -6,7 +6,7 @@ internal sealed class ClearGripperOperation : AbstractOperation<ErrorCodes>
 {
 	public override ErrorCodes Execute()
 	{
-		IMotionControlService service = ServiceLocator.Instance.GetService<IMotionControlService>();
+		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		ErrorCodes errorCodes = CloseTrackChecked();
 		if (errorCodes != ErrorCodes.Success)
 		{
@@ -32,7 +32,7 @@ internal sealed class ClearGripperOperation : AbstractOperation<ErrorCodes>
 				Controller.SetFinger(GripperFingerState.Rent);
 				try
 				{
-					if (service.AtVendDoor && VendDoorState.Closed != Controller.VendDoorState)
+					if (motionControlService.AtVendDoor && VendDoorState.Closed != Controller.VendDoorState)
 					{
 						Controller.VendDoorRent();
 					}

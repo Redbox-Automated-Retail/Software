@@ -112,26 +112,26 @@ public static class Program
 			return text;
 		}
 		length = text.Length;
-		int num = text.IndexOf(':');
-		if (num > -1)
+		int index = text.IndexOf(':');
+		if (index > -1)
 		{
 			hasValue = true;
-			if (length > num + 1)
+			if (length > index + 1)
 			{
-				value = text.Substring(num + 1);
+				value = text.Substring(index + 1);
 			}
-			text = text.Substring(0, num);
+			text = text.Substring(0, index);
 		}
 		length = text.Length;
-		num = text.IndexOf('=');
-		if (num > -1)
+		index = text.IndexOf('=');
+		if (index > -1)
 		{
 			hasValue = true;
-			if (length > num + 1)
+			if (length > index + 1)
 			{
-				value = text.Substring(num + 1);
+				value = text.Substring(index + 1);
 			}
-			text = text.Substring(0, num);
+			text = text.Substring(0, index);
 		}
 		return text;
 	}

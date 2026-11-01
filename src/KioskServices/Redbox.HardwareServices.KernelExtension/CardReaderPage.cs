@@ -69,7 +69,7 @@ public class CardReaderPage : UserControl, IPreferencePageHost
 
 	public void LoadValues(IPreferencePage preferencePage)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		ValidateVersionModel validateVersionModel = null;
 		bool supportsEMV = false;
@@ -84,7 +84,7 @@ public class CardReaderPage : UserControl, IPreferencePageHost
 			checkBoxDeviceServiceCardReaderConnected.Checked = deviceServiceClientHelper?.IsCardReaderConnected ?? false;
 			checkBoxSupportsEMV.Checked = supportsEMV;
 			panelLoadingData.Visible = false;
-		}, CancellationToken.None, TaskContinuationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler);
 		textBoxDeviceServiceVersion.Text = deviceServiceClientHelper?.DeviceServiceVersion?.ToString();
 		textBoxDeviceServiceClientVersion.Text = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString();
 		checkBoxDeviceServiceConnected.Checked = deviceServiceClientHelper?.IsConnectedToDeviceService ?? false;

@@ -316,10 +316,10 @@ public class IdeMainForm : Form
 				}
 				if (s.StartsWith(typeof(SymbolsToolWindow).ToString()))
 				{
-					string[] array = s.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-					if (array.Length == 2)
+					string[] parts = s.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length == 2)
 					{
-						SymbolsToolWindow obj = ((array[1] == "Locals") ? m_localsToolWindow : m_globalsToolWindow);
+						SymbolsToolWindow obj = ((parts[1] == "Locals") ? m_localsToolWindow : m_globalsToolWindow);
 						obj.RefreshSymbols();
 						return obj;
 					}
@@ -406,10 +406,10 @@ public class IdeMainForm : Form
 	{
 		if (!m_isActivated)
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service != null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (machineSettingsStore != null)
 			{
-				base.ShowInTaskbar = service.GetValue("Ide", "ShowIDEInTaskBar", defaultValue: true);
+				base.ShowInTaskbar = machineSettingsStore.GetValue("Ide", "ShowIDEInTaskBar", defaultValue: true);
 			}
 			m_isActivated = true;
 		}
@@ -475,9 +475,9 @@ public class IdeMainForm : Form
 
 	private void OnShowLegacyDebugger(object sender, EventArgs e)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		DebuggerForm.Instance.ActiveBundleSet = service.ActiveBundleSet;
-		DebuggerForm.Instance.Filter = service.Filter;
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		DebuggerForm.Instance.ActiveBundleSet = resourceBundleService.ActiveBundleSet;
+		DebuggerForm.Instance.Filter = resourceBundleService.Filter;
 		DebuggerForm.Instance.ActivateDebugger();
 	}
 

@@ -136,8 +136,8 @@ public sealed class ServiceCommand
 	[Description("")]
 	public void GetKioskID(CommandContext context)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		context.Messages.Add(service.KioskId);
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		context.Messages.Add(runtimeService.KioskId);
 	}
 
 	[CommandForm(Name = "mark-kiosk-empty")]
@@ -208,14 +208,14 @@ public sealed class ServiceCommand
 
 	private void OnChangeMode(bool enter, EngineModes mode)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
 		if (enter)
 		{
-			service.Enter(mode);
+			executionService.Enter(mode);
 		}
 		else
 		{
-			service.Exit(mode);
+			executionService.Exit(mode);
 		}
 	}
 }

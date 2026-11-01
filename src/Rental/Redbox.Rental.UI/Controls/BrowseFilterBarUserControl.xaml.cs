@@ -35,9 +35,9 @@ public partial class BrowseFilterBarUserControl : UserControl, IWPFActor, ICompo
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(startover_button);
-		obj?.SetStyle(BackButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(startover_button);
+		theme?.SetStyle(BackButton);
 	}
 
 	private void HandleWPFHit()

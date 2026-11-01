@@ -20,7 +20,7 @@ public sealed class ZipFileService : IZipFileService
 		{
 			using ZipOutputStream zipOutputStream = new ZipOutputStream(File.Create(zipPath));
 			zipOutputStream.SetLevel(9);
-			byte[] array = new byte[4096];
+			byte[] buffer = new byte[4096];
 			int num = 0;
 			foreach (string file in files)
 			{
@@ -34,8 +34,8 @@ public sealed class ZipFileService : IZipFileService
 					int num2;
 					do
 					{
-						num2 = fileStream.Read(array, 0, array.Length);
-						zipOutputStream.Write(array, 0, num2);
+						num2 = fileStream.Read(buffer, 0, buffer.Length);
+						zipOutputStream.Write(buffer, 0, num2);
 					}
 					while (num2 > 0);
 				}
@@ -88,13 +88,13 @@ public sealed class ZipFileService : IZipFileService
 					using (FileStream fileStream = File.Create(text))
 					{
 						int num = 2048;
-						byte[] array = new byte[2048];
+						byte[] buffer = new byte[2048];
 						while (true)
 						{
-							num = zipInputStream.Read(array, 0, array.Length);
+							num = zipInputStream.Read(buffer, 0, buffer.Length);
 							if (num > 0)
 							{
-								fileStream.Write(array, 0, num);
+								fileStream.Write(buffer, 0, num);
 								continue;
 							}
 							break;

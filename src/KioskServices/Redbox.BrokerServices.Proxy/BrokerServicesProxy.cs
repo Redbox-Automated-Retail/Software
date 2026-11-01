@@ -90,8 +90,8 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 
 	public bool Register(int kioskId, string versionPricingDictionary)
 	{
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		if (service != null && service.UseLegacyBrokerService)
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		if (configuration != null && configuration.UseLegacyBrokerService)
 		{
 			m_kioskId = kioskId;
 			m_versionPricingDictionary = versionPricingDictionary;
@@ -121,10 +121,10 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 		try
 		{
 			using ExecutionTimer executionTimer = new ExecutionTimer();
-			ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-			if (service != null)
+			ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+			if (callbackService != null)
 			{
-				service.EnqueueCallback(reservationCallbackEntry);
+				callbackService.EnqueueCallback(reservationCallbackEntry);
 				reservationCallbackEntry.ResetEvent.WaitOne();
 				LogHelper.Instance.Log("BrokerServicesProxy.Reserve3 execution time: {0}", executionTimer.Elapsed);
 			}
@@ -148,10 +148,10 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 		try
 		{
 			using ExecutionTimer executionTimer = new ExecutionTimer();
-			ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-			if (service != null)
+			ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+			if (callbackService != null)
 			{
-				service.EnqueueCallback(cancelReservationCallbackEntry);
+				callbackService.EnqueueCallback(cancelReservationCallbackEntry);
 				cancelReservationCallbackEntry.ResetEvent.WaitOne();
 				LogHelper.Instance.Log("BrokerServicesProxy.CancelReservation execution time: {0}", executionTimer.Elapsed);
 			}

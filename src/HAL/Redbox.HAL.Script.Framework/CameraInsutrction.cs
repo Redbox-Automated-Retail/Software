@@ -56,7 +56,7 @@ public class CameraInsutrction : Instruction
 		{
 			flag = boolValue;
 		}
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 		IScannerDevice configuredDevice = ServiceLocator.Instance.GetService<IScannerDeviceService>().GetConfiguredDevice();
 		switch (Enum<ExpectedOperand>.ParseIgnoringCase(base.Operands[0].Value, ExpectedOperand.None))
 		{
@@ -72,7 +72,7 @@ public class CameraInsutrction : Instruction
 		case ExpectedOperand.Start:
 			if (flag)
 			{
-				service.Center(CenterDiskMethod.VendDoorAndBack);
+				controlSystem.Center(CenterDiskMethod.VendDoorAndBack);
 			}
 			context.PushTop(configuredDevice.Start());
 			break;

@@ -298,13 +298,13 @@ public class PromotionService : IPromotionService
 	{
 		get
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 			if (GetPromotion() == null && IsFreeInCartOfferRunning)
 			{
 				IPromoCodeValidationInfo promoCodeValidationInfo = ValidateFreeInCartOffer();
 				if (promoCodeValidationInfo != null && promoCodeValidationInfo.IsCartValid)
 				{
-					return service?.CurrentRentalShoppingCart?.InCartPromoOfferMade != true;
+					return rentalShoppingCartService?.CurrentRentalShoppingCart?.InCartPromoOfferMade != true;
 				}
 			}
 			return false;
@@ -391,14 +391,14 @@ public class PromotionService : IPromotionService
 	public void SetPromotion(IPromotion promotion)
 	{
 		_promotion = promotion;
-		IPersonalizationService service = ServiceLocator.Instance.GetService<IPersonalizationService>();
+		IPersonalizationService personalizationService = ServiceLocator.Instance.GetService<IPersonalizationService>();
 		if (promotion != null)
 		{
-			service?.SetSelectedPromo(promotion.Name);
+			personalizationService?.SetSelectedPromo(promotion.Name);
 		}
 		else
 		{
-			service?.ClearSelectedPromo();
+			personalizationService?.ClearSelectedPromo();
 		}
 	}
 
@@ -704,14 +704,14 @@ public class PromotionService : IPromotionService
 								{
 									continue;
 								}
-								IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+								IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 								bool noIncludedProductInStock = true;
-								if (service != null)
+								if (dataService != null)
 								{
 									foreach (long includeProduct in promotionRule.IncludeProducts)
 									{
 										IKioskProduct kioskProduct = null;
-										service.GetProduct(includeProduct, excludeTitleRollup: false, out kioskProduct);
+										dataService.GetProduct(includeProduct, excludeTitleRollup: false, out kioskProduct);
 										if (kioskProduct is ITitleProduct { IsRentableAndInStock: not false })
 										{
 											noIncludedProductInStock = false;
@@ -820,11 +820,11 @@ public class PromotionService : IPromotionService
 			excludeProductList = new List<long>();
 		}
 		LogHelper.Instance.Log(string.Format("> BrowseCountBy pt: {0}, pf: {1}, include list: {2}, exclude list: {3}", titleType, titleFamily, string.Join(", ", includeProductList), string.Join(", ", excludeProductList)));
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService != null)
 		{
 			List<IKioskProduct> products = null;
-			service.GetProducts(BrowseViewFilter.All, titleFamily, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
+			dataService.GetProducts(BrowseViewFilter.All, titleFamily, titleType, BrowseSort.MerchandiseDate, null, null, null, null, isADAView: false, null, null, out products);
 			foreach (IKioskProduct item in products)
 			{
 				ITitleProduct titleProduct = item as ITitleProduct;
@@ -1211,9 +1211,9 @@ public class PromotionService : IPromotionService
 					ActionCode = ((offer.ActionCode != ActionCode.Purchase) ? PromotionActionCode.Rental : PromotionActionCode.Purchase)
 				};
 				SetPromotion(offerPromotion);
-				IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-				service.CurrentRentalShoppingCart.ValidateAndUpdatePromoCode();
-				service.CurrentRentalShoppingCart.UpdateServiceFee();
+				IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+				rentalShoppingCartService.CurrentRentalShoppingCart.ValidateAndUpdatePromoCode();
+				rentalShoppingCartService.CurrentRentalShoppingCart.UpdateServiceFee();
 			}
 		}
 	}
@@ -1263,10 +1263,10 @@ public class PromotionService : IPromotionService
 		TitleFamily titleFamilyFromInCartPromo = GetTitleFamilyFromInCartPromo();
 		TitleType titleTypeFromInCartPromo = GetTitleTypeFromInCartPromo();
 		List<long> excludeProducts = null;
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		if (service.CurrentRentalShoppingCart != null)
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		if (rentalShoppingCartService.CurrentRentalShoppingCart != null)
 		{
-			IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = (from x in service.CurrentRentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, titleTypeFromInCartPromo, titleFamilyFromInCartPromo, null, excludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, null, includeDiscountRestrictionItems: false)
+			IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = (from x in rentalShoppingCartService.CurrentRentalShoppingCart.GetTitleItemsByCriteria(RentalShoppingCartItemAction.rental, null, titleTypeFromInCartPromo, titleFamilyFromInCartPromo, null, excludeProducts, null, null, null, includeMultiNightPricedItems: false, includeFlashDeals: true, includeLoyaltyRedeemedItems: false, null, includeDiscountRestrictionItems: false)
 				orderby (x?.PricingRecord?.InitialNight).GetValueOrDefault(), x.ProductId
 				select x).FirstOrDefault();
 			promoCodeValidationInfo.IsCartValid = rentalShoppingCartTitleItem != null;
@@ -1589,8 +1589,8 @@ public class PromotionService : IPromotionService
 
 	private string AddMultiDiscs(string productIdList)
 	{
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (service != null)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (dataService != null)
 		{
 			List<string> list = new List<string>(productIdList.Split(','));
 			foreach (string item in list)
@@ -1600,7 +1600,7 @@ public class PromotionService : IPromotionService
 					continue;
 				}
 				IKioskProduct kioskProduct = null;
-				service.GetProduct(result, excludeTitleRollup: false, out kioskProduct);
+				dataService.GetProduct(result, excludeTitleRollup: false, out kioskProduct);
 				if (!(kioskProduct is MDVProduct mDVProduct))
 				{
 					continue;

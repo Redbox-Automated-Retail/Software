@@ -244,7 +244,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 	public void Parse()
 	{
 		base.Errors.Clear();
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IStyleSheetService styleSheetService = ServiceLocator.Instance.GetService<IStyleSheetService>();
 		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		IResource viewResource = GetViewResource();
@@ -279,7 +279,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 		if (!string.IsNullOrEmpty(attributeValue3))
 		{
 			attributeValue3 = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(attributeValue3);
-			Image bitmap = service.GetBitmap(attributeValue3);
+			Image bitmap = resourceBundleService.GetBitmap(attributeValue3);
 			if (bitmap != null)
 			{
 				BackgroundImage = bitmap;
@@ -351,7 +351,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 			{
 				text = styleSheetState["font"] as string;
 			}
-			actorProperties.Font = service.GetFont(text, out var resourceFound);
+			actorProperties.Font = resourceBundleService.GetFont(text, out var resourceFound);
 			if (!string.IsNullOrEmpty(text) && !resourceFound)
 			{
 				base.Errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError("V003", $"{attributeValue4}.font: Font resource '{text}' not found.", $" Actor {attributeValue4} is referencing a font resource named '{text}' that was not found."));
@@ -364,7 +364,7 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 			if (!string.IsNullOrEmpty(text2))
 			{
 				text2 = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(text2);
-				Image bitmap2 = service.GetBitmap(text2);
+				Image bitmap2 = resourceBundleService.GetBitmap(text2);
 				if (bitmap2 != null)
 				{
 					actorProperties.Image = bitmap2;
@@ -399,11 +399,11 @@ internal sealed class ViewFrame : BaseViewFrame, IViewFrame, IBaseViewFrame, IDi
 
 	private IResource GetViewResource()
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return null;
 		}
-		return service.GetResource(base.ViewName) ?? throw new ArgumentException($"View resource {base.ViewName} was not found.");
+		return resourceBundleService.GetResource(base.ViewName) ?? throw new ArgumentException($"View resource {base.ViewName} was not found.");
 	}
 }

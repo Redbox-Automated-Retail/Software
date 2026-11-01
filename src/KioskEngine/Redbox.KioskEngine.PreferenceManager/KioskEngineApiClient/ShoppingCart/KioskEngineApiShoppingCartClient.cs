@@ -14,9 +14,9 @@ public class KioskEngineApiShoppingCartClient : KioskEngineApiBaseClient
 
 	public static async Task<APIResponse<GetLoyaltyTestShoppingCartItemsResponse>> GetLoyaltyTestShoppingCartItemsResponse()
 	{
-		IHttpService service = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/loyaltytestshoppingcartitems", null, HttpMethod.Get);
-		return await service.SendRequestAsync<GetLoyaltyTestShoppingCartItemsResponse>(request, null, "GetLoyaltyTestShoppingCartItemsResponse", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\ShoppingCart\\KioskEngineApiShoppingCartClient.cs");
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/loyaltytestshoppingcartitems", null, HttpMethod.Get);
+		return await httpService.SendRequestAsync<GetLoyaltyTestShoppingCartItemsResponse>(request, null, "GetLoyaltyTestShoppingCartItemsResponse", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\ShoppingCart\\KioskEngineApiShoppingCartClient.cs");
 	}
 
 	public static async Task<List<LoyaltyTestShoppingCartItem>> GetLoyaltyTestShoppingCartItems()

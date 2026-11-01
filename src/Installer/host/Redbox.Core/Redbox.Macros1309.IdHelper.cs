@@ -27,11 +27,11 @@ internal class Redbox_002EMacros1309_002EIdHelper
 	public static string GeneratePseudoUniqueId(int codeLength, string validChars)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		byte[] array = new byte[codeLength];
-		m_provider.GetBytes(array);
+		byte[] buffer = new byte[codeLength];
+		m_provider.GetBytes(buffer);
 		for (int i = 0; i < codeLength; i++)
 		{
-			int startIndex = array[i] % validChars.Length;
+			int startIndex = buffer[i] % validChars.Length;
 			stringBuilder.Append(validChars.Substring(startIndex, 1));
 		}
 		return stringBuilder.ToString();

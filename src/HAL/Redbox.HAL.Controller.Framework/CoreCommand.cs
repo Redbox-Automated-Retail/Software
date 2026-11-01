@@ -77,7 +77,7 @@ internal sealed class CoreCommand
 
 	private ErrorCodes WaitForCommand(CommandTrace trace)
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 		TimeSpan timespan = new TimeSpan(0, 0, 0, 0, WaitPauseTime);
 		trace.Enter();
 		trace.Trace("[WaitForCommand] Start.");
@@ -86,7 +86,7 @@ internal sealed class CoreCommand
 			using ExecutionTimer executionTimer = new ExecutionTimer();
 			do
 			{
-				service.SpinWait(timespan);
+				runtimeService.SpinWait(timespan);
 				CoreResponse coreResponse = SendCommand("S", trace);
 				if (coreResponse.CommError)
 				{

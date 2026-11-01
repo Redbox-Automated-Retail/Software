@@ -98,9 +98,9 @@ public class PromoOfferBrowseViewController : BaseViewController
 
 	private static void ConfigureShoppingCartChangeHandler()
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		_originalCartItems = service.CurrentRentalShoppingCart.ShallowClone();
-		service.CurrentRentalShoppingCart.OnChange += CurrentRentalShoppingCart_OnChange;
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		_originalCartItems = rentalShoppingCartService.CurrentRentalShoppingCart.ShallowClone();
+		rentalShoppingCartService.CurrentRentalShoppingCart.OnChange += CurrentRentalShoppingCart_OnChange;
 	}
 
 	private static void CurrentRentalShoppingCart_OnChange(IRentalShoppingCart rentalShoppingCart)
@@ -205,9 +205,9 @@ public class PromoOfferBrowseViewController : BaseViewController
 		}
 		if (_selectedTitle != null)
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
 			PromoOfferState.SelectedProduct = null;
-			service.RemoveItemFromRentalShoppingCartByProductId(service.CurrentRentalShoppingCart.ShoppingSessionId, _selectedTitle.ProductId, userRemoved: true);
+			rentalShoppingCartService.RemoveItemFromRentalShoppingCartByProductId(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId, _selectedTitle.ProductId, userRemoved: true);
 		}
 		switch (titleProduct.KioskProductType)
 		{
@@ -250,11 +250,11 @@ public class PromoOfferBrowseViewController : BaseViewController
 	{
 		if (_selectedTitle != null)
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			IRentalShoppingCart currentRentalShoppingCart = service.CurrentRentalShoppingCart;
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			IRentalShoppingCart currentRentalShoppingCart = rentalShoppingCartService.CurrentRentalShoppingCart;
 			if (!currentRentalShoppingCart.HasTitleItem(_selectedTitle.ProductId))
 			{
-				IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = service.CreateRentalShoppingCartItemFromTitleProduct(_selectedTitle);
+				IRentalShoppingCartTitleItem rentalShoppingCartTitleItem = rentalShoppingCartService.CreateRentalShoppingCartItemFromTitleProduct(_selectedTitle);
 				rentalShoppingCartTitleItem.SourceType = ItemSourceType.Browse;
 				rentalShoppingCartTitleItem.Action = RentalShoppingCartItemAction.rental;
 				rentalShoppingCartTitleItem.Quantity = 1m;
@@ -511,8 +511,8 @@ public class PromoOfferBrowseViewController : BaseViewController
 		BaseViewController.ProcessWPFHit();
 		if (browseItemModel != null)
 		{
-			IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-			service.RemoveItemFromRentalShoppingCartByProductId(service.CurrentRentalShoppingCart.ShoppingSessionId, _selectedTitle.ProductId, userRemoved: true);
+			IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+			rentalShoppingCartService.RemoveItemFromRentalShoppingCartByProductId(rentalShoppingCartService.CurrentRentalShoppingCart.ShoppingSessionId, _selectedTitle.ProductId, userRemoved: true);
 			_selectedTitle = null;
 			PromoOfferState.SelectedProduct = null;
 			PromoOfferBrowseViewModel viewModelFromView = GetViewModelFromView();
@@ -597,11 +597,11 @@ public class PromoOfferBrowseViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		int timeOut = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 120000 : 25000);
-		IIdleTimer obj = service?.CreateIdleTimer("PromoOfferBrowseViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("PromoOfferBrowseViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			MessagePopupViewController.ShowOfferTimeoutMessage(delegate
@@ -616,21 +616,21 @@ public class PromoOfferBrowseViewController : BaseViewController
 				OrchestrationService.ViewGoBackSafe("PromoOfferBrowseViewController time out", popOnly: false);
 			});
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("PromoOfferBrowseViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("PromoOfferBrowseViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("PromoOfferBrowseViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("PromoOfferBrowseViewTimer");
 	}
 
 	private static void ConfigureTTS(PromoOfferBrowseViewModel browseViewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			browseViewModel.OnGetSpeechControl = () => PromoOfferBrowseViewTextToSpeech.GetSpeechControl(GetViewModelFromView);
 		}

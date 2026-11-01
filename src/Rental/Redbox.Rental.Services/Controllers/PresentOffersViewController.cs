@@ -56,8 +56,8 @@ public class PresentOffersViewController : BaseViewController
 			PopulateModelText(presentOffersViewModel, parameters, continueCommand);
 			ConfigureTTS(presentOffersViewModel);
 			viewUserControl.DataContext = presentOffersViewModel;
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			int value = ((service != null && service.TTSEnabled) ? 90000 : 25000);
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			int value = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : 25000);
 			(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("PresentOffersViewTimer", value, value, delegate
 			{
 				LogHelper.Instance.Log("present_offers_view_timer executed");
@@ -509,8 +509,8 @@ public class PresentOffersViewController : BaseViewController
 
 	private static void ConfigureTTS(PresentOffersViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || viewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || viewModel == null)
 		{
 			return;
 		}

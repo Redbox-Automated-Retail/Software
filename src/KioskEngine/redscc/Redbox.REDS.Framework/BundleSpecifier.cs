@@ -18,13 +18,13 @@ public class BundleSpecifier : IBundleSpecifier
 		{
 			throw new ArgumentException("specifier cannot be null.");
 		}
-		string[] array = specifier.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		if (array.Length < 2)
+		string[] parts = specifier.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		if (parts.Length < 2)
 		{
 			throw new ArgumentException("specifier must be in the format: product,version");
 		}
-		Name = array[0];
-		Version = new Version((array[1] == "*") ? "999999.999999" : array[1].Replace("*", "999999"));
+		Name = parts[0];
+		Version = new Version((parts[1] == "*") ? "999999.999999" : parts[1].Replace("*", "999999"));
 	}
 
 	public BundleSpecifier(string productName, string productVersion, BundleType type, IResourceBundle bundle)

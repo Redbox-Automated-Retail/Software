@@ -122,7 +122,7 @@ internal sealed class SegmentManager : IGetObserver
 		VMZIterator vMZIterator = null;
 		MerchandizeResult _mr = result;
 		ILocation target = null;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (location != null)
 		{
 			VMZ.ForAllBetweenDo(delegate(ILocation loc)
@@ -136,7 +136,7 @@ internal sealed class SegmentManager : IGetObserver
 				{
 					return true;
 				}
-				if (!service.IsStuck(loc))
+				if (!inventoryService.IsStuck(loc))
 				{
 					MerchandizeResult merchandizeResult = MoveNonThin(loc, manager);
 					if (merchandizeResult == MerchandizeResult.Success)
@@ -270,15 +270,15 @@ internal sealed class SegmentManager : IGetObserver
 
 	private int Compare(MerchFlags left, MerchFlags right)
 	{
-		int num = IncreasingPriorityOrder.IndexOf(left);
+		int index = IncreasingPriorityOrder.IndexOf(left);
 		int num2 = IncreasingPriorityOrder.IndexOf(right);
-		return num - num2;
+		return index - num2;
 	}
 
 	private ILocation FindTarget(VMZIterator iterator, MerchFlags flags, MerchTransferManager manager, out MerchandizeResult result)
 	{
 		result = MerchandizeResult.Success;
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		while (true)
 		{
 			if (iterator.IsEmpty)
@@ -306,7 +306,7 @@ internal sealed class SegmentManager : IGetObserver
 					break;
 				}
 			}
-			else if (!service.IsStuck(iterator.Location))
+			else if (!inventoryService.IsStuck(iterator.Location))
 			{
 				MerchandizeResult merchandizeResult = MoveNonThin(iterator.Location, manager);
 				if (merchandizeResult == MerchandizeResult.Success)

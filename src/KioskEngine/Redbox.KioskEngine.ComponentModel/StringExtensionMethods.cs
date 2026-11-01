@@ -12,12 +12,12 @@ public static class StringExtensionMethods
 
 	public static string ReplaceFirst(this string text, string search, string replace)
 	{
-		int num = text.IndexOf(search);
-		if (num < 0)
+		int index = text.IndexOf(search);
+		if (index < 0)
 		{
 			return text;
 		}
-		return text.Substring(0, num) + replace + text.Substring(num + search.Length);
+		return text.Substring(0, index) + replace + text.Substring(index + search.Length);
 	}
 
 	public static string ToPrettyJson(this string source)
@@ -38,27 +38,27 @@ public static class StringExtensionMethods
 			gZipStream.Write(bytes, 0, bytes.Length);
 		}
 		memoryStream.Position = 0L;
-		byte[] array = new byte[memoryStream.Length];
-		memoryStream.Read(array, 0, array.Length);
-		byte[] array2 = new byte[array.Length + 4];
-		Buffer.BlockCopy(array, 0, array2, 4, array.Length);
+		byte[] buffer = new byte[memoryStream.Length];
+		memoryStream.Read(buffer, 0, buffer.Length);
+		byte[] array2 = new byte[buffer.Length + 4];
+		Buffer.BlockCopy(buffer, 0, array2, 4, buffer.Length);
 		Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, array2, 0, 4);
 		return Convert.ToBase64String(array2);
 	}
 
 	public static string DecompressString(this string compressedText)
 	{
-		byte[] array = Convert.FromBase64String(compressedText);
+		byte[] decoded = Convert.FromBase64String(compressedText);
 		using MemoryStream memoryStream = new MemoryStream();
-		int num = BitConverter.ToInt32(array, 0);
-		memoryStream.Write(array, 4, array.Length - 4);
-		byte[] array2 = new byte[num];
+		int num = BitConverter.ToInt32(decoded, 0);
+		memoryStream.Write(decoded, 4, decoded.Length - 4);
+		byte[] buffer = new byte[num];
 		memoryStream.Position = 0L;
 		using (GZipStream gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
 		{
-			gZipStream.Read(array2, 0, array2.Length);
+			gZipStream.Read(buffer, 0, buffer.Length);
 		}
-		return Encoding.UTF8.GetString(array2);
+		return Encoding.UTF8.GetString(buffer);
 	}
 
 	public static string CheckNotAvailable(this string source)

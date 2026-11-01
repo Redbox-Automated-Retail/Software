@@ -78,17 +78,17 @@ internal sealed class PacketFactory
 		}
 		ushort num = Converter.ToUInt16(data, startIndex + 13);
 		int num2 = num + 17;
-		byte[] array = new byte[num2];
+		byte[] buffer = new byte[num2];
 		if (startIndex + num2 > data.Length)
 		{
 			return new IncompletePacket();
 		}
-		Array.Copy(data, startIndex, array, 0, num2);
+		Array.Copy(data, startIndex, buffer, 0, num2);
 		if (IsNonDataPacket(data, startIndex))
 		{
-			return new NonDataPacket(array, num);
+			return new NonDataPacket(buffer, num);
 		}
-		return new DataPacket(array, num);
+		return new DataPacket(buffer, num);
 	}
 
 	private PacketFactory()

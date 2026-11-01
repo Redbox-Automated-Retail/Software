@@ -58,10 +58,10 @@ public class AnalyticsShoppingCart
 		}
 		try
 		{
-			IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-			if (service != null)
+			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+			if (dataService != null)
 			{
-				List<ITitleProduct> movieBrowseProducts = service.GetMovieBrowseProducts();
+				List<ITitleProduct> movieBrowseProducts = dataService.GetMovieBrowseProducts();
 				List<ITitleRollupProduct> rollupOnly = (from x in movieBrowseProducts
 					where x is ITitleRollupProduct
 					select x as ITitleRollupProduct).ToList();
@@ -70,8 +70,8 @@ public class AnalyticsShoppingCart
 					ITitleRollupProduct titleRollupProduct = rollupOnly.Where((ITitleRollupProduct tr) => tr.KioskProducts.Contains(item.TitleProduct)).FirstOrDefault();
 					if (titleRollupProduct != null)
 					{
-						int num = movieBrowseProducts.IndexOf(titleRollupProduct);
-						item.RentalPosition = num + 1;
+						int index = movieBrowseProducts.IndexOf(titleRollupProduct);
+						item.RentalPosition = index + 1;
 					}
 					else
 					{

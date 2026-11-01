@@ -307,9 +307,9 @@ public class KeyboardViewController : BaseViewController
 
 	private static void ConfigureTTS(KeyboardModel keyboardModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			keyboardModel.ProcessGetSpeechControl = () => BaseTTSController<KeyboardTTSController, KeyboardLogic>.GetSpeechControl(GetKeyboardLogic);
 		}

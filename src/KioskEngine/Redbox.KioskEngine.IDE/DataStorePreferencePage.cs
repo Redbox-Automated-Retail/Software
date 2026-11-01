@@ -74,12 +74,12 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		NewKeyValueForm newKeyValueForm = new NewKeyValueForm();
 		if (newKeyValueForm.ShowDialog() == DialogResult.OK)
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service != null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService != null)
 			{
 				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(m_storeToolStripComboBox.SelectedItem.ToString());
 				string tableName = m_tableToolStripComboBox.SelectedItem.ToString();
-				service.Set(fileNameWithoutExtension, tableName, newKeyValueForm.KeyName, newKeyValueForm.Value);
+				dataStoreService.Set(fileNameWithoutExtension, tableName, newKeyValueForm.KeyName, newKeyValueForm.Value);
 				RefreshTable();
 			}
 		}
@@ -91,8 +91,8 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		{
 			return;
 		}
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-		if (service == null)
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		if (dataStoreService == null)
 		{
 			return;
 		}
@@ -100,15 +100,15 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 		string tableName = m_tableToolStripComboBox.SelectedItem.ToString();
 		foreach (DataGridViewRow selectedRow in m_dataGridView.SelectedRows)
 		{
-			service.Remove(fileNameWithoutExtension, tableName, selectedRow.Cells[0].FormattedValue as string);
+			dataStoreService.Remove(fileNameWithoutExtension, tableName, selectedRow.Cells[0].FormattedValue as string);
 		}
 		RefreshTable();
 	}
 
 	private void OnSave(object sender, EventArgs e)
 	{
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-		if (service == null)
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		if (dataStoreService == null)
 		{
 			return;
 		}
@@ -125,7 +125,7 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 					dictionary[(string)item.Cells[0].FormattedValue] = item.Cells[1].FormattedValue as string;
 				}
 			}
-			service.BulkSet(fileNameWithoutExtension, tableName, dictionary);
+			dataStoreService.BulkSet(fileNameWithoutExtension, tableName, dictionary);
 		}
 		finally
 		{
@@ -138,13 +138,13 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 	{
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service == null || m_storeToolStripComboBox.SelectedItem == null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService == null || m_storeToolStripComboBox.SelectedItem == null)
 			{
 				return;
 			}
 			Cursor = Cursors.WaitCursor;
-			ReadOnlyCollection<string> tables = service.GetTables(Path.GetFileNameWithoutExtension(m_storeToolStripComboBox.SelectedItem.ToString()));
+			ReadOnlyCollection<string> tables = dataStoreService.GetTables(Path.GetFileNameWithoutExtension(m_storeToolStripComboBox.SelectedItem.ToString()));
 			m_tableToolStripComboBox.BeginUpdate();
 			m_tableToolStripComboBox.Items.Clear();
 			foreach (string item in tables)
@@ -171,8 +171,8 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 	private void RefreshTable()
 	{
 		m_currentRowIndex = null;
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-		if (service == null || m_tableToolStripComboBox.SelectedItem == null)
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		if (dataStoreService == null || m_tableToolStripComboBox.SelectedItem == null)
 		{
 			return;
 		}
@@ -185,13 +185,13 @@ public class DataStorePreferencePage : UserControl, IPreferencePageHost
 			DataTable dataTable = new DataTable();
 			dataTable.Columns.Add("Key", typeof(string));
 			dataTable.Columns.Add("Value", typeof(string));
-			foreach (string key in service.GetKeys(fileNameWithoutExtension, tableName))
+			foreach (string key in dataStoreService.GetKeys(fileNameWithoutExtension, tableName))
 			{
 				DataRow dataRow = dataTable.NewRow();
 				dataTable.Rows.Add(dataRow);
 				dataRow.BeginEdit();
 				dataRow["Key"] = key;
-				dataRow["Value"] = service.Get(fileNameWithoutExtension, tableName, key);
+				dataRow["Value"] = dataStoreService.Get(fileNameWithoutExtension, tableName, key);
 				dataRow.EndEdit();
 				dataRow.AcceptChanges();
 			}

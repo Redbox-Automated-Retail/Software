@@ -170,11 +170,11 @@ public class TextToSpeechService : ITextToSpeechService
 		if (_speechControl != null)
 		{
 			LogHelper.Instance.Log("TTS((> stop existing speech workflow {0} #{1} {2}", _speechControl?.Name, _currentSpeechPart?.Sequence ?? 0, _currentSpeechPart?.Name);
-			ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-			if (service != null)
+			ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+			if (timerService != null)
 			{
-				service.RemoveTimer("TTSTimer");
-				service.RemoveTimer("TTSInputTimer");
+				timerService.RemoveTimer("TTSTimer");
+				timerService.RemoveTimer("TTSInputTimer");
 			}
 			SilenceTTS();
 			m_keyHandlers.Clear();
@@ -256,8 +256,8 @@ public class TextToSpeechService : ITextToSpeechService
 		if (speechPart != null)
 		{
 			m_textQueue = new Queue<string>();
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			speechPart.EnqueueText(m_textQueue, m_macrosFound, service);
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			speechPart.EnqueueText(m_textQueue, m_macrosFound, viewService);
 			if (m_textQueue.Count > 0)
 			{
 				SayTTS(m_textQueue.Dequeue());
@@ -295,9 +295,9 @@ public class TextToSpeechService : ITextToSpeechService
 		}
 		_currentSpeechPart = speechPart;
 		m_keyHandlers.Clear();
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		m_macrosFound = new Dictionary<string, string>();
-		speechPart.ValidateMacros(service, m_macrosFound);
+		speechPart.ValidateMacros(macroService, m_macrosFound);
 		ResetTTSEventHandlers(speechPart);
 		if (_currentSpeechPart.KeySequenceDelay > 0)
 		{
@@ -337,9 +337,9 @@ public class TextToSpeechService : ITextToSpeechService
 	{
 		if (delay > 0)
 		{
-			ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-			service.RemoveTimer("TTSTimer");
-			service.CreateTimer("TTSTimer", delay, null, delegate
+			ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+			timerService.RemoveTimer("TTSTimer");
+			timerService.CreateTimer("TTSTimer", delay, null, delegate
 			{
 				RunSpeechPart(speechPart);
 			}).Start();
@@ -360,9 +360,9 @@ public class TextToSpeechService : ITextToSpeechService
 
 	private void ResetTTSEventHandlers(ISpeechPart speechPart)
 	{
-		IInputService service = ServiceLocator.Instance.GetService<IInputService>();
+		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
 		m_keySequence = "";
-		service.RemoveKeyPressHandler("TTS-KeyHandler");
+		inputService.RemoveKeyPressHandler("TTS-KeyHandler");
 		if (speechPart.Events == null)
 		{
 			return;
@@ -736,7 +736,7 @@ public class TextToSpeechService : ITextToSpeechService
 				}
 			}
 		};
-		service.RegisterKeyPressHandler("TTS-KeyHandler", handler);
+		inputService.RegisterKeyPressHandler("TTS-KeyHandler", handler);
 	}
 
 	private void TTSFinalizeKeyEntry()
@@ -766,10 +766,10 @@ public class TextToSpeechService : ITextToSpeechService
 	{
 		SpeechControl speechControl = null;
 		LogHelper.Instance.Log("TTS((> Attempting to load XML Control markup for " + resourceName);
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service != null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService != null)
 		{
-			XmlNode xml = service.GetXml(resourceName);
+			XmlNode xml = resourceBundleService.GetXml(resourceName);
 			if (xml != null)
 			{
 				speechControl = new SpeechControl
@@ -1053,12 +1053,12 @@ public class TextToSpeechService : ITextToSpeechService
 	{
 		int sequence = _currentSpeechPart.Sequence;
 		LogHelper.Instance.Log("TTS((> Reader speak completed speech part #" + sequence);
-		ITimerService service = ServiceLocator.Instance.GetService<ITimerService>();
-		if (service == null)
+		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
+		if (timerService == null)
 		{
 			return;
 		}
-		service.RemoveTimer("TTSTimer");
+		timerService.RemoveTimer("TTSTimer");
 		if (_currentSpeechPart == null)
 		{
 			return;
@@ -1066,7 +1066,7 @@ public class TextToSpeechService : ITextToSpeechService
 		int endPause = _currentSpeechPart.EndPause;
 		if (endPause > 0)
 		{
-			service.CreateTimer("TTSTimer", endPause, null, delegate
+			timerService.CreateTimer("TTSTimer", endPause, null, delegate
 			{
 				RunNextSpeechPart();
 			}).Start();

@@ -160,7 +160,7 @@ internal class SqliteDataStoreProvider : DataStoreProvider
 		{
 			return;
 		}
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		try
 		{
 			lock (connection)
@@ -182,7 +182,7 @@ internal class SqliteDataStoreProvider : DataStoreProvider
 				foreach (KeyValuePair<string, object> item in values)
 				{
 					key.Value = item.Key;
-					value.Value = (object)service.FormatLuaValue(item.Value) ?? DBNull.Value;
+					value.Value = (object)kernelService.FormatLuaValue(item.Value) ?? DBNull.Value;
 					command.ExecuteNonQuery();
 				}
 				transaction.Commit();

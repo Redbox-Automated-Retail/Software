@@ -67,14 +67,14 @@ public class AuthSvcsPreferencePage : UserControl, IPreferencePageHost
 			m_responseTypeComboBox.Items.Add(item);
 		}
 		m_responseTypeComboBox.SelectedIndex = 0;
-		IAuthenticationServices service = ServiceLocator.Instance.GetService<IAuthenticationServices>();
-		m_liveCallCheckBox.Checked = service.LiveCall;
-		m_simulateServerBusyCheckBox.Checked = service.SimulateServerBusyError;
-		m_enableLocalAccountCachingCheckBox.Checked = service.EnableLocalAccountCaching;
-		m_simulateCommunicationsFailureCheckBox.Checked = service.SimulateCommunicationsFailure;
+		IAuthenticationServices authenticationServices = ServiceLocator.Instance.GetService<IAuthenticationServices>();
+		m_liveCallCheckBox.Checked = authenticationServices.LiveCall;
+		m_simulateServerBusyCheckBox.Checked = authenticationServices.SimulateServerBusyError;
+		m_enableLocalAccountCachingCheckBox.Checked = authenticationServices.EnableLocalAccountCaching;
+		m_simulateCommunicationsFailureCheckBox.Checked = authenticationServices.SimulateCommunicationsFailure;
 		m_usersListView.BeginUpdate();
 		m_usersListView.Items.Clear();
-		names = service.Users;
+		names = authenticationServices.Users;
 		for (int i = 0; i < names.Length; i++)
 		{
 			string[] array = names[i].Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries);

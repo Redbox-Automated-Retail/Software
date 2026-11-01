@@ -170,12 +170,12 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 				Interlocked.Increment(ref m_working);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
-					IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-					string arg = (service.SendEstimateAccrualToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+					IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+					string arg = (configuration.SendEstimateAccrualToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 					LogHelper.Instance.Log($"Live call to remote ILoyaltyServices.EstimatePointsAccrued, URL: {arg}");
 					CartMessage request = ProxyMessageHelper.CreateCartMessage(customerProfileNumber, "EstimateAccrual");
 					IDictionary<string, object> dictionary;
-					if (service.SendEstimateAccrualToKioskClientService)
+					if (configuration.SendEstimateAccrualToKioskClientService)
 					{
 						dictionary = await ServiceLocator.Instance.GetService<IKioskClientService>().Loyalty.EstimateAccrual(request);
 					}
@@ -334,12 +334,12 @@ public class LoyaltyServicesProxy : ILoyaltyServices
 				Interlocked.Increment(ref m_working);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
-					IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-					string arg = (service.SendEstimateRedemptionToKioskClientService ? service.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
+					IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+					string arg = (configuration.SendEstimateRedemptionToKioskClientService ? configuration.KioskClientServiceBaseUrl : KioskServicesProxy.Instance.Url);
 					LogHelper.Instance.Log($"Live call to remote ILoyaltyServices.EstimateRedemptionPoints, URL: {arg}");
 					CartMessage request = ProxyMessageHelper.CreateCartMessage(customerProfileNumber, "EstimateRedemption");
 					IDictionary<string, object> dictionary;
-					if (service.SendEstimateRedemptionToKioskClientService)
+					if (configuration.SendEstimateRedemptionToKioskClientService)
 					{
 						dictionary = await ServiceLocator.Instance.GetService<IKioskClientService>().Loyalty.EstimateRedemption(request);
 					}

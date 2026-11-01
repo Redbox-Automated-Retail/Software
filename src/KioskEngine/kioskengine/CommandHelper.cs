@@ -37,14 +37,14 @@ internal static class CommandHelper
 			LogHelper.Instance.Log("WM_COPYDATA: Command string is null; bailing.");
 			return;
 		}
-		int num = command.IndexOf(":");
-		if (num == -1)
+		int index = command.IndexOf(":");
+		if (index == -1)
 		{
 			ExecuteCommand(command, new string[0]);
 			return;
 		}
-		string name = command.Substring(0, num);
-		string[] parms = command.Substring(num + 1).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string name = command.Substring(0, index);
+		string[] parms = command.Substring(index + 1).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		ExecuteCommand(name, parms);
 	}
 
@@ -101,8 +101,8 @@ internal static class CommandHelper
 	[EngineCommand(Name = "ExecuteScript")]
 	internal static void ExecuteScript(string[] parms)
 	{
-		IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
-		if (service == null)
+		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
+		if (kernelService == null)
 		{
 			return;
 		}
@@ -111,7 +111,7 @@ internal static class CommandHelper
 			foreach (string text in parms)
 			{
 				LogHelper.Instance.Log("WM_COPYDATA: Execute script: {0}", text);
-				service.ExecuteChunk(File.ReadAllText(text));
+				kernelService.ExecuteChunk(File.ReadAllText(text));
 			}
 		}
 		catch (Exception e)

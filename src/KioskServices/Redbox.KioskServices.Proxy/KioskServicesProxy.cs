@@ -101,11 +101,11 @@ public class KioskServicesProxy
 		}
 		try
 		{
-			IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
+			IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
 			// A copy of the request with card data, opt-in contacts and images masked, for the log only; the request
 			// itself is sent as it is.
 			Dictionary<string, object> logRequest = jsonRequest.ToObject<Dictionary<string, object>>();
-			service?.ObfuscateDictionary(logRequest);
+			obfuscationService?.ObfuscateDictionary(logRequest);
 			if (logRequest.ContainsKey("OptInItems") && logRequest["OptInItems"] != null)
 			{
 				foreach (object item in logRequest["OptInItems"] as ArrayList)
@@ -113,14 +113,14 @@ public class KioskServicesProxy
 					Dictionary<string, object> optInItem = item as Dictionary<string, object>;
 					if (optInItem.ContainsKey("OptInMethodData") && optInItem["OptInMethodData"] != null)
 					{
-						optInItem["OptInMethodData"] = service?.ObfuscateMessageData(optInItem["OptInMethodData"].ToString(), 'x', 1, 0);
+						optInItem["OptInMethodData"] = obfuscationService?.ObfuscateMessageData(optInItem["OptInMethodData"].ToString(), 'x', 1, 0);
 					}
 				}
 			}
 			if (logRequest.ContainsKey("CreditCard"))
 			{
 				Dictionary<string, object> creditCard = (Dictionary<string, object>)logRequest["CreditCard"];
-				service?.ObfuscateDictionary(creditCard);
+				obfuscationService?.ObfuscateDictionary(creditCard);
 				if (creditCard.ContainsKey("EmvTags") && creditCard["EmvTags"] != null)
 				{
 					IDictionary<string, object> emvTags = (IDictionary<string, object>)creditCard["EmvTags"];
@@ -144,11 +144,11 @@ public class KioskServicesProxy
 			LogHelper.Instance.Log("KioskServicesProxy JSON request: {0}", (prettyLogJson.Length <= 10000) ? prettyLogJson : logJson);
 			string jsonResponse = PerformRemoteMessage(jsonRequest);
 			Dictionary<string, object> logResponse = jsonResponse.ToObject<Dictionary<string, object>>() ?? new Dictionary<string, object>();
-			service?.ObfuscateDictionary(logResponse);
+			obfuscationService?.ObfuscateDictionary(logResponse);
 			if (logResponse.ContainsKey("CustomerProfile"))
 			{
 				Dictionary<string, object> customerProfile = (Dictionary<string, object>)logResponse["CustomerProfile"];
-				service?.ObfuscateDictionary(customerProfile);
+				obfuscationService?.ObfuscateDictionary(customerProfile);
 			}
 			string logResponseJson = logResponse.ToJson();
 			LogHelper.Instance.Log($"KioskServicesProxy JSON response: {logResponseJson.ToPrettyJson()}");
@@ -186,9 +186,9 @@ public class KioskServicesProxy
 			dictionary["Hal Service"] = service["HALServiceVersion"] ?? "Not Found";
 			dictionary["Hal Client"] = service["HALVersion"] ?? "Not Found";
 		}
-		IDeviceServiceClientHelper service2 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		dictionary["Device Service"] = service2?.DeviceServiceVersion?.ToString() ?? "Not Found";
-		dictionary["Device Service Client"] = service2.DeviceServiceClientVersion?.ToString() ?? "Not Found";
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		dictionary["Device Service"] = deviceServiceClientHelper?.DeviceServiceVersion?.ToString() ?? "Not Found";
+		dictionary["Device Service Client"] = deviceServiceClientHelper.DeviceServiceClientVersion?.ToString() ?? "Not Found";
 		IKernelExtensionService kernelExtensionService = ServiceLocator.Instance.GetService<IKernelExtensionService>();
 		if (kernelExtensionService != null)
 		{

@@ -22,8 +22,8 @@ public class StyleSheetService : IStyleSheetService
 
 	public IStyleSheet New(string name)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		if (service == null)
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		if (resourceBundleService == null)
 		{
 			return null;
 		}
@@ -33,7 +33,7 @@ public class StyleSheetService : IStyleSheetService
 			return m_stylesheets[name];
 		}
 		LogHelper.Instance.Log("Stylesheet resource '{0}' is not in cache; build cache entry.", name);
-		XmlNode xml = service.GetXml(name);
+		XmlNode xml = resourceBundleService.GetXml(name);
 		if (xml == null)
 		{
 			return null;

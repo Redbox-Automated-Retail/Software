@@ -8,7 +8,7 @@ internal sealed class PutDiskInDumpBinJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		ApplicationLog applicationLog = ApplicationLog.ConfigureLog(base.Context, logAppends: true, "VMZ", flushOnWrite: true, "Tester-Put-In-Bin");
 		IPickerSensorReadResult pickerSensorReadResult = base.ControlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
@@ -31,13 +31,13 @@ internal sealed class PutDiskInDumpBinJob : NativeJobAdapter
 			AddError("The bin is not configured.");
 			return;
 		}
-		if (service.IsFull())
+		if (dumpbinService.IsFull())
 		{
 			base.Context.CreateInfoResult("DumpBinFull", "The dump bin is full.");
 			AddError("The dumpbin is full.");
 			return;
 		}
-		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(service.PutLocation, MoveMode.Put, applicationLog);
+		ErrorCodes errorCodes = ServiceLocator.Instance.GetService<IMotionControlService>().MoveTo(dumpbinService.PutLocation, MoveMode.Put, applicationLog);
 		if (errorCodes != ErrorCodes.Success)
 		{
 			base.Context.CreateInfoResult("MoveError", $"MOVE failed with error {errorCodes.ToString()}");
@@ -54,7 +54,7 @@ internal sealed class PutDiskInDumpBinJob : NativeJobAdapter
 		}
 		base.Context.CreateInfoResult("PutToBinOK", "The disk was successfully filed", text);
 		applicationLog.WriteFormatted("The barcode {0} was put into the dump bin.", text);
-		service.DumpContents(base.AppLog);
+		dumpbinService.DumpContents(base.AppLog);
 	}
 
 	internal PutDiskInDumpBinJob(ExecutionResult result, ExecutionContext ctx)

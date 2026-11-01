@@ -97,7 +97,7 @@ public class KioskClientServiceMarketing : BaseKioskClientService, IKioskClientS
 		public string Obfuscate()
 		{
 			ObfuscationHelper obfuscationHelper = new ObfuscationHelper();
-			IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
+			IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
 			KioskOptInPayload kioskOptInPayload = new KioskOptInPayload
 			{
 				MessageId = MessageId,
@@ -106,7 +106,7 @@ public class KioskClientServiceMarketing : BaseKioskClientService, IKioskClientS
 			};
 			foreach (IOptInItem optInItem2 in OptInItems)
 			{
-				IOptInItem optInItem = service.NewOptInItem();
+				IOptInItem optInItem = marketingServices.NewOptInItem();
 				optInItem.CampaignName = optInItem2.CampaignName;
 				optInItem.ItemId = optInItem2.ItemId;
 				optInItem.Item_Type = optInItem2.Item_Type;

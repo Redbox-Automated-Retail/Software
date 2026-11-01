@@ -10,8 +10,8 @@ internal sealed class DecodeImageJob : NativeJobAdapter
 	{
 		base.Context.ShouldCleanup = false;
 		string path = base.Context.PopTop<string>();
-		IBarcodeReaderFactory service = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>();
-		string text = Path.Combine(service.ImagePath, path);
+		IBarcodeReaderFactory barcodeReaderFactory = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>();
+		string text = Path.Combine(barcodeReaderFactory.ImagePath, path);
 		if (!File.Exists(text))
 		{
 			LogHelper.Instance.WithContext("The image '{0}' was not found", text);
@@ -19,7 +19,7 @@ internal sealed class DecodeImageJob : NativeJobAdapter
 		}
 		else
 		{
-			new ScanResult(service.GetConfiguredReader().Scan(text)).PushTo(base.Context);
+			new ScanResult(barcodeReaderFactory.GetConfiguredReader().Scan(text)).PushTo(base.Context);
 		}
 	}
 

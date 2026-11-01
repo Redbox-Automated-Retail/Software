@@ -106,10 +106,10 @@ public class StoreServices : IStoreServices
 		set
 		{
 			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Store", "Environment", value);
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			if (service != null)
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			if (resourceBundleService != null)
 			{
-				service.Filter["environment"] = value;
+				resourceBundleService.Filter["environment"] = value;
 			}
 		}
 	}
@@ -123,10 +123,10 @@ public class StoreServices : IStoreServices
 		set
 		{
 			ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue("Store", "Application", value);
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-			if (service != null)
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			if (resourceBundleService != null)
 			{
-				service.Filter["application"] = value;
+				resourceBundleService.Filter["application"] = value;
 			}
 		}
 	}
@@ -135,14 +135,14 @@ public class StoreServices : IStoreServices
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			string text = service.GetValue<string>("Store", "RebootTime", null);
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			string text = machineSettingsStore.GetValue<string>("Store", "RebootTime", null);
 			if (string.IsNullOrEmpty(text))
 			{
 				string s = IdHelper.GeneratePseudoUniqueId(1, "12345");
 				string s2 = IdHelper.GeneratePseudoUniqueId(2, "012345");
 				text = $"{int.Parse(s):00}:{int.Parse(s2):00}";
-				service.SetValue("Store", "RebootTime", text);
+				machineSettingsStore.SetValue("Store", "RebootTime", text);
 			}
 			return text;
 		}
@@ -209,9 +209,9 @@ public class StoreServices : IStoreServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+				IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 				LogHelper.Instance.Log("Live call to KioskClientService GetPendingStates, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-				PendingStatesResponse pendingStates = service.Installer.GetPendingStates();
+				PendingStatesResponse pendingStates = kioskClientService.Installer.GetPendingStates();
 				if (pendingStates == null)
 				{
 					LogHelper.Instance.Log("ProxyService GetPendingStates api returned a null response");
@@ -267,9 +267,9 @@ public class StoreServices : IStoreServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+				IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 				LogHelper.Instance.Log("Live call to KioskClientService GetPendingBanners, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-				PendingBannersResponse pendingBannersForState = service.Installer.GetPendingBannersForState(stateId);
+				PendingBannersResponse pendingBannersForState = kioskClientService.Installer.GetPendingBannersForState(stateId);
 				if (pendingBannersForState == null)
 				{
 					LogHelper.Instance.Log("ProxyService GetPendingBanners api returned a null response");
@@ -325,9 +325,9 @@ public class StoreServices : IStoreServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+				IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 				LogHelper.Instance.Log("Live call to KioskClientService GetPendingStores, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-				PendingKiosksResponse pendingKiosksForStateAndBanner = service.Installer.GetPendingKiosksForStateAndBanner(stateId, bannerId);
+				PendingKiosksResponse pendingKiosksForStateAndBanner = kioskClientService.Installer.GetPendingKiosksForStateAndBanner(stateId, bannerId);
 				if (pendingKiosksForStateAndBanner == null)
 				{
 					LogHelper.Instance.Log("ProxyService GetPendingKiosksForStateAndBanner api returned a null response");
@@ -387,9 +387,9 @@ public class StoreServices : IStoreServices
 			try
 			{
 				Interlocked.Increment(ref m_working);
-				IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+				IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 				LogHelper.Instance.Log("Live call to KioskClientService GetOpsMarket, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
-				OpsMarketResponse opsMarketForKiosk = service.Installer.GetOpsMarketForKiosk(int.Parse(storeNumber));
+				OpsMarketResponse opsMarketForKiosk = kioskClientService.Installer.GetOpsMarketForKiosk(int.Parse(storeNumber));
 				remoteServiceResult.Success = opsMarketForKiosk.Success;
 				remoteServiceResult.Properties["is_online"] = true;
 				remoteServiceResult.Properties["ops_market"] = opsMarketForKiosk.OpsMarket;

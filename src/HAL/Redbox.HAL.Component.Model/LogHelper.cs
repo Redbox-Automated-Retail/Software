@@ -15,8 +15,8 @@ public sealed class LogHelper
 
 	public void Log(string fmt, params object[] stuff)
 	{
-		ILogger service = ServiceLocator.Instance.GetService<ILogger>();
-		if (service != null)
+		ILogger logger = ServiceLocator.Instance.GetService<ILogger>();
+		if (logger != null)
 		{
 			string message = string.Format(fmt, stuff);
 			Log(message, LogEntryType.Info);
@@ -40,11 +40,11 @@ public sealed class LogHelper
 
 	public void Log(LogEntryType type, string message, params object[] args)
 	{
-		ILogger service = ServiceLocator.Instance.GetService<ILogger>();
-		if (service != null && IsLevelEnabled(type))
+		ILogger logger = ServiceLocator.Instance.GetService<ILogger>();
+		if (logger != null && IsLevelEnabled(type))
 		{
 			string message2 = string.Format(message, args);
-			service.Log(message2, type);
+			logger.Log(message2, type);
 		}
 	}
 
@@ -70,13 +70,13 @@ public sealed class LogHelper
 
 	public void WithContext(bool toFormattedLog, LogEntryType type, string msg)
 	{
-		IExecutionService service = ServiceLocator.Instance.GetService<IExecutionService>();
-		if (service == null)
+		IExecutionService executionService = ServiceLocator.Instance.GetService<IExecutionService>();
+		if (executionService == null)
 		{
 			Log(type, msg);
 			return;
 		}
-		IExecutionContext activeContext = service.GetActiveContext();
+		IExecutionContext activeContext = executionService.GetActiveContext();
 		if (activeContext == null)
 		{
 			Log(type, msg);

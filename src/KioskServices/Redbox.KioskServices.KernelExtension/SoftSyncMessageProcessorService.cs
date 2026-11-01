@@ -48,8 +48,8 @@ internal class SoftSyncMessageProcessorService : BaseQueueMessageProcessorServic
 	private static bool OnProcessMessage(IMessage message, out IDictionary<string, object> response)
 	{
 		response = new Dictionary<string, object>();
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null || service.IsServerBusy || ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null || healthServices.IsServerBusy || ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 		{
 			return false;
 		}

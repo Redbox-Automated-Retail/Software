@@ -186,13 +186,13 @@ public class Program : IDisposable
 
 	private void SendUnhandledExceptionAlert(KioskUnhandledException unhandledException)
 	{
-		IHealthServices service = ServiceLocator.Instance.GetService<IHealthServices>();
-		if (service == null)
+		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
+		if (healthServices == null)
 		{
 			return;
 		}
-		IStoreManager service2 = ServiceLocator.Instance.GetService<IStoreManager>();
-		if (service2 == null)
+		IStoreManager storeManager = ServiceLocator.Instance.GetService<IStoreManager>();
+		if (storeManager == null)
 		{
 			return;
 		}
@@ -207,7 +207,7 @@ public class Program : IDisposable
 			LogHelper.Instance.Log("Program.SendUnhandledExceptionAlert - SendAppCrashAlert is {0}", flag);
 			if (flag)
 			{
-				service.SendAlert(service2.KioskId.ToString(), "ApplicationCrash", "Unhandled", string.Format($"Message: {unhandledException.Message}, Exception: {unhandledException.Exception}"), DateTime.Now, null);
+				healthServices.SendAlert(storeManager.KioskId.ToString(), "ApplicationCrash", "Unhandled", string.Format($"Message: {unhandledException.Message}, Exception: {unhandledException.Exception}"), DateTime.Now, null);
 			}
 		}
 	}

@@ -207,7 +207,7 @@ internal class AuthenticationServices : IAuthenticationServices
 				LogHelper.Instance.Log("Live call to KioskClientService Authenticate, URL: {0}", ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServiceBaseUrl);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
-					IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+					IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 					AuthenticateRequest request = new AuthenticateRequest
 					{
 						KioskId = int.Parse(storeNumber),
@@ -215,7 +215,7 @@ internal class AuthenticationServices : IAuthenticationServices
 						Password = EncryptionHelper.Encrypt(password),
 						Username = userName
 					};
-					AuthenticateResponse authenticateResponse = service.Authentication.Authenticate(request);
+					AuthenticateResponse authenticateResponse = kioskClientService.Authentication.Authenticate(request);
 					if (authenticateResponse == null)
 					{
 						remoteServiceResult.Properties["response"] = Redbox.KioskServices.Proxy.ComponentModel.AuthenticationResponse.Error.ToString();
@@ -281,14 +281,14 @@ internal class AuthenticationServices : IAuthenticationServices
 				LogHelper.Instance.Log("Live call to KioskServices Authenticate, URL: {0}", KioskServicesProxy.Instance.Url);
 				if (!ServiceLocator.Instance.GetService<Redbox.KioskServices.Proxy.ComponentModel.IStoreServices>().IsStandAlone)
 				{
-					IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+					IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 					IDictionary<string, object> dictionary = KioskServicesProxy.Instance.ExecuteMessage(new
 					{
 						MessageType = "Authenticate",
 						MessageId = Guid.NewGuid(),
 						KioskId = int.Parse(storeNumber),
-						EngineVersion = service["EngineVersion"],
-						BundleVersion = service["ProductVersion"],
+						EngineVersion = macroService["EngineVersion"],
+						BundleVersion = macroService["ProductVersion"],
 						UseNTAuthentication = useLdapAuthentication,
 						Password = EncryptionHelper.Encrypt(password),
 						Username = userName

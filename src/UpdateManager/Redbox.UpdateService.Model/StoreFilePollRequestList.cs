@@ -43,12 +43,12 @@ public class StoreFilePollRequestList
 			StoreFilePollRequests.Clear();
 			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string item)
 			{
-				string[] array = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
 				StoreFilePollRequest item2 = new StoreFilePollRequest
 				{
-					StoreFile = Convert.ToInt64(array[0]),
-					StoreFileData = Convert.ToInt64(array[1]),
-					SyncId = Convert.ToInt32(array[2])
+					StoreFile = Convert.ToInt64(parts[0]),
+					StoreFileData = Convert.ToInt64(parts[1]),
+					SyncId = Convert.ToInt32(parts[2])
 				};
 				StoreFilePollRequests.Add(item2);
 			});

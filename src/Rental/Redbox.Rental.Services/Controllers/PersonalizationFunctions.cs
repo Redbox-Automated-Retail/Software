@@ -44,10 +44,10 @@ public class PersonalizationFunctions
 	{
 		get
 		{
-			IPersonalizationService service = ServiceLocator.Instance.GetService<IPersonalizationService>();
+			IPersonalizationService personalizationService = ServiceLocator.Instance.GetService<IPersonalizationService>();
 			if (!IsSignedIn)
 			{
-				return service?.IsEarlyIdEnabled ?? false;
+				return personalizationService?.IsEarlyIdEnabled ?? false;
 			}
 			return false;
 		}
@@ -144,8 +144,8 @@ public class PersonalizationFunctions
 
 	private static void RegularSignUpAction()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		string parentView = service.Peek(1);
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		string parentView = viewService.Peek(1);
 		ServiceLocator.Instance.GetService<IPerksSignupService>()?.StartSignupFlow(delegate
 		{
 			OrchestrationService.UnwindToSafe(parentView, discard: true, "SignInViewController sign up");
@@ -192,9 +192,9 @@ public class PersonalizationFunctions
 			});
 			return;
 		}
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		IViewFrameInstance viewFrameInstance = service?.PeekViewFrame();
-		if (service == null || viewFrameInstance == null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		IViewFrameInstance viewFrameInstance = viewService?.PeekViewFrame();
+		if (viewService == null || viewFrameInstance == null)
 		{
 			return;
 		}
@@ -218,7 +218,7 @@ public class PersonalizationFunctions
 				keyboardInfo.KeyboardCode = string.Empty;
 			}
 		}
-		service.Show();
+		viewService.Show();
 	}
 
 	public static void AfterRegularSignInAction(LoginType loginType, ILoginResult loginResult)
@@ -377,7 +377,7 @@ public class PersonalizationFunctions
 		} : null);
 		OrchestrationService.ViewShow("please_wait_view", parameter);
 		ServiceLocator.Instance.GetService<IPersonalizationService>();
-		IKioskClientService service = ServiceLocator.Instance.GetService<IKioskClientService>();
+		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
 		_loginStartTime = DateTime.Now;
 		Action<ILoginResult> loginResultCallback = delegate(ILoginResult loginResult)
 		{
@@ -385,15 +385,15 @@ public class PersonalizationFunctions
 		};
 		if (loginType == LoginType.Mobile)
 		{
-			service?.CustomerProfile?.LoginWithCustomerProfileNumber(customerProfileNumber, loginResultCallback);
+			kioskClientService?.CustomerProfile?.LoginWithCustomerProfileNumber(customerProfileNumber, loginResultCallback);
 		}
 		else if (loginType == LoginType.Email)
 		{
-			service?.CustomerProfile?.LoginWithEmail(emailAddress, password, loginResultCallback);
+			kioskClientService?.CustomerProfile?.LoginWithEmail(emailAddress, password, loginResultCallback);
 		}
 		else
 		{
-			service?.CustomerProfile?.LoginWithPhoneNumber(phoneNumber, pin, loginResultCallback);
+			kioskClientService?.CustomerProfile?.LoginWithPhoneNumber(phoneNumber, pin, loginResultCallback);
 		}
 	}
 
@@ -575,8 +575,8 @@ public class PersonalizationFunctions
 				break;
 			}
 		}
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service?.UITaskScheduler == null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService?.UITaskScheduler == null)
 		{
 			return;
 		}
@@ -608,22 +608,22 @@ public class PersonalizationFunctions
 					continueAction?.Invoke();
 				});
 			}
-		}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+		}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 	}
 
 	public static string GetTivoQueryIdFromTransactionEntities(ITitleProduct titleProduct)
 	{
 		ITransactionData obj = Redbox.Rental.Services.Session.Session.Instance?.TransactionData;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		long productGroupId = service.GetProductGroupId(titleProduct);
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		long productGroupId = dataService.GetProductGroupId(titleProduct);
 		string result = null;
 		List<Redbox.Rental.Model.Transaction.ITransactionEntity> list = obj?.TransactionEntities.Where((Redbox.Rental.Model.Transaction.ITransactionEntity x) => x.Name == "TivoQueryId").ToList();
 		if (list != null)
 		{
 			foreach (Redbox.Rental.Model.Transaction.ITransactionEntity item in list)
 			{
-				service.GetProduct(item.TitleId, excludeTitleRollup: false, out var kioskProduct);
-				long productGroupId2 = service.GetProductGroupId(kioskProduct);
+				dataService.GetProduct(item.TitleId, excludeTitleRollup: false, out var kioskProduct);
+				long productGroupId2 = dataService.GetProductGroupId(kioskProduct);
 				if ((productGroupId > 0 && productGroupId2 > 0 && productGroupId == productGroupId2) || item.TitleId == titleProduct.ProductId)
 				{
 					result = item.Value;
@@ -682,10 +682,10 @@ public class PersonalizationFunctions
 	{
 		LogHelper.Instance.Log("Email Receipt starting.");
 		int num = 8000;
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null)
 		{
-			num = service.GetTimeout("shorter", num);
+			num = textToSpeechService.GetTimeout("shorter", num);
 		}
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		object lockObject = new object();
@@ -720,10 +720,10 @@ public class PersonalizationFunctions
 	public static void ShowSonySweepstakesConfirmationView(IAuthorizeResult authorizeResult, string emailAddress, bool showRedboxSweepstakes)
 	{
 		int num = 10000;
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null)
 		{
-			num = service.GetTimeout("shorter", num);
+			num = textToSpeechService.GetTimeout("shorter", num);
 		}
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		object lockObject = new object();
@@ -790,8 +790,8 @@ public class PersonalizationFunctions
 
 	public static void ShowUseMemberPoints()
 	{
-		IRentalShoppingCartService service = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
-		if (!IsLoyaltySignedIn || service?.CurrentRentalShoppingCart?.TitleItems?.Any() != true)
+		IRentalShoppingCartService rentalShoppingCartService = ServiceLocator.Instance.GetService<IRentalShoppingCartService>();
+		if (!IsLoyaltySignedIn || rentalShoppingCartService?.CurrentRentalShoppingCart?.TitleItems?.Any() != true)
 		{
 			return;
 		}

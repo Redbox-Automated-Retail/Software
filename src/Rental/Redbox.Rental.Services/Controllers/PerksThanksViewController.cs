@@ -80,8 +80,8 @@ internal class PerksThanksViewController : BaseViewController
 
 	private static void ConfigureTTS(PerksThanksViewModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || viewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || viewModel == null)
 		{
 			return;
 		}

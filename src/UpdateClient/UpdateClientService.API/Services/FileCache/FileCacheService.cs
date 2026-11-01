@@ -417,8 +417,8 @@ public class FileCacheService : IFileCacheService
 		long result = 0L;
 		if (!string.IsNullOrEmpty(revisionFileName) && revisionFileName.Contains("-"))
 		{
-			string[] array = revisionFileName.Split('-');
-			if (array != null && array.Count() > 0 && long.TryParse(array[0], out result))
+			string[] parts = revisionFileName.Split('-');
+			if (parts != null && parts.Count() > 0 && long.TryParse(parts[0], out result))
 			{
 				item = true;
 			}

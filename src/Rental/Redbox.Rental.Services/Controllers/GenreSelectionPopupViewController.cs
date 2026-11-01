@@ -56,22 +56,22 @@ public class GenreSelectionPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		int timeOut = 20000;
-		IIdleTimer obj = service?.CreateIdleTimer("GenreSelectionPopupViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("GenreSelectionPopupViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("GenreSelectionPopupViewController time out", popOnly: false);
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("GenreSelectionPopupViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("GenreSelectionPopupViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("GenreSelectionPopupViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("GenreSelectionPopupViewTimer");
 	}
 
 	private static GenreButtonModel CreateGenreButtonModel(Genres genre)

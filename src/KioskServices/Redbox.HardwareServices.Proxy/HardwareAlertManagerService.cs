@@ -62,11 +62,11 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		Validate(jobId, "Jobid", IsValidString);
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service != null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService != null)
 		{
 			ErrorList errors = new ErrorList();
-			if (service.GetJobErrors(jobId, out errors).Count > 0)
+			if (hardwareService.GetJobErrors(jobId, out errors).Count > 0)
 			{
 				stringBuilder.Append("<p>The job ended in an Errored state; errors follow:</p>");
 				foreach (Redbox.KioskEngine.ComponentModel.Error item in errors)
@@ -110,16 +110,16 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		LogHelper.Instance.Log("HardwareAlertManagerService.set_alert2:Start");
 		Validate(typeOfSync, "Type of Sync", IsValidString);
 		Validate(jobId, "Job Id", IsValidString);
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service == null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService == null)
 		{
 			return;
 		}
-		service.GetProgramResults(jobId, out var hardwareResults);
+		hardwareService.GetProgramResults(jobId, out var hardwareResults);
 		bool flag = hardwareResults?.All((IHardwareResult x) => x.Code == "InventoryState" || x.Code == "ItemReturned" || x.Code == "ExcludedSlotSkipped" || x.Code == "BadIdRead" || x.Code == "ServiceNotConfigured" || x.Code == "NoFraudMarkersDetected" || x.Code == "FraudMarkersRead" || x.Code == "FraudScanError" || x.Code == "Read-ID" || x.Code == "PeeledImageFile" || x.Code == "ReadTime" || x.Code == "DeviceStatus" || x.Code == "NumBarcodes" || x.Code == "ReadAttempts" || x.Code == "CameraStatsJson") ?? false;
 		LogHelper.Instance.Log(FormatJobResults(jobId));
 		ErrorList errors = new ErrorList();
-		ErrorList jobErrors = service.GetJobErrors(jobId, out errors);
+		ErrorList jobErrors = hardwareService.GetJobErrors(jobId, out errors);
 		LogHelper.Instance.Log(FormatErrors(jobId));
 		StringBuilder stringBuilder = new StringBuilder("<h2>" + typeOfSync);
 		if ((jobErrors != null && jobErrors.Count != 0) || !flag)
@@ -172,10 +172,10 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 	private string FormatJobResults(string jobId)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		IHardwareService service = ServiceLocator.Instance.GetService<IHardwareService>();
-		if (service != null)
+		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
+		if (hardwareService != null)
 		{
-			service.GetProgramResults(jobId, out var hardwareResults);
+			hardwareService.GetProgramResults(jobId, out var hardwareResults);
 			foreach (IHardwareResult item in hardwareResults)
 			{
 				stringBuilder.Append(FormatJobResult(item));

@@ -16,7 +16,7 @@ public static class ActorFunctions
 		{
 			return;
 		}
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		IScene scene = ServiceLocator.Instance.GetService<IRenderingService>().GetScene("Default");
 		if (scene == null)
 		{
@@ -76,7 +76,7 @@ public static class ActorFunctions
 		}
 		if (!string.IsNullOrEmpty(font))
 		{
-			actor.Font = service.GetFont(font, out var resourceFound);
+			actor.Font = resourceBundleService.GetFont(font, out var resourceFound);
 			if (!resourceFound)
 			{
 				actor.OptionFlags |= RenderOptionFlags.DrawBorder;
@@ -110,7 +110,7 @@ public static class ActorFunctions
 			}
 			else
 			{
-				Image bitmap = service.GetBitmap(image);
+				Image bitmap = resourceBundleService.GetBitmap(image);
 				if (bitmap == null)
 				{
 					actor.OptionFlags |= RenderOptionFlags.DrawBorder;
@@ -260,8 +260,8 @@ public static class ActorFunctions
 		{
 			if (resourceName.StartsWith("cache:"))
 			{
-				IBitmapCacheService service = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-				actor.Image = service.GetImage(resourceName.Substring(6));
+				IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
+				actor.Image = bitmapCacheService.GetImage(resourceName.Substring(6));
 			}
 			else
 			{
@@ -714,10 +714,10 @@ public static class ActorFunctions
 	[KernelFunction(Name = "kernel.setlasthitactortag")]
 	public static void SetLastHitActorTag(string actorTag)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			service.LastHitActorTag = actorTag;
+			viewService.LastHitActorTag = actorTag;
 		}
 	}
 
@@ -730,10 +730,10 @@ public static class ActorFunctions
 	[KernelFunction(Name = "kernel.setlasthitactorname")]
 	public static void SetLastHitActorName(string actorName)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			service.LastHitActorName = actorName;
+			viewService.LastHitActorName = actorName;
 		}
 	}
 

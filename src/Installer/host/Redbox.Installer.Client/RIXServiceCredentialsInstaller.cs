@@ -116,10 +116,10 @@ public abstract class RIXServiceCredentialsInstaller : System.Configuration.Inst
 	private KeyValuePair<string, string[]> DetermineDelimitedStringValue(string suffix, string defaultvalue, IDictionary state)
 	{
 		KeyValuePair<string, string> keyValuePair = DetermineStringValue(suffix, defaultvalue, state);
-		string[] array = keyValuePair.Value.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-		WriteToLog("DetermineDelimitedStringValue - values: '{0}'", EnumerableExtensions.Join(array, ","));
-		state[keyValuePair.Key] = array;
-		return new KeyValuePair<string, string[]>(keyValuePair.Key, array);
+		string[] parts = keyValuePair.Value.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+		WriteToLog("DetermineDelimitedStringValue - values: '{0}'", EnumerableExtensions.Join(parts, ","));
+		state[keyValuePair.Key] = parts;
+		return new KeyValuePair<string, string[]>(keyValuePair.Key, parts);
 	}
 
 	private KeyValuePair<string, T> DetermineEnumValue<T>(string suffix, T defaultvalue, IDictionary state)

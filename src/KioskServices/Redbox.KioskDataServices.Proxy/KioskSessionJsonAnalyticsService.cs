@@ -10,10 +10,10 @@ public class KioskSessionJsonAnalyticsService : IKioskSessionJsonAnalyticsServic
 
 	private KioskSessionJsonAnalyticsService()
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
-			service.RegisterMessageProcessorService(new AddKioskSessionJsonMessageProcessorService());
+			queueService.RegisterMessageProcessorService(new AddKioskSessionJsonMessageProcessorService());
 		}
 		else
 		{

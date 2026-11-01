@@ -63,11 +63,11 @@ public class SwipeViewController : BaseViewController
 	{
 		get
 		{
-			IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-			IDeviceServiceClientHelper service2 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-			if (service == null || service.KioskSession.DeviceService.ChipEnabled)
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			if (configuration == null || configuration.KioskSession.DeviceService.ChipEnabled)
 			{
-				return service2?.SupportsEMV ?? false;
+				return deviceServiceClientHelper?.SupportsEMV ?? false;
 			}
 			return false;
 		}
@@ -78,9 +78,9 @@ public class SwipeViewController : BaseViewController
 		get
 		{
 			bool flag = false;
-			IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-			IDeviceServiceClientHelper service2 = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-			flag = (service == null || service.KioskSession.DeviceService.ContactlessEnabled) && (service2?.SupportsEMV ?? false);
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			flag = (configuration == null || configuration.KioskSession.DeviceService.ContactlessEnabled) && (deviceServiceClientHelper?.SupportsEMV ?? false);
 			if (ServiceLocator.Instance.GetService<IEMVReaderHealth>().ContactlessOffDueToDisconnectThresholdReached)
 			{
 				flag = false;
@@ -93,10 +93,10 @@ public class SwipeViewController : BaseViewController
 	{
 		get
 		{
-			IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+			IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 			if (Redbox.Rental.Services.Configuration.Configuration.Instance.KioskSession.DeviceService.ContactlessEnabled && Redbox.Rental.Services.Configuration.Configuration.Instance.PerksPassEnabled)
 			{
-				return service?.SupportsEMV ?? false;
+				return deviceServiceClientHelper?.SupportsEMV ?? false;
 			}
 			return false;
 		}
@@ -107,10 +107,10 @@ public class SwipeViewController : BaseViewController
 		get
 		{
 			string result = null;
-			IShoppingSessionService service = ServiceLocator.Instance.GetService<IShoppingSessionService>();
-			if (service != null)
+			IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
+			if (shoppingSessionService != null)
 			{
-				IShoppingSession currentSession = service.GetCurrentSession();
+				IShoppingSession currentSession = shoppingSessionService.GetCurrentSession();
 				if (currentSession != null)
 				{
 					result = currentSession.Id.ToString();
@@ -145,14 +145,14 @@ public class SwipeViewController : BaseViewController
 		{
 			return;
 		}
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 		if (_regularCheckoutTypes.Contains(_swipeViewType))
 		{
 			if (ChipEnabled && !deviceServiceTrackDataService.IsInTechnicalFallback)
 			{
 				if (ContactlessEnabled)
 				{
-					if (service?.KioskSession?.DeviceService?.HideMobilePayOption == true)
+					if (configuration?.KioskSession?.DeviceService?.HideMobilePayOption == true)
 					{
 						_swipeViewType = SwipeViewType.EMVInsertTapHideMobileRegularCheckout;
 					}
@@ -205,13 +205,13 @@ public class SwipeViewController : BaseViewController
 		{
 			return;
 		}
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
 		OrchestrationService.StopIdleTimer("idle_timer");
 		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
 		if (trackDataService == null)
 		{
 			LogHelper.Instance.Log("TrackDataService is null.  Attempting to detect card reader.");
-			service?.DetectCardReaderAndRegisterTrackDataService();
+			environmentNotificationService?.DetectCardReaderAndRegisterTrackDataService();
 			trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
 		}
 		if (trackDataService == null)
@@ -344,14 +344,14 @@ public class SwipeViewController : BaseViewController
 	private static void OnCardReadStartedHandler(Guid cardReadJobCommandRequestId)
 	{
 		LogHelper.Instance.Log("SwipeViewController card read started.");
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service?.UITaskScheduler != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService?.UITaskScheduler != null)
 		{
 			Task.Factory.StartNew(delegate
 			{
 				StopTimer();
 				HandleWPFHit();
-			}, CancellationToken.None, TaskCreationOptions.None, service?.UITaskScheduler);
+			}, CancellationToken.None, TaskCreationOptions.None, viewService?.UITaskScheduler);
 		}
 	}
 
@@ -363,9 +363,9 @@ public class SwipeViewController : BaseViewController
 			return;
 		}
 		swipeViewModel.GridBackground = WPFFunctions.GetBrush(BaseViewController.GetViewUserControl(), (_swipeViewType == SwipeViewType.EMVInsertTapRegularCheckout || _swipeViewType == SwipeViewType.EncryptedSwipeRegularCheckOut || _swipeViewType == SwipeViewType.EMVInsertTapReservationPickup || _swipeViewType == SwipeViewType.EMVTapToLogin) ? "RubineToDarkPurpleGradientBrush" : "RubineRedBrush");
-		IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
-		swipeViewModel.ApplePayImageVisibility = ((service?.KioskSession?.DeviceService?.HideApplePayImage == true) ? Visibility.Collapsed : Visibility.Visible);
-		swipeViewModel.GooglePayImageVisibility = ((service?.KioskSession?.DeviceService?.HideGooglePayImage == true) ? Visibility.Collapsed : Visibility.Visible);
+		IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
+		swipeViewModel.ApplePayImageVisibility = ((configuration?.KioskSession?.DeviceService?.HideApplePayImage == true) ? Visibility.Collapsed : Visibility.Visible);
+		swipeViewModel.GooglePayImageVisibility = ((configuration?.KioskSession?.DeviceService?.HideGooglePayImage == true) ? Visibility.Collapsed : Visibility.Visible);
 		ServiceLocator.Instance.GetService<ITrackDataService>();
 		swipeViewModel.ChipNotEnabledText = Resources.chip_not_enabled_text;
 		swipeViewModel.BackButtonText = Resources.back_button.ToUpper();
@@ -541,10 +541,10 @@ public class SwipeViewController : BaseViewController
 
 	public static void LeaveSwipeView(IViewFrameInstance viewFrameInstance)
 	{
-		ITrackDataService service = ServiceLocator.Instance.GetService<ITrackDataService>();
-		if (service != null)
+		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
+		if (trackDataService != null)
 		{
-			service.StopCardRead(CancelReason.LeavingSwipeView);
+			trackDataService.StopCardRead(CancelReason.LeavingSwipeView);
 			_cardReadComplete.WaitOne(3000);
 		}
 		ICardReadAttempt currentCardReadAttempt = GetCurrentCardReadAttempt();
@@ -869,10 +869,10 @@ public class SwipeViewController : BaseViewController
 					viewModel.BackButtonVisibility = Visibility.Hidden;
 				}
 				BaseViewController.AnalyticsService?.AddButtonPressEvent("SwipeCardSwipeBack");
-				IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-				if (service != null)
+				IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+				if (macroService != null)
 				{
-					service["MatureWarning:Header"] = string.Empty;
+					macroService["MatureWarning:Header"] = string.Empty;
 				}
 				UpdateCardReadAttempt(CardReadAttemptStatus.Cancelled, null);
 				if (_cancelAction != null)

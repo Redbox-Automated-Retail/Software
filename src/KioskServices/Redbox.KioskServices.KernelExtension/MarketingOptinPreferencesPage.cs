@@ -65,18 +65,18 @@ public class MarketingOptinPreferencesPage : UserControl, IPreferencePageHost
 
 	public bool SaveValues(IPreferencePage preferencePage)
 	{
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-		service.CustomerProfileNumber = txtCustProfileNum.Text;
-		service.MobilePhoneNumber = txtMobilePhoneNumber.Text;
-		service.PromptForEarlyId = cbPromptForEarlyId.Checked;
-		service.PromptForPerks = cbPromptForPerks.Checked;
-		service.TextClubEnabled = cbTextClubEnabled.Checked;
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+		marketingServices.CustomerProfileNumber = txtCustProfileNum.Text;
+		marketingServices.MobilePhoneNumber = txtMobilePhoneNumber.Text;
+		marketingServices.PromptForEarlyId = cbPromptForEarlyId.Checked;
+		marketingServices.PromptForPerks = cbPromptForPerks.Checked;
+		marketingServices.TextClubEnabled = cbTextClubEnabled.Checked;
 		bool? emailVerified = null;
 		if (bool.TryParse(cbEmailVerified?.Text, out var result))
 		{
 			emailVerified = result;
 		}
-		service.EmailVerified = emailVerified;
+		marketingServices.EmailVerified = emailVerified;
 		return true;
 	}
 
@@ -89,16 +89,16 @@ public class MarketingOptinPreferencesPage : UserControl, IPreferencePageHost
 		{
 			m_confirmationStatusComboBox.Items.Add(item);
 		}
-		IMarketingServices service = ServiceLocator.Instance.GetService<IMarketingServices>();
-		m_confirmationStatusComboBox.SelectedIndex = (int)service.ConfirmationStatusCode;
-		m_liveCallCheckBox.Checked = service.LiveCall;
-		m_commFailureCheckBox.Checked = service.SimulateCommunicationsFailure;
-		txtCustProfileNum.Text = service.CustomerProfileNumber;
-		txtMobilePhoneNumber.Text = service.MobilePhoneNumber;
-		cbPromptForEarlyId.Checked = service.PromptForEarlyId;
-		cbPromptForPerks.Checked = service.PromptForPerks;
-		cbTextClubEnabled.Checked = service.TextClubEnabled;
-		cbEmailVerified.Text = ((!service.EmailVerified.HasValue) ? "null" : service.EmailVerified.ToString());
+		IMarketingServices marketingServices = ServiceLocator.Instance.GetService<IMarketingServices>();
+		m_confirmationStatusComboBox.SelectedIndex = (int)marketingServices.ConfirmationStatusCode;
+		m_liveCallCheckBox.Checked = marketingServices.LiveCall;
+		m_commFailureCheckBox.Checked = marketingServices.SimulateCommunicationsFailure;
+		txtCustProfileNum.Text = marketingServices.CustomerProfileNumber;
+		txtMobilePhoneNumber.Text = marketingServices.MobilePhoneNumber;
+		cbPromptForEarlyId.Checked = marketingServices.PromptForEarlyId;
+		cbPromptForPerks.Checked = marketingServices.PromptForPerks;
+		cbTextClubEnabled.Checked = marketingServices.TextClubEnabled;
+		cbEmailVerified.Text = ((!marketingServices.EmailVerified.HasValue) ? "null" : marketingServices.EmailVerified.ToString());
 		UpdateSimulatedOptions();
 		m_isLoaded = true;
 	}

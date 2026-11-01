@@ -30,8 +30,8 @@ internal class TransferCommand
 	[Usage("transfer list [allusers:]")]
 	public void InTransit(CommandContext context, bool? allusers)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJobs(out var jobs, allusers.HasValue && allusers.Value)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJobs(out var jobs, allusers.HasValue && allusers.Value)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(jobs.ToJson());
@@ -42,8 +42,8 @@ internal class TransferCommand
 	[Usage("transfer create-download name:")]
 	public void CreateDownload(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.CreateDownloadJob(name, out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.CreateDownloadJob(name, out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(job.ToJson());
@@ -54,8 +54,8 @@ internal class TransferCommand
 	[Usage("transfer create-upload name:")]
 	public void CreateUpload(CommandContext context, [CommandKeyValue(IsRequired = true)] string name)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.CreateUploadJob(name, out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.CreateUploadJob(name, out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(job.ToJson());
@@ -66,8 +66,8 @@ internal class TransferCommand
 	[Usage("transfer get-job id:")]
 	public void GetJob(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(job.ToJson());
@@ -78,8 +78,8 @@ internal class TransferCommand
 	[Usage("transfer are-jobs-running:")]
 	public void AreJobsRunning(CommandContext context)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.AreJobsRunning(out var isRunning)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.AreJobsRunning(out var isRunning)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Messages.Add(isRunning.ToJson());
@@ -90,8 +90,8 @@ internal class TransferCommand
 	[Usage("add-item id: url: file:")]
 	public void AddItem(CommandContext context, [CommandKeyValue(IsRequired = true)] string id, [CommandKeyValue(IsRequired = true)] string url, [CommandKeyValue(IsRequired = true)] string file)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.AddItem(url, file)));
@@ -102,8 +102,8 @@ internal class TransferCommand
 	[Usage("complete id:")]
 	public void Complete(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.Complete()));
@@ -114,8 +114,8 @@ internal class TransferCommand
 	[Usage("resume id:")]
 	public void Resume(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.Resume()));
@@ -126,8 +126,8 @@ internal class TransferCommand
 	[Usage("cancel id:")]
 	public void Cancel(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.Cancel()));
@@ -138,8 +138,8 @@ internal class TransferCommand
 	[Usage("suspend id:")]
 	public void Suspend(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.Suspend()));
@@ -150,8 +150,8 @@ internal class TransferCommand
 	[Usage("set-priority id:")]
 	public void SetPriority(CommandContext context, [CommandKeyValue(IsRequired = true)] string id, [CommandKeyValue(IsRequired = true)] TransferJobPriority priority)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.SetPriority(priority)));
@@ -162,8 +162,8 @@ internal class TransferCommand
 	[Usage("take-ownership id:")]
 	public void TakeOwnership(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.TakeOwnership()));
@@ -174,8 +174,8 @@ internal class TransferCommand
 	[Usage("set-no-progress-timeout id: timeout:")]
 	public void SetNoProgressTimeout(CommandContext context, [CommandKeyValue(IsRequired = true)] string id, [CommandKeyValue(IsRequired = true)] uint? timeout)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.SetNoProgressTimeout(timeout.Value)));
@@ -186,8 +186,8 @@ internal class TransferCommand
 	[Usage("set-minimum-retry-delay id: seconds:")]
 	public void SetMinimumRetryDelay(CommandContext context, [CommandKeyValue(IsRequired = true)] string id, [CommandKeyValue(IsRequired = true)] uint? seconds)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			context.Errors.AddRange(ConvertErrors(job.SetMinimumRetryDelay(seconds.Value)));
@@ -198,8 +198,8 @@ internal class TransferCommand
 	[Usage("get-errors id:")]
 	public void GetErrors(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			job.GetErrors(out var errors);
@@ -211,8 +211,8 @@ internal class TransferCommand
 	[Usage("get-items id:")]
 	public void GetItems(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		ITransferService service = ServiceLocator.Instance.GetService<ITransferService>();
-		context.Errors.AddRange(ConvertErrors(service.GetJob(new Guid(id), out var job)));
+		ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
+		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
 			Redbox.UpdateManager.ComponentModel.ErrorList items = job.GetItems(out var items2);

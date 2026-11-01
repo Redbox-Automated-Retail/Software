@@ -199,9 +199,9 @@ public class MemberPerksPopupViewController : BaseViewController
 
 	private static void ConfigureTTS(MemberPerksPopupViewModel PerksModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			PerksModel.ProcessGetSpeechControl = () => MemberPerksPopupTTSController.GetSpeechControl(BaseViewController.GetViewModel<MemberPerksPopupViewModel>);
 		}

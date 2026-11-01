@@ -39,8 +39,8 @@ internal class RandomSyncDecorator : SyncDecorator
 			AddError("job error.");
 			return SyncResult.HardwareError;
 		}
-		IControllerService service = ServiceLocator.Instance.GetService<IControllerService>();
-		IVendItemResult vendItemResult = service.VendItemInPicker(VendTime);
+		IControllerService controllerService = ServiceLocator.Instance.GetService<IControllerService>();
+		IVendItemResult vendItemResult = controllerService.VendItemInPicker(VendTime);
 		if (!vendItemResult.Presented)
 		{
 			AddError("Job error.");
@@ -51,16 +51,16 @@ internal class RandomSyncDecorator : SyncDecorator
 			AddError("Job error.");
 			return SyncResult.HardwareError;
 		}
-		ErrorCodes errorCodes = service.AcceptDiskAtDoor();
+		ErrorCodes errorCodes = controllerService.AcceptDiskAtDoor();
 		if (ErrorCodes.PickerFull != errorCodes)
 		{
 			AddError("Job error.");
 			return SyncResult.HardwareError;
 		}
-		IControlSystem service2 = ServiceLocator.Instance.GetService<IControlSystem>();
-		service2.TrackCycle();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		controlSystem.TrackCycle();
 		SyncResult result = SyncResult.Success;
-		using (Scanner scanner = new Scanner(service2))
+		using (Scanner scanner = new Scanner(controlSystem))
 		{
 			using ScanResult scanResult = scanner.Read();
 			if (!scanResult.SnapOk)

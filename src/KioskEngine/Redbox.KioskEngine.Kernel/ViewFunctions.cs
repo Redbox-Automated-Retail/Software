@@ -39,12 +39,12 @@ internal static class ViewFunctions
 	[KernelFunction(Name = "kernel.getviewframe")]
 	internal static LuaTable GetViewFrame()
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service == null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService == null)
 		{
 			return null;
 		}
-		if (!(service.PeekViewFrame()?.ViewFrame is IViewFrame { ViewWindow: var viewWindow } viewFrame))
+		if (!(viewService.PeekViewFrame()?.ViewFrame is IViewFrame { ViewWindow: var viewWindow } viewFrame))
 		{
 			return null;
 		}
@@ -65,10 +65,10 @@ internal static class ViewFunctions
 	internal static string GetViewRenderType()
 	{
 		string result = null;
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			IViewFrameInstance viewFrameInstance = service.PeekViewFrame();
+			IViewFrameInstance viewFrameInstance = viewService.PeekViewFrame();
 			if (viewFrameInstance?.ViewFrame.Scene != null)
 			{
 				result = viewFrameInstance.ViewFrame.Scene.SceneRenderType.ToString();
@@ -116,22 +116,22 @@ internal static class ViewFunctions
 	[KernelFunction(Name = "kernel.view_goback")]
 	internal static void ViewGoBack(object context, bool? popOnly)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
 			bool popOnly2 = popOnly.HasValue && popOnly.Value;
-			service.GoBack(context, popOnly2);
+			viewService.GoBack(context, popOnly2);
 		}
 	}
 
 	[KernelFunction(Name = "kernel.view_goback_safe")]
 	internal static void ViewGoBackSafe(object context, bool? popOnly)
 	{
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
 			bool popOnly2 = popOnly.HasValue && popOnly.Value;
-			service.GoBackSafe(context, popOnly2);
+			viewService.GoBackSafe(context, popOnly2);
 		}
 	}
 }

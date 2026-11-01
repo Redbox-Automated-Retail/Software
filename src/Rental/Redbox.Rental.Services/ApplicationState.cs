@@ -61,10 +61,10 @@ public class ApplicationState : IApplicationState
 	{
 		get
 		{
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 			if (!IsADAAccessible)
 			{
-				return service?.TTSEnabled ?? false;
+				return textToSpeechService?.TTSEnabled ?? false;
 			}
 			return true;
 		}

@@ -45,8 +45,8 @@ public sealed class QuickReturnDescriptor : IDeviceDescriptor, IDriverDescriptor
 
 	public QuickReturnDescriptor()
 	{
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(DeviceClass.Ports);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(DeviceClass.Ports);
 		DriverVersion = new Version("2.4.6.0");
 	}
 }

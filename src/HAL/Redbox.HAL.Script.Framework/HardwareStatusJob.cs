@@ -8,14 +8,14 @@ internal sealed class HardwareStatusJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IDoorSensorService service = ServiceLocator.Instance.GetService<IDoorSensorService>();
+		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
 		int num = 0;
 		if (ControllerConfiguration.Instance.FixArcusDuringStatusJob && !base.MotionService.TestAndReset())
 		{
 			base.Context.CreateInfoResult("MotionControllerCommunicationError", "Could not talk with the motion controller.");
 			num++;
 		}
-		if (ControllerConfiguration.Instance.EnableDoorCheckInStatus && service.Query() != DoorSensorResult.Ok)
+		if (ControllerConfiguration.Instance.EnableDoorCheckInStatus && doorSensorService.Query() != DoorSensorResult.Ok)
 		{
 			base.Context.CreateInfoResult("MotionControllerCommunicationError", "The door sensors are not in a safe mode.");
 			num++;

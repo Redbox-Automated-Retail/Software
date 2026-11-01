@@ -35,8 +35,8 @@ public class OfferAbandonConfirmViewController : BaseViewController
 			PopulateModelText(offerAbandonConfirmModel, parameters);
 			ConfigureTTS(offerAbandonConfirmModel);
 			viewUserControl.DataContext = offerAbandonConfirmModel;
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			int value = ((service != null && service.TTSEnabled) ? 35000 : 15000);
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			int value = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 35000 : 15000);
 			(ServiceLocator.Instance.GetService<ITimerService>()?.CreateTimer("OfferAbandonConfirmTimer", value, value, delegate
 			{
 				LogHelper.Instance.Log("offer_abandon_confirm_view_timer executed");
@@ -98,8 +98,8 @@ public class OfferAbandonConfirmViewController : BaseViewController
 
 	private static void ConfigureTTS(OfferAbandonConfirmModel viewModel)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service == null || !service.TTSEnabled || viewModel == null)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService == null || !textToSpeechService.TTSEnabled || viewModel == null)
 		{
 			return;
 		}

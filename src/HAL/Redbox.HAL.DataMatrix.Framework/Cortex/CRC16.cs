@@ -34,10 +34,10 @@ internal static class CRC16
 
 	internal static ushort CRC(ushort initialValue, byte[] data)
 	{
-		int num = data.Length;
+		int length = data.Length;
 		int num2 = 0;
 		ushort num3 = initialValue;
-		while (num-- > 0)
+		while (length-- > 0)
 		{
 			num3 = (ushort)((num3 << 8) ^ Table[(num3 >> 8) ^ data[num2++]]);
 		}

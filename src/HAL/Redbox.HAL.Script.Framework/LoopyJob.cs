@@ -7,12 +7,12 @@ internal sealed class LoopyJob : NativeJobAdapter
 {
 	protected override void ExecuteInner()
 	{
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		int num = base.Context.PopTop<int>();
-		for (int i = 0; i < num; i++)
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		int operand = base.Context.PopTop<int>();
+		for (int i = 0; i < operand; i++)
 		{
 			base.Context.Send($"Message-{i}");
-			service.Wait(1500);
+			runtimeService.Wait(1500);
 		}
 	}
 

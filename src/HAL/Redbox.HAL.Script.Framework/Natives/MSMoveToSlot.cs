@@ -11,14 +11,14 @@ internal sealed class MSMoveToSlot : NativeJobAdapter
 		int num = base.Context.PopTop<int>();
 		int num2 = base.Context.PopTop<int>();
 		int failures = 0;
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		if (!service.GetBoardVersion(ControlBoards.Aux).ReadSuccess)
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		if (!controlSystem.GetBoardVersion(ControlBoards.Aux).ReadSuccess)
 		{
 			base.Context.CreateInfoResult("BoardVersionTimeout", "Move: AUX board not responsive.");
 			int num3 = failures + 1;
 			failures = num3;
 		}
-		if (!service.GetBoardVersion(ControlBoards.Picker).ReadSuccess)
+		if (!controlSystem.GetBoardVersion(ControlBoards.Picker).ReadSuccess)
 		{
 			base.Context.CreateInfoResult("BoardVersionTimeout", "Move: PCB not responsive.");
 			int num3 = failures + 1;

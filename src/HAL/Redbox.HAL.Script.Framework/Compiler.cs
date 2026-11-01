@@ -266,13 +266,13 @@ public class Compiler
 
 	private bool IsDirective(string maybeDirective, out string directiveName)
 	{
-		int num = maybeDirective.IndexOf("@") + 1;
-		if (num == 0)
+		int index = maybeDirective.IndexOf("@") + 1;
+		if (index == 0)
 		{
 			directiveName = string.Empty;
 			return false;
 		}
-		if (string.Compare(maybeDirective, num, "INC", 0, "INC".Length) == 0)
+		if (string.Compare(maybeDirective, index, "INC", 0, "INC".Length) == 0)
 		{
 			directiveName = "INC";
 			return true;
@@ -317,15 +317,15 @@ public class Compiler
 
 	private string GetDirective(string line)
 	{
-		int num = line.IndexOf('"');
-		if (++num == 0)
+		int index = line.IndexOf('"');
+		if (++index == 0)
 		{
 			return string.Empty;
 		}
-		int num2 = line.LastIndexOf('"');
-		if (-1 != num2)
+		int lastIndex = line.LastIndexOf('"');
+		if (-1 != lastIndex)
 		{
-			return line.Substring(num, num2 - num);
+			return line.Substring(index, lastIndex - index);
 		}
 		return string.Empty;
 	}
@@ -409,8 +409,8 @@ public class Compiler
 	static Compiler()
 	{
 		m_configScriptPaths = new Deque<string>();
-		IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-		m_configScriptPaths.AddToBack(service.InstallPath("Scripts"));
+		IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+		m_configScriptPaths.AddToBack(runtimeService.InstallPath("Scripts"));
 		m_warningTable = new Dictionary<string, bool>();
 		m_warningTable["W008"] = false;
 	}

@@ -6,9 +6,9 @@ internal sealed class StandardSyncDecorator : SyncDecorator
 {
 	internal override void OnGetFailure(IGetResult notUsed)
 	{
-		IInventoryService service = ServiceLocator.Instance.GetService<IInventoryService>();
+		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		SyncLocation.ID = "UNKNOWN";
-		service.Save(SyncLocation);
+		inventoryService.Save(SyncLocation);
 	}
 
 	internal StandardSyncDecorator(ExecutionContext ctx, ExecutionResult r, ILocation l)

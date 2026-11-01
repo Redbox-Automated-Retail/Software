@@ -43,12 +43,12 @@ public class FileSetPollRequestList
 			FileSetPollRequests.Clear();
 			data.Split(new string[1] { "|" }, StringSplitOptions.RemoveEmptyEntries).ForEach(delegate(string item)
 			{
-				string[] array = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = item.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
 				FileSetPollRequest item2 = new FileSetPollRequest
 				{
-					FileSetId = Convert.ToInt64(array[0]),
-					FileSetRevisionId = Convert.ToInt64(array[1]),
-					FileSetState = (FileSetState)Convert.ToInt32(array[2])
+					FileSetId = Convert.ToInt64(parts[0]),
+					FileSetRevisionId = Convert.ToInt64(parts[1]),
+					FileSetState = (FileSetState)Convert.ToInt32(parts[2])
 				};
 				FileSetPollRequests.Add(item2);
 			});

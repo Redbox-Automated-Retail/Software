@@ -12,15 +12,15 @@ public class KioskEngineApiKioskHealthClient : KioskEngineApiBaseClient
 
 	public static async Task<APIResponse<PingResponse>> SendPing()
 	{
-		IHttpService service = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/ping", null, HttpMethod.Post);
-		return await service.SendRequestAsync<PingResponse>(request, null, "SendPing", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\KioskHealth\\KioskEngineApiKioskHealthClient.cs");
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/ping", null, HttpMethod.Post);
+		return await httpService.SendRequestAsync<PingResponse>(request, null, "SendPing", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\KioskHealth\\KioskEngineApiKioskHealthClient.cs");
 	}
 
 	public static async Task<APIResponse<PingServiceInfo>> GetPingServerInfo()
 	{
-		IHttpService service = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/getpingserviceinfo", null, HttpMethod.Get);
-		return await service.SendRequestAsync<PingServiceInfo>(request, null, "GetPingServerInfo", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\KioskHealth\\KioskEngineApiKioskHealthClient.cs");
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(KioskEngineApiBaseClient.KioskEngineApiBaseUrl, _apiPath + "/getpingserviceinfo", null, HttpMethod.Get);
+		return await httpService.SendRequestAsync<PingServiceInfo>(request, null, "GetPingServerInfo", "c:\\build\\Redbox.KioskEngine.PreferenceManager\\KioskEngineApiClient\\KioskHealth\\KioskEngineApiKioskHealthClient.cs");
 	}
 }

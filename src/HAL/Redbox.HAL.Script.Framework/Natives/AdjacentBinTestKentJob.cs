@@ -66,8 +66,8 @@ internal sealed class AdjacentBinTestKentJob : NativeJobAdapter
 
 	private bool FileDiskInPickerToBin()
 	{
-		IDumpbinService service = ServiceLocator.Instance.GetService<IDumpbinService>();
-		if (base.MotionService.MoveTo(service.PutLocation, MoveMode.Put, base.AppLog) != ErrorCodes.Success)
+		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
+		if (base.MotionService.MoveTo(dumpbinService.PutLocation, MoveMode.Put, base.AppLog) != ErrorCodes.Success)
 		{
 			AddError("Test failure!");
 			return false;

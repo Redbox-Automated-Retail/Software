@@ -159,10 +159,10 @@ public class InstallerApplication : ApplicationContext
 		SHA256Managed sHA256Managed = new SHA256Managed();
 		List<byte> list = new List<byte>();
 		using FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-		byte[] array = new byte[1048576];
-		int num = ReadChunk(fileStream, array);
-		list.AddRange(array);
-		if (num == array.Length)
+		byte[] buffer = new byte[1048576];
+		int num = ReadChunk(fileStream, buffer);
+		list.AddRange(buffer);
+		if (num == buffer.Length)
 		{
 			byte[] array2 = new byte[1048576];
 			fileStream.Seek(fileStream.Length - array2.Length, SeekOrigin.Begin);

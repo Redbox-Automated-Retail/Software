@@ -26,9 +26,9 @@ public partial class BrowseCheckOutBarUserControl : UserControl, IWPFActor, ICom
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(checkout_button);
-		obj?.SetStyle(SwitchProductFamilyButton1);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(checkout_button);
+		theme?.SetStyle(SwitchProductFamilyButton1);
 	}
 
 	private void HandleWPFHit()

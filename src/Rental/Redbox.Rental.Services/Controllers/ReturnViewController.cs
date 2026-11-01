@@ -25,13 +25,13 @@ public class ReturnViewController : BaseViewController
 			{
 				ad = ServiceLocator.Instance.GetService<IAdService>()?.GetScreenAd(AdLocation.Return);
 			}
-			IConfiguration service = ServiceLocator.Instance.GetService<IConfiguration>();
+			IConfiguration configuration = ServiceLocator.Instance.GetService<IConfiguration>();
 			ReturnViewModel returnViewModel = (ReturnViewModel)(viewUserControl.DataContext = new ReturnViewModel
 			{
 				MessageText = Resources.disc_return_message,
 				Bullet1Text = Resources.return_bullet_1,
 				Bullet2Text = Resources.return_bullet_2,
-				TouchlessBannerVisibility = ((!Redbox.Rental.Services.Session.Session.Instance.IsInZeroTouchMode || !service.ZeroTouchPickupEnabled) ? Visibility.Collapsed : Visibility.Visible),
+				TouchlessBannerVisibility = ((!Redbox.Rental.Services.Session.Session.Instance.IsInZeroTouchMode || !configuration.ZeroTouchPickupEnabled) ? Visibility.Collapsed : Visibility.Visible),
 				TouchlessBannerHeaderText = Resources.return_touchless_banner_title,
 				TouchlessBannerMessageText = GetTouchlessBannerMessageText(),
 				AdImageSource = ad?.Image,
@@ -57,8 +57,8 @@ public class ReturnViewController : BaseViewController
 
 	private static string GetTouchlessBannerMessageText()
 	{
-		ITrackDataService service = ServiceLocator.Instance.GetService<ITrackDataService>();
-		if (service == null || service.IsOlderReader)
+		ITrackDataService trackDataService = ServiceLocator.Instance.GetService<ITrackDataService>();
+		if (trackDataService == null || trackDataService.IsOlderReader)
 		{
 			return Resources.return_touchless_banner_swipe_message;
 		}

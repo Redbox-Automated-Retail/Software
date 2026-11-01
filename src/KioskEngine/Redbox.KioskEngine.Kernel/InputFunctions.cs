@@ -148,15 +148,15 @@ internal static class InputFunctions
 	[KernelFunction(Name = "kernel.confirm")]
 	internal static string Confirm(string message)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		return MessageBox.Show(message, service.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OKCancel, MessageBoxIcon.Question).ToString();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		return MessageBox.Show(message, macroService.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OKCancel, MessageBoxIcon.Question).ToString();
 	}
 
 	[KernelFunction(Name = "kernel.showmessage")]
 	internal static void ShowMessage(string message)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		MessageBox.Show(message, service.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		MessageBox.Show(message, macroService.ExpandProperties("${ProductName} ${ProductVersion}"), MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 	}
 
 	[KernelFunction(Name = "kernel.sendkeys")]

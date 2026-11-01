@@ -24,10 +24,10 @@ public sealed class KioskConfiguration
 	{
 		get
 		{
-			IRuntimeService service = ServiceLocator.Instance.GetService<IRuntimeService>();
-			if (service != null)
+			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
+			if (runtimeService != null)
 			{
-				return service.RuntimePath("Kiosk.xml");
+				return runtimeService.RuntimePath("Kiosk.xml");
 			}
 			return Path.Combine(Path.GetDirectoryName(typeof(KioskConfiguration).Assembly.Location), "Kiosk.xml");
 		}

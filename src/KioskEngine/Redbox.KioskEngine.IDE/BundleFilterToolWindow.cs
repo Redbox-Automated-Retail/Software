@@ -47,8 +47,8 @@ public class BundleFilterToolWindow : ToolWindow
 		m_dynamicPropertyGrid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 		int num = 2;
 		List<string> list = new List<string>();
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		foreach (KeyValuePair<string, IResourceType> resourceType in service.GetResourceTypes())
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		foreach (KeyValuePair<string, IResourceType> resourceType in resourceBundleService.GetResourceTypes())
 		{
 			ReadOnlyCollection<IPropertyType> filterProperties = resourceType.Value.GetFilterProperties();
 			if (filterProperties.Count == 0)
@@ -71,7 +71,7 @@ public class BundleFilterToolWindow : ToolWindow
 			PropertyEnumerator underCategory = m_dynamicPropertyGrid.AppendRootCategory(num++, resourceType.Key);
 			foreach (IPropertyType item in list2)
 			{
-				m_dynamicPropertyGrid.AppendManagedProperty(underCategory, num++, $"{item.Label} ({item.Name})", item.Type, service.Filter[item.Name], item.Description ?? string.Empty, new DefaultValueAttribute(item.DefaultValue)).Property.Tag = item;
+				m_dynamicPropertyGrid.AppendManagedProperty(underCategory, num++, $"{item.Label} ({item.Name})", item.Type, resourceBundleService.Filter[item.Name], item.Description ?? string.Empty, new DefaultValueAttribute(item.DefaultValue)).Property.Tag = item;
 			}
 		}
 		m_dynamicPropertyGrid.EndUpdate();

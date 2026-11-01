@@ -66,9 +66,9 @@ public class NewCartConfirmViewController : BaseViewController
 
 	private static void ConfigureTTS(NewCartConfirmViewModel viewModel, NewCartConfirmviewParameters parameters)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		if (service != null && service.TTSEnabled && viewUserControl != null)
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled && viewUserControl != null)
 		{
 			viewModel.OnGetSpeechControl = () => NewCartConfirmViewTextToSpeech.GetSpeechControl(GetShoppingCartViewModelFromView, parameters);
 		}
@@ -93,13 +93,13 @@ public class NewCartConfirmViewController : BaseViewController
 	{
 		List<DisplayCheckoutProductModel> list = new List<DisplayCheckoutProductModel>();
 		IRentalShoppingCart newCart = parameters.NewCart;
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-		if (newCart != null && service != null && newCart.TitleItems.Count > 0)
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+		if (newCart != null && dataService != null && newCart.TitleItems.Count > 0)
 		{
 			foreach (IRentalShoppingCartTitleItem titleItem in newCart.TitleItems)
 			{
 				IKioskProduct kioskProduct = null;
-				service.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
+				dataService.GetProduct(titleItem.ProductId, excludeTitleRollup: true, out kioskProduct);
 				if (kioskProduct != null)
 				{
 					DisplayCheckoutProductModel displayCheckoutProductModel = new DisplayCheckoutProductModel
@@ -136,9 +136,9 @@ public class NewCartConfirmViewController : BaseViewController
 			return;
 		}
 		displayCheckoutProductModel.ConfigureForCheckout();
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		IKioskProduct kioskProduct = null;
-		service.GetProduct(eachRentalShoppingCartItem.ProductId, excludeTitleRollup: false, out kioskProduct);
+		dataService.GetProduct(eachRentalShoppingCartItem.ProductId, excludeTitleRollup: false, out kioskProduct);
 		ITitleProduct titleProduct = kioskProduct as ITitleProduct;
 		displayCheckoutProductModel.ProductTitleText = BrowseFunctions.GetProductDisplayName(titleProduct);
 		MDVProduct mDVProduct = titleProduct as MDVProduct;
@@ -378,11 +378,11 @@ public class NewCartConfirmViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		int timeOut = ((textToSpeechService != null && textToSpeechService.TTSEnabled) ? 90000 : OrchestrationService.TTSGetTimeout("medium", 15000));
-		IIdleTimer obj = service?.CreateIdleTimer("NewCartConfirmViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("NewCartConfirmViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			MessagePopupViewController.ShowOfferTimeoutMessage(delegate
@@ -398,14 +398,14 @@ public class NewCartConfirmViewController : BaseViewController
 				OrchestrationService.ViewGoBackSafe("NewCartConfirmViewController time out", popOnly: false);
 			});
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("NewCartConfirmViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("PromoOfferBrowseViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("NewCartConfirmViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("PromoOfferBrowseViewTimer");
 	}
 
 	public static void LeaveView()

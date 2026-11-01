@@ -589,9 +589,9 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		TouchScreenDescriptors.Add(new GenericTouchscreenDescriptor("0dfc", "0001", "General Touch", Driver_GeneralTouch_HID2, this, DeviceClass.HIDClass));
 		TouchScreenDescriptors.Add(new GenericTouchscreenDescriptor("0dfc", "0001", "General Touch", Driver_GeneralTouch_HID1, this, DeviceClass.Mouse));
 		TouchScreenDescriptors.Add(new GenericTouchscreenDescriptor("14c8", "0003", "Zytronic", Driver_TouchBase, this, DeviceClass.Mouse));
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		CreditCardReaders.Add(new IdTechRev1(this, service));
-		CreditCardReaders.Add(new IdTechRev2(this, service));
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		CreditCardReaders.Add(new IdTechRev1(this, deviceSetupClassFactory));
+		CreditCardReaders.Add(new IdTechRev2(this, deviceSetupClassFactory));
 		Cameras.Add(new Gen5DeviceDescriptor(this));
 		Cameras.Add(new LegacyDeviceDescriptor("1871", "0d01", "4th Gen (Color)", Gen4DriverDescriptor, this));
 		Cameras.Add(new LegacyDeviceDescriptor("1871", "0f01", "4th Gen", Gen4DriverDescriptor, this));

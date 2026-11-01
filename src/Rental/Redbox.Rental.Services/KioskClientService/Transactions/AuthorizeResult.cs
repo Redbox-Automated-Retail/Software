@@ -74,9 +74,9 @@ public class AuthorizeResult : BaseResponse, IAuthorizeResult, IMessageScrub
 	public override void ScrubData()
 	{
 		base.ScrubData();
-		IObfuscationService service = ServiceLocator.Instance.GetService<IObfuscationService>();
-		FirstName = service?.ObfuscateStringData(FirstName, 1, 0);
-		LastName = service?.ObfuscateStringData(LastName, 2, 0);
-		Email = service?.ObfuscateStringData(Email, 1, 0);
+		IObfuscationService obfuscationService = ServiceLocator.Instance.GetService<IObfuscationService>();
+		FirstName = obfuscationService?.ObfuscateStringData(FirstName, 1, 0);
+		LastName = obfuscationService?.ObfuscateStringData(LastName, 2, 0);
+		Email = obfuscationService?.ObfuscateStringData(Email, 1, 0);
 	}
 }

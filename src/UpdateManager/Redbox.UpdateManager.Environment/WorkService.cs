@@ -91,9 +91,9 @@ public class WorkService : IPollRequestReply
 	{
 		ErrorList result = new ErrorList();
 		pollRequestList = new List<PollRequest>();
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		string storeNumber = ServiceLocator.Instance.GetService<IUpdateService>().StoreNumber();
-		for (ResultEntry resultEntry = service.Peek<ResultEntry>("script"); resultEntry != null; resultEntry = service.Peek<ResultEntry>("script"))
+		for (ResultEntry resultEntry = queueService.Peek<ResultEntry>("script"); resultEntry != null; resultEntry = queueService.Peek<ResultEntry>("script"))
 		{
 			Dictionary<object, object> results = resultEntry.Entry.ToObject<Dictionary<object, object>>();
 			WorkResultPollRequestDTO instance = new WorkResultPollRequestDTO
@@ -108,7 +108,7 @@ public class WorkService : IPollRequestReply
 				Data = instance.ToJson()
 			};
 			pollRequestList.Add(item);
-			service.Dequeue("script");
+			queueService.Dequeue("script");
 			LogHelper.Instance.Log("Sent result for script {0} to server.", resultEntry.ID);
 		}
 		return result;
@@ -124,16 +124,16 @@ public class WorkService : IPollRequestReply
 		try
 		{
 			IEnumerable<ClientWorkScript> enumerable = pollReplyList.Select((PollReply pollReply) => pollReply.Data.ToObject<ClientWorkScript>());
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			List<Guid> list = new List<Guid>();
 			foreach (ClientWorkScript item in enumerable)
 			{
 				Guid guid = Guid.NewGuid();
 				list.Add(guid);
-				service.Set(string.Concat(guid, ".workdat"), item);
+				dataStoreService.Set(string.Concat(guid, ".workdat"), item);
 				LogHelper.Instance.Log("Script Id: {0} has been put on the work queue.", item.ID);
 			}
-			service.Set(".incomplete", list);
+			dataStoreService.Set(".incomplete", list);
 		}
 		catch (Exception e)
 		{
@@ -178,12 +178,12 @@ public class WorkService : IPollRequestReply
 	private static ErrorList DoIncompleteAndQueuedWork()
 	{
 		ErrorList errorList = new ErrorList();
-		IUpdateService service = ServiceLocator.Instance.GetService<IUpdateService>();
+		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
 		List<Guid> list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".incomplete");
 		if (list != null && list.Count > 0)
 		{
 			LogHelper.Instance.Log("Doing {0} incomplete and queued work items.", list.Count);
-			errorList.AddRange(service.DoInCompleteWork(list));
+			errorList.AddRange(updateService.DoInCompleteWork(list));
 		}
 		else
 		{

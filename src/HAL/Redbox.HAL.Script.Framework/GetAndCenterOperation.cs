@@ -8,8 +8,8 @@ internal class GetAndCenterOperation
 
 	internal bool Run()
 	{
-		IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
-		IPickerSensorReadResult pickerSensorReadResult = service.ReadPickerSensors();
+		IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
+		IPickerSensorReadResult pickerSensorReadResult = controlSystem.ReadPickerSensors();
 		if (!pickerSensorReadResult.Success)
 		{
 			Context.CreateResult("ErrorMessage", $"Read picker sensors returned error {pickerSensorReadResult.Error}", null);
@@ -38,7 +38,7 @@ internal class GetAndCenterOperation
 		}
 		if (flag)
 		{
-			service.Center(CenterDiskMethod.VendDoorAndBack);
+			controlSystem.Center(CenterDiskMethod.VendDoorAndBack);
 		}
 		Context.CreateInfoResult("SuccessMessage", "GET SUCCESS");
 		return true;

@@ -342,11 +342,11 @@ public class EditSlotData : Form
 			{
 				return;
 			}
-			IControlSystem service = ServiceLocator.Instance.GetService<IControlSystem>();
+			IControlSystem controlSystem = ServiceLocator.Instance.GetService<IControlSystem>();
 			IControlResponse controlResponse = null;
 			if (button == m_ringlightOnButton)
 			{
-				controlResponse = service.ToggleRingLight(on: true, null);
+				controlResponse = controlSystem.ToggleRingLight(on: true, null);
 				if (controlResponse.Success)
 				{
 					RinglightActive = true;
@@ -354,7 +354,7 @@ public class EditSlotData : Form
 			}
 			else if (button == m_ringlightOffButton)
 			{
-				controlResponse = service.ToggleRingLight(on: false, null);
+				controlResponse = controlSystem.ToggleRingLight(on: false, null);
 				if (controlResponse.Success)
 				{
 					RinglightActive = false;
@@ -362,7 +362,7 @@ public class EditSlotData : Form
 			}
 			else if (button == m_sensorBarOnButton)
 			{
-				controlResponse = service.SetSensors(on: true);
+				controlResponse = controlSystem.SetSensors(on: true);
 				if (controlResponse.Success)
 				{
 					SensorbarActive = true;
@@ -370,7 +370,7 @@ public class EditSlotData : Form
 			}
 			else if (button == m_sensorBarOffButton)
 			{
-				controlResponse = service.SetSensors(on: false);
+				controlResponse = controlSystem.SetSensors(on: false);
 				if (controlResponse.Success)
 				{
 					SensorbarActive = false;
@@ -378,19 +378,19 @@ public class EditSlotData : Form
 			}
 			else if (button == m_gripperExtendButton)
 			{
-				controlResponse = service.ExtendArm();
+				controlResponse = controlSystem.ExtendArm();
 			}
 			else if (button == m_gripperFingerOpen)
 			{
-				controlResponse = service.SetFinger(GripperFingerState.Rent);
+				controlResponse = controlSystem.SetFinger(GripperFingerState.Rent);
 			}
 			else if (button == m_gripperRetractButton)
 			{
-				controlResponse = service.RetractArm();
+				controlResponse = controlSystem.RetractArm();
 			}
 			else if (button == m_gripperFingerClose)
 			{
-				controlResponse = service.SetFinger(GripperFingerState.Closed);
+				controlResponse = controlSystem.SetFinger(GripperFingerState.Closed);
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append(button.Tag?.ToString() + " ... ");

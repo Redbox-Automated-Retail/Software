@@ -29,9 +29,9 @@ public partial class IdleTimeoutMessageViewUserControl : TextToSpeechUserControl
 
 	private void ApplyTheme()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(YesButton);
-		obj?.SetStyle(NoButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(YesButton);
+		theme?.SetStyle(NoButton);
 	}
 
 	public override ISpeechControl GetSpeechControl()

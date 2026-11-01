@@ -43,8 +43,8 @@ public sealed class AbeDeviceDescriptor : IDeviceDescriptor
 	public AbeDeviceDescriptor(bool debug)
 	{
 		Debug = debug;
-		IDeviceSetupClassFactory service = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
-		SetupClass = service.Get(DeviceClass.HIDClass);
+		IDeviceSetupClassFactory deviceSetupClassFactory = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>();
+		SetupClass = deviceSetupClassFactory.Get(DeviceClass.HIDClass);
 	}
 
 	public AbeDeviceDescriptor()

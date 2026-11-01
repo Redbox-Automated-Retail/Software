@@ -386,10 +386,10 @@ public class Scheduler : ITaskScheduler
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			lock (FileLock)
 			{
-				service.Delete("config-schedule");
+				dataStoreService.Delete("config-schedule");
 				RunDefaultSchedule();
 			}
 		}
@@ -406,12 +406,12 @@ public class Scheduler : ITaskScheduler
 
 	private static string GetRaw()
 	{
-		IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-		string raw = service.GetRaw("config-schedule");
+		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+		string raw = dataStoreService.GetRaw("config-schedule");
 		if (string.IsNullOrEmpty(raw))
 		{
 			RunDefaultSchedule();
-			raw = service.GetRaw("config-schedule");
+			raw = dataStoreService.GetRaw("config-schedule");
 		}
 		else
 		{
@@ -421,9 +421,9 @@ public class Scheduler : ITaskScheduler
 			}
 			catch (Exception)
 			{
-				service.Delete("config-schedule");
+				dataStoreService.Delete("config-schedule");
 				RunDefaultSchedule();
-				raw = service.GetRaw("config-schedule");
+				raw = dataStoreService.GetRaw("config-schedule");
 			}
 		}
 		return raw;
@@ -456,7 +456,7 @@ public class Scheduler : ITaskScheduler
 	{
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			lock (FileLock)
 			{
 				string raw = GetRaw();
@@ -468,7 +468,7 @@ public class Scheduler : ITaskScheduler
 				List<Task> arg = PersistTasksToTasks(persistTasks);
 				arg = operation(arg);
 				persistTasks = TasksToPersistTasks(arg);
-				service.Set("config-schedule", persistTasks);
+				dataStoreService.Set("config-schedule", persistTasks);
 			}
 		}
 		catch (Exception e)
@@ -483,13 +483,13 @@ public class Scheduler : ITaskScheduler
 		try
 		{
 			string text = Path.Combine(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties("${Scripts}"), "default-schedule.lua");
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			if (!File.Exists(text))
 			{
 				LogHelper.Instance.Log("RunDefaultSchedule: Script: {0} not found.", text);
 				return;
 			}
-			service.Set("config-schedule", new object());
+			dataStoreService.Set("config-schedule", new object());
 			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			string chunk = File.ReadAllText(text);
 			LogHelper.Instance.Log("RunDefaultSchedule: Executing lua script at {0}", text);

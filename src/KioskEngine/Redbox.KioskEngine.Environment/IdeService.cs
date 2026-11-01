@@ -23,12 +23,12 @@ public class IdeService : IIdeService
 	{
 		get
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-			if (service == null)
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			if (machineSettingsStore == null)
 			{
 				return new List<string>().AsReadOnly();
 			}
-			return new List<string>(service.GetValue("Ide", "RecentProjects", new string[0])).AsReadOnly();
+			return new List<string>(machineSettingsStore.GetValue("Ide", "RecentProjects", new string[0])).AsReadOnly();
 		}
 	}
 
@@ -86,8 +86,8 @@ public class IdeService : IIdeService
 
 	public void ActivateDebugger(string resourceName, int lineNumber, string error)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		IResource resource = service.ActiveBundleSet.GetResource(resourceName, service.Filter);
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResource resource = resourceBundleService.ActiveBundleSet.GetResource(resourceName, resourceBundleService.Filter);
 		Show();
 		((IdeMainForm)MainForm).OpenResourceEditor(resource, lineNumber, error);
 	}

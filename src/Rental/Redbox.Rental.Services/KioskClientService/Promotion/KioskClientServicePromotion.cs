@@ -22,9 +22,9 @@ internal class KioskClientServicePromotion : BaseKioskClientService, IKioskClien
 			KioskId = kioskId
 		};
 		LogHelper.Instance.Log("KioskClientServicePromotion.ValidatePromotionCode - POST'ing following validate promotion code payload to 'api/promotion/promocodevalidation': " + anon.ToJson());
-		IHttpService service = ServiceLocator.Instance.GetService<IHttpService>();
-		HttpRequestMessage request = service.GenerateRequest(base.KioskClientServiceBaseUrl, "api/promotion/promocodevalidation", anon, HttpMethod.Post);
-		APIResponse<PromotionCodeValidationResponse> aPIResponse = await service.SendRequestAsync<PromotionCodeValidationResponse>(request, ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServicePromoCodeValidationTimeout, "ValidatePromotionCode", "c:\\build\\Redbox.Rental.Services\\KioskClientService\\Promotion\\KioskClientServicePromotion.cs");
+		IHttpService httpService = ServiceLocator.Instance.GetService<IHttpService>();
+		HttpRequestMessage request = httpService.GenerateRequest(base.KioskClientServiceBaseUrl, "api/promotion/promocodevalidation", anon, HttpMethod.Post);
+		APIResponse<PromotionCodeValidationResponse> aPIResponse = await httpService.SendRequestAsync<PromotionCodeValidationResponse>(request, ServiceLocator.Instance.GetService<IConfiguration>().KioskClientServicePromoCodeValidationTimeout, "ValidatePromotionCode", "c:\\build\\Redbox.Rental.Services\\KioskClientService\\Promotion\\KioskClientServicePromotion.cs");
 		LogHelper.Instance.Log("KioskClientServicePromotion.ValidatePromotionCode - response: " + aPIResponse.ResponseContent);
 		return aPIResponse.ToPromoCodeValidationDictionary();
 	}

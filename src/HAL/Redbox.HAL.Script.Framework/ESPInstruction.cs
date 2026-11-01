@@ -19,14 +19,14 @@ public class ESPInstruction : Instruction
 
 	protected override void OnExecute(ExecutionResult result, ExecutionContext context)
 	{
-		IEmptySearchPatternService service = ServiceLocator.Instance.GetService<IEmptySearchPatternService>();
+		IEmptySearchPatternService emptySearchPatternService = ServiceLocator.Instance.GetService<IEmptySearchPatternService>();
 		if (string.Compare(base.Operands[0].Value, "DUMP", ignoreCase: true) == 0)
 		{
-			service.DumpESP(dumpStore: false);
+			emptySearchPatternService.DumpESP(dumpStore: false);
 		}
 		else if (string.Compare(base.Operands[0].Value, "DUMP-STORE", ignoreCase: true) == 0)
 		{
-			service.DumpESP(dumpStore: true);
+			emptySearchPatternService.DumpESP(dumpStore: true);
 		}
 	}
 }

@@ -97,8 +97,8 @@ public class ViewService : IViewService
 
 	public void Show()
 	{
-		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-		if ((service != null && service.IsInMaintenanceMode) || !m_isCriticalErrorViewShown)
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		if ((applicationState != null && applicationState.IsInMaintenanceMode) || !m_isCriticalErrorViewShown)
 		{
 			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 			IShoppingSession shoppingSession = null;
@@ -161,10 +161,10 @@ public class ViewService : IViewService
 
 	private void TTSRunSpeech(IViewFrameInstance viewFrameInstance)
 	{
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-		if (service != null && service.TTSEnabled)
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		if (textToSpeechService != null && textToSpeechService.TTSEnabled)
 		{
-			service.RunSpeechWorkflow("tts_" + viewFrameInstance.ViewFrame.ViewName);
+			textToSpeechService.RunSpeechWorkflow("tts_" + viewFrameInstance.ViewFrame.ViewName);
 		}
 	}
 
@@ -345,10 +345,10 @@ public class ViewService : IViewService
 	public int GetActiveHitHandlerCount()
 	{
 		int result = 0;
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService != null)
 		{
-			result = service.ActiveScene.ActiveHitHandlers;
+			result = renderingService.ActiveScene.ActiveHitHandlers;
 		}
 		return result;
 	}

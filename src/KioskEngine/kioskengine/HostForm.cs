@@ -63,15 +63,15 @@ public class HostForm : Form
 	{
 		InitializeComponent();
 		ServiceLocator.Instance.GetService<IViewService>().UITaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-		IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
-		if (!Debugger.IsAttached && !service.GetValue("Core", "EnableMouseCursor", defaultValue: true))
+		IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+		if (!Debugger.IsAttached && !machineSettingsStore.GetValue("Core", "EnableMouseCursor", defaultValue: true))
 		{
 			Cursor.Hide();
 			m_isCursorHidden = true;
 		}
-		base.ShowInTaskbar = service.GetValue("Ide", "ShowKioskEngineInTaskBar", defaultValue: false);
-		service.GetValue<string>("Store", "Environment", null);
-		service.GetValue("Ide", "ShowChrome", defaultValue: false);
+		base.ShowInTaskbar = machineSettingsStore.GetValue("Ide", "ShowKioskEngineInTaskBar", defaultValue: false);
+		machineSettingsStore.GetValue<string>("Store", "Environment", null);
+		machineSettingsStore.GetValue("Ide", "ShowChrome", defaultValue: false);
 		if (Debugger.IsAttached)
 		{
 			base.FormBorderStyle = FormBorderStyle.Sizable;
@@ -84,18 +84,18 @@ public class HostForm : Form
 	protected override void WndProc(ref Message m)
 	{
 		EnvironmentNotificationType environmentNotificationType = EnvironmentNotificationType.None;
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		if (service != null)
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		if (environmentNotificationService != null)
 		{
-			environmentNotificationType = service.ProcessClassicCardReaderNotification(ref m);
+			environmentNotificationType = environmentNotificationService.ProcessClassicCardReaderNotification(ref m);
 		}
-		if (environmentNotificationType == EnvironmentNotificationType.CreditCardReaderInvalid && service != null)
+		if (environmentNotificationType == EnvironmentNotificationType.CreditCardReaderInvalid && environmentNotificationService != null)
 		{
-			service.RaiseInvalidClassicCardReader();
+			environmentNotificationService.RaiseInvalidClassicCardReader();
 		}
-		else if (environmentNotificationType == EnvironmentNotificationType.CreditCardReaderValid && service != null)
+		else if (environmentNotificationType == EnvironmentNotificationType.CreditCardReaderValid && environmentNotificationService != null)
 		{
-			service.RaiseValidClassicCardReader();
+			environmentNotificationService.RaiseValidClassicCardReader();
 		}
 		else
 		{
@@ -111,10 +111,10 @@ public class HostForm : Form
 
 	private void OnPaint(object sender, PaintEventArgs e)
 	{
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service.ActiveScene != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService.ActiveScene != null)
 		{
-			service.ActiveScene.MakeDirty(null);
+			renderingService.ActiveScene.MakeDirty(null);
 		}
 	}
 
@@ -326,7 +326,7 @@ public class HostForm : Form
 
 	public void OnKeyPress(object sender, KeyPressEventArgs e)
 	{
-		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		if (e.KeyChar == '\u001b')
 		{
 			Close();
@@ -369,7 +369,7 @@ public class HostForm : Form
 			goto IL_00ea;
 		}
 		IClassicTrackDataService classicTrackDataService2 = ClassicTrackDataService;
-		if (classicTrackDataService2 != null && classicTrackDataService2.AllowTrackDataParsing && service != null && service.Filter["environment"] != "Production")
+		if (classicTrackDataService2 != null && classicTrackDataService2.AllowTrackDataParsing && resourceBundleService != null && resourceBundleService.Filter["environment"] != "Production")
 		{
 			switch (e.KeyChar)
 			{
@@ -404,10 +404,10 @@ public class HostForm : Form
 
 	private void OnActivated(object sender, EventArgs e)
 	{
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service.ActiveScene != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService.ActiveScene != null)
 		{
-			service.ActiveScene.MakeDirty(null);
+			renderingService.ActiveScene.MakeDirty(null);
 			EngineApplication.Instance.ActivateActivatedHandlers();
 			Focus();
 			BringToFront();
@@ -416,10 +416,10 @@ public class HostForm : Form
 
 	private void OnMouseClick(object sender, MouseEventArgs e)
 	{
-		IRenderingService service = ServiceLocator.Instance.GetService<IRenderingService>();
-		if (service.ActiveScene != null)
+		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
+		if (renderingService.ActiveScene != null)
 		{
-			service.ActiveScene.HitTest(e.X, e.Y);
+			renderingService.ActiveScene.HitTest(e.X, e.Y);
 			EngineApplication.Instance.ActivateMouseClickHandlers(e);
 		}
 	}
@@ -452,9 +452,9 @@ public class HostForm : Form
 	{
 		if (Debugger.IsAttached)
 		{
-			IMachineSettingsStore service = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
+			IMachineSettingsStore machineSettingsStore = ServiceLocator.Instance.GetService<IMachineSettingsStore>();
 			string value = $"{base.Width},{base.Height}";
-			service.SetValue("Core", "DebugWindowSize", value);
+			machineSettingsStore.SetValue("Core", "DebugWindowSize", value);
 		}
 	}
 

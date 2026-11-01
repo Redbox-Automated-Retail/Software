@@ -88,19 +88,19 @@ public class KioskServicesHost : IKernelExtensionHost, IDisposable
 		}
 		ServiceLocator.Instance.AddService(typeof(ICustomerOfferService), CustomerOfferProxy.Instance);
 		ServiceLocator.Instance.AddService(typeof(ILoyaltyServices), LoyaltyServicesProxy.Instance);
-		IPreferenceService service = ServiceLocator.Instance.GetService<IPreferenceService>();
-		if (service != null)
+		IPreferenceService preferenceService = ServiceLocator.Instance.GetService<IPreferenceService>();
+		if (preferenceService != null)
 		{
-			service.AddPreferencePage("KioskServices_General", "Store", "Kiosk Services/General", PreferencePageTarget.LocalSystem, new GeneralPreferencePage());
-			service.AddPreferencePage("KioskServices_AuthenticationServices", "Remote Services\\Authentication Services", "Kiosk Services/Authentication Services", PreferencePageTarget.LocalSystem, new AuthSvcsPreferencePage());
-			service.AddPreferencePage("KioskServices_HealthServices", "Remote Services\\Health Services", "Kiosk Services/Health Services", PreferencePageTarget.LocalSystem, new HealthServicesPreferencePage());
-			service.AddPreferencePage("KioskServices_PromotionServices", "Remote Services\\Promotion Services", "Kiosk Services/Promotion Services", PreferencePageTarget.LocalSystem, new PromotionServicesPreferencePage());
-			service.AddPreferencePage("KoiskServices_MarketingOptinServices", "Remote Services\\Marketing Optin Services", "Kiosk Services/Marketing Optin Services", PreferencePageTarget.LocalSystem, new MarketingOptinPreferencesPage());
-			service.AddPreferencePage("KioskServices_LoyaltyServices", "Remote Services\\Loyalty Services", "Kiosk Services/Loyalty Services", PreferencePageTarget.LocalSystem, new LoyaltyServicesPreferencePage());
-			service.AddPreferencePage("KioskServices_PersonalizationGeneral", "Remote Services\\Personalization Services", "Kiosk Services/Personalization Services/General", PreferencePageTarget.LocalSystem, new PersonalizationGeneralPreferencePage());
-			service.AddPreferencePage("KioskServices_PersonalizationUpdateAccount", "Remote Services\\Personalization Services", "Kiosk Services/Personalization Services/Update Account", PreferencePageTarget.LocalSystem, new PersonalizationUpdateAccountPreferencePage());
-			service.AddPreferencePage("FraudService", "Local Services\\Fraud Services", "Kiosk Services/Fraud Services", PreferencePageTarget.LocalSystem, new FraudServicePreferencePage());
-			service.AddPreferencePage("CustomerOffers", "Local Services\\Customer Offers", "Kiosk Services/Customer Offers", PreferencePageTarget.LocalSystem, new CustomerOffersPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_General", "Store", "Kiosk Services/General", PreferencePageTarget.LocalSystem, new GeneralPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_AuthenticationServices", "Remote Services\\Authentication Services", "Kiosk Services/Authentication Services", PreferencePageTarget.LocalSystem, new AuthSvcsPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_HealthServices", "Remote Services\\Health Services", "Kiosk Services/Health Services", PreferencePageTarget.LocalSystem, new HealthServicesPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_PromotionServices", "Remote Services\\Promotion Services", "Kiosk Services/Promotion Services", PreferencePageTarget.LocalSystem, new PromotionServicesPreferencePage());
+			preferenceService.AddPreferencePage("KoiskServices_MarketingOptinServices", "Remote Services\\Marketing Optin Services", "Kiosk Services/Marketing Optin Services", PreferencePageTarget.LocalSystem, new MarketingOptinPreferencesPage());
+			preferenceService.AddPreferencePage("KioskServices_LoyaltyServices", "Remote Services\\Loyalty Services", "Kiosk Services/Loyalty Services", PreferencePageTarget.LocalSystem, new LoyaltyServicesPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_PersonalizationGeneral", "Remote Services\\Personalization Services", "Kiosk Services/Personalization Services/General", PreferencePageTarget.LocalSystem, new PersonalizationGeneralPreferencePage());
+			preferenceService.AddPreferencePage("KioskServices_PersonalizationUpdateAccount", "Remote Services\\Personalization Services", "Kiosk Services/Personalization Services/Update Account", PreferencePageTarget.LocalSystem, new PersonalizationUpdateAccountPreferencePage());
+			preferenceService.AddPreferencePage("FraudService", "Local Services\\Fraud Services", "Kiosk Services/Fraud Services", PreferencePageTarget.LocalSystem, new FraudServicePreferencePage());
+			preferenceService.AddPreferencePage("CustomerOffers", "Local Services\\Customer Offers", "Kiosk Services/Customer Offers", PreferencePageTarget.LocalSystem, new CustomerOffersPreferencePage());
 		}
 		return result;
 	}
@@ -109,11 +109,11 @@ public class KioskServicesHost : IKernelExtensionHost, IDisposable
 	{
 		LogHelper.Instance.Log("Kiosk Services Kernel Extension Reset:");
 		ErrorList result = new ErrorList();
-		IKernelFunctionRegistryService service = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
-		if (service != null)
+		IKernelFunctionRegistryService kernelFunctionRegistryService = ServiceLocator.Instance.GetService<IKernelFunctionRegistryService>();
+		if (kernelFunctionRegistryService != null)
 		{
 			LogHelper.Instance.Log("...Register Kiosk Services kernel functions.");
-			service.RegisterKernelFunctions(typeof(KernelRegistrationObject).Assembly, "Kiosk Services");
+			kernelFunctionRegistryService.RegisterKernelFunctions(typeof(KernelRegistrationObject).Assembly, "Kiosk Services");
 		}
 		LogHelper.Instance.Log("...Reset Kiosk Services Proxy.");
 		ServiceLocator.Instance.GetService<IAuthenticationServices>().Reset();
@@ -126,13 +126,13 @@ public class KioskServicesHost : IKernelExtensionHost, IDisposable
 	{
 		LogHelper.Instance.Log("Kiosk Services Kernel Extension Activate:");
 		ErrorList result = new ErrorList();
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
 			_defaultMessageProcessorService = new DefaultMessageProcessorService();
-			service.RegisterMessageProcessorService(_defaultMessageProcessorService);
+			queueService.RegisterMessageProcessorService(_defaultMessageProcessorService);
 			_softSyncMessageProcessorService = new SoftSyncMessageProcessorService();
-			service.RegisterMessageProcessorService(_softSyncMessageProcessorService);
+			queueService.RegisterMessageProcessorService(_softSyncMessageProcessorService);
 		}
 		ServiceLocator.Instance.GetService<IHealthServices>().StartPingTimer();
 		return result;
@@ -142,17 +142,17 @@ public class KioskServicesHost : IKernelExtensionHost, IDisposable
 	{
 		LogHelper.Instance.Log("Kiosk Services Kernel Extension Deactivate:");
 		ErrorList result = new ErrorList();
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null && _defaultMessageProcessorService != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null && _defaultMessageProcessorService != null)
 		{
 			if (_defaultMessageProcessorService != null)
 			{
-				service.UnRegisterMessageProcessorService(_softSyncMessageProcessorService);
+				queueService.UnRegisterMessageProcessorService(_softSyncMessageProcessorService);
 				_softSyncMessageProcessorService = null;
 			}
 			if (_softSyncMessageProcessorService != null)
 			{
-				service.UnRegisterMessageProcessorService(_defaultMessageProcessorService);
+				queueService.UnRegisterMessageProcessorService(_defaultMessageProcessorService);
 				_defaultMessageProcessorService = null;
 			}
 		}

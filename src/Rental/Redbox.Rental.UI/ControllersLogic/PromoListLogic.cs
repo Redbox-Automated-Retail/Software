@@ -99,12 +99,12 @@ public class PromoListLogic : BaseLogic
 		{
 			return;
 		}
-		IDataService service = ServiceLocator.Instance.GetService<IDataService>();
+		IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 		bool flag = false;
 		foreach (IStoredPromoCode storedPromoCode in personalizationSession.StoredPromoCodes)
 		{
 			string promoCodeExpirationText = DetermineExpirationText(storedPromoCode);
-			bool flag2 = service?.GetRedboxPlusPromoCampaign(storedPromoCode.CampaignId) != null;
+			bool flag2 = dataService?.GetRedboxPlusPromoCampaign(storedPromoCode.CampaignId) != null;
 			if (!flag2 || (includeRedboxPlus && !flag))
 			{
 				StoredPromoCodeModel storedPromoCodeModel = new StoredPromoCodeModel
@@ -174,11 +174,11 @@ public class PromoListLogic : BaseLogic
 		};
 		if (!string.IsNullOrEmpty(offer.EndValueText))
 		{
-			string[] array = offer.EndValueText.Split(' ');
-			perksOfferListItemModel.OfferValueText = array[0];
-			if (array.Length > 1)
+			string[] parts = offer.EndValueText.Split(' ');
+			perksOfferListItemModel.OfferValueText = parts[0];
+			if (parts.Length > 1)
 			{
-				perksOfferListItemModel.OfferUnitsText = array[1];
+				perksOfferListItemModel.OfferUnitsText = parts[1];
 			}
 		}
 		return perksOfferListItemModel;
@@ -194,10 +194,10 @@ public class PromoListLogic : BaseLogic
 		}
 		else if (!string.IsNullOrEmpty(timeToComplete))
 		{
-			string[] array = timeToComplete.Split(' ');
-			if (array.Length == 2 && array[1] == "D")
+			string[] parts = timeToComplete.Split(' ');
+			if (parts.Length == 2 && parts[1] == "D")
 			{
-				int.TryParse(array[0], out result2);
+				int.TryParse(parts[0], out result2);
 			}
 		}
 		if (result2 > 1 && result2 < 15)

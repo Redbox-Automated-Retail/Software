@@ -22,10 +22,10 @@ public class KioskHealthController : ApiController
 		PingResponse response = new PingResponse();
 		await Task.Run(async delegate
 		{
-			IPingService service = ServiceLocator.Instance.GetService<IPingService>();
-			if (service != null)
+			IPingService pingService = ServiceLocator.Instance.GetService<IPingService>();
+			if (pingService != null)
 			{
-				response = await service.SendPing();
+				response = await pingService.SendPing();
 			}
 			else
 			{
@@ -50,11 +50,11 @@ public class KioskHealthController : ApiController
 		PingServiceInfo response = null;
 		await Task.Run(delegate
 		{
-			IPingService service = ServiceLocator.Instance.GetService<IPingService>();
+			IPingService pingService = ServiceLocator.Instance.GetService<IPingService>();
 			response = new PingServiceInfo
 			{
-				PingInterval = (service?.PingInterval ?? 0),
-				Enabled = (service?.Enabled ?? false)
+				PingInterval = (pingService?.PingInterval ?? 0),
+				Enabled = (pingService?.Enabled ?? false)
 			};
 		});
 		return response;

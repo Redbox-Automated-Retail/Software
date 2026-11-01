@@ -30,9 +30,9 @@ public class HardwareEventCallback : ICallbackEntry
 		}
 		catch (Exception e)
 		{
-			IKernelService service = ServiceLocator.Instance.GetService<IKernelService>();
+			IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 			string resourceName = $"HardwareEventCallback for job ID {JobId}";
-			if (!service.RaiseDebuggerOrError(e, resourceName))
+			if (!kernelService.RaiseDebuggerOrError(e, resourceName))
 			{
 				LogHelper.Instance.Log("An unhandled exception was raised in HardwareEventCallback handler.", e);
 			}

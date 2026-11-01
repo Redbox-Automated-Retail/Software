@@ -70,15 +70,15 @@ public class RedboxRentalService : IRedboxRental
 
 	private void CheckReaderValidation()
 	{
-		IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		service?.CheckDeviceActivation();
-		service?.CheckDeviceStatus();
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		deviceServiceClientHelper?.CheckDeviceActivation();
+		deviceServiceClientHelper?.CheckDeviceStatus();
 	}
 
 	public void StartTheRentalApplication()
 	{
-		IApplicationState service = ServiceLocator.Instance.GetService<IApplicationState>();
-		if (service == null || !service.IsInMaintenanceMode)
+		IApplicationState applicationState = ServiceLocator.Instance.GetService<IApplicationState>();
+		if (applicationState == null || !applicationState.IsInMaintenanceMode)
 		{
 			OrchestrationService.SendHealthServicesMinutesInMaintenanceModeStatistics(0);
 		}
@@ -93,10 +93,10 @@ public class RedboxRentalService : IRedboxRental
 			OrchestrationService.CloseShoppingCartAnalytics(rentalShoppingCart.ShoppingSessionId, isSessionAbandoned: true);
 			rentalShoppingCart.Abandon("User chose to abandon session.");
 			ApplicationState.Instance.IsADAAccessible = false;
-			ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
-			if ((service?.TTSEnabled ?? false) & clearAudioDeviceConnected)
+			ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+			if ((textToSpeechService?.TTSEnabled ?? false) & clearAudioDeviceConnected)
 			{
-				service.ClearAudioDeviceConnected();
+				textToSpeechService.ClearAudioDeviceConnected();
 			}
 		}
 		ICardReadAttemptCollection cardReadAttemptCollection = Redbox.Rental.Services.Session.Session.Instance?.CardReadAttemptCollection ?? null;
@@ -125,8 +125,8 @@ public class RedboxRentalService : IRedboxRental
 			return;
 		}
 		bool flag = true;
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		if (service != null && !service.HasValidCardReader)
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		if (environmentNotificationService != null && !environmentNotificationService.HasValidCardReader)
 		{
 			Redbox.Rental.Services.Session.Session.Instance = new Redbox.Rental.Services.Session.Session();
 			if (CanEnterMaintenanceMode())
@@ -178,11 +178,11 @@ public class RedboxRentalService : IRedboxRental
 
 	private void InitializeDesktop()
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		string defaultCulture = ServiceLocator.Instance.GetService<IStoreManager>().GetDefaultCulture();
 		if (!string.IsNullOrEmpty(defaultCulture))
 		{
-			service["DefaultCulture"] = defaultCulture;
+			macroService["DefaultCulture"] = defaultCulture;
 		}
 		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		if (textToSpeechService != null)
@@ -218,8 +218,8 @@ public class RedboxRentalService : IRedboxRental
 
 	private void CheckForTamperedCardReader()
 	{
-		IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		if (service != null && service.IsCardReaderTampered)
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		if (deviceServiceClientHelper != null && deviceServiceClientHelper.IsCardReaderTampered)
 		{
 			ApplicationState.Instance.AddMaintenanceModeReason(MaintenanceModeSource.CardReader, "0099CDRR");
 		}
@@ -257,8 +257,8 @@ public class RedboxRentalService : IRedboxRental
 			IViewService viewService = ViewService;
 			if (viewService != null && viewService.IsMaintenanceViewShowing())
 			{
-				IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-				if (service == null || !service.IsCardReaderTampered)
+				IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+				if (deviceServiceClientHelper == null || !deviceServiceClientHelper.IsCardReaderTampered)
 				{
 					ViewService?.UnwindTo(ViewService.GetStartOverViewName(), discard: true, "clear maintenance view");
 					ServiceLocator.Instance.GetService<IRedboxRental>()?.CloseOpenSessionAndStartNewRentalSession("Exit Maintenance Mode Code " + removedMaintenanceModeReason?.Code);
@@ -293,9 +293,9 @@ public class RedboxRentalService : IRedboxRental
 		}
 		else
 		{
-			IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
+			IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 			IManifestInfo manifestInfo = null;
-			service?.GetManifest(out manifestInfo);
+			resourceBundleService?.GetManifest(out manifestInfo);
 			LogHelper.Instance.Log("Not showing maintenance view because the rental application is not running.  Current application: " + manifestInfo?.ProductName);
 		}
 	}
@@ -306,8 +306,8 @@ public class RedboxRentalService : IRedboxRental
 		IMaintenanceModeReason maintenanceModeReason = ((maintenanceModeReasons != null && maintenanceModeReasons.Any()) ? maintenanceModeReasons.Last() : null);
 		if (maintenanceModeReason != null)
 		{
-			IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-			if (service != null && !service.IsMaintenanceViewShowing())
+			IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+			if (viewService != null && !viewService.IsMaintenanceViewShowing())
 			{
 				HandleOnAddMaintenanceModeReason(maintenanceModeReason);
 			}
@@ -316,13 +316,13 @@ public class RedboxRentalService : IRedboxRental
 
 	private void RegisterEnvironmentServiceCallbacks()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		if (service != null)
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		if (environmentNotificationService != null)
 		{
-			service.RegisterCardReaderConnectedCallback(HandleCardReaderConnected);
-			service.RegisterCardReaderDisconnectedCallback(HandleCardReaderDisconnected);
-			service.RegisterCorruptDbCallback(HandleCorruptDb);
-			service.RegisterTamperedCardReaderCallback(HandleTamperedCardReader);
+			environmentNotificationService.RegisterCardReaderConnectedCallback(HandleCardReaderConnected);
+			environmentNotificationService.RegisterCardReaderDisconnectedCallback(HandleCardReaderDisconnected);
+			environmentNotificationService.RegisterCorruptDbCallback(HandleCorruptDb);
+			environmentNotificationService.RegisterTamperedCardReaderCallback(HandleTamperedCardReader);
 		}
 	}
 
@@ -372,11 +372,11 @@ public class RedboxRentalService : IRedboxRental
 
 	public void EnterMaintenanceModeBecauseOfTamperedCardReader()
 	{
-		IDeviceServiceClientHelper service = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		if (service != null && !service.IsCardReaderTampered)
+		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
+		if (deviceServiceClientHelper != null && !deviceServiceClientHelper.IsCardReaderTampered)
 		{
-			service.IsCardReaderTampered = true;
-			service.SendTamperedCardReaderKioskAlertMessage();
+			deviceServiceClientHelper.IsCardReaderTampered = true;
+			deviceServiceClientHelper.SendTamperedCardReaderKioskAlertMessage();
 		}
 		AddCardReaderMaintenanceModeReason("0099CDRR");
 	}
@@ -392,8 +392,8 @@ public class RedboxRentalService : IRedboxRental
 
 	private ITimer CreateDisconnectedCardReaderTimer()
 	{
-		IEnvironmentNotificationService service = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
-		int value = ((service != null && service.PreviousTrackDataServiceWasDeviceServiceTrackDataService) ? 90000 : 10000);
+		IEnvironmentNotificationService environmentNotificationService = ServiceLocator.Instance.GetService<IEnvironmentNotificationService>();
+		int value = ((environmentNotificationService != null && environmentNotificationService.PreviousTrackDataServiceWasDeviceServiceTrackDataService) ? 90000 : 10000);
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		ITimer timer = timerService?.GetTimer("disconnected_usb_card_reader_timer");
 		if (timer == null)
@@ -513,10 +513,10 @@ public class RedboxRentalService : IRedboxRental
 	private bool CanForceStartOfNewRentalSession()
 	{
 		bool result = true;
-		IViewService service = ServiceLocator.Instance.GetService<IViewService>();
-		if (service != null)
+		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
+		if (viewService != null)
 		{
-			result = service.Peek() != service.GetMaintenanceViewName() && service.Peek() != "maintenance_sync_view" && !service.Stack.Any((IViewFrameInstance x) => x?.ViewFrame?.ViewName == "swipe_view") && Redbox.Rental.Services.Session.Session.Instance?.BrowseState?.InReturnFlow != true;
+			result = viewService.Peek() != viewService.GetMaintenanceViewName() && viewService.Peek() != "maintenance_sync_view" && !viewService.Stack.Any((IViewFrameInstance x) => x?.ViewFrame?.ViewName == "swipe_view") && Redbox.Rental.Services.Session.Session.Instance?.BrowseState?.InReturnFlow != true;
 		}
 		return result;
 	}
@@ -562,9 +562,9 @@ public class RedboxRentalService : IRedboxRental
 	private void RespondToRentalShoppingCartChange(IRentalShoppingCart rentalShoppingCart)
 	{
 		IDataService dataService = ServiceLocator.Instance.GetService(typeof(IDataService)) as IDataService;
-		ITextToSpeechService service = ServiceLocator.Instance.GetService<ITextToSpeechService>();
+		ITextToSpeechService textToSpeechService = ServiceLocator.Instance.GetService<ITextToSpeechService>();
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
-		if (!service.TTSEnabled)
+		if (!textToSpeechService.TTSEnabled)
 		{
 			return;
 		}
@@ -594,7 +594,7 @@ public class RedboxRentalService : IRedboxRental
 		}
 		macroService["TTS:NumberOfTitlesInCart"] = ((list.Count > 0) ? list.Count.ToString() : string.Empty);
 		macroService["TTS:CartTitlePlurality"] = ((list.Count == 1) ? "Title" : "Titles");
-		service.TTSRepeatSequence();
+		textToSpeechService.TTSRepeatSequence();
 	}
 
 	private void SetAndLogMacroValue(IMacroService macroService, string macroName, string macroValue)

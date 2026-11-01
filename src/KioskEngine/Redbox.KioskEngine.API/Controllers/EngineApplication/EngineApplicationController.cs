@@ -16,14 +16,14 @@ public class EngineApplicationController : ApiController
 	public HttpResponseMessage PerformShutdown()
 	{
 		PerformShutdownResponse performShutdownResponse = new PerformShutdownResponse();
-		IEngineApplicationService service = ServiceLocator.Instance.GetService<IEngineApplicationService>();
-		if (service == null)
+		IEngineApplicationService engineApplicationService = ServiceLocator.Instance.GetService<IEngineApplicationService>();
+		if (engineApplicationService == null)
 		{
 			performShutdownResponse.Error = "Unable to find FileSetsService.";
 		}
 		else
 		{
-			performShutdownResponse = service.PerformShutdown();
+			performShutdownResponse = engineApplicationService.PerformShutdown();
 		}
 		return base.Request.CreateResponse(string.IsNullOrWhiteSpace(performShutdownResponse.Error) ? HttpStatusCode.Accepted : HttpStatusCode.InternalServerError, performShutdownResponse, base.Configuration.Formatters.JsonFormatter);
 	}
@@ -34,11 +34,11 @@ public class EngineApplicationController : ApiController
 	[SwaggerResponse(HttpStatusCode.InternalServerError, "Kiosk Engine encountered an error while processing the request", typeof(int?))]
 	public HttpResponseMessage GetProcessId()
 	{
-		IEngineApplicationService service = ServiceLocator.Instance.GetService<IEngineApplicationService>();
-		if (service == null)
+		IEngineApplicationService engineApplicationService = ServiceLocator.Instance.GetService<IEngineApplicationService>();
+		if (engineApplicationService == null)
 		{
 			return base.Request.CreateResponse<int?>(HttpStatusCode.InternalServerError, null, base.Configuration.Formatters.JsonFormatter);
 		}
-		return base.Request.CreateResponse(HttpStatusCode.OK, service.ProcessId, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(HttpStatusCode.OK, engineApplicationService.ProcessId, base.Configuration.Formatters.JsonFormatter);
 	}
 }

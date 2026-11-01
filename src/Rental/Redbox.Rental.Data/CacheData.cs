@@ -57,12 +57,12 @@ public class CacheData : ICacheData
 		if (!instance.BarcodeProducts.TryGetValue(text, out var value))
 		{
 			isNew = true;
-			string[] array = pair.Key.Split('@');
+			string[] parts = pair.Key.Split('@');
 			value = new BarcodeProduct
 			{
 				Position = pair.Key,
-				Deck = Convert.ToInt32(array[0]),
-				Slot = Convert.ToInt32(array[1])
+				Deck = Convert.ToInt32(parts[0]),
+				Slot = Convert.ToInt32(parts[1])
 			};
 		}
 		value.Barcode = text;
@@ -304,12 +304,12 @@ public class CacheData : ICacheData
 		Dictionary<string, string> dict = new Dictionary<string, string>();
 		try
 		{
-			IDataStoreService service = ServiceLocator.Instance.GetService<IDataStoreService>();
-			if (service == null)
+			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
+			if (dataStoreService == null)
 			{
 				return dict;
 			}
-			Dictionary<string, object> all = service.GetAll("cache", tableName);
+			Dictionary<string, object> all = dataStoreService.GetAll("cache", tableName);
 			if (all == null)
 			{
 				return dict;

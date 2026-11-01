@@ -194,9 +194,9 @@ public partial class BrowseUserControl : UserControl, IComponentConnector
 
 	private void ApplyStyle()
 	{
-		ITheme obj = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
-		obj?.SetStyle(LeftPaddleButton);
-		obj?.SetStyle(RightPaddleButton);
+		ITheme theme = ServiceLocator.Instance.GetService<IThemeService>()?.CurrentTheme;
+		theme?.SetStyle(LeftPaddleButton);
+		theme?.SetStyle(RightPaddleButton);
 	}
 
 	private static void OnShowPaddlesPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

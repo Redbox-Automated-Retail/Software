@@ -49,22 +49,22 @@ public class SortSelectionPopupViewController : BaseViewController
 
 	private static void CreateAndStartTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
 		int timeOut = 20000;
-		IIdleTimer obj = service?.CreateIdleTimer("SortSelectionPopupViewTimer");
-		obj?.Initialize(timeOut, delegate
+		IIdleTimer idleTimer = idleTimerService?.CreateIdleTimer("SortSelectionPopupViewTimer");
+		idleTimer?.Initialize(timeOut, delegate
 		{
 			BaseViewController.AnalyticsService?.AddTimeoutEvent(timeOut);
 			OrchestrationService.ViewGoBackSafe("SortSelectionPopupViewController time out", popOnly: false);
 		});
-		obj?.Start();
+		idleTimer?.Start();
 	}
 
 	private static void StopAndRemoveTimer()
 	{
-		IIdleTimerService service = ServiceLocator.Instance.GetService<IIdleTimerService>();
-		(service?.GetIdleTimer("SortSelectionPopupViewTimer"))?.Stop();
-		service?.RemoveIdleTimer("SortSelectionPopupViewTimer");
+		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
+		(idleTimerService?.GetIdleTimer("SortSelectionPopupViewTimer"))?.Stop();
+		idleTimerService?.RemoveIdleTimer("SortSelectionPopupViewTimer");
 	}
 
 	private static SortButtonModel CreateSortButtonModel(BrowseSort sort)

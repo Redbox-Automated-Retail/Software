@@ -49,8 +49,8 @@ public class KioskPricingService : IKioskPricingService
 		{
 			if (_store == null)
 			{
-				IDataService service = ServiceLocator.Instance.GetService<IDataService>();
-				_store = service.GetStore();
+				IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
+				_store = dataService.GetStore();
 			}
 			return _store;
 		}
