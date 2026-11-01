@@ -37,8 +37,7 @@ public static class ConversionHelper
 				if (flagsAttributes != null && flagsAttributes.Length != 0)
 				{
 					int num = 0;
-					string[] array2 = ((string)value).Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-					foreach (string text in array2)
+					foreach (string text in ((string)value).Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 					{
 						object value2 = Enum.Parse(convertToType, text.Trim(), ignoreCase: true);
 						num |= Convert.ToInt32(value2);

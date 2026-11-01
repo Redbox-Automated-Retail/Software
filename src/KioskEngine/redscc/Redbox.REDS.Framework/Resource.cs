@@ -129,8 +129,7 @@ public class Resource : IResource
 			string attributeValue3 = document.DocumentElement.GetAttributeValue<string>("depends");
 			if (!string.IsNullOrEmpty(attributeValue3))
 			{
-				string[] array = attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-				foreach (string text in array)
+				foreach (string text in attributeValue3.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 				{
 					string trimmed = text.Trim();
 					if (!(trimmed == resource.Name))

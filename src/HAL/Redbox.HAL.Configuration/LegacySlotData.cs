@@ -113,8 +113,7 @@ public sealed class LegacySlotData : IConfigurationFile, IDisposable
 		int num = 1;
 		bool flag = false;
 		StringBuilder stringBuilder = new StringBuilder();
-		string[] array = File.ReadAllLines(FullSourcePath);
-		foreach (string text in array)
+		foreach (string text in File.ReadAllLines(FullSourcePath))
 		{
 			List<int> list = new List<int>();
 			int result;

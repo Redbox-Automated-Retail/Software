@@ -64,8 +64,7 @@ public class BaseSettingFunctions
 		if (obj != null)
 		{
 			bool flag = false;
-			string[] array = name.Split('.');
-			foreach (string name2 in array)
+			foreach (string name2 in name.Split('.'))
 			{
 				if (obj == null)
 				{

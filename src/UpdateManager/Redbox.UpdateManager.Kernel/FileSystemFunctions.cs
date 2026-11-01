@@ -396,8 +396,7 @@ public static class FileSystemFunctions
 		{
 			string[] files = Directory.GetFiles(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			int num = 1;
-			string[] array = files;
-			foreach (string value in array)
+			foreach (string value in files)
 			{
 				luaTable[num++] = value;
 			}
@@ -418,8 +417,7 @@ public static class FileSystemFunctions
 		{
 			string[] directories = Directory.GetDirectories(macroService.ExpandProperties(path), pattern, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			int num = 1;
-			string[] array = directories;
-			foreach (string value in array)
+			foreach (string value in directories)
 			{
 				luaTable[num++] = value;
 			}

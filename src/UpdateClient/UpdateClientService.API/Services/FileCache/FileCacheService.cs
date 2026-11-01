@@ -380,8 +380,7 @@ public class FileCacheService : IFileCacheService
 			return list;
 		}
 		string[] directories = Directory.GetDirectories(Constants.FileCacheRootPath);
-		string[] array = directories;
-		foreach (string path in array)
+		foreach (string path in directories)
 		{
 			string fileName = Path.GetFileName(path);
 			try

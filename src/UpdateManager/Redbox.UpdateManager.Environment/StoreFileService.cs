@@ -183,8 +183,7 @@ public class StoreFileService : IPollRequestReply
 			}
 			string[] files = Directory.GetFiles(m_root, '*' + ".state", SearchOption.TopDirectoryOnly);
 			LogHelper.Instance.Log("StoreFileService: GetCurrentState files: " + files.ToJson(), LogEntryType.Debug);
-			string[] array = files;
-			foreach (string text in array)
+			foreach (string text in files)
 			{
 				try
 				{

@@ -36,8 +36,7 @@ public sealed class GampHelper
 			return dictionary;
 		}
 		string[] lines = File.ReadAllLines(path);
-		string[] array2 = lines;
-		foreach (string text in array2)
+		foreach (string text in lines)
 		{
 			string[] parts = text.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 			if (parts.Length >= 2 && int.TryParse(parts[1], out var result))
@@ -105,8 +104,7 @@ public sealed class GampHelper
 		bool flag = false;
 		StringBuilder stringBuilder = new StringBuilder();
 		string[] lines = File.ReadAllLines(path);
-		string[] array2 = lines;
-		foreach (string text in array2)
+		foreach (string text in lines)
 		{
 			List<int> list2 = new List<int>();
 			int result;

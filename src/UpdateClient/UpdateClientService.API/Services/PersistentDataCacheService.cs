@@ -126,8 +126,7 @@ public class PersistentDataCacheService : IPersistentDataCacheService
 					try
 					{
 						string[] files = Directory.GetFiles(directory, "*" + pattern + "*");
-						string[] array = files;
-						foreach (string path in array)
+						foreach (string path in files)
 						{
 							List<PersistentDataWrapper<T>> list = result;
 							list.Add(await InnerRead<T>(Path.GetFileName(path), useCache, Path.GetDirectoryName(path), log: false));
@@ -166,8 +165,7 @@ public class PersistentDataCacheService : IPersistentDataCacheService
 					{
 						string[] files = Directory.GetFiles(directory, "*.*");
 						files = files.Where((string f) => pattern.IsMatch(Path.GetFileName(f))).ToArray();
-						string[] array = files;
-						foreach (string path in array)
+						foreach (string path in files)
 						{
 							List<PersistentDataWrapper<T>> list = result;
 							list.Add(await InnerRead<T>(Path.GetFileName(path), useCache, Path.GetDirectoryName(path), log: false));
@@ -280,8 +278,7 @@ public class PersistentDataCacheService : IPersistentDataCacheService
 					if (Directory.Exists(directory))
 					{
 						string[] files = Directory.GetFiles(directory, "*" + pattern + "*");
-						string[] array = files;
-						foreach (string path in array)
+						foreach (string path in files)
 						{
 							File.Delete(path);
 						}

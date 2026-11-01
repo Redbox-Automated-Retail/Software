@@ -40,8 +40,7 @@ public class RevisionChangeSetRepository : IRevisionChangeSetRepository
 			try
 			{
 				string[] files = Directory.GetFiles(ChangeSetDirectory, "*.changeSet", SearchOption.TopDirectoryOnly);
-				string[] array = files;
-				foreach (string eachFile in array)
+				foreach (string eachFile in files)
 				{
 					try
 					{
@@ -140,8 +139,7 @@ public class RevisionChangeSetRepository : IRevisionChangeSetRepository
 			{
 				string[] files = Directory.GetFiles(ChangeSetDirectory, "*.changeSet", SearchOption.TopDirectoryOnly);
 				result = true;
-				string[] array = files;
-				foreach (string text in array)
+				foreach (string text in files)
 				{
 					try
 					{

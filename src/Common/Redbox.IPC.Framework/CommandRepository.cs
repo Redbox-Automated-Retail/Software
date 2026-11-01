@@ -133,8 +133,7 @@ public class CommandRepository
 		List<string> list = new List<string>();
 		foreach (Type type in types)
 		{
-			CommandAttribute[] array = (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false);
-			foreach (CommandAttribute commandAttribute in array)
+			foreach (CommandAttribute commandAttribute in (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false))
 			{
 				if (commandAttribute.Name != null)
 				{

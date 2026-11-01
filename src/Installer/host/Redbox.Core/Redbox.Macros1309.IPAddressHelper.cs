@@ -25,8 +25,7 @@ internal static class Redbox_002EMacros1309_002EIPAddressHelper
 		}
 		IPAddress result = null;
 		IPAddress bindableAddress = GetBindableAddress();
-		IPAddress[] array = hostAddresses;
-		foreach (IPAddress iPAddress in array)
+		foreach (IPAddress iPAddress in hostAddresses)
 		{
 			if (!(iPAddress.ToString() != bindableAddress.ToString()))
 			{

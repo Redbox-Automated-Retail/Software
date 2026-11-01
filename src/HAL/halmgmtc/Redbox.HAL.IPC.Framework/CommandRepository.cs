@@ -101,8 +101,7 @@ public class CommandRepository
 					Description = ((descriptionAttribute2 != null) ? descriptionAttribute2.Description : string.Empty)
 				};
 				int num = 0;
-				ParameterInfo[] array = parameters;
-				foreach (ParameterInfo parameterInfo in array)
+				foreach (ParameterInfo parameterInfo in parameters)
 				{
 					if (parameterInfo.ParameterType == typeof(CommandContext))
 					{
@@ -149,8 +148,7 @@ public class CommandRepository
 		List<string> list = new List<string>();
 		foreach (Type type in types)
 		{
-			CommandAttribute[] array = (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false);
-			foreach (CommandAttribute commandAttribute in array)
+			foreach (CommandAttribute commandAttribute in (CommandAttribute[])type.GetCustomAttributes(typeof(CommandAttribute), inherit: false))
 			{
 				if (commandAttribute.Name != null)
 				{

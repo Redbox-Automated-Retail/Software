@@ -991,8 +991,7 @@ public class HardwareService : IHardwareService
 			else
 			{
 				List<IHardwareResult> list = new List<IHardwareResult>();
-				ProgramResult[] array = results;
-				foreach (ProgramResult programResult in array)
+				foreach (ProgramResult programResult in results)
 				{
 					string itemID = ((programResult.ItemID != null && programResult.ItemID.Barcode != null) ? programResult.ItemID.Barcode : "UNKNOWN");
 					if (programResult.ItemID != null && programResult.ItemID.IsEmpty())
@@ -1154,8 +1153,7 @@ public class HardwareService : IHardwareService
 				return errorList;
 			}
 			List<IHardwareJob> list = new List<IHardwareJob>();
-			Redbox.HAL.Client.HardwareJob[] array = jobs2;
-			foreach (Redbox.HAL.Client.HardwareJob hardwareJob in array)
+			foreach (Redbox.HAL.Client.HardwareJob hardwareJob in jobs2)
 			{
 				string startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
 				string executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());

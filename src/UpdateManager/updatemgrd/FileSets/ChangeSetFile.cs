@@ -229,8 +229,7 @@ internal class ChangeSetFile
 				CreateChangeSetDirectory();
 				string[] files = Directory.GetFiles(GetChangeSetDirectory(), '*' + ".changeSet", SearchOption.TopDirectoryOnly);
 				LogHelper.Instance.Log($"ChangeSetManager.GetAllFiles json: {files.ToJson()} ", LogEntryType.Debug);
-				string[] array = files;
-				foreach (string text in array)
+				foreach (string text in files)
 				{
 					try
 					{

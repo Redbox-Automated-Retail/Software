@@ -622,8 +622,7 @@ internal sealed class Program
 			{
 				string path5 = "c:\\Program Files\\Redbox\\HALService\\bin";
 				List<string> list = new List<string>();
-				string[] array = new string[2] { "*.dll", "*.exe" };
-				foreach (string searchPattern in array)
+				foreach (string searchPattern in new string[2] { "*.dll", "*.exe" })
 				{
 					list.AddRange(Directory.GetFiles(path5, searchPattern));
 				}
@@ -1147,8 +1146,7 @@ internal sealed class Program
 				List<FraudLocInfo> fraudLocInfoList = new List<FraudLocInfo>();
 				FraudLocInfo fraudLocInfo = null;
 				char[] separator2 = new char[1] { ' ' };
-				string[] array = lines;
-				foreach (string text2 in array)
+				foreach (string text2 in lines)
 				{
 					if (text2.Contains("GET Deck"))
 					{

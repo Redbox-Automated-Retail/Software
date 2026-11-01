@@ -166,8 +166,7 @@ public static class DateFunctions
 	{
 		string obj = (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now) ? TimeZone.CurrentTimeZone.DaylightName : TimeZone.CurrentTimeZone.StandardName);
 		StringBuilder stringBuilder = new StringBuilder();
-		string[] array = obj.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-		foreach (string text in array)
+		foreach (string text in obj.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 		{
 			stringBuilder.Append(text[0]);
 		}

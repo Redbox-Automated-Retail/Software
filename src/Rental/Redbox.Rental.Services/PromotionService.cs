@@ -1223,8 +1223,7 @@ public class PromotionService : IPromotionService
 		List<int> list = new List<int>();
 		if (formatIds != null)
 		{
-			TitleType[] array = (TitleType[])Enum.GetValues(typeof(TitleType));
-			foreach (TitleType item in array)
+			foreach (TitleType item in (TitleType[])Enum.GetValues(typeof(TitleType)))
 			{
 				if (!formatIds.Contains((int)item))
 				{

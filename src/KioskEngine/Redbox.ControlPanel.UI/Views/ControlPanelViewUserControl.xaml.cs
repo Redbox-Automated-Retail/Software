@@ -317,8 +317,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 	private string GetTzAbbreviation(string timeZoneName)
 	{
 		string text = string.Empty;
-		string[] array = timeZoneName.Split(' ');
-		foreach (string text2 in array)
+		foreach (string text2 in timeZoneName.Split(' '))
 		{
 			text = ((text2[0] == '(') ? (text + text2) : (text + text2[0]));
 		}

@@ -806,8 +806,7 @@ public class DebuggerForm : Form
 		CallStackEntry[] callStack = Debugger.GetCallStack();
 		m_callStackListView.BeginUpdate();
 		m_callStackListView.Items.Clear();
-		CallStackEntry[] array = callStack;
-		foreach (CallStackEntry callStackEntry in array)
+		foreach (CallStackEntry callStackEntry in callStack)
 		{
 			ListViewItem listViewItem = new ListViewItem(callStackEntry.FunctionName);
 			listViewItem.SubItems.Add(callStackEntry.FileName);

@@ -115,8 +115,7 @@ public sealed class GampHelper
 		int num = 1;
 		bool flag = false;
 		StringBuilder stringBuilder = new StringBuilder();
-		string[] array = File.ReadAllLines(path);
-		foreach (string text in array)
+		foreach (string text in File.ReadAllLines(path))
 		{
 			List<int> list2 = new List<int>();
 			int result;

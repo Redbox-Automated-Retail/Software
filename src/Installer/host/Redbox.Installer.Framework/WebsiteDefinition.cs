@@ -506,8 +506,7 @@ public class WebsiteDefinition : Definition
 	{
 		try
 		{
-			string[] array = (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]);
-			foreach (string text in array)
+			foreach (string text in (string[])Registry.GetValue(InstallerProject.Instance.GetUninstallKey(), "IIsObjects", new string[0]))
 			{
 				try
 				{

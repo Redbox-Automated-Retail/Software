@@ -22,8 +22,7 @@ public class BaseLogic : DynamicRouting
 			return null;
 		}
 		SecureString secureString = new SecureString();
-		char[] array = source.ToCharArray();
-		foreach (char c in array)
+		foreach (char c in source.ToCharArray())
 		{
 			secureString.AppendChar(c);
 		}

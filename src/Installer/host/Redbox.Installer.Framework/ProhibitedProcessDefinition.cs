@@ -59,8 +59,7 @@ public class ProhibitedProcessDefinition : Definition
 		Process[] processesByName = Process.GetProcessesByName(Name);
 		if (processesByName.Length > 0)
 		{
-			Process[] array = processesByName;
-			foreach (Process process in array)
+			foreach (Process process in processesByName)
 			{
 				process.Kill();
 				if (!process.HasExited)
@@ -77,8 +76,7 @@ public class ProhibitedProcessDefinition : Definition
 		Process[] processesByName = Process.GetProcessesByName(Name);
 		if (processesByName.Length > 0)
 		{
-			Process[] array = processesByName;
-			foreach (Process process in array)
+			foreach (Process process in processesByName)
 			{
 				if (!process.HasExited)
 				{

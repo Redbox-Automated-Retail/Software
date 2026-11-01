@@ -125,8 +125,7 @@ public static class CardHelper
 	public static SecureString CopyToSecure(string value)
 	{
 		SecureString secureString = new SecureString();
-		char[] array = value.ToCharArray();
-		foreach (char c in array)
+		foreach (char c in value.ToCharArray())
 		{
 			secureString.AppendChar(c);
 		}

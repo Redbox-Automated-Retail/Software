@@ -1290,8 +1290,7 @@ public class ConfiguredDevicesForm : Form
 				EngineeringOutput.Write("Failed to get program results. I'm sorry!");
 				return;
 			}
-			ProgramResult[] array = results;
-			foreach (ProgramResult programResult in array)
+			foreach (ProgramResult programResult in results)
 			{
 				EngineeringOutput.Write(programResult.Message);
 			}
@@ -1347,8 +1346,7 @@ public class ConfiguredDevicesForm : Form
 				EngineeringOutput.Write("Failed to get program results. I'm sorry!");
 				return;
 			}
-			ProgramResult[] array = results;
-			foreach (ProgramResult programResult in array)
+			foreach (ProgramResult programResult in results)
 			{
 				EngineeringOutput.Write(programResult.Message);
 			}
@@ -1419,8 +1417,7 @@ public class ConfiguredDevicesForm : Form
 				EngineeringOutput.Write("Failed to get program results. I'm sorry!");
 				return;
 			}
-			ProgramResult[] array = results;
-			foreach (ProgramResult programResult in array)
+			foreach (ProgramResult programResult in results)
 			{
 				EngineeringOutput.Write(programResult.Message);
 			}

@@ -33,8 +33,7 @@ internal class ManifestInfo : IManifestInfo
 		ControlAssembly = (string)resource["control_assembly"];
 		if (resource["requires"] is string text)
 		{
-			string[] array = text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-			foreach (string specifier in array)
+			foreach (string specifier in text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 			{
 				InnerRequires.Add(new BundleSpecifier(specifier));
 			}

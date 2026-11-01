@@ -622,8 +622,7 @@ public sealed class HardwareService
 			suspendedJobs = hardwareJobs.ToArray();
 			return hardwareCommandResult;
 		}
-		HardwareJob[] array = jobs;
-		foreach (HardwareJob hardwareJob in array)
+		foreach (HardwareJob hardwareJob in jobs)
 		{
 			if (hardwareJob.ID != Constants.ExecutionContexts.ImmediateModeContext && (hardwareJob.Status == HardwareJobStatus.Pending || hardwareJob.Status == HardwareJobStatus.Running) && hardwareJob.Priority > priority)
 			{

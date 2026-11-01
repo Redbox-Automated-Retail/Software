@@ -22,8 +22,7 @@ internal sealed class PluginLoader
 			{
 				m_pluginDescriptors = new List<CameraPluginDescriptor>();
 				string[] files = Directory.GetFiles(PluginsDirectory, "*.xml");
-				string[] array = files;
-				foreach (string xmlPath in array)
+				foreach (string xmlPath in files)
 				{
 					CameraPluginDescriptor cameraPluginDescriptor = CameraPluginDescriptor.FromXml(xmlPath);
 					if (cameraPluginDescriptor != null)
@@ -73,8 +72,7 @@ internal sealed class PluginLoader
 		string assemblyFile = Path.Combine(PluginsDirectory, descriptor.AssemblyName);
 		Assembly assembly = Assembly.LoadFrom(assemblyFile);
 		Type[] exportedTypes = assembly.GetExportedTypes();
-		Type[] array = exportedTypes;
-		foreach (Type type in array)
+		foreach (Type type in exportedTypes)
 		{
 			if (type.FullName.Equals(descriptor.PluginNamespace))
 			{

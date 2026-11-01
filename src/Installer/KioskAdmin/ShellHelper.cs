@@ -115,8 +115,7 @@ public class ShellHelper
 		{
 			processStartInfo2.UserName = user;
 			SecureString secureString = new SecureString();
-			char[] array = password.ToCharArray();
-			foreach (char c in array)
+			foreach (char c in password.ToCharArray())
 			{
 				secureString.AppendChar(c);
 			}

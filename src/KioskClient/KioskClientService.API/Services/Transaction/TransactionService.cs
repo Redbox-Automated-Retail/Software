@@ -529,8 +529,7 @@ public class TransactionService : ITransactionService
 			OfferDiscountCode = "ExtraNight50c",
 			CampaignId = 123L
 		};
-		string[] array = (await GetTestDataValue("AfterSwipeCustomerOffers.MultiNightPriceProductIds"))?.Replace(" ", null)?.Split(',');
-		foreach (string s in array)
+		foreach (string s in (await GetTestDataValue("AfterSwipeCustomerOffers.MultiNightPriceProductIds"))?.Replace(" ", null)?.Split(','))
 		{
 			if (long.TryParse(s, out var result2))
 			{
