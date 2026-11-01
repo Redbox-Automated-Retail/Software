@@ -29,10 +29,10 @@ internal struct BitDecoder
 
 	public uint Decode(Decoder rangeDecoder)
 	{
-		uint num = (rangeDecoder.Range >> 11) * Prob;
-		if (rangeDecoder.Code < num)
+		uint newBound = (rangeDecoder.Range >> 11) * Prob;
+		if (rangeDecoder.Code < newBound)
 		{
-			rangeDecoder.Range = num;
+			rangeDecoder.Range = newBound;
 			Prob += 2048 - Prob >> 5;
 			if (rangeDecoder.Range < 16777216)
 			{
@@ -41,8 +41,8 @@ internal struct BitDecoder
 			}
 			return 0u;
 		}
-		rangeDecoder.Range -= num;
-		rangeDecoder.Code -= num;
+		rangeDecoder.Range -= newBound;
+		rangeDecoder.Code -= newBound;
 		Prob -= Prob >> 5;
 		if (rangeDecoder.Range < 16777216)
 		{

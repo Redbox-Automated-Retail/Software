@@ -51,10 +51,10 @@ public class OutWindow
 
 	public void Flush()
 	{
-		uint num = _pos - _streamPos;
-		if (num != 0)
+		uint size = _pos - _streamPos;
+		if (size != 0)
 		{
-			_stream.Write(_buffer, (int)_streamPos, (int)num);
+			_stream.Write(_buffer, (int)_streamPos, (int)size);
 			if (_pos >= _windowSize)
 			{
 				_pos = 0u;
@@ -65,18 +65,18 @@ public class OutWindow
 
 	public void CopyBlock(uint distance, uint len)
 	{
-		uint num = _pos - distance - 1;
-		if (num >= _windowSize)
+		uint pos = _pos - distance - 1;
+		if (pos >= _windowSize)
 		{
-			num += _windowSize;
+			pos += _windowSize;
 		}
 		while (len != 0)
 		{
-			if (num >= _windowSize)
+			if (pos >= _windowSize)
 			{
-				num = 0u;
+				pos = 0u;
 			}
-			_buffer[_pos++] = _buffer[num++];
+			_buffer[_pos++] = _buffer[pos++];
 			if (_pos >= _windowSize)
 			{
 				Flush();
@@ -96,11 +96,11 @@ public class OutWindow
 
 	public byte GetByte(uint distance)
 	{
-		uint num = _pos - distance - 1;
-		if (num >= _windowSize)
+		uint pos = _pos - distance - 1;
+		if (pos >= _windowSize)
 		{
-			num += _windowSize;
+			pos += _windowSize;
 		}
-		return _buffer[num];
+		return _buffer[pos];
 	}
 }

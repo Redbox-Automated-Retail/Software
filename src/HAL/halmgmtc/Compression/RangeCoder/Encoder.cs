@@ -85,10 +85,10 @@ internal class Encoder
 
 	public void EncodeDirectBits(uint v, int numTotalBits)
 	{
-		for (int num = numTotalBits - 1; num >= 0; num--)
+		for (int i = numTotalBits - 1; i >= 0; i--)
 		{
 			Range >>= 1;
-			if (((v >> num) & 1) == 1)
+			if (((v >> i) & 1) == 1)
 			{
 				Low += Range;
 			}
@@ -102,15 +102,15 @@ internal class Encoder
 
 	public void EncodeBit(uint size0, int numTotalBits, uint symbol)
 	{
-		uint num = (Range >> numTotalBits) * size0;
+		uint newBound = (Range >> numTotalBits) * size0;
 		if (symbol == 0)
 		{
-			Range = num;
+			Range = newBound;
 		}
 		else
 		{
-			Low += num;
-			Range -= num;
+			Low += newBound;
+			Range -= newBound;
 		}
 		while (Range < 16777216)
 		{

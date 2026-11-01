@@ -424,18 +424,18 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		g_FastPos = new byte[2048];
 		kMatchFinderIDs = new string[2] { "BT2", "BT4" };
-		int num = 2;
+		int c = 2;
 		g_FastPos[0] = 0;
 		g_FastPos[1] = 1;
-		for (byte b = 2; b < 22; b++)
+		for (byte slotFast = 2; slotFast < 22; slotFast++)
 		{
-			uint num2 = (uint)(1 << (b >> 1) - 1);
-			uint num3 = 0u;
-			while (num3 < num2)
+			uint k = (uint)(1 << (slotFast >> 1) - 1);
+			uint j = 0u;
+			while (j < k)
 			{
-				g_FastPos[num] = b;
-				num3++;
-				num++;
+				g_FastPos[c] = slotFast;
+				j++;
+				c++;
 			}
 		}
 	}
@@ -627,13 +627,13 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 					_optimum[posPrev - 1].BackPrev = _optimum[cur].BackPrev2;
 				}
 			}
-			uint num = posPrev;
+			uint prev = posPrev;
 			uint backPrev2 = backPrev;
-			backPrev = _optimum[num].BackPrev;
-			posPrev = _optimum[num].PosPrev;
-			_optimum[num].BackPrev = backPrev2;
-			_optimum[num].PosPrev = cur;
-			cur = num;
+			backPrev = _optimum[prev].BackPrev;
+			posPrev = _optimum[prev].PosPrev;
+			_optimum[prev].BackPrev = backPrev2;
+			_optimum[prev].PosPrev = cur;
+			cur = prev;
 		}
 		while (cur != 0);
 		backRes = _optimum[0].BackPrev;

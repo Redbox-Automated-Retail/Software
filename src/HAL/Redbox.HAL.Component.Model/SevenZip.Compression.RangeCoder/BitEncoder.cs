@@ -35,16 +35,16 @@ internal struct BitEncoder
 
 	public void Encode(Encoder encoder, uint symbol)
 	{
-		uint num = (encoder.Range >> 11) * Prob;
+		uint newBound = (encoder.Range >> 11) * Prob;
 		if (symbol == 0)
 		{
-			encoder.Range = num;
+			encoder.Range = newBound;
 			Prob += 2048 - Prob >> 5;
 		}
 		else
 		{
-			encoder.Low += num;
-			encoder.Range -= num;
+			encoder.Low += newBound;
+			encoder.Range -= newBound;
 			Prob -= Prob >> 5;
 		}
 		if (encoder.Range < 16777216)
@@ -57,13 +57,13 @@ internal struct BitEncoder
 	static BitEncoder()
 	{
 		ProbPrices = new uint[512];
-		for (int num = 8; num >= 0; num--)
+		for (int i = 8; i >= 0; i--)
 		{
-			uint num2 = (uint)(1 << 9 - num - 1);
-			uint num3 = (uint)(1 << 9 - num);
-			for (uint num4 = num2; num4 < num3; num4++)
+			uint start = (uint)(1 << 9 - i - 1);
+			uint end = (uint)(1 << 9 - i);
+			for (uint j = start; j < end; j++)
 			{
-				ProbPrices[num4] = (uint)(num << 6) + (num3 - num4 << 6 >> 9 - num - 1);
+				ProbPrices[j] = (uint)(i << 6) + (end - j << 6 >> 9 - i - 1);
 			}
 		}
 	}

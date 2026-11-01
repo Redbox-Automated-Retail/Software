@@ -30,17 +30,17 @@ public class InWindow
 
 	public void MoveBlock()
 	{
-		uint num = _bufferOffset + _pos - _keepSizeBefore;
-		if (num != 0)
+		uint offset = _bufferOffset + _pos - _keepSizeBefore;
+		if (offset != 0)
 		{
-			num--;
+			offset--;
 		}
-		uint num2 = _bufferOffset + _streamPos - num;
-		for (uint num3 = 0u; num3 < num2; num3++)
+		uint numBytes = _bufferOffset + _streamPos - offset;
+		for (uint i = 0u; i < numBytes; i++)
 		{
-			_bufferBase[num3] = _bufferBase[num + num3];
+			_bufferBase[i] = _bufferBase[offset + i];
 		}
-		_bufferOffset -= num;
+		_bufferOffset -= offset;
 	}
 
 	public virtual void ReadBlock()
@@ -51,25 +51,25 @@ public class InWindow
 		}
 		while (true)
 		{
-			int num = (int)(0 - _bufferOffset + _blockSize - _streamPos);
-			if (num == 0)
+			int size = (int)(0 - _bufferOffset + _blockSize - _streamPos);
+			if (size == 0)
 			{
 				return;
 			}
-			int num2 = _stream.Read(_bufferBase, (int)(_bufferOffset + _streamPos), num);
-			if (num2 == 0)
+			int numReadBytes = _stream.Read(_bufferBase, (int)(_bufferOffset + _streamPos), size);
+			if (numReadBytes == 0)
 			{
 				break;
 			}
-			_streamPos += (uint)num2;
+			_streamPos += (uint)numReadBytes;
 			if (_streamPos >= _pos + _keepSizeAfter)
 			{
 				_posLimit = _streamPos - _keepSizeAfter;
 			}
 		}
 		_posLimit = _streamPos;
-		uint num3 = _bufferOffset + _posLimit;
-		if (num3 > _pointerToLastSafePosition)
+		uint pointerToPosition = _bufferOffset + _posLimit;
+		if (pointerToPosition > _pointerToLastSafePosition)
 		{
 			_posLimit = _pointerToLastSafePosition - _bufferOffset;
 		}
@@ -85,11 +85,11 @@ public class InWindow
 	{
 		_keepSizeBefore = keepSizeBefore;
 		_keepSizeAfter = keepSizeAfter;
-		uint num = keepSizeBefore + keepSizeAfter + keepSizeReserv;
-		if (_bufferBase == null || _blockSize != num)
+		uint blockSize = keepSizeBefore + keepSizeAfter + keepSizeReserv;
+		if (_bufferBase == null || _blockSize != blockSize)
 		{
 			Free();
-			_blockSize = num;
+			_blockSize = blockSize;
 			_bufferBase = new byte[_blockSize];
 		}
 		_pointerToLastSafePosition = _blockSize - keepSizeAfter;
@@ -119,8 +119,8 @@ public class InWindow
 		_pos++;
 		if (_pos > _posLimit)
 		{
-			uint num = _bufferOffset + _pos;
-			if (num > _pointerToLastSafePosition)
+			uint pointerToPosition = _bufferOffset + _pos;
+			if (pointerToPosition > _pointerToLastSafePosition)
 			{
 				MoveBlock();
 			}
@@ -140,12 +140,12 @@ public class InWindow
 			limit = _streamPos - (uint)(int)(_pos + index);
 		}
 		distance++;
-		uint num = _bufferOffset + _pos + (uint)index;
-		uint num2;
-		for (num2 = 0u; num2 < limit && _bufferBase[num + num2] == _bufferBase[num + num2 - distance]; num2++)
+		uint pby = _bufferOffset + _pos + (uint)index;
+		uint i;
+		for (i = 0u; i < limit && _bufferBase[pby + i] == _bufferBase[pby + i - distance]; i++)
 		{
 		}
-		return num2;
+		return i;
 	}
 
 	public uint GetNumAvailableBytes()

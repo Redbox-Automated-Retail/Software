@@ -8,47 +8,47 @@ internal struct BitTreeDecoder(int numBitLevels)
 
 	public void Init()
 	{
-		for (uint num = 1u; num < 1 << NumBitLevels; num++)
+		for (uint i = 1u; i < 1 << NumBitLevels; i++)
 		{
-			Models[num].Init();
+			Models[i].Init();
 		}
 	}
 
 	public uint Decode(Decoder rangeDecoder)
 	{
-		uint num = 1u;
-		for (int num2 = NumBitLevels; num2 > 0; num2--)
+		uint m = 1u;
+		for (int bitIndex = NumBitLevels; bitIndex > 0; bitIndex--)
 		{
-			num = (num << 1) + Models[num].Decode(rangeDecoder);
+			m = (m << 1) + Models[m].Decode(rangeDecoder);
 		}
-		return num - (uint)(1 << NumBitLevels);
+		return m - (uint)(1 << NumBitLevels);
 	}
 
 	public uint ReverseDecode(Decoder rangeDecoder)
 	{
-		uint num = 1u;
-		uint num2 = 0u;
+		uint m = 1u;
+		uint symbol = 0u;
 		for (int i = 0; i < NumBitLevels; i++)
 		{
-			uint num3 = Models[num].Decode(rangeDecoder);
-			num <<= 1;
-			num += num3;
-			num2 |= num3 << i;
+			uint bit = Models[m].Decode(rangeDecoder);
+			m <<= 1;
+			m += bit;
+			symbol |= bit << i;
 		}
-		return num2;
+		return symbol;
 	}
 
 	public static uint ReverseDecode(BitDecoder[] Models, uint startIndex, Decoder rangeDecoder, int NumBitLevels)
 	{
-		uint num = 1u;
-		uint num2 = 0u;
+		uint m = 1u;
+		uint symbol = 0u;
 		for (int i = 0; i < NumBitLevels; i++)
 		{
-			uint num3 = Models[startIndex + num].Decode(rangeDecoder);
-			num <<= 1;
-			num += num3;
-			num2 |= num3 << i;
+			uint bit = Models[startIndex + m].Decode(rangeDecoder);
+			m <<= 1;
+			m += bit;
+			symbol |= bit << i;
 		}
-		return num2;
+		return symbol;
 	}
 }

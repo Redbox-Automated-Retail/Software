@@ -65,40 +65,40 @@ internal class Decoder
 
 	public uint DecodeDirectBits(int numTotalBits)
 	{
-		uint num = Range;
-		uint num2 = Code;
-		uint num3 = 0u;
-		for (int num4 = numTotalBits; num4 > 0; num4--)
+		uint range = Range;
+		uint code = Code;
+		uint result = 0u;
+		for (int i = numTotalBits; i > 0; i--)
 		{
-			num >>= 1;
-			uint num5 = num2 - num >> 31;
-			num2 -= num & (num5 - 1);
-			num3 = (num3 << 1) | (1 - num5);
-			if (num < 16777216)
+			range >>= 1;
+			uint t = code - range >> 31;
+			code -= range & (t - 1);
+			result = (result << 1) | (1 - t);
+			if (range < 16777216)
 			{
-				num2 = (num2 << 8) | (byte)Stream.ReadByte();
-				num <<= 8;
+				code = (code << 8) | (byte)Stream.ReadByte();
+				range <<= 8;
 			}
 		}
-		Range = num;
-		Code = num2;
-		return num3;
+		Range = range;
+		Code = code;
+		return result;
 	}
 
 	public uint DecodeBit(uint size0, int numTotalBits)
 	{
-		uint num = (Range >> numTotalBits) * size0;
+		uint newBound = (Range >> numTotalBits) * size0;
 		uint result;
-		if (Code < num)
+		if (Code < newBound)
 		{
 			result = 0u;
-			Range = num;
+			Range = newBound;
 		}
 		else
 		{
 			result = 1u;
-			Code -= num;
-			Range -= num;
+			Code -= newBound;
+			Range -= newBound;
 		}
 		Normalize();
 		return result;
