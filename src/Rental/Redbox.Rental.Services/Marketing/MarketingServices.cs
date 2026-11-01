@@ -63,8 +63,8 @@ internal class MarketingServices : IMarketingServices
 				{
 					if (callback != null)
 					{
-						ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-						if (service != null)
+						ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+						if (callbackService != null)
 						{
 							RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 							{
@@ -75,7 +75,7 @@ internal class MarketingServices : IMarketingServices
 								remoteServiceResult.Errors.AddRange(errorList);
 								remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 							}
-							service.EnqueueCallback(new RemoteServiceCallbackEntry
+							callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 							{
 								Callback = callback,
 								Result = remoteServiceResult,
@@ -105,7 +105,7 @@ internal class MarketingServices : IMarketingServices
 	{
 		try
 		{
-			EmailConfirmResult obj = new EmailConfirmResult
+			EmailConfirmResult emailConfirmResult = new EmailConfirmResult
 			{
 				Success = result.Success,
 				Errors = result.Errors,
@@ -117,16 +117,16 @@ internal class MarketingServices : IMarketingServices
 				EmailVerified = result.GetProperty<bool?>("email_verified")
 			};
 			ConfirmationStatus confirmationStatus = ConfirmationStatus.DontShow;
-			if (Enum.TryParse<ConfirmationStatus>(result.GetProperty<string>("confirmation_status"), out var result2))
+			if (Enum.TryParse<ConfirmationStatus>(result.GetProperty<string>("confirmation_status"), out var parsedStatus))
 			{
-				confirmationStatus = result2;
+				confirmationStatus = parsedStatus;
 			}
 			if (confirmationStatus == ConfirmationStatus.DontShow)
 			{
 				confirmationStatus = ConfirmationStatus.DontShow;
 			}
-			((IEmailConfirmResult)obj).ConfirmationStatus = confirmationStatus;
-			return obj;
+			((IEmailConfirmResult)emailConfirmResult).ConfirmationStatus = confirmationStatus;
+			return emailConfirmResult;
 		}
 		catch (Exception e)
 		{

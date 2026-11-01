@@ -18,10 +18,10 @@ internal static class QueueFunctions
 	[KernelFunction(Name = "kernel.queuecounts2")]
 	internal static LuaTable GetQueueCounts2()
 	{
-		LuaTable value = InnerQueueCounts(out var errors);
-		LuaTable luaTable = BuildResultTable(errors);
-		luaTable["counts"] = value;
-		return luaTable;
+		LuaTable countsTable = InnerQueueCounts(out var errors);
+		LuaTable result = BuildResultTable(errors);
+		result["counts"] = countsTable;
+		return result;
 	}
 
 	[KernelFunction(Name = "kernel.queuestopworker")]
@@ -39,10 +39,10 @@ internal static class QueueFunctions
 	[KernelFunction(Name = "kernel.queueclear")]
 	internal static LuaTable ClearQueue()
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
-			return BuildResultTable(service.Clear());
+			return BuildResultTable(queueService.Clear());
 		}
 		return null;
 	}
@@ -51,13 +51,13 @@ internal static class QueueFunctions
 	internal static LuaTable GetAllMessages()
 	{
 		LuaTable table = new LuaTable(KernelService.Instance.LuaRuntime);
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service == null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService == null)
 		{
 			return table;
 		}
 		int index = 1;
-		BuildResultTable(service.ForEach(delegate(IMessage m)
+		BuildResultTable(queueService.ForEach(delegate(IMessage m)
 		{
 			table[index++] = CreateMessageTable(m);
 		}))["messages"] = table;
@@ -68,13 +68,13 @@ internal static class QueueFunctions
 	internal static LuaTable GetMessagesByType(string type)
 	{
 		LuaTable table = new LuaTable(KernelService.Instance.LuaRuntime);
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service == null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService == null)
 		{
 			return table;
 		}
 		int index = 1;
-		BuildResultTable(service.ForEach(delegate(IMessage m)
+		BuildResultTable(queueService.ForEach(delegate(IMessage m)
 		{
 			table[index++] = CreateMessageTable(m);
 		}, type))["messages"] = table;
@@ -84,19 +84,19 @@ internal static class QueueFunctions
 	[KernelFunction(Name = "kernel.queuedequeue")]
 	internal static LuaTable Dequeue(LuaFunction predicate)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service == null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService == null)
 		{
 			return null;
 		}
-		return BuildResultTable(service.Dequeue(delegate(IMessage m)
+		return BuildResultTable(queueService.Dequeue(delegate(IMessage m)
 		{
 			if (predicate == null)
 			{
 				return false;
 			}
-			ReadOnlyCollection<object> readOnlyCollection = predicate.Call(CreateMessageTable(m));
-			return readOnlyCollection != null && readOnlyCollection.Count > 0 && (bool)readOnlyCollection[0];
+			ReadOnlyCollection<object> returnValues = predicate.Call(CreateMessageTable(m));
+			return returnValues != null && returnValues.Count > 0 && (bool)returnValues[0];
 		}));
 	}
 
@@ -109,10 +109,10 @@ internal static class QueueFunctions
 	[KernelFunction(Name = "kernel.queuedeletemessage")]
 	internal static LuaTable DeleteMessage(int id)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
-			return BuildResultTable(service.DeleteMessage(id));
+			return BuildResultTable(queueService.DeleteMessage(id));
 		}
 		return null;
 	}
@@ -120,10 +120,10 @@ internal static class QueueFunctions
 	[KernelFunction(Name = "kernel.queuedeletemessagesbytype")]
 	internal static LuaTable DeleteMessageByType(string type)
 	{
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service != null)
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService != null)
 		{
-			return BuildResultTable(service.DeleteMessageByType(type));
+			return BuildResultTable(queueService.DeleteMessageByType(type));
 		}
 		return null;
 	}
@@ -131,30 +131,23 @@ internal static class QueueFunctions
 	private static LuaTable InnerQueueCounts(out ErrorList errors)
 	{
 		errors = new ErrorList();
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service == null)
+		LuaTable countsTable = new LuaTable(KernelService.Instance.LuaRuntime);
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService == null)
 		{
-			return luaTable;
+			return countsTable;
 		}
 		Dictionary<string, int> counts = new Dictionary<string, int>();
-		errors = service.ForEach(delegate(IMessage m)
+		errors = queueService.ForEach(delegate(IMessage m)
 		{
-			if (counts.ContainsKey(m.Type))
-			{
-				int num = counts[m.Type];
-				counts[m.Type] = num + 1;
-			}
-			else
-			{
-				counts[m.Type] = 1;
-			}
+			counts.TryGetValue(m.Type, out var countSoFar);
+			counts[m.Type] = countSoFar + 1;
 		});
-		foreach (KeyValuePair<string, int> item in counts)
+		foreach (KeyValuePair<string, int> count in counts)
 		{
-			luaTable[item.Key] = item.Value;
+			countsTable[count.Key] = count.Value;
 		}
-		return luaTable;
+		return countsTable;
 	}
 
 	private static LuaTable CreateMessageTable(IMessage message)
@@ -171,23 +164,23 @@ internal static class QueueFunctions
 
 	private static LuaTable BuildResultTable(ErrorList errors)
 	{
-		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		luaTable["success"] = !errors.ContainsError();
-		LuaTable luaTable2 = (LuaTable)(luaTable["errors"] = new LuaTable(KernelService.Instance.LuaRuntime));
+		LuaTable result = new LuaTable(KernelService.Instance.LuaRuntime);
+		result["success"] = !errors.ContainsError();
+		LuaTable errorsTable = (LuaTable)(result["errors"] = new LuaTable(KernelService.Instance.LuaRuntime));
 		if (!errors.ContainsError())
 		{
-			return luaTable;
+			return result;
 		}
-		int num = 1;
+		int index = 1;
 		foreach (Redbox.KioskEngine.ComponentModel.Error error in errors)
 		{
-			LuaTable luaTable4 = new LuaTable(KernelService.Instance.LuaRuntime);
-			luaTable4["code"] = error.Code;
-			luaTable4["description"] = error.Description;
-			luaTable4["details"] = error.Details;
-			luaTable2[num++] = luaTable4;
+			LuaTable errorTable = new LuaTable(KernelService.Instance.LuaRuntime);
+			errorTable["code"] = error.Code;
+			errorTable["description"] = error.Description;
+			errorTable["details"] = error.Details;
+			errorsTable[index++] = errorTable;
 		}
-		return luaTable;
+		return result;
 	}
 
 	private static LuaTable BuildCountsTable(Dictionary<string, int> counts)

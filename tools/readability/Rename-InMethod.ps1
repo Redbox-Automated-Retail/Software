@@ -1,4 +1,4 @@
-﻿# Rename-InMethod -Path <file> -Method <text of the member's declaration line> -Map @{ old = 'new'; ... }
+# Rename-InMethod -Path <file> -Method <text of the member's declaration line> -Map @{ old = 'new'; ... }
 # Whole-word renames inside one member (its declaration line up to the next member at one tab of indentation).
 param([Parameter(Mandatory)] [string] $Path, [Parameter(Mandatory)] [string] $Method, [Parameter(Mandatory)] [System.Collections.IDictionary] $Map)
 $full = (Resolve-Path $Path).Path
@@ -9,6 +9,7 @@ if ($text.IndexOf($Method, $start + 1) -ge 0) { throw "member text is not unique
 $m = [regex]::Match($text.Substring($start + $Method.Length), '\n\t(public|private|protected|internal|static|\[|#|\})'); $end = if ($m.Success) { $start + $Method.Length + $m.Index } else { $text.Length }
 $body = $text.Substring($start, $end - $start)
 foreach ($k in $Map.Keys) {
+    if ($k -eq 'value' -and [regex]::IsMatch($body, '\n\t+set\b')) { throw "value is the setter keyword in $Method; rename it by hand" }
     if ([regex]::IsMatch($body, "\b$($Map[$k])\b")) { throw "$($Map[$k]) is already used in $Method" }
     if (-not [regex]::IsMatch($body, "\b$k\b")) { throw "$k not found in $Method" }
 }

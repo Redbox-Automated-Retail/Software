@@ -12,67 +12,67 @@ public class QueueFunctions
 {
 	internal static QueuedPendingCounts GetPendingCounts()
 	{
-		QueuedPendingCounts result = new QueuedPendingCounts();
-		IQueueService service = ServiceLocator.Instance.GetService<IQueueService>();
-		if (service == null)
+		QueuedPendingCounts counts = new QueuedPendingCounts();
+		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
+		if (queueService == null)
 		{
-			return result;
+			return counts;
 		}
 		ITrackData trackData = Redbox.Rental.Services.Session.Session.Instance?.TrackData;
 		if (trackData == null || !trackData.HasValidData())
 		{
-			return result;
+			return counts;
 		}
 		IEncryptedTrackData encryptedTrackData = trackData as IEncryptedTrackData;
 		string currentCardHashId = trackData.CardHashId;
-		service.ForEach(delegate(IMessage m)
+		queueService.ForEach(delegate(IMessage m)
 		{
-			Dictionary<string, object> dictionary = Encoding.ASCII.GetString(m.Data).ToDictionary();
-			if (dictionary.ContainsKey("CreditCard"))
+			Dictionary<string, object> reconcileMessage = Encoding.ASCII.GetString(m.Data).ToDictionary();
+			if (reconcileMessage.ContainsKey("CreditCard"))
 			{
-				IDictionary<string, object> dictionary2 = (IDictionary<string, object>)dictionary["CreditCard"];
-				if ((encryptedTrackData == null || (dictionary2.ContainsKey("BIN") && string.Compare((string)dictionary2["BIN"], encryptedTrackData.FirstSix) == 0) || (dictionary2.ContainsKey("LastFour") && string.Compare((string)dictionary2["LastFour"], encryptedTrackData.LastFour) == 0)) && dictionary2.ContainsKey("CardId") && string.Compare((string)dictionary2["CardId"], currentCardHashId) == 0 && dictionary.ContainsKey("ShoppingCart"))
+				IDictionary<string, object> creditCard = (IDictionary<string, object>)reconcileMessage["CreditCard"];
+				if ((encryptedTrackData == null || (creditCard.ContainsKey("BIN") && string.Compare((string)creditCard["BIN"], encryptedTrackData.FirstSix) == 0) || (creditCard.ContainsKey("LastFour") && string.Compare((string)creditCard["LastFour"], encryptedTrackData.LastFour) == 0)) && creditCard.ContainsKey("CardId") && string.Compare((string)creditCard["CardId"], currentCardHashId) == 0 && reconcileMessage.ContainsKey("ShoppingCart"))
 				{
-					foreach (IDictionary<string, object> item in (ArrayList)((IDictionary<string, object>)dictionary["ShoppingCart"])["Groups"])
+					foreach (IDictionary<string, object> group in (ArrayList)((IDictionary<string, object>)reconcileMessage["ShoppingCart"])["Groups"])
 					{
-						if (item.ContainsKey("GroupType") && (int)item["GroupType"] == 1)
+						if (group.ContainsKey("GroupType") && (int)group["GroupType"] == 1)
 						{
-							foreach (IDictionary<string, object> item2 in (ArrayList)item["Items"])
+							foreach (IDictionary<string, object> rentalItem in (ArrayList)group["Items"])
 							{
-								if (!item2.ContainsKey("VendStatus") || (int)item2["VendStatus"] == 0)
+								if (!rentalItem.ContainsKey("VendStatus") || (int)rentalItem["VendStatus"] == 0)
 								{
-									if (item2.ContainsKey("MultiDisc") && !(bool)item2["MultiDisc"] && item2.ContainsKey("Pricing"))
+									if (rentalItem.ContainsKey("MultiDisc") && !(bool)rentalItem["MultiDisc"] && rentalItem.ContainsKey("Pricing"))
 									{
-										IDictionary<string, object> dictionary5 = (IDictionary<string, object>)item2["Pricing"];
-										if (dictionary5.ContainsKey("InitialNight") && (string.Compare(dictionary5["InitialNight"].ToString(), "0") == 0 || string.Compare(dictionary5["InitialNight"].ToString(), "0.0") == 0))
+										IDictionary<string, object> pricing = (IDictionary<string, object>)rentalItem["Pricing"];
+										if (pricing.ContainsKey("InitialNight") && (string.Compare(pricing["InitialNight"].ToString(), "0") == 0 || string.Compare(pricing["InitialNight"].ToString(), "0.0") == 0))
 										{
 											continue;
 										}
 									}
-									if (item2.ContainsKey("ProductFamily") && string.Compare((string)item2["ProductFamily"], "Movies", ignoreCase: true) == 0)
+									if (rentalItem.ContainsKey("ProductFamily") && string.Compare((string)rentalItem["ProductFamily"], "Movies", ignoreCase: true) == 0)
 									{
-										result.MovieRentalCount++;
+										counts.MovieRentalCount++;
 									}
-									if (item2.ContainsKey("ProductFamily") && string.Compare((string)item2["ProductFamily"], "Games", ignoreCase: true) == 0)
+									if (rentalItem.ContainsKey("ProductFamily") && string.Compare((string)rentalItem["ProductFamily"], "Games", ignoreCase: true) == 0)
 									{
-										result.GameRentalCount++;
+										counts.GameRentalCount++;
 									}
 								}
 							}
 						}
-						if (item.ContainsKey("GroupType") && (int)item["GroupType"] == 2)
+						if (group.ContainsKey("GroupType") && (int)group["GroupType"] == 2)
 						{
-							foreach (IDictionary<string, object> item3 in (ArrayList)item["Items"])
+							foreach (IDictionary<string, object> purchaseItem in (ArrayList)group["Items"])
 							{
-								if (!item3.ContainsKey("VendStatus") || (int)item3["VendStatus"] == 0)
+								if (!purchaseItem.ContainsKey("VendStatus") || (int)purchaseItem["VendStatus"] == 0)
 								{
-									if (item3.ContainsKey("ProductFamily") && string.Compare((string)item3["ProductFamily"], "Movies", ignoreCase: true) == 0)
+									if (purchaseItem.ContainsKey("ProductFamily") && string.Compare((string)purchaseItem["ProductFamily"], "Movies", ignoreCase: true) == 0)
 									{
-										result.MoviePurchaseCount++;
+										counts.MoviePurchaseCount++;
 									}
-									if (item3.ContainsKey("ProductFamily") && string.Compare((string)item3["ProductFamily"], "Games", ignoreCase: true) == 0)
+									if (purchaseItem.ContainsKey("ProductFamily") && string.Compare((string)purchaseItem["ProductFamily"], "Games", ignoreCase: true) == 0)
 									{
-										result.GamePurchaseCount++;
+										counts.GamePurchaseCount++;
 									}
 								}
 							}
@@ -81,6 +81,6 @@ public class QueueFunctions
 				}
 			}
 		}, "Reconcile");
-		return result;
+		return counts;
 	}
 }

@@ -60,8 +60,8 @@ internal class MarketingServices : IMarketingServices
 	{
 		get
 		{
-			string value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Marketing Optin Services", "ConfirmationStatusCode", "DoNotShow");
-			return (ConfirmationStatus)Enum.Parse(typeof(ConfirmationStatus), value, ignoreCase: true);
+			string storedStatus = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue("Remote Services\\Marketing Optin Services", "ConfirmationStatusCode", "DoNotShow");
+			return (ConfirmationStatus)Enum.Parse(typeof(ConfirmationStatus), storedStatus, ignoreCase: true);
 		}
 		set
 		{
@@ -85,12 +85,12 @@ internal class MarketingServices : IMarketingServices
 	{
 		get
 		{
-			bool? result = null;
-			if (bool.TryParse(ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>("Remote Services\\Marketing Optin Services", "EmailVerified", null), out var result2))
+			bool? emailVerified = null;
+			if (bool.TryParse(ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>("Remote Services\\Marketing Optin Services", "EmailVerified", null), out var parsed))
 			{
-				result = result2;
+				emailVerified = parsed;
 			}
-			return result;
+			return emailVerified;
 		}
 		set
 		{
@@ -201,8 +201,8 @@ internal class MarketingServices : IMarketingServices
 				{
 					if (callback != null)
 					{
-						ICallbackService service = ServiceLocator.Instance.GetService<ICallbackService>();
-						if (service != null)
+						ICallbackService callbackService = ServiceLocator.Instance.GetService<ICallbackService>();
+						if (callbackService != null)
 						{
 							RemoteServiceResult remoteServiceResult = new RemoteServiceResult
 							{
@@ -213,7 +213,7 @@ internal class MarketingServices : IMarketingServices
 								remoteServiceResult.Errors.AddRange(errorList);
 								remoteServiceResult.Success = !remoteServiceResult.Errors.ContainsError();
 							}
-							service.EnqueueCallback(new RemoteServiceCallbackEntry
+							callbackService.EnqueueCallback(new RemoteServiceCallbackEntry
 							{
 								Callback = callback,
 								Result = remoteServiceResult,
@@ -270,7 +270,7 @@ internal class MarketingServices : IMarketingServices
 	{
 		try
 		{
-			EmailConfirmResult obj = new EmailConfirmResult
+			EmailConfirmResult emailConfirmResult = new EmailConfirmResult
 			{
 				Success = result.Success,
 				Errors = result.Errors,
@@ -282,16 +282,16 @@ internal class MarketingServices : IMarketingServices
 				EmailVerified = result.GetProperty<bool?>("email_verified")
 			};
 			ConfirmationStatus confirmationStatus = ConfirmationStatus.DontShow;
-			if (Enum.TryParse<ConfirmationStatus>(result.GetProperty<string>("confirmation_status"), out var result2))
+			if (Enum.TryParse<ConfirmationStatus>(result.GetProperty<string>("confirmation_status"), out var parsedStatus))
 			{
-				confirmationStatus = result2;
+				confirmationStatus = parsedStatus;
 			}
 			if (confirmationStatus == ConfirmationStatus.DontShow)
 			{
 				confirmationStatus = ConfirmationStatus.DontShow;
 			}
-			((IEmailConfirmResult)obj).ConfirmationStatus = confirmationStatus;
-			return obj;
+			((IEmailConfirmResult)emailConfirmResult).ConfirmationStatus = confirmationStatus;
+			return emailConfirmResult;
 		}
 		catch (Exception e)
 		{
@@ -372,11 +372,11 @@ internal class MarketingServices : IMarketingServices
 				{
 					remoteServiceResult.Properties["has_errors"] = false;
 					remoteServiceResult.Success = false;
-					RemoteServiceProviderInstruction item = new RemoteServiceProviderInstruction
+					RemoteServiceProviderInstruction instruction = new RemoteServiceProviderInstruction
 					{
 						Type = InstructionType.WaitForSuccessfulPing
 					};
-					remoteServiceResult.InnerInstructions.Add(item);
+					remoteServiceResult.InnerInstructions.Add(instruction);
 					remoteServiceResult.Properties["server_name"] = "Simulated";
 					remoteServiceResult.Properties["server_busy"] = true;
 					remoteServiceResult.Properties["is_online"] = false;
@@ -397,12 +397,12 @@ internal class MarketingServices : IMarketingServices
 					remoteServiceResult.Properties["server_name"] = "Simulated";
 					remoteServiceResult.Properties["server_busy"] = false;
 					remoteServiceResult.Properties["is_online"] = true;
-					Dictionary<string, object> dictionary = new Dictionary<string, object>();
+					Dictionary<string, object> serverTime = new Dictionary<string, object>();
 					DateTime now = DateTime.Now;
-					dictionary.Add("theDate", now.Ticks);
-					dictionary.Add("dateTimeKind", "Utc");
-					dictionary.Add("dateString", now.ToString("yyyy-mm-ddThh:mm:ss"));
-					remoteServiceResult.Properties["server_time"] = dictionary;
+					serverTime.Add("theDate", now.Ticks);
+					serverTime.Add("dateTimeKind", "Utc");
+					serverTime.Add("dateString", now.ToString("yyyy-mm-ddThh:mm:ss"));
+					remoteServiceResult.Properties["server_time"] = serverTime;
 				}
 			}
 			catch (Exception e)
@@ -447,49 +447,49 @@ internal class MarketingServices : IMarketingServices
 
 	private IRemoteServiceResult KSPerformEmailConfirmationApiCall(long kioskId, string emailAddress, string accountNumber)
 	{
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
-		Dictionary<string, object> dictionary = new Dictionary<string, object>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
+		Dictionary<string, object> transactionDate = new Dictionary<string, object>();
 		DateTime now = DateTime.Now;
-		dictionary.Add("theDate", now.Ticks);
-		dictionary.Add("dateTimeKind", "Unspecified");
-		dictionary.Add("dateString", now.ToString("yyyy-mm-ddThh:mm:ss"));
+		transactionDate.Add("theDate", now.Ticks);
+		transactionDate.Add("dateTimeKind", "Unspecified");
+		transactionDate.Add("dateString", now.ToString("yyyy-mm-ddThh:mm:ss"));
 		LogHelper.Instance.Log("Live call to KioskServices EmailConfirmation, URL: {0}", KioskServicesProxy.Instance.Url);
-		IDictionary<string, object> dictionary2 = KioskServicesProxy.Instance.ExecuteMessage(new
+		IDictionary<string, object> response = KioskServicesProxy.Instance.ExecuteMessage(new
 		{
 			MessageType = "EmailConfirm",
-			TransactionDate = dictionary,
+			TransactionDate = transactionDate,
 			Email = emailAddress,
 			AccountNumber = accountNumber,
 			MessageId = Guid.NewGuid(),
 			KioskId = kioskId,
-			EngineVersion = service["EngineVersion"],
-			BundleVersion = service["ProductVersion"],
+			EngineVersion = macroService["EngineVersion"],
+			BundleVersion = macroService["ProductVersion"],
 			UseMessageControl = false
 		});
 		RemoteServiceResult remoteServiceResult = new RemoteServiceResult();
-		remoteServiceResult.Success = dictionary2.ContainsKey("Success") && (bool)dictionary2["Success"];
-		remoteServiceResult.Properties["confirmation_status"] = (dictionary2.ContainsKey("ConfirmationStatus") ? ((ConfirmationStatus)dictionary2["ConfirmationStatus"]/*cast due to constrained. prefix*/).ToString() : string.Empty);
-		remoteServiceResult.Properties["customer_profile_number"] = (dictionary2.ContainsKey("CustomerProfileNumber") ? ((string)dictionary2["CustomerProfileNumber"]) : string.Empty);
-		remoteServiceResult.Properties["mobile_phone_number"] = (dictionary2.ContainsKey("MobilePhoneNumber") ? ((string)dictionary2["MobilePhoneNumber"]) : string.Empty);
-		remoteServiceResult.Properties["prompt_for_perks"] = dictionary2.ContainsKey("PromptForPerks") && (bool)dictionary2["PromptForPerks"];
-		remoteServiceResult.Properties["prompt_for_early_id"] = dictionary2.ContainsKey("PromptForEarlyId") && (bool)dictionary2["PromptForEarlyId"];
-		remoteServiceResult.Properties["text_club_enabled"] = dictionary2.ContainsKey("TextClubEnabled") && (bool)dictionary2["TextClubEnabled"];
-		remoteServiceResult.Properties["email_verified"] = (dictionary2.ContainsKey("EmailVerified") ? ((bool?)dictionary2["EmailVerified"]) : ((bool?)null));
-		if (dictionary2.ContainsKey("Errors"))
+		remoteServiceResult.Success = response.ContainsKey("Success") && (bool)response["Success"];
+		remoteServiceResult.Properties["confirmation_status"] = (response.ContainsKey("ConfirmationStatus") ? ((ConfirmationStatus)response["ConfirmationStatus"]/*cast due to constrained. prefix*/).ToString() : string.Empty);
+		remoteServiceResult.Properties["customer_profile_number"] = (response.ContainsKey("CustomerProfileNumber") ? ((string)response["CustomerProfileNumber"]) : string.Empty);
+		remoteServiceResult.Properties["mobile_phone_number"] = (response.ContainsKey("MobilePhoneNumber") ? ((string)response["MobilePhoneNumber"]) : string.Empty);
+		remoteServiceResult.Properties["prompt_for_perks"] = response.ContainsKey("PromptForPerks") && (bool)response["PromptForPerks"];
+		remoteServiceResult.Properties["prompt_for_early_id"] = response.ContainsKey("PromptForEarlyId") && (bool)response["PromptForEarlyId"];
+		remoteServiceResult.Properties["text_club_enabled"] = response.ContainsKey("TextClubEnabled") && (bool)response["TextClubEnabled"];
+		remoteServiceResult.Properties["email_verified"] = (response.ContainsKey("EmailVerified") ? ((bool?)response["EmailVerified"]) : ((bool?)null));
+		if (response.ContainsKey("Errors"))
 		{
-			if (dictionary2["Errors"] is ArrayList)
+			if (response["Errors"] is ArrayList)
 			{
-				foreach (object item in dictionary2["Errors"] as ArrayList)
+				foreach (object errorObject in response["Errors"] as ArrayList)
 				{
-					Redbox.KioskEngine.ComponentModel.Error error = item as Redbox.KioskEngine.ComponentModel.Error;
+					Redbox.KioskEngine.ComponentModel.Error error = errorObject as Redbox.KioskEngine.ComponentModel.Error;
 					remoteServiceResult.Errors.Add(Redbox.KioskEngine.ComponentModel.Error.NewError(error.Code, error.Description, error.Details));
 				}
 			}
-			else if (dictionary2["Errors"] is IEnumerable<Redbox.KioskEngine.ComponentModel.Error>)
+			else if (response["Errors"] is IEnumerable<Redbox.KioskEngine.ComponentModel.Error>)
 			{
-				foreach (Redbox.KioskEngine.ComponentModel.Error item2 in dictionary2["Errors"] as IEnumerable<Redbox.KioskEngine.ComponentModel.Error>)
+				foreach (Redbox.KioskEngine.ComponentModel.Error responseError in response["Errors"] as IEnumerable<Redbox.KioskEngine.ComponentModel.Error>)
 				{
-					remoteServiceResult.Errors.Add(item2);
+					remoteServiceResult.Errors.Add(responseError);
 				}
 			}
 		}
@@ -499,14 +499,14 @@ internal class MarketingServices : IMarketingServices
 	private ErrorList KSPerformKioskOptInApiCall(long kioskId, IEnumerable<IOptInItem> optInItems)
 	{
 		LogHelper.Instance.Log("Live call to KioskServices KioskOptIn, URL: {0}", KioskServicesProxy.Instance.Url);
-		IMacroService service = ServiceLocator.Instance.GetService<IMacroService>();
+		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		return ServiceLocator.Instance.GetService<IQueueService>().Enqueue(200, "KioskOptIn", new
 		{
 			MessageType = "KioskOptIn",
 			MessageId = Guid.NewGuid(),
 			KioskId = kioskId,
-			EngineVersion = service["EngineVersion"],
-			BundleVersion = service["ProductVersion"],
+			EngineVersion = macroService["EngineVersion"],
+			BundleVersion = macroService["ProductVersion"],
 			RequestDate = DateTime.Now,
 			OptInItems = optInItems
 		});
