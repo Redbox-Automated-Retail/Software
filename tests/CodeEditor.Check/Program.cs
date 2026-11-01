@@ -130,6 +130,59 @@ internal static class Program
 			keyValueForm.Value = "return 42";
 			Check("NewKeyValueForm", keyValueForm.Value == "return 42", keyValueForm.Value);
 		}
+		// The IDE's property grid (WinForms PropertyGrid in place of SmartPropertyGrid).
+		using (DynamicPropertyGrid grid = new DynamicPropertyGrid { Dock = DockStyle.Fill })
+		{
+			form.Controls.Add(grid);
+			List<string> changed = new List<string>();
+			int expanded = 0;
+			grid.PropertyChanged += (s, e) => changed.Add(e.PropertyEnum.Property.Name + "=" + e.PropertyEnum.Property.Value.GetValue());
+			grid.PropertyExpanded += (s, e) =>
+			{
+				expanded++;
+				grid.BeginUpdate();
+				grid.ClearUnderProperty(e.PropertyEnum);
+				grid.AppendManagedProperty(e.PropertyEnum, 100, "x", typeof(int), 1, string.Empty);
+				grid.AppendManagedProperty(e.PropertyEnum, 101, "y", typeof(int), 2, string.Empty);
+				grid.EndUpdate();
+			};
+			grid.BeginUpdate();
+			grid.Clear();
+			grid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
+			PropertyEnumerator category = grid.AppendRootCategory(1, "Locals");
+			PropertyEnumerator name = grid.AppendManagedProperty(category, 2, "name", typeof(string), "abc", string.Empty, new System.ComponentModel.DefaultValueAttribute("abc"));
+			PropertyEnumerator table = grid.AppendManagedProperty(category, 3, "t", typeof(string), "(table)", string.Empty);
+			table.Property.Feel = grid.GetRegisteredFeel("button");
+			grid.AppendManagedProperty(table, 4, "hidden", typeof(string), null, string.Empty);
+			grid.EndUpdate();
+			Application.DoEvents();
+			PropertyGrid inner = null;
+			foreach (Control c in grid.Controls) { if (c is PropertyGrid g) { inner = g; } }
+			System.ComponentModel.PropertyDescriptorCollection props = System.ComponentModel.TypeDescriptor.GetProperties(inner.SelectedObject);
+			Check("grid: two properties", props.Count == 2, props.Count.ToString());
+			System.ComponentModel.PropertyDescriptor nameDescriptor = props.Find("p2", false);
+			Check("grid: category and name", nameDescriptor.Category == "Locals" && nameDescriptor.DisplayName == "name" && !nameDescriptor.IsReadOnly);
+			nameDescriptor.SetValue(inner.SelectedObject, "xyz");
+			Check("grid: PropertyChanged", string.Join(",", changed) == "name=xyz", string.Join(",", changed));
+			Check("grid: non-default shown", nameDescriptor.ShouldSerializeValue(inner.SelectedObject));
+			System.ComponentModel.PropertyDescriptor tableDescriptor = props.Find("p3", false);
+			Check("grid: table read-only with button", tableDescriptor.IsReadOnly && tableDescriptor.GetEditor(typeof(System.Drawing.Design.UITypeEditor)) != null);
+			System.ComponentModel.PropertyDescriptorCollection children = tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject), null);
+			Check("grid: expanded once, children filled", expanded == 1 && children.Count == 2 && children[0].DisplayName == "x", $"{expanded} {children.Count}");
+			tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject), null);
+			Check("grid: not expanded again", expanded == 1, expanded.ToString());
+		}
+
+		// The IDE main window: WeifenLuo docking, SmartPropertyGrid and the tool windows (not shown; showing needs the engine's settings services).
+		try
+		{
+			using IdeMainForm ideMainForm = new IdeMainForm();
+			Check("IdeMainForm created", ideMainForm.Controls.Count > 0);
+		}
+		catch (Exception e)
+		{
+			Check("IdeMainForm created", false, e.ToString());
+		}
 		output.WriteLine($"Scintilla {typeof(Scintilla).Assembly.GetName().Version}");
 	}
 

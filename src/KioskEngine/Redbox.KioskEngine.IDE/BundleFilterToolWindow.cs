@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using Redbox.Core;
 using Redbox.KioskEngine.ComponentModel;
 using Redbox.REDS.Framework;
-using VisualHint.SmartPropertyGrid;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Redbox.KioskEngine.IDE;
@@ -21,7 +20,7 @@ public class BundleFilterToolWindow : ToolWindow
 	public BundleFilterToolWindow()
 	{
 		InitializeComponent();
-		m_dynamicPropertyGrid.PropertyChanged += delegate(object sender, VisualHint.SmartPropertyGrid.PropertyChangedEventArgs e)
+		m_dynamicPropertyGrid.PropertyChanged += delegate(object sender, GridPropertyChangedEventArgs e)
 		{
 			if (e.PropertyEnum.Property.Tag is IPropertyType propertyType)
 			{
@@ -45,7 +44,7 @@ public class BundleFilterToolWindow : ToolWindow
 		m_dynamicPropertyGrid.SuspendLayout();
 		m_dynamicPropertyGrid.BeginUpdate();
 		m_dynamicPropertyGrid.Clear();
-		m_dynamicPropertyGrid.DisplayMode = VisualHint.SmartPropertyGrid.PropertyGrid.DisplayModes.Categorized;
+		m_dynamicPropertyGrid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 		int num = 2;
 		List<string> list = new List<string>();
 		IResourceBundleService service = ServiceLocator.Instance.GetService<IResourceBundleService>();
@@ -105,7 +104,7 @@ public class BundleFilterToolWindow : ToolWindow
 		this.m_dynamicPropertyGrid.Size = new System.Drawing.Size(460, 260);
 		this.m_dynamicPropertyGrid.TabIndex = 0;
 		this.m_dynamicPropertyGrid.ToolbarVisibility = true;
-		this.m_dynamicPropertyGrid.ToolTipMode = VisualHint.SmartPropertyGrid.PropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
+		this.m_dynamicPropertyGrid.ToolTipMode = DynamicPropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
 		this.m_dynamicPropertyGrid.RefreshGrid += new System.EventHandler(OnRefresh);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

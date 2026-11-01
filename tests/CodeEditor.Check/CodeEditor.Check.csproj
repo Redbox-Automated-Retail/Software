@@ -2,8 +2,9 @@
   <!--
     Not part of the decompiled sources. Checks Redbox.KioskEngine.IDE.CodeEditor (Scintilla in place of Puzzle.SyntaxBox)
     on both frameworks the engine builds for: what the IDE relies on from the editor (text and undo state, the
-    modified/changed events, breakpoints and line markers, go to line, find/replace), and that the IDE controls using
-    it can be created. Needs a desktop session (it creates a hidden form).
+    modified/changed events, breakpoints and line markers, go to line, find/replace), the IDE's DynamicPropertyGrid
+    (categories, change/expand events, lazy children, button editor), and that the IDE controls and main window can be
+    created. Needs a desktop session (it creates a hidden form).
   -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>

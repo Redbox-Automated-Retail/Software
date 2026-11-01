@@ -47,9 +47,6 @@
     <Reference Include="Skybound.VisualTips">
       <HintPath>..\..\..\lib\Skybound.VisualTips\Skybound.VisualTips.dll</HintPath>
     </Reference>
-    <Reference Include="SmartPropertyGrid">
-      <HintPath>..\..\..\lib\SmartPropertyGrid\SmartPropertyGrid.dll</HintPath>
-    </Reference>
     <Reference Include="WeifenLuo.WinFormsUI.Docking">
       <HintPath>..\..\..\lib\WeifenLuo\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>

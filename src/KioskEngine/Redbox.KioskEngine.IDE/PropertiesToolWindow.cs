@@ -7,7 +7,6 @@ using System.Text;
 using System.Windows.Forms;
 using Redbox.KioskEngine.ComponentModel;
 using Redbox.REDS.Framework;
-using VisualHint.SmartPropertyGrid;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Redbox.KioskEngine.IDE;
@@ -18,7 +17,7 @@ public class PropertiesToolWindow : ToolWindow
 	{
 		public IDictionary<string, object> Properties = new Dictionary<string, object>();
 
-		public virtual void UpdatePropertyHost(Property property)
+		public virtual void UpdatePropertyHost(GridProperty property)
 		{
 			if (Properties.ContainsKey("resource") && Properties.ContainsKey("propertyType"))
 			{
@@ -41,7 +40,7 @@ public class PropertiesToolWindow : ToolWindow
 	public PropertiesToolWindow()
 	{
 		InitializeComponent();
-		m_dynamicPropertyGrid.PropertyChanged += delegate(object sender, VisualHint.SmartPropertyGrid.PropertyChangedEventArgs e)
+		m_dynamicPropertyGrid.PropertyChanged += delegate(object sender, GridPropertyChangedEventArgs e)
 		{
 			if (e.PropertyEnum.Property.Tag is PropertyHandler propertyHandler)
 			{
@@ -187,7 +186,7 @@ public class PropertiesToolWindow : ToolWindow
 		this.m_dynamicPropertyGrid.TabIndex = 0;
 		this.m_dynamicPropertyGrid.Text = "dynamicPropertyGrid1";
 		this.m_dynamicPropertyGrid.ToolbarVisibility = true;
-		this.m_dynamicPropertyGrid.ToolTipMode = VisualHint.SmartPropertyGrid.PropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
+		this.m_dynamicPropertyGrid.ToolTipMode = DynamicPropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.ClientSize = new System.Drawing.Size(342, 303);

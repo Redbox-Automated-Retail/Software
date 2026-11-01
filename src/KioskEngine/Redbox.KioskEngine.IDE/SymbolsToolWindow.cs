@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using Redbox.Lua;
-using VisualHint.SmartPropertyGrid;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Redbox.KioskEngine.IDE;
@@ -38,9 +37,9 @@ public class SymbolsToolWindow : ToolWindow
 		{
 			if (e.Expanded)
 			{
-				if (m_dynamicPropertyGrid.DisplayMode != VisualHint.SmartPropertyGrid.PropertyGrid.DisplayModes.Categorized)
+				if (m_dynamicPropertyGrid.DisplayMode != DynamicPropertyGrid.DisplayModes.Categorized)
 				{
-					m_dynamicPropertyGrid.DisplayMode = VisualHint.SmartPropertyGrid.PropertyGrid.DisplayModes.Categorized;
+					m_dynamicPropertyGrid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 				}
 				else if (e.PropertyEnum.Property.Tag is LuaTable table)
 				{
@@ -110,7 +109,7 @@ public class SymbolsToolWindow : ToolWindow
 		return obj;
 	}
 
-	private void RefreshVariableGrid(VisualHint.SmartPropertyGrid.PropertyGrid grid, string category, IEnumerable<LuaVar> vars)
+	private void RefreshVariableGrid(DynamicPropertyGrid grid, string category, IEnumerable<LuaVar> vars)
 	{
 		try
 		{
@@ -118,7 +117,7 @@ public class SymbolsToolWindow : ToolWindow
 			grid.SuspendLayout();
 			grid.BeginUpdate();
 			grid.Clear();
-			grid.DisplayMode = VisualHint.SmartPropertyGrid.PropertyGrid.DisplayModes.Categorized;
+			grid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 			PropertyEnumerator underCategory = grid.AppendRootCategory(1, category);
 			int num = 2;
 			foreach (LuaVar var in vars)
@@ -154,7 +153,7 @@ public class SymbolsToolWindow : ToolWindow
 		}
 	}
 
-	private static void BuildNestedTableProperties(VisualHint.SmartPropertyGrid.PropertyGrid grid, PropertyEnumerator parentEnumerator, int id, LuaTable table, ICollection<LuaTable> visited)
+	private static void BuildNestedTableProperties(DynamicPropertyGrid grid, PropertyEnumerator parentEnumerator, int id, LuaTable table, ICollection<LuaTable> visited)
 	{
 		if (visited.Contains(table))
 		{
@@ -210,7 +209,7 @@ public class SymbolsToolWindow : ToolWindow
 		this.m_dynamicPropertyGrid.TabIndex = 0;
 		this.m_dynamicPropertyGrid.Text = "m_dynamicPropertyGrid";
 		this.m_dynamicPropertyGrid.ToolbarVisibility = true;
-		this.m_dynamicPropertyGrid.ToolTipMode = VisualHint.SmartPropertyGrid.PropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
+		this.m_dynamicPropertyGrid.ToolTipMode = DynamicPropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
 		this.m_dynamicPropertyGrid.RefreshGrid += new System.EventHandler(OnRefresh);
 		base.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

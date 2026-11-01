@@ -12,7 +12,6 @@ using Redbox.Lua;
 using Redbox.REDS.Framework;
 using Skybound.VisualTips;
 using Skybound.VisualTips.Rendering;
-using VisualHint.SmartPropertyGrid;
 
 namespace Redbox.KioskEngine.IDE;
 
@@ -759,12 +758,12 @@ public class DebuggerForm : Form
 		return obj;
 	}
 
-	private static void RefreshVariableTable(VisualHint.SmartPropertyGrid.PropertyGrid grid, string category, IEnumerable<LuaVar> vars)
+	private static void RefreshVariableTable(DynamicPropertyGrid grid, string category, IEnumerable<LuaVar> vars)
 	{
 		grid.SuspendLayout();
 		grid.BeginUpdate();
 		grid.Clear();
-		grid.DisplayMode = VisualHint.SmartPropertyGrid.PropertyGrid.DisplayModes.Categorized;
+		grid.DisplayMode = DynamicPropertyGrid.DisplayModes.Categorized;
 		PropertyEnumerator underCategory = grid.AppendRootCategory(1, category);
 		int id = 2;
 		foreach (LuaVar var in vars)
@@ -783,7 +782,7 @@ public class DebuggerForm : Form
 		grid.ResumeLayout();
 	}
 
-	private static void BuildNestedTableProperties(VisualHint.SmartPropertyGrid.PropertyGrid grid, PropertyEnumerator parentEnumerator, int id, LuaTable table, ICollection<LuaTable> visited)
+	private static void BuildNestedTableProperties(DynamicPropertyGrid grid, PropertyEnumerator parentEnumerator, int id, LuaTable table, ICollection<LuaTable> visited)
 	{
 		if (visited.Contains(table))
 		{
@@ -1257,7 +1256,7 @@ public class DebuggerForm : Form
 		this.m_localsPropertyGrid.Size = new System.Drawing.Size(516, 138);
 		this.m_localsPropertyGrid.TabIndex = 0;
 		this.m_localsPropertyGrid.ToolbarVisibility = true;
-		this.m_localsPropertyGrid.ToolTipMode = VisualHint.SmartPropertyGrid.PropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
+		this.m_localsPropertyGrid.ToolTipMode = DynamicPropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
 		this.m_globalsTabPage.Controls.Add(this.m_globalsPropertyGrid);
 		this.m_globalsTabPage.ImageIndex = 2;
 		this.m_globalsTabPage.Location = new System.Drawing.Point(4, 4);
@@ -1278,7 +1277,7 @@ public class DebuggerForm : Form
 		this.m_globalsPropertyGrid.Size = new System.Drawing.Size(516, 138);
 		this.m_globalsPropertyGrid.TabIndex = 1;
 		this.m_globalsPropertyGrid.ToolbarVisibility = true;
-		this.m_globalsPropertyGrid.ToolTipMode = VisualHint.SmartPropertyGrid.PropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
+		this.m_globalsPropertyGrid.ToolTipMode = DynamicPropertyGrid.ToolTipModes.ToolTipsOnValuesAndLabels;
 		this.m_callStackTabPage.Controls.Add(this.m_callStackListView);
 		this.m_callStackTabPage.ImageIndex = 3;
 		this.m_callStackTabPage.Location = new System.Drawing.Point(4, 4);
