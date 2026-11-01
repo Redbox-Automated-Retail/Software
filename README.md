@@ -53,6 +53,9 @@ docs/                   assembly inventory, decompilation notes, update-store su
 build/                  ILRepack re-merge targets
 tools/                  scripts that generated src/ and fixed decompiler output
 tests/                  smoke test for the reconstructed RBA SDK simulator
+installer/              kiosk installers for the self-hosted backend (not decompiled; see below)
+  classic/              Redbox's store installer (src/Installer) modernized: .NET 4.8, Windows 10/11
+  cli/                  Install-Kiosk.ps1, a command-line installer that does the same
 src/
   Common/               shared Redbox.* libraries (Core, IPC, Lua, Macros, ...)
   HAL/                  hardware abstraction layer service (halservice) and its tools
@@ -64,8 +67,15 @@ src/
   KioskClient/          KioskClientService.API (.NET Core 2.2)
   UpdateClient/         UpdateClientService.API (.NET Core 2.2) and Redbox.NetCore.*
   UpdateManager/        legacy update manager daemon/UI/console and their libraries
-  Tools/                KioskShell, kioskutil, inventoryimport
+  Installer/            the Windows 10 store installer's setup host (RIX), as decompiled
+  Tools/                KioskShell, kioskutil, inventoryimport; Reprovision (rb-reprovision, ours)
 ```
+
+The [`stock`](../../tree/stock) branch keeps the decompiled software as it was before any of our changes (the
+decompile, the fixes that make it compile, the docs and tools); `main` moves on from there. The installers in
+`installer/` and `src/Tools/Reprovision` are ours: they take a kiosk profile made by the backend (`admin
+kiosk-profile`) and need nothing else from the Backend repository to build. See
+[installer/classic](installer/classic/README.md) and [installer/cli](installer/cli/README.md).
 
 Each project folder is named after the assembly it builds. See
 [docs/assemblies.md](docs/assemblies.md) for the mapping from every shipped binary to its
