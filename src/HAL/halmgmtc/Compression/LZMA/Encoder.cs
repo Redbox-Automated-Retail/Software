@@ -36,63 +36,63 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 			public void Encode(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, byte symbol)
 			{
-				uint num = 1u;
-				for (int num2 = 7; num2 >= 0; num2--)
+				uint context = 1u;
+				for (int i = 7; i >= 0; i--)
 				{
-					uint num3 = (uint)((symbol >> num2) & 1);
-					m_Encoders[num].Encode(rangeEncoder, num3);
-					num = (num << 1) | num3;
+					uint bit = (uint)((symbol >> i) & 1);
+					m_Encoders[context].Encode(rangeEncoder, bit);
+					context = (context << 1) | bit;
 				}
 			}
 
 			public void EncodeMatched(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, byte matchByte, byte symbol)
 			{
-				uint num = 1u;
-				bool flag = true;
-				for (int num2 = 7; num2 >= 0; num2--)
+				uint context = 1u;
+				bool same = true;
+				for (int i = 7; i >= 0; i--)
 				{
-					uint num3 = (uint)((symbol >> num2) & 1);
-					uint num4 = num;
-					if (flag)
+					uint bit = (uint)((symbol >> i) & 1);
+					uint state = context;
+					if (same)
 					{
-						uint num5 = (uint)((matchByte >> num2) & 1);
-						num4 += 1 + num5 << 8;
-						flag = num5 == num3;
+						uint matchBit = (uint)((matchByte >> i) & 1);
+						state += 1 + matchBit << 8;
+						same = matchBit == bit;
 					}
-					m_Encoders[num4].Encode(rangeEncoder, num3);
-					num = (num << 1) | num3;
+					m_Encoders[state].Encode(rangeEncoder, bit);
+					context = (context << 1) | bit;
 				}
 			}
 
 			public uint GetPrice(bool matchMode, byte matchByte, byte symbol)
 			{
-				uint num = 0u;
-				uint num2 = 1u;
-				int num3 = 7;
+				uint price = 0u;
+				uint context = 1u;
+				int i = 7;
 				if (matchMode)
 				{
-					while (num3 >= 0)
+					while (i >= 0)
 					{
-						uint num4 = (uint)((matchByte >> num3) & 1);
-						uint num5 = (uint)((symbol >> num3) & 1);
-						num += m_Encoders[(1 + num4 << 8) + num2].GetPrice(num5);
-						num2 = (num2 << 1) | num5;
-						if (num4 != num5)
+						uint matchBit = (uint)((matchByte >> i) & 1);
+						uint bit = (uint)((symbol >> i) & 1);
+						price += m_Encoders[(1 + matchBit << 8) + context].GetPrice(bit);
+						context = (context << 1) | bit;
+						if (matchBit != bit)
 						{
-							num3--;
+							i--;
 							break;
 						}
-						num3--;
+						i--;
 					}
 				}
-				while (num3 >= 0)
+				while (i >= 0)
 				{
-					uint num6 = (uint)((symbol >> num3) & 1);
-					num += m_Encoders[num2].GetPrice(num6);
-					num2 = (num2 << 1) | num6;
-					num3--;
+					uint bit = (uint)((symbol >> i) & 1);
+					price += m_Encoders[context].GetPrice(bit);
+					context = (context << 1) | bit;
+					i--;
 				}
-				return num;
+				return price;
 			}
 		}
 
@@ -111,21 +111,21 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 				m_NumPosBits = numPosBits;
 				m_PosMask = (uint)((1 << numPosBits) - 1);
 				m_NumPrevBits = numPrevBits;
-				uint num = (uint)(1 << m_NumPrevBits + m_NumPosBits);
-				m_Coders = new Encoder2[num];
-				for (uint num2 = 0u; num2 < num; num2++)
+				uint numStates = (uint)(1 << m_NumPrevBits + m_NumPosBits);
+				m_Coders = new Encoder2[numStates];
+				for (uint i = 0u; i < numStates; i++)
 				{
-					m_Coders[num2].Create();
+					m_Coders[i].Create();
 				}
 			}
 		}
 
 		public void Init()
 		{
-			uint num = (uint)(1 << m_NumPrevBits + m_NumPosBits);
-			for (uint num2 = 0u; num2 < num; num2++)
+			uint numStates = (uint)(1 << m_NumPrevBits + m_NumPosBits);
+			for (uint i = 0u; i < numStates; i++)
 			{
-				m_Coders[num2].Init();
+				m_Coders[i].Init();
 			}
 		}
 
@@ -149,12 +149,10 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 		public LenEncoder()
 		{
-			for (uint num = 0u; num < 16; num++)
+			for (uint posState = 0u; posState < 16; posState++)
 			{
-				ref BitTreeEncoder reference = ref _lowCoder[num];
-				reference = new BitTreeEncoder(3);
-				ref BitTreeEncoder reference2 = ref _midCoder[num];
-				reference2 = new BitTreeEncoder(3);
+				_lowCoder[posState] = new BitTreeEncoder(3);
+				_midCoder[posState] = new BitTreeEncoder(3);
 			}
 		}
 
@@ -162,10 +160,10 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		{
 			_choice.Init();
 			_choice2.Init();
-			for (uint num = 0u; num < numPosStates; num++)
+			for (uint posState = 0u; posState < numPosStates; posState++)
 			{
-				_lowCoder[num].Init();
-				_midCoder[num].Init();
+				_lowCoder[posState].Init();
+				_midCoder[posState].Init();
 			}
 			_highCoder.Init();
 		}
@@ -194,30 +192,30 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 		public void SetPrices(uint posState, uint numSymbols, uint[] prices, uint st)
 		{
-			uint price = _choice.GetPrice0();
-			uint price2 = _choice.GetPrice1();
-			uint num = price2 + _choice2.GetPrice0();
-			uint num2 = price2 + _choice2.GetPrice1();
-			uint num3 = 0u;
-			for (num3 = 0u; num3 < 8; num3++)
+			uint a0 = _choice.GetPrice0();
+			uint a1 = _choice.GetPrice1();
+			uint b0 = a1 + _choice2.GetPrice0();
+			uint b1 = a1 + _choice2.GetPrice1();
+			uint i = 0u;
+			for (i = 0u; i < 8; i++)
 			{
-				if (num3 >= numSymbols)
+				if (i >= numSymbols)
 				{
 					return;
 				}
-				prices[st + num3] = price + _lowCoder[posState].GetPrice(num3);
+				prices[st + i] = a0 + _lowCoder[posState].GetPrice(i);
 			}
-			for (; num3 < 16; num3++)
+			for (; i < 16; i++)
 			{
-				if (num3 >= numSymbols)
+				if (i >= numSymbols)
 				{
 					return;
 				}
-				prices[st + num3] = num + _midCoder[posState].GetPrice(num3 - 8);
+				prices[st + i] = b0 + _midCoder[posState].GetPrice(i - 8);
 			}
-			for (; num3 < numSymbols; num3++)
+			for (; i < numSymbols; i++)
 			{
-				prices[st + num3] = num2 + _highCoder.GetPrice(num3 - 8 - 8);
+				prices[st + i] = b1 + _highCoder.GetPrice(i - 8 - 8);
 			}
 		}
 	}
@@ -248,9 +246,9 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 		public void UpdateTables(uint numPosStates)
 		{
-			for (uint num = 0u; num < numPosStates; num++)
+			for (uint posState = 0u; posState < numPosStates; posState++)
 			{
-				UpdateTable(num);
+				UpdateTable(posState);
 			}
 		}
 
@@ -472,9 +470,9 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		_state.Init();
 		_previousByte = 0;
-		for (uint num = 0u; num < 4; num++)
+		for (uint i = 0u; i < 4; i++)
 		{
-			_repDistances[num] = 0u;
+			_repDistances[i] = 0u;
 		}
 	}
 
@@ -508,8 +506,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		}
 		for (int j = 0; (long)j < 4L; j++)
 		{
-			ref BitTreeEncoder reference = ref _posSlotEncoder[j];
-			reference = new BitTreeEncoder(6);
+			_posSlotEncoder[j] = new BitTreeEncoder(6);
 		}
 	}
 
@@ -522,27 +519,27 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		BaseInit();
 		_rangeEncoder.Init();
-		for (uint num = 0u; num < 12; num++)
+		for (uint i = 0u; i < 12; i++)
 		{
-			for (uint num2 = 0u; num2 <= _posStateMask; num2++)
+			for (uint j = 0u; j <= _posStateMask; j++)
 			{
-				uint num3 = (num << 4) + num2;
-				_isMatch[num3].Init();
-				_isRep0Long[num3].Init();
+				uint complexState = (i << 4) + j;
+				_isMatch[complexState].Init();
+				_isRep0Long[complexState].Init();
 			}
-			_isRep[num].Init();
-			_isRepG0[num].Init();
-			_isRepG1[num].Init();
-			_isRepG2[num].Init();
+			_isRep[i].Init();
+			_isRepG0[i].Init();
+			_isRepG1[i].Init();
+			_isRepG2[i].Init();
 		}
 		_literalEncoder.Init();
-		for (uint num = 0u; num < 4; num++)
+		for (uint i = 0u; i < 4; i++)
 		{
-			_posSlotEncoder[num].Init();
+			_posSlotEncoder[i].Init();
 		}
-		for (uint num = 0u; num < 114; num++)
+		for (uint i = 0u; i < 114; i++)
 		{
-			_posEncoders[num].Init();
+			_posEncoders[i].Init();
 		}
 		_lenEncoder.Init((uint)(1 << _posStateBits));
 		_repMatchLenEncoder.Init((uint)(1 << _posStateBits));
@@ -608,8 +605,8 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	private uint GetPosLenPrice(uint pos, uint len, uint posState)
 	{
 		uint lenToPosState = Base.GetLenToPosState(len);
-		uint num = ((pos >= 128) ? (_posSlotPrices[(lenToPosState << 6) + GetPosSlot2(pos)] + _alignPrices[pos & 0xF]) : _distancesPrices[lenToPosState * 128 + pos]);
-		return num + _lenEncoder.GetPrice(len - 2, posState);
+		uint price = ((pos >= 128) ? (_posSlotPrices[(lenToPosState << 6) + GetPosSlot2(pos)] + _alignPrices[pos & 0xF]) : _distancesPrices[lenToPosState * 128 + pos]);
+		return price + _lenEncoder.GetPrice(len - 2, posState);
 	}
 
 	private uint Backward(out uint backRes, uint cur)
@@ -648,81 +645,81 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		if (_optimumEndIndex != _optimumCurrentIndex)
 		{
-			uint result = _optimum[_optimumCurrentIndex].PosPrev - _optimumCurrentIndex;
+			uint lenRes = _optimum[_optimumCurrentIndex].PosPrev - _optimumCurrentIndex;
 			backRes = _optimum[_optimumCurrentIndex].BackPrev;
 			_optimumCurrentIndex = _optimum[_optimumCurrentIndex].PosPrev;
-			return result;
+			return lenRes;
 		}
 		_optimumCurrentIndex = (_optimumEndIndex = 0u);
-		uint lenRes;
+		uint lenMain;
 		uint numDistancePairs;
 		if (!_longestMatchWasFound)
 		{
-			ReadMatchDistances(out lenRes, out numDistancePairs);
+			ReadMatchDistances(out lenMain, out numDistancePairs);
 		}
 		else
 		{
-			lenRes = _longestMatchLength;
+			lenMain = _longestMatchLength;
 			numDistancePairs = _numDistancePairs;
 			_longestMatchWasFound = false;
 		}
-		uint num = _matchFinder.GetNumAvailableBytes() + 1;
-		if (num < 2)
+		uint numAvailableBytes = _matchFinder.GetNumAvailableBytes() + 1;
+		if (numAvailableBytes < 2)
 		{
 			backRes = uint.MaxValue;
 			return 1u;
 		}
-		if (num > 273)
+		if (numAvailableBytes > 273)
 		{
-			num = 273u;
+			numAvailableBytes = 273u;
 		}
-		uint num2 = 0u;
-		for (uint num3 = 0u; num3 < 4; num3++)
+		uint repMaxIndex = 0u;
+		for (uint i = 0u; i < 4; i++)
 		{
-			reps[num3] = _repDistances[num3];
-			repLens[num3] = _matchFinder.GetMatchLen(-1, reps[num3], 273u);
-			if (repLens[num3] > repLens[num2])
+			reps[i] = _repDistances[i];
+			repLens[i] = _matchFinder.GetMatchLen(-1, reps[i], 273u);
+			if (repLens[i] > repLens[repMaxIndex])
 			{
-				num2 = num3;
+				repMaxIndex = i;
 			}
 		}
-		if (repLens[num2] >= _numFastBytes)
+		if (repLens[repMaxIndex] >= _numFastBytes)
 		{
-			backRes = num2;
-			uint num4 = repLens[num2];
-			MovePos(num4 - 1);
-			return num4;
-		}
-		if (lenRes >= _numFastBytes)
-		{
-			backRes = _matchDistances[numDistancePairs - 1] + 4;
+			backRes = repMaxIndex;
+			uint lenRes = repLens[repMaxIndex];
 			MovePos(lenRes - 1);
 			return lenRes;
 		}
-		byte indexByte = _matchFinder.GetIndexByte(-1);
-		byte indexByte2 = _matchFinder.GetIndexByte((int)(0 - _repDistances[0] - 1 - 1));
-		if (lenRes < 2 && indexByte != indexByte2 && repLens[num2] < 2)
+		if (lenMain >= _numFastBytes)
+		{
+			backRes = _matchDistances[numDistancePairs - 1] + 4;
+			MovePos(lenMain - 1);
+			return lenMain;
+		}
+		byte currentByte = _matchFinder.GetIndexByte(-1);
+		byte matchByte = _matchFinder.GetIndexByte((int)(0 - _repDistances[0] - 1 - 1));
+		if (lenMain < 2 && currentByte != matchByte && repLens[repMaxIndex] < 2)
 		{
 			backRes = uint.MaxValue;
 			return 1u;
 		}
 		_optimum[0].State = _state;
-		uint num5 = position & _posStateMask;
-		_optimum[1].Price = _isMatch[(_state.Index << 4) + num5].GetPrice0() + _literalEncoder.GetSubCoder(position, _previousByte).GetPrice(!_state.IsCharState(), indexByte2, indexByte);
+		uint posState = position & _posStateMask;
+		_optimum[1].Price = _isMatch[(_state.Index << 4) + posState].GetPrice0() + _literalEncoder.GetSubCoder(position, _previousByte).GetPrice(!_state.IsCharState(), matchByte, currentByte);
 		_optimum[1].MakeAsChar();
-		uint price = _isMatch[(_state.Index << 4) + num5].GetPrice1();
-		uint num6 = price + _isRep[_state.Index].GetPrice1();
-		if (indexByte2 == indexByte)
+		uint matchPrice = _isMatch[(_state.Index << 4) + posState].GetPrice1();
+		uint repMatchPrice = matchPrice + _isRep[_state.Index].GetPrice1();
+		if (matchByte == currentByte)
 		{
-			uint num7 = num6 + GetRepLen1Price(_state, num5);
-			if (num7 < _optimum[1].Price)
+			uint shortRepPrice = repMatchPrice + GetRepLen1Price(_state, posState);
+			if (shortRepPrice < _optimum[1].Price)
 			{
-				_optimum[1].Price = num7;
+				_optimum[1].Price = shortRepPrice;
 				_optimum[1].MakeAsShortRep();
 			}
 		}
-		uint num8 = ((lenRes >= repLens[num2]) ? lenRes : repLens[num2]);
-		if (num8 < 2)
+		uint lenEnd = ((lenMain >= repLens[repMaxIndex]) ? lenMain : repLens[repMaxIndex]);
+		if (lenEnd < 2)
 		{
 			backRes = _optimum[1].BackPrev;
 			return 1u;
@@ -732,89 +729,89 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		_optimum[0].Backs1 = reps[1];
 		_optimum[0].Backs2 = reps[2];
 		_optimum[0].Backs3 = reps[3];
-		uint num9 = num8;
+		uint len = lenEnd;
 		do
 		{
-			_optimum[num9--].Price = 268435455u;
+			_optimum[len--].Price = 268435455u;
 		}
-		while (num9 >= 2);
-		for (uint num3 = 0u; num3 < 4; num3++)
+		while (len >= 2);
+		for (uint i = 0u; i < 4; i++)
 		{
-			uint num10 = repLens[num3];
-			if (num10 < 2)
+			uint repLen = repLens[i];
+			if (repLen < 2)
 			{
 				continue;
 			}
-			uint num11 = num6 + GetPureRepPrice(num3, _state, num5);
+			uint price = repMatchPrice + GetPureRepPrice(i, _state, posState);
 			do
 			{
-				uint num12 = num11 + _repMatchLenEncoder.GetPrice(num10 - 2, num5);
-				Optimal optimal = _optimum[num10];
-				if (num12 < optimal.Price)
+				uint curAndLenPrice = price + _repMatchLenEncoder.GetPrice(repLen - 2, posState);
+				Optimal optimum = _optimum[repLen];
+				if (curAndLenPrice < optimum.Price)
 				{
-					optimal.Price = num12;
-					optimal.PosPrev = 0u;
-					optimal.BackPrev = num3;
-					optimal.Prev1IsChar = false;
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = 0u;
+					optimum.BackPrev = i;
+					optimum.Prev1IsChar = false;
 				}
 			}
-			while (--num10 >= 2);
+			while (--repLen >= 2);
 		}
-		uint num13 = price + _isRep[_state.Index].GetPrice0();
-		num9 = ((repLens[0] >= 2) ? (repLens[0] + 1) : 2u);
-		if (num9 <= lenRes)
+		uint normalMatchPrice = matchPrice + _isRep[_state.Index].GetPrice0();
+		len = ((repLens[0] >= 2) ? (repLens[0] + 1) : 2u);
+		if (len <= lenMain)
 		{
-			uint num14;
-			for (num14 = 0u; num9 > _matchDistances[num14]; num14 += 2)
+			uint offs;
+			for (offs = 0u; len > _matchDistances[offs]; offs += 2)
 			{
 			}
 			while (true)
 			{
-				uint num15 = _matchDistances[num14 + 1];
-				uint num16 = num13 + GetPosLenPrice(num15, num9, num5);
-				Optimal optimal2 = _optimum[num9];
-				if (num16 < optimal2.Price)
+				uint distance = _matchDistances[offs + 1];
+				uint curAndLenPrice = normalMatchPrice + GetPosLenPrice(distance, len, posState);
+				Optimal optimum = _optimum[len];
+				if (curAndLenPrice < optimum.Price)
 				{
-					optimal2.Price = num16;
-					optimal2.PosPrev = 0u;
-					optimal2.BackPrev = num15 + 4;
-					optimal2.Prev1IsChar = false;
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = 0u;
+					optimum.BackPrev = distance + 4;
+					optimum.Prev1IsChar = false;
 				}
-				if (num9 == _matchDistances[num14])
+				if (len == _matchDistances[offs])
 				{
-					num14 += 2;
-					if (num14 == numDistancePairs)
+					offs += 2;
+					if (offs == numDistancePairs)
 					{
 						break;
 					}
 				}
-				num9++;
+				len++;
 			}
 		}
-		uint num17 = 0u;
-		uint lenRes2;
+		uint cur = 0u;
+		uint newLen;
 		while (true)
 		{
-			num17++;
-			if (num17 == num8)
+			cur++;
+			if (cur == lenEnd)
 			{
-				return Backward(out backRes, num17);
+				return Backward(out backRes, cur);
 			}
-			ReadMatchDistances(out lenRes2, out numDistancePairs);
-			if (lenRes2 >= _numFastBytes)
+			ReadMatchDistances(out newLen, out numDistancePairs);
+			if (newLen >= _numFastBytes)
 			{
 				break;
 			}
 			position++;
-			uint num18 = _optimum[num17].PosPrev;
+			uint posPrev = _optimum[cur].PosPrev;
 			Base.State state;
-			if (_optimum[num17].Prev1IsChar)
+			if (_optimum[cur].Prev1IsChar)
 			{
-				num18--;
-				if (_optimum[num17].Prev2)
+				posPrev--;
+				if (_optimum[cur].Prev2)
 				{
-					state = _optimum[_optimum[num17].PosPrev2].State;
-					if (_optimum[num17].BackPrev2 < 4)
+					state = _optimum[_optimum[cur].PosPrev2].State;
+					if (_optimum[cur].BackPrev2 < 4)
 					{
 						state.UpdateRep();
 					}
@@ -825,17 +822,17 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 				}
 				else
 				{
-					state = _optimum[num18].State;
+					state = _optimum[posPrev].State;
 				}
 				state.UpdateChar();
 			}
 			else
 			{
-				state = _optimum[num18].State;
+				state = _optimum[posPrev].State;
 			}
-			if (num18 == num17 - 1)
+			if (posPrev == cur - 1)
 			{
-				if (_optimum[num17].IsShortRep())
+				if (_optimum[cur].IsShortRep())
 				{
 					state.UpdateShortRep();
 				}
@@ -846,17 +843,17 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			}
 			else
 			{
-				uint num19;
-				if (_optimum[num17].Prev1IsChar && _optimum[num17].Prev2)
+				uint pos;
+				if (_optimum[cur].Prev1IsChar && _optimum[cur].Prev2)
 				{
-					num18 = _optimum[num17].PosPrev2;
-					num19 = _optimum[num17].BackPrev2;
+					posPrev = _optimum[cur].PosPrev2;
+					pos = _optimum[cur].BackPrev2;
 					state.UpdateRep();
 				}
 				else
 				{
-					num19 = _optimum[num17].BackPrev;
-					if (num19 < 4)
+					pos = _optimum[cur].BackPrev;
+					if (pos < 4)
 					{
 						state.UpdateRep();
 					}
@@ -865,264 +862,264 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 						state.UpdateMatch();
 					}
 				}
-				Optimal optimal3 = _optimum[num18];
-				switch (num19)
+				Optimal opt = _optimum[posPrev];
+				switch (pos)
 				{
 				case 0u:
-					reps[0] = optimal3.Backs0;
-					reps[1] = optimal3.Backs1;
-					reps[2] = optimal3.Backs2;
-					reps[3] = optimal3.Backs3;
+					reps[0] = opt.Backs0;
+					reps[1] = opt.Backs1;
+					reps[2] = opt.Backs2;
+					reps[3] = opt.Backs3;
 					break;
 				case 1u:
-					reps[0] = optimal3.Backs1;
-					reps[1] = optimal3.Backs0;
-					reps[2] = optimal3.Backs2;
-					reps[3] = optimal3.Backs3;
+					reps[0] = opt.Backs1;
+					reps[1] = opt.Backs0;
+					reps[2] = opt.Backs2;
+					reps[3] = opt.Backs3;
 					break;
 				case 2u:
-					reps[0] = optimal3.Backs2;
-					reps[1] = optimal3.Backs0;
-					reps[2] = optimal3.Backs1;
-					reps[3] = optimal3.Backs3;
+					reps[0] = opt.Backs2;
+					reps[1] = opt.Backs0;
+					reps[2] = opt.Backs1;
+					reps[3] = opt.Backs3;
 					break;
 				case 3u:
-					reps[0] = optimal3.Backs3;
-					reps[1] = optimal3.Backs0;
-					reps[2] = optimal3.Backs1;
-					reps[3] = optimal3.Backs2;
+					reps[0] = opt.Backs3;
+					reps[1] = opt.Backs0;
+					reps[2] = opt.Backs1;
+					reps[3] = opt.Backs2;
 					break;
 				default:
-					reps[0] = num19 - 4;
-					reps[1] = optimal3.Backs0;
-					reps[2] = optimal3.Backs1;
-					reps[3] = optimal3.Backs2;
+					reps[0] = pos - 4;
+					reps[1] = opt.Backs0;
+					reps[2] = opt.Backs1;
+					reps[3] = opt.Backs2;
 					break;
 				}
 			}
-			_optimum[num17].State = state;
-			_optimum[num17].Backs0 = reps[0];
-			_optimum[num17].Backs1 = reps[1];
-			_optimum[num17].Backs2 = reps[2];
-			_optimum[num17].Backs3 = reps[3];
-			uint price2 = _optimum[num17].Price;
-			indexByte = _matchFinder.GetIndexByte(-1);
-			indexByte2 = _matchFinder.GetIndexByte((int)(0 - reps[0] - 1 - 1));
-			num5 = position & _posStateMask;
-			uint num20 = price2 + _isMatch[(state.Index << 4) + num5].GetPrice0() + _literalEncoder.GetSubCoder(position, _matchFinder.GetIndexByte(-2)).GetPrice(!state.IsCharState(), indexByte2, indexByte);
-			Optimal optimal4 = _optimum[num17 + 1];
-			bool flag = false;
-			if (num20 < optimal4.Price)
+			_optimum[cur].State = state;
+			_optimum[cur].Backs0 = reps[0];
+			_optimum[cur].Backs1 = reps[1];
+			_optimum[cur].Backs2 = reps[2];
+			_optimum[cur].Backs3 = reps[3];
+			uint curPrice = _optimum[cur].Price;
+			currentByte = _matchFinder.GetIndexByte(-1);
+			matchByte = _matchFinder.GetIndexByte((int)(0 - reps[0] - 1 - 1));
+			posState = position & _posStateMask;
+			uint curAnd1Price = curPrice + _isMatch[(state.Index << 4) + posState].GetPrice0() + _literalEncoder.GetSubCoder(position, _matchFinder.GetIndexByte(-2)).GetPrice(!state.IsCharState(), matchByte, currentByte);
+			Optimal nextOptimum = _optimum[cur + 1];
+			bool nextIsChar = false;
+			if (curAnd1Price < nextOptimum.Price)
 			{
-				optimal4.Price = num20;
-				optimal4.PosPrev = num17;
-				optimal4.MakeAsChar();
-				flag = true;
+				nextOptimum.Price = curAnd1Price;
+				nextOptimum.PosPrev = cur;
+				nextOptimum.MakeAsChar();
+				nextIsChar = true;
 			}
-			price = price2 + _isMatch[(state.Index << 4) + num5].GetPrice1();
-			num6 = price + _isRep[state.Index].GetPrice1();
-			if (indexByte2 == indexByte && (optimal4.PosPrev >= num17 || optimal4.BackPrev != 0))
+			matchPrice = curPrice + _isMatch[(state.Index << 4) + posState].GetPrice1();
+			repMatchPrice = matchPrice + _isRep[state.Index].GetPrice1();
+			if (matchByte == currentByte && (nextOptimum.PosPrev >= cur || nextOptimum.BackPrev != 0))
 			{
-				uint num21 = num6 + GetRepLen1Price(state, num5);
-				if (num21 <= optimal4.Price)
+				uint shortRepPrice = repMatchPrice + GetRepLen1Price(state, posState);
+				if (shortRepPrice <= nextOptimum.Price)
 				{
-					optimal4.Price = num21;
-					optimal4.PosPrev = num17;
-					optimal4.MakeAsShortRep();
-					flag = true;
+					nextOptimum.Price = shortRepPrice;
+					nextOptimum.PosPrev = cur;
+					nextOptimum.MakeAsShortRep();
+					nextIsChar = true;
 				}
 			}
-			uint val = _matchFinder.GetNumAvailableBytes() + 1;
-			val = Math.Min(4095 - num17, val);
-			num = val;
-			if (num < 2)
+			uint numAvailableBytesFull = _matchFinder.GetNumAvailableBytes() + 1;
+			numAvailableBytesFull = Math.Min(4095 - cur, numAvailableBytesFull);
+			numAvailableBytes = numAvailableBytesFull;
+			if (numAvailableBytes < 2)
 			{
 				continue;
 			}
-			if (num > _numFastBytes)
+			if (numAvailableBytes > _numFastBytes)
 			{
-				num = _numFastBytes;
+				numAvailableBytes = _numFastBytes;
 			}
-			if (!flag && indexByte2 != indexByte)
+			if (!nextIsChar && matchByte != currentByte)
 			{
-				uint limit = Math.Min(val - 1, _numFastBytes);
-				uint matchLen = _matchFinder.GetMatchLen(0, reps[0], limit);
-				if (matchLen >= 2)
+				uint t = Math.Min(numAvailableBytesFull - 1, _numFastBytes);
+				uint lenTest2 = _matchFinder.GetMatchLen(0, reps[0], t);
+				if (lenTest2 >= 2)
 				{
 					Base.State state2 = state;
 					state2.UpdateChar();
-					uint num22 = (position + 1) & _posStateMask;
-					uint num23 = num20 + _isMatch[(state2.Index << 4) + num22].GetPrice1() + _isRep[state2.Index].GetPrice1();
-					uint num24 = num17 + 1 + matchLen;
-					while (num8 < num24)
+					uint posStateNext = (position + 1) & _posStateMask;
+					uint nextRepMatchPrice = curAnd1Price + _isMatch[(state2.Index << 4) + posStateNext].GetPrice1() + _isRep[state2.Index].GetPrice1();
+					uint offset = cur + 1 + lenTest2;
+					while (lenEnd < offset)
 					{
-						_optimum[++num8].Price = 268435455u;
+						_optimum[++lenEnd].Price = 268435455u;
 					}
-					uint num25 = num23 + GetRepPrice(0u, matchLen, state2, num22);
-					Optimal optimal5 = _optimum[num24];
-					if (num25 < optimal5.Price)
+					uint curAndLenPrice = nextRepMatchPrice + GetRepPrice(0u, lenTest2, state2, posStateNext);
+					Optimal optimum = _optimum[offset];
+					if (curAndLenPrice < optimum.Price)
 					{
-						optimal5.Price = num25;
-						optimal5.PosPrev = num17 + 1;
-						optimal5.BackPrev = 0u;
-						optimal5.Prev1IsChar = true;
-						optimal5.Prev2 = false;
+						optimum.Price = curAndLenPrice;
+						optimum.PosPrev = cur + 1;
+						optimum.BackPrev = 0u;
+						optimum.Prev1IsChar = true;
+						optimum.Prev2 = false;
 					}
 				}
 			}
-			uint num26 = 2u;
-			for (uint num27 = 0u; num27 < 4; num27++)
+			uint startLen = 2u;
+			for (uint repIndex = 0u; repIndex < 4; repIndex++)
 			{
-				uint num28 = _matchFinder.GetMatchLen(-1, reps[num27], num);
-				if (num28 < 2)
+				uint repLenTest = _matchFinder.GetMatchLen(-1, reps[repIndex], numAvailableBytes);
+				if (repLenTest < 2)
 				{
 					continue;
 				}
-				uint num29 = num28;
+				uint repLenTestTemp = repLenTest;
 				while (true)
 				{
-					if (num8 < num17 + num28)
+					if (lenEnd < cur + repLenTest)
 					{
-						_optimum[++num8].Price = 268435455u;
+						_optimum[++lenEnd].Price = 268435455u;
 						continue;
 					}
-					uint num30 = num6 + GetRepPrice(num27, num28, state, num5);
-					Optimal optimal6 = _optimum[num17 + num28];
-					if (num30 < optimal6.Price)
+					uint curAndLenPrice = repMatchPrice + GetRepPrice(repIndex, repLenTest, state, posState);
+					Optimal optimum = _optimum[cur + repLenTest];
+					if (curAndLenPrice < optimum.Price)
 					{
-						optimal6.Price = num30;
-						optimal6.PosPrev = num17;
-						optimal6.BackPrev = num27;
-						optimal6.Prev1IsChar = false;
+						optimum.Price = curAndLenPrice;
+						optimum.PosPrev = cur;
+						optimum.BackPrev = repIndex;
+						optimum.Prev1IsChar = false;
 					}
-					if (--num28 < 2)
+					if (--repLenTest < 2)
 					{
 						break;
 					}
 				}
-				num28 = num29;
-				if (num27 == 0)
+				repLenTest = repLenTestTemp;
+				if (repIndex == 0)
 				{
-					num26 = num28 + 1;
+					startLen = repLenTest + 1;
 				}
-				if (num28 >= val)
+				if (repLenTest >= numAvailableBytesFull)
 				{
 					continue;
 				}
-				uint limit2 = Math.Min(val - 1 - num28, _numFastBytes);
-				uint matchLen2 = _matchFinder.GetMatchLen((int)num28, reps[num27], limit2);
-				if (matchLen2 >= 2)
+				uint t = Math.Min(numAvailableBytesFull - 1 - repLenTest, _numFastBytes);
+				uint lenTest2 = _matchFinder.GetMatchLen((int)repLenTest, reps[repIndex], t);
+				if (lenTest2 >= 2)
 				{
-					Base.State state3 = state;
-					state3.UpdateRep();
-					uint num31 = (position + num28) & _posStateMask;
-					uint num32 = num6 + GetRepPrice(num27, num28, state, num5) + _isMatch[(state3.Index << 4) + num31].GetPrice0() + _literalEncoder.GetSubCoder(position + num28, _matchFinder.GetIndexByte((int)(num28 - 1 - 1))).GetPrice(matchMode: true, _matchFinder.GetIndexByte((int)(num28 - 1 - (reps[num27] + 1))), _matchFinder.GetIndexByte((int)(num28 - 1)));
-					state3.UpdateChar();
-					num31 = (position + num28 + 1) & _posStateMask;
-					uint num33 = num32 + _isMatch[(state3.Index << 4) + num31].GetPrice1();
-					uint num34 = num33 + _isRep[state3.Index].GetPrice1();
-					uint num35 = num28 + 1 + matchLen2;
-					while (num8 < num17 + num35)
+					Base.State state2 = state;
+					state2.UpdateRep();
+					uint posStateNext = (position + repLenTest) & _posStateMask;
+					uint curAndLenCharPrice = repMatchPrice + GetRepPrice(repIndex, repLenTest, state, posState) + _isMatch[(state2.Index << 4) + posStateNext].GetPrice0() + _literalEncoder.GetSubCoder(position + repLenTest, _matchFinder.GetIndexByte((int)(repLenTest - 1 - 1))).GetPrice(matchMode: true, _matchFinder.GetIndexByte((int)(repLenTest - 1 - (reps[repIndex] + 1))), _matchFinder.GetIndexByte((int)(repLenTest - 1)));
+					state2.UpdateChar();
+					posStateNext = (position + repLenTest + 1) & _posStateMask;
+					uint nextMatchPrice = curAndLenCharPrice + _isMatch[(state2.Index << 4) + posStateNext].GetPrice1();
+					uint nextRepMatchPrice = nextMatchPrice + _isRep[state2.Index].GetPrice1();
+					uint offset = repLenTest + 1 + lenTest2;
+					while (lenEnd < cur + offset)
 					{
-						_optimum[++num8].Price = 268435455u;
+						_optimum[++lenEnd].Price = 268435455u;
 					}
-					uint num36 = num34 + GetRepPrice(0u, matchLen2, state3, num31);
-					Optimal optimal7 = _optimum[num17 + num35];
-					if (num36 < optimal7.Price)
+					uint curAndLenPrice = nextRepMatchPrice + GetRepPrice(0u, lenTest2, state2, posStateNext);
+					Optimal optimum = _optimum[cur + offset];
+					if (curAndLenPrice < optimum.Price)
 					{
-						optimal7.Price = num36;
-						optimal7.PosPrev = num17 + num28 + 1;
-						optimal7.BackPrev = 0u;
-						optimal7.Prev1IsChar = true;
-						optimal7.Prev2 = true;
-						optimal7.PosPrev2 = num17;
-						optimal7.BackPrev2 = num27;
+						optimum.Price = curAndLenPrice;
+						optimum.PosPrev = cur + repLenTest + 1;
+						optimum.BackPrev = 0u;
+						optimum.Prev1IsChar = true;
+						optimum.Prev2 = true;
+						optimum.PosPrev2 = cur;
+						optimum.BackPrev2 = repIndex;
 					}
 				}
 			}
-			if (lenRes2 > num)
+			if (newLen > numAvailableBytes)
 			{
-				lenRes2 = num;
-				for (numDistancePairs = 0u; lenRes2 > _matchDistances[numDistancePairs]; numDistancePairs += 2)
+				newLen = numAvailableBytes;
+				for (numDistancePairs = 0u; newLen > _matchDistances[numDistancePairs]; numDistancePairs += 2)
 				{
 				}
-				_matchDistances[numDistancePairs] = lenRes2;
+				_matchDistances[numDistancePairs] = newLen;
 				numDistancePairs += 2;
 			}
-			if (lenRes2 < num26)
+			if (newLen < startLen)
 			{
 				continue;
 			}
-			num13 = price + _isRep[state.Index].GetPrice0();
-			while (num8 < num17 + lenRes2)
+			normalMatchPrice = matchPrice + _isRep[state.Index].GetPrice0();
+			while (lenEnd < cur + newLen)
 			{
-				_optimum[++num8].Price = 268435455u;
+				_optimum[++lenEnd].Price = 268435455u;
 			}
-			uint num37;
-			for (num37 = 0u; num26 > _matchDistances[num37]; num37 += 2)
+			uint offs;
+			for (offs = 0u; startLen > _matchDistances[offs]; offs += 2)
 			{
 			}
-			uint num38 = num26;
+			uint lenTest = startLen;
 			while (true)
 			{
-				uint num39 = _matchDistances[num37 + 1];
-				uint num40 = num13 + GetPosLenPrice(num39, num38, num5);
-				Optimal optimal8 = _optimum[num17 + num38];
-				if (num40 < optimal8.Price)
+				uint curBack = _matchDistances[offs + 1];
+				uint curAndLenPrice = normalMatchPrice + GetPosLenPrice(curBack, lenTest, posState);
+				Optimal optimum = _optimum[cur + lenTest];
+				if (curAndLenPrice < optimum.Price)
 				{
-					optimal8.Price = num40;
-					optimal8.PosPrev = num17;
-					optimal8.BackPrev = num39 + 4;
-					optimal8.Prev1IsChar = false;
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = cur;
+					optimum.BackPrev = curBack + 4;
+					optimum.Prev1IsChar = false;
 				}
-				if (num38 == _matchDistances[num37])
+				if (lenTest == _matchDistances[offs])
 				{
-					if (num38 < val)
+					if (lenTest < numAvailableBytesFull)
 					{
-						uint limit3 = Math.Min(val - 1 - num38, _numFastBytes);
-						uint matchLen3 = _matchFinder.GetMatchLen((int)num38, num39, limit3);
-						if (matchLen3 >= 2)
+						uint t = Math.Min(numAvailableBytesFull - 1 - lenTest, _numFastBytes);
+						uint lenTest2 = _matchFinder.GetMatchLen((int)lenTest, curBack, t);
+						if (lenTest2 >= 2)
 						{
-							Base.State state4 = state;
-							state4.UpdateMatch();
-							uint num41 = (position + num38) & _posStateMask;
-							uint num42 = num40 + _isMatch[(state4.Index << 4) + num41].GetPrice0() + _literalEncoder.GetSubCoder(position + num38, _matchFinder.GetIndexByte((int)(num38 - 1 - 1))).GetPrice(matchMode: true, _matchFinder.GetIndexByte((int)(num38 - (num39 + 1) - 1)), _matchFinder.GetIndexByte((int)(num38 - 1)));
-							state4.UpdateChar();
-							num41 = (position + num38 + 1) & _posStateMask;
-							uint num43 = num42 + _isMatch[(state4.Index << 4) + num41].GetPrice1();
-							uint num44 = num43 + _isRep[state4.Index].GetPrice1();
-							uint num45 = num38 + 1 + matchLen3;
-							while (num8 < num17 + num45)
+							Base.State state2 = state;
+							state2.UpdateMatch();
+							uint posStateNext = (position + lenTest) & _posStateMask;
+							uint curAndLenCharPrice = curAndLenPrice + _isMatch[(state2.Index << 4) + posStateNext].GetPrice0() + _literalEncoder.GetSubCoder(position + lenTest, _matchFinder.GetIndexByte((int)(lenTest - 1 - 1))).GetPrice(matchMode: true, _matchFinder.GetIndexByte((int)(lenTest - (curBack + 1) - 1)), _matchFinder.GetIndexByte((int)(lenTest - 1)));
+							state2.UpdateChar();
+							posStateNext = (position + lenTest + 1) & _posStateMask;
+							uint nextMatchPrice = curAndLenCharPrice + _isMatch[(state2.Index << 4) + posStateNext].GetPrice1();
+							uint nextRepMatchPrice = nextMatchPrice + _isRep[state2.Index].GetPrice1();
+							uint offset = lenTest + 1 + lenTest2;
+							while (lenEnd < cur + offset)
 							{
-								_optimum[++num8].Price = 268435455u;
+								_optimum[++lenEnd].Price = 268435455u;
 							}
-							num40 = num44 + GetRepPrice(0u, matchLen3, state4, num41);
-							optimal8 = _optimum[num17 + num45];
-							if (num40 < optimal8.Price)
+							curAndLenPrice = nextRepMatchPrice + GetRepPrice(0u, lenTest2, state2, posStateNext);
+							optimum = _optimum[cur + offset];
+							if (curAndLenPrice < optimum.Price)
 							{
-								optimal8.Price = num40;
-								optimal8.PosPrev = num17 + num38 + 1;
-								optimal8.BackPrev = 0u;
-								optimal8.Prev1IsChar = true;
-								optimal8.Prev2 = true;
-								optimal8.PosPrev2 = num17;
-								optimal8.BackPrev2 = num39 + 4;
+								optimum.Price = curAndLenPrice;
+								optimum.PosPrev = cur + lenTest + 1;
+								optimum.BackPrev = 0u;
+								optimum.Prev1IsChar = true;
+								optimum.Prev2 = true;
+								optimum.PosPrev2 = cur;
+								optimum.BackPrev2 = curBack + 4;
 							}
 						}
 					}
-					num37 += 2;
-					if (num37 == numDistancePairs)
+					offs += 2;
+					if (offs == numDistancePairs)
 					{
 						break;
 					}
 				}
-				num38++;
+				lenTest++;
 			}
 		}
 		_numDistancePairs = numDistancePairs;
-		_longestMatchLength = lenRes2;
+		_longestMatchLength = newLen;
 		_longestMatchWasFound = true;
-		return Backward(out backRes, num17);
+		return Backward(out backRes, cur);
 	}
 
 	private bool ChangePair(uint smallDist, uint bigDist)
@@ -1141,15 +1138,15 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			_isMatch[(_state.Index << 4) + posState].Encode(_rangeEncoder, 1u);
 			_isRep[_state.Index].Encode(_rangeEncoder, 0u);
 			_state.UpdateMatch();
-			uint num = 2u;
-			_lenEncoder.Encode(_rangeEncoder, num - 2, posState);
+			uint len = 2u;
+			_lenEncoder.Encode(_rangeEncoder, len - 2, posState);
 			uint symbol = 63u;
-			uint lenToPosState = Base.GetLenToPosState(num);
+			uint lenToPosState = Base.GetLenToPosState(len);
 			_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, symbol);
-			int num2 = 30;
-			uint num3 = (uint)((1 << num2) - 1);
-			_rangeEncoder.EncodeDirectBits(num3 >> 4, num2 - 4);
-			_posAlignEncoder.ReverseEncode(_rangeEncoder, num3 & 0xF);
+			int footerBits = 30;
+			uint posReduced = (uint)((1 << footerBits) - 1);
+			_rangeEncoder.EncodeDirectBits(posReduced >> 4, footerBits - 4);
+			_posAlignEncoder.ReverseEncode(_rangeEncoder, posReduced & 0xF);
 		}
 	}
 
@@ -1178,7 +1175,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			return;
 		}
 		_finished = true;
-		long num = nowPos64;
+		long progressPosValuePrev = nowPos64;
 		if (nowPos64 == 0)
 		{
 			if (_matchFinder.GetNumAvailableBytes() == 0)
@@ -1187,12 +1184,12 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 				return;
 			}
 			ReadMatchDistances(out var _, out var _);
-			uint num2 = (uint)(int)nowPos64 & _posStateMask;
-			_isMatch[(_state.Index << 4) + num2].Encode(_rangeEncoder, 0u);
+			uint posState = (uint)(int)nowPos64 & _posStateMask;
+			_isMatch[(_state.Index << 4) + posState].Encode(_rangeEncoder, 0u);
 			_state.UpdateChar();
-			byte indexByte = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
-			_literalEncoder.GetSubCoder((uint)nowPos64, _previousByte).Encode(_rangeEncoder, indexByte);
-			_previousByte = indexByte;
+			byte curByte = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
+			_literalEncoder.GetSubCoder((uint)nowPos64, _previousByte).Encode(_rangeEncoder, curByte);
+			_previousByte = curByte;
 			_additionalOffset--;
 			nowPos64++;
 		}
@@ -1203,42 +1200,42 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		}
 		while (true)
 		{
-			uint optimum = GetOptimum((uint)nowPos64, out var backRes);
-			uint num3 = (uint)(int)nowPos64 & _posStateMask;
-			uint num4 = (_state.Index << 4) + num3;
-			if (optimum == 1 && backRes == uint.MaxValue)
+			uint len = GetOptimum((uint)nowPos64, out var backRes);
+			uint posState = (uint)(int)nowPos64 & _posStateMask;
+			uint complexState = (_state.Index << 4) + posState;
+			if (len == 1 && backRes == uint.MaxValue)
 			{
-				_isMatch[num4].Encode(_rangeEncoder, 0u);
-				byte indexByte2 = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
+				_isMatch[complexState].Encode(_rangeEncoder, 0u);
+				byte curByte = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
 				LiteralEncoder.Encoder2 subCoder = _literalEncoder.GetSubCoder((uint)nowPos64, _previousByte);
 				if (!_state.IsCharState())
 				{
-					byte indexByte3 = _matchFinder.GetIndexByte((int)(0 - _repDistances[0] - 1 - _additionalOffset));
-					subCoder.EncodeMatched(_rangeEncoder, indexByte3, indexByte2);
+					byte matchByte = _matchFinder.GetIndexByte((int)(0 - _repDistances[0] - 1 - _additionalOffset));
+					subCoder.EncodeMatched(_rangeEncoder, matchByte, curByte);
 				}
 				else
 				{
-					subCoder.Encode(_rangeEncoder, indexByte2);
+					subCoder.Encode(_rangeEncoder, curByte);
 				}
-				_previousByte = indexByte2;
+				_previousByte = curByte;
 				_state.UpdateChar();
 			}
 			else
 			{
-				_isMatch[num4].Encode(_rangeEncoder, 1u);
+				_isMatch[complexState].Encode(_rangeEncoder, 1u);
 				if (backRes < 4)
 				{
 					_isRep[_state.Index].Encode(_rangeEncoder, 1u);
 					if (backRes == 0)
 					{
 						_isRepG0[_state.Index].Encode(_rangeEncoder, 0u);
-						if (optimum == 1)
+						if (len == 1)
 						{
-							_isRep0Long[num4].Encode(_rangeEncoder, 0u);
+							_isRep0Long[complexState].Encode(_rangeEncoder, 0u);
 						}
 						else
 						{
-							_isRep0Long[num4].Encode(_rangeEncoder, 1u);
+							_isRep0Long[complexState].Encode(_rangeEncoder, 1u);
 						}
 					}
 					else
@@ -1254,62 +1251,62 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 							_isRepG2[_state.Index].Encode(_rangeEncoder, backRes - 2);
 						}
 					}
-					if (optimum == 1)
+					if (len == 1)
 					{
 						_state.UpdateShortRep();
 					}
 					else
 					{
-						_repMatchLenEncoder.Encode(_rangeEncoder, optimum - 2, num3);
+						_repMatchLenEncoder.Encode(_rangeEncoder, len - 2, posState);
 						_state.UpdateRep();
 					}
-					uint num5 = _repDistances[backRes];
+					uint distance = _repDistances[backRes];
 					if (backRes != 0)
 					{
-						for (uint num6 = backRes; num6 >= 1; num6--)
+						for (uint i = backRes; i >= 1; i--)
 						{
-							_repDistances[num6] = _repDistances[num6 - 1];
+							_repDistances[i] = _repDistances[i - 1];
 						}
-						_repDistances[0] = num5;
+						_repDistances[0] = distance;
 					}
 				}
 				else
 				{
 					_isRep[_state.Index].Encode(_rangeEncoder, 0u);
 					_state.UpdateMatch();
-					_lenEncoder.Encode(_rangeEncoder, optimum - 2, num3);
+					_lenEncoder.Encode(_rangeEncoder, len - 2, posState);
 					backRes -= 4;
 					uint posSlot = GetPosSlot(backRes);
-					uint lenToPosState = Base.GetLenToPosState(optimum);
+					uint lenToPosState = Base.GetLenToPosState(len);
 					_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, posSlot);
 					if (posSlot >= 4)
 					{
-						int num7 = (int)((posSlot >> 1) - 1);
-						uint num8 = (2 | (posSlot & 1)) << num7;
-						uint num9 = backRes - num8;
+						int footerBits = (int)((posSlot >> 1) - 1);
+						uint baseVal = (2 | (posSlot & 1)) << footerBits;
+						uint posReduced = backRes - baseVal;
 						if (posSlot < 14)
 						{
-							BitTreeEncoder.ReverseEncode(_posEncoders, num8 - posSlot - 1, _rangeEncoder, num7, num9);
+							BitTreeEncoder.ReverseEncode(_posEncoders, baseVal - posSlot - 1, _rangeEncoder, footerBits, posReduced);
 						}
 						else
 						{
-							_rangeEncoder.EncodeDirectBits(num9 >> 4, num7 - 4);
-							_posAlignEncoder.ReverseEncode(_rangeEncoder, num9 & 0xF);
+							_rangeEncoder.EncodeDirectBits(posReduced >> 4, footerBits - 4);
+							_posAlignEncoder.ReverseEncode(_rangeEncoder, posReduced & 0xF);
 							_alignPriceCount++;
 						}
 					}
-					uint num10 = backRes;
-					for (uint num11 = 3u; num11 >= 1; num11--)
+					uint distance = backRes;
+					for (uint i = 3u; i >= 1; i--)
 					{
-						_repDistances[num11] = _repDistances[num11 - 1];
+						_repDistances[i] = _repDistances[i - 1];
 					}
-					_repDistances[0] = num10;
+					_repDistances[0] = distance;
 					_matchPriceCount++;
 				}
-				_previousByte = _matchFinder.GetIndexByte((int)(optimum - 1 - _additionalOffset));
+				_previousByte = _matchFinder.GetIndexByte((int)(len - 1 - _additionalOffset));
 			}
-			_additionalOffset -= optimum;
-			nowPos64 += optimum;
+			_additionalOffset -= len;
+			nowPos64 += len;
 			if (_additionalOffset == 0)
 			{
 				if (_matchPriceCount >= 128)
@@ -1327,7 +1324,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 					Flush((uint)nowPos64);
 					return;
 				}
-				if (nowPos64 - num >= 4096)
+				if (nowPos64 - progressPosValuePrev >= 4096)
 				{
 					break;
 				}
@@ -1412,34 +1409,34 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 	private void FillDistancesPrices()
 	{
-		for (uint num = 4u; num < 128; num++)
+		for (uint i = 4u; i < 128; i++)
 		{
-			uint posSlot = GetPosSlot(num);
-			int num2 = (int)((posSlot >> 1) - 1);
-			uint num3 = (2 | (posSlot & 1)) << num2;
-			tempPrices[num] = BitTreeEncoder.ReverseGetPrice(_posEncoders, num3 - posSlot - 1, num2, num - num3);
+			uint posSlot = GetPosSlot(i);
+			int footerBits = (int)((posSlot >> 1) - 1);
+			uint baseVal = (2 | (posSlot & 1)) << footerBits;
+			tempPrices[i] = BitTreeEncoder.ReverseGetPrice(_posEncoders, baseVal - posSlot - 1, footerBits, i - baseVal);
 		}
-		for (uint num4 = 0u; num4 < 4; num4++)
+		for (uint lenToPosState = 0u; lenToPosState < 4; lenToPosState++)
 		{
-			BitTreeEncoder bitTreeEncoder = _posSlotEncoder[num4];
-			uint num5 = num4 << 6;
-			for (uint num6 = 0u; num6 < _distTableSize; num6++)
+			BitTreeEncoder encoder = _posSlotEncoder[lenToPosState];
+			uint st = lenToPosState << 6;
+			for (uint posSlot = 0u; posSlot < _distTableSize; posSlot++)
 			{
-				_posSlotPrices[num5 + num6] = bitTreeEncoder.GetPrice(num6);
+				_posSlotPrices[st + posSlot] = encoder.GetPrice(posSlot);
 			}
-			for (uint num6 = 14u; num6 < _distTableSize; num6++)
+			for (uint posSlot = 14u; posSlot < _distTableSize; posSlot++)
 			{
-				_posSlotPrices[num5 + num6] += (num6 >> 1) - 1 - 4 << 6;
+				_posSlotPrices[st + posSlot] += (posSlot >> 1) - 1 - 4 << 6;
 			}
-			uint num7 = num4 * 128;
-			uint num8;
-			for (num8 = 0u; num8 < 4; num8++)
+			uint st2 = lenToPosState * 128;
+			uint i;
+			for (i = 0u; i < 4; i++)
 			{
-				_distancesPrices[num7 + num8] = _posSlotPrices[num5 + num8];
+				_distancesPrices[st2 + i] = _posSlotPrices[st + i];
 			}
-			for (; num8 < 128; num8++)
+			for (; i < 128; i++)
 			{
-				_distancesPrices[num7 + num8] = _posSlotPrices[num5 + GetPosSlot(num8)] + tempPrices[num8];
+				_distancesPrices[st2 + i] = _posSlotPrices[st + GetPosSlot(i)] + tempPrices[i];
 			}
 		}
 		_matchPriceCount = 0u;
@@ -1447,9 +1444,9 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 	private void FillAlignPrices()
 	{
-		for (uint num = 0u; num < 16; num++)
+		for (uint i = 0u; i < 16; i++)
 		{
-			_alignPrices[num] = _posAlignEncoder.ReverseGetPrice(num);
+			_alignPrices[i] = _posAlignEncoder.ReverseGetPrice(i);
 		}
 		_alignPriceCount = 0u;
 	}
@@ -1468,35 +1465,35 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 	public void SetCoderProperties(CoderPropID[] propIDs, object[] properties)
 	{
-		for (uint num = 0u; num < properties.Length; num++)
+		for (uint i = 0u; i < properties.Length; i++)
 		{
-			object obj = properties[num];
-			switch (propIDs[num])
+			object prop = properties[i];
+			switch (propIDs[i])
 			{
 			case CoderPropID.NumFastBytes:
-				if (!(obj is int num2))
+				if (!(prop is int numFastBytes))
 				{
 					throw new InvalidParamException();
 				}
-				if (num2 < 5 || (long)num2 > 273L)
+				if (numFastBytes < 5 || (long)numFastBytes > 273L)
 				{
 					throw new InvalidParamException();
 				}
-				_numFastBytes = (uint)num2;
+				_numFastBytes = (uint)numFastBytes;
 				break;
 			case CoderPropID.MatchFinder:
 			{
-				if (!(obj is string))
+				if (!(prop is string))
 				{
 					throw new InvalidParamException();
 				}
 				EMatchFinderType matchFinderType = _matchFinderType;
-				int num6 = FindMatchFinder(((string)obj).ToUpper());
-				if (num6 < 0)
+				int matchFinderIndex = FindMatchFinder(((string)prop).ToUpper());
+				if (matchFinderIndex < 0)
 				{
 					throw new InvalidParamException();
 				}
-				_matchFinderType = (EMatchFinderType)num6;
+				_matchFinderType = (EMatchFinderType)matchFinderIndex;
 				if (_matchFinder != null && matchFinderType != _matchFinderType)
 				{
 					_dictionarySizePrev = uint.MaxValue;
@@ -1506,62 +1503,62 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			}
 			case CoderPropID.DictionarySize:
 			{
-				if (!(obj is int num7))
+				if (!(prop is int dictionarySize))
 				{
 					throw new InvalidParamException();
 				}
-				if ((long)num7 < 1L || (long)num7 > 1073741824L)
+				if ((long)dictionarySize < 1L || (long)dictionarySize > 1073741824L)
 				{
 					throw new InvalidParamException();
 				}
-				_dictionarySize = (uint)num7;
-				int i;
-				for (i = 0; (long)i < 30L && num7 > (uint)(1 << i); i++)
+				_dictionarySize = (uint)dictionarySize;
+				int dicLogSize;
+				for (dicLogSize = 0; (long)dicLogSize < 30L && dictionarySize > (uint)(1 << dicLogSize); dicLogSize++)
 				{
 				}
-				_distTableSize = (uint)(i * 2);
+				_distTableSize = (uint)(dicLogSize * 2);
 				break;
 			}
 			case CoderPropID.PosStateBits:
-				if (!(obj is int num3))
+				if (!(prop is int posStateBits))
 				{
 					throw new InvalidParamException();
 				}
-				if (num3 < 0 || (long)num3 > 4L)
+				if (posStateBits < 0 || (long)posStateBits > 4L)
 				{
 					throw new InvalidParamException();
 				}
-				_posStateBits = num3;
+				_posStateBits = posStateBits;
 				_posStateMask = (uint)((1 << _posStateBits) - 1);
 				break;
 			case CoderPropID.LitPosBits:
-				if (!(obj is int num5))
+				if (!(prop is int litPosBits))
 				{
 					throw new InvalidParamException();
 				}
-				if (num5 < 0 || (long)num5 > 4L)
+				if (litPosBits < 0 || (long)litPosBits > 4L)
 				{
 					throw new InvalidParamException();
 				}
-				_numLiteralPosStateBits = num5;
+				_numLiteralPosStateBits = litPosBits;
 				break;
 			case CoderPropID.LitContextBits:
-				if (!(obj is int num4))
+				if (!(prop is int litContextBits))
 				{
 					throw new InvalidParamException();
 				}
-				if (num4 < 0 || (long)num4 > 8L)
+				if (litContextBits < 0 || (long)litContextBits > 8L)
 				{
 					throw new InvalidParamException();
 				}
-				_numLiteralContextBits = num4;
+				_numLiteralContextBits = litContextBits;
 				break;
 			case CoderPropID.EndMarker:
-				if (!(obj is bool))
+				if (!(prop is bool))
 				{
 					throw new InvalidParamException();
 				}
-				SetWriteEndMarkerMode((bool)obj);
+				SetWriteEndMarkerMode((bool)prop);
 				break;
 			default:
 				throw new InvalidParamException();

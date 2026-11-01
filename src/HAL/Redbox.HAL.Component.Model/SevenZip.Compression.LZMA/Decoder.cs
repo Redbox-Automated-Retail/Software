@@ -25,12 +25,10 @@ public class Decoder : ICoder, ISetDecoderProperties
 
 		public void Create(uint numPosStates)
 		{
-			for (uint num = m_NumPosStates; num < numPosStates; num++)
+			for (uint posState = m_NumPosStates; posState < numPosStates; posState++)
 			{
-				ref BitTreeDecoder reference = ref m_LowCoder[num];
-				reference = new BitTreeDecoder(3);
-				ref BitTreeDecoder reference2 = ref m_MidCoder[num];
-				reference2 = new BitTreeDecoder(3);
+				m_LowCoder[posState] = new BitTreeDecoder(3);
+				m_MidCoder[posState] = new BitTreeDecoder(3);
 			}
 			m_NumPosStates = numPosStates;
 		}
@@ -38,10 +36,10 @@ public class Decoder : ICoder, ISetDecoderProperties
 		public void Init()
 		{
 			m_Choice.Init();
-			for (uint num = 0u; num < m_NumPosStates; num++)
+			for (uint posState = 0u; posState < m_NumPosStates; posState++)
 			{
-				m_LowCoder[num].Init();
-				m_MidCoder[num].Init();
+				m_LowCoder[posState].Init();
+				m_MidCoder[posState].Init();
 			}
 			m_Choice2.Init();
 			m_HighCoder.Init();
@@ -53,13 +51,13 @@ public class Decoder : ICoder, ISetDecoderProperties
 			{
 				return m_LowCoder[posState].Decode(rangeDecoder);
 			}
-			uint num = 8u;
+			uint symbol = 8u;
 			if (m_Choice2.Decode(rangeDecoder) == 0)
 			{
-				return num + m_MidCoder[posState].Decode(rangeDecoder);
+				return symbol + m_MidCoder[posState].Decode(rangeDecoder);
 			}
-			num += 8;
-			return num + m_HighCoder.Decode(rangeDecoder);
+			symbol += 8;
+			return symbol + m_HighCoder.Decode(rangeDecoder);
 		}
 	}
 
@@ -84,35 +82,35 @@ public class Decoder : ICoder, ISetDecoderProperties
 
 			public byte DecodeNormal(SevenZip.Compression.RangeCoder.Decoder rangeDecoder)
 			{
-				uint num = 1u;
+				uint symbol = 1u;
 				do
 				{
-					num = (num << 1) | m_Decoders[num].Decode(rangeDecoder);
+					symbol = (symbol << 1) | m_Decoders[symbol].Decode(rangeDecoder);
 				}
-				while (num < 256);
-				return (byte)num;
+				while (symbol < 256);
+				return (byte)symbol;
 			}
 
 			public byte DecodeWithMatchByte(SevenZip.Compression.RangeCoder.Decoder rangeDecoder, byte matchByte)
 			{
-				uint num = 1u;
+				uint symbol = 1u;
 				do
 				{
-					uint num2 = (uint)((matchByte >> 7) & 1);
+					uint matchBit = (uint)((matchByte >> 7) & 1);
 					matchByte <<= 1;
-					uint num3 = m_Decoders[(1 + num2 << 8) + num].Decode(rangeDecoder);
-					num = (num << 1) | num3;
-					if (num2 != num3)
+					uint bit = m_Decoders[(1 + matchBit << 8) + symbol].Decode(rangeDecoder);
+					symbol = (symbol << 1) | bit;
+					if (matchBit != bit)
 					{
-						while (num < 256)
+						while (symbol < 256)
 						{
-							num = (num << 1) | m_Decoders[num].Decode(rangeDecoder);
+							symbol = (symbol << 1) | m_Decoders[symbol].Decode(rangeDecoder);
 						}
 						break;
 					}
 				}
-				while (num < 256);
-				return (byte)num;
+				while (symbol < 256);
+				return (byte)symbol;
 			}
 		}
 
@@ -131,21 +129,21 @@ public class Decoder : ICoder, ISetDecoderProperties
 				m_NumPosBits = numPosBits;
 				m_PosMask = (uint)((1 << numPosBits) - 1);
 				m_NumPrevBits = numPrevBits;
-				uint num = (uint)(1 << m_NumPrevBits + m_NumPosBits);
-				m_Coders = new Decoder2[num];
-				for (uint num2 = 0u; num2 < num; num2++)
+				uint numStates = (uint)(1 << m_NumPrevBits + m_NumPosBits);
+				m_Coders = new Decoder2[numStates];
+				for (uint i = 0u; i < numStates; i++)
 				{
-					m_Coders[num2].Create();
+					m_Coders[i].Create();
 				}
 			}
 		}
 
 		public void Init()
 		{
-			uint num = (uint)(1 << m_NumPrevBits + m_NumPosBits);
-			for (uint num2 = 0u; num2 < num; num2++)
+			uint numStates = (uint)(1 << m_NumPrevBits + m_NumPosBits);
+			for (uint i = 0u; i < numStates; i++)
 			{
-				m_Coders[num2].Init();
+				m_Coders[i].Init();
 			}
 		}
 
@@ -204,8 +202,7 @@ public class Decoder : ICoder, ISetDecoderProperties
 		m_DictionarySize = uint.MaxValue;
 		for (int i = 0; (long)i < 4L; i++)
 		{
-			ref BitTreeDecoder reference = ref m_PosSlotDecoder[i];
-			reference = new BitTreeDecoder(6);
+			m_PosSlotDecoder[i] = new BitTreeDecoder(6);
 		}
 	}
 
@@ -239,37 +236,37 @@ public class Decoder : ICoder, ISetDecoderProperties
 		{
 			throw new InvalidParamException();
 		}
-		uint num = (uint)(1 << pb);
-		m_LenDecoder.Create(num);
-		m_RepLenDecoder.Create(num);
-		m_PosStateMask = num - 1;
+		uint numPosStates = (uint)(1 << pb);
+		m_LenDecoder.Create(numPosStates);
+		m_RepLenDecoder.Create(numPosStates);
+		m_PosStateMask = numPosStates - 1;
 	}
 
 	private void Init(Stream inStream, Stream outStream)
 	{
 		m_RangeDecoder.Init(inStream);
 		m_OutWindow.Init(outStream);
-		for (uint num = 0u; num < 12; num++)
+		for (uint i = 0u; i < 12; i++)
 		{
-			for (uint num2 = 0u; num2 <= m_PosStateMask; num2++)
+			for (uint j = 0u; j <= m_PosStateMask; j++)
 			{
-				uint num3 = (num << 4) + num2;
-				m_IsMatchDecoders[num3].Init();
-				m_IsRep0LongDecoders[num3].Init();
+				uint index = (i << 4) + j;
+				m_IsMatchDecoders[index].Init();
+				m_IsRep0LongDecoders[index].Init();
 			}
-			m_IsRepDecoders[num].Init();
-			m_IsRepG0Decoders[num].Init();
-			m_IsRepG1Decoders[num].Init();
-			m_IsRepG2Decoders[num].Init();
+			m_IsRepDecoders[i].Init();
+			m_IsRepG0Decoders[i].Init();
+			m_IsRepG1Decoders[i].Init();
+			m_IsRepG2Decoders[i].Init();
 		}
 		m_LiteralDecoder.Init();
-		for (uint num = 0u; num < 4; num++)
+		for (uint i = 0u; i < 4; i++)
 		{
-			m_PosSlotDecoder[num].Init();
+			m_PosSlotDecoder[i].Init();
 		}
-		for (uint num = 0u; num < 114; num++)
+		for (uint i = 0u; i < 114; i++)
 		{
-			m_PosDecoders[num].Init();
+			m_PosDecoders[i].Init();
 		}
 		m_LenDecoder.Init();
 		m_RepLenDecoder.Init();
@@ -281,12 +278,12 @@ public class Decoder : ICoder, ISetDecoderProperties
 		Init(inStream, outStream);
 		Base.State state = default(Base.State);
 		state.Init();
-		uint num = 0u;
-		uint num2 = 0u;
-		uint num3 = 0u;
-		uint num4 = 0u;
-		ulong num5 = 0uL;
-		if (num5 < (ulong)outSize)
+		uint rep0 = 0u;
+		uint rep1 = 0u;
+		uint rep2 = 0u;
+		uint rep3 = 0u;
+		ulong nowPos64 = 0uL;
+		if (nowPos64 < (ulong)outSize)
 		{
 			if (m_IsMatchDecoders[state.Index << 4].Decode(m_RangeDecoder) != 0)
 			{
@@ -295,96 +292,96 @@ public class Decoder : ICoder, ISetDecoderProperties
 			state.UpdateChar();
 			byte b = m_LiteralDecoder.DecodeNormal(m_RangeDecoder, 0u, 0);
 			m_OutWindow.PutByte(b);
-			num5++;
+			nowPos64++;
 		}
-		while (num5 < (ulong)outSize)
+		while (nowPos64 < (ulong)outSize)
 		{
-			uint num6 = (uint)(int)num5 & m_PosStateMask;
-			if (m_IsMatchDecoders[(state.Index << 4) + num6].Decode(m_RangeDecoder) == 0)
+			uint posState = (uint)(int)nowPos64 & m_PosStateMask;
+			if (m_IsMatchDecoders[(state.Index << 4) + posState].Decode(m_RangeDecoder) == 0)
 			{
 				byte prevByte = m_OutWindow.GetByte(0u);
-				byte b2 = (state.IsCharState() ? m_LiteralDecoder.DecodeNormal(m_RangeDecoder, (uint)num5, prevByte) : m_LiteralDecoder.DecodeWithMatchByte(m_RangeDecoder, (uint)num5, prevByte, m_OutWindow.GetByte(num)));
-				m_OutWindow.PutByte(b2);
+				byte b = (state.IsCharState() ? m_LiteralDecoder.DecodeNormal(m_RangeDecoder, (uint)nowPos64, prevByte) : m_LiteralDecoder.DecodeWithMatchByte(m_RangeDecoder, (uint)nowPos64, prevByte, m_OutWindow.GetByte(rep0)));
+				m_OutWindow.PutByte(b);
 				state.UpdateChar();
-				num5++;
+				nowPos64++;
 				continue;
 			}
-			uint num8;
+			uint len;
 			if (m_IsRepDecoders[state.Index].Decode(m_RangeDecoder) == 1)
 			{
 				if (m_IsRepG0Decoders[state.Index].Decode(m_RangeDecoder) == 0)
 				{
-					if (m_IsRep0LongDecoders[(state.Index << 4) + num6].Decode(m_RangeDecoder) == 0)
+					if (m_IsRep0LongDecoders[(state.Index << 4) + posState].Decode(m_RangeDecoder) == 0)
 					{
 						state.UpdateShortRep();
-						m_OutWindow.PutByte(m_OutWindow.GetByte(num));
-						num5++;
+						m_OutWindow.PutByte(m_OutWindow.GetByte(rep0));
+						nowPos64++;
 						continue;
 					}
 				}
 				else
 				{
-					uint num7;
+					uint rep;
 					if (m_IsRepG1Decoders[state.Index].Decode(m_RangeDecoder) == 0)
 					{
-						num7 = num2;
+						rep = rep1;
 					}
 					else
 					{
 						if (m_IsRepG2Decoders[state.Index].Decode(m_RangeDecoder) == 0)
 						{
-							num7 = num3;
+							rep = rep2;
 						}
 						else
 						{
-							num7 = num4;
-							num4 = num3;
+							rep = rep3;
+							rep3 = rep2;
 						}
-						num3 = num2;
+						rep2 = rep1;
 					}
-					num2 = num;
-					num = num7;
+					rep1 = rep0;
+					rep0 = rep;
 				}
-				num8 = m_RepLenDecoder.Decode(m_RangeDecoder, num6) + 2;
+				len = m_RepLenDecoder.Decode(m_RangeDecoder, posState) + 2;
 				state.UpdateRep();
 			}
 			else
 			{
-				num4 = num3;
-				num3 = num2;
-				num2 = num;
-				num8 = 2 + m_LenDecoder.Decode(m_RangeDecoder, num6);
+				rep3 = rep2;
+				rep2 = rep1;
+				rep1 = rep0;
+				len = 2 + m_LenDecoder.Decode(m_RangeDecoder, posState);
 				state.UpdateMatch();
-				uint num9 = m_PosSlotDecoder[Base.GetLenToPosState(num8)].Decode(m_RangeDecoder);
-				if (num9 >= 4)
+				uint posSlot = m_PosSlotDecoder[Base.GetLenToPosState(len)].Decode(m_RangeDecoder);
+				if (posSlot >= 4)
 				{
-					int num10 = (int)((num9 >> 1) - 1);
-					num = (2 | (num9 & 1)) << num10;
-					if (num9 < 14)
+					int numDirectBits = (int)((posSlot >> 1) - 1);
+					rep0 = (2 | (posSlot & 1)) << numDirectBits;
+					if (posSlot < 14)
 					{
-						num += BitTreeDecoder.ReverseDecode(m_PosDecoders, num - num9 - 1, m_RangeDecoder, num10);
+						rep0 += BitTreeDecoder.ReverseDecode(m_PosDecoders, rep0 - posSlot - 1, m_RangeDecoder, numDirectBits);
 					}
 					else
 					{
-						num += m_RangeDecoder.DecodeDirectBits(num10 - 4) << 4;
-						num += m_PosAlignDecoder.ReverseDecode(m_RangeDecoder);
+						rep0 += m_RangeDecoder.DecodeDirectBits(numDirectBits - 4) << 4;
+						rep0 += m_PosAlignDecoder.ReverseDecode(m_RangeDecoder);
 					}
 				}
 				else
 				{
-					num = num9;
+					rep0 = posSlot;
 				}
 			}
-			if (num >= num5 || num >= m_DictionarySizeCheck)
+			if (rep0 >= nowPos64 || rep0 >= m_DictionarySizeCheck)
 			{
-				if (num == uint.MaxValue)
+				if (rep0 == uint.MaxValue)
 				{
 					break;
 				}
 				throw new DataErrorException();
 			}
-			m_OutWindow.CopyBlock(num, num8);
-			num5 += num8;
+			m_OutWindow.CopyBlock(rep0, len);
+			nowPos64 += len;
 		}
 		m_OutWindow.Flush();
 		m_OutWindow.ReleaseStream();
@@ -398,20 +395,20 @@ public class Decoder : ICoder, ISetDecoderProperties
 			throw new InvalidParamException();
 		}
 		int lc = properties[0] % 9;
-		int num = properties[0] / 9;
-		int lp = num % 5;
-		int num2 = num / 5;
-		if (num2 > 4)
+		int remainder = properties[0] / 9;
+		int lp = remainder % 5;
+		int pb = remainder / 5;
+		if (pb > 4)
 		{
 			throw new InvalidParamException();
 		}
-		uint num3 = 0u;
+		uint dictionarySize = 0u;
 		for (int i = 0; i < 4; i++)
 		{
-			num3 += (uint)(properties[1 + i] << i * 8);
+			dictionarySize += (uint)(properties[1 + i] << i * 8);
 		}
-		SetDictionarySize(num3);
+		SetDictionarySize(dictionarySize);
 		SetLiteralProperties(lp, lc);
-		SetPosBitsProperties(num2);
+		SetPosBitsProperties(pb);
 	}
 }

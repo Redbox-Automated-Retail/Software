@@ -75,9 +75,9 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 	public new void Init()
 	{
 		base.Init();
-		for (uint num = 0u; num < _hashSizeSum; num++)
+		for (uint i = 0u; i < _hashSizeSum; i++)
 		{
-			_hash[num] = 0u;
+			_hash[i] = 0u;
 		}
 		_cyclicBufferPos = 0u;
 		ReduceOffsets(-1);
@@ -121,234 +121,234 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 		uint keepSizeReserv = (historySize + keepAddBufferBefore + matchMaxLen + keepAddBufferAfter) / 2 + 256;
 		Create(historySize + keepAddBufferBefore, matchMaxLen + keepAddBufferAfter, keepSizeReserv);
 		_matchMaxLen = matchMaxLen;
-		uint num = historySize + 1;
-		if (_cyclicBufferSize != num)
+		uint cyclicBufferSize = historySize + 1;
+		if (_cyclicBufferSize != cyclicBufferSize)
 		{
-			_son = new uint[(_cyclicBufferSize = num) * 2];
+			_son = new uint[(_cyclicBufferSize = cyclicBufferSize) * 2];
 		}
-		uint num2 = 65536u;
+		uint hs = 65536u;
 		if (HASH_ARRAY)
 		{
-			num2 = historySize - 1;
-			num2 |= num2 >> 1;
-			num2 |= num2 >> 2;
-			num2 |= num2 >> 4;
-			num2 |= num2 >> 8;
-			num2 >>= 1;
-			num2 |= 0xFFFF;
-			if (num2 > 16777216)
+			hs = historySize - 1;
+			hs |= hs >> 1;
+			hs |= hs >> 2;
+			hs |= hs >> 4;
+			hs |= hs >> 8;
+			hs >>= 1;
+			hs |= 0xFFFF;
+			if (hs > 16777216)
 			{
-				num2 >>= 1;
+				hs >>= 1;
 			}
-			_hashMask = num2;
-			num2++;
-			num2 += kFixHashSize;
+			_hashMask = hs;
+			hs++;
+			hs += kFixHashSize;
 		}
-		if (num2 != _hashSizeSum)
+		if (hs != _hashSizeSum)
 		{
-			_hash = new uint[_hashSizeSum = num2];
+			_hash = new uint[_hashSizeSum = hs];
 		}
 	}
 
 	public uint GetMatches(uint[] distances)
 	{
-		uint num;
+		uint lenLimit;
 		if (_pos + _matchMaxLen <= _streamPos)
 		{
-			num = _matchMaxLen;
+			lenLimit = _matchMaxLen;
 		}
 		else
 		{
-			num = _streamPos - _pos;
-			if (num < kMinMatchCheck)
+			lenLimit = _streamPos - _pos;
+			if (lenLimit < kMinMatchCheck)
 			{
 				MovePos();
 				return 0u;
 			}
 		}
-		uint num2 = 0u;
-		uint num3 = ((_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0u);
-		uint num4 = _bufferOffset + _pos;
-		uint num5 = 1u;
-		uint num6 = 0u;
-		uint num7 = 0u;
-		uint num9;
+		uint offset = 0u;
+		uint matchMinPos = ((_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0u);
+		uint cur = _bufferOffset + _pos;
+		uint maxLen = 1u;
+		uint hash2Value = 0u;
+		uint hash3Value = 0u;
+		uint hashValue;
 		if (HASH_ARRAY)
 		{
-			uint num8 = CRC.Table[_bufferBase[num4]] ^ _bufferBase[num4 + 1];
-			num6 = num8 & 0x3FF;
-			num8 ^= (uint)(_bufferBase[num4 + 2] << 8);
-			num7 = num8 & 0xFFFF;
-			num9 = (num8 ^ (CRC.Table[_bufferBase[num4 + 3]] << 5)) & _hashMask;
+			uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
+			hash2Value = temp & 0x3FF;
+			temp ^= (uint)(_bufferBase[cur + 2] << 8);
+			hash3Value = temp & 0xFFFF;
+			hashValue = (temp ^ (CRC.Table[_bufferBase[cur + 3]] << 5)) & _hashMask;
 		}
 		else
 		{
-			num9 = (uint)(_bufferBase[num4] ^ (_bufferBase[num4 + 1] << 8));
+			hashValue = (uint)(_bufferBase[cur] ^ (_bufferBase[cur + 1] << 8));
 		}
-		uint num10 = _hash[kFixHashSize + num9];
+		uint curMatch = _hash[kFixHashSize + hashValue];
 		if (HASH_ARRAY)
 		{
-			uint num11 = _hash[num6];
-			uint num12 = _hash[1024 + num7];
-			_hash[num6] = _pos;
-			_hash[1024 + num7] = _pos;
-			if (num11 > num3 && _bufferBase[_bufferOffset + num11] == _bufferBase[num4])
+			uint curMatch2 = _hash[hash2Value];
+			uint curMatch3 = _hash[1024 + hash3Value];
+			_hash[hash2Value] = _pos;
+			_hash[1024 + hash3Value] = _pos;
+			if (curMatch2 > matchMinPos && _bufferBase[_bufferOffset + curMatch2] == _bufferBase[cur])
 			{
-				num5 = (distances[num2++] = 2u);
-				distances[num2++] = _pos - num11 - 1;
+				maxLen = (distances[offset++] = 2u);
+				distances[offset++] = _pos - curMatch2 - 1;
 			}
-			if (num12 > num3 && _bufferBase[_bufferOffset + num12] == _bufferBase[num4])
+			if (curMatch3 > matchMinPos && _bufferBase[_bufferOffset + curMatch3] == _bufferBase[cur])
 			{
-				if (num12 == num11)
+				if (curMatch3 == curMatch2)
 				{
-					num2 -= 2;
+					offset -= 2;
 				}
-				num5 = (distances[num2++] = 3u);
-				distances[num2++] = _pos - num12 - 1;
-				num11 = num12;
+				maxLen = (distances[offset++] = 3u);
+				distances[offset++] = _pos - curMatch3 - 1;
+				curMatch2 = curMatch3;
 			}
-			if (num2 != 0 && num11 == num10)
+			if (offset != 0 && curMatch2 == curMatch)
 			{
-				num2 -= 2;
-				num5 = 1u;
+				offset -= 2;
+				maxLen = 1u;
 			}
 		}
-		_hash[kFixHashSize + num9] = _pos;
-		uint num13 = (_cyclicBufferPos << 1) + 1;
-		uint num14 = _cyclicBufferPos << 1;
-		uint val2;
-		uint val = (val2 = kNumHashDirectBytes);
-		if (kNumHashDirectBytes != 0 && num10 > num3 && _bufferBase[_bufferOffset + num10 + kNumHashDirectBytes] != _bufferBase[num4 + kNumHashDirectBytes])
+		_hash[kFixHashSize + hashValue] = _pos;
+		uint ptr1 = (_cyclicBufferPos << 1) + 1;
+		uint ptr0 = _cyclicBufferPos << 1;
+		uint len1;
+		uint len0 = (len1 = kNumHashDirectBytes);
+		if (kNumHashDirectBytes != 0 && curMatch > matchMinPos && _bufferBase[_bufferOffset + curMatch + kNumHashDirectBytes] != _bufferBase[cur + kNumHashDirectBytes])
 		{
-			num5 = (distances[num2++] = kNumHashDirectBytes);
-			distances[num2++] = _pos - num10 - 1;
+			maxLen = (distances[offset++] = kNumHashDirectBytes);
+			distances[offset++] = _pos - curMatch - 1;
 		}
-		uint cutValue = _cutValue;
+		uint count = _cutValue;
 		while (true)
 		{
-			if (num10 <= num3 || cutValue-- == 0)
+			if (curMatch <= matchMinPos || count-- == 0)
 			{
-				_son[num13] = (_son[num14] = 0u);
+				_son[ptr1] = (_son[ptr0] = 0u);
 				break;
 			}
-			uint num15 = _pos - num10;
-			uint num16 = ((num15 <= _cyclicBufferPos) ? (_cyclicBufferPos - num15) : (_cyclicBufferPos - num15 + _cyclicBufferSize)) << 1;
-			uint num17 = _bufferOffset + num10;
-			uint num18 = Math.Min(val, val2);
-			if (_bufferBase[num17 + num18] == _bufferBase[num4 + num18])
+			uint delta = _pos - curMatch;
+			uint cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta) : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+			uint pby1 = _bufferOffset + curMatch;
+			uint len = Math.Min(len0, len1);
+			if (_bufferBase[pby1 + len] == _bufferBase[cur + len])
 			{
-				while (++num18 != num && _bufferBase[num17 + num18] == _bufferBase[num4 + num18])
+				while (++len != lenLimit && _bufferBase[pby1 + len] == _bufferBase[cur + len])
 				{
 				}
-				if (num5 < num18)
+				if (maxLen < len)
 				{
-					num5 = (distances[num2++] = num18);
-					distances[num2++] = num15 - 1;
-					if (num18 == num)
+					maxLen = (distances[offset++] = len);
+					distances[offset++] = delta - 1;
+					if (len == lenLimit)
 					{
-						_son[num14] = _son[num16];
-						_son[num13] = _son[num16 + 1];
+						_son[ptr0] = _son[cyclicPos];
+						_son[ptr1] = _son[cyclicPos + 1];
 						break;
 					}
 				}
 			}
-			if (_bufferBase[num17 + num18] < _bufferBase[num4 + num18])
+			if (_bufferBase[pby1 + len] < _bufferBase[cur + len])
 			{
-				_son[num14] = num10;
-				num14 = num16 + 1;
-				num10 = _son[num14];
-				val2 = num18;
+				_son[ptr0] = curMatch;
+				ptr0 = cyclicPos + 1;
+				curMatch = _son[ptr0];
+				len1 = len;
 			}
 			else
 			{
-				_son[num13] = num10;
-				num13 = num16;
-				num10 = _son[num13];
-				val = num18;
+				_son[ptr1] = curMatch;
+				ptr1 = cyclicPos;
+				curMatch = _son[ptr1];
+				len0 = len;
 			}
 		}
 		MovePos();
-		return num2;
+		return offset;
 	}
 
 	public void Skip(uint num)
 	{
 		do
 		{
-			uint num2;
+			uint lenLimit;
 			if (_pos + _matchMaxLen <= _streamPos)
 			{
-				num2 = _matchMaxLen;
+				lenLimit = _matchMaxLen;
 			}
 			else
 			{
-				num2 = _streamPos - _pos;
-				if (num2 < kMinMatchCheck)
+				lenLimit = _streamPos - _pos;
+				if (lenLimit < kMinMatchCheck)
 				{
 					MovePos();
 					continue;
 				}
 			}
-			uint num3 = ((_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0u);
-			uint num4 = _bufferOffset + _pos;
-			uint num8;
+			uint matchMinPos = ((_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0u);
+			uint cur = _bufferOffset + _pos;
+			uint hashValue;
 			if (HASH_ARRAY)
 			{
-				uint num5 = CRC.Table[_bufferBase[num4]] ^ _bufferBase[num4 + 1];
-				uint num6 = num5 & 0x3FF;
-				_hash[num6] = _pos;
-				num5 ^= (uint)(_bufferBase[num4 + 2] << 8);
-				uint num7 = num5 & 0xFFFF;
-				_hash[1024 + num7] = _pos;
-				num8 = (num5 ^ (CRC.Table[_bufferBase[num4 + 3]] << 5)) & _hashMask;
+				uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
+				uint hash2Value = temp & 0x3FF;
+				_hash[hash2Value] = _pos;
+				temp ^= (uint)(_bufferBase[cur + 2] << 8);
+				uint hash3Value = temp & 0xFFFF;
+				_hash[1024 + hash3Value] = _pos;
+				hashValue = (temp ^ (CRC.Table[_bufferBase[cur + 3]] << 5)) & _hashMask;
 			}
 			else
 			{
-				num8 = (uint)(_bufferBase[num4] ^ (_bufferBase[num4 + 1] << 8));
+				hashValue = (uint)(_bufferBase[cur] ^ (_bufferBase[cur + 1] << 8));
 			}
-			uint num9 = _hash[kFixHashSize + num8];
-			_hash[kFixHashSize + num8] = _pos;
-			uint num10 = (_cyclicBufferPos << 1) + 1;
-			uint num11 = _cyclicBufferPos << 1;
-			uint val2;
-			uint val = (val2 = kNumHashDirectBytes);
-			uint cutValue = _cutValue;
+			uint curMatch = _hash[kFixHashSize + hashValue];
+			_hash[kFixHashSize + hashValue] = _pos;
+			uint ptr1 = (_cyclicBufferPos << 1) + 1;
+			uint ptr0 = _cyclicBufferPos << 1;
+			uint len1;
+			uint len0 = (len1 = kNumHashDirectBytes);
+			uint count = _cutValue;
 			while (true)
 			{
-				if (num9 <= num3 || cutValue-- == 0)
+				if (curMatch <= matchMinPos || count-- == 0)
 				{
-					_son[num10] = (_son[num11] = 0u);
+					_son[ptr1] = (_son[ptr0] = 0u);
 					break;
 				}
-				uint num12 = _pos - num9;
-				uint num13 = ((num12 <= _cyclicBufferPos) ? (_cyclicBufferPos - num12) : (_cyclicBufferPos - num12 + _cyclicBufferSize)) << 1;
-				uint num14 = _bufferOffset + num9;
-				uint num15 = Math.Min(val, val2);
-				if (_bufferBase[num14 + num15] == _bufferBase[num4 + num15])
+				uint delta = _pos - curMatch;
+				uint cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta) : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+				uint pby1 = _bufferOffset + curMatch;
+				uint len = Math.Min(len0, len1);
+				if (_bufferBase[pby1 + len] == _bufferBase[cur + len])
 				{
-					while (++num15 != num2 && _bufferBase[num14 + num15] == _bufferBase[num4 + num15])
+					while (++len != lenLimit && _bufferBase[pby1 + len] == _bufferBase[cur + len])
 					{
 					}
-					if (num15 == num2)
+					if (len == lenLimit)
 					{
-						_son[num11] = _son[num13];
-						_son[num10] = _son[num13 + 1];
+						_son[ptr0] = _son[cyclicPos];
+						_son[ptr1] = _son[cyclicPos + 1];
 						break;
 					}
 				}
-				if (_bufferBase[num14 + num15] < _bufferBase[num4 + num15])
+				if (_bufferBase[pby1 + len] < _bufferBase[cur + len])
 				{
-					_son[num11] = num9;
-					num11 = num13 + 1;
-					num9 = _son[num11];
-					val2 = num15;
+					_son[ptr0] = curMatch;
+					ptr0 = cyclicPos + 1;
+					curMatch = _son[ptr0];
+					len1 = len;
 				}
 				else
 				{
-					_son[num10] = num9;
-					num10 = num13;
-					num9 = _son[num10];
-					val = num15;
+					_son[ptr1] = curMatch;
+					ptr1 = cyclicPos;
+					curMatch = _son[ptr1];
+					len0 = len;
 				}
 			}
 			MovePos();
@@ -358,11 +358,11 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 
 	private void NormalizeLinks(uint[] items, uint numItems, uint subValue)
 	{
-		for (uint num = 0u; num < numItems; num++)
+		for (uint i = 0u; i < numItems; i++)
 		{
-			uint num2 = items[num];
-			num2 = ((num2 > subValue) ? (num2 - subValue) : 0u);
-			items[num] = num2;
+			uint value = items[i];
+			value = ((value > subValue) ? (value - subValue) : 0u);
+			items[i] = value;
 		}
 	}
 
