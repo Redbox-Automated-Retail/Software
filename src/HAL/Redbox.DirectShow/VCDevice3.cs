@@ -369,18 +369,18 @@ public class VCDevice3 : IVideoSource
 	{
 		ReasonToFinishPlaying reason = ReasonToFinishPlaying.StoppedByUser;
 		SampleGrabber sampleGrabber = new SampleGrabber(OnNewFrame);
-		object obj = null;
-		object obj2 = null;
-		object obj3 = null;
+		object captureGraphObject = null;
+		object graphObject = null;
+		object grabberObject = null;
 		object retInterface = null;
 		ICaptureGraphBuilder2 captureGraphBuilder = null;
 		IFilterGraph2 filterGraph = null;
-		IBaseFilter baseFilter = null;
-		IBaseFilter baseFilter2 = null;
-		ISampleGrabber sampleGrabber2 = null;
+		IBaseFilter sourceBase = null;
+		IBaseFilter grabberBase = null;
+		ISampleGrabber sampleGrabberInterface = null;
 		IMediaControl mediaControl = null;
 		IMediaEventEx mediaEventEx = null;
-		IAMCrossbar iAMCrossbar = null;
+		IAMCrossbar crossbar = null;
 		try
 		{
 			Type typeFromCLSID = Type.GetTypeFromCLSID(Clsid.CaptureGraphBuilder2);
@@ -389,16 +389,16 @@ public class VCDevice3 : IVideoSource
 				LogHelper.Instance.Log("[DirectShow] Failed creating capture graph builder");
 				return;
 			}
-			obj = Activator.CreateInstance(typeFromCLSID);
-			captureGraphBuilder = (ICaptureGraphBuilder2)obj;
+			captureGraphObject = Activator.CreateInstance(typeFromCLSID);
+			captureGraphBuilder = (ICaptureGraphBuilder2)captureGraphObject;
 			typeFromCLSID = Type.GetTypeFromCLSID(Clsid.FilterGraph);
 			if (typeFromCLSID == null)
 			{
 				LogHelper.Instance.Log("Failed creating filter graph");
 				return;
 			}
-			obj2 = Activator.CreateInstance(typeFromCLSID);
-			filterGraph = (IFilterGraph2)obj2;
+			graphObject = Activator.CreateInstance(typeFromCLSID);
+			filterGraph = (IFilterGraph2)graphObject;
 			captureGraphBuilder.SetFiltergraph((IGraphBuilder)filterGraph);
 			sourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			if (sourceObject == null)
@@ -406,7 +406,7 @@ public class VCDevice3 : IVideoSource
 				LogHelper.Instance.Log("[DirectShow] Failed creating device object for moniker");
 				return;
 			}
-			baseFilter = (IBaseFilter)sourceObject;
+			sourceBase = (IBaseFilter)sourceObject;
 			try
 			{
 				_ = (IAMVideoControl)sourceObject;
@@ -420,26 +420,26 @@ public class VCDevice3 : IVideoSource
 				LogHelper.Instance.Log("[DirectShow] Failed creating sample grabber");
 				return;
 			}
-			obj3 = Activator.CreateInstance(typeFromCLSID);
-			sampleGrabber2 = (ISampleGrabber)obj3;
-			baseFilter2 = (IBaseFilter)obj3;
-			filterGraph.AddFilter(baseFilter, "source");
-			filterGraph.AddFilter(baseFilter2, "grabber_video");
-			AMMediaType aMMediaType = new AMMediaType();
-			aMMediaType.MajorType = MediaType.Video;
-			aMMediaType.SubType = MediaSubType.RGB24;
-			sampleGrabber2.SetMediaType(aMMediaType);
-			captureGraphBuilder.FindInterface(FindDirection.UpstreamOnly, Guid.Empty, baseFilter, typeof(IAMCrossbar).GUID, out retInterface);
+			grabberObject = Activator.CreateInstance(typeFromCLSID);
+			sampleGrabberInterface = (ISampleGrabber)grabberObject;
+			grabberBase = (IBaseFilter)grabberObject;
+			filterGraph.AddFilter(sourceBase, "source");
+			filterGraph.AddFilter(grabberBase, "grabber_video");
+			AMMediaType mediaType = new AMMediaType();
+			mediaType.MajorType = MediaType.Video;
+			mediaType.SubType = MediaSubType.RGB24;
+			sampleGrabberInterface.SetMediaType(mediaType);
+			captureGraphBuilder.FindInterface(FindDirection.UpstreamOnly, Guid.Empty, sourceBase, typeof(IAMCrossbar).GUID, out retInterface);
 			if (retInterface != null)
 			{
-				iAMCrossbar = (IAMCrossbar)retInterface;
+				crossbar = (IAMCrossbar)retInterface;
 			}
-			isCrossbarAvailable = iAMCrossbar != null;
-			crossbarVideoInputs = ColletCrossbarVideoInputs(iAMCrossbar);
-			sampleGrabber2.SetBufferSamples(bufferThem: false);
-			sampleGrabber2.SetOneShot(oneShot: false);
-			sampleGrabber2.SetCallback(sampleGrabber, 1);
-			GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, baseFilter, PinCategory.Capture, videoResolution, ref videoCapabilities);
+			isCrossbarAvailable = crossbar != null;
+			crossbarVideoInputs = ColletCrossbarVideoInputs(crossbar);
+			sampleGrabberInterface.SetBufferSamples(bufferThem: false);
+			sampleGrabberInterface.SetOneShot(oneShot: false);
+			sampleGrabberInterface.SetCallback(sampleGrabber, 1);
+			GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, sourceBase, PinCategory.Capture, videoResolution, ref videoCapabilities);
 			lock (cacheVideoCapabilities)
 			{
 				if (videoCapabilities != null && !cacheVideoCapabilities.ContainsKey(deviceMoniker))
@@ -449,15 +449,15 @@ public class VCDevice3 : IVideoSource
 			}
 			if (runGraph)
 			{
-				captureGraphBuilder.RenderStream(PinCategory.Capture, MediaType.Video, baseFilter, null, baseFilter2);
-				if (sampleGrabber2.GetConnectedMediaType(aMMediaType) == 0)
+				captureGraphBuilder.RenderStream(PinCategory.Capture, MediaType.Video, sourceBase, null, grabberBase);
+				if (sampleGrabberInterface.GetConnectedMediaType(mediaType) == 0)
 				{
-					VideoInfoHeader videoInfoHeader = (VideoInfoHeader)Marshal.PtrToStructure(aMMediaType.FormatPtr, typeof(VideoInfoHeader));
+					VideoInfoHeader videoInfoHeader = (VideoInfoHeader)Marshal.PtrToStructure(mediaType.FormatPtr, typeof(VideoInfoHeader));
 					sampleGrabber.Size = new Size(videoInfoHeader.BmiHeader.Width, videoInfoHeader.BmiHeader.Height);
-					aMMediaType.Dispose();
+					mediaType.Dispose();
 				}
-				mediaControl = (IMediaControl)obj2;
-				mediaEventEx = (IMediaEventEx)obj2;
+				mediaControl = (IMediaControl)graphObject;
+				mediaEventEx = (IMediaEventEx)graphObject;
 				mediaControl.Run();
 				StartEvent.Set();
 				LogHelper.Instance.Log("[DirectShow] graph is running; avg rate = {0}.", videoResolution.AverageFrameRate);
@@ -481,8 +481,8 @@ public class VCDevice3 : IVideoSource
 						needToSetVideoInput = false;
 						if (isCrossbarAvailable.Value)
 						{
-							SetCurrentCrossbarInput(iAMCrossbar, crossbarVideoInput);
-							crossbarVideoInput = GetCurrentCrossbarInput(iAMCrossbar);
+							SetCurrentCrossbarInput(crossbar, crossbarVideoInput);
+							crossbarVideoInput = GetCurrentCrossbarInput(crossbar);
 						}
 					}
 					if (!Triggered)
@@ -542,31 +542,31 @@ public class VCDevice3 : IVideoSource
 		{
 			captureGraphBuilder = null;
 			filterGraph = null;
-			baseFilter = null;
+			sourceBase = null;
 			mediaControl = null;
 			mediaEventEx = null;
-			iAMCrossbar = null;
-			baseFilter2 = null;
-			sampleGrabber2 = null;
-			if (obj2 != null)
+			crossbar = null;
+			grabberBase = null;
+			sampleGrabberInterface = null;
+			if (graphObject != null)
 			{
-				Marshal.ReleaseComObject(obj2);
-				obj2 = null;
+				Marshal.ReleaseComObject(graphObject);
+				graphObject = null;
 			}
 			if (sourceObject != null)
 			{
 				Marshal.ReleaseComObject(sourceObject);
 				sourceObject = null;
 			}
-			if (obj3 != null)
+			if (grabberObject != null)
 			{
-				Marshal.ReleaseComObject(obj3);
-				obj3 = null;
+				Marshal.ReleaseComObject(grabberObject);
+				grabberObject = null;
 			}
-			if (obj != null)
+			if (captureGraphObject != null)
 			{
-				Marshal.ReleaseComObject(obj);
-				obj = null;
+				Marshal.ReleaseComObject(captureGraphObject);
+				captureGraphObject = null;
 			}
 			if (retInterface != null)
 			{
@@ -657,21 +657,21 @@ public class VCDevice3 : IVideoSource
 			{
 				return cacheCrossbarVideoInputs[deviceMoniker];
 			}
-			List<VideoInput> list = new List<VideoInput>();
+			List<VideoInput> videoInputsList = new List<VideoInput>();
 			if (crossbar != null && crossbar.get_PinCounts(out var _, out var inputPinCount) == 0)
 			{
 				for (int i = 0; i < inputPinCount; i++)
 				{
 					if (crossbar.get_CrossbarPinInfo(isInputPin: true, i, out var _, out var physicalType) == 0 && physicalType < PhysicalConnectorType.AudioTuner)
 					{
-						list.Add(new VideoInput(i, physicalType));
+						videoInputsList.Add(new VideoInput(i, physicalType));
 					}
 				}
 			}
-			VideoInput[] array = new VideoInput[list.Count];
-			list.CopyTo(array);
-			cacheCrossbarVideoInputs.Add(deviceMoniker, array);
-			return array;
+			VideoInput[] videoInputs = new VideoInput[videoInputsList.Count];
+			videoInputsList.CopyTo(videoInputs);
+			cacheCrossbarVideoInputs.Add(deviceMoniker, videoInputs);
+			return videoInputs;
 		}
 	}
 
@@ -680,20 +680,20 @@ public class VCDevice3 : IVideoSource
 		VideoInput result = VideoInput.Default;
 		if (crossbar.get_PinCounts(out var outputPinCount, out var _) == 0)
 		{
-			int num = -1;
+			int videoDecoderOutputPin = -1;
 			int pinIndexRelated;
 			for (int i = 0; i < outputPinCount; i++)
 			{
 				if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out var physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 				{
-					num = i;
+					videoDecoderOutputPin = i;
 					break;
 				}
 			}
-			if (num != -1 && crossbar.get_IsRoutedTo(num, out var inputPinIndex) == 0)
+			if (videoDecoderOutputPin != -1 && crossbar.get_IsRoutedTo(videoDecoderOutputPin, out var inputPinIndex) == 0)
 			{
-				crossbar.get_CrossbarPinInfo(isInputPin: true, inputPinIndex, out pinIndexRelated, out var physicalType2);
-				result = new VideoInput(inputPinIndex, physicalType2);
+				crossbar.get_CrossbarPinInfo(isInputPin: true, inputPinIndex, out pinIndexRelated, out var inputType);
+				result = new VideoInput(inputPinIndex, inputType);
 			}
 		}
 		return result;
@@ -705,15 +705,15 @@ public class VCDevice3 : IVideoSource
 		{
 			return;
 		}
-		int num = -1;
-		int num2 = -1;
+		int videoDecoderOutputPin = -1;
+		int videoInputPin = -1;
 		int pinIndexRelated;
 		PhysicalConnectorType physicalType;
 		for (int i = 0; i < outputPinCount; i++)
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 			{
-				num = i;
+				videoDecoderOutputPin = i;
 				break;
 			}
 		}
@@ -721,13 +721,13 @@ public class VCDevice3 : IVideoSource
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: true, j, out pinIndexRelated, out physicalType) == 0 && physicalType == videoInput.Type && j == videoInput.Index)
 			{
-				num2 = j;
+				videoInputPin = j;
 				break;
 			}
 		}
-		if (num2 != -1 && num != -1 && crossbar.CanRoute(num, num2) == 0)
+		if (videoInputPin != -1 && videoDecoderOutputPin != -1 && crossbar.CanRoute(videoDecoderOutputPin, videoInputPin) == 0)
 		{
-			crossbar.Route(num, num2);
+			crossbar.Route(videoDecoderOutputPin, videoInputPin);
 		}
 	}
 

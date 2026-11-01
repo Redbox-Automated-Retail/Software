@@ -405,21 +405,21 @@ public class VideoCaptureDevice : IVideoSource
 				needToDisplayPropertyPage = true;
 				return;
 			}
-			object obj = null;
+			object tempSourceObject = null;
 			try
 			{
-				obj = FilterInfo.CreateFilter(deviceMoniker);
+				tempSourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			}
 			catch
 			{
 				throw new ApplicationException("Failed creating device object for moniker.");
 			}
-			if (!(obj is ISpecifyPropertyPages))
+			if (!(tempSourceObject is ISpecifyPropertyPages))
 			{
 				throw new NotSupportedException("The video source does not support configuration property page.");
 			}
-			DisplayPropertyPage(parentWindow, obj);
-			Marshal.ReleaseComObject(obj);
+			DisplayPropertyPage(parentWindow, tempSourceObject);
+			Marshal.ReleaseComObject(tempSourceObject);
 		}
 	}
 
@@ -485,91 +485,91 @@ public class VideoCaptureDevice : IVideoSource
 
 	public bool SetCameraProperty(CameraControlProperty property, int value, CameraControlFlags controlFlags)
 	{
-		bool flag = true;
+		bool ret = true;
 		if (deviceMoniker == null || string.IsNullOrEmpty(deviceMoniker))
 		{
 			throw new ArgumentException("Video source is not specified.");
 		}
 		lock (sync)
 		{
-			object obj = null;
+			object tempSourceObject = null;
 			try
 			{
-				obj = FilterInfo.CreateFilter(deviceMoniker);
+				tempSourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			}
 			catch
 			{
 				throw new ApplicationException("Failed creating device object for moniker.");
 			}
-			if (!(obj is IAMCameraControl))
+			if (!(tempSourceObject is IAMCameraControl))
 			{
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
-			IAMCameraControl iAMCameraControl = (IAMCameraControl)obj;
+			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
 			int num = iAMCameraControl.Set(property, value, controlFlags);
-			flag = num >= 0;
-			Marshal.ReleaseComObject(obj);
-			return flag;
+			ret = num >= 0;
+			Marshal.ReleaseComObject(tempSourceObject);
+			return ret;
 		}
 	}
 
 	public bool GetCameraProperty(CameraControlProperty property, out int value, out CameraControlFlags controlFlags)
 	{
-		bool flag = true;
+		bool ret = true;
 		if (deviceMoniker == null || string.IsNullOrEmpty(deviceMoniker))
 		{
 			throw new ArgumentException("Video source is not specified.");
 		}
 		lock (sync)
 		{
-			object obj = null;
+			object tempSourceObject = null;
 			try
 			{
-				obj = FilterInfo.CreateFilter(deviceMoniker);
+				tempSourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			}
 			catch
 			{
 				throw new ApplicationException("Failed creating device object for moniker.");
 			}
-			if (!(obj is IAMCameraControl))
+			if (!(tempSourceObject is IAMCameraControl))
 			{
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
-			IAMCameraControl iAMCameraControl = (IAMCameraControl)obj;
+			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
 			int num = iAMCameraControl.Get(property, out value, out controlFlags);
-			flag = num >= 0;
-			Marshal.ReleaseComObject(obj);
-			return flag;
+			ret = num >= 0;
+			Marshal.ReleaseComObject(tempSourceObject);
+			return ret;
 		}
 	}
 
 	public bool GetCameraPropertyRange(CameraControlProperty property, out int minValue, out int maxValue, out int stepSize, out int defaultValue, out CameraControlFlags controlFlags)
 	{
-		bool flag = true;
+		bool ret = true;
 		if (deviceMoniker == null || string.IsNullOrEmpty(deviceMoniker))
 		{
 			throw new ArgumentException("Video source is not specified.");
 		}
 		lock (sync)
 		{
-			object obj = null;
+			object tempSourceObject = null;
 			try
 			{
-				obj = FilterInfo.CreateFilter(deviceMoniker);
+				tempSourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			}
 			catch
 			{
 				throw new ApplicationException("Failed creating device object for moniker.");
 			}
-			if (!(obj is IAMCameraControl))
+			if (!(tempSourceObject is IAMCameraControl))
 			{
 				throw new NotSupportedException("The video source does not support camera control.");
 			}
-			IAMCameraControl iAMCameraControl = (IAMCameraControl)obj;
+			IAMCameraControl iAMCameraControl = (IAMCameraControl)tempSourceObject;
 			int range = iAMCameraControl.GetRange(property, out minValue, out maxValue, out stepSize, out defaultValue, out controlFlags);
-			flag = range >= 0;
-			Marshal.ReleaseComObject(obj);
-			return flag;
+			ret = range >= 0;
+			Marshal.ReleaseComObject(tempSourceObject);
+			return ret;
 		}
 	}
 
@@ -582,25 +582,25 @@ public class VideoCaptureDevice : IVideoSource
 	{
 		ReasonToFinishPlaying reason = ReasonToFinishPlaying.StoppedByUser;
 		bool flag = false;
-		SampleGrabber sampleGrabber = new SampleGrabber(OnNewFrame);
-		SampleGrabber sampleGrabber2 = new SampleGrabber(OnSnapshotFrame);
-		object obj = null;
-		object obj2 = null;
-		object obj3 = null;
-		object obj4 = null;
+		SampleGrabber videoGrabberCallback = new SampleGrabber(OnNewFrame);
+		SampleGrabber snapshotGrabberCallback = new SampleGrabber(OnSnapshotFrame);
+		object captureGraphObject = null;
+		object graphObject = null;
+		object videoGrabberObject = null;
+		object snapshotGrabberObject = null;
 		object retInterface = null;
 		ICaptureGraphBuilder2 captureGraphBuilder = null;
 		IFilterGraph2 filterGraph = null;
-		IBaseFilter baseFilter = null;
-		IBaseFilter baseFilter2 = null;
-		IBaseFilter baseFilter3 = null;
-		ISampleGrabber sampleGrabber3 = null;
-		ISampleGrabber sampleGrabber4 = null;
+		IBaseFilter sourceBase = null;
+		IBaseFilter videoGrabberBase = null;
+		IBaseFilter snapshotGrabberBase = null;
+		ISampleGrabber videoSampleGrabber = null;
+		ISampleGrabber snapshotSampleGrabber = null;
 		IMediaControl mediaControl = null;
 		IAMVideoControl iAMVideoControl = null;
 		IMediaEventEx mediaEventEx = null;
 		IPin pin = null;
-		IAMCrossbar iAMCrossbar = null;
+		IAMCrossbar crossbar = null;
 		try
 		{
 			Type typeFromCLSID = Type.GetTypeFromCLSID(Clsid.CaptureGraphBuilder2);
@@ -608,22 +608,22 @@ public class VideoCaptureDevice : IVideoSource
 			{
 				throw new ApplicationException("Failed creating capture graph builder");
 			}
-			obj = Activator.CreateInstance(typeFromCLSID);
-			captureGraphBuilder = (ICaptureGraphBuilder2)obj;
+			captureGraphObject = Activator.CreateInstance(typeFromCLSID);
+			captureGraphBuilder = (ICaptureGraphBuilder2)captureGraphObject;
 			typeFromCLSID = Type.GetTypeFromCLSID(Clsid.FilterGraph);
 			if (typeFromCLSID == null)
 			{
 				throw new ApplicationException("Failed creating filter graph");
 			}
-			obj2 = Activator.CreateInstance(typeFromCLSID);
-			filterGraph = (IFilterGraph2)obj2;
+			graphObject = Activator.CreateInstance(typeFromCLSID);
+			filterGraph = (IFilterGraph2)graphObject;
 			captureGraphBuilder.SetFiltergraph((IGraphBuilder)filterGraph);
 			sourceObject = FilterInfo.CreateFilter(deviceMoniker);
 			if (sourceObject == null)
 			{
 				throw new ApplicationException("Failed creating device object for moniker");
 			}
-			baseFilter = (IBaseFilter)sourceObject;
+			sourceBase = (IBaseFilter)sourceObject;
 			try
 			{
 				iAMVideoControl = (IAMVideoControl)sourceObject;
@@ -636,27 +636,27 @@ public class VideoCaptureDevice : IVideoSource
 			{
 				throw new ApplicationException("Failed creating sample grabber");
 			}
-			obj3 = Activator.CreateInstance(typeFromCLSID);
-			sampleGrabber3 = (ISampleGrabber)obj3;
-			baseFilter2 = (IBaseFilter)obj3;
-			obj4 = Activator.CreateInstance(typeFromCLSID);
-			sampleGrabber4 = (ISampleGrabber)obj4;
-			baseFilter3 = (IBaseFilter)obj4;
-			filterGraph.AddFilter(baseFilter, "source");
-			filterGraph.AddFilter(baseFilter2, "grabber_video");
-			filterGraph.AddFilter(baseFilter3, "grabber_snapshot");
-			AMMediaType aMMediaType = new AMMediaType();
-			aMMediaType.MajorType = MediaType.Video;
-			aMMediaType.SubType = MediaSubType.RGB24;
-			sampleGrabber3.SetMediaType(aMMediaType);
-			sampleGrabber4.SetMediaType(aMMediaType);
-			captureGraphBuilder.FindInterface(FindDirection.UpstreamOnly, Guid.Empty, baseFilter, typeof(IAMCrossbar).GUID, out retInterface);
+			videoGrabberObject = Activator.CreateInstance(typeFromCLSID);
+			videoSampleGrabber = (ISampleGrabber)videoGrabberObject;
+			videoGrabberBase = (IBaseFilter)videoGrabberObject;
+			snapshotGrabberObject = Activator.CreateInstance(typeFromCLSID);
+			snapshotSampleGrabber = (ISampleGrabber)snapshotGrabberObject;
+			snapshotGrabberBase = (IBaseFilter)snapshotGrabberObject;
+			filterGraph.AddFilter(sourceBase, "source");
+			filterGraph.AddFilter(videoGrabberBase, "grabber_video");
+			filterGraph.AddFilter(snapshotGrabberBase, "grabber_snapshot");
+			AMMediaType mediaType = new AMMediaType();
+			mediaType.MajorType = MediaType.Video;
+			mediaType.SubType = MediaSubType.RGB24;
+			videoSampleGrabber.SetMediaType(mediaType);
+			snapshotSampleGrabber.SetMediaType(mediaType);
+			captureGraphBuilder.FindInterface(FindDirection.UpstreamOnly, Guid.Empty, sourceBase, typeof(IAMCrossbar).GUID, out retInterface);
 			if (retInterface != null)
 			{
-				iAMCrossbar = (IAMCrossbar)retInterface;
+				crossbar = (IAMCrossbar)retInterface;
 			}
-			isCrossbarAvailable = iAMCrossbar != null;
-			crossbarVideoInputs = ColletCrossbarVideoInputs(iAMCrossbar);
+			isCrossbarAvailable = crossbar != null;
+			crossbarVideoInputs = ColletCrossbarVideoInputs(crossbar);
 			if (iAMVideoControl != null)
 			{
 				captureGraphBuilder.FindPin(sourceObject, PinDirection.Output, PinCategory.StillImage, MediaType.Video, unconnected: false, 0, out pin);
@@ -666,16 +666,16 @@ public class VideoCaptureDevice : IVideoSource
 					flag = (flags & VideoControlFlags.ExternalTriggerEnable) != 0;
 				}
 			}
-			sampleGrabber3.SetBufferSamples(bufferThem: false);
-			sampleGrabber3.SetOneShot(oneShot: false);
-			sampleGrabber3.SetCallback(sampleGrabber, 1);
-			sampleGrabber4.SetBufferSamples(bufferThem: true);
-			sampleGrabber4.SetOneShot(oneShot: false);
-			sampleGrabber4.SetCallback(sampleGrabber2, 1);
-			GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, baseFilter, PinCategory.Capture, videoResolution, ref videoCapabilities);
+			videoSampleGrabber.SetBufferSamples(bufferThem: false);
+			videoSampleGrabber.SetOneShot(oneShot: false);
+			videoSampleGrabber.SetCallback(videoGrabberCallback, 1);
+			snapshotSampleGrabber.SetBufferSamples(bufferThem: true);
+			snapshotSampleGrabber.SetOneShot(oneShot: false);
+			snapshotSampleGrabber.SetCallback(snapshotGrabberCallback, 1);
+			GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, sourceBase, PinCategory.Capture, videoResolution, ref videoCapabilities);
 			if (flag)
 			{
-				GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, baseFilter, PinCategory.StillImage, snapshotResolution, ref snapshotCapabilities);
+				GetPinCapabilitiesAndConfigureSizeAndRate(captureGraphBuilder, sourceBase, PinCategory.StillImage, snapshotResolution, ref snapshotCapabilities);
 			}
 			else
 			{
@@ -697,27 +697,27 @@ public class VideoCaptureDevice : IVideoSource
 			}
 			if (runGraph)
 			{
-				captureGraphBuilder.RenderStream(PinCategory.Capture, MediaType.Video, baseFilter, null, baseFilter2);
-				if (sampleGrabber3.GetConnectedMediaType(aMMediaType) == 0)
+				captureGraphBuilder.RenderStream(PinCategory.Capture, MediaType.Video, sourceBase, null, videoGrabberBase);
+				if (videoSampleGrabber.GetConnectedMediaType(mediaType) == 0)
 				{
-					VideoInfoHeader videoInfoHeader = (VideoInfoHeader)Marshal.PtrToStructure(aMMediaType.FormatPtr, typeof(VideoInfoHeader));
-					sampleGrabber.Size = new Size(videoInfoHeader.BmiHeader.Width, videoInfoHeader.BmiHeader.Height);
-					aMMediaType.Dispose();
+					VideoInfoHeader videoInfoHeader = (VideoInfoHeader)Marshal.PtrToStructure(mediaType.FormatPtr, typeof(VideoInfoHeader));
+					videoGrabberCallback.Size = new Size(videoInfoHeader.BmiHeader.Width, videoInfoHeader.BmiHeader.Height);
+					mediaType.Dispose();
 				}
 				if (flag && provideSnapshots)
 				{
-					captureGraphBuilder.RenderStream(PinCategory.StillImage, MediaType.Video, baseFilter, null, baseFilter3);
-					if (sampleGrabber4.GetConnectedMediaType(aMMediaType) == 0)
+					captureGraphBuilder.RenderStream(PinCategory.StillImage, MediaType.Video, sourceBase, null, snapshotGrabberBase);
+					if (snapshotSampleGrabber.GetConnectedMediaType(mediaType) == 0)
 					{
-						VideoInfoHeader videoInfoHeader2 = (VideoInfoHeader)Marshal.PtrToStructure(aMMediaType.FormatPtr, typeof(VideoInfoHeader));
-						sampleGrabber2.Size = new Size(videoInfoHeader2.BmiHeader.Width, videoInfoHeader2.BmiHeader.Height);
-						aMMediaType.Dispose();
+						VideoInfoHeader videoInfoHeader2 = (VideoInfoHeader)Marshal.PtrToStructure(mediaType.FormatPtr, typeof(VideoInfoHeader));
+						snapshotGrabberCallback.Size = new Size(videoInfoHeader2.BmiHeader.Width, videoInfoHeader2.BmiHeader.Height);
+						mediaType.Dispose();
 					}
 				}
-				mediaControl = (IMediaControl)obj2;
-				mediaEventEx = (IMediaEventEx)obj2;
+				mediaControl = (IMediaControl)graphObject;
+				mediaEventEx = (IMediaEventEx)graphObject;
 				mediaControl.Run();
-				sampleGrabber2.Grab = true;
+				snapshotGrabberCallback.Grab = true;
 				if (flag && provideSnapshots)
 				{
 					startTime = DateTime.Now;
@@ -739,8 +739,8 @@ public class VideoCaptureDevice : IVideoSource
 						needToSetVideoInput = false;
 						if (isCrossbarAvailable.Value)
 						{
-							SetCurrentCrossbarInput(iAMCrossbar, crossbarVideoInput);
-							crossbarVideoInput = GetCurrentCrossbarInput(iAMCrossbar);
+							SetCurrentCrossbarInput(crossbar, crossbarVideoInput);
+							crossbarVideoInput = GetCurrentCrossbarInput(crossbar);
 						}
 					}
 					if (needToSimulateTrigger)
@@ -755,23 +755,23 @@ public class VideoCaptureDevice : IVideoSource
 					{
 						needToDisplayPropertyPage = false;
 						DisplayPropertyPage(parentWindowForPropertyPage, sourceObject);
-						if (iAMCrossbar != null)
+						if (crossbar != null)
 						{
-							crossbarVideoInput = GetCurrentCrossbarInput(iAMCrossbar);
+							crossbarVideoInput = GetCurrentCrossbarInput(crossbar);
 						}
 					}
 					if (needToDisplayCrossBarPropertyPage)
 					{
 						needToDisplayCrossBarPropertyPage = false;
-						if (iAMCrossbar != null)
+						if (crossbar != null)
 						{
-							DisplayPropertyPage(parentWindowForPropertyPage, iAMCrossbar);
-							crossbarVideoInput = GetCurrentCrossbarInput(iAMCrossbar);
+							DisplayPropertyPage(parentWindowForPropertyPage, crossbar);
+							crossbarVideoInput = GetCurrentCrossbarInput(crossbar);
 						}
 					}
 				}
 				while (!stopEvent.WaitOne(100, exitContext: false));
-				sampleGrabber2.Grab = false;
+				snapshotGrabberCallback.Grab = false;
 				mediaControl.Stop();
 			}
 		}
@@ -786,40 +786,40 @@ public class VideoCaptureDevice : IVideoSource
 		{
 			captureGraphBuilder = null;
 			filterGraph = null;
-			baseFilter = null;
+			sourceBase = null;
 			mediaControl = null;
 			iAMVideoControl = null;
 			mediaEventEx = null;
 			pin = null;
-			iAMCrossbar = null;
-			baseFilter2 = null;
-			baseFilter3 = null;
-			sampleGrabber3 = null;
-			sampleGrabber4 = null;
-			if (obj2 != null)
+			crossbar = null;
+			videoGrabberBase = null;
+			snapshotGrabberBase = null;
+			videoSampleGrabber = null;
+			snapshotSampleGrabber = null;
+			if (graphObject != null)
 			{
-				Marshal.ReleaseComObject(obj2);
-				obj2 = null;
+				Marshal.ReleaseComObject(graphObject);
+				graphObject = null;
 			}
 			if (sourceObject != null)
 			{
 				Marshal.ReleaseComObject(sourceObject);
 				sourceObject = null;
 			}
-			if (obj3 != null)
+			if (videoGrabberObject != null)
 			{
-				Marshal.ReleaseComObject(obj3);
-				obj3 = null;
+				Marshal.ReleaseComObject(videoGrabberObject);
+				videoGrabberObject = null;
 			}
-			if (obj4 != null)
+			if (snapshotGrabberObject != null)
 			{
-				Marshal.ReleaseComObject(obj4);
-				obj4 = null;
+				Marshal.ReleaseComObject(snapshotGrabberObject);
+				snapshotGrabberObject = null;
 			}
-			if (obj != null)
+			if (captureGraphObject != null)
 			{
-				Marshal.ReleaseComObject(obj);
-				obj = null;
+				Marshal.ReleaseComObject(captureGraphObject);
+				captureGraphObject = null;
 			}
 			if (retInterface != null)
 			{
@@ -925,21 +925,21 @@ public class VideoCaptureDevice : IVideoSource
 			{
 				return cacheCrossbarVideoInputs[deviceMoniker];
 			}
-			List<VideoInput> list = new List<VideoInput>();
+			List<VideoInput> videoInputsList = new List<VideoInput>();
 			if (crossbar != null && crossbar.get_PinCounts(out var _, out var inputPinCount) == 0)
 			{
 				for (int i = 0; i < inputPinCount; i++)
 				{
 					if (crossbar.get_CrossbarPinInfo(isInputPin: true, i, out var _, out var physicalType) == 0 && physicalType < PhysicalConnectorType.AudioTuner)
 					{
-						list.Add(new VideoInput(i, physicalType));
+						videoInputsList.Add(new VideoInput(i, physicalType));
 					}
 				}
 			}
-			VideoInput[] array = new VideoInput[list.Count];
-			list.CopyTo(array);
-			cacheCrossbarVideoInputs.Add(deviceMoniker, array);
-			return array;
+			VideoInput[] videoInputs = new VideoInput[videoInputsList.Count];
+			videoInputsList.CopyTo(videoInputs);
+			cacheCrossbarVideoInputs.Add(deviceMoniker, videoInputs);
+			return videoInputs;
 		}
 	}
 
@@ -948,20 +948,20 @@ public class VideoCaptureDevice : IVideoSource
 		VideoInput result = VideoInput.Default;
 		if (crossbar.get_PinCounts(out var outputPinCount, out var _) == 0)
 		{
-			int num = -1;
+			int videoDecoderOutputPin = -1;
 			int pinIndexRelated;
 			for (int i = 0; i < outputPinCount; i++)
 			{
 				if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out var physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 				{
-					num = i;
+					videoDecoderOutputPin = i;
 					break;
 				}
 			}
-			if (num != -1 && crossbar.get_IsRoutedTo(num, out var inputPinIndex) == 0)
+			if (videoDecoderOutputPin != -1 && crossbar.get_IsRoutedTo(videoDecoderOutputPin, out var inputPinIndex) == 0)
 			{
-				crossbar.get_CrossbarPinInfo(isInputPin: true, inputPinIndex, out pinIndexRelated, out var physicalType2);
-				result = new VideoInput(inputPinIndex, physicalType2);
+				crossbar.get_CrossbarPinInfo(isInputPin: true, inputPinIndex, out pinIndexRelated, out var inputType);
+				result = new VideoInput(inputPinIndex, inputType);
 			}
 		}
 		return result;
@@ -973,15 +973,15 @@ public class VideoCaptureDevice : IVideoSource
 		{
 			return;
 		}
-		int num = -1;
-		int num2 = -1;
+		int videoDecoderOutputPin = -1;
+		int videoInputPin = -1;
 		int pinIndexRelated;
 		PhysicalConnectorType physicalType;
 		for (int i = 0; i < outputPinCount; i++)
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: false, i, out pinIndexRelated, out physicalType) == 0 && physicalType == PhysicalConnectorType.VideoDecoder)
 			{
-				num = i;
+				videoDecoderOutputPin = i;
 				break;
 			}
 		}
@@ -989,13 +989,13 @@ public class VideoCaptureDevice : IVideoSource
 		{
 			if (crossbar.get_CrossbarPinInfo(isInputPin: true, j, out pinIndexRelated, out physicalType) == 0 && physicalType == videoInput.Type && j == videoInput.Index)
 			{
-				num2 = j;
+				videoInputPin = j;
 				break;
 			}
 		}
-		if (num2 != -1 && num != -1 && crossbar.CanRoute(num, num2) == 0)
+		if (videoInputPin != -1 && videoDecoderOutputPin != -1 && crossbar.CanRoute(videoDecoderOutputPin, videoInputPin) == 0)
 		{
-			crossbar.Route(num, num2);
+			crossbar.Route(videoDecoderOutputPin, videoInputPin);
 		}
 	}
 
