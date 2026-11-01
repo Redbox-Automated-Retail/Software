@@ -62,7 +62,7 @@ Windows-only projects use `net10.0-windows`, and services that load x86 native c
 | Today | Moves to | Why |
 |---|---|---|
 | .NET Core 2.1/2.2 (Device Service, Kiosk Client, Update Client) | `net10.0` / `net10.0-windows`, x86 where needed | ASP.NET Core 2.2 → 10 is a well-trodden path; these projects don't reference the shared Redbox libraries |
-| .NET Framework 3.5 (HAL, tools) | **4.8** first, `net10.0-windows` evaluated later | .NET 3.5 is the main thing that breaks on Windows 11 (an optional feature; Windows Sandbox can't enable it). 4.8 ships in Windows 10 1903+ and 11. It loads the same 2.0-era DLLs (VistaDB 3.5, log4net 1.2.9) unchanged. |
+| .NET Framework 3.5 (HAL, tools) | **4.8** first, then `net10.0-windows` (done for the HAL service folder; `halmgmtc`, MSHALTester and HalUtilities are still 4.8) | .NET 3.5 is the main thing that breaks on Windows 11 (an optional feature; Windows Sandbox can't enable it). 4.8 ships in Windows 10 1903+ and 11. It loads the same 2.0-era DLLs (VistaDB 3.5, log4net 1.2.9) unchanged. |
 | .NET Framework 4.0–4.7.2 (engine, Update Manager, installer) | **4.8** first; .NET 10 where the blockers below are solved | Targeting 4.7+ alone fixes the TLS 1.0 default of `SslStream`/`HttpWebRequest`. |
 | `netstandard2.0` libraries (Device Service model, RBA SDK) | stay `netstandard2.0` | the 4.8 engine and the .NET 10 services both use them |
 | Shared `Redbox.*` libraries (`net46`) | `net48;net10.0-windows` multi-target, once a .NET 10 consumer needs them | |
@@ -72,7 +72,7 @@ Windows-only projects use `net10.0-windows`, and services that load x86 native c
 | Blocker | Used by | Way off |
 |---|---|---|
 | .NET Remoting over GenuineChannels `gtcp://` (legacy reservation broker, the 1.88 default `UseLegacyBrokerService = true`) | engine (`Redbox.BrokerServices.Proxy`) | a minimal MS-NRTP/MS-NRBF client for the few broker calls, checked against `rb-remoting` (Mono, the kiosk's own GenuineChannels.dll); or switch the engine to the HTTP broker path (`UseAWSBrokerService`) if the backend supports it |
-| .NET Remoting `HttpChannel` + binary formatter (KioskServices) | engine (`Redbox.KioskServices.Proxy`) | there is one call, `IMessageService.Process(string) -> string`. Use the existing `KioskServicesProtocol = REST` mode, which the backend serves, or a hand-written NRBF request for the one method |
+| .NET Remoting `HttpChannel` + binary formatter (KioskServices) | engine (`Redbox.KioskServices.Proxy`) | there is one call, `IMessageService.Process(string) -> string`. Use the existing `KioskServicesProtocol = REST` mode, which the backend serves, or a hand-written NRBF request for the one method. **Done:** the hand-written request (`Redbox.Remoting.Nrbf.RemotingHttpClient`) |
 | VistaDB 3.5 (`VistaDB.NET20.dll`, 2008, commercial, no successor we can ship) | engine (`Redbox.KioskEngine.Environment`, `Redbox.Rental.Data`), HAL (`Redbox.HAL.DataStorage`) | spike: load it on .NET 10. If that fails, migrate to SQLite with a one-time importer, a larger change that needs sign-off |
 | ASP.NET Web API 5 self-host (WCF underneath) | engine (`Redbox.KioskEngine.API`, `:9002`) | Kestrel minimal host with the same routes and Newtonsoft settings |
 | Engine plug-ins compiled against the engine (kernel extensions, Rental bundles) and Lua scripts that call .NET types | engine | the plug-ins are built from this repo, so they move together; the Lua scripts in bundles have to keep finding the same types and members |
@@ -440,6 +440,10 @@ only in Windows Sandbox.
 | Legacy broker over GTCP without GenuineChannels | done; `tests/BrokerGtcp.Check`: 89 offline + 21 live checks against rb-remoting | `Broker on .NET 10: GTCP client ...` |
 | VistaDB → SQLite (engine, Rental, HAL storage, migration tool) | done; `tests/Redbox.Data.SqliteParity`: 119 results identical | see "VistaDB → SQLite" |
 | **.NET 10 engine end to end** | **runs in Windows Sandbox**: start view, HAL start-up jobs (HAL 4.8), `:9002`, VistaDB files converted on first start, registered with the reservation broker over GTCP, with the .NET 10 Kiosk Client, Update Client and Device Service | `.NET 10 runtime: ...`, `Engine (.NET 10): load the UI assemblies ...` |
+| KioskServices (`Redbox.KioskServices.*`): also net10.0-windows; Remoting mode as a hand-written binary .NET Remoting call over HTTP (`Redbox.Remoting.Nrbf`) | done; `tests/KioskServicesRemoting.Check`: 4 messages give the same answer over Remoting (rb-remoting's real .NET Remoting host) and REST | `KioskServices on .NET 10: ...` |
+| **HAL on .NET 10**: `halsvc-win32`, `HAL.PackageInstaller`, `CameraTuner`, the camera plug-in and their libraries (self-contained win-x86); job contexts as JSON, 4.8 contexts imported | **runs in Windows Sandbox** with the .NET 10 engine (start view, its HAL jobs complete); `tests/HalContextStore.Check`: 35 of the kiosk's 4.8 contexts imported and round-tripped | `HAL on .NET 10: ...` |
+| HAL: clean stop on configuration errors (a `hal.xml` without decks) | done; Sandbox: P006, service ends Stopped | `HAL: stop cleanly when the configuration has errors ...` |
+| `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (324 files, `NewFiles` lists them all); not yet published to the backend or installed by the Update Manager | `release.ps1: -Framework ...` |
 
 Notes from the .NET 10 engine work:
 
@@ -474,6 +478,11 @@ Notes from the .NET 10 services:
   same in Development; kiosks run as Production.
 - **Releases.** `build/release.ps1` publishes .NET 5+ projects self-contained (the project's own
   `RuntimeIdentifier`), so a release zip is ~110 MB per service, but kiosks need no .NET runtime installed.
+- **Multi-target components** (engine, HAL) are released for one framework: `-Framework net48` (the default, what
+  kiosks run today) or `-Framework net10.0-windows`. A .NET 10 release publishes the exes self-contained, builds the
+  plug-in libraries, leaves out the component's .NET Framework-only projects, and lists every file in `NewFiles`,
+  because the runtime is new to the kiosk's repository (the backend refuses unlisted new files). The restore runs
+  without `TargetFramework`; given globally it would also apply to the netstandard2.0 references (NETSDK1005).
 
 HAL in Windows Sandbox (Backend `tests/clients/sandbox`, emulator, backend under WSLC, 2026-10-31): the 4.8 build
 (this branch's `halsvc-win32`, `HAL.PackageInstaller`, `halmgmtc` over the image's HAL install) started as
@@ -498,4 +507,34 @@ Notes from the HAL step:
 - `HAL.PackageInstaller` refuses to run unless `GetPlatform()` says `Windows7`, which means OS version 6.x
   except 6.0. Without a Windows 10 compatibility manifest, Windows 10/11 report 6.2, so it passes. Adding such
   a manifest to the HAL exes would break this check.
-- Still open for HAL: fail clearly on a 0-deck `hal.xml` (it dies in `DecksManager.First` today).
+- A 0-deck `hal.xml` died in `DecksManager.First`; it is now the P006 configuration error and the service stops
+  (see the HAL .NET 10 notes).
+
+Notes from HAL on .NET 10 (Sandbox, 2026-10-31):
+
+- **What runs where.** `halservice\bin` holds one framework: the .NET 10 release replaces `halsvc-win32`,
+  `HAL.PackageInstaller`, `CameraTuner`, `Redbox.HAL.Service.Framework`, the libraries and
+  `camera.plugins\Redbox.HAL.DirectShow.Frame.Plugin.dll`. `halmgmtc` (its own copies of the HAL libraries, log4net
+  1.2.9) and the two legacy camera plug-ins (`DirectShow`, `Vidcap`; not configured on the image's kiosk) are still
+  net48 only and are left out of a .NET 10 release. Follow-up: `halmgmtc` on .NET 10.
+- **Job contexts.** The 4.8 HAL saves every job in `data\contexts\<id>\ctx.data` (and cooperative jobs' compiled
+  programs) with the BinaryFormatter. The .NET 10 HAL writes `ctx.json` (the same `GetObjectData` entries) and keeps
+  a program as its script source (`<program>.hs`, compiled again on load). On its first start it reads each
+  `ctx.data` with `System.Formats.Nrbf` (a decoder; nothing is deserialized into objects), saves it as `ctx.json` and
+  renames the old file to `ctx.data.imported`, so a kiosk keeps its jobs and their results across the upgrade. A
+  4.8 job's programs are taken from the current scripts. `ExecutionContext.Save` on 4.8 opened `ctx.data` without
+  truncating it (`File.OpenWrite`), so old files can carry stale bytes after the record; the decoder stops at the
+  record's end.
+- **HAL's own quirks kept.** `Error` parsing keeps the space after `ERROR:`, so an error's text gains a space every
+  time a context is loaded (4.8 too); `HalContextStore.Check` ignores repeated spaces in that one entry.
+- **Platform check.** .NET 5+ reports the real Windows version (10.0) whatever the manifest, so `GetPlatform()`
+  maps 10+ to `Windows7` (which stands for "7 or later"); otherwise the .NET 10 `HAL.PackageInstaller` refuses to run.
+- **Folder scans.** HAL's command scan and the installer's handler scan load every `*.dll` in `bin`. A
+  self-contained .NET folder has ~230 of them (the runtime, native DLLs, and each app's `<name>.dll`), so the scans
+  skip the runtime's assemblies, native DLLs and app assemblies (a `<name>.runtimeconfig.json` next to them). The
+  .NET Framework scans never saw the apps either, since those were `.exe` files.
+- **Threads.** `Thread.Abort` (DirectShow capture threads) does not exist on .NET; the threads already poll their
+  stop event every 100 ms, so `Stop` sets it and waits.
+- **Stopping after start-up errors.** Any configuration error made the service call `Stop()`, whose first
+  `NullReferenceException` (from parts that were never set up) escaped and left the service Running but not
+  listening, on 4.8 too. It now stops each part on its own and ends Stopped.
