@@ -19,11 +19,11 @@ public class Task : IDisposable
 		Settings = 4
 	}
 
-	private ITask iTask;
+	private ITask iTask; // released and cleared by Close; using the Task afterwards throws, as before
 
 	private string name;
 
-	private TriggerList triggers;
+	private TriggerList? triggers;
 
 	public string Name => name;
 
@@ -413,7 +413,7 @@ public class Task : IDisposable
 		if (Count == 1)
 		{
 			SystemTime systemTime2 = default(SystemTime);
-			systemTime2 = (SystemTime)Marshal.PtrToStructure(TaskTimes, typeof(SystemTime));
+			systemTime2 = (SystemTime)Marshal.PtrToStructure(TaskTimes, typeof(SystemTime))!;
 			Marshal.FreeCoTaskMem(TaskTimes);
 			return new DateTime(systemTime2.Year, systemTime2.Month, systemTime2.Day, systemTime2.Hour, systemTime2.Minute, systemTime2.Second);
 		}
@@ -450,7 +450,7 @@ public class Task : IDisposable
 			triggers.Dispose();
 		}
 		Marshal.ReleaseComObject(iTask);
-		iTask = null;
+		iTask = null!;
 	}
 
 	public void DisplayForEdit()
@@ -504,7 +504,7 @@ public class Task : IDisposable
 		return sheetResult > 0;
 	}
 
-	public void SetAccountInformation(string accountName, string password)
+	public void SetAccountInformation(string accountName, string? password)
 	{
 		IntPtr intPtr = Marshal.StringToCoTaskMemUni(password);
 		iTask.SetAccountInformation(accountName, intPtr);

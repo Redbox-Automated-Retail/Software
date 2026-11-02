@@ -20,7 +20,7 @@ public class SecurityService
 
 	private const string AdminUserGroup = "administrators";
 
-	private static SecurityService _securityService;
+	private static SecurityService? _securityService;
 
 	public static SecurityService Instance
 	{

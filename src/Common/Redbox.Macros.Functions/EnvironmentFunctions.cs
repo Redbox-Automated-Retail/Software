@@ -42,7 +42,7 @@ public class EnvironmentFunctions : FunctionSetBase
 		{
 			throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1095"), name));
 		}
-		return Environment.GetEnvironmentVariable(name);
+		return Environment.GetEnvironmentVariable(name)!; // VariableExists checked it
 	}
 
 	[Function("variable-exists")]

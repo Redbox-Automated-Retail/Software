@@ -4,6 +4,7 @@
     reflection from its working directory when AppSettings:UseSimulator is true. See README.md.
   -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>RBA_SDK_Simulator</AssemblyName>
     <RootNamespace>RBA_SDK_Simulator</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>

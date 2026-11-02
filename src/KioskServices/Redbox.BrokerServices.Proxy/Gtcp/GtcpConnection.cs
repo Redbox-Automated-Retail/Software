@@ -51,7 +51,7 @@ internal sealed class GtcpConnection : IDisposable
 	private readonly int _port;
 	private readonly GtcpConnectionSettings _settings;
 	private readonly Func<GtcpMessage, byte[]> _callHandler;
-	private readonly Action<string, Exception> _log;
+	private readonly Action<string, Exception?> _log;
 	private readonly string _connectionName;
 	private readonly int _hostNumber;
 	private readonly object _stateLock = new object();
@@ -61,16 +61,16 @@ internal sealed class GtcpConnection : IDisposable
 	private readonly ConcurrentDictionary<int, ReceivedCall> _receivedCalls = new ConcurrentDictionary<int, ReceivedCall>();
 
 	private State _state = State.New;
-	private Socket _socket;
-	private NetworkStream _stream;
+	private Socket? _socket;
+	private NetworkStream? _stream;
 	private int _generation;
 	private long _lastSendTicks;
 	private long _lastReceiveTicks;
-	private Timer _timer;
+	private Timer? _timer;
 
 	/// <param name="host">Host name as written in the URL; it is also part of the connection name.</param>
 	/// <param name="callHandler">Runs a call from the broker (on a thread-pool thread) and returns the reply content.</param>
-	public GtcpConnection(string host, int port, GtcpConnectionSettings settings, Func<GtcpMessage, byte[]> callHandler, Action<string, Exception> log)
+	public GtcpConnection(string host, int port, GtcpConnectionSettings settings, Func<GtcpMessage, byte[]> callHandler, Action<string, Exception?> log)
 	{
 		_host = host;
 		_port = port;
@@ -82,13 +82,13 @@ internal sealed class GtcpConnection : IDisposable
 	}
 
 	/// <summary>Raised once, on a thread-pool thread, when the connection is lost for good (not on Dispose).</summary>
-	public event Action<string> Closed;
+	public event Action<string>? Closed;
 
 	/// <summary>Our host URI ("_gtcp://" + 32 hex digits); the broker calls back to it.</summary>
 	public string HostUri => ProcessHostUri;
 
 	/// <summary>The broker's host URI from the handshake; it changes when the broker restarts.</summary>
-	public string ServerUri { get; private set; }
+	public string? ServerUri { get; private set; }
 
 	public bool IsConnected
 	{
@@ -290,7 +290,7 @@ internal sealed class GtcpConnection : IDisposable
 				if (message.IsReply)
 				{
 					// Unknown ReplyToIds are expected: after a reconnect the broker re-sends its last reply (section 7).
-					if (_pendingCalls.TryGetValue(message.ReplyToId, out PendingCall call))
+					if (_pendingCalls.TryGetValue(message.ReplyToId, out PendingCall? call))
 					{
 						call.Reply.TrySetResult(message);
 					}
@@ -315,7 +315,7 @@ internal sealed class GtcpConnection : IDisposable
 		{
 			// The broker re-sent a call it had sent before the connection broke: answer it again from the cache,
 			// or ignore it while the first one is still running (its reply goes out on the current socket).
-			byte[] cachedReply = existing.EncodedReply;
+			byte[]? cachedReply = existing.EncodedReply;
 			if (cachedReply != null)
 			{
 				_log($"GTCP: re-sending the reply to broker call {message.MessageId}.", null);
@@ -351,7 +351,7 @@ internal sealed class GtcpConnection : IDisposable
 			{
 				return false;
 			}
-			stream = _stream;
+			stream = _stream!; // Connected: Install has set it
 			generation = _generation;
 		}
 		try
@@ -476,7 +476,7 @@ internal sealed class GtcpConnection : IDisposable
 		}
 		_log($"GTCP: connection to the broker closed: {reason}.", null);
 		FailPendingCalls(new IOException("The connection to the broker was closed: " + reason));
-		Action<string> closed = Closed;
+		Action<string>? closed = Closed;
 		if (closed != null)
 		{
 			ThreadPool.QueueUserWorkItem(_ => closed(reason));
@@ -512,6 +512,6 @@ internal sealed class GtcpConnection : IDisposable
 
 		public long ReceivedTicks { get; }
 
-		public volatile byte[] EncodedReply;
+		public volatile byte[]? EncodedReply;
 	}
 }

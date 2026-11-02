@@ -10,11 +10,11 @@ public class ReservationCart
 
 	public long ReferenceNumber { get; set; }
 
-	public string CardID { get; set; }
+	public string? CardID { get; set; }
 
-	public string Email { get; set; }
+	public string? Email { get; set; }
 
 	public DateTime ReserveDate { get; set; }
 
-	public List<ReservationTitle> Titles { get; set; }
+	public List<ReservationTitle>? Titles { get; set; }
 }

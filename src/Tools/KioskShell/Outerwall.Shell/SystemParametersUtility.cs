@@ -19,7 +19,7 @@ internal static class SystemParametersUtility
 		}
 		if (SystemParametersInfo(SPI.SPI_SETDESKWALLPAPER, 0u, wallpaper, SPIF.SPIF_UPDATEINIFILE | SPIF.SPIF_SENDCHANGE))
 		{
-			RegistryKey registryKey;
+			RegistryKey? registryKey;
 			try
 			{
 				registryKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", writable: true);

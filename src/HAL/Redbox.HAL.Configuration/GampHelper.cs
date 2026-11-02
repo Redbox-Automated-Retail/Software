@@ -181,7 +181,7 @@ public sealed class GampHelper
 	{
 		List<int> offsets = new List<int>();
 		decimal? offset = startOffset;
-		offsets.Add((int)offset.Value);
+		offsets.Add((int)offset!.Value);
 		for (int i = 0; i < 5; i++)
 		{
 			decimal? quadrantWidth = 2666.6672m;

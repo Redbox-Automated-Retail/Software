@@ -16,27 +16,27 @@ public class Scheduler : ITaskScheduler
 {
 	private class PersistTask
 	{
-		public string Name { get; set; }
+		public string Name { get; set; } = null!; // set by the constructor or the JSON reader
 
-		public string ScheduleType { get; set; }
+		public string? ScheduleType { get; set; }
 
-		public string Payload { get; set; }
+		public string Payload { get; set; } = null!; // set by the constructor or the JSON reader
 
-		public string PayloadType { get; set; }
+		public string? PayloadType { get; set; }
 
-		public string StartOffset { get; set; }
+		public string? StartOffset { get; set; }
 
-		public string StartDate { get; set; }
+		public string? StartDate { get; set; }
 
-		public string StartTime { get; set; }
+		public string? StartTime { get; set; }
 
-		public string EndTime { get; set; }
+		public string? EndTime { get; set; }
 
-		public string EndDate { get; set; }
+		public string? EndDate { get; set; }
 
-		public string CronExpression { get; set; }
+		public string? CronExpression { get; set; }
 
-		public string RepeatInterval { get; set; }
+		public string? RepeatInterval { get; set; }
 
 		public PersistTask()
 		{
@@ -149,9 +149,9 @@ public class Scheduler : ITaskScheduler
 			return section;
 		}
 		System.Collections.Specialized.NameValueCollection properties = new System.Collections.Specialized.NameValueCollection();
-		using Stream stream = typeof(StdSchedulerFactory).Assembly.GetManifestResourceStream("Quartz.quartz.config");
+		using Stream stream = typeof(StdSchedulerFactory).Assembly.GetManifestResourceStream("Quartz.quartz.config")!; // embedded in Quartz.dll
 		using StreamReader reader = new StreamReader(stream);
-		string line;
+		string? line;
 		while ((line = reader.ReadLine()) != null)
 		{
 			line = line.Trim();
@@ -177,7 +177,7 @@ public class Scheduler : ITaskScheduler
 		success = false;
 		try
 		{
-			Task task = m_tasks.Find((Task t) => t.Name == name);
+			Task? task = m_tasks.Find((Task t) => t.Name == name);
 			if (task != null)
 			{
 				task.Execute(null);
@@ -404,10 +404,10 @@ public class Scheduler : ITaskScheduler
 	{
 	}
 
-	private static string GetRaw()
+	private static string? GetRaw()
 	{
 		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
-		string raw = dataStoreService.GetRaw("config-schedule");
+		string? raw = dataStoreService.GetRaw("config-schedule");
 		if (string.IsNullOrEmpty(raw))
 		{
 			RunDefaultSchedule();
@@ -417,7 +417,7 @@ public class Scheduler : ITaskScheduler
 		{
 			try
 			{
-				raw.ToObject<List<PersistTask>>();
+				raw!.ToObject<List<PersistTask>>();
 			}
 			catch (Exception)
 			{
@@ -435,14 +435,14 @@ public class Scheduler : ITaskScheduler
 		tasks = new List<Task>();
 		try
 		{
-			string raw;
+			string? raw;
 			lock (FileLock)
 			{
 				raw = GetRaw();
 			}
 			if (!string.IsNullOrEmpty(raw))
 			{
-				tasks = PersistTasksToTasks(raw.ToObject<List<PersistTask>>());
+				tasks = PersistTasksToTasks(raw!.ToObject<List<PersistTask>>());
 			}
 		}
 		catch (Exception e)
@@ -459,11 +459,11 @@ public class Scheduler : ITaskScheduler
 			IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 			lock (FileLock)
 			{
-				string raw = GetRaw();
+				string? raw = GetRaw();
 				List<PersistTask> persistTasks = new List<PersistTask>();
 				if (!string.IsNullOrEmpty(raw))
 				{
-					persistTasks = raw.ToObject<List<PersistTask>>();
+					persistTasks = raw!.ToObject<List<PersistTask>>();
 				}
 				List<Task> tasks = PersistTasksToTasks(persistTasks);
 				tasks = operation(tasks);
@@ -511,7 +511,7 @@ public class Scheduler : ITaskScheduler
 		return tasks.Select((Task task) => new PersistTask(task)).ToList();
 	}
 
-	private static ErrorList ParsePayload(string text, out PayloadType parsed)
+	private static ErrorList ParsePayload(string? text, out PayloadType parsed)
 	{
 		ErrorList errorList = new ErrorList();
 		parsed = Enum<PayloadType>.ParseIgnoringCase(text, PayloadType.Unknown);

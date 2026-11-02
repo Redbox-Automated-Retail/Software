@@ -102,30 +102,30 @@ public class SimulatorDataProvider : ISimulatorDataProvider
 		return result.ToString(CultureInfo.InvariantCulture);
 	}
 
-	public string ReadConfig(string group, string index)
+	public string? ReadConfig(string group, string index)
 	{
-		if (!_configuration.TryGetValue(Key(group, index), out string value))
+		if (!_configuration.TryGetValue(Key(group, index), out string? value))
 		{
 			return null;
 		}
 		return value;
 	}
 
-	public void WriteConfig(string group, string index, string value)
+	public void WriteConfig(string group, string index, string? value)
 	{
 		_configuration[Key(group, index)] = value ?? string.Empty;
 	}
 
-	public string GetVariable(string id)
+	public string? GetVariable(string id)
 	{
-		if (!_variables.TryGetValue(Normalize(id), out string value))
+		if (!_variables.TryGetValue(Normalize(id), out string? value))
 		{
 			return null;
 		}
 		return value;
 	}
 
-	public void SetVariable(string id, string value)
+	public void SetVariable(string id, string? value)
 	{
 		_variables[Normalize(id)] = value ?? string.Empty;
 	}

@@ -5,6 +5,7 @@
     hub protocol the 4.8 engine expects.
   -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>

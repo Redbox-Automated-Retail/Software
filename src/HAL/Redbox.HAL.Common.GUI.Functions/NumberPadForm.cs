@@ -7,13 +7,13 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public class NumberPadForm : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private NumberPad m_numberPad;
+	private NumberPad m_numberPad = null!;
 
-	private Button m_okButton;
+	private Button m_okButton = null!;
 
-	private Button m_cancelButton;
+	private Button m_cancelButton = null!;
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -29,18 +29,19 @@ public class NumberPadForm : Form
 		}
 	}
 
+	// The controls above are created by InitializeComponent.
 	public NumberPadForm()
 	{
 		InitializeComponent();
 	}
 
-	private void OnOK(object sender, EventArgs e)
+	private void OnOK(object? sender, EventArgs e)
 	{
 		base.DialogResult = DialogResult.OK;
 		Close();
 	}
 
-	private void OnCancel(object sender, EventArgs e)
+	private void OnCancel(object? sender, EventArgs e)
 	{
 		base.DialogResult = DialogResult.Cancel;
 		Close();

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.UpdateManager.BITS</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.BITS</RootNamespace>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>

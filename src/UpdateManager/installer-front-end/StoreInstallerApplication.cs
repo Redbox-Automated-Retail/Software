@@ -16,13 +16,13 @@ namespace Redbox.UpdateManager.StoreInstallerFrontEnd;
 
 public class StoreInstallerApplication : ApplicationContext, IEventNotifyService, IInputService
 {
-	private Thread m_scriptThread;
+	private Thread? m_scriptThread;
 
 	public static StoreInstallerApplication Instance => Singleton<StoreInstallerApplication>.Instance;
 
 	public bool ScriptCompleted => KernelService.Instance.ScriptCompleted;
 
-	public string Script { get; set; }
+	public string Script { get; set; } = null!; // set by Initialize
 
 	public DialogResult AskYesNoQuestion(string title, string message)
 	{
@@ -45,12 +45,12 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 
 	public FileInfo LocateFile()
 	{
-		FileInfo file = null;
+		FileInfo? file = null;
 		ThreadSafeHostUpdate(delegate
 		{
-			file = ((Host)base.MainForm).ShowFileDialog();
+			file = ((Host)base.MainForm!).ShowFileDialog();
 		});
-		return file;
+		return file!; // null when the dialog is cancelled, but IInputService.LocateFile is declared non-null
 	}
 
 	public ErrorList AddEvent(string name, string description)
@@ -59,7 +59,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		{
 			ThreadSafeHostUpdate(delegate
 			{
-				((Host)base.MainForm).AddEvent(name, description);
+				((Host)base.MainForm!).AddEvent(name, description);
 			});
 		}
 		catch (Exception e)
@@ -75,7 +75,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		{
 			ThreadSafeHostUpdate(delegate
 			{
-				((Host)base.MainForm).EventStart(name);
+				((Host)base.MainForm!).EventStart(name);
 			});
 		}
 		catch (Exception e)
@@ -91,7 +91,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		{
 			ThreadSafeHostUpdate(delegate
 			{
-				((Host)base.MainForm).EventError(name, Redbox.UpdateManager.ComponentModel.Error.NewError(code, description, details));
+				((Host)base.MainForm!).EventError(name, Redbox.UpdateManager.ComponentModel.Error.NewError(code, description, details));
 			});
 		}
 		catch (Exception e)
@@ -107,7 +107,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		{
 			ThreadSafeHostUpdate(delegate
 			{
-				((Host)base.MainForm).EventComplete(name);
+				((Host)base.MainForm!).EventComplete(name);
 			});
 		}
 		catch (Exception e)
@@ -123,7 +123,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		{
 			ThreadSafeHostUpdate(delegate
 			{
-				((Host)base.MainForm).ShowFinish();
+				((Host)base.MainForm!).ShowFinish();
 			});
 		}
 		catch (Exception e)
@@ -151,7 +151,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 				ThreadSafeExceptionDisplay(ex);
 				ThreadSafeHostUpdate(delegate
 				{
-					((Host)base.MainForm).ErrorAll();
+					((Host)base.MainForm!).ErrorAll();
 				});
 			}
 		})
@@ -170,11 +170,11 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		return false;
 	}
 
-	public ErrorList Initialize(string script, string storeNumber)
+	public ErrorList Initialize(string? script, string? storeNumber)
 	{
 		MacroService macroService = new MacroService();
 		ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
-		string directoryName = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location);
+		string directoryName = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location)!;
 		ErrorList errorList = new ErrorList();
 		string expanded = macroService.ExpandProperties(script);
 		if (!Path.IsPathRooted(expanded))
@@ -196,7 +196,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		macroService["Scripts"] = "C:\\Program Files\\Redbox\\REDS\\Update Manager\\scripts";
 		macroService["WorkingDirectory"] = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location);
 		WindowsTaskScheduler.Instance.Initialize();
-		Redbox.UpdateManager.Remoting.UpdateService.Instance.Initialize(Settings.Default.UpdateServiceUrl, TimeSpan.FromSeconds(120.0), storeNumber, Settings.Default.MinimumRetryDelay);
+		Redbox.UpdateManager.Remoting.UpdateService.Instance.Initialize(Settings.Default.UpdateServiceUrl, TimeSpan.FromSeconds(120.0), storeNumber!, Settings.Default.MinimumRetryDelay);
 		KernelService.Instance.Initialize();
 		DataStoreService.Instance.Initialize(Settings.Default.DataStoreRoot);
 		Scheduler.Instance.Initialize();
@@ -210,7 +210,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 
 	public void ThreadSafeHostUpdate(MethodInvoker invoker)
 	{
-		if (base.MainForm.InvokeRequired)
+		if (base.MainForm!.InvokeRequired)
 		{
 			base.MainForm.Invoke(invoker);
 		}

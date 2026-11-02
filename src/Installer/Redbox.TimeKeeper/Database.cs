@@ -4,9 +4,9 @@ namespace Redbox.TimeKeeper;
 
 public class Database : IDatabase
 {
-	private string _connectionString = null;
+	private string? _connectionString = null;
 
-	public string ConnectionString => _connectionString;
+	public string? ConnectionString => _connectionString;
 
 	protected Database()
 	{

@@ -14,7 +14,7 @@ var sim = new RBA_API_Simulator(data, queue, new ConsoleLog<RBA_API_Simulator>(q
 var proxy = new IUC285Proxy(sim, new ConsoleLog<IUC285Proxy>(quiet: true), null, null, null, new Monitor());
 
 int failures = 0;
-void Check(string name, bool ok, string detail = "")
+void Check(string name, bool ok, string? detail = "")
 {
 	Console.WriteLine($"{(ok ? "PASS" : "FAIL")}  {name} {detail}");
 	if (!ok) failures++;
@@ -28,16 +28,16 @@ Check("Health", health?.DeviceName == "iUC285", $"reboots={health?.RebootCount}"
 Check("SupportsEMV", proxy.SupportsEMV);
 Check("CardInserted=Removed", proxy.CheckIfCardInserted() == InsertedStatus.Removed);
 
-async Task<Base87CardReadModel> Read(SimulatorCommand cmd, DeviceInputType input, decimal amount = 1.50m)
+async Task<Base87CardReadModel?> Read(SimulatorCommand cmd, DeviceInputType input, decimal amount = 1.50m)
 {
-	Base87CardReadModel result = null;
+	Base87CardReadModel? result = null;
 	queue.Enqueue(cmd);
 	await proxy.ReadCard(new CardReadRequest { Amount = amount, InputType = input, Timeout = 30000, VasMode = VasMode.PayOnly },
 		CancellationToken.None, m => result = m, null);
 	return result;
 }
 
-string Describe(Base87CardReadModel m) => m == null ? "null" :
+string Describe(Base87CardReadModel? m) => m == null ? "null" :
 	$"{m.GetType().Name} status={m.Status} source={m.CardSource} {m.FirstSix}..{m.LastFour} exp={m.Expiry} errors=[{string.Join(",", m.Errors?.Select(e => e.Code) ?? [])}]";
 
 var swipe = await Read(new SimulatorCommand { Type = SimulatorCommandType.Swipe }, DeviceInputType.MCS);
@@ -79,7 +79,7 @@ Check("Customer cancel", cancel?.Errors.Any(x => x.Code == "BadExitType") == tru
 var bad = await Read(new SimulatorCommand { Type = SimulatorCommandType.BadRead }, DeviceInputType.MCS);
 Check("Bad read", bad?.Errors.Any(x => x.Code == "BadExitType") == true, Describe(bad));
 
-string v = null; Check("Config round-trip", proxy.WriteConfig("13", "14", "abc") && proxy.ReadConfig("13", "14", out v) && v == "abc", v);
+string? v = null; Check("Config round-trip", proxy.WriteConfig("13", "14", "abc") && proxy.ReadConfig("13", "14", out v) && v == "abc", v);
 
 data.Tampered = true;
 sim.SimulateDisconnect();
@@ -98,15 +98,15 @@ return failures;
 class Monitor : IOptionsMonitor<DeviceServiceConfig>
 {
 	public DeviceServiceConfig CurrentValue { get; } = new DeviceServiceConfig { EnableVasCommands = false };
-	public DeviceServiceConfig Get(string name) => CurrentValue;
-	public IDisposable OnChange(Action<DeviceServiceConfig, string> listener) => null;
+	public DeviceServiceConfig Get(string? name) => CurrentValue;
+	public IDisposable? OnChange(Action<DeviceServiceConfig, string> listener) => null;
 }
 
 class ConsoleLog<T>(bool quiet) : ILogger<T>
 {
-	public IDisposable BeginScope<TState>(TState state) => null;
+	public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 	public bool IsEnabled(LogLevel logLevel) => !quiet || logLevel >= LogLevel.Warning;
-	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 	{
 		if (IsEnabled(logLevel)) Console.WriteLine($"    [{logLevel}] {formatter(state, exception)}");
 	}

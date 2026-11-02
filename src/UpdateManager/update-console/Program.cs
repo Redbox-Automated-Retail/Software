@@ -250,7 +250,7 @@ public class Program
 						return 1;
 					}
 					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
-					if (!repositoryService.ContainsRepository(Opts.RepositoryName))
+					if (!repositoryService.ContainsRepository(Opts.RepositoryName!))
 					{
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "repository-name does not exist.", "Check Name."));
 						return 1;
@@ -258,16 +258,16 @@ public class Program
 					switch (Opts.Dump!.ToLower())
 					{
 					case "active":
-						Console.Write(repositoryService.GetActiveRevision(Opts.RepositoryName));
+						Console.Write(repositoryService.GetActiveRevision(Opts.RepositoryName!));
 						break;
 					case "current":
-						Console.Write(repositoryService.GetStagedRevision(Opts.RepositoryName));
+						Console.Write(repositoryService.GetStagedRevision(Opts.RepositoryName!));
 						break;
 					case "label":
-						Console.Write(repositoryService.GetActiveLabel(Opts.RepositoryName));
+						Console.Write(repositoryService.GetActiveLabel(Opts.RepositoryName!));
 						break;
 					case "revlog":
-						Console.Write(PrettyPrinter.GetPrettyString(repositoryService.GetAllChanges(Opts.RepositoryName).ToJson()));
+						Console.Write(PrettyPrinter.GetPrettyString(repositoryService.GetAllChanges(Opts.RepositoryName!).ToJson()));
 						break;
 					default:
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "Dump file is invalid.", "Valid values: active, current, label, revlog"));

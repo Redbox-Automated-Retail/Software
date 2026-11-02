@@ -7,33 +7,33 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public class NumberPad : UserControl
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private TableLayoutPanel m_tableLayoutPanel;
+	private TableLayoutPanel m_tableLayoutPanel = null!;
 
-	private Button m_sevenButton;
+	private Button m_sevenButton = null!;
 
-	private Button m_eightButton;
+	private Button m_eightButton = null!;
 
-	private Button m_nineButton;
+	private Button m_nineButton = null!;
 
-	private Button m_fourButton;
+	private Button m_fourButton = null!;
 
-	private Button m_fiveButton;
+	private Button m_fiveButton = null!;
 
-	private Button m_sixButton;
+	private Button m_sixButton = null!;
 
-	private Button m_oneButton;
+	private Button m_oneButton = null!;
 
-	private Button m_twoButton;
+	private Button m_twoButton = null!;
 
-	private Button m_threeButton;
+	private Button m_threeButton = null!;
 
-	private Button m_zeroButton;
+	private Button m_zeroButton = null!;
 
-	private Button m_clearButton;
+	private Button m_clearButton = null!;
 
-	private TextBox m_textBox;
+	private TextBox m_textBox = null!;
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -61,8 +61,9 @@ public class NumberPad : UserControl
 		}
 	}
 
-	public event EventHandler NumberChanged;
+	public event EventHandler? NumberChanged;
 
+	// The controls above are created by InitializeComponent.
 	public NumberPad()
 	{
 		InitializeComponent();
@@ -74,7 +75,7 @@ public class NumberPad : UserControl
 		m_textBox.Clear();
 	}
 
-	private void OnNumberPadButtonClicked(object sender, EventArgs e)
+	private void OnNumberPadButtonClicked(object? sender, EventArgs e)
 	{
 		if (sender is Button button)
 		{
@@ -89,7 +90,7 @@ public class NumberPad : UserControl
 		}
 	}
 
-	private void OnKeyDown(object sender, KeyEventArgs e)
+	private void OnKeyDown(object? sender, KeyEventArgs e)
 	{
 		if (!e.Control)
 		{
@@ -100,7 +101,7 @@ public class NumberPad : UserControl
 		case Keys.V:
 			e.Handled = true;
 			e.SuppressKeyPress = true;
-			if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text))
+			if (Clipboard.GetDataObject()!.GetDataPresent(DataFormats.Text))
 			{
 				m_textBox.Paste();
 			}
@@ -124,7 +125,7 @@ public class NumberPad : UserControl
 		}
 	}
 
-	private void OnKeyPress(object sender, KeyPressEventArgs e)
+	private void OnKeyPress(object? sender, KeyPressEventArgs e)
 	{
 		if ((e.KeyChar < '0' || e.KeyChar > '9') && e.KeyChar != '\b')
 		{
@@ -132,7 +133,7 @@ public class NumberPad : UserControl
 		}
 	}
 
-	private void OnTextChanged(object sender, EventArgs e)
+	private void OnTextChanged(object? sender, EventArgs e)
 	{
 		if (NumberChanged != null)
 		{

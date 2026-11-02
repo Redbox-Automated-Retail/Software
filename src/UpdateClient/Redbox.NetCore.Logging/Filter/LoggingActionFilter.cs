@@ -31,11 +31,11 @@ internal class LoggingActionFilter : IAsyncActionFilter, IFilterMetadata
 		string controllerName = controllerActionDescriptor.ControllerName;
 		string actionName = controllerActionDescriptor.ActionName;
 		StringBuilder scrubbedRequest = new StringBuilder();
-		context.ActionArguments.ToList().ForEach(delegate(KeyValuePair<string, object> arg)
+		context.ActionArguments.ToList().ForEach(delegate(KeyValuePair<string, object?> arg)
 		{
 			if (arg.Value is IMessageScrub)
 			{
-				scrubbedRequest.Append($",{arg.Key}:{(arg.Value as IMessageScrub).Scrub()}");
+				scrubbedRequest.Append($",{arg.Key}:{(arg.Value as IMessageScrub)!.Scrub()}");
 			}
 			else
 			{

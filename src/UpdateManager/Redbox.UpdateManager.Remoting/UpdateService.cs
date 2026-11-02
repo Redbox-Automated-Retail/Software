@@ -15,12 +15,12 @@ public class UpdateService : IUpdateService
 {
 	private class ResultEntry
 	{
-		public string Entry { get; set; }
+		public string Entry { get; set; } = null!; // set by the object initializer
 
 		public long ID { get; set; }
 	}
 
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	private TimeSpan m_timeout = TimeSpan.FromSeconds(30.0);
 
@@ -30,7 +30,7 @@ public class UpdateService : IUpdateService
 
 	private const string ScriptLabel = "script";
 
-	private string m_storeNumber;
+	private string m_storeNumber = null!; // set by Initialize
 
 	private int m_minimumRetryDelay = 60;
 
@@ -149,7 +149,7 @@ public class UpdateService : IUpdateService
 				{
 					continue;
 				}
-				ITransferJob job = null;
+				ITransferJob? job = null;
 				try
 				{
 					if (!repositoryService.ContainsRepository(changeSet.Name))
@@ -158,7 +158,7 @@ public class UpdateService : IUpdateService
 					}
 					string jobName = $"<~{changeSet.Name}-{changeSet.Head.Substring(0, 8)}~>";
 					errorList.AddRange(transferService.CreateDownloadJob(jobName, out job));
-					errorList.AddRange(job.SetMinimumRetryDelay((uint)m_minimumRetryDelay));
+					errorList.AddRange(job!.SetMinimumRetryDelay((uint)m_minimumRetryDelay));
 					errorList.AddRange(job.SetNoProgressTimeout(storeScheduleInfo.NoProgressTimeout));
 					errorList.AddRange(job.AddItem(changeSet.Url, Path.GetTempFileName()));
 					if (errorList.ContainsError())
@@ -241,7 +241,7 @@ public class UpdateService : IUpdateService
 				{
 					continue;
 				}
-				ITransferJob job = null;
+				ITransferJob? job = null;
 				try
 				{
 					if (!repositoryService.ContainsRepository(pendingChangeSet.Name))
@@ -250,7 +250,7 @@ public class UpdateService : IUpdateService
 					}
 					string jobName = $"<~{pendingChangeSet.Name}-{pendingChangeSet.Head.Substring(0, 8)}~>";
 					errorList.AddRange(transferService.CreateDownloadJob(jobName, out job));
-					errorList.AddRange(job.SetMinimumRetryDelay((uint)m_minimumRetryDelay));
+					errorList.AddRange(job!.SetMinimumRetryDelay((uint)m_minimumRetryDelay));
 					errorList.AddRange(job.SetNoProgressTimeout(store.NoProgressTimeout));
 					errorList.AddRange(job.AddItem(pendingChangeSet.Url, Path.GetTempFileName()));
 					if (errorList.ContainsError())
@@ -328,7 +328,7 @@ public class UpdateService : IUpdateService
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		try
 		{
-			Upload upload = dataStoreService.Get<Upload>(jobId);
+			Upload? upload = dataStoreService.Get<Upload>(jobId);
 			if (upload == null)
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("M001", $"Job file for job: {jobId}", "Job file is missing the bits jobs will be canceled."));
@@ -345,7 +345,7 @@ public class UpdateService : IUpdateService
 				return errorList;
 			}
 			UploadReport entry;
-			if (job2.Status == TransferStatus.Error)
+			if (job2!.Status == TransferStatus.Error)
 			{
 				entry = new UploadReport
 				{
@@ -391,8 +391,8 @@ public class UpdateService : IUpdateService
 		IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
 		IDataStoreService dataStoreService = ServiceLocator.Instance.GetService<IDataStoreService>();
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
-		ChangeSet changeSet;
-		ITransferJob job2;
+		ChangeSet? changeSet;
+		ITransferJob? job2;
 		try
 		{
 			changeSet = dataStoreService.Get<ChangeSet>(jobId);
@@ -411,7 +411,7 @@ public class UpdateService : IUpdateService
 			{
 				return errorList;
 			}
-			if (job2.Status == TransferStatus.Error)
+			if (job2!.Status == TransferStatus.Error)
 			{
 				TransferStatisticReport entry = new TransferStatisticReport
 				{
@@ -548,10 +548,10 @@ public class UpdateService : IUpdateService
 		IDataStoreService dataStore = ServiceLocator.Instance.GetService<IDataStoreService>();
 		try
 		{
-			List<Guid> incompleteIds = dataStore.Get<List<Guid>>(".incomplete");
-			for (int i = 0; i < incompleteIds.Count; i++)
+			List<Guid>? incompleteIds = dataStore.Get<List<Guid>>(".incomplete");
+			for (int i = 0; i < incompleteIds!.Count; i++)
 			{
-				if (dataStore.Get<Work>(string.Concat(incompleteIds[i], ".workdat")).ID == Convert.ToInt64(name))
+				if (dataStore.Get<Work>(string.Concat(incompleteIds[i], ".workdat"))!.ID == Convert.ToInt64(name))
 				{
 					incompleteIds.RemoveAt(i);
 					dataStore.Set(".incomplete", incompleteIds);
@@ -569,10 +569,10 @@ public class UpdateService : IUpdateService
 		return errorList;
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string> response)
+	public Redbox.UpdateManager.ComponentModel.ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string?> response)
 	{
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
-		response = new Dictionary<string, string>();
+		response = new Dictionary<string, string?>();
 		using (Redbox.UpdateService.Client.UpdateService updateService = GetService())
 		{
 			ClientCommandResult clientCommandResult = updateService.StartStoreInstaller("installer", repositoryHash, frontEndVersion);
@@ -683,9 +683,9 @@ public class UpdateService : IUpdateService
 			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 			foreach (Guid id in ids)
 			{
-				Work work = dataStore.Get<Work>(string.Concat(id, ".workdat"));
+				Work work = dataStore.Get<Work>(string.Concat(id, ".workdat"))!; // dereferenced unchecked below, as shipped
 				IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
-				Exception ex = null;
+				Exception? ex = null;
 				try
 				{
 					LogHelper.Instance.Log("Executing incomplete work item with script id: {0}", work.ID);

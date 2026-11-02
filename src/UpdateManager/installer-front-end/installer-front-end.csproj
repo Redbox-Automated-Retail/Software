@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>installer-front-end</AssemblyName>
     <RootNamespace>Redbox.UpdateManager.StoreInstallerFrontEnd</RootNamespace>
     <OutputType>WinExe</OutputType>

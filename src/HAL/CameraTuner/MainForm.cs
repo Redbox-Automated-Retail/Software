@@ -28,50 +28,51 @@ public class MainForm : Form
 
 	private readonly bool Details;
 
-	private string CurrentImage;
+	private string? CurrentImage;
 
-	private FilterInfoCollection videoDevices;
+	private FilterInfoCollection? videoDevices;
 
-	private PlayerDevice videoDevice;
+	private PlayerDevice? videoDevice;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private VideoSourcePlayer videoSourcePlayer;
+	private VideoSourcePlayer videoSourcePlayer = null!;
 
-	private Button button1;
+	private Button button1 = null!;
 
-	private Button button2;
+	private Button button2 = null!;
 
-	private Button button3;
+	private Button button3 = null!;
 
-	private TextBox m_numberOfBarcodesBox;
+	private TextBox m_numberOfBarcodesBox = null!;
 
-	private TextBox m_decodeTimeBox;
+	private TextBox m_decodeTimeBox = null!;
 
-	private TextBox m_barcodeBox;
+	private TextBox m_barcodeBox = null!;
 
-	private TextBox m_snapStatusBox;
+	private TextBox m_snapStatusBox = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private Label label6;
+	private Label label6 = null!;
 
-	private TextBox m_detectedErrorsTB;
+	private TextBox m_detectedErrorsTB = null!;
 
-	private Button button4;
+	private Button button4 = null!;
 
-	private BackgroundWorker backgroundWorker1;
+	private BackgroundWorker backgroundWorker1 = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private TextBox m_secureReadTB;
+	private TextBox m_secureReadTB = null!;
 
+	// The controls above are created by InitializeComponent.
 	public MainForm(TunerLog log)
 	{
 		InitializeComponent();
@@ -93,7 +94,7 @@ public class MainForm : Form
 		Details = Settings.Default.DetailedLog;
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 		if (videoDevices == null || videoDevices.Count == 0)
@@ -130,7 +131,7 @@ public class MainForm : Form
 		ResetView();
 	}
 
-	private void videoSource_PlayingFinished(object sender, ReasonToFinishPlaying reason)
+	private void videoSource_PlayingFinished(object? sender, ReasonToFinishPlaying reason)
 	{
 		if (ReasonToFinishPlaying.StoppedByUser != reason)
 		{
@@ -140,7 +141,7 @@ public class MainForm : Form
 		}
 	}
 
-	private void SnapFrame(object sender, ref Bitmap image)
+	private void SnapFrame(object? sender, ref Bitmap image)
 	{
 		if (SnapFlag.Clear())
 		{
@@ -155,7 +156,7 @@ public class MainForm : Form
 		}
 	}
 
-	private void button3_Click(object sender, EventArgs e)
+	private void button3_Click(object? sender, EventArgs e)
 	{
 		OnShutdown();
 		Application.Exit();
@@ -193,7 +194,7 @@ public class MainForm : Form
 		}
 	}
 
-	private void button4_Click(object sender, EventArgs e)
+	private void button4_Click(object? sender, EventArgs e)
 	{
 		button1.BackColor = Color.Red;
 		button1.Enabled = false;
@@ -202,7 +203,7 @@ public class MainForm : Form
 		backgroundWorker1.RunWorkerAsync();
 	}
 
-	private void button2_Click(object sender, EventArgs e)
+	private void button2_Click(object? sender, EventArgs e)
 	{
 		if (videoDevice != null)
 		{
@@ -223,12 +224,12 @@ public class MainForm : Form
 		}
 	}
 
-	private void button4_Click_1(object sender, EventArgs e)
+	private void button4_Click_1(object? sender, EventArgs e)
 	{
 		WriteErrorText(string.Empty);
 	}
 
-	private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+	private void backgroundWorker1_DoWork(object? sender, DoWorkEventArgs e)
 	{
 		bool grabbed = false;
 		using (new AtomicFlagHelper(SnapFlag))
@@ -238,12 +239,12 @@ public class MainForm : Form
 		e.Result = (grabbed ? ScanResult.Scan(CurrentImage) : ScanResult.ErrorResult());
 	}
 
-	private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+	private void backgroundWorker1_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
 	{
 		button1.BackColor = Color.LightGray;
 		button1.Enabled = true;
-		ScanResult scanResult = e.Result as ScanResult;
-		m_snapStatusBox.Text = ((!scanResult.SnapOk) ? "CAPTURE ERROR" : "SUCCESS");
+		ScanResult? scanResult = e.Result as ScanResult;
+		m_snapStatusBox.Text = ((!scanResult!.SnapOk) ? "CAPTURE ERROR" : "SUCCESS");
 		m_numberOfBarcodesBox.Text = scanResult.ReadCount.ToString();
 		m_decodeTimeBox.Text = $"{scanResult.ExecutionTime.Seconds}.{scanResult.ExecutionTime.Milliseconds} s";
 		m_barcodeBox.Text = scanResult.ScannedMatrix;

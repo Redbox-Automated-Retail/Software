@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.HAL.DataStorage</AssemblyName>
     <RootNamespace>Redbox.HAL.DataStorage</RootNamespace>
     <!-- net48 for today's HAL (VistaDB); net10.0-windows (SQLite) for the .NET 10 HAL. -->

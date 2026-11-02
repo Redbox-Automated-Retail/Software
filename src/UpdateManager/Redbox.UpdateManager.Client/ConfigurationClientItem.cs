@@ -4,11 +4,12 @@ namespace Redbox.UpdateManager.Client;
 
 public class ConfigurationClientItem
 {
-	public string Key { get; set; }
+	// The string properties are set by the object initializer in ConfigurationClient.GetItems.
+	public string Key { get; set; } = null!;
 
-	public string FilePath { get; set; }
+	public string FilePath { get; set; } = null!;
 
-	public string DefaultCategory { get; set; }
+	public string DefaultCategory { get; set; } = null!;
 
 	public TimeSpan CheckTime { get; set; }
 

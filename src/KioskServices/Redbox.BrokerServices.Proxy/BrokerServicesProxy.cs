@@ -20,13 +20,13 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 
 	private int? m_kioskId;
 
-	private string m_versionPricingDictionary;
+	private string? m_versionPricingDictionary;
 
 	private bool m_allowReconnect;
 
-	private Timer m_reconnectTimer;
+	private Timer? m_reconnectTimer;
 
-	private IKioskRegister m_broker;
+	private IKioskRegister? m_broker;
 
 	private volatile bool m_isConnecting;
 
@@ -102,12 +102,12 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 		return false;
 	}
 
-	public ReservationResult Reserve(ReservationCart cart)
+	public ReservationResult? Reserve(ReservationCart cart)
 	{
 		return null;
 	}
 
-	public ReservationResult Reserve2(ReservationCart2 cart)
+	public ReservationResult? Reserve2(ReservationCart2 cart)
 	{
 		return null;
 	}
@@ -205,7 +205,7 @@ public partial class BrokerServicesProxy : MarshalByRefObject, IKioskOperations
 				return false;
 			}
 			LogHelper.Instance.Log("Register with Broker Services, store number: {0}, version data: {1}", m_kioskId, m_versionPricingDictionary);
-			m_broker.Register(m_kioskId.Value, this, m_versionPricingDictionary);
+			m_broker.Register(m_kioskId!.Value, this, m_versionPricingDictionary!);
 			LogHelper.Instance.Log("...Registration with Broker Services successful.");
 			registered = true;
 		}

@@ -26,7 +26,7 @@ internal class HotKeyManager : IDisposable
 
 	private ModifierKeys _modifiers;
 
-	public event EventHandler<HotKeyEventArgs> HotKeyInvokedEvent;
+	public event EventHandler<HotKeyEventArgs>? HotKeyInvokedEvent;
 
 	public HotKeyManager()
 	{
@@ -131,7 +131,7 @@ internal class HotKeyManager : IDisposable
 		}
 	}
 
-	private void Monitor(object sender, KeyPressEventEventArgs e)
+	private void Monitor(object? sender, KeyPressEventEventArgs e)
 	{
 		lock (_monitorSync)
 		{
@@ -180,7 +180,7 @@ internal class HotKeyManager : IDisposable
 						_suspend = true;
 						e.Handled = true;
 						hotKey.Execute();
-						EventHandler<HotKeyEventArgs> eventHandler = HotKeyInvokedEvent;
+						EventHandler<HotKeyEventArgs>? eventHandler = HotKeyInvokedEvent;
 						if (eventHandler != null)
 						{
 							HotKeyEventArgs e2 = new HotKeyEventArgs(hotKey.Name, hotKey.ModifierKeys, hotKey.Keys);

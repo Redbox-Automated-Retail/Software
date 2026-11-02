@@ -18,9 +18,9 @@ namespace Redbox.Shell;
 
 public class Program
 {
-	private static ILogger logger;
+	private static ILogger logger = null!; // set by Main
 
-	private static CommandLine commandLine;
+	private static CommandLine? commandLine;
 
 	private static CommandLine CommandLine
 	{
@@ -41,7 +41,7 @@ public class Program
 		NetFrameworkCompatibility.ImportExeConfig();
 #endif
 		logger = LogHelper.Instance.CreateLog4NetLogger(typeof(Program));
-		logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "shell-log4net.config"));
+		logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "shell-log4net.config"));
 		LogHelper.Instance.Logger = logger;
 		LogHelper.Instance.Log("Shell starting up...");
 		AppDomain.CurrentDomain.UnhandledException += DomainExceptionHandler;

@@ -9,7 +9,7 @@ namespace KioskAdmin;
 
 public class LogService
 {
-	private static LogService _logService;
+	private static LogService? _logService;
 
 	private List<Pair> _log = new List<Pair>();
 
@@ -49,7 +49,7 @@ public class LogService
 		DumpLog(null);
 	}
 
-	public void DumpLog(string fileName)
+	public void DumpLog(string? fileName)
 	{
 		if (string.IsNullOrEmpty(fileName))
 		{

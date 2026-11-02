@@ -12,18 +12,19 @@ public class Host : Form
 {
 	private readonly Dictionary<string, EventPanel> m_eventDict = new Dictionary<string, EventPanel>();
 
-	private IContainer components;
+	private IContainer? components;
 
-	private FlowLayoutPanel m_events;
+	private FlowLayoutPanel m_events = null!;
 
-	private OpenFileDialog m_fileDialog;
+	private OpenFileDialog m_fileDialog = null!;
 
+	// The controls above are created by InitializeComponent.
 	public Host()
 	{
 		InitializeComponent();
 	}
 
-	public FileInfo ShowFileDialog()
+	public FileInfo? ShowFileDialog()
 	{
 		if (m_fileDialog.ShowDialog() != DialogResult.OK)
 		{
@@ -111,7 +112,7 @@ public class Host : Form
 		base.Controls.Add(this.m_events);
 		this.Font = new System.Drawing.Font("Consolas", 9.75f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.MaximizeBox = false;
 		base.Name = "Host";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

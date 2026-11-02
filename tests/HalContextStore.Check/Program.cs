@@ -27,14 +27,14 @@ try
 		{
 			continue;
 		}
-		Dictionary<string, string> expected = DecodeLegacy(legacyPath);
+		Dictionary<string, string?> expected = DecodeLegacy(legacyPath);
 		ExecutionContext imported = ExecutionContextStore.Load(directory);
-		Dictionary<string, string> first = Entries(imported);
+		Dictionary<string, string?> first = Entries(imported);
 		if (!File.Exists(Path.Combine(directory, ExecutionContextStore.FileName)) || File.Exists(legacyPath))
 		{
 			failures.Add($"{id}: import did not leave ctx.json in place of ctx.data");
 		}
-		Dictionary<string, string> second = Entries(ExecutionContextStore.Load(directory));
+		Dictionary<string, string?> second = Entries(ExecutionContextStore.Load(directory));
 		Compare($"{id} BinaryFormatter file vs imported", expected, first, failures);
 		Compare($"{id} imported vs reloaded from ctx.json", first, second, failures);
 		checkedCount++;
@@ -53,11 +53,11 @@ Console.WriteLine(failures.Count == 0 && checkedCount > 0 ? $"ALL PASSED ({check
 return failures.Count == 0 && checkedCount > 0 ? 0 : 1;
 
 // The context as GetObjectData describes it, every value as invariant text.
-static Dictionary<string, string> Entries(ExecutionContext context)
+static Dictionary<string, string?> Entries(ExecutionContext context)
 {
 	SerializationInfo info = new SerializationInfo(typeof(ExecutionContext), new FormatterConverter());
 	((ISerializable)context).GetObjectData(info, new StreamingContext(StreamingContextStates.Persistence));
-	Dictionary<string, string> entries = new Dictionary<string, string>();
+	Dictionary<string, string?> entries = new Dictionary<string, string?>();
 	foreach (SerializationEntry entry in info)
 	{
 		if (entry.Value is IDictionary<string, object> symbols)
@@ -76,21 +76,21 @@ static Dictionary<string, string> Entries(ExecutionContext context)
 }
 
 // ctx.data decoded without Redbox.HAL code: the members of the ExecutionContext record.
-static Dictionary<string, string> DecodeLegacy(string path)
+static Dictionary<string, string?> DecodeLegacy(string path)
 {
 	using FileStream stream = File.OpenRead(path);
 	ClassRecord record = NrbfDecoder.DecodeClassRecord(stream);
-	Dictionary<string, string> entries = new Dictionary<string, string>();
+	Dictionary<string, string?> entries = new Dictionary<string, string?>();
 	foreach (string name in record.MemberNames)
 	{
-		object value = record.GetRawValue(name);
+		object? value = record.GetRawValue(name);
 		if (value is ClassRecord member && name == "SymbolTable")
 		{
 			if (member.GetRawValue("KeyValuePairs") is SZArrayRecord<SerializationRecord> pairs)
 			{
 				foreach (ClassRecord pair in pairs.GetArray().OfType<ClassRecord>())
 				{
-					object symbol = pair.GetRawValue("value");
+					object? symbol = pair.GetRawValue("value");
 					entries["SymbolTable." + pair.GetString("key")] = symbol is ClassRecord boxed ? Convert.ToString(boxed.GetRawValue("value__"), CultureInfo.InvariantCulture) : Text(symbol);
 				}
 			}
@@ -107,7 +107,7 @@ static Dictionary<string, string> DecodeLegacy(string path)
 	return entries;
 }
 
-static string Text(object value)
+static string? Text(object? value)
 {
 	return value switch
 	{
@@ -118,12 +118,12 @@ static string Text(object value)
 	};
 }
 
-static void Compare(string what, Dictionary<string, string> expected, Dictionary<string, string> actual, List<string> failures)
+static void Compare(string what, Dictionary<string, string?> expected, Dictionary<string, string?> actual, List<string> failures)
 {
 	foreach (string key in expected.Keys.Union(actual.Keys).OrderBy(k => k, StringComparer.Ordinal))
 	{
-		expected.TryGetValue(key, out string e);
-		actual.TryGetValue(key, out string a);
+		expected.TryGetValue(key, out string? e);
+		actual.TryGetValue(key, out string? a);
 		if (key == "Errors" && e != null && a != null)
 		{
 			// HAL's Error parsing keeps the space after "ERROR:", so each load adds one (the .NET Framework HAL as well).

@@ -6,23 +6,24 @@ namespace Redbox.HAL.DataStorage;
 
 internal sealed class KioskFunctionCheckData : IKioskFunctionCheckData
 {
-	public string VerticalSlotTestResult { get; internal set; }
+	// The strings are set by the object initializer in KioskFunctionCheckTable or TableTypeFactory.
+	public string VerticalSlotTestResult { get; internal set; } = null!;
 
-	public string InitTestResult { get; internal set; }
+	public string InitTestResult { get; internal set; } = null!;
 
-	public string VendDoorTestResult { get; internal set; }
+	public string VendDoorTestResult { get; internal set; } = null!;
 
-	public string TrackTestResult { get; internal set; }
+	public string TrackTestResult { get; internal set; } = null!;
 
-	public string SnapDecodeTestResult { get; internal set; }
+	public string SnapDecodeTestResult { get; internal set; } = null!;
 
-	public string TouchscreenDriverTestResult { get; internal set; }
+	public string TouchscreenDriverTestResult { get; internal set; } = null!;
 
-	public string CameraDriverTestResult { get; internal set; }
+	public string CameraDriverTestResult { get; internal set; } = null!;
 
 	public DateTime Timestamp { get; internal set; }
 
-	public string UserIdentifier { get; internal set; }
+	public string UserIdentifier { get; internal set; } = null!;
 
 	public override string ToString()
 	{

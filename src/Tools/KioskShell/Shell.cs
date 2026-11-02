@@ -19,13 +19,13 @@ public class Shell : Form
 
 	private readonly HotKeyManager _hotKeyManager;
 
-	private readonly IHotKeyCommand _attentionSequenceCommand;
+	private readonly IHotKeyCommand? _attentionSequenceCommand;
 
 	private const int WS_EX_TRANSPARENT = 32;
 
 	private const int WS_EX_TOOLWINDOW = 128;
 
-	private IContainer components;
+	private IContainer? components;
 
 	protected override CreateParams CreateParams
 	{
@@ -91,7 +91,7 @@ public class Shell : Form
 		}
 	}
 
-	private void Shell_Load(object sender, EventArgs e)
+	private void Shell_Load(object? sender, EventArgs e)
 	{
 		try
 		{

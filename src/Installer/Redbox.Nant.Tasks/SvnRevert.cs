@@ -9,9 +9,9 @@ public class SvnRevert : Task
 {
 	protected SvnExecTask _task;
 
-	private string _workingDirectory;
+	private string _workingDirectory = null!; // set by NAnt (required attribute)
 
-	private string _ignoreList;
+	private string _ignoreList = null!; // set by NAnt (required attribute)
 
 	[TaskAttribute("working-dir", Required = true)]
 	public string WorkingDirectory

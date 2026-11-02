@@ -9,11 +9,11 @@ public class RemotingEndpoint : Task
 {
 	private const string DEFAULT_PUBLIC_KEY_TOKEN = "a85d6bf8ca5f760d";
 
-	private string _version;
+	private string _version = null!; // set by NAnt (required attribute)
 
-	private string _file;
+	private string _file = null!; // set by NAnt (required attribute)
 
-	private string _publicKeyToken;
+	private string? _publicKeyToken;
 
 	[TaskAttribute("version", Required = true)]
 	public string Version

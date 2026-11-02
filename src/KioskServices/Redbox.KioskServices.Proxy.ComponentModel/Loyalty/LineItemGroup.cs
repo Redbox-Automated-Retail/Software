@@ -8,7 +8,7 @@ public class LineItemGroup
 
 	public List<LineItem> Items { get; set; }
 
-	public Totals Totals { get; set; }
+	public Totals? Totals { get; set; }
 
 	public LineItemGroup()
 	{

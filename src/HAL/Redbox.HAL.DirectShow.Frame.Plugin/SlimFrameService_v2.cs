@@ -10,7 +10,7 @@ internal sealed class SlimFrameService_v2 : AbstractDirectShowControl
 {
 	private FrameControls FrameControl = FrameControls.Legacy;
 
-	private AbstractDirectShowFrameControl Control;
+	private AbstractDirectShowFrameControl? Control;
 
 	protected override bool OnStartup(string moniker)
 	{
@@ -41,7 +41,7 @@ internal sealed class SlimFrameService_v2 : AbstractDirectShowControl
 
 	protected override void OnSnap(string fileName)
 	{
-		if (!Control.SimulateTrigger(fileName, SnapTimeout))
+		if (!Control!.SimulateTrigger(fileName, SnapTimeout))
 		{
 			LogHelper.Instance.Log("[SlimFrameService_v2] Image received wait timed out.");
 		}
@@ -49,7 +49,7 @@ internal sealed class SlimFrameService_v2 : AbstractDirectShowControl
 
 	protected override bool OnShutdown()
 	{
-		Control.SignalToStop();
+		Control!.SignalToStop();
 		Control.PlayingFinished -= base.PlayingFinished;
 		Control = null;
 		LogHelper.Instance.Log("[SlimFrameService_v2] Plugin shutdown.");

@@ -14,19 +14,19 @@ public class RBA_API : IRBA_API
 	{
 		private int m_instance_id = -50;
 
-		private string m_name;
+		private string? m_name;
 
 		private bool m_disposed;
 
-		public PinPadMessageHandler pinpadHandler;
+		public PinPadMessageHandler? pinpadHandler;
 
 		private unsafe static readonly PinPadMessageCallBackWithInstanceId vsPinpadCallBackWithInstanceId = PinpadCallBackWithInstanceId;
 
-		private ConnectHandler connectHandler;
+		private ConnectHandler? connectHandler;
 
 		private static readonly ConnectCallBackWithInstanceId vsUnmanagedConnectCallBackWithInstanceId = UnmanagedConnectCallBackWithInstanceId;
 
-		public DisconnectHandler disconnectHandler;
+		public DisconnectHandler? disconnectHandler;
 
 		private static readonly DisconnectCallBackWithInstanceId vsUnmanagedDisconnectCallBackWithInstanceId = UnmanagedDisconnectCallBackWithInstance;
 
@@ -64,7 +64,7 @@ public class RBA_API : IRBA_API
 			}
 		}
 
-		public string GetInstanceName()
+		public string? GetInstanceName()
 		{
 			return m_name;
 		}
@@ -473,11 +473,11 @@ public class RBA_API : IRBA_API
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	private delegate void DisconnectCallBackWithInstanceId(uint instaneId);
 
-	public BatteryLevelHandler batterylevelHandler;
+	public BatteryLevelHandler? batterylevelHandler;
 
-	private ConnectHandler connectHandler;
+	private ConnectHandler? connectHandler;
 
-	private DisconnectHandler disconnectHandler;
+	private DisconnectHandler? disconnectHandler;
 
 	private readonly LOUT vsUnmanagedTraceLog;
 
@@ -493,9 +493,9 @@ public class RBA_API : IRBA_API
 
 	private bool m_SetUnmanagedLogCalBackOnce = true;
 
-	public LogHandler logHandler { get; set; }
+	public LogHandler? logHandler { get; set; }
 
-	public PinPadMessageHandler pinpadHandler { get; set; }
+	public PinPadMessageHandler? pinpadHandler { get; set; }
 
 	private static string AssemblyVersion
 	{
@@ -775,7 +775,7 @@ public class RBA_API : IRBA_API
 
 	public byte[] GetParamAsByteArray(PARAMETER_ID id)
 	{
-		byte[] data = null;
+		byte[]? data = null;
 		GetParam(id, out data);
 		return data;
 	}
@@ -1221,19 +1221,19 @@ public class RBA_API : IRBA_API
 	private static extern int SendCustomMessageNativeFor(uint instanceId, StringBuilder RawData, int DataLength, [MarshalAs(UnmanagedType.I1)] bool bWaitResponce);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetMessageCallBack")]
-	private static extern int SetMessageCallBackNative(PinPadMessageCallBack cbMessageHandler);
+	private static extern int SetMessageCallBackNative(PinPadMessageCallBack? cbMessageHandler);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetMessageCallBackWithInstanceId")]
 	private unsafe static extern int SetMessageCallBackWithInstanceIdNative(uint instanceId, PinPadMessageCallBackWithInstanceId cbMessageHandler, void* userParam);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetNotifyRbaConnected")]
-	private static extern int SetNotifyRbaConnectedNative(ConnectCallBack cbConnectHandler);
+	private static extern int SetNotifyRbaConnectedNative(ConnectCallBack? cbConnectHandler);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetNotifyRbaConnectedFor")]
-	private static extern int SetNotifyRbaConnectedForNative(uint instanceId, ConnectCallBackWithInstanceId cbConnectHandler);
+	private static extern int SetNotifyRbaConnectedForNative(uint instanceId, ConnectCallBackWithInstanceId? cbConnectHandler);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetNotifyRbaDisconnected")]
-	private static extern int SetNotifyRbaDisconnectedNative(DisconnectCallBack cbConnectHandler);
+	private static extern int SetNotifyRbaDisconnectedNative(DisconnectCallBack? cbConnectHandler);
 
 	[DllImport("RBA_SDK", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RBA_SDK_SetNotifyRbaDisconnectedFor")]
 	private static extern int SetNotifyRbaDisconnectedForNative(uint instanceId, DisconnectCallBackWithInstanceId cbConnectHandler);

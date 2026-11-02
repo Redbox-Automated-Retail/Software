@@ -7,7 +7,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class DataStoreServiceProxy : IDataStoreService
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	public static DataStoreServiceProxy Instance => Singleton<DataStoreServiceProxy>.Instance;
 
@@ -48,14 +48,14 @@ public class DataStoreServiceProxy : IDataStoreService
 		}
 	}
 
-	public T Get<T>(Guid id)
+	public T? Get<T>(Guid id)
 	{
 		return Get<T>(id.ToString());
 	}
 
-	public T Get<T>(string id)
+	public T? Get<T>(string id)
 	{
-		string raw = GetRaw(id);
+		string? raw = GetRaw(id);
 		if (raw == null)
 		{
 			return default(T);
@@ -63,12 +63,12 @@ public class DataStoreServiceProxy : IDataStoreService
 		return raw.ToObject<T>();
 	}
 
-	public string GetRaw(Guid id)
+	public string? GetRaw(Guid id)
 	{
 		return GetRaw(id.ToString());
 	}
 
-	public string GetRaw(string id)
+	public string? GetRaw(string id)
 	{
 		string command = $"data get id: '{id}'";
 		using UpdateManagerService updateManagerService = UpdateManagerService.GetService(m_url);

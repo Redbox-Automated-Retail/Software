@@ -19,9 +19,10 @@ public class Task : ITask, IJob
 
 	public ScheduleType ScheduleType { get; set; }
 
-	public string CronExpression { get; set; }
+	public string? CronExpression { get; set; }
 
-	public string Name { get; set; }
+	// Name and Payload are set by the constructors with parameters (Quartz's instance from the parameterless one only runs Execute).
+	public string Name { get; set; } = null!;
 
 	public TimeSpan? StartOffset { get; set; }
 
@@ -31,7 +32,7 @@ public class Task : ITask, IJob
 
 	public TimeSpan? RepeatInterval { get; set; }
 
-	public string Payload { get; set; }
+	public string Payload { get; set; } = null!;
 
 	public PayloadType PayloadType { get; set; }
 
@@ -39,7 +40,7 @@ public class Task : ITask, IJob
 	{
 	}
 
-	public Task(string name, string payload, PayloadType payloadType, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, string cronExpression)
+	public Task(string name, string payload, PayloadType payloadType, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, string? cronExpression)
 	{
 		Name = name;
 		Payload = payload;
@@ -63,11 +64,11 @@ public class Task : ITask, IJob
 		RepeatInterval = repeatInterval;
 	}
 
-	public void Execute(IJobExecutionContext context)
+	public void Execute(IJobExecutionContext? context)
 	{
 		try
 		{
-			Task task;
+			Task? task;
 			if (context == null)
 			{
 				task = this;
@@ -175,7 +176,7 @@ public class Task : ITask, IJob
 						CreateNoWindow = true,
 						WindowStyle = ProcessWindowStyle.Hidden,
 						FileName = fileName
-					}))
+					})!) // the old code dereferenced it unchecked
 					{
 						LogHelper.Instance.Log("Process '{0}' started with PID '{1}'.", process.ProcessName, process.Id);
 					}

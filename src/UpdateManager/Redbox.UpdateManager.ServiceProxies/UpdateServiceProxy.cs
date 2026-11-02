@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class UpdateServiceProxy : IUpdateService
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	private TimeSpan m_timeout = TimeSpan.FromSeconds(120.0);
 
@@ -119,7 +119,7 @@ public class UpdateServiceProxy : IUpdateService
 		return NotImplemented("GetSubscriptionState");
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string> response)
+	public Redbox.UpdateManager.ComponentModel.ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string?>? response)
 	{
 		response = null;
 		return NotImplemented("StartInstaller");

@@ -24,7 +24,7 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 	{
 		using (new WithUpgradeableReadLock(Lock))
 		{
-			IPersistentOption persistentOption = Options.Find((IPersistentOption each) => each.Key == key);
+			IPersistentOption? persistentOption = Options.Find((IPersistentOption each) => each.Key == key);
 			if (persistentOption != null)
 			{
 				using (new WithWriteLock(Lock))
@@ -41,7 +41,7 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 	{
 		using (new WithUpgradeableReadLock(Lock))
 		{
-			IPersistentOption persistentOption = Options.Find((IPersistentOption each) => each.Key == name);
+			IPersistentOption? persistentOption = Options.Find((IPersistentOption each) => each.Key == name);
 			if (persistentOption == null)
 			{
 				using (new WithWriteLock(Lock))
@@ -60,10 +60,10 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 		{
 			try
 			{
-				IPersistentOption persistentOption = Options.Find((IPersistentOption each) => each.Key == key);
+				IPersistentOption? persistentOption = Options.Find((IPersistentOption each) => each.Key == key);
 				if (persistentOption != null)
 				{
-					persistentOption.UpdateValue(value.ToString());
+					persistentOption.UpdateValue(value!.ToString());
 					Table.Update(persistentOption);
 				}
 				else
@@ -87,7 +87,7 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 
 	private void InsertUnderLock<T>(string key, T val)
 	{
-		IPersistentOption persistentOption = ServiceLocator.Instance.GetService<ITableTypeFactory>().NewPersistentOption(key, val.ToString());
+		IPersistentOption persistentOption = ServiceLocator.Instance.GetService<ITableTypeFactory>().NewPersistentOption(key, val!.ToString());
 		Table.Insert(persistentOption);
 		Options.Add(persistentOption);
 	}

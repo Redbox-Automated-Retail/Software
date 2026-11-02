@@ -13,9 +13,9 @@ public class ReservationServicesProxy : IReservationServices
 
 	public static ReservationServicesProxy Instance => Singleton<ReservationServicesProxy>.Instance;
 
-	internal ReservationRequestCallback3 RequestCallback3 { get; private set; }
+	internal ReservationRequestCallback3? RequestCallback3 { get; private set; }
 
-	internal CancelReservationCallback CancelRequestCallback { get; private set; }
+	internal CancelReservationCallback? CancelRequestCallback { get; private set; }
 
 	public bool CanSwitch()
 	{

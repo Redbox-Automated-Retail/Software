@@ -20,7 +20,7 @@ public class TransferItem : ITransferItem
 		file.GetLocalName(out var pVal);
 		file.GetRemoteName(out var pVal2);
 		file.GetProgress(out var pVal3);
-		Path = System.IO.Path.GetDirectoryName(pVal);
+		Path = System.IO.Path.GetDirectoryName(pVal)!; // BITS local names are full file paths
 		Name = System.IO.Path.GetFileName(pVal);
 		RemoteURL = pVal2;
 		TotalBytes = pVal3.BytesTotal;

@@ -12,7 +12,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 
 		private int currentIndex;
 
-		public object Current => outer.oTriggers[currentIndex];
+		public object? Current => outer.oTriggers[currentIndex];
 
 		internal Enumerator(TriggerList outer)
 		{
@@ -31,7 +31,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 	}
 
-	private ITask iTask;
+	private ITask iTask; // cleared by Dispose, with oTriggers; using the list afterwards throws, as before
 
 	private ArrayList oTriggers;
 
@@ -45,7 +45,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 			{
 				throw new ArgumentOutOfRangeException("index", index, "TriggerList collection");
 			}
-			return (Trigger)oTriggers[index];
+			return (Trigger)oTriggers[index]!;
 		}
 		set
 		{
@@ -53,13 +53,13 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 			{
 				throw new ArgumentOutOfRangeException("index", index, "TriggerList collection");
 			}
-			Trigger trigger = (Trigger)oTriggers[index];
+			Trigger trigger = (Trigger)oTriggers[index]!;
 			value.Bind(trigger);
 			oTriggers[index] = value;
 		}
 	}
 
-	object IList.this[int index]
+	object? IList.this[int index]
 	{
 		get
 		{
@@ -67,7 +67,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 		set
 		{
-			this[index] = value as Trigger;
+			this[index] = (value as Trigger)!; // the setter dereferences it, so null threw before too
 		}
 	}
 
@@ -77,7 +77,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 
 	public bool IsSynchronized => false;
 
-	public object SyncRoot => null;
+	public object SyncRoot => null!; // null as shipped
 
 	internal TriggerList(ITask iTask)
 	{
@@ -98,17 +98,17 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		{
 			throw new ArgumentOutOfRangeException("index", index, "Failed to remove Trigger. Index out of range.");
 		}
-		((Trigger)oTriggers[index]).Unbind();
+		((Trigger)oTriggers[index]!).Unbind();
 		oTriggers.RemoveAt(index);
 		iTask.DeleteTrigger((ushort)index);
 	}
 
-	void IList.Insert(int index, object value)
+	void IList.Insert(int index, object? value)
 	{
 		throw new NotImplementedException("TriggerList does not support Insert().");
 	}
 
-	public void Remove(Trigger trigger)
+	public void Remove(Trigger? trigger)
 	{
 		int index = IndexOf(trigger);
 		if (index != -1)
@@ -117,17 +117,17 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 	}
 
-	void IList.Remove(object value)
+	void IList.Remove(object? value)
 	{
 		Remove(value as Trigger);
 	}
 
-	public bool Contains(Trigger trigger)
+	public bool Contains(Trigger? trigger)
 	{
 		return IndexOf(trigger) != -1;
 	}
 
-	bool IList.Contains(object value)
+	bool IList.Contains(object? value)
 	{
 		return Contains(value as Trigger);
 	}
@@ -140,7 +140,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 	}
 
-	public int IndexOf(Trigger trigger)
+	public int IndexOf(Trigger? trigger)
 	{
 		for (int i = 0; i < Count; i++)
 		{
@@ -152,7 +152,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		return -1;
 	}
 
-	int IList.IndexOf(object value)
+	int IList.IndexOf(object? value)
 	{
 		return IndexOf(value as Trigger);
 	}
@@ -173,9 +173,9 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		return NewTriggerIndex;
 	}
 
-	int IList.Add(object value)
+	int IList.Add(object? value)
 	{
-		return Add(value as Trigger);
+		return Add((value as Trigger)!); // Add dereferences it, so null threw before too
 	}
 
 	public void CopyTo(Array array, int index)
@@ -186,7 +186,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		}
 		for (int i = 0; i < oTriggers.Count; i++)
 		{
-			array.SetValue(((Trigger)oTriggers[i]).Clone(), index + i);
+			array.SetValue(((Trigger)oTriggers[i]!).Clone(), index + i);
 		}
 	}
 
@@ -201,7 +201,7 @@ public class TriggerList : IList, ICollection, IEnumerable, IDisposable
 		{
 			((Trigger)oTrigger).Unbind();
 		}
-		oTriggers = null;
-		iTask = null;
+		oTriggers = null!;
+		iTask = null!;
 	}
 }

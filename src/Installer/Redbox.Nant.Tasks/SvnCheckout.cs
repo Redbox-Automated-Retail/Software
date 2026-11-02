@@ -9,9 +9,9 @@ public class SvnCheckout : Task
 {
 	protected SvnExecTask _task;
 
-	private string _remoteDirectory;
+	private string _remoteDirectory = null!; // set by NAnt (required attribute)
 
-	private string _workingDirectory;
+	private string _workingDirectory = null!; // set by NAnt (required attribute)
 
 	[TaskAttribute("remote-dir", Required = true)]
 	public string RemoteDirectory

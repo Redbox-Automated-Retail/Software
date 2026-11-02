@@ -42,11 +42,11 @@ public class WindowsTaskScheduler : IWindowsTaskScheduler
 		try
 		{
 			using ScheduledTasks scheduledTasks = new ScheduledTasks();
-			Task task = null;
+			Task? task = null;
 			try
 			{
 				task = scheduledTasks.OpenTask(name) ?? scheduledTasks.CreateTask(name);
-				task.Flags = TaskFlags.Hidden;
+				task!.Flags = TaskFlags.Hidden; // CreateTask returns null on failure; this threw (and was logged) before too
 				if (string.IsNullOrEmpty(password))
 				{
 					task.Flags |= TaskFlags.RunOnlyIfLoggedOn;
@@ -73,7 +73,7 @@ public class WindowsTaskScheduler : IWindowsTaskScheduler
 				{
 					if (string.Compare(accountName, "system", ignoreCase: true) == 0)
 					{
-						task.SetAccountInformation("", (string)null);
+						task.SetAccountInformation("", (string?)null);
 					}
 					else
 					{
@@ -98,7 +98,7 @@ public class WindowsTaskScheduler : IWindowsTaskScheduler
 		try
 		{
 			using ScheduledTasks scheduledTasks = new ScheduledTasks();
-			Task task = null;
+			Task? task = null;
 			try
 			{
 				task = scheduledTasks.OpenTask(name);
@@ -133,7 +133,7 @@ public class WindowsTaskScheduler : IWindowsTaskScheduler
 		try
 		{
 			using ScheduledTasks scheduledTasks = new ScheduledTasks();
-			Task task = null;
+			Task? task = null;
 			try
 			{
 				task = scheduledTasks.OpenTask(name);
@@ -176,7 +176,7 @@ public class WindowsTaskScheduler : IWindowsTaskScheduler
 		try
 		{
 			using ScheduledTasks scheduledTasks = new ScheduledTasks();
-			Task task = null;
+			Task? task = null;
 			try
 			{
 				task = scheduledTasks.OpenTask(name);

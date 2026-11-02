@@ -17,5 +17,5 @@ public interface IMessage
 
 	bool UseMessageControl { get; }
 
-	Dictionary<string, string> PropertyBag { get; set; }
+	Dictionary<string, string>? PropertyBag { get; set; }
 }

@@ -16,7 +16,7 @@ public sealed class JobCommand
 	[Usage("JOB get job: job-id")]
 	public void Get(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			CommandHelper.FormatJob(job, context);
@@ -42,7 +42,7 @@ public sealed class JobCommand
 	[Usage("JOB set-label job: job-id value: label")]
 	public void SetLabel(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId, string value)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			job.Label = value;
@@ -53,7 +53,7 @@ public sealed class JobCommand
 	[Usage("JOB get-errors job: job-id")]
 	public void GetErrors(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			ProtocolHelper.FormatErrors(job.Result.Errors, context);
@@ -91,7 +91,7 @@ public sealed class JobCommand
 	[Usage("JOB connect job: job-id")]
 	public void Connect(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId)
 	{
-		IExecutionContext executionContext = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? executionContext = CommandHelper.GetJob(jobId, context.Errors);
 		if (executionContext != null)
 		{
 			executionContext.Connect(context.MessageSink);
@@ -162,7 +162,7 @@ public sealed class JobCommand
 	[Usage("JOB set-priority job: job-id value: priority")]
 	public void SetPriority(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId, ProgramPriority value)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			job.Priority = value;
@@ -173,7 +173,7 @@ public sealed class JobCommand
 	[Usage("JOB set-start-time job: job-id value: startTime")]
 	public void SetStartTime(CommandContext context, [CommandKeyValue(IsRequired = true, KeyName = "job")] string jobId, DateTime value)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			job.StartTime = value;
@@ -204,7 +204,7 @@ public sealed class JobCommand
 
 	[CommandForm(Name = "schedule")]
 	[Usage("JOB schedule name: program-name [debugging: flag] [priority: priority] [startTime: startTime] [label: label] [resume-now] [no-duplicates]")]
-	public void Schedule(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, bool? debugging, ProgramPriority? priority, DateTime? startTime, string label)
+	public void Schedule(CommandContext context, [CommandKeyValue(IsRequired = true)] string name, bool? debugging, ProgramPriority? priority, DateTime? startTime, string? label)
 	{
 		bool resumeNow = context.Parameters.ContainsKey("resume-now");
 		bool noDuplicates = context.Parameters.ContainsKey("no-duplicates");
@@ -263,7 +263,7 @@ public sealed class JobCommand
 		context.Messages.Add("INACTIVE");
 	}
 
-	private static IExecutionContext ScheduleJob(string programName, string label, DateTime? startTime, ProgramPriority priority, bool enableDebugging)
+	private static IExecutionContext ScheduleJob(string programName, string? label, DateTime? startTime, ProgramPriority priority, bool enableDebugging)
 	{
 		return ServiceLocator.Instance.GetService<IExecutionService>().ScheduleJob(programName, label, startTime, priority);
 	}

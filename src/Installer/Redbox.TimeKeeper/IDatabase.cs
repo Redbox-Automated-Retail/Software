@@ -4,7 +4,7 @@ namespace Redbox.TimeKeeper;
 
 public interface IDatabase
 {
-	string ConnectionString { get; }
+	string? ConnectionString { get; }
 
 	long Modify(SqlCommand command);
 }

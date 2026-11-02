@@ -46,7 +46,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	private readonly CancellationTokenSource _stop = new CancellationTokenSource();
 
-	private DisconnectHandler _disconnectHandler;
+	private DisconnectHandler? _disconnectHandler;
 
 	private bool _initialized;
 
@@ -56,26 +56,26 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	private MESSAGE_ID? _pendingRead;
 
-	private SimulatedCard _activeCard;
+	private SimulatedCard? _activeCard;
 
 	private bool _cardInserted;
 
 	private EmvState _emvState;
 
-	private Thread _messageThread;
+	private Thread? _messageThread;
 
-	private Thread _commandThread;
+	private Thread? _commandThread;
 
-	public LogHandler logHandler { get; set; }
+	public LogHandler? logHandler { get; set; }
 
-	public PinPadMessageHandler pinpadHandler { get; set; }
+	public PinPadMessageHandler? pinpadHandler { get; set; }
 
 	/// <summary>
 	/// The most recently initialized simulator. DeviceService.WebApi's Startup creates IUC285Proxy from a second
 	/// ServiceProvider (built on a background task), so the terminal the proxy talks to is not the IRBA_API
 	/// singleton the MVC container hands to SimulatorController. The controller drives this instance instead.
 	/// </summary>
-	public static RBA_API_Simulator Active { get; private set; }
+	public static RBA_API_Simulator? Active { get; private set; }
 
 	internal ISimulatorDataProvider Data => _data;
 
@@ -85,7 +85,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	public bool IsCardInserted => _cardInserted;
 
-	public string PendingRead => _pendingRead?.ToString();
+	public string? PendingRead => _pendingRead?.ToString();
 
 	public string EmvTransactionState => _emvState.ToString();
 
@@ -200,7 +200,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_params)
 		{
-			if (!_params.TryGetValue(id, out List<string> value))
+			if (!_params.TryGetValue(id, out List<string>? value))
 			{
 				value = (_params[id] = new List<string>());
 			}
@@ -229,7 +229,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_params)
 		{
-			if (!_params.TryGetValue(id, out List<string> value) || value.Count == 0)
+			if (!_params.TryGetValue(id, out List<string>? value) || value.Count == 0)
 			{
 				return string.Empty;
 			}
@@ -246,7 +246,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_params)
 		{
-			if (!_params.TryGetValue(id, out List<string> value) || value.Count == 0)
+			if (!_params.TryGetValue(id, out List<string>? value) || value.Count == 0)
 			{
 				return -1;
 			}
@@ -263,7 +263,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_params)
 		{
-			if (!_params.TryGetValue(id, out List<string> value) || value.Count == 0)
+			if (!_params.TryGetValue(id, out List<string>? value) || value.Count == 0)
 			{
 				return string.Empty;
 			}
@@ -295,7 +295,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_tags)
 		{
-			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>> value))
+			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>>? value))
 			{
 				value = (_tags[msg] = new Queue<KeyValuePair<int, byte[]>>());
 			}
@@ -313,7 +313,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_tags)
 		{
-			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>> value) || value.Count == 0)
+			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>>? value) || value.Count == 0)
 			{
 				return 0;
 			}
@@ -325,7 +325,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_tags)
 		{
-			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>> value) || value.Count == 0)
+			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>>? value) || value.Count == 0)
 			{
 				data = new byte[0];
 				return 0;
@@ -340,7 +340,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		lock (_tags)
 		{
-			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>> value))
+			if (!_tags.TryGetValue(msg, out Queue<KeyValuePair<int, byte[]>>? value))
 			{
 				return new List<KeyValuePair<int, byte[]>>();
 			}
@@ -431,7 +431,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M29_GET_VARIABLE:
 		{
-			string variable = _data.GetVariable(Request(PARAMETER_ID.P29_REQ_VARIABLE_ID));
+			string? variable = _data.GetVariable(Request(PARAMETER_ID.P29_REQ_VARIABLE_ID));
 			Respond(PARAMETER_ID.P29_RES_STATUS, variable == null ? "6" : "2");
 			Respond(PARAMETER_ID.P29_RES_VARIABLE_DATA, variable ?? string.Empty);
 			break;
@@ -470,7 +470,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M61_CONFIGURATION_READ:
 		{
-			string configValue = _data.ReadConfig(Request(PARAMETER_ID.P61_REQ_GROUP_NUM), Request(PARAMETER_ID.P61_REQ_INDEX_NUM));
+			string? configValue = _data.ReadConfig(Request(PARAMETER_ID.P61_REQ_GROUP_NUM), Request(PARAMETER_ID.P61_REQ_INDEX_NUM));
 			Respond(PARAMETER_ID.P61_RES_STATUS, "2");
 			Respond(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER, configValue ?? string.Empty);
 			break;
@@ -481,7 +481,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			break;
 		case MESSAGE_ID.M65_RETRIEVE_FILE:
 		{
-			if (!_data.Files.TryGetValue(Request(PARAMETER_ID.P65_REQ_FILE_NAME), out string fileData))
+			if (!_data.Files.TryGetValue(Request(PARAMETER_ID.P65_REQ_FILE_NAME), out string? fileData))
 			{
 				Respond(PARAMETER_ID.P65_RES_RESULT, "1");
 				break;
@@ -520,7 +520,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 			}
 		}
 		string key = string.IsNullOrEmpty(fileName) ? "_lastFile" : fileName;
-		if (Request(PARAMETER_ID.P62_REQ_RECORD_TYPE) == "1" && _data.Files.TryGetValue(key, out string existingData))
+		if (Request(PARAMETER_ID.P62_REQ_RECORD_TYPE) == "1" && _data.Files.TryGetValue(key, out string? existingData))
 		{
 			fileData = existingData + fileData;
 		}
@@ -597,11 +597,11 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 		while (!_stop.IsCancellationRequested)
 		{
 			_commands.WaitForCommand(250);
-			while (_connected && _commands.TryTake(CanRun, out SimulatorCommand command))
+			while (_connected && _commands.TryTake(CanRun, out SimulatorCommand? command))
 			{
 				try
 				{
-					Run(command);
+					Run(command!); // TryTake returned true
 				}
 				catch (Exception exception)
 				{
@@ -629,7 +629,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 				});
 				return;
 			}
-			readMessage = _pendingRead.Value;
+			readMessage = _pendingRead!.Value; // CanRun checked it
 			_pendingRead = null;
 			_activeCard = card;
 		}
@@ -707,7 +707,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	}
 
 	/// <summary>Sets the status parameter and EMV tags of an unsolicited 33.xx message.</summary>
-	private void RespondEmv(MESSAGE_ID messageId, PARAMETER_ID statusParameter, byte? cryptogramInformation, string authorizationResponseCode = null)
+	private void RespondEmv(MESSAGE_ID messageId, PARAMETER_ID statusParameter, byte? cryptogramInformation, string? authorizationResponseCode = null)
 	{
 		Respond(statusParameter, "00");
 		SimulatedCard card = _activeCard ?? _data.DefaultCard;
@@ -727,7 +727,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 
 	#region Unsolicited terminal messages
 
-	private void RaiseTerminalMessage(MESSAGE_ID messageId, Action setResponse)
+	private void RaiseTerminalMessage(MESSAGE_ID messageId, Action? setResponse)
 	{
 		_terminalMessages.Add(delegate
 		{
@@ -765,7 +765,7 @@ public class RBA_API_Simulator : IRBA_API, IDisposable
 	{
 		string text = $"{DateTime.Now:HH:mm:ss.fff} {message}";
 		_history.Enqueue(text);
-		while (_history.Count > 200 && _history.TryDequeue(out string _))
+		while (_history.Count > 200 && _history.TryDequeue(out string? _))
 		{
 		}
 		logHandler?.Invoke("[RBA_SDK_Simulator] " + message);

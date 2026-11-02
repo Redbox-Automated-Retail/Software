@@ -11,11 +11,11 @@ namespace Redbox.UpdateManager.Remoting;
 
 public class KioskEngineProxy
 {
-	internal static string IpcHostUrl;
+	internal static string IpcHostUrl = null!; // set by KioskEngineService.Initialize
 
-	private static ClientSession _clientSession;
+	private static ClientSession? _clientSession;
 
-	internal static ClientSession IPCClientSession
+	internal static ClientSession? IPCClientSession
 	{
 		get
 		{
@@ -78,13 +78,13 @@ public class KioskEngineProxy
 			}
 			LogHelper.Instance.Log($"IPC command \"{command}\" to host \"{IpcHostUrl}\" failed.  {stringBuilder.ToString()}", LogEntryType.Error);
 		}
-		return clientCommandResult;
+		return clientCommandResult!; // dereferenced in the loop's last pass
 	}
 
 	internal static ClientCommandResult ExecuteCommandString(string command)
 	{
 		int i = 0;
-		ClientCommandResult clientCommandResult = null;
+		ClientCommandResult? clientCommandResult = null;
 		for (; i <= 3; i++)
 		{
 			try
@@ -96,7 +96,7 @@ public class KioskEngineProxy
 				Console.WriteLine("Unable to send IPC command '{0}' ({1})", command, ex.Message);
 				Console.WriteLine(ex.StackTrace);
 			}
-			if (!clientCommandResult.Errors.FindAll((Redbox.IPC.Framework.Error x) => x.Code == "J777" || x.Code == "J999" || x.Code == "J001").Any())
+			if (!clientCommandResult!.Errors.FindAll((Redbox.IPC.Framework.Error x) => x.Code == "J777" || x.Code == "J999" || x.Code == "J001").Any())
 			{
 				break;
 			}
@@ -106,6 +106,6 @@ public class KioskEngineProxy
 				IPCClientSession = null;
 			}
 		}
-		return clientCommandResult;
+		return clientCommandResult!; // dereferenced in the loop's last pass
 	}
 }

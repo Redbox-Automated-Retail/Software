@@ -4,7 +4,7 @@ public class Scheduler
 {
 	private readonly TaskList tasks;
 
-	public string TargetComputer
+	public string? TargetComputer
 	{
 		get
 		{

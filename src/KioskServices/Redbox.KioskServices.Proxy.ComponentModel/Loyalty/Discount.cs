@@ -8,7 +8,7 @@ public class Discount
 
 	public DiscountType DiscountType { get; set; }
 
-	public string PromotionCode { get; set; }
+	public string? PromotionCode { get; set; }
 
 	public decimal? PromotionCodeValue { get; set; }
 

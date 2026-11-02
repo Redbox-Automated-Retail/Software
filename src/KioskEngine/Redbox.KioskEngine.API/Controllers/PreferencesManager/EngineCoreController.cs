@@ -32,7 +32,7 @@ public class EngineCoreController : ApiController
 			KioskEngineVersions kioskEngineVersions = response.Content;
 			AppDomain.CurrentDomain.GetAssemblies().ForEach(delegate(Assembly eachAssembly)
 			{
-				AssemblyName assemblyName = eachAssembly?.GetName();
+				AssemblyName? assemblyName = eachAssembly?.GetName();
 				if (assemblyName?.Name?.ToUpper()?.StartsWith("REDBOX") == true || assemblyName?.Name?.ToUpper() == "KIOSKENGINE")
 				{
 					kioskEngineVersions.Assemblies.Add(new AssemblyInfo
@@ -68,7 +68,7 @@ public class EngineCoreController : ApiController
 		GetStoreInfoResponse response = new GetStoreInfoResponse();
 		await Task.Run(delegate
 		{
-			Store store = ServiceLocator.Instance.GetService<IDataService>()?.GetStore();
+			Store? store = ServiceLocator.Instance.GetService<IDataService>()?.GetStore();
 			if (store != null)
 			{
 				response.Content = new StoreInfo
@@ -119,7 +119,7 @@ public class EngineCoreController : ApiController
 		GetPreferenceValueResponse response = new GetPreferenceValueResponse();
 		await Task.Run(delegate
 		{
-			string text = ServiceLocator.Instance.GetService<IPreferenceService>()?.GetValue<string>(pageName, settingName);
+			string? text = ServiceLocator.Instance.GetService<IPreferenceService>()?.GetValue<string>(pageName, settingName);
 			response.Content = text;
 			LogHelper.Instance.Log("EngineCoreController.GetPreferenceValue pageName=" + pageName + ", settingName=" + settingName + ", result=" + text);
 		});
@@ -141,7 +141,7 @@ public class EngineCoreController : ApiController
 		};
 		await Task.Run(delegate
 		{
-			string text = ServiceLocator.Instance.GetService<IMachineSettingsStore>()?.GetValue<string>(settingPath, settingName);
+			string? text = ServiceLocator.Instance.GetService<IMachineSettingsStore>()?.GetValue<string>(settingPath, settingName);
 			response.Content = text;
 			LogHelper.Instance.Log("EngineCoreController.GetMachineSettingValue settingPath=" + settingPath + ", settingName=" + settingName + ", result=" + text);
 		});

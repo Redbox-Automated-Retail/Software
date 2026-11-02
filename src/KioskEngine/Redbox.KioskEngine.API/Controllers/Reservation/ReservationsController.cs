@@ -40,7 +40,7 @@ public class ReservationsController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 
 	[HttpGet]
@@ -70,7 +70,7 @@ public class ReservationsController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 
 	[HttpGet]
@@ -100,7 +100,7 @@ public class ReservationsController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 
 	[HttpPost]
@@ -131,7 +131,7 @@ public class ReservationsController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 
 	[HttpPost]
@@ -165,7 +165,7 @@ public class ReservationsController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 
 	[HttpPost]

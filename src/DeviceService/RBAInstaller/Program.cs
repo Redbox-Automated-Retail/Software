@@ -33,7 +33,7 @@ internal class Program
 	{
 		services.AddSingleton(Log.Logger);
 		services.AddSingleton<IRBA_API, RBA_API>();
-		IIUC285Proxy singletonIUC285Proxy = null;
+		IIUC285Proxy? singletonIUC285Proxy = null;
 		services.AddSingleton(delegate(IServiceProvider provider)
 		{
 			if (singletonIUC285Proxy == null)
@@ -44,7 +44,8 @@ internal class Program
 			}
 			return singletonIUC285Proxy;
 		});
-		services.AddSingleton((IServiceProvider provider) => singletonIUC285Proxy as IFileUpdater);
+		// set by the IIUC285Proxy factory above, which RBAInstaller's constructor resolves first
+		services.AddSingleton((IServiceProvider provider) => (singletonIUC285Proxy as IFileUpdater)!);
 		return services.BuildServiceProvider();
 	}
 

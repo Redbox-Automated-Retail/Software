@@ -24,7 +24,7 @@ internal static class ProcessFunctions
 	{
 		try
 		{
-			Process processByName = GetProcessByName(name);
+			Process? processByName = GetProcessByName(name);
 			return processByName != null;
 		}
 		catch
@@ -33,7 +33,7 @@ internal static class ProcessFunctions
 		}
 	}
 
-	public static int Execute(string process, string arguments, string workingDirectory, object timeout)
+	public static int Execute(string process, string arguments, string workingDirectory, object? timeout)
 	{
 		try
 		{
@@ -101,7 +101,7 @@ internal static class ProcessFunctions
 	{
 		try
 		{
-			Process processByName = GetProcessByName(name);
+			Process? processByName = GetProcessByName(name);
 			if (processByName != null)
 			{
 				DateTime now = DateTime.Now;
@@ -116,7 +116,7 @@ internal static class ProcessFunctions
 		}
 	}
 
-	public static Process GetProcessByName(string name)
+	public static Process? GetProcessByName(string name)
 	{
 		try
 		{

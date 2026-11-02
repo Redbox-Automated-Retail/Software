@@ -7,9 +7,9 @@ namespace Redbox.Nant.Tasks;
 [TaskName("svn.mkdir")]
 public class SvnMakeDirectory : Task
 {
-	private string _remoteDirectory;
+	private string _remoteDirectory = null!; // set by NAnt (required attribute)
 
-	private string _comments;
+	private string _comments = null!; // set by NAnt (required attribute)
 
 	protected SvnExecTask _task;
 

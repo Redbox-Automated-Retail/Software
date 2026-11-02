@@ -6,7 +6,7 @@ namespace Redbox.HAL.DirectShow.Frame.Plugin;
 
 internal sealed class Service : ICameraPlugin
 {
-	private ICameraPlugin m_plugin;
+	private ICameraPlugin m_plugin = null!; // set by InitWithProperties
 
 	public bool IsRunning => m_plugin.IsRunning;
 

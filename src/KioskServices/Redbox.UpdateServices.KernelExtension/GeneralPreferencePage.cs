@@ -8,22 +8,23 @@ namespace Redbox.UpdateServices.KernelExtension;
 
 public class GeneralPreferencePage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer components = null!;
 
-	private TextBox m_updateMangerServiceTimeoutTextBox;
+	private TextBox m_updateMangerServiceTimeoutTextBox = null!;
 
-	private TextBox m_updateManagerServiceUrlTextBox;
+	private TextBox m_updateManagerServiceUrlTextBox = null!;
 
-	private Label label8;
+	private Label label8 = null!;
 
-	private Label label7;
+	private Label label7 = null!;
 
-	private ErrorProvider m_errorProvider;
+	private ErrorProvider m_errorProvider = null!;
 
-	private CheckBox m_liveCallCheckBox;
+	private CheckBox m_liveCallCheckBox = null!;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
+	// The controls above are created by InitializeComponent.
 	public GeneralPreferencePage()
 	{
 		InitializeComponent();

@@ -25,7 +25,7 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 
 	private readonly string SourcePath;
 
-	private string m_databasePath;
+	private string? m_databasePath;
 
 	public bool Exists
 	{
@@ -340,7 +340,7 @@ public abstract class AbstractVistaDBDataTable<T> : IDataTable<T>
 		}
 	}
 
-	private static int Execute(SqliteConnection connection, SqliteTransaction transaction, string statement)
+	private static int Execute(SqliteConnection connection, SqliteTransaction? transaction, string statement)
 	{
 		using SqliteCommand command = connection.CreateCommand();
 		command.Transaction = transaction;

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.TimeKeeper</AssemblyName>
     <RootNamespace>Redbox.TimeKeeper</RootNamespace>
     <TargetFramework>net35</TargetFramework>

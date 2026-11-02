@@ -10,7 +10,7 @@ public class TitleResult
 
 	public bool Reservable { get; set; }
 
-	public string ReservedBarcode { get; set; }
+	public string? ReservedBarcode { get; set; }
 
-	public List<DiscStatus> UnreservableDiscs { get; set; }
+	public List<DiscStatus>? UnreservableDiscs { get; set; }
 }

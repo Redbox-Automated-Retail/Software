@@ -15,11 +15,11 @@ public abstract class MessageBase : IMessage
 
 	public string BundleVersion { get; set; }
 
-	public virtual string MessageType { get; set; }
+	public virtual string MessageType { get; set; } = null!; // set by whoever creates the message
 
 	public bool UseMessageControl { get; set; }
 
-	public Dictionary<string, string> PropertyBag { get; set; }
+	public Dictionary<string, string>? PropertyBag { get; set; }
 
 	protected MessageBase()
 	{

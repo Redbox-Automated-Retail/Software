@@ -7,11 +7,11 @@ namespace Redbox.Shell.Remoting;
 
 internal class KioskEngineProxy
 {
-	internal static string IpcHostUrl;
+	internal static string IpcHostUrl = null!; // set by KioskEngineService.Initialize
 
-	private static ClientSession _clientSession;
+	private static ClientSession? _clientSession;
 
-	internal static ClientSession IPCClientSession
+	internal static ClientSession? IPCClientSession
 	{
 		get
 		{
@@ -32,15 +32,15 @@ internal class KioskEngineProxy
 		return ExecuteCommandString("engine ping")?.Success ?? false;
 	}
 
-	internal static ClientCommandResult ActiviateControlPanel()
+	internal static ClientCommandResult? ActiviateControlPanel()
 	{
 		return ExecuteCommandString("engine load-control-panel");
 	}
 
-	private static ClientCommandResult ExecuteCommandString(string command)
+	private static ClientCommandResult? ExecuteCommandString(string command)
 	{
 		int i = 0;
-		ClientCommandResult clientCommandResult = null;
+		ClientCommandResult? clientCommandResult = null;
 		for (; i <= 3; i++)
 		{
 			try

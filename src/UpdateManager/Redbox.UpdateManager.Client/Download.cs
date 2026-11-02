@@ -7,9 +7,9 @@ public class Download
 {
 	public TransferJobType JobType { get; set; }
 
-	public string Owner { get; set; }
+	public string Owner { get; set; } = null!; // set by the JSON reader
 
-	public string Name { get; set; }
+	public string Name { get; set; } = null!; // set by the JSON reader
 
 	public Guid ID { get; set; }
 

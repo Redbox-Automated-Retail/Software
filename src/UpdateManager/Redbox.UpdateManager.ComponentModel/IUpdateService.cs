@@ -33,7 +33,7 @@ public interface IUpdateService
 
 	ErrorList GetSubscriptionState(string name, out DateTime lastRun, out SubscriptionState state);
 
-	ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string> response);
+	ErrorList StartInstaller(string repositoryHash, string frontEndVersion, out Dictionary<string, string?>? response);
 
 	ErrorList FinishInstaller(string guid, Dictionary<string, string> data);
 

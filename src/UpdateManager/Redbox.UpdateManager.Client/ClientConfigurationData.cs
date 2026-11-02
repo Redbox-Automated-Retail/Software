@@ -6,13 +6,14 @@ public class ClientConfigurationData
 {
 	public long CategoryID { get; set; }
 
-	public string CategoryName { get; set; }
+	// The string properties are set by the JSON reader.
+	public string CategoryName { get; set; } = null!;
 
-	public string SettingName { get; set; }
+	public string SettingName { get; set; } = null!;
 
-	public string SettingDataType { get; set; }
+	public string SettingDataType { get; set; } = null!;
 
-	public string DefaultTypeName { get; set; }
+	public string DefaultTypeName { get; set; } = null!;
 
 	public int DefaultTypeRank { get; set; }
 
@@ -20,9 +21,9 @@ public class ClientConfigurationData
 
 	public long DefaultTypeKey { get; set; }
 
-	public string DefaultTypeValue { get; set; }
+	public string DefaultTypeValue { get; set; } = null!;
 
-	public string Value { get; set; }
+	public string Value { get; set; } = null!;
 
 	public DateTime EffectiveTime { get; set; }
 

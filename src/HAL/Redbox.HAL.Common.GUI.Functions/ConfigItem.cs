@@ -34,13 +34,13 @@ public sealed class ConfigItem
 
 	public string CategoryName { get; private set; }
 
-	public List<string> ValidValues { get; private set; }
+	public List<string>? ValidValues { get; private set; }
 
 	public int ValidValuesCount { get; private set; }
 
-	public string CustomEditor { get; private set; }
+	public string? CustomEditor { get; private set; }
 
-	public Type ItemType { get; private set; }
+	public Type? ItemType { get; private set; }
 
 	public XmlNode Node { get; private set; }
 
@@ -71,9 +71,9 @@ public sealed class ConfigItem
 				ValidValues.Add(attributeValue2);
 			}
 		}
-		if (Value != null && !ValidValues.Contains(Value.ToString()))
+		if (Value != null && !ValidValues.Contains(Value.ToString()!))
 		{
-			ValidValues.Add(Value.ToString());
+			ValidValues.Add(Value.ToString()!);
 		}
 		ItemType = ValidValues.GetType();
 	}

@@ -7,7 +7,7 @@ namespace ClearImage;
 [ComVisible(true)]
 public sealed class _ICiImageEvents_SinkHelper : _ICiImageEvents
 {
-	public _ICiImageEvents_LogEventHandler m_LogDelegate;
+	public _ICiImageEvents_LogEventHandler? m_LogDelegate;
 
 	public int m_dwCookie;
 

@@ -47,7 +47,7 @@ public class KioskHealthController : ApiController
 	public async Task<PingServiceInfo> GetPingServiceInfo()
 	{
 		LogHelper.Instance.Log("KioskHealthController.GetPingServiceInfo");
-		PingServiceInfo response = null;
+		PingServiceInfo response = null!; // set by the Task.Run delegate below
 		await Task.Run(delegate
 		{
 			IPingService pingService = ServiceLocator.Instance.GetService<IPingService>();

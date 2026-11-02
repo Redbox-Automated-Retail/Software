@@ -14,7 +14,7 @@ internal static class Program
 	[STAThread]
 	private static int Main(string[] args)
 	{
-		string log = args.Length > 0 ? args[0] : null;
+		string? log = args.Length > 0 ? args[0] : null;
 		using StringWriter output = new StringWriter();
 		try
 		{
@@ -156,20 +156,20 @@ internal static class Program
 			grid.AppendManagedProperty(table, 4, "hidden", typeof(string), null, string.Empty);
 			grid.EndUpdate();
 			Application.DoEvents();
-			PropertyGrid inner = null;
+			PropertyGrid? inner = null;
 			foreach (Control c in grid.Controls) { if (c is PropertyGrid g) { inner = g; } }
-			System.ComponentModel.PropertyDescriptorCollection props = System.ComponentModel.TypeDescriptor.GetProperties(inner.SelectedObject);
+			System.ComponentModel.PropertyDescriptorCollection props = System.ComponentModel.TypeDescriptor.GetProperties(inner!.SelectedObject!); // the grid hosts a PropertyGrid showing its object
 			Check("grid: two properties", props.Count == 2, props.Count.ToString());
-			System.ComponentModel.PropertyDescriptor nameDescriptor = props.Find("p2", false);
+			System.ComponentModel.PropertyDescriptor nameDescriptor = props.Find("p2", false)!;
 			Check("grid: category and name", nameDescriptor.Category == "Locals" && nameDescriptor.DisplayName == "name" && !nameDescriptor.IsReadOnly);
 			nameDescriptor.SetValue(inner.SelectedObject, "xyz");
 			Check("grid: PropertyChanged", string.Join(",", changed) == "name=xyz", string.Join(",", changed));
-			Check("grid: non-default shown", nameDescriptor.ShouldSerializeValue(inner.SelectedObject));
-			System.ComponentModel.PropertyDescriptor tableDescriptor = props.Find("p3", false);
+			Check("grid: non-default shown", nameDescriptor.ShouldSerializeValue(inner.SelectedObject!));
+			System.ComponentModel.PropertyDescriptor tableDescriptor = props.Find("p3", false)!;
 			Check("grid: table read-only with button", tableDescriptor.IsReadOnly && tableDescriptor.GetEditor(typeof(System.Drawing.Design.UITypeEditor)) != null);
-			System.ComponentModel.PropertyDescriptorCollection children = tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject), null);
+			System.ComponentModel.PropertyDescriptorCollection children = tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject)!, null)!;
 			Check("grid: expanded once, children filled", expanded == 1 && children.Count == 2 && children[0].DisplayName == "x", $"{expanded} {children.Count}");
-			tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject), null);
+			tableDescriptor.Converter.GetProperties(null, tableDescriptor.GetValue(inner.SelectedObject)!, null);
 			Check("grid: not expanded again", expanded == 1, expanded.ToString());
 		}
 
@@ -186,7 +186,7 @@ internal static class Program
 		output.WriteLine($"Scintilla {typeof(Scintilla).Assembly.GetName().Version}");
 	}
 
-	private static void Check(string name, bool ok, string detail = null)
+	private static void Check(string name, bool ok, string? detail = null)
 	{
 		Checks++;
 		if (!ok)

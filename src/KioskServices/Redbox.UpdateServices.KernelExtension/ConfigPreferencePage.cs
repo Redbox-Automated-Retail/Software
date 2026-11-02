@@ -12,36 +12,37 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 {
 	private bool m_loading;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private CheckBox m_checkboxActiveOnly;
+	private CheckBox m_checkboxActiveOnly = null!;
 
-	private ComboBox m_configFileComboBox;
+	private ComboBox m_configFileComboBox = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
-	private CheckedListBox m_categoriesListBox;
+	private CheckedListBox m_categoriesListBox = null!;
 
-	private ListView m_configValuesListView;
+	private ListView m_configValuesListView = null!;
 
-	private Label m_valuesLabel;
+	private Label m_valuesLabel = null!;
 
-	private ColumnHeader m_categoryColumn;
+	private ColumnHeader m_categoryColumn = null!;
 
-	private ColumnHeader m_settingNameColumn;
+	private ColumnHeader m_settingNameColumn = null!;
 
-	private ColumnHeader m_settingValueColumn;
+	private ColumnHeader m_settingValueColumn = null!;
 
-	private ColumnHeader m_effDateColumn;
+	private ColumnHeader m_effDateColumn = null!;
 
-	private ColumnHeader m_expDateColumn;
+	private ColumnHeader m_expDateColumn = null!;
 
-	private ColumnHeader m_dataTypeColumn;
+	private ColumnHeader m_dataTypeColumn = null!;
 
+	// The controls above are created by InitializeComponent.
 	public ConfigPreferencePage()
 	{
 		InitializeComponent();
@@ -76,7 +77,7 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		{
 			m_configFileComboBox.Text = value;
 		}
-		_ = (string)m_configFileComboBox.SelectedItem;
+		_ = (string?)m_configFileComboBox.SelectedItem;
 		RefreshCategories();
 		m_loading = false;
 		RefreshSettings();
@@ -89,7 +90,7 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService != null)
 		{
-			string text = (string)m_configFileComboBox.SelectedItem;
+			string? text = (string?)m_configFileComboBox.SelectedItem;
 			if (text != null && text != string.Empty)
 			{
 				List<string> list = new List<string>();
@@ -113,7 +114,7 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		}
 		m_configValuesListView.Items.Clear();
 		m_configValuesListView.SuspendLayout();
-		string text = (string)m_configFileComboBox.SelectedItem;
+		string? text = (string?)m_configFileComboBox.SelectedItem;
 		if (text != null && text != string.Empty)
 		{
 			IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
@@ -160,18 +161,18 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		});
 	}
 
-	private void m_configFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
+	private void m_configFileComboBox_SelectedIndexChanged(object? sender, EventArgs e)
 	{
 		RefreshCategories();
 		RefreshSettings();
 	}
 
-	private void m_categoriesListBox_SelectedValueChanged(object sender, EventArgs e)
+	private void m_categoriesListBox_SelectedValueChanged(object? sender, EventArgs e)
 	{
 		RefreshSettings();
 	}
 
-	private void m_checkboxActiveOnly_CheckedChanged(object sender, EventArgs e)
+	private void m_checkboxActiveOnly_CheckedChanged(object? sender, EventArgs e)
 	{
 		RefreshSettings();
 	}

@@ -4,9 +4,10 @@ namespace Redbox.HAL.DataStorage;
 
 internal sealed class PersistentOption : IPersistentOption
 {
-	public string Key { get; internal set; }
+	// Key and Value are set by the object initializer in SecretOptionsTable or TableTypeFactory.
+	public string Key { get; internal set; } = null!;
 
-	public string Value { get; internal set; }
+	public string Value { get; internal set; } = null!;
 
 	public void UpdateValue(string value)
 	{

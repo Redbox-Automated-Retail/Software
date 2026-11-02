@@ -14,11 +14,11 @@ public class Options
 
 	[Option(LongName = "eval")]
 	[Description("Executes the script specified in the store updater kernel. All other options ignored.")]
-	public string Script { get; set; }
+	public string? Script { get; set; }
 
 	[Option(LongName = "store-number", ShortName = "n")]
 	[Description("Number of Current Store.")]
-	public string StoreNumber { get; set; }
+	public string? StoreNumber { get; set; }
 
 	private Options()
 	{

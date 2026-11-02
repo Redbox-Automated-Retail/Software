@@ -22,7 +22,7 @@ public class SimulatorCommand
 {
 	public SimulatorCommandType Type { get; set; }
 
-	public SimulatedCard Card { get; set; }
+	public SimulatedCard? Card { get; set; }
 
 	public override string ToString()
 	{

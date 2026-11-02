@@ -14,9 +14,10 @@ public class ConfigurationClient
 	{
 		internal class TypeMap
 		{
-			public string TypeName { get; set; }
+			// Set by the object initializers in GetTypeMapList.
+			public string TypeName { get; set; } = null!;
 
-			public Type Type { get; set; }
+			public Type Type { get; set; } = null!;
 
 			public static List<TypeMap> GetTypeMapList()
 			{
@@ -87,7 +88,7 @@ public class ConfigurationClient
 
 			public static Type GetType(string typeName)
 			{
-				TypeMap typeMap = (from tm in GetTypeMapList()
+				TypeMap? typeMap = (from tm in GetTypeMapList()
 					where tm.TypeName.Equals(typeName, StringComparison.CurrentCultureIgnoreCase)
 					select tm).FirstOrDefault();
 				if (typeMap == null)
@@ -106,13 +107,13 @@ public class ConfigurationClient
 
 		private Func<bool> _canActivate;
 
-		private Action _activateAction;
+		private Action? _activateAction;
 
 		private string _defaultCategory;
 
 		private int _inCheckup;
 
-		private ClientConfigFile _clientConfigFile;
+		private ClientConfigFile? _clientConfigFile;
 
 		private const string ConfigFileStaged = ".configstaged";
 
@@ -128,7 +129,7 @@ public class ConfigurationClient
 
 		internal bool HasActivateAction => _activateAction != null;
 
-		internal InternalClientConfigFile(string filepath, string defaultCategory, TimeSpan checkTime, Func<bool> canActivate, Action activateAction)
+		internal InternalClientConfigFile(string filepath, string defaultCategory, TimeSpan checkTime, Func<bool>? canActivate, Action? activateAction)
 		{
 			_lastCheckup = DateTime.Now;
 			_checkTime = checkTime;
@@ -143,12 +144,12 @@ public class ConfigurationClient
 			ActivateConfigFile();
 		}
 
-		internal bool TryGetValue<T>(string setting, out T value)
+		internal bool TryGetValue<T>(string setting, out T? value)
 		{
 			return TryGetValue<T>(_defaultCategory, setting, out value);
 		}
 
-		internal bool TryGetValue<T>(string category, string setting, out T value)
+		internal bool TryGetValue<T>(string category, string setting, out T? value)
 		{
 			value = default(T);
 			lock (_lock)
@@ -160,7 +161,7 @@ public class ConfigurationClient
 						return false;
 					}
 					DateTime date = DateTime.Now;
-					ClientConfigurationData clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
+					ClientConfigurationData? clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
 						where d.CategoryName.Equals(category, StringComparison.CurrentCultureIgnoreCase) && d.SettingName.Equals(setting, StringComparison.CurrentCultureIgnoreCase) && d.EffectiveTime <= date && (!d.ExpireTime.HasValue || d.ExpireTime > date)
 						orderby d.DefaultTypeRank descending, d.EffectiveTime descending
 						select d).FirstOrDefault();
@@ -189,12 +190,12 @@ public class ConfigurationClient
 			}
 		}
 
-		internal bool TryGetObject(string setting, out object value)
+		internal bool TryGetObject(string setting, out object? value)
 		{
 			return TryGetObject(_defaultCategory, setting, out value);
 		}
 
-		internal bool TryGetObject(string category, string setting, out object value)
+		internal bool TryGetObject(string category, string setting, out object? value)
 		{
 			value = null;
 			lock (_lock)
@@ -206,7 +207,7 @@ public class ConfigurationClient
 						return false;
 					}
 					DateTime date = DateTime.Now;
-					ClientConfigurationData clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
+					ClientConfigurationData? clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
 						where d.CategoryName.Equals(category, StringComparison.CurrentCultureIgnoreCase) && d.SettingName.Equals(setting, StringComparison.CurrentCultureIgnoreCase) && d.EffectiveTime <= date && (!d.ExpireTime.HasValue || d.ExpireTime > date)
 						orderby d.DefaultTypeRank descending, d.EffectiveTime descending
 						select d).FirstOrDefault();
@@ -234,12 +235,12 @@ public class ConfigurationClient
 			}
 		}
 
-		internal bool TryGetConfigurationData(string setting, out ClientConfigurationData value)
+		internal bool TryGetConfigurationData(string setting, out ClientConfigurationData? value)
 		{
 			return TryGetConfigurationData(_defaultCategory, setting, out value);
 		}
 
-		internal bool TryGetConfigurationData(string category, string setting, out ClientConfigurationData value)
+		internal bool TryGetConfigurationData(string category, string setting, out ClientConfigurationData? value)
 		{
 			value = null;
 			lock (_lock)
@@ -251,7 +252,7 @@ public class ConfigurationClient
 						return false;
 					}
 					DateTime date = DateTime.Now;
-					ClientConfigurationData clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
+					ClientConfigurationData? clientConfigurationData = (from d in _clientConfigFile.ConfigurationData
 						where d.CategoryName.Equals(category, StringComparison.CurrentCultureIgnoreCase) && d.SettingName.Equals(setting, StringComparison.CurrentCultureIgnoreCase) && d.EffectiveTime <= date && (!d.ExpireTime.HasValue || d.ExpireTime > date)
 						orderby d.DefaultTypeRank descending, d.EffectiveTime descending
 						select d).FirstOrDefault();
@@ -405,7 +406,7 @@ public class ConfigurationClient
 
 		private void InternalActivateFile()
 		{
-			if (_clientConfigFile.OID > 0)
+			if (_clientConfigFile!.OID > 0) // the old code dereferenced it unchecked
 			{
 				Instance.ActivateConfigFile(_clientConfigFile.OID);
 			}
@@ -464,11 +465,11 @@ public class ConfigurationClient
 
 	private readonly object _lock = new object();
 
-	private Timer _changeTimer;
+	private Timer? _changeTimer;
 
 	private bool _isRunning;
 
-	private string _url;
+	private string _url = null!; // set by Initialize
 
 	private int _timeout;
 
@@ -499,13 +500,13 @@ public class ConfigurationClient
 
 	public void Start()
 	{
-		_changeTimer.Change(new TimeSpan(0L), new TimeSpan(0, 0, 120));
+		_changeTimer!.Change(new TimeSpan(0L), new TimeSpan(0, 0, 120)); // Initialize must have run
 		_isRunning = true;
 	}
 
 	public void Stop()
 	{
-		_changeTimer.Change(-1, -1);
+		_changeTimer!.Change(-1, -1); // Initialize must have run
 		_isRunning = false;
 	}
 
@@ -514,7 +515,7 @@ public class ConfigurationClient
 		Add(key, filepath, defaultCategory, null, null, null);
 	}
 
-	public void Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool> canActivate, Action activateAction)
+	public void Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool>? canActivate, Action? activateAction)
 	{
 		lock (_lock)
 		{
@@ -583,7 +584,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetValue<T>(string key, string setting, out T value)
+	public bool TryGetValue<T>(string key, string setting, out T? value)
 	{
 		value = default(T);
 		lock (_lock)
@@ -596,7 +597,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetValue<T>(string key, string category, string setting, out T value)
+	public bool TryGetValue<T>(string key, string category, string setting, out T? value)
 	{
 		value = default(T);
 		lock (_lock)
@@ -609,7 +610,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetObject(string key, string setting, out object value)
+	public bool TryGetObject(string key, string setting, out object? value)
 	{
 		value = null;
 		lock (_lock)
@@ -622,7 +623,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetObject(string key, string category, string setting, out object value)
+	public bool TryGetObject(string key, string category, string setting, out object? value)
 	{
 		value = null;
 		lock (_lock)
@@ -635,7 +636,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetConfigurationData(string key, string setting, out ClientConfigurationData value)
+	public bool TryGetConfigurationData(string key, string setting, out ClientConfigurationData? value)
 	{
 		value = null;
 		lock (_lock)
@@ -648,7 +649,7 @@ public class ConfigurationClient
 		}
 	}
 
-	public bool TryGetConfigurationData(string key, string category, string setting, out ClientConfigurationData value)
+	public bool TryGetConfigurationData(string key, string category, string setting, out ClientConfigurationData? value)
 	{
 		value = null;
 		lock (_lock)

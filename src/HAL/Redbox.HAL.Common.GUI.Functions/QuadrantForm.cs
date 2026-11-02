@@ -7,25 +7,25 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public class QuadrantForm : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private TextBox m_offsetTextBox;
+	private TextBox m_offsetTextBox = null!;
 
-	private TextBox m_startSlotTextBox;
+	private TextBox m_startSlotTextBox = null!;
 
-	private TextBox m_endSlotTextBox;
+	private TextBox m_endSlotTextBox = null!;
 
-	private ErrorProvider m_errorProvider;
+	private ErrorProvider m_errorProvider = null!;
 
-	private Button m_okButton;
+	private Button m_okButton = null!;
 
-	private Button m_cancelButton;
+	private Button m_cancelButton = null!;
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -93,12 +93,13 @@ public class QuadrantForm : Form
 		}
 	}
 
+	// The controls above are created by InitializeComponent.
 	public QuadrantForm()
 	{
 		InitializeComponent();
 	}
 
-	private void OnOK(object sender, EventArgs e)
+	private void OnOK(object? sender, EventArgs e)
 	{
 		m_errorProvider.SetError(m_offsetTextBox, string.Empty);
 		m_errorProvider.SetError(m_startSlotTextBox, string.Empty);
@@ -112,7 +113,7 @@ public class QuadrantForm : Form
 		Close();
 	}
 
-	private void OnCancel(object sender, EventArgs e)
+	private void OnCancel(object? sender, EventArgs e)
 	{
 		base.DialogResult = DialogResult.Cancel;
 		Close();

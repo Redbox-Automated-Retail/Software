@@ -12,13 +12,13 @@ public class AssemblyNameFunctions : FunctionSetBase
 	}
 
 	[Function("get-codebase")]
-	public static string GetCodeBase(AssemblyName assemblyName)
+	public static string? GetCodeBase(AssemblyName assemblyName)
 	{
 		return assemblyName.CodeBase;
 	}
 
 	[Function("get-escaped-codebase")]
-	public static string GetEscapedCodeBase(AssemblyName assemblyName)
+	public static string? GetEscapedCodeBase(AssemblyName assemblyName)
 	{
 		return assemblyName.EscapedCodeBase;
 	}
@@ -30,13 +30,13 @@ public class AssemblyNameFunctions : FunctionSetBase
 	}
 
 	[Function("get-name")]
-	public static string GetName(AssemblyName assemblyName)
+	public static string? GetName(AssemblyName assemblyName)
 	{
 		return assemblyName.Name;
 	}
 
 	[Function("get-version")]
-	public static Version GetVersion(AssemblyName assemblyName)
+	public static Version? GetVersion(AssemblyName assemblyName)
 	{
 		return assemblyName.Version;
 	}

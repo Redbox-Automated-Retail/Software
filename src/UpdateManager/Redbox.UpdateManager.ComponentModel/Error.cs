@@ -10,13 +10,13 @@ public class Error
 
 	private readonly bool m_isWarning;
 
-	private readonly string m_details;
+	private readonly string? m_details;
 
 	private readonly string m_description;
 
 	public string Code => m_code;
 
-	public string Details => m_details;
+	public string? Details => m_details;
 
 	public bool IsWarning => m_isWarning;
 
@@ -27,7 +27,7 @@ public class Error
 		string code = error.ExtractCodeFromBrackets("[", "]");
 		int startIndex = error.IndexOf("]");
 		string[] parts = error.Substring(startIndex).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		string details = null;
+		string? details = null;
 		if (parts.Length > 1)
 		{
 			details = parts[1];
@@ -75,7 +75,7 @@ public class Error
 		return $"[{Code}] {Description}";
 	}
 
-	private Error(string code, string description, string details, bool isWarning)
+	private Error(string code, string description, string? details, bool isWarning)
 	{
 		m_code = code;
 		m_details = details;

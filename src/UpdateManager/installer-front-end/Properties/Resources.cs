@@ -13,9 +13,9 @@ namespace Redbox.UpdateManager.StoreInstallerFrontEnd.Properties;
 [CompilerGenerated]
 internal class Resources
 {
-	private static ResourceManager resourceMan;
+	private static ResourceManager? resourceMan;
 
-	private static CultureInfo resourceCulture;
+	private static CultureInfo? resourceCulture;
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	internal static ResourceManager ResourceManager
@@ -31,7 +31,7 @@ internal class Resources
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
-	internal static CultureInfo Culture
+	internal static CultureInfo? Culture
 	{
 		get
 		{
@@ -43,19 +43,19 @@ internal class Resources
 		}
 	}
 
-	internal static Bitmap error => (Bitmap)ResourceManager.GetObject("error", resourceCulture);
+	internal static Bitmap error => (Bitmap)ResourceManager.GetObject("error", resourceCulture)!;
 
-	internal static Bitmap error2 => (Bitmap)ResourceManager.GetObject("error2", resourceCulture);
+	internal static Bitmap error2 => (Bitmap)ResourceManager.GetObject("error2", resourceCulture)!;
 
-	internal static Bitmap pending => (Bitmap)ResourceManager.GetObject("pending", resourceCulture);
+	internal static Bitmap pending => (Bitmap)ResourceManager.GetObject("pending", resourceCulture)!;
 
-	internal static Bitmap running => (Bitmap)ResourceManager.GetObject("running", resourceCulture);
+	internal static Bitmap running => (Bitmap)ResourceManager.GetObject("running", resourceCulture)!;
 
-	internal static Bitmap running1 => (Bitmap)ResourceManager.GetObject("running1", resourceCulture);
+	internal static Bitmap running1 => (Bitmap)ResourceManager.GetObject("running1", resourceCulture)!;
 
-	internal static Bitmap Spinner32x32 => (Bitmap)ResourceManager.GetObject("Spinner32x32", resourceCulture);
+	internal static Bitmap Spinner32x32 => (Bitmap)ResourceManager.GetObject("Spinner32x32", resourceCulture)!;
 
-	internal static Bitmap sucess => (Bitmap)ResourceManager.GetObject("sucess", resourceCulture);
+	internal static Bitmap sucess => (Bitmap)ResourceManager.GetObject("sucess", resourceCulture)!;
 
 	internal Resources()
 	{

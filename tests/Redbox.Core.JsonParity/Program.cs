@@ -19,7 +19,7 @@ public class Item
 {
 	public int Id { get; set; }
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public decimal Price { get; set; }
 
@@ -43,20 +43,20 @@ public class Item
 
 	public char Letter { get; set; }
 
-	public byte[] Bytes { get; set; }
+	public byte[]? Bytes { get; set; }
 
-	public List<string> Tags { get; set; }
+	public List<string?>? Tags { get; set; }
 
-	public Dictionary<string, object> Extra { get; set; }
+	public Dictionary<string, object?>? Extra { get; set; }
 
-	public Item Child { get; set; }
+	public Item? Child { get; set; }
 
 	[ScriptIgnore]
 	public string Hidden { get; set; } = "hidden";
 
 	public string Field = "field";
 
-	public Uri Link { get; set; }
+	public Uri? Link { get; set; }
 }
 
 internal static class Program
@@ -81,8 +81,8 @@ internal static class Program
 			Color = Color.Green,
 			Letter = 'x',
 			Bytes = new byte[] { 0, 1, 254, 255 },
-			Tags = new List<string> { "a", null, "" },
-			Extra = new Dictionary<string, object> { ["n"] = 1, ["s"] = "t", ["d"] = 2.5, ["nil"] = null, ["arr"] = new object[] { 1, "two", false } },
+			Tags = new List<string?> { "a", null, "" },
+			Extra = new Dictionary<string, object?> { ["n"] = 1, ["s"] = "t", ["d"] = 2.5, ["nil"] = null, ["arr"] = new object[] { 1, "two", false } },
 			Child = new Item { Id = 1, When = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
 			Link = new Uri("https://example.invalid/a?b=c")
 		};
@@ -94,7 +94,7 @@ internal static class Program
 		Case("hashtable", () => new Hashtable { ["k"] = "v" }.ToJson());
 		Case("anonymous", () => new { A = 1, B = new[] { "x" } }.ToJson());
 		Case("string", () => "plain".ToJson());
-		Case("null", () => ((object)null).ToJson());
+		Case("null", () => ((object?)null).ToJson());
 		string itemJson = item.ToJson();
 		Case("round trip", () => itemJson.ToObject<Item>().ToJson());
 		Case("to dictionary", () => Dump(itemJson.ToDictionary()));
@@ -115,9 +115,9 @@ internal static class Program
 		return 0;
 	}
 
-	private static void Case(string name, Func<string> run)
+	private static void Case(string name, Func<string?> run)
 	{
-		string result;
+		string? result;
 		try
 		{
 			result = run();
@@ -131,7 +131,7 @@ internal static class Program
 	}
 
 	// Type and value of each entry, so number types (int/long/decimal/double) are compared too.
-	private static string Dump(object o)
+	private static string Dump(object? o)
 	{
 		switch (o)
 		{

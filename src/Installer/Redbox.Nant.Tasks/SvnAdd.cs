@@ -9,11 +9,11 @@ public class SvnAdd : Task
 {
 	protected SvnExecTask _task;
 
-	private string _workingDirectory;
+	private string _workingDirectory = null!; // set by NAnt (required attribute)
 
-	private string _targetsFile;
+	private string? _targetsFile;
 
-	private string _filesToAdd;
+	private string? _filesToAdd;
 
 	[TaskAttribute("working-dir", Required = true)]
 	public string WorkingDirectory
@@ -29,7 +29,7 @@ public class SvnAdd : Task
 	}
 
 	[TaskAttribute("targets-file", Required = false)]
-	public string TargetsFile
+	public string? TargetsFile
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class SvnAdd : Task
 	}
 
 	[TaskAttribute("files-to-add", Required = false)]
-	public string FilesToAdd
+	public string? FilesToAdd
 	{
 		get
 		{

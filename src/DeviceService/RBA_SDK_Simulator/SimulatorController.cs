@@ -16,9 +16,9 @@ public class SimulatorController : ControllerBase
 	public class CardRequest
 	{
 		/// <summary>A preset name (Visa, Mastercard, Amex, Discover, RedboxGiftCard). Ignored when Card is set.</summary>
-		public string Preset { get; set; }
+		public string? Preset { get; set; }
 
-		public SimulatedCard Card { get; set; }
+		public SimulatedCard? Card { get; set; }
 
 		public bool? Decline { get; set; }
 
@@ -31,7 +31,7 @@ public class SimulatorController : ControllerBase
 
 	private readonly ICommandQueue _commands;
 
-	private readonly RBA_API_Simulator _terminal;
+	private readonly RBA_API_Simulator? _terminal;
 
 	public SimulatorController(ISimulatorDataProvider data, ICommandQueue commands, IRBA_API terminal)
 	{
@@ -73,25 +73,25 @@ public class SimulatorController : ControllerBase
 	}
 
 	[HttpPost("Swipe")]
-	public IActionResult Swipe([FromBody] CardRequest request = null)
+	public IActionResult Swipe([FromBody] CardRequest? request = null)
 	{
 		return Queue(SimulatorCommandType.Swipe, request);
 	}
 
 	[HttpPost("Insert")]
-	public IActionResult Insert([FromBody] CardRequest request = null)
+	public IActionResult Insert([FromBody] CardRequest? request = null)
 	{
 		return Queue(SimulatorCommandType.InsertChip, request);
 	}
 
 	[HttpPost("Tap")]
-	public IActionResult Tap([FromBody] CardRequest request = null)
+	public IActionResult Tap([FromBody] CardRequest? request = null)
 	{
 		return Queue(SimulatorCommandType.Tap, request);
 	}
 
 	[HttpPost("TapMsd")]
-	public IActionResult TapMsd([FromBody] CardRequest request = null)
+	public IActionResult TapMsd([FromBody] CardRequest? request = null)
 	{
 		return Queue(SimulatorCommandType.TapMsd, request);
 	}
@@ -122,9 +122,9 @@ public class SimulatorController : ControllerBase
 	}
 
 	[HttpPut("DefaultCard")]
-	public IActionResult SetDefaultCard([FromBody] CardRequest request)
+	public IActionResult SetDefaultCard([FromBody] CardRequest? request)
 	{
-		_data.DefaultCard = ResolveCard(request);
+		_data.DefaultCard = ResolveCard(request!); // an empty body throws here, as before
 		return Ok(_data.DefaultCard);
 	}
 
@@ -158,20 +158,20 @@ public class SimulatorController : ControllerBase
 	}
 
 	[HttpPut("Config/{group}/{index}")]
-	public IActionResult SetConfig(string group, string index, [FromBody] string value)
+	public IActionResult SetConfig(string group, string index, [FromBody] string? value)
 	{
 		_data.WriteConfig(group, index, value);
 		return Ok();
 	}
 
 	[HttpPut("Variable/{id}")]
-	public IActionResult SetVariable(string id, [FromBody] string value)
+	public IActionResult SetVariable(string id, [FromBody] string? value)
 	{
 		_data.SetVariable(id, value);
 		return Ok();
 	}
 
-	private IActionResult Queue(SimulatorCommandType type, CardRequest request)
+	private IActionResult Queue(SimulatorCommandType type, CardRequest? request)
 	{
 		SimulatorCommand simulatorCommand = new SimulatorCommand
 		{

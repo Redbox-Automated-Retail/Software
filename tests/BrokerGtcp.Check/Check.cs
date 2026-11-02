@@ -10,7 +10,7 @@ internal static class Check
 
 	public static int Failed { get; private set; }
 
-	public static bool That(bool condition, string name, string detail = null)
+	public static bool That(bool condition, string name, string? detail = null)
 	{
 		if (condition)
 		{
@@ -57,7 +57,7 @@ internal static class Check
 		}
 	}
 
-	private static string Show<T>(T value) => value switch
+	private static string? Show<T>(T value) => value switch
 	{
 		null => "null",
 		DateTime d => d.ToString("o") + " " + d.Kind,

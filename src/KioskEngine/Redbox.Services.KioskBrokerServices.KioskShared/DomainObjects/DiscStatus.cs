@@ -6,7 +6,7 @@ namespace Redbox.Services.KioskBrokerServices.KioskShared.DomainObjects;
 [Serializable]
 public class DiscStatus
 {
-	public string Barcode { get; set; }
+	public string? Barcode { get; set; }
 
 	public int DiscTypeID { get; set; }
 

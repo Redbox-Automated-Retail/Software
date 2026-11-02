@@ -5,6 +5,7 @@
     referencesource copy in Redbox.Core); compare-json-parity.ps1 checks that both print the same.
   -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>

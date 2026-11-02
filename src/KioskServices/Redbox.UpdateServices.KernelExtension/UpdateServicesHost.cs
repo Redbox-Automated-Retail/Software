@@ -10,11 +10,11 @@ namespace Redbox.UpdateServices.KernelExtension;
 
 public class UpdateServicesHost : IKernelExtensionHost, IDisposable
 {
-	private Thread _thread;
+	private Thread? _thread;
 
-	private IPCServiceHost _listener;
+	private IPCServiceHost? _listener;
 
-	public IKernelExtension Extension { get; set; }
+	public IKernelExtension Extension { get; set; } = null!; // set by the kernel when it loads the extension
 
 	public void Dispose()
 	{

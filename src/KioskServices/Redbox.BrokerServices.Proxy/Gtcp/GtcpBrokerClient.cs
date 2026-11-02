@@ -21,17 +21,17 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 	private readonly int _port;
 	private readonly string _objectUri;
 	private readonly GtcpConnectionSettings _settings;
-	private readonly Action<string, Exception> _log;
+	private readonly Action<string, Exception?> _log;
 	private readonly object _openLock = new object();
 
 	// The URI the broker puts in __RequestUri when it calls our callback object (any string works; 5.1).
 	private readonly string _callbackUri = "/" + Guid.NewGuid().ToString("N") + "/kiosk_operations.rem";
 
-	private GtcpConnection _connection;
-	private volatile IKioskOperations _callbackTarget;
+	private GtcpConnection? _connection;
+	private volatile IKioskOperations? _callbackTarget;
 	private bool _disposed;
 
-	public GtcpBrokerClient(string url, GtcpConnectionSettings settings, Action<string, Exception> log)
+	public GtcpBrokerClient(string url, GtcpConnectionSettings settings, Action<string, Exception?> log)
 	{
 		Uri uri = new Uri(url);
 		if (!string.Equals(uri.Scheme, "gtcp", StringComparison.OrdinalIgnoreCase))
@@ -46,10 +46,10 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 	}
 
 	/// <summary>The connection was lost for good; the kiosk has to register again (on a thread-pool thread).</summary>
-	public event Action<GtcpBrokerClient, string> ConnectionClosed;
+	public event Action<GtcpBrokerClient, string>? ConnectionClosed;
 
 	/// <summary>Our GTCP host URI, as the broker sees it (null before the first call).</summary>
-	public string HostUri => _connection?.HostUri;
+	public string? HostUri => _connection?.HostUri;
 
 	public bool IsConnected => _connection?.IsConnected ?? false;
 
@@ -72,7 +72,7 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 
 	public void Dispose()
 	{
-		GtcpConnection connection;
+		GtcpConnection? connection;
 		lock (_openLock)
 		{
 			_disposed = true;
@@ -111,7 +111,7 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 		{
 			NrbfMethodCall call = NrbfReader.ReadMethodCall(message.Content);
 			methodName = call.MethodName;
-			IKioskOperations target = _callbackTarget;
+			IKioskOperations? target = _callbackTarget;
 			if (target == null || message.RequestUri != _callbackUri)
 			{
 				throw new InvalidOperationException($"No object is published at {message.RequestUri}.");
@@ -137,7 +137,7 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 		{
 			args[i] = NrbfObjectMapper.Map(call.Args[i], parameters[i].ParameterType);
 		}
-		object result = method.Invoke(target, args);
+		object? result = method.Invoke(target, args);
 		return NrbfWriter.MethodReturn(result, method.ReturnType == typeof(void));
 	}
 }

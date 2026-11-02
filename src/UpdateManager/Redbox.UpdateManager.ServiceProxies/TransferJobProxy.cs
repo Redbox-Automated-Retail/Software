@@ -8,11 +8,11 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class TransferJobProxy : ITransferJob
 {
-	private string m_url;
+	private string m_url = null!; // set by SetUrl or the constructor
 
 	public TransferJobType JobType { get; set; }
 
-	public string Name { get; set; }
+	public string Name { get; set; } = null!; // set by the JSON reader
 
 	public Guid ID { get; set; }
 
@@ -22,7 +22,7 @@ public class TransferJobProxy : ITransferJob
 
 	public DateTime? FinishTime { get; set; }
 
-	public string Owner { get; set; }
+	public string Owner { get; set; } = null!; // set by the JSON reader
 
 	public ulong TotalBytesTransfered { get; set; }
 

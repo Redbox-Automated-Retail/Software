@@ -10,13 +10,13 @@ namespace Redbox.UpdateManager.BITS;
 
 public class TransferJob : ITransferJob
 {
-	private List<ITransferItem> m_items;
+	private List<ITransferItem> m_items = null!; // set by Initialize
 
 	public TransferJobType JobType { get; private set; }
 
-	public string Owner { get; private set; }
+	public string Owner { get; private set; } = null!; // set by Initialize
 
-	public string Name { get; private set; }
+	public string Name { get; private set; } = null!; // set by Initialize
 
 	public Guid ID { get; private set; }
 
@@ -40,7 +40,7 @@ public class TransferJob : ITransferJob
 			return errorList;
 		}
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -76,7 +76,7 @@ public class TransferJob : ITransferJob
 			seconds = 60u;
 		}
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -108,7 +108,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -140,8 +140,8 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
-		IEnumBackgroundCopyFiles pEnum = null;
+		IBackgroundCopyJob? ppJob = null;
+		IEnumBackgroundCopyFiles? pEnum = null;
 		try
 		{
 			Guid jobID = ID;
@@ -180,7 +180,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -212,7 +212,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -244,7 +244,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -276,7 +276,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -308,7 +308,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -340,7 +340,7 @@ public class TransferJob : ITransferJob
 	{
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -384,7 +384,7 @@ public class TransferJob : ITransferJob
 			return;
 		}
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			Guid jobID = ID;
@@ -428,7 +428,7 @@ public class TransferJob : ITransferJob
 	internal TransferJob(Guid id)
 	{
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			backgroundCopyManager.GetJob(ref id, out ppJob);
@@ -460,13 +460,13 @@ public class TransferJob : ITransferJob
 
 	private void Initialize(Guid id, IBackgroundCopyJob job)
 	{
-		IEnumBackgroundCopyFiles pEnum = null;
+		IEnumBackgroundCopyFiles? pEnum = null;
 		try
 		{
 			job.GetOwner(out var pVal);
 			Owner = pVal;
 			job.GetTimes(out var pVal2);
-			StartTime = pVal2.CreationTime.ToUTCDateTime().Value;
+			StartTime = pVal2.CreationTime.ToUTCDateTime()!.Value;
 			FinishTime = pVal2.TransferCompletionTime.ToUTCDateTime();
 			DateTime? dateTime = pVal2.ModificationTime.ToUTCDateTime();
 			ModifiedTime = (dateTime.HasValue ? dateTime.Value : StartTime);

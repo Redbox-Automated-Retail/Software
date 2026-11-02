@@ -7,11 +7,12 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class RevLog : IRevLog
 {
-	public string Hash { get; set; }
+	// Set by the JSON reader.
+	public string Hash { get; set; } = null!;
 
-	public string Label { get; set; }
+	public string Label { get; set; } = null!;
 
-	public List<ChangeItem> Changes { get; set; }
+	public List<ChangeItem> Changes { get; set; } = null!;
 
 	public string HashFileName(string name)
 	{

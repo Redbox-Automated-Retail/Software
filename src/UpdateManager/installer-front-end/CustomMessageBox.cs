@@ -15,11 +15,11 @@ public sealed class CustomMessageBox : Form
 
 	private readonly Timer _timer2 = new Timer();
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label MessageLabel;
+	private Label MessageLabel = null!;
 
-	private Button OKButton;
+	private Button OKButton = null!;
 
 	public static DialogResult Show(string title, string message, Font font)
 	{
@@ -27,6 +27,7 @@ public sealed class CustomMessageBox : Form
 		return customMessageBox.ShowDialog();
 	}
 
+	// The controls above are created by InitializeComponent.
 	private CustomMessageBox(string title, string message, Font font)
 	{
 		Font = font;
@@ -38,7 +39,7 @@ public sealed class CustomMessageBox : Form
 		OKButton.Text = $"OK ({30})";
 	}
 
-	private void TimedClose(object sender, EventArgs e)
+	private void TimedClose(object? sender, EventArgs e)
 	{
 		_timer.Interval = 30000;
 		_timer2.Interval = 1000;
@@ -48,12 +49,12 @@ public sealed class CustomMessageBox : Form
 		_timer2.Start();
 	}
 
-	private void UpdateOkButton(object sender, EventArgs e)
+	private void UpdateOkButton(object? sender, EventArgs e)
 	{
 		OKButton.Text = $"OK ({--_count})";
 	}
 
-	private void OkButtonClick(object sender, EventArgs e)
+	private void OkButtonClick(object? sender, EventArgs e)
 	{
 		_timer.Stop();
 		_timer2.Stop();
@@ -97,7 +98,7 @@ public sealed class CustomMessageBox : Form
 		base.ControlBox = false;
 		base.Controls.Add(this.OKButton);
 		base.Controls.Add(this.MessageLabel);
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.Name = "CustomMessageBox";
 		base.ShowInTaskbar = false;
 		base.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;

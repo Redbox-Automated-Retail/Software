@@ -10,13 +10,13 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 {
 	private IConnectionPointContainer m_ConnectionPointContainer;
 
-	private ArrayList m_aEventSinkHelpers;
+	private ArrayList? m_aEventSinkHelpers;
 
-	private IConnectionPoint m_ConnectionPoint;
+	private IConnectionPoint? m_ConnectionPoint;
 
 	private void Init()
 	{
-		IConnectionPoint ppCP = null;
+		IConnectionPoint? ppCP = null;
 		Guid riid = new Guid(new byte[16]
 		{
 			139, 241, 188, 242, 39, 11, 212, 17, 181, 245,
@@ -38,10 +38,10 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 			}
 			_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = new _ICiImageEvents_SinkHelper();
 			int pdwCookie = 0;
-			m_ConnectionPoint.Advise(iCiImageEvents_SinkHelper, out pdwCookie);
+			m_ConnectionPoint!.Advise(iCiImageEvents_SinkHelper, out pdwCookie);
 			iCiImageEvents_SinkHelper.m_dwCookie = pdwCookie;
 			iCiImageEvents_SinkHelper.m_LogDelegate = P_0;
-			m_aEventSinkHelpers.Add(iCiImageEvents_SinkHelper);
+			m_aEventSinkHelpers!.Add(iCiImageEvents_SinkHelper);
 		}
 		finally
 		{
@@ -66,11 +66,11 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 			}
 			do
 			{
-				_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index];
+				_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index]!;
 				if (iCiImageEvents_SinkHelper.m_LogDelegate != null && ((iCiImageEvents_SinkHelper.m_LogDelegate.Equals(P_0) ? 1u : 0u) & 0xFFu) != 0)
 				{
 					m_aEventSinkHelpers.RemoveAt(index);
-					m_ConnectionPoint.Unadvise(iCiImageEvents_SinkHelper.m_dwCookie);
+					m_ConnectionPoint!.Unadvise(iCiImageEvents_SinkHelper.m_dwCookie);
 					if (count <= 1)
 					{
 						Marshal.ReleaseComObject(m_ConnectionPoint);
@@ -103,13 +103,13 @@ public sealed class _ICiImageEvents_EventProvider : _ICiImageEvents_Event, IDisp
 			{
 				return;
 			}
-			int count = m_aEventSinkHelpers.Count;
+			int count = m_aEventSinkHelpers!.Count;
 			int index = 0;
 			if (0 < count)
 			{
 				do
 				{
-					_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index];
+					_ICiImageEvents_SinkHelper iCiImageEvents_SinkHelper = (_ICiImageEvents_SinkHelper)m_aEventSinkHelpers[index]!;
 					m_ConnectionPoint.Unadvise(iCiImageEvents_SinkHelper.m_dwCookie);
 					index++;
 				}

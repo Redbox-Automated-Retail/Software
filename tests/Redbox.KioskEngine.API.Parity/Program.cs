@@ -65,7 +65,7 @@ internal static class Program
 		}
 	}
 
-	private static void Request(HttpClient client, string method, string path, string body = null)
+	private static void Request(HttpClient client, string method, string path, string? body = null)
 	{
 		HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(method), path);
 		if (body != null)
@@ -85,19 +85,19 @@ internal static class Program
 // Interface stub: every member returns the answer function's value (or default).
 public class Stub<T> : DispatchProxy
 {
-	private Func<MethodInfo, object> m_answer;
+	private Func<MethodInfo, object?> m_answer = null!; // set by Create
 
-	public static T Create(Func<MethodInfo, object> answer)
+	public static T Create(Func<MethodInfo, object?> answer)
 	{
 		T proxy = Create<T, Stub<T>>();
-		((Stub<T>)(object)proxy).m_answer = answer;
+		((Stub<T>)(object)proxy!).m_answer = answer;
 		return proxy;
 	}
 
-	protected override object Invoke(MethodInfo targetMethod, object[] args)
+	protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
 	{
-		object value = m_answer(targetMethod);
-		if (value == null && targetMethod.ReturnType.IsValueType && targetMethod.ReturnType != typeof(void))
+		object? value = m_answer(targetMethod!); // always passed by DispatchProxy
+		if (value == null && targetMethod!.ReturnType.IsValueType && targetMethod.ReturnType != typeof(void))
 		{
 			return Activator.CreateInstance(targetMethod.ReturnType);
 		}

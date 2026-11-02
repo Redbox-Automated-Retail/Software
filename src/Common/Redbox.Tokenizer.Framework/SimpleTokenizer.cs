@@ -1,6 +1,6 @@
 namespace Redbox.Tokenizer.Framework;
 
-public class SimpleTokenizer<T> : TokenizerBase<T>
+public class SimpleTokenizer<T> : TokenizerBase<T> where T : notnull
 {
 	public SimpleTokenList Tokens { get; protected set; }
 

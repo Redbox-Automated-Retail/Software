@@ -12,7 +12,7 @@ internal sealed class LegacyService : ICameraPlugin
 {
 	private int SnapTimeout;
 
-	private string ImagePath;
+	private string? ImagePath;
 
 	private Size ImageSize;
 
@@ -20,9 +20,9 @@ internal sealed class LegacyService : ICameraPlugin
 
 	private int GrabTime;
 
-	private string SnapFile;
+	private string? SnapFile;
 
-	private VCDevice3 Device;
+	private VCDevice3? Device;
 
 	private int m_waitingState = Constants.NotRunning;
 
@@ -76,7 +76,7 @@ internal sealed class LegacyService : ICameraPlugin
 		if (IsRunning)
 		{
 			Interlocked.Exchange(ref m_waitingState, Constants.Running);
-			Device.SimulateTrigger();
+			Device!.SimulateTrigger();
 			if (!ImageReceived.WaitOne(SnapTimeout))
 			{
 				ImageReceived.Reset();
@@ -131,7 +131,7 @@ internal sealed class LegacyService : ICameraPlugin
 			return false;
 		}
 		IsRunning = false;
-		Device.SignalToStop();
+		Device!.SignalToStop();
 		Device.WaitForStop();
 		Device.SnapshotFrame -= GetFrame;
 		Device.PlayingFinished -= PlayingFinished;
@@ -147,7 +147,7 @@ internal sealed class LegacyService : ICameraPlugin
 			Bitmap frame = eventArgs.Frame;
 			DateTime now = DateTime.Now;
 			string path = $"m{now.Month}d{now.Day}y{now.Year}_h{now.Hour}m{now.Minute}s{now.Second}t{now.Millisecond}.jpg";
-			SnapFile = Path.Combine(ImagePath, path);
+			SnapFile = Path.Combine(ImagePath!, path);
 			frame.Save(SnapFile);
 			ImageReceived.Set();
 		}

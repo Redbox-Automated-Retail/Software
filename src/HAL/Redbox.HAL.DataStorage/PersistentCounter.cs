@@ -4,7 +4,7 @@ namespace Redbox.HAL.DataStorage;
 
 internal sealed class PersistentCounter : IPersistentCounter
 {
-	public string Name { get; internal set; }
+	public string Name { get; internal set; } = null!; // set by PersistentCounterTable or TableTypeFactory
 
 	public int Value { get; internal set; }
 

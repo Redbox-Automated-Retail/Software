@@ -11,7 +11,7 @@ namespace Redbox.BrokerServices.Proxy;
 // (docs/modernization.md, section 7; protocol notes in Gtcp\GtcpConnection.cs and the files next to it).
 public partial class BrokerServicesProxy
 {
-	private GtcpBrokerClient m_gtcpClient;
+	private GtcpBrokerClient? m_gtcpClient;
 
 	private GtcpConnectionSettings m_gtcpSettings = new GtcpConnectionSettings();
 
@@ -50,7 +50,7 @@ public partial class BrokerServicesProxy
 	{
 		try
 		{
-			GtcpBrokerClient client = m_gtcpClient;
+			GtcpBrokerClient? client = m_gtcpClient;
 			m_gtcpClient = null;
 			m_broker = null;
 			client?.Dispose();
@@ -86,7 +86,7 @@ public partial class BrokerServicesProxy
 	{
 	}
 
-	private static void LogGtcp(string message, Exception exception)
+	private static void LogGtcp(string message, Exception? exception)
 	{
 		// Through "{0}" so braces in the text are not taken as format items.
 		if (exception == null)

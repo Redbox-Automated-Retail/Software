@@ -13,7 +13,7 @@ public class Program : IDisposable
 {
 	private static readonly ILogger m_logger = LogHelper.Instance.CreateLog4NetLogger(typeof(Program));
 
-	private static CommandLine m_commandLine;
+	private static CommandLine? m_commandLine;
 
 	private static CommandLine CommandLine
 	{
@@ -57,7 +57,7 @@ public class Program : IDisposable
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(defaultValue: false);
-			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "installer-front-end-log4net.config"));
+			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "installer-front-end-log4net.config"));
 			LogHelper.Instance.Logger = m_logger;
 			errorList.AddRange(StoreInstallerApplication.Instance.Initialize(Opts.Script, Opts.StoreNumber));
 		}

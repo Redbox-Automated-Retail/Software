@@ -7,7 +7,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class QueueServiceProxy : IQueueService
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	public static QueueServiceProxy Instance => Singleton<QueueServiceProxy>.Instance;
 
@@ -65,7 +65,7 @@ public class QueueServiceProxy : IQueueService
 		}
 	}
 
-	public T Peek<T>(string label)
+	public T? Peek<T>(string label)
 	{
 		string command = $"queue peek label: '{label}'";
 		using UpdateManagerService updateManagerService = UpdateManagerService.GetService(m_url);
@@ -86,7 +86,7 @@ public class QueueServiceProxy : IQueueService
 		return clientCommandResult.CommandMessages[0].ToObject<T>();
 	}
 
-	public string PeekRaw(string label)
+	public string? PeekRaw(string label)
 	{
 		string command = $"queue peek label: '{label}'";
 		using UpdateManagerService updateManagerService = UpdateManagerService.GetService(m_url);

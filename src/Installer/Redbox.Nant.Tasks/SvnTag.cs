@@ -9,15 +9,15 @@ public class SvnTag : Task
 {
 	protected SvnExecTask _task;
 
-	private string _repositoryUrl;
+	private string _repositoryUrl = null!; // set by NAnt (required attribute)
 
-	private string _tagsUrl;
+	private string _tagsUrl = null!; // set by NAnt (required attribute)
 
-	private string _tagVersion;
+	private string _tagVersion = null!; // set by NAnt (required attribute)
 
-	private string _tagStage;
+	private string _tagStage = null!; // set by NAnt (required attribute)
 
-	private string _comments;
+	private string _comments = null!; // set by NAnt (required attribute)
 
 	[TaskAttribute("repository-url", Required = true)]
 	public string RepositoryUrl

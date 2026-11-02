@@ -6,11 +6,12 @@ public class ClientConfigFile
 {
 	public long OID { get; set; }
 
-	public string Name { get; set; }
+	// Set by the JSON reader.
+	public string Name { get; set; } = null!;
 
-	public string Path { get; set; }
+	public string Path { get; set; } = null!;
 
 	public long GenerationOID { get; set; }
 
-	public List<ClientConfigurationData> ConfigurationData { get; set; }
+	public List<ClientConfigurationData> ConfigurationData { get; set; } = null!;
 }

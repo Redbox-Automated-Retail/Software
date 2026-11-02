@@ -34,7 +34,7 @@ public class CommandQueue : ICommandQueue
 		_enqueued.Set();
 	}
 
-	public bool TryTake(Predicate<SimulatorCommand> canRun, out SimulatorCommand command)
+	public bool TryTake(Predicate<SimulatorCommand> canRun, out SimulatorCommand? command)
 	{
 		lock (_commands)
 		{

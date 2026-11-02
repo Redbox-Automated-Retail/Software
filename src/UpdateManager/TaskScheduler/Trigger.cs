@@ -14,7 +14,7 @@ public abstract class Trigger : ICloneable
 		Disabled = 4
 	}
 
-	private ITaskTrigger iTaskTrigger;
+	private ITaskTrigger? iTaskTrigger;
 
 	internal TaskTrigger taskTrigger;
 
@@ -218,7 +218,7 @@ public abstract class Trigger : ICloneable
 
 	internal void Bind(Trigger trigger)
 	{
-		Bind(trigger.iTaskTrigger);
+		Bind(trigger.iTaskTrigger!); // Bind dereferences it, so a null one threw before too
 	}
 
 	internal void Unbind()
@@ -240,9 +240,9 @@ public abstract class Trigger : ICloneable
 		return "Unbound " + GetType().ToString();
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
-		return taskTrigger.Equals(((Trigger)obj).taskTrigger);
+		return taskTrigger.Equals(((Trigger)obj!).taskTrigger);
 	}
 
 	public override int GetHashCode()

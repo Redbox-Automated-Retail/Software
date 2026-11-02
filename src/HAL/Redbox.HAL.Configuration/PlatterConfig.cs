@@ -18,7 +18,7 @@ public sealed class PlatterConfig
 
 	public int SlotCount { get; private set; }
 
-	public PlatterData Data { get; private set; }
+	public PlatterData Data { get; private set; } = null!; // set by the PlatterData constructor, the only one used
 
 	public static PlatterConfig Get(PlatterData data)
 	{

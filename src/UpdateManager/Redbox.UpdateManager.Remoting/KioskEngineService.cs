@@ -9,7 +9,7 @@ namespace Redbox.UpdateManager.Remoting;
 
 public class KioskEngineService : IKioskEngineService
 {
-	private string _kioskEnginePath;
+	private string _kioskEnginePath = null!; // set by Initialize
 
 	public static KioskEngineService Instance => Singleton<KioskEngineService>.Instance;
 
@@ -18,7 +18,7 @@ public class KioskEngineService : IKioskEngineService
 		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(kioskEnginePath);
 		if (!Path.IsPathRooted(text))
 		{
-			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), text);
+			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, text);
 		}
 		_kioskEnginePath = kioskEnginePath;
 		ServiceLocator.Instance.AddService(typeof(IKioskEngineService), this);

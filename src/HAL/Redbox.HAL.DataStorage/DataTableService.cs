@@ -10,7 +10,7 @@ public sealed class DataTableService : IDataTableService
 
 	private readonly Dictionary<Type, object> LegacyTypeMap = new Dictionary<Type, object>();
 
-	public IDataTable<T> GetTable<T>()
+	public IDataTable<T>? GetTable<T>()
 	{
 		Type typeFromHandle = typeof(T);
 		if (!TypeMap.ContainsKey(typeFromHandle))
@@ -20,7 +20,7 @@ public sealed class DataTableService : IDataTableService
 		return (IDataTable<T>)TypeMap[typeFromHandle];
 	}
 
-	public IDataTable<T> GetLegacyTable<T>()
+	public IDataTable<T>? GetLegacyTable<T>()
 	{
 		Type typeFromHandle = typeof(T);
 		if (!LegacyTypeMap.ContainsKey(typeFromHandle))

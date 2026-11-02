@@ -9,7 +9,7 @@ public class ConfigFile
 
 	public string _filename;
 
-	public Task _parentTask;
+	public Task? _parentTask;
 
 	public ConfigFile(string filename)
 	{

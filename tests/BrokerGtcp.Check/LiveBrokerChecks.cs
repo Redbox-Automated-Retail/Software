@@ -36,7 +36,7 @@ internal sealed class LiveBrokerChecks
 	private readonly Uri _brokerUrl;
 	private readonly int _kioskId;
 	private readonly DateTime _startedUtc = DateTime.UtcNow.AddSeconds(-2);
-	private TcpRelay _relay;
+	private TcpRelay _relay = null!; // created at the start of Run
 
 	public LiveBrokerChecks(string brokerUrl, int kioskId)
 	{
@@ -76,7 +76,7 @@ internal sealed class LiveBrokerChecks
 	{
 		string version = "{\"Runtime\":\"Kiosk Engine\",\"Version\":\"1.88.0.80\",\"PricingPolicy\":{\"rental\":{\"dvd\":{\"initial\":1.99}}},\"GiftCardsEnabled\":false,\"RecoOnPickup\":false,\"AuthorizeAtPickup\":true,\"CancelReservation\":true,\"Features\":1,\"Transport\":\"GTCP .NET 10\"}";
 		Check.That(BrokerServicesProxy.Instance.Register(_kioskId, version), "BrokerServicesProxy.Register returned true");
-		string hostUri = CurrentClient()?.HostUri;
+		string? hostUri = CurrentClient()?.HostUri;
 		JsonElement? kiosk = FindKiosk();
 		Check.That(kiosk != null, "broker lists the kiosk as registered");
 		if (kiosk != null)
@@ -124,7 +124,7 @@ internal sealed class LiveBrokerChecks
 
 	private void DroppedSocket()
 	{
-		string hostBefore = CurrentClient()?.HostUri;
+		string? hostBefore = CurrentClient()?.HostUri;
 		DateTime droppedUtc = DateTime.UtcNow.AddMilliseconds(-200);
 		_relay.KillConnections();
 		bool reconnected = WaitFor(TimeSpan.FromSeconds(30), () =>
@@ -140,7 +140,7 @@ internal sealed class LiveBrokerChecks
 		// backend bookkeeping race, independent of the client; it is reported here instead of failing the transport.
 		WaitFor(TimeSpan.FromSeconds(3), () => FindKiosk()?.GetProperty("lostUtc").ValueKind == JsonValueKind.Null);
 		JsonElement? kiosk = FindKiosk();
-		string lostReason = kiosk?.GetProperty("lostReason").ValueKind == JsonValueKind.String ? kiosk.Value.GetProperty("lostReason").GetString() : null;
+		string? lostReason = kiosk?.GetProperty("lostReason").ValueKind == JsonValueKind.String ? kiosk.Value.GetProperty("lostReason").GetString() : null;
 		if (kiosk?.GetProperty("lostUtc").ValueKind != JsonValueKind.Null && lostReason?.Contains("opened another connection") == true)
 		{
 			Console.WriteLine("NOTE backend race: rb-remoting still shows the kiosk as lost (" + lostReason + "); Ping over the new socket not checked this run.");
@@ -186,9 +186,9 @@ internal sealed class LiveBrokerChecks
 			InterfaceStub.Create<Redbox.Rental.Model.IConfiguration>("get_UseLegacyBrokerService"));
 		// What ReservationServicesProxy.Register does, without the rest of the engine.
 		Type proxyType = typeof(ReservationServicesProxy);
-		proxyType.GetProperty("RequestCallback3", BindingFlags.Instance | BindingFlags.NonPublic)
+		proxyType.GetProperty("RequestCallback3", BindingFlags.Instance | BindingFlags.NonPublic)!
 			.SetValue(ReservationServicesProxy.Instance, (ReservationRequestCallback3)Reserve);
-		proxyType.GetProperty("CancelRequestCallback", BindingFlags.Instance | BindingFlags.NonPublic)
+		proxyType.GetProperty("CancelRequestCallback", BindingFlags.Instance | BindingFlags.NonPublic)!
 			.SetValue(ReservationServicesProxy.Instance, (CancelReservationCallback)Cancel);
 	}
 
@@ -240,7 +240,7 @@ internal sealed class LiveBrokerChecks
 		}
 	}
 
-	private static string LastCallbackEvent()
+	private static string? LastCallbackEvent()
 	{
 		lock (CallbackLock)
 		{
@@ -250,7 +250,7 @@ internal sealed class LiveBrokerChecks
 
 	// ------------------------------------------------------------------ helpers
 
-	private static GtcpBrokerClient CurrentClient() =>
+	private static GtcpBrokerClient? CurrentClient() =>
 		typeof(BrokerServicesProxy).GetField("m_gtcpClient", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(BrokerServicesProxy.Instance) as GtcpBrokerClient;
 
 	private static bool ReconnectTimerRunning() =>
@@ -288,7 +288,7 @@ internal sealed class LiveBrokerChecks
 	}
 
 	/// <summary>Calls rb-remoting's control API from inside the container; the request body goes through stdin.</summary>
-	private static JsonElement? Control(string method, string path, string body = null)
+	private static JsonElement? Control(string method, string path, string? body = null)
 	{
 		List<string> args = new List<string> { "exec" };
 		if (body != null)
@@ -334,7 +334,7 @@ internal sealed class LiveBrokerChecks
 		return count;
 	}
 
-	private static string RunWslc(List<string> args, string stdin, bool includeStderr = false)
+	private static string RunWslc(List<string> args, string? stdin, bool includeStderr = false)
 	{
 		ProcessStartInfo start = new ProcessStartInfo(Wslc)
 		{
@@ -348,7 +348,7 @@ internal sealed class LiveBrokerChecks
 		{
 			start.ArgumentList.Add(arg);
 		}
-		using Process process = Process.Start(start);
+		using Process process = Process.Start(start)!; // null only when reusing a shell process, not with UseShellExecute = false
 		if (stdin != null)
 		{
 			process.StandardInput.Write(stdin);

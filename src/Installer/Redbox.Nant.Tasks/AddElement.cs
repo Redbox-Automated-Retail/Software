@@ -6,9 +6,9 @@ namespace Redbox.Nant.Tasks;
 [ElementName("add")]
 public class AddElement : Element
 {
-	private string _keyName;
+	private string _keyName = null!; // set by NAnt (required attribute)
 
-	private string _keyValue;
+	private string _keyValue = null!; // set by NAnt (required attribute)
 
 	private bool _preserveExisting = false;
 

@@ -7,7 +7,7 @@ namespace Redbox.PaymentService;
 
 public class Global : HttpApplication
 {
-	private IContainer components = null;
+	private IContainer components = null!; // set by InitializeComponent
 
 	public Global()
 	{

@@ -149,7 +149,7 @@ public class ConfigurationService : IConfigurationService
 		return ConfigurationClient.Instance.GetSettingNames(key, category, out list);
 	}
 
-	public bool TryGetValue<T>(string key, string category, string setting, out T value)
+	public bool TryGetValue<T>(string key, string category, string setting, out T? value)
 	{
 		return ConfigurationClient.Instance.TryGetValue<T>(key, category, setting, out value);
 	}
@@ -162,7 +162,7 @@ public class ConfigurationService : IConfigurationService
 		bool parsed = false;
 		if (ConfigurationClient.Instance.TryGetValue<string>(key, category, setting, out rangeText))
 		{
-			string[] parts = rangeText.Split('-');
+			string[] parts = rangeText!.Split('-');
 			if (parts.Length == 2 && TimeSpan.TryParseExact(parts[0], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var parsedStart) && TimeSpan.TryParseExact(parts[1], "h\\:mm", DateTimeFormatInfo.InvariantInfo, TimeSpanStyles.None, out var parsedEnd))
 			{
 				if (parsedStart <= parsedEnd)
@@ -184,17 +184,17 @@ public class ConfigurationService : IConfigurationService
 		return parsed;
 	}
 
-	public bool TryGetValue<T>(string key, string setting, out T value)
+	public bool TryGetValue<T>(string key, string setting, out T? value)
 	{
 		return ConfigurationClient.Instance.TryGetValue<T>(key, setting, out value);
 	}
 
-	public bool TryGetObject(string key, string category, string setting, out object value)
+	public bool TryGetObject(string key, string category, string setting, out object? value)
 	{
 		return ConfigurationClient.Instance.TryGetObject(key, category, setting, out value);
 	}
 
-	public bool TryGetObject(string key, string setting, out object value)
+	public bool TryGetObject(string key, string setting, out object? value)
 	{
 		return ConfigurationClient.Instance.TryGetObject(key, setting, out value);
 	}
@@ -205,7 +205,7 @@ public class ConfigurationService : IConfigurationService
 		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, category, setting, out var clientData);
 		if (found)
 		{
-			value = ToConfigurationData(clientData);
+			value = ToConfigurationData(clientData!);
 		}
 		return found;
 	}
@@ -216,7 +216,7 @@ public class ConfigurationService : IConfigurationService
 		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, setting, out var clientData);
 		if (found)
 		{
-			value = ToConfigurationData(clientData);
+			value = ToConfigurationData(clientData!);
 		}
 		return found;
 	}

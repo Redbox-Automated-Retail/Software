@@ -13,6 +13,6 @@ internal class LowLevelMouseHook : WindowsHook
 
 	protected override bool HookFunction(int code, IntPtr wParam, IntPtr lParam)
 	{
-		return ((MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT))).flags == 1;
+		return ((MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT))!).flags == 1;
 	}
 }

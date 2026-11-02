@@ -7,7 +7,7 @@ namespace TaskSchedulerInterop;
 [Guid("148BD527-A2AB-11CE-B11F-00AA00530503")]
 public interface ITaskScheduler
 {
-	void SetTargetComputer([In][MarshalAs(UnmanagedType.LPWStr)] string Computer);
+	void SetTargetComputer([In][MarshalAs(UnmanagedType.LPWStr)] string? Computer);
 
 	void GetTargetComputer(out IntPtr Computer);
 

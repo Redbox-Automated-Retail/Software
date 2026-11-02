@@ -8,7 +8,7 @@ public interface IQueueService
 
 	void Dequeue(string label);
 
-	T Peek<T>(string label);
+	T? Peek<T>(string label);
 
-	string PeekRaw(string label);
+	string? PeekRaw(string label);
 }

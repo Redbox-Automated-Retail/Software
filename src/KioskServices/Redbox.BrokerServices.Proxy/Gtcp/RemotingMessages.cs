@@ -61,7 +61,7 @@ internal static class RemotingMessages
 /// <summary>The broker answered a call with an exception.</summary>
 public sealed class BrokerRemoteException : Exception
 {
-	public BrokerRemoteException(string message, string remoteType, string remoteStackTrace)
+	public BrokerRemoteException(string message, string remoteType, string? remoteStackTrace)
 		: base(message)
 	{
 		RemoteType = remoteType;
@@ -71,11 +71,11 @@ public sealed class BrokerRemoteException : Exception
 	/// <summary>The exception's class name on the broker, e.g. System.InvalidCastException.</summary>
 	public string RemoteType { get; }
 
-	public string RemoteStackTrace { get; }
+	public string? RemoteStackTrace { get; }
 
 	internal static BrokerRemoteException From(string methodName, object serializedException)
 	{
-		NrbfObject exception = serializedException as NrbfObject;
+		NrbfObject? exception = serializedException as NrbfObject;
 		string type = exception?["ClassName"] as string ?? exception?.TypeName ?? "unknown exception";
 		string message = exception?["Message"] as string ?? "(no message)";
 		return new BrokerRemoteException($"The broker failed {methodName}: {type}: {message}", type, exception?["StackTraceString"] as string);

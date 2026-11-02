@@ -5,6 +5,7 @@
     fresh databases and on copies of real kiosk files; compare-sqlite-parity.ps1 compares the two outputs.
   -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>

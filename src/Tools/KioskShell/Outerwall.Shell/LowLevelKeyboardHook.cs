@@ -8,7 +8,7 @@ namespace Outerwall.Shell;
 
 internal class LowLevelKeyboardHook : WindowsHook
 {
-	public event EventHandler<KeyPressEventEventArgs> KeyPressEvent;
+	public event EventHandler<KeyPressEventEventArgs>? KeyPressEvent;
 
 	public LowLevelKeyboardHook()
 		: base(13)
@@ -17,10 +17,10 @@ internal class LowLevelKeyboardHook : WindowsHook
 
 	protected override bool HookFunction(int code, IntPtr wParam, IntPtr lParam)
 	{
-		EventHandler<KeyPressEventEventArgs> eventHandler = KeyPressEvent;
+		EventHandler<KeyPressEventEventArgs>? eventHandler = KeyPressEvent;
 		if (eventHandler != null)
 		{
-			KBDLLHOOKSTRUCT kBDLLHOOKSTRUCT = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
+			KBDLLHOOKSTRUCT kBDLLHOOKSTRUCT = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT))!;
 			int state;
 			switch (wParam.ToInt32())
 			{

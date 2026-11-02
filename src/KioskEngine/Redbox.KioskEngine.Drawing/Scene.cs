@@ -12,28 +12,28 @@ namespace Redbox.KioskEngine.Drawing;
 
 public class Scene : IScene, IDisposable
 {
-	private System.Drawing.Image m_backgroundImage;
+	private System.Drawing.Image? m_backgroundImage;
 
 	private Color m_backgroundColor;
 
 	private bool m_isDrawingSuspended;
 
-	private LinkedList<IActor> m_actors;
+	private LinkedList<IActor>? m_actors;
 
-	private List<Rectangle> m_dirtyRectangles;
+	private List<Rectangle>? m_dirtyRectangles;
 
 	private readonly object m_syncObject = new object();
 
-	private ElementHost m_elementHost;
+	private ElementHost m_elementHost = null!; // set by InitializeWPFElementHost
 
-	private Grid m_wpfGrid;
+	private Grid m_wpfGrid = null!; // set by InitializeWPFElementHost
 
 	public int ActiveHitHandlers
 	{
 		get
 		{
 			int count = 0;
-			for (LinkedListNode<IActor> linkedListNode = Actors.Last; linkedListNode != null; linkedListNode = linkedListNode.Previous)
+			for (LinkedListNode<IActor>? linkedListNode = Actors.Last; linkedListNode != null; linkedListNode = linkedListNode.Previous)
 			{
 				IActor actor = linkedListNode.Value;
 				if ((actor.HitFlags & HitTestFlags.Enabled) != HitTestFlags.None && actor.Visible && actor.Enabled && actor.HitExists)
@@ -69,7 +69,7 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public System.Drawing.Image BackgroundImage
+	public System.Drawing.Image? BackgroundImage
 	{
 		get
 		{
@@ -84,7 +84,7 @@ public class Scene : IScene, IDisposable
 
 	public Grid WPFGrid => m_wpfGrid;
 
-	internal Bitmap BackBuffer { get; set; }
+	internal Bitmap? BackBuffer { get; set; }
 
 	internal Rectangle Bounds { get; set; }
 
@@ -116,11 +116,11 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public event WPFHitHandler OnWPFHit;
+	public event WPFHitHandler? OnWPFHit;
 
-	public event WPFKeyEvent OnWPFKeyDown;
+	public event WPFKeyEvent? OnWPFKeyDown;
 
-	public event WPFKeyEvent OnWPFKeyUp;
+	public event WPFKeyEvent? OnWPFKeyUp;
 
 	public Scene(string name, int width, int height, Color backgroundColor, ElementHost elementHost)
 	{
@@ -151,9 +151,9 @@ public class Scene : IScene, IDisposable
 		BackgroundImage = null;
 	}
 
-	public IActor HitTest(int x, int y)
+	public IActor? HitTest(int x, int y)
 	{
-		for (LinkedListNode<IActor> linkedListNode = Actors.Last; linkedListNode != null; linkedListNode = linkedListNode.Previous)
+		for (LinkedListNode<IActor>? linkedListNode = Actors.Last; linkedListNode != null; linkedListNode = linkedListNode.Previous)
 		{
 			IActor value = linkedListNode.Value;
 			if ((value.HitFlags & HitTestFlags.Enabled) != HitTestFlags.None && value.Visible && value.Enabled)
@@ -211,7 +211,7 @@ public class Scene : IScene, IDisposable
 			if (SceneRenderType == RenderType.GDI)
 			{
 				DrawBackground(context, Bounds);
-				for (LinkedListNode<IActor> linkedListNode = Actors.First; linkedListNode != null; linkedListNode = linkedListNode.Next)
+				for (LinkedListNode<IActor>? linkedListNode = Actors.First; linkedListNode != null; linkedListNode = linkedListNode.Next)
 				{
 					linkedListNode.Value.Render(context);
 				}
@@ -241,11 +241,11 @@ public class Scene : IScene, IDisposable
 		IsDirty = true;
 	}
 
-	public IActor Remove(string name)
+	public IActor? Remove(string name)
 	{
 		lock (m_syncObject)
 		{
-			IActor actor = null;
+			IActor? actor = null;
 			foreach (IActor actor2 in Actors)
 			{
 				if (string.Compare(actor2.Name, name, ignoreCase: true) == 0)
@@ -291,9 +291,9 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public FrameworkElement GetWPFGridChild(object tag)
+	public FrameworkElement? GetWPFGridChild(object tag)
 	{
-		FrameworkElement result = null;
+		FrameworkElement? result = null;
 		if (WPFGrid != null)
 		{
 			WPFGrid.Dispatcher.Invoke(delegate
@@ -338,7 +338,7 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public IActor GetActor(string name)
+	public IActor? GetActor(string name)
 	{
 		lock (m_syncObject)
 		{
@@ -353,9 +353,9 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public IActor GetActorByNameAndTag(string name, string tag)
+	public IActor? GetActorByNameAndTag(string name, string tag)
 	{
-		IActor result = null;
+		IActor? result = null;
 		lock (m_syncObject)
 		{
 			foreach (IActor actor in Actors)
@@ -377,7 +377,7 @@ public class Scene : IScene, IDisposable
 		{
 			foreach (IActor actor in Actors)
 			{
-				if (actor.Tag != null && !string.IsNullOrEmpty(actor.Tag.ToString()) && new List<string>(actor.Tag.ToString().Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries)).Contains(tag))
+				if (actor.Tag != null && !string.IsNullOrEmpty(actor.Tag.ToString()) && new List<string>(actor.Tag.ToString()!.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries)).Contains(tag))
 				{
 					list.Add(actor);
 				}
@@ -386,9 +386,9 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	public IActor GetActorByTabOrder(int tabOrder)
+	public IActor? GetActorByTabOrder(int tabOrder)
 	{
-		IActor result = null;
+		IActor? result = null;
 		lock (m_syncObject)
 		{
 			foreach (IActor actor in Actors)
@@ -403,7 +403,7 @@ public class Scene : IScene, IDisposable
 		return result;
 	}
 
-	public void MakeDirty(Rectangle[] rectangles)
+	public void MakeDirty(Rectangle[]? rectangles)
 	{
 		if (m_isDrawingSuspended)
 		{

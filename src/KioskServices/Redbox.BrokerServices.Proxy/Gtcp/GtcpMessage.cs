@@ -50,7 +50,7 @@ internal sealed class GtcpMessage
 
 	public bool IsReply => ReplyToId > 0;
 
-	public string RequestUri => Headers.TryGetValue(RequestUriHeader, out string uri) ? uri : null;
+	public string? RequestUri => Headers.TryGetValue(RequestUriHeader, out string? uri) ? uri : null;
 
 	public static GtcpMessage Request(int messageId, string objectUri, byte[] content) => new GtcpMessage
 	{

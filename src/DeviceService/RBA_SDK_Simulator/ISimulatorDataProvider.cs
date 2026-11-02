@@ -23,15 +23,15 @@ public interface ISimulatorDataProvider
 	/// <summary>Milliseconds between a request and an unsolicited terminal message.</summary>
 	int ResponseDelay { get; set; }
 
-	string ReadConfig(string group, string index);
+	string? ReadConfig(string group, string index);
 
-	void WriteConfig(string group, string index, string value);
+	void WriteConfig(string group, string index, string? value);
 
 	IDictionary<string, string> Configuration { get; }
 
-	string GetVariable(string id);
+	string? GetVariable(string id);
 
-	void SetVariable(string id, string value);
+	void SetVariable(string id, string? value);
 
 	IDictionary<string, string> Variables { get; }
 

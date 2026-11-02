@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.Nant.Tasks</AssemblyName>
     <RootNamespace>Redbox.Nant.Tasks</RootNamespace>
     <TargetFramework>net40</TargetFramework>

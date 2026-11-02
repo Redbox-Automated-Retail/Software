@@ -10,11 +10,11 @@ public class Config : Task
 
 	private RemoveCollection _removeElements;
 
-	protected Task _task;
+	protected Task? _task;
 
-	private string _configFile;
+	private string _configFile = null!; // set by NAnt (required attribute)
 
-	private ConfigFile _config;
+	private ConfigFile? _config;
 
 	public ConfigFile ConfigFile
 	{

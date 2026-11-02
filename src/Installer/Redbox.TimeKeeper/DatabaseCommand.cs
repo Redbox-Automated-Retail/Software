@@ -7,9 +7,9 @@ namespace Redbox.TimeKeeper;
 
 public abstract class DatabaseCommand : IDisposable
 {
-	private SqlCommand _command = null;
+	private SqlCommand _command = null!; // set by the protected constructors
 
-	private SqlCommand _invalidCommand;
+	private SqlCommand? _invalidCommand;
 
 	protected SqlCommand Command => _command;
 
@@ -114,17 +114,17 @@ public abstract class DatabaseCommand : IDisposable
 		return !one.Equals(two);
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (obj is SqlCommand)
 		{
-			return CompareCommand(obj as SqlCommand);
+			return CompareCommand((obj as SqlCommand)!);
 		}
-		if (!obj.GetType().Equals(GetType()))
+		if (!obj!.GetType().Equals(GetType())) // a null obj threw here before too
 		{
 			return false;
 		}
-		DatabaseCommand databaseCommand = obj as DatabaseCommand;
+		DatabaseCommand databaseCommand = (obj as DatabaseCommand)!; // same type as this
 		return CompareCommand(databaseCommand.Command);
 	}
 
@@ -183,7 +183,7 @@ public abstract class DatabaseCommand : IDisposable
 			}
 		}
 		string command = $"\n{CommandText}:{parameters}";
-		string invalidCommand = $"\n{_invalidCommand.CommandText}:{invalidParameters}";
+		string invalidCommand = $"\n{_invalidCommand!.CommandText}:{invalidParameters}"; // throws when there is none, as before
 		return command + invalidCommand;
 	}
 

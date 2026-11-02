@@ -19,7 +19,7 @@ public sealed class ConfigurationService : IConfigurationService
 
 	private readonly Dictionary<string, IAttributeXmlConfiguration> Configurations = new Dictionary<string, IAttributeXmlConfiguration>();
 
-	private readonly string ConfigurationFile;
+	private readonly string? ConfigurationFile;
 
 	private readonly char[] PropertyPathSeparators = new char[1] { '.' };
 
@@ -30,7 +30,7 @@ public sealed class ConfigurationService : IConfigurationService
 		return new ConfigurationService(configFile);
 	}
 
-	public string FormatAsXml(string friendly)
+	public string? FormatAsXml(string friendly)
 	{
 		friendly = friendly.ToLower();
 		if (Configurations.ContainsKey(friendly))
@@ -112,13 +112,13 @@ public sealed class ConfigurationService : IConfigurationService
 		xmlDocument.Save(ConfigurationFile);
 	}
 
-	public object GetPropertyByName(string key, string name)
+	public object? GetPropertyByName(string key, string name)
 	{
 		if (name == null)
 		{
 			return null;
 		}
-		IAttributeXmlConfiguration attributeXmlConfiguration = FromKey(key);
+		IAttributeXmlConfiguration? attributeXmlConfiguration = FromKey(key);
 		if (attributeXmlConfiguration != null)
 		{
 			return GetValueForPath(name, attributeXmlConfiguration);
@@ -131,7 +131,7 @@ public sealed class ConfigurationService : IConfigurationService
 		LogHelper.Instance.Log("[Configuration Service] Property update.");
 		if (name != null && value != null)
 		{
-			IAttributeXmlConfiguration attributeXmlConfiguration = FromKey(key);
+			IAttributeXmlConfiguration? attributeXmlConfiguration = FromKey(key);
 			if (attributeXmlConfiguration != null)
 			{
 				BroadcastChangeStart(attributeXmlConfiguration);
@@ -154,7 +154,7 @@ public sealed class ConfigurationService : IConfigurationService
 	public void LoadAndImport(ErrorList errors)
 	{
 		XmlDocument xmlDocument = new XmlDocument();
-		xmlDocument.Load(ConfigurationFile);
+		xmlDocument.Load(ConfigurationFile!);
 		if (xmlDocument.DocumentElement == null)
 		{
 			return;
@@ -166,13 +166,13 @@ public sealed class ConfigurationService : IConfigurationService
 			attributeXmlConfiguration.Import(errors);
 			attributeXmlConfiguration.StoreProperties(xmlDocument, errors);
 		}
-		xmlDocument.Save(ConfigurationFile);
+		xmlDocument.Save(ConfigurationFile!);
 	}
 
 	public void LoadAndUpgrade(ErrorList errors)
 	{
 		XmlDocument xmlDocument = new XmlDocument();
-		xmlDocument.Load(ConfigurationFile);
+		xmlDocument.Load(ConfigurationFile!);
 		if (xmlDocument.DocumentElement == null)
 		{
 			return;
@@ -181,15 +181,15 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			Configurations[key].Upgrade(xmlDocument, errors);
 		}
-		xmlDocument.Save(ConfigurationFile);
+		xmlDocument.Save(ConfigurationFile!);
 	}
 
-	public IAttributeXmlConfiguration FindConfiguration(string name)
+	public IAttributeXmlConfiguration? FindConfiguration(string name)
 	{
 		return FromKey(name);
 	}
 
-	public IAttributeXmlConfiguration FindConfiguration(Configurations configuration)
+	public IAttributeXmlConfiguration? FindConfiguration(Configurations configuration)
 	{
 		return FindConfiguration(configuration.ToString());
 	}
@@ -222,12 +222,12 @@ public sealed class ConfigurationService : IConfigurationService
 		config.NotifyConfigurationChangeStart();
 	}
 
-	private object GetValueForPath(string path, object rootObject)
+	private object? GetValueForPath(string path, object rootObject)
 	{
 		return GetObjectFromPath(path, rootObject, null);
 	}
 
-	private IAttributeXmlConfiguration FromKey(string key)
+	private IAttributeXmlConfiguration? FromKey(string key)
 	{
 		key = key.ToLower();
 		if (Configurations.ContainsKey(key))
@@ -237,7 +237,7 @@ public sealed class ConfigurationService : IConfigurationService
 		return null;
 	}
 
-	private object ExtractIndexInternal(string part)
+	private object? ExtractIndexInternal(string part)
 	{
 		if (part == null)
 		{
@@ -245,7 +245,7 @@ public sealed class ConfigurationService : IConfigurationService
 		}
 		Match keyMatch = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
 		Match numberMatch = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object result = null;
+		object? result = null;
 		int intIndex;
 		if (keyMatch.Success)
 		{
@@ -258,7 +258,7 @@ public sealed class ConfigurationService : IConfigurationService
 		return result;
 	}
 
-	private object GetObjectFromPath(string path, object rootObject, int? depthAdjust)
+	private object? GetObjectFromPath(string path, object rootObject, int? depthAdjust)
 	{
 		if (path == null)
 		{
@@ -274,12 +274,12 @@ public sealed class ConfigurationService : IConfigurationService
 		{
 			length -= depthAdjust.Value;
 		}
-		object current = rootObject;
+		object? current = rootObject;
 		for (int i = 0; i < length; i++)
 		{
-			object[] args = null;
+			object[]? args = null;
 			string memberName = pathParts[i];
-			object index = ExtractIndexInternal(memberName);
+			object? index = ExtractIndexInternal(memberName);
 			if (index != null)
 			{
 				memberName = memberName.Substring(0, memberName.IndexOf("["));
@@ -303,11 +303,11 @@ public sealed class ConfigurationService : IConfigurationService
 
 	private void SetValueForPath(string path, object rootObject, object value)
 	{
-		object objectFromPath = GetObjectFromPath(path, rootObject, 1);
+		object? objectFromPath = GetObjectFromPath(path, rootObject, 1);
 		if (objectFromPath != null)
 		{
 			string[] pathParts = path.Split(PropertyPathSeparators);
-			PropertyInfo property = objectFromPath.GetType().GetProperty(pathParts[pathParts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			PropertyInfo? property = objectFromPath.GetType().GetProperty(pathParts[pathParts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
 			property?.SetValue(objectFromPath, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}

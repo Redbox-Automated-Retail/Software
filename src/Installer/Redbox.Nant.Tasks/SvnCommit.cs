@@ -9,9 +9,9 @@ public class SvnCommit : Task
 {
 	protected SvnExecTask _task;
 
-	private string _directory;
+	private string _directory = null!; // set by NAnt (required attribute)
 
-	private string _comments;
+	private string _comments = null!; // set by NAnt (required attribute)
 
 	[TaskAttribute("dir", Required = true)]
 	public string Directory

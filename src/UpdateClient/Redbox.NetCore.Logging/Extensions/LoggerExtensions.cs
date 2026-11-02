@@ -42,18 +42,18 @@ public static class LoggerExtensions
 		logger.LogCritical(ex, callerLocation.ClassName() + "." + memberName + " -> " + message);
 	}
 
-	private static string ClassName(this string callerLocation)
+	private static string? ClassName(this string callerLocation)
 	{
 		if (!callerLocation.Contains("\\"))
 		{
-			string unixFileName = callerLocation.Split('/').LastOrDefault();
+			string? unixFileName = callerLocation.Split('/').LastOrDefault();
 			if (unixFileName == null)
 			{
 				return null;
 			}
 			return unixFileName.TrimEnd(".cs");
 		}
-		string fileName = callerLocation.Split("\\").LastOrDefault();
+		string? fileName = callerLocation.Split("\\").LastOrDefault();
 		if (fileName == null)
 		{
 			return null;
@@ -61,7 +61,7 @@ public static class LoggerExtensions
 		return fileName.TrimEnd(".cs");
 	}
 
-	private static string TrimEnd(this string value, string substring)
+	private static string? TrimEnd(this string? value, string substring)
 	{
 		if (value == null || !value.EndsWith(substring))
 		{

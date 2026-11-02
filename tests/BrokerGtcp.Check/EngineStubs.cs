@@ -12,9 +12,9 @@ namespace BrokerGtcp.Check;
 /// <summary>"Remote Services\Reservation Services\BrokerServicesURL" (and defaults for everything else).</summary>
 internal sealed class FakeSettings : IMachineSettingsStore
 {
-	public string BrokerUrl { get; set; }
+	public string BrokerUrl { get; set; } = null!; // set by LiveBrokerChecks.SetUpEngineServices
 
-	public T GetValue<T>(string path, string key) => GetValue(path, key, default(T));
+	public T? GetValue<T>(string path, string key) => GetValue(path, key, default(T));
 
 	public T GetValue<T>(string path, string key, T defaultValue) => key == "BrokerServicesURL" ? (T)(object)BrokerUrl : defaultValue;
 
@@ -71,7 +71,7 @@ internal sealed class FakeCallbacks : ICallbackService
 
 	public DateTime? GetEnqueuedDateTimeFromNextCallbackEntry() => null;
 
-	public ICallbackServiceStatistics GetStatics() => null;
+	public ICallbackServiceStatistics? GetStatics() => null;
 
 	public void ResetStatistics()
 	{
@@ -97,13 +97,13 @@ public class InterfaceStub : DispatchProxy
 	public static T Create<T>(params string[] trueGetters)
 	{
 		T stub = Create<T, InterfaceStub>();
-		TrueGetters[stub] = trueGetters;
+		TrueGetters[stub!] = trueGetters;
 		return stub;
 	}
 
-	protected override object Invoke(MethodInfo targetMethod, object[] args)
+	protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
 	{
-		if (targetMethod.ReturnType == typeof(bool) && TrueGetters.TryGetValue(this, out string[] names) && Array.IndexOf(names, targetMethod.Name) >= 0)
+		if (targetMethod!.ReturnType == typeof(bool) && TrueGetters.TryGetValue(this, out string[]? names) && Array.IndexOf(names, targetMethod.Name) >= 0)
 		{
 			return true;
 		}

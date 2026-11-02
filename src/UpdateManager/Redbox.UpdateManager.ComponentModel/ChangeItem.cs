@@ -4,13 +4,14 @@ namespace Redbox.UpdateManager.ComponentModel;
 
 public class ChangeItem
 {
-	public string VersionHash { get; set; }
+	// The string properties are set by the object initializer that creates the item.
+	public string VersionHash { get; set; } = null!;
 
-	public string ContentHash { get; set; }
+	public string ContentHash { get; set; } = null!;
 
-	public string TargetName { get; set; }
+	public string TargetName { get; set; } = null!;
 
-	public string TargetPath { get; set; }
+	public string TargetPath { get; set; } = null!;
 
 	public bool IsSeed { get; set; }
 

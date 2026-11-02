@@ -7,13 +7,14 @@ public class Task : ITask
 {
 	public DateTime? EndTime { get; set; }
 
-	public string CronExpression { get; set; }
+	public string? CronExpression { get; set; }
 
 	public TimeSpan? RepeatInterval { get; set; }
 
-	public string Name { get; set; }
+	// Name and Payload are set by the JSON reader.
+	public string Name { get; set; } = null!;
 
-	public string Payload { get; set; }
+	public string Payload { get; set; } = null!;
 
 	public PayloadType PayloadType { get; set; }
 

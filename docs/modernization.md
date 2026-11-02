@@ -420,8 +420,15 @@ comments. The work is mostly elsewhere:
   - `tools/readability/Test-Nullable.ps1 <project> [-Enable]` turns nullable on in that project only (its
     references that aren't annotated yet stay oblivious, as in the real build), rebuilds it and lists its
     warnings; with `-Enable` the project keeps the setting once it has none. Smallest projects first: 2026-11-02,
-    22 projects (all with 10 warnings or fewer); a full build with nullable on everywhere counted about 18,000
-    warnings in the rest, most in Rental.Services/UI, halmgmtc and the Kiosk Client and Update Client APIs.
+    63 projects (every project with up to about 90 warnings, and all tests); a full build with nullable on
+    everywhere had counted about 18,000 warnings, most in Rental.Services/UI, halmgmtc and the Kiosk Client and
+    Update Client APIs, which are still to do. Annotating a library can add warnings in projects that already
+    have nullable on (its callers now see `?`); rebuild those too.
+  - ASP.NET Core treats a non-nullable property of a request model as `[Required]` once nullable is on. The four
+    ASP.NET hosts (engine API, Device Service with the card reader simulator, Kiosk Client, Update Client) set
+    `SuppressImplicitRequiredAttributeForNonNullableReferenceTypes`, so model binding stays as it was.
+  - `src/Common/Redbox.Core/NetFrameworkCompatibility.cs` (.NET 10 only, linked into HAL tools) has
+    `#nullable enable` of its own, so projects that link it can turn nullable on before Redbox.Core does.
 
 ## Verification
 

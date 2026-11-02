@@ -8,7 +8,7 @@ public class ReservationResult
 {
 	public bool ReservationSucceeded { get; set; }
 
-	public string ErrorMessage { get; set; }
+	public string? ErrorMessage { get; set; }
 
-	public List<TitleResult> TitleResults { get; set; }
+	public List<TitleResult>? TitleResults { get; set; }
 }

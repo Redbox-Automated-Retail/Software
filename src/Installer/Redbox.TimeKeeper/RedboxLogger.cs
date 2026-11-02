@@ -35,7 +35,7 @@ public class RedboxLogger
 		Write(message, LoggingLevel.Default, ex);
 	}
 
-	private void Write(string message, LevelWrapper level, Exception ex)
+	private void Write(string message, LevelWrapper level, Exception? ex)
 	{
 		_defaultLogger.Logger.Log(typeof(RedboxLogger), level.Level, message, ex);
 	}

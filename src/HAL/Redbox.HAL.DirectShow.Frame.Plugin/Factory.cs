@@ -4,7 +4,7 @@ namespace Redbox.HAL.DirectShow.Frame.Plugin;
 
 public sealed class Factory
 {
-	private static ICameraPlugin m_instance;
+	private static ICameraPlugin? m_instance;
 
 	public static ICameraPlugin GetCameraPlugin()
 	{

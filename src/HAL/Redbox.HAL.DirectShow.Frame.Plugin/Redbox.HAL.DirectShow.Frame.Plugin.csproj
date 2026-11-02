@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.HAL.DirectShow.Frame.Plugin</AssemblyName>
     <RootNamespace>Redbox.HAL.DirectShow.Frame.Plugin</RootNamespace>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>

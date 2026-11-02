@@ -85,10 +85,10 @@ public static class BandwidthUsageSettings
 		UseSystemMaxOutsideOfSchedule = false;
 	}
 
-	private static T Get<T>(string keyName)
+	private static T? Get<T>(string keyName)
 	{
 		using RegistryKey key = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\BITS");
-		object registryValue = key.GetValue(keyName);
+		object? registryValue = key.GetValue(keyName);
 		if (registryValue == null)
 		{
 			return default(T);

@@ -9,15 +9,15 @@ public class SvnRollback : Task
 {
 	protected SvnExecTask _task;
 
-	private string _workingDirectory;
+	private string _workingDirectory = null!; // set by NAnt (required attribute)
 
-	private string _repositoryUrl;
+	private string _repositoryUrl = null!; // set by NAnt (required attribute)
 
-	private string _tagsUrl;
+	private string _tagsUrl = null!; // set by NAnt (required attribute)
 
-	private string _targetVersion;
+	private string _targetVersion = null!; // set by NAnt (required attribute)
 
-	private string _targetStage;
+	private string _targetStage = null!; // set by NAnt (required attribute)
 
 	[TaskAttribute("working-dir", Required = true)]
 	public string WorkingDirectory

@@ -6,13 +6,13 @@ namespace TaskScheduler;
 
 public class ScheduledTasks : IDisposable
 {
-	private ITaskScheduler its;
+	private ITaskScheduler its; // released and cleared by Dispose; using the object afterwards throws, as before
 
 	internal static Guid ITaskGuid;
 
 	internal static Guid CTaskGuid;
 
-	public ScheduledTasks(string computer)
+	public ScheduledTasks(string? computer)
 		: this()
 	{
 		its.SetTargetComputer(computer);
@@ -47,7 +47,7 @@ public class ScheduledTasks : IDisposable
 			while (Fetched != 0)
 			{
 				IntPtr ptr = Marshal.ReadIntPtr(Names, (int)(--Fetched) * IntPtr.Size);
-				names[count++] = Marshal.PtrToStringUni(ptr);
+				names[count++] = Marshal.PtrToStringUni(ptr)!; // the enumerator returns allocated names
 				Marshal.FreeCoTaskMem(ptr);
 			}
 			Marshal.FreeCoTaskMem(Names);
@@ -55,9 +55,9 @@ public class ScheduledTasks : IDisposable
 		return names;
 	}
 
-	public Task CreateTask(string name)
+	public Task? CreateTask(string name)
 	{
-		Task task = OpenTask(name);
+		Task? task = OpenTask(name);
 		if (task != null)
 		{
 			task.Close();
@@ -88,7 +88,7 @@ public class ScheduledTasks : IDisposable
 		}
 	}
 
-	public Task OpenTask(string name)
+	public Task? OpenTask(string name)
 	{
 		try
 		{
@@ -105,7 +105,7 @@ public class ScheduledTasks : IDisposable
 	public void Dispose()
 	{
 		Marshal.ReleaseComObject(its);
-		its = null;
+		its = null!;
 	}
 
 	static ScheduledTasks()

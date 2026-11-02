@@ -11,9 +11,9 @@ namespace Redbox.UpdateManager.Remoting;
 
 public class IPCPoll : IPoll
 {
-	private string m_storeNumber;
+	private string? m_storeNumber;
 
-	private string m_url;
+	private string? m_url;
 
 	private TimeSpan m_timeout;
 
@@ -46,7 +46,7 @@ public class IPCPoll : IPoll
 				return errorList;
 			}
 			LogHelper.Instance.Log("Timeout for IPC poll is " + m_timeout.TotalSeconds + " seconds.", (!(m_timeout < TimeSpan.FromSeconds(30.0))) ? LogEntryType.Debug : LogEntryType.Info);
-			using Redbox.UpdateService.Client.UpdateService updateService = GetService(m_url, m_timeout);
+			using Redbox.UpdateService.Client.UpdateService updateService = GetService(m_url!, m_timeout);
 			ClientCommandResult clientCommandResult = updateService.Poll(m_storeNumber, m_version, pollRequestList, out pollReplyList);
 			errorList.AddRange(IPC(clientCommandResult.Errors));
 		}

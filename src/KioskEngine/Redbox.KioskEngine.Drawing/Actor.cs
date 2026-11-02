@@ -20,7 +20,7 @@ namespace Redbox.KioskEngine.Drawing;
 
 public class Actor : IActor, IDisposable
 {
-	private Form _mainForm;
+	private Form? _mainForm;
 
 	private bool m_clickStarted;
 
@@ -30,17 +30,17 @@ public class Actor : IActor, IDisposable
 
 	private int m_y;
 
-	private Font m_font;
+	private Font? m_font;
 
 	private int m_width;
 
 	private int m_height;
 
-	private string m_text;
+	private string? m_text;
 
-	private string m_html;
+	private string? m_html;
 
-	private System.Drawing.Image m_image;
+	private System.Drawing.Image? m_image;
 
 	private bool m_enabled;
 
@@ -52,7 +52,7 @@ public class Actor : IActor, IDisposable
 
 	private int m_frameNumber;
 
-	private string m_errorText;
+	private string? m_errorText;
 
 	private System.Drawing.Size? m_cornerSize;
 
@@ -66,7 +66,7 @@ public class Actor : IActor, IDisposable
 
 	private System.Drawing.Color m_backgroundColor;
 
-	private IStyleSheetStyle m_style;
+	private IStyleSheetStyle? m_style;
 
 	private float? m_cornerSweepAngle;
 
@@ -74,7 +74,7 @@ public class Actor : IActor, IDisposable
 
 	private float? m_textRotationAngle;
 
-	private System.Windows.Forms.WebBrowser m_browserControl;
+	private System.Windows.Forms.WebBrowser? m_browserControl;
 
 	private System.Drawing.Color? m_gradientTargetColor;
 
@@ -82,17 +82,17 @@ public class Actor : IActor, IDisposable
 
 	private RenderOptionFlags m_optionFlags;
 
-	private FrameDimension m_frameDimension;
+	private FrameDimension? m_frameDimension;
 
 	private StringAlignment m_verticalAlignment;
 
 	private StringAlignment m_horizontalAlignment;
 
-	private FrameworkElement m_wpfFrameworkElement;
+	private FrameworkElement? m_wpfFrameworkElement;
 
-	private TextBlock m_wpfTextBlock;
+	private TextBlock? m_wpfTextBlock;
 
-	private System.Windows.Controls.Image m_wpfImage;
+	private System.Windows.Controls.Image? m_wpfImage;
 
 	public bool HitExists => Hit != null;
 
@@ -103,9 +103,9 @@ public class Actor : IActor, IDisposable
 			if (_mainForm == null)
 			{
 				IEngineApplication engineApplication = ServiceLocator.Instance.GetService<IEngineApplication>();
-				_mainForm = (engineApplication as ApplicationContext).MainForm;
+				_mainForm = (engineApplication as ApplicationContext)!.MainForm;
 			}
-			return _mainForm.Handle;
+			return _mainForm!.Handle;
 		}
 	}
 
@@ -159,7 +159,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public Font Font
+	public Font? Font
 	{
 		get
 		{
@@ -211,7 +211,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string Text
+	public string? Text
 	{
 		get
 		{
@@ -224,7 +224,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string Html
+	public string? Html
 	{
 		get
 		{
@@ -246,9 +246,9 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
-	public IScene Scene { get; set; }
+	public IScene? Scene { get; set; }
 
 	public bool IsDirty { get; internal set; }
 
@@ -308,7 +308,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public System.Drawing.Image Image
+	public System.Drawing.Image? Image
 	{
 		get
 		{
@@ -386,11 +386,11 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public object Tag { get; set; }
+	public object? Tag { get; set; }
 
 	public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
 
-	public string ErrorText
+	public string? ErrorText
 	{
 		get
 		{
@@ -402,7 +402,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public float[] TabStops { get; set; }
+	public float[]? TabStops { get; set; }
 
 	public float StrokeWeight
 	{
@@ -416,7 +416,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string StyleName { get; set; }
+	public string? StyleName { get; set; }
 
 	public Rectangle? HotSpot { get; set; }
 
@@ -520,7 +520,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string RelativeToActorName { get; set; }
+	public string? RelativeToActorName { get; set; }
 
 	public System.Drawing.Point? TextTranslationPoint
 	{
@@ -572,7 +572,7 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public IStyleSheetStyle Style
+	public IStyleSheetStyle? Style
 	{
 		get
 		{
@@ -600,9 +600,9 @@ public class Actor : IActor, IDisposable
 		}
 	}
 
-	public string WPFControlName { get; set; }
+	public string? WPFControlName { get; set; }
 
-	public string WPFControlAssemblyName { get; set; }
+	public string? WPFControlAssemblyName { get; set; }
 
 	private System.Windows.HorizontalAlignment WPFHorizontalAlignmnet => HorizontalAlignment switch
 	{
@@ -624,15 +624,15 @@ public class Actor : IActor, IDisposable
 	{
 		get
 		{
-			int right = ((Width != 0) ? (Scene.Width - Width - X) : 0);
-			int bottom = ((Height != 0) ? (Scene.Height - Height - Y) : 0);
+			int right = ((Width != 0) ? (Scene!.Width - Width - X) : 0);
+			int bottom = ((Height != 0) ? (Scene!.Height - Height - Y) : 0);
 			return new Thickness(X, Y, right, bottom);
 		}
 	}
 
-	public event WPFHitHandler OnWPFHit;
+	public event WPFHitHandler? OnWPFHit;
 
-	public event EventHandler Hit;
+	public event EventHandler? Hit;
 
 	public Actor()
 	{
@@ -682,7 +682,7 @@ public class Actor : IActor, IDisposable
 		StringFormat stringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
 		int charactersFitted;
 		int linesFilled;
-		return new MeasureTextResult(graphics.MeasureString(macroService.ExpandProperties(Text), Font, new SizeF(textRegion.Width, textRegion.Height), stringFormat, out charactersFitted, out linesFilled), charactersFitted, linesFilled);
+		return new MeasureTextResult(graphics.MeasureString(macroService.ExpandProperties(Text), Font!, new SizeF(textRegion.Width, textRegion.Height), stringFormat, out charactersFitted, out linesFilled), charactersFitted, linesFilled);
 	}
 
 	public void CenterHorizontally()
@@ -708,9 +708,9 @@ public class Actor : IActor, IDisposable
 
 	protected FrameworkElement CreateUIElement()
 	{
-		FrameworkElement frameworkElement = null;
+		FrameworkElement? frameworkElement = null;
 		frameworkElement = (string.IsNullOrEmpty(WPFControlName) ? CreateWPFActor() : CreateWPFControl());
-		frameworkElement.Tag = Name;
+		frameworkElement!.Tag = Name;
 		frameworkElement.Margin = Margin;
 		frameworkElement.MouseDown += FrameworkElement_MouseDown;
 		frameworkElement.MouseLeave += FrameworkElement_MouseLeave;
@@ -772,14 +772,14 @@ public class Actor : IActor, IDisposable
 			{
 				Opacity = Opacity
 			};
-			System.Windows.Media.FontFamily fontFamily = null;
+			System.Windows.Media.FontFamily? fontFamily = null;
 			if (fontFamily == null)
 			{
-				fontFamily = new System.Windows.Media.FontFamily(Font.FontFamily.Name);
+				fontFamily = new System.Windows.Media.FontFamily(Font!.FontFamily.Name);
 				LogHelper.Instance.Log("Unable to find Font Family {0}.  Using default font instead.", Font.FontFamily.Name);
 			}
 			m_wpfTextBlock.FontFamily = fontFamily;
-			m_wpfTextBlock.FontSize = (double)Font.Size * WPFSizeConvertion;
+			m_wpfTextBlock.FontSize = (double)Font!.Size * WPFSizeConvertion;
 			if (Font.Style == System.Drawing.FontStyle.Bold)
 			{
 				m_wpfTextBlock.FontWeight = FontWeights.Bold;
@@ -816,23 +816,23 @@ public class Actor : IActor, IDisposable
 		return grid;
 	}
 
-	private FrameworkElement CreateWPFControl()
+	private FrameworkElement? CreateWPFControl()
 	{
-		FrameworkElement frameworkElement = ServiceLocator.Instance.GetService<IThemeService>()?.GetNewThemedControlInstance(WPFControlName);
+		FrameworkElement? frameworkElement = ServiceLocator.Instance.GetService<IThemeService>()?.GetNewThemedControlInstance(WPFControlName);
 		if (frameworkElement == null)
 		{
 			if (!string.IsNullOrEmpty(WPFControlName) && !string.IsNullOrEmpty(WPFControlAssemblyName))
 			{
-				string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), WPFControlAssemblyName);
+				string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, WPFControlAssemblyName);
 				if (File.Exists(path))
 				{
 					Assembly assembly = Redbox.Core.AssemblyLoading.LoadFile(path);
 					if (assembly != null)
 					{
-						Type type = assembly.GetType(WPFControlName);
+						Type? type = assembly.GetType(WPFControlName);
 						if (type != null)
 						{
-							object control = Activator.CreateInstance(type);
+							object? control = Activator.CreateInstance(type);
 							if (control != null)
 							{
 								if (control is System.Windows.Controls.UserControl userControl)
@@ -880,11 +880,11 @@ public class Actor : IActor, IDisposable
 		return frameworkElement;
 	}
 
-	private void AssignWPFImage(System.Drawing.Image image)
+	private void AssignWPFImage(System.Drawing.Image? image)
 	{
 		if (m_wpfImage != null && image != null)
 		{
-			m_wpfImage.Source = ToBitmapImage(new Bitmap(Image));
+			m_wpfImage.Source = ToBitmapImage(new Bitmap(Image!));
 		}
 	}
 
@@ -998,7 +998,7 @@ public class Actor : IActor, IDisposable
 			}
 			else
 			{
-				System.Drawing.Brush brush = null;
+				System.Drawing.Brush? brush = null;
 				try
 				{
 					if ((OptionFlags & RenderOptionFlags.BackgroundGradient) != RenderOptionFlags.None)
@@ -1023,7 +1023,7 @@ public class Actor : IActor, IDisposable
 			ImageAttributes imageAttributes = new ImageAttributes();
 			if (FrameCount > 1)
 			{
-				Image.SelectActiveFrame(m_frameDimension, FrameNumber);
+				Image.SelectActiveFrame(m_frameDimension!, FrameNumber);
 			}
 			else
 			{
@@ -1078,18 +1078,18 @@ public class Actor : IActor, IDisposable
 			string s = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(Text);
 			if (hasValue2)
 			{
-				context.TranslateTransform(TextTranslationPoint.Value.X, TextTranslationPoint.Value.Y);
+				context.TranslateTransform(TextTranslationPoint!.Value.X, TextTranslationPoint.Value.Y);
 			}
 			if (hasValue)
 			{
-				context.RotateTransform(TextRotationAngle.Value);
+				context.RotateTransform(TextRotationAngle!.Value);
 			}
 			if ((OptionFlags & RenderOptionFlags.TextShadow) != RenderOptionFlags.None)
 			{
 				using SolidBrush brush3 = new SolidBrush(GetAlphaRampedColor(System.Drawing.Color.Black, Opacity));
-				context.DrawString(s, Font, brush3, new Rectangle(textRegion.Left + 1, textRegion.Top + 1, textRegion.Width, textRegion.Height), stringFormat);
+				context.DrawString(s, Font!, brush3, new Rectangle(textRegion.Left + 1, textRegion.Top + 1, textRegion.Width, textRegion.Height), stringFormat);
 			}
-			context.DrawString(s, Font, brush2, textRegion, stringFormat);
+			context.DrawString(s, Font!, brush2, textRegion, stringFormat);
 			if (hasValue2 | hasValue)
 			{
 				context.ResetTransform();
@@ -1160,10 +1160,10 @@ public class Actor : IActor, IDisposable
 		return new Rectangle(x, y, width, height);
 	}
 
-	private void BrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+	private void BrowserDocumentCompleted(object? sender, WebBrowserDocumentCompletedEventArgs e)
 	{
 		Bitmap bitmap = new Bitmap(Width, Height);
-		m_browserControl.DrawToBitmap(bitmap, new Rectangle(0, 0, Width, Height));
+		m_browserControl!.DrawToBitmap(bitmap, new Rectangle(0, 0, Width, Height));
 		Image = bitmap;
 	}
 
@@ -1200,7 +1200,7 @@ public class Actor : IActor, IDisposable
 								propertyInfo.SetValue(this, converted, null);
 								continue;
 							}
-							string text = stateValue as string;
+							string? text = stateValue as string;
 							if (text != null && text.StartsWith("cache:"))
 							{
 								IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
@@ -1268,7 +1268,7 @@ public class Actor : IActor, IDisposable
 		graphicsPath.CloseFigure();
 		if (fill)
 		{
-			System.Drawing.Brush brush = null;
+			System.Drawing.Brush? brush = null;
 			try
 			{
 				if ((OptionFlags & RenderOptionFlags.BackgroundGradient) != RenderOptionFlags.None)

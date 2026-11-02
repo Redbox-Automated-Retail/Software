@@ -4,7 +4,7 @@ public class ItemAccrualRedemptions
 {
 	public long ProductId { get; set; }
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public int AccrualPoints { get; set; }
 

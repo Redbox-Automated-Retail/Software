@@ -18,7 +18,7 @@ public interface ITask
 
 	DateTime? EndTime { get; set; }
 
-	string CronExpression { get; set; }
+	string? CronExpression { get; set; }
 
 	TimeSpan? RepeatInterval { get; set; }
 }

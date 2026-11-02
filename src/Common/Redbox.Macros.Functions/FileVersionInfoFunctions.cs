@@ -18,7 +18,7 @@ public class FileVersionInfoFunctions : FunctionSetBase
 	}
 
 	[Function("get-company-name")]
-	public static string GetCompanyName(FileVersionInfo fileVersionInfo)
+	public static string? GetCompanyName(FileVersionInfo fileVersionInfo)
 	{
 		return fileVersionInfo.CompanyName;
 	}
@@ -30,7 +30,7 @@ public class FileVersionInfoFunctions : FunctionSetBase
 	}
 
 	[Function("get-product-name")]
-	public static string GetProductName(FileVersionInfo fileVersionInfo)
+	public static string? GetProductName(FileVersionInfo fileVersionInfo)
 	{
 		return fileVersionInfo.ProductName;
 	}

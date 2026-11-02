@@ -17,7 +17,7 @@ public class OptionValueList : LinkedList<OptionValue>
 		}
 	}
 
-	public OptionValue GetOptionValue(string name)
+	public OptionValue? GetOptionValue(string name)
 	{
 		using (Enumerator enumerator = GetEnumerator())
 		{

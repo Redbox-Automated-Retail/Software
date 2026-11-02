@@ -7,7 +7,7 @@ namespace Redbox.Shell.Remoting;
 
 public class KioskEngineService : IKioskEngineService
 {
-	private string _kioskEnginePath;
+	private string _kioskEnginePath = null!; // set by Initialize
 
 	public static KioskEngineService Instance => Singleton<KioskEngineService>.Instance;
 
@@ -33,8 +33,8 @@ public class KioskEngineService : IKioskEngineService
 		{
 			if (KioskEngineProxy.IsEngineRunning())
 			{
-				ClientCommandResult clientCommandResult = KioskEngineProxy.ActiviateControlPanel();
-				if (!clientCommandResult.Success)
+				ClientCommandResult? clientCommandResult = KioskEngineProxy.ActiviateControlPanel();
+				if (!clientCommandResult!.Success)
 				{
 					foreach (Redbox.IPC.Framework.Error error in clientCommandResult.Errors)
 					{

@@ -83,6 +83,8 @@ public class Startup
 		{
 			options.EnableEndpointRouting = false;
 			options.AddLoggingActionFilter();
+			// Nullable reference types must not make non-nullable model properties [Required]: binding stays as before nullable was turned on.
+			options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 		}).AddNewtonsoftJson(delegate(MvcNewtonsoftJsonOptions options)
 		{
 			options.SerializerSettings.Converters.Add(new StringEnumConverter());

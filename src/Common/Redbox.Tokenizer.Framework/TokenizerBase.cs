@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Redbox.Tokenizer.Framework;
 
-public abstract class TokenizerBase<T>
+public abstract class TokenizerBase<T> where T : notnull
 {
 	internal delegate StateResult StateHandler();
 
-	protected readonly ITokenReader m_tokenReader;
+	protected readonly ITokenReader m_tokenReader = null!; // set by the constructors that take the source
 
 	private readonly ErrorList m_errors = new ErrorList();
 
@@ -18,9 +18,9 @@ public abstract class TokenizerBase<T>
 
 	public ErrorList Errors => m_errors;
 
-	protected internal StringBuilder Accumulator { get; private set; }
+	protected internal StringBuilder Accumulator { get; private set; } = null!; // set by ResetAccumulator (Tokenize resets first)
 
-	protected internal T CurrentState { get; set; }
+	protected internal T CurrentState { get; set; } = default!; // the default state until a subclass sets it
 
 	protected TokenizerBase(Stream tokenStream)
 		: this()
@@ -53,7 +53,7 @@ public abstract class TokenizerBase<T>
 		}
 		while (true)
 		{
-			StateHandler handler = (m_handlers.ContainsKey(CurrentState) ? m_handlers[CurrentState] : null);
+			StateHandler? handler = (m_handlers.ContainsKey(CurrentState) ? m_handlers[CurrentState] : null);
 			if (handler == null)
 			{
 				break;
@@ -137,10 +137,10 @@ public abstract class TokenizerBase<T>
 		MethodInfo[] methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
-			StateHandlerAttribute stateHandlerAttribute = (StateHandlerAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(StateHandlerAttribute));
+			StateHandlerAttribute? stateHandlerAttribute = (StateHandlerAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(StateHandlerAttribute));
 			if (stateHandlerAttribute != null)
 			{
-				m_handlers[(T)stateHandlerAttribute.State] = (StateHandler)Delegate.CreateDelegate(typeof(StateHandler), this, methodInfo.Name);
+				m_handlers[(T)stateHandlerAttribute.State!] = (StateHandler)Delegate.CreateDelegate(typeof(StateHandler), this, methodInfo.Name);
 			}
 		}
 	}

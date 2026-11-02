@@ -14,7 +14,7 @@ public class UpdateManagerService : IDisposable
 {
 	private const bool TransientSessionFlag = false;
 
-	private ClientSession m_clientSession;
+	private ClientSession? m_clientSession;
 
 	private static readonly Guid m_applicationGuid = new Guid("{FB5E48FF-4677-4cfa-8ED1-265114D7564C}");
 

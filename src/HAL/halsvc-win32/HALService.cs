@@ -31,9 +31,9 @@ public class HALService : ServiceBase, ILogger
 
 	private const string StartMessage = "Start Hardware Abstraction Layer (HAL) Service";
 
-	private Thread ListenerThread;
+	private Thread? ListenerThread;
 
-	private IPCProxy Proxy;
+	private IPCProxy? Proxy;
 
 	private PowerState State;
 
@@ -43,7 +43,7 @@ public class HALService : ServiceBase, ILogger
 
 	private readonly object PowerStateLock = new object();
 
-	private IContainer components;
+	private IContainer? components;
 
 	public HALService()
 	{

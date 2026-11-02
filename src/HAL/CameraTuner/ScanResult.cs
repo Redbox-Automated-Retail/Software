@@ -23,7 +23,7 @@ internal sealed class ScanResult
 		return new ScanResult();
 	}
 
-	internal static ScanResult Scan(string file)
+	internal static ScanResult Scan(string? file)
 	{
 		if (string.IsNullOrEmpty(file) || !File.Exists(file))
 		{
@@ -39,7 +39,7 @@ internal sealed class ScanResult
 			LogHelper.Instance.Log("[ScanResult] There are {0} matrix entries.", scanResult.DecodeResults.Count);
 			return scanResult2;
 		}
-		IDecodeResult decodeResult = null;
+		IDecodeResult? decodeResult = null;
 		foreach (IDecodeResult decodeResult2 in scanResult.DecodeResults)
 		{
 			if (!decodeResult2.Matrix.Equals(SecretToken, StringComparison.CurrentCultureIgnoreCase))

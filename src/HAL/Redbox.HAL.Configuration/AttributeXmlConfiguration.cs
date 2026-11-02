@@ -61,12 +61,12 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 	{
 		using (ExecutionTimer executionTimer = new ExecutionTimer())
 		{
-			foreach (XmlNode childNode in document.DocumentElement.SelectSingleNode(FileNodeName).ChildNodes)
+			foreach (XmlNode childNode in document.DocumentElement!.SelectSingleNode(FileNodeName)!.ChildNodes)
 			{
 				string name = childNode.Name;
 				try
 				{
-					PropertyInfo property = ThisType.GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+					PropertyInfo? property = ThisType.GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 					if (property == null)
 					{
 						if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
@@ -102,8 +102,8 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 				{
 					try
 					{
-						string value = propertyInfo.GetValue(this, null).ToString();
-						SetSingleNodeValue(document.DocumentElement, $"{FileNodeName}/{propertyInfo.Name}", value);
+						string value = propertyInfo.GetValue(this, null)!.ToString()!;
+						SetSingleNodeValue(document.DocumentElement!, $"{FileNodeName}/{propertyInfo.Name}", value);
 					}
 					catch (Exception e)
 					{
@@ -162,12 +162,12 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 
 	private void SetSingleNodeValue(XmlNode node, string path, object value)
 	{
-		GetTargetNode(node, path).InnerText = value.ToString();
+		GetTargetNode(node, path).InnerText = value.ToString()!;
 	}
 
 	private T GetNodeValue<T>(XmlNode parent, string singleNode, T defaultValue)
 	{
-		XmlNode xmlNode = parent.SelectSingleNode(singleNode);
+		XmlNode? xmlNode = parent.SelectSingleNode(singleNode);
 		try
 		{
 			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
@@ -188,10 +188,10 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 		XmlNode current = node;
 		foreach (string name in names)
 		{
-			XmlNode child = current.SelectSingleNode(name);
+			XmlNode? child = current.SelectSingleNode(name);
 			if (child == null)
 			{
-				child = current.OwnerDocument.CreateElement(name);
+				child = current.OwnerDocument!.CreateElement(name);
 				current.AppendChild(child);
 			}
 			current = child;

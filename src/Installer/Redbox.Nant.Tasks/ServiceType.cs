@@ -6,11 +6,11 @@ public class ServiceType
 
 	public string Assembly;
 
-	public string Version;
+	public string? Version;
 
 	public string Culture = "neutral";
 
-	public string PublicKeyToken;
+	public string? PublicKeyToken;
 
 	public ServiceType(string type)
 	{

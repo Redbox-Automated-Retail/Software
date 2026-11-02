@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>RBA_SDK_STANDARD</AssemblyName>
     <RootNamespace>RBA_SDK</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>

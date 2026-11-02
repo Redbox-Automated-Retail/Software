@@ -6,7 +6,7 @@ namespace Redbox.HAL.DirectShow.Frame.Plugin;
 
 internal sealed class SlimFrameService : AbstractDirectShowControl
 {
-	private DirectShowFrameControl Control;
+	private DirectShowFrameControl? Control;
 
 	protected override bool OnStartup(string moniker)
 	{
@@ -38,7 +38,7 @@ internal sealed class SlimFrameService : AbstractDirectShowControl
 
 	protected override void OnSnap(string fileName)
 	{
-		if (!Control.SimulateTrigger(fileName, SnapTimeout))
+		if (!Control!.SimulateTrigger(fileName, SnapTimeout))
 		{
 			LogHelper.Instance.Log("{0} Image received wait timed out.", LogHeader);
 		}
@@ -46,7 +46,7 @@ internal sealed class SlimFrameService : AbstractDirectShowControl
 
 	protected override bool OnShutdown()
 	{
-		Control.SignalToStop();
+		Control!.SignalToStop();
 		Control.WaitForStop();
 		Control.PlayingFinished -= base.PlayingFinished;
 		Control = null;

@@ -16,12 +16,12 @@ public class SimpleTokenList : List<SimpleToken>, ICloneable<SimpleTokenList>
 	{
 	}
 
-	public SimpleToken GetLabel()
+	public SimpleToken? GetLabel()
 	{
 		return Find((SimpleToken each) => each.Type == SimpleTokenType.Label);
 	}
 
-	public SimpleToken GetMnemonic()
+	public SimpleToken? GetMnemonic()
 	{
 		return Find((SimpleToken each) => each.Type == SimpleTokenType.Mnemonic);
 	}
@@ -79,9 +79,9 @@ public class SimpleTokenList : List<SimpleToken>, ICloneable<SimpleTokenList>
 		return new SimpleTokenList(FindAll((SimpleToken each) => each.IsKeyValuePair));
 	}
 
-	public KeyValuePair GetKeyValuePair(string key)
+	public KeyValuePair? GetKeyValuePair(string key)
 	{
-		SimpleToken simpleToken = Find((SimpleToken each) => each.IsKeyValuePair && string.Compare(((KeyValuePair)each.ConvertValue()).Key, key, ignoreCase: true) == 0);
+		SimpleToken? simpleToken = Find((SimpleToken each) => each.IsKeyValuePair && string.Compare(((KeyValuePair)each.ConvertValue()).Key, key, ignoreCase: true) == 0);
 		if (simpleToken != null)
 		{
 			return (KeyValuePair)simpleToken.ConvertValue();

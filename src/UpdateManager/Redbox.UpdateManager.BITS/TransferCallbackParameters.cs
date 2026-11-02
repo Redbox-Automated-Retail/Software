@@ -5,9 +5,10 @@ namespace Redbox.UpdateManager.BITS;
 
 public class TransferCallbackParameters : ITransferCallbackParameters
 {
-	public string Path { get; set; }
+	// Set by the caller before it is passed to SetCallback.
+	public string Path { get; set; } = null!;
 
-	public string Executable { get; set; }
+	public string Executable { get; set; } = null!;
 
-	public List<string> Arguments { get; set; }
+	public List<string> Arguments { get; set; } = null!;
 }

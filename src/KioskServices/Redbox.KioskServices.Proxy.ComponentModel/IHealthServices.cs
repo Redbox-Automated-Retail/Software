@@ -25,7 +25,7 @@ public interface IHealthServices
 
 	void Ping(string storeNumber);
 
-	void SendAlert(string storeNumber, string alertType, string subType, string message, DateTime dateTime, RemoteServiceCallback callback, Action action = null, bool skipQueue = false);
+	void SendAlert(string storeNumber, string alertType, string subType, string message, DateTime dateTime, RemoteServiceCallback callback, Action? action = null, bool skipQueue = false);
 
 	void SendAuditEvent(string storeNumber, string eventType, DateTime logDate, string userName, string message, string source, RemoteServiceCallback callback);
 

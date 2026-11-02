@@ -24,7 +24,7 @@ namespace Redbox.Data.SqliteParity;
 // Prints one line per result. Lines starting with "#" are build-specific (not compared).
 internal static class Program
 {
-	private static string s_dataPath;
+	private static string? s_dataPath;
 
 	private static int Main(string[] args)
 	{
@@ -116,7 +116,7 @@ internal static class Program
 				Out($"{name}.{table}", $"count={store.Count(name, table)} all={all.Count} keys={store.GetKeys(name, table).Count} sha1={Sha1(Dump(all))}");
 				ReadOnlyCollection<string> keys = store.GetKeys(name, table);
 				Out($"{name}.{table} first keys in order", string.Join(", ", keys.Take(3)));
-				string first = keys.OrderBy(k => k, StringComparer.Ordinal).FirstOrDefault();
+				string? first = keys.OrderBy(k => k, StringComparer.Ordinal).FirstOrDefault();
 				if (first != null)
 				{
 					Out($"{name}.{table} get(first key, upper-cased)", Short(store.Get(name, table, first.ToUpperInvariant())));
@@ -178,7 +178,7 @@ internal static class Program
 #endif
 	}
 
-	private static string Messages(IQueueServiceData queue, string type)
+	private static string Messages(IQueueServiceData queue, string? type)
 	{
 		List<string> list = new List<string>();
 		if (type == null)
@@ -217,7 +217,7 @@ internal static class Program
 		DateTime t1 = new DateTime(2026, 10, 31, 9, 15, 30);
 		DateTime t2 = new DateTime(2026, 10, 31, 18, 5, 0);
 
-		IDataTable<IPersistentCounter> counters = service.GetTable<IPersistentCounter>();
+		IDataTable<IPersistentCounter> counters = service.GetTable<IPersistentCounter>()!;
 		Out("counters exists", counters.Exists);
 		Out("counters create", counters.Create());
 		Out("counters exists after create", counters.Exists);
@@ -231,7 +231,7 @@ internal static class Program
 		Out("counters update table", UpdateTable(counters));
 		Out("counters update table again", UpdateTable(counters));
 
-		IDataTable<ILocation> inventory = service.GetTable<ILocation>();
+		IDataTable<ILocation> inventory = service.GetTable<ILocation>()!;
 		Out("inventory create", inventory.Create());
 		Out("inventory update table", UpdateTable(inventory));
 		List<ILocation> slots = new List<ILocation>
@@ -246,20 +246,20 @@ internal static class Program
 		Out("inventory delete", inventory.Delete(factory.NewLocation(2, 1)));
 		Out("inventory", string.Join("; ", inventory.LoadEntries().OrderBy(l => l.Deck).ThenBy(l => l.Slot).Select(DescribeLocation)));
 
-		IDataTable<IDumpBinInventoryItem> bin = service.GetTable<IDumpBinInventoryItem>();
+		IDataTable<IDumpBinInventoryItem> bin = service.GetTable<IDumpBinInventoryItem>()!;
 		Out("dumpbin create", bin.Create());
 		Out("dumpbin insert", bin.Insert(new List<IDumpBinInventoryItem> { factory.NewBinItem("B1", t1), factory.NewBinItem("B2", t2) }));
 		Out("dumpbin delete by barcode+time", bin.Delete(factory.NewBinItem("B1", t1)));
 		Out("dumpbin", string.Join("; ", bin.LoadEntries().Select(i => $"{i.ID}@{Stamp(i.PutTime)}")));
 
-		IDataTable<IHardwareCorrectionStatistic> stats = service.GetTable<IHardwareCorrectionStatistic>();
+		IDataTable<IHardwareCorrectionStatistic> stats = service.GetTable<IHardwareCorrectionStatistic>()!;
 		Out("stats create", stats.Create());
 		Out("stats insert", stats.Insert(factory.NewStatistic(HardwareCorrectionStatistic.Arcus, "init", false, t1)));
 		Out("stats update", stats.Update(factory.NewStatistic(HardwareCorrectionStatistic.Arcus, "init", true, t1)));
 		Out("stats", string.Join("; ", stats.LoadEntries().Select(s => $"{s.Statistic}:{s.ProgramName}:{s.CorrectionOk}:{Stamp(s.CorrectionTime)}")));
 		Out("stats delete", stats.Delete(factory.NewStatistic(HardwareCorrectionStatistic.Arcus, "init", true, t1)));
 
-		IDataTable<IKioskFunctionCheckData> checks = service.GetTable<IKioskFunctionCheckData>();
+		IDataTable<IKioskFunctionCheckData> checks = service.GetTable<IKioskFunctionCheckData>()!;
 		Out("kfc create", checks.Create());
 		DateTime old = DateTime.Now.AddDays(-20).Date.AddHours(10);
 		DateTime recent = DateTime.Now.AddDays(-1).Date.AddHours(10);
@@ -272,7 +272,7 @@ internal static class Program
 		Out("kfc clean (older than 14 days)", checks.Clean());
 		Out("kfc", string.Join("; ", checks.LoadEntries().Select(c => $"{c.UserIdentifier}:{c.VerticalSlotTestResult}:{c.CameraDriverTestResult}:{(c.Timestamp == recent ? "recent" : Stamp(c.Timestamp))}")));
 
-		IDataTable<IPersistentOption> options = service.GetTable<IPersistentOption>();
+		IDataTable<IPersistentOption> options = service.GetTable<IPersistentOption>()!;
 		Out("options create", options.Create());
 		Out("options insert", options.Insert(factory.NewPersistentOption("RebootTime", "03:00")));
 		Out("options update", options.Update(factory.NewPersistentOption("RebootTime", "04:00")));
@@ -287,13 +287,13 @@ internal static class Program
 		Redbox.HAL.Component.Model.ServiceLocator.Instance.RemoveService<IRuntimeService>();
 		Redbox.HAL.Component.Model.ServiceLocator.Instance.AddService<IRuntimeService>(Stub.Create<IRuntimeService>((m, a) => m.Name == "get_DataPath" ? dataPath : null));
 		DataTableService service = new DataTableService(exclusive: false);
-		Out("counters", Summary(service.GetTable<IPersistentCounter>().LoadEntries().OrderBy(c => c.Name, StringComparer.Ordinal).Select(c => $"{c.Name}={c.Value}")));
-		Out("options", Summary(service.GetTable<IPersistentOption>().LoadEntries().OrderBy(o => o.Key, StringComparer.Ordinal).Select(o => $"{o.Key}={o.Value}")));
-		Out("inventory", Summary(service.GetTable<ILocation>().LoadEntries().OrderBy(l => l.Deck).ThenBy(l => l.Slot).Select(DescribeLocation)));
-		Out("dumpbin", Summary(service.GetTable<IDumpBinInventoryItem>().LoadEntries().Select(i => $"{i.ID}@{Stamp(i.PutTime)}").OrderBy(s => s, StringComparer.Ordinal)));
-		Out("stats rows", service.GetTable<IHardwareCorrectionStatistic>().GetRowCount());
-		Out("kfc rows", service.GetTable<IKioskFunctionCheckData>().GetRowCount());
-		IDataTable<ILocation> inventory = service.GetTable<ILocation>();
+		Out("counters", Summary(service.GetTable<IPersistentCounter>()!.LoadEntries().OrderBy(c => c.Name, StringComparer.Ordinal).Select(c => $"{c.Name}={c.Value}")));
+		Out("options", Summary(service.GetTable<IPersistentOption>()!.LoadEntries().OrderBy(o => o.Key, StringComparer.Ordinal).Select(o => $"{o.Key}={o.Value}")));
+		Out("inventory", Summary(service.GetTable<ILocation>()!.LoadEntries().OrderBy(l => l.Deck).ThenBy(l => l.Slot).Select(DescribeLocation)));
+		Out("dumpbin", Summary(service.GetTable<IDumpBinInventoryItem>()!.LoadEntries().Select(i => $"{i.ID}@{Stamp(i.PutTime)}").OrderBy(s => s, StringComparer.Ordinal)));
+		Out("stats rows", service.GetTable<IHardwareCorrectionStatistic>()!.GetRowCount());
+		Out("kfc rows", service.GetTable<IKioskFunctionCheckData>()!.GetRowCount());
+		IDataTable<ILocation> inventory = service.GetTable<ILocation>()!;
 		Out("inventory update table", UpdateTable(inventory));
 		ILocation first = inventory.LoadEntries().OrderBy(l => l.Deck).ThenBy(l => l.Slot).First();
 		first.ID = "AFTER-CONVERSION";
@@ -380,7 +380,7 @@ internal static class Program
 		Console.WriteLine($"{name}: {Format(value)}");
 	}
 
-	private static string Format(object value)
+	private static string? Format(object? value)
 	{
 		switch (value)
 		{
@@ -409,7 +409,7 @@ internal static class Program
 
 	private static string Short(object value)
 	{
-		string text = Format(value);
+		string text = Format(value)!; // Format returns null only if a ToString() does
 		return text.Length > 60 ? text.Substring(0, 60) + "..." : text;
 	}
 
@@ -438,19 +438,19 @@ internal static class Program
 // Minimal service stubs for the engine/HAL interfaces the data code looks up.
 public class Stub : DispatchProxy
 {
-	private Func<MethodInfo, object[], object> m_handler;
+	private Func<MethodInfo, object?[], object?> m_handler = null!; // set by Create
 
-	public static T Create<T>(Func<MethodInfo, object[], object> handler)
+	public static T Create<T>(Func<MethodInfo, object?[], object?> handler)
 	{
 		T proxy = DispatchProxy.Create<T, Stub>();
-		((Stub)(object)proxy).m_handler = handler;
+		((Stub)(object)proxy!).m_handler = handler;
 		return proxy;
 	}
 
-	protected override object Invoke(MethodInfo targetMethod, object[] args)
+	protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
 	{
-		object result = m_handler(targetMethod, args);
-		if (result == null && targetMethod.ReturnType.IsValueType && targetMethod.ReturnType != typeof(void))
+		object? result = m_handler(targetMethod!, args!); // both always passed by DispatchProxy
+		if (result == null && targetMethod!.ReturnType.IsValueType && targetMethod.ReturnType != typeof(void))
 		{
 			return Activator.CreateInstance(targetMethod.ReturnType);
 		}

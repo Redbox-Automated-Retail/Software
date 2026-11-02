@@ -8,7 +8,7 @@ public sealed class TunerLog : ILogger
 {
 	private bool Disposed;
 
-	private TextWriter m_logFile;
+	private TextWriter? m_logFile;
 
 	private const string LogFileName = "CameraTuner.log";
 
@@ -72,7 +72,7 @@ public sealed class TunerLog : ILogger
 		GC.SuppressFinalize(this);
 	}
 
-	private void WriteToLogFile(string msg)
+	private void WriteToLogFile(string? msg)
 	{
 		try
 		{

@@ -15,9 +15,9 @@ public class OptionValue
 
 	private readonly OptionAttribute m_definition;
 
-	private readonly DescriptionAttribute m_description;
+	private readonly DescriptionAttribute? m_description;
 
-	private readonly DefaultValueAttribute m_defaultValue;
+	private readonly DefaultValueAttribute? m_defaultValue;
 
 	public bool Required => m_definition.Required;
 
@@ -27,29 +27,30 @@ public class OptionValue
 		MemberInfo[] members = container.GetType().GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.GetProperty | BindingFlags.SetProperty);
 		foreach (MemberInfo memberInfo in members)
 		{
-			OptionAttribute optionAttribute = (OptionAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(OptionAttribute));
+			OptionAttribute? optionAttribute = (OptionAttribute?)Attribute.GetCustomAttribute(memberInfo, typeof(OptionAttribute));
 			if (optionAttribute != null)
 			{
-				DescriptionAttribute description = (DescriptionAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(DescriptionAttribute));
-				DefaultValueAttribute defaultValue = (DefaultValueAttribute)Attribute.GetCustomAttribute(memberInfo, typeof(DefaultValueAttribute));
+				DescriptionAttribute? description = (DescriptionAttribute?)Attribute.GetCustomAttribute(memberInfo, typeof(DescriptionAttribute));
+				DefaultValueAttribute? defaultValue = (DefaultValueAttribute?)Attribute.GetCustomAttribute(memberInfo, typeof(DefaultValueAttribute));
 				optionValueList.AddLast(new OptionValue(container, new MemberAccessor(memberInfo), optionAttribute, description, defaultValue));
 			}
 		}
 		return optionValueList;
 	}
 
-	public void SetValue(object key, object value)
+	public void SetValue(object? key, object? value)
 	{
 		if (IsDictionary())
 		{
-			PropertyInfo property = m_member.Type.GetProperty("Item");
+			PropertyInfo property = m_member.Type.GetProperty("Item")!; // IDictionary<,> has an indexer
 			Type convertToType = m_member.Type.GetGenericArguments()[0];
 			property.SetValue(value: ConversionHelper.ChangeType(value, m_member.Type.GetGenericArguments()[1]), obj: m_member.GetValue(m_container), index: new object[1] { ConversionHelper.ChangeType(key, convertToType) });
 		}
 		else if (IsList())
 		{
 			Type convertToType2 = m_member.Type.GetGenericArguments()[0];
-			m_member.Type.GetMethod("Insert").Invoke(m_member.GetValue(m_container), new object[2]
+			// IList<> has Insert.
+			m_member.Type.GetMethod("Insert")!.Invoke(m_member.GetValue(m_container), new object[2]
 			{
 				0,
 				ConversionHelper.ChangeType(value, convertToType2)
@@ -151,7 +152,7 @@ public class OptionValue
 		return true;
 	}
 
-	internal OptionValue(object container, MemberAccessor member, OptionAttribute definition, DescriptionAttribute description, DefaultValueAttribute defaultValue)
+	internal OptionValue(object container, MemberAccessor member, OptionAttribute definition, DescriptionAttribute? description, DefaultValueAttribute? defaultValue)
 	{
 		m_member = member;
 		m_container = container;

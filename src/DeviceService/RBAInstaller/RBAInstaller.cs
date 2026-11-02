@@ -65,7 +65,7 @@ public class RBAInstaller : IHostedService
 		return Path.Combine(Path.Combine(Environment.CurrentDirectory, "RBA Files"), fileName);
 	}
 
-	private UpdateJson LoadUpdateFile()
+	private UpdateJson? LoadUpdateFile()
 	{
 		string filePath = GetFilePath("update.json");
 		if (!File.Exists(filePath))
@@ -73,7 +73,7 @@ public class RBAInstaller : IHostedService
 			Log("Unable to locate: " + filePath);
 			return null;
 		}
-		UpdateJson result = null;
+		UpdateJson? result = null;
 		try
 		{
 			string contents = File.ReadAllText(filePath);
@@ -85,7 +85,7 @@ public class RBAInstaller : IHostedService
 		}
 		catch (Exception exception)
 		{
-			_logger.LogError(exception, "Unhandled exception in LoadUpdateFile", null);
+			_logger.LogError(exception, "Unhandled exception in LoadUpdateFile", null!); // a null args array, as before
 		}
 		return result;
 	}
@@ -97,7 +97,7 @@ public class RBAInstaller : IHostedService
 			Log("Update RBA Missing Unit Data");
 			return false;
 		}
-		string text = null;
+		string? text = null;
 		if (!string.IsNullOrWhiteSpace(file.MinorVersion))
 		{
 			text = _proxy.GetVariable_29("254");
@@ -163,7 +163,7 @@ public class RBAInstaller : IHostedService
 		try
 		{
 			Log("Begin Updates");
-			UpdateJson updateJson = LoadUpdateFile();
+			UpdateJson? updateJson = LoadUpdateFile();
 			if (updateJson?.Files == null || !updateJson.Files.Any())
 			{
 				Log("Unable to load update files");
@@ -172,7 +172,7 @@ public class RBAInstaller : IHostedService
 			bool success = true;
 			foreach (UpdateFile file in updateJson.Files)
 			{
-				string extension = Path.GetExtension(file.Path).ToUpper();
+				string extension = Path.GetExtension(file.Path)!.ToUpper(); // a file without a Path throws here, caught below
 				Log("File Path: " + file.Path + " - Compare Version: " + file.CompareVersion);
 				Log($"Connected: {WaitForConnection()}");
 				switch (extension)

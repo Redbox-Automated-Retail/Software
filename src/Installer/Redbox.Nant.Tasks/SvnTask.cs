@@ -4,7 +4,7 @@ namespace Redbox.Nant.Tasks;
 
 public abstract class SvnTask : Task
 {
-	protected SvnExecTask _task;
+	protected SvnExecTask _task = null!; // set by the derived task's constructor
 
 	public SvnTask()
 	{

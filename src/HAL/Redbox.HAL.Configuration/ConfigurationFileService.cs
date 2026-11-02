@@ -12,7 +12,7 @@ public sealed class ConfigurationFileService : IConfigurationFileService
 
 	private readonly List<IConfigurationFile> Configs = new List<IConfigurationFile>();
 
-	public IConfigurationFile Get(SystemConfigurations config)
+	public IConfigurationFile? Get(SystemConfigurations config)
 	{
 		if (config == SystemConfigurations.None)
 		{

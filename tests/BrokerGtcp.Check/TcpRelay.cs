@@ -17,7 +17,7 @@ internal sealed class TcpRelay : IDisposable
 	private readonly string _targetHost;
 	private readonly int _targetPort;
 	private readonly List<Socket> _connections = new List<Socket>();
-	private TcpListener _listener;
+	private TcpListener? _listener;
 
 	public TcpRelay(string targetHost, int targetPort)
 	{

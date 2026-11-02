@@ -28,7 +28,7 @@ internal static class Program
 		return _failures;
 	}
 
-	private static void Check(string name, bool ok, string detail)
+	private static void Check(string name, bool ok, string? detail)
 	{
 		if (!ok)
 		{

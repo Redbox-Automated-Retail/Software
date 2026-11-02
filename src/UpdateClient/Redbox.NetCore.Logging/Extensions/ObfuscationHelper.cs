@@ -9,7 +9,7 @@ public static class ObfuscationHelper
 		public const char ReplacementNumber = '#';
 	}
 
-	public static string ObfuscateMessageData(string msgText, char newChar, int leading, int trailing)
+	public static string? ObfuscateMessageData(string? msgText, char newChar, int leading, int trailing)
 	{
 		if (msgText == null)
 		{
@@ -26,12 +26,12 @@ public static class ObfuscationHelper
 		return head + mask + tail;
 	}
 
-	public static string ObfuscateStringData(string value, int leading, int trailing)
+	public static string? ObfuscateStringData(string? value, int leading, int trailing)
 	{
 		return ObfuscateMessageData(value, 'x', leading, trailing);
 	}
 
-	public static string ObfuscateNumericData(string value, int leading, int trailing)
+	public static string? ObfuscateNumericData(string? value, int leading, int trailing)
 	{
 		return ObfuscateMessageData(value, '#', leading, trailing);
 	}

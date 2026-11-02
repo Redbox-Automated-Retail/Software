@@ -14,9 +14,9 @@ namespace Redbox.BrokerServices.Proxy;
 // .NET Framework transport: .NET Remoting over GenuineChannels (gtcp://), as the kiosk shipped it.
 public partial class BrokerServicesProxy
 {
-	private GenuineTcpChannel m_channel;
+	private GenuineTcpChannel? m_channel;
 
-	public override object InitializeLifetimeService()
+	public override object? InitializeLifetimeService()
 	{
 		return null;
 	}

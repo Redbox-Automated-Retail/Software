@@ -6,7 +6,7 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public struct ButtonAspects : IDisposable
 {
-	public readonly Button Button;
+	public readonly Button? Button;
 
 	private readonly Color RunningColor;
 
@@ -21,7 +21,7 @@ public struct ButtonAspects : IDisposable
 		}
 	}
 
-	public string GetTagInstruction()
+	public string? GetTagInstruction()
 	{
 		if (Button != null)
 		{
@@ -30,7 +30,7 @@ public struct ButtonAspects : IDisposable
 		return string.Empty;
 	}
 
-	internal ButtonAspects(Button b, Color running)
+	internal ButtonAspects(Button? b, Color running)
 	{
 		Button = b;
 		RunningColor = running;

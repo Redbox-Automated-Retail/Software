@@ -85,8 +85,8 @@ internal static class CaptureChecks
 		Check.Equal(123456789L, cart.ReferenceNumber, "cart.ReferenceNumber");
 		Check.Equal("card-1", cart.CardID, "cart.CardID");
 		Check.Equal(false, cart.IsGc, "cart.IsGc");
-		Check.Equal(0, cart.GcIds.Count, "cart.GcIds is empty (capacity-0 list)");
-		Check.Equal("cc1", string.Join(",", cart.CcIds), "cart.CcIds (_size 1 of capacity 4)");
+		Check.Equal(0, cart.GcIds!.Count, "cart.GcIds is empty (capacity-0 list)");
+		Check.Equal("cc1", string.Join(",", cart.CcIds!), "cart.CcIds (_size 1 of capacity 4)");
 		Check.Equal("a@b.test", cart.Email, "cart.Email");
 		Check.Equal(new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc), cart.ReserveDate, "cart.ReserveDate");
 		Check.Equal(DateTimeKind.Utc, cart.ReserveDate.Kind, "cart.ReserveDate kind bits");
@@ -99,7 +99,7 @@ internal static class CaptureChecks
 		Check.Equal(null, cart.PromoCode, "cart.PromoCode");
 		Check.Equal("C1", cart.CustomerNumber, "cart.CustomerNumber");
 		Check.Equal(false, cart.AppliedCredit || cart.AppliedHiveOnlinePromotion || cart.AppliedTitleMarketing, "cart.Applied* all false");
-		Check.Equal("7,8", string.Join(",", cart.HistoryTitleIDs), "cart.HistoryTitleIDs (Int32 list)");
+		Check.Equal("7,8", string.Join(",", cart.HistoryTitleIDs!), "cart.HistoryTitleIDs (Int32 list)");
 		Check.Equal("0.075", cart.TaxRate.ToString(System.Globalization.CultureInfo.InvariantCulture), "cart.TaxRate keeps its scale");
 		Check.Equal("60601", cart.Zip, "cart.Zip");
 		Check.Equal(false, cart.IsMnp || cart.IsMdv || cart.LoyaltyRedemption, "cart.IsMnp/IsMdv/LoyaltyRedemption false");
@@ -108,8 +108,8 @@ internal static class CaptureChecks
 		Check.Equal(true, cart.AuthorizeAtPickup, "cart.AuthorizeAtPickup");
 		Check.Equal("abc", cart.ReservationCardHash?.CardBinHash, "cart.ReservationCardHash.CardBinHash");
 		Check.Equal("1234", cart.ReservationCardHash?.Last4, "cart.ReservationCardHash.Last4");
-		Check.Equal(0, cart.AlternateCardHashes.Count, "cart.AlternateCardHashes is empty");
-		Check.Equal(1, cart.Titles.Count, "cart.Titles count");
+		Check.Equal(0, cart.AlternateCardHashes!.Count, "cart.AlternateCardHashes is empty");
+		Check.Equal(1, cart.Titles!.Count, "cart.Titles count");
 		ReservationTitle3 title = cart.Titles[0];
 		Check.Equal(1, title.ItemID, "title.ItemID");
 		Check.Equal(4711, title.TitleID, "title.TitleID");
@@ -138,9 +138,9 @@ internal static class CaptureChecks
 		Check.Equal("Register", call.MethodName, "Register (real client): method name");
 		Check.Equal(NrbfMessageFlags.ArgsInArray | NrbfMessageFlags.ContextInArray, call.Flags, "Register (real client): flags");
 		Check.Equal((object)990010, call.Args[0], "Register (real client): kioskID");
-		NrbfObject objRef = call.Args[1] as NrbfObject;
+		NrbfObject? objRef = call.Args[1] as NrbfObject;
 		Check.Equal("System.Runtime.Remoting.ObjRef", objRef?.TypeName, "Register (real client): ObjRef");
-		string channelUri = ((objRef?["channelInfo"] as NrbfObject)?["channelData"] as NrbfArray)?.Items
+		string? channelUri = ((objRef?["channelInfo"] as NrbfObject)?["channelData"] as NrbfArray)?.Items
 			.OfType<NrbfObject>().Select(o => (o["_channelURIs"] as NrbfArray)?.Items[0] as string).FirstOrDefault(u => u != null);
 		Check.Equal("_gtcp://0f04560181d64d64ad3918bcf8016271/", channelUri, "Register (real client): channel URI in the ObjRef");
 		Check.That((call.Args[2] as string)?.StartsWith("{\"Runtime\":\"Kiosk Engine\"") == true, "Register (real client): version JSON");
@@ -185,13 +185,13 @@ internal static class CaptureChecks
 
 	private sealed class RecordingKiosk : IKioskOperations
 	{
-		public ReservationCart3 Cart;
+		public ReservationCart3? Cart;
 		public long CancelledReference;
 		public int Pings;
 
-		public ReservationResult Reserve(ReservationCart cart) => null;
+		public ReservationResult? Reserve(ReservationCart cart) => null;
 
-		public ReservationResult Reserve2(ReservationCart2 cart) => null;
+		public ReservationResult? Reserve2(ReservationCart2 cart) => null;
 
 		public ReservationResult Reserve3(ReservationCart3 cart)
 		{
@@ -231,7 +231,7 @@ internal static class CaptureChecks
 		Check.Equal((object)990012, call.Args[0], "written Register: kioskID");
 		NrbfObject written = (NrbfObject)call.Args[1];
 		Check.Equal("/x/kiosk_operations.rem", written["uri"] as string, "written Register: ObjRef uri");
-		string iface = ((written["typeInfo"] as NrbfObject)?["interfacesImplemented"] as NrbfArray)?.Items[0] as string;
+		string? iface = ((written["typeInfo"] as NrbfObject)?["interfacesImplemented"] as NrbfArray)?.Items[0] as string;
 		Check.Equal("Redbox.Services.KioskBrokerServices.KioskShared.ServiceInterfaces.IKioskOperations, Redbox.Services.KioskBrokerServices.KioskShared, Version=0.0.0.56, Culture=neutral, PublicKeyToken=null",
 			iface, "written Register: interface name equals the captured 0.0.0.56 name");
 		Check.Equal("{}", call.Args[2], "written Register: version");
@@ -242,7 +242,7 @@ internal static class CaptureChecks
 	{
 		ReservationCart3 original = NrbfObjectMapper.Map<ReservationCart3>(NrbfReader.ReadMethodCall(Content("reserve3-call.s2c.bin")).Args.Single());
 		original.ReserveDate = new DateTime(2026, 11, 1, 9, 30, 0, DateTimeKind.Local);
-		original.Titles.Add(new ReservationTitle3 { ItemID = 2, TitleID = 99, ReservationType = ReservationType.Purchase, DiscountType = DiscountType.Loyalty, Price = 12.50m });
+		original.Titles!.Add(new ReservationTitle3 { ItemID = 2, TitleID = 99, ReservationType = ReservationType.Purchase, DiscountType = DiscountType.Loyalty, Price = 12.50m });
 		byte[] written = NrbfWriter.MethodReturn(original, isVoid: false);
 		ReservationCart3 copy = NrbfObjectMapper.Map<ReservationCart3>(NrbfReader.ReadMethodReturn(written).ReturnValue);
 		Check.Equal(original.ToJsonForCompare(), copy.ToJsonForCompare(), "cart written and read back is equal (enums, lists, decimals)");
@@ -264,12 +264,12 @@ internal static class CartCompare
 	/// <summary>A flat text form of a cart for equality checks.</summary>
 	public static string ToJsonForCompare(this ReservationCart3 cart)
 	{
-		string titles = string.Join(";", cart.Titles.Select(t => $"{t.ItemID}/{t.TitleID}/{t.ReservationType}/{t.Price}/{t.Discount}/{t.DiscountType}/{t.DiscountedPrice}/{t.NumberOfCredits}/{t.LoyaltyPoints}"));
-		return string.Join("|", cart.KioskID, cart.ReferenceNumber, cart.CardID, cart.IsGc, string.Join(",", cart.GcIds), string.Join(",", cart.CcIds),
+		string titles = string.Join(";", cart.Titles!.Select(t => $"{t.ItemID}/{t.TitleID}/{t.ReservationType}/{t.Price}/{t.Discount}/{t.DiscountType}/{t.DiscountedPrice}/{t.NumberOfCredits}/{t.LoyaltyPoints}"));
+		return string.Join("|", cart.KioskID, cart.ReferenceNumber, cart.CardID, cart.IsGc, string.Join(",", cart.GcIds!), string.Join(",", cart.CcIds!),
 			cart.Email, cart.ReserveDate.ToString("o"), titles, cart.DiscountedSubTotal, cart.SubTotal, cart.Tax, cart.GrandTotal,
 			cart.HiveOnlinePromotionDiscount, cart.NumberOfCreditsRemaining, cart.PromoCode, cart.CustomerNumber, cart.AppliedCredit,
-			cart.AppliedHiveOnlinePromotion, cart.AppliedTitleMarketing, string.Join(",", cart.HistoryTitleIDs), cart.TaxRate, cart.Zip,
+			cart.AppliedHiveOnlinePromotion, cart.AppliedTitleMarketing, string.Join(",", cart.HistoryTitleIDs!), cart.TaxRate, cart.Zip,
 			cart.IsMnp, cart.IsMdv, cart.LoyaltyRedemption, cart.DefaultServiceFeeAmount, cart.ActualServiceFeeAmount, cart.AuthorizeAtPickup,
-			cart.ReservationCardHash?.CardBinHash, cart.ReservationCardHash?.Last4, cart.AlternateCardHashes.Count);
+			cart.ReservationCardHash?.CardBinHash, cart.ReservationCardHash?.Last4, cart.AlternateCardHashes!.Count);
 	}
 }

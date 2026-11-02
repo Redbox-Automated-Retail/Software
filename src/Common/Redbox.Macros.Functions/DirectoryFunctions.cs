@@ -51,7 +51,7 @@ public class DirectoryFunctions : FunctionSetBase
 	[Function("get-parent-directory")]
 	public string GetParentDirectory(string path)
 	{
-		DirectoryInfo parent = new DirectoryInfo(path).Parent;
+		DirectoryInfo? parent = new DirectoryInfo(path).Parent;
 		if (parent == null)
 		{
 			return string.Empty;

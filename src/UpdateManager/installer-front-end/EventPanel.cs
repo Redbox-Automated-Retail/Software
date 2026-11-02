@@ -12,14 +12,15 @@ public class EventPanel : UserControl
 {
 	private readonly ErrorList m_errors = new ErrorList();
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label m_name;
+	private Label m_name = null!;
 
-	private TextBox m_description;
+	private TextBox m_description = null!;
 
-	private PictureBox m_status;
+	private PictureBox m_status = null!;
 
+	// The controls above are created by InitializeComponent.
 	public EventPanel()
 	{
 		InitializeComponent();
@@ -53,7 +54,7 @@ public class EventPanel : UserControl
 		m_status.Image = Resources.pending;
 	}
 
-	private void m_status_Click(object sender, EventArgs e)
+	private void m_status_Click(object? sender, EventArgs e)
 	{
 		if (m_errors.ContainsError())
 		{

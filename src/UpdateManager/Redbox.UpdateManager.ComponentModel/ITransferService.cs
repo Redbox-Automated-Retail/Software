@@ -23,11 +23,11 @@ public interface ITransferService
 
 	ErrorList GetJobs(out List<ITransferJob> jobs, bool allUsers);
 
-	ErrorList CreateDownloadJob(string name, out ITransferJob job);
+	ErrorList CreateDownloadJob(string name, out ITransferJob? job);
 
-	ErrorList CreateUploadJob(string name, out ITransferJob job);
+	ErrorList CreateUploadJob(string name, out ITransferJob? job);
 
-	ErrorList GetJob(Guid id, out ITransferJob job);
+	ErrorList GetJob(Guid id, out ITransferJob? job);
 
 	ErrorList AreJobsRunning(out bool isRunning);
 

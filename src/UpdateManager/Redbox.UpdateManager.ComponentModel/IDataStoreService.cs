@@ -12,13 +12,13 @@ public interface IDataStoreService
 
 	void SetRaw(string id, string o);
 
-	T Get<T>(Guid id);
+	T? Get<T>(Guid id);
 
-	T Get<T>(string id);
+	T? Get<T>(string id);
 
-	string GetRaw(Guid id);
+	string? GetRaw(Guid id);
 
-	string GetRaw(string id);
+	string? GetRaw(string id);
 
 	void Delete(Guid id);
 

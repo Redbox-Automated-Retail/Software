@@ -128,7 +128,7 @@ public sealed class ServiceCommand
 	[Description("")]
 	public void GetServiceVersion(CommandContext context)
 	{
-		context.Messages.Add(typeof(ServiceCommand).Assembly.GetName().Version.ToString());
+		context.Messages.Add(typeof(ServiceCommand).Assembly.GetName().Version!.ToString());
 	}
 
 	[CommandForm(Name = "get-kiosk-id")]

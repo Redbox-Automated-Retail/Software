@@ -13,9 +13,9 @@ public class ShellHelper
 	{
 		try
 		{
-			string directoryName = Path.GetDirectoryName(processName);
+			string? directoryName = Path.GetDirectoryName(processName);
 			string fileName = Path.GetFileName(processName);
-			string text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
+			string? text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
 			LogHelper.Instance.Log("starting from path: '{0}' with file: '{1}' in directory: '{2}' with command line: '{3}'", processName, fileName, directoryName, text);
 			Process process = new Process
 			{

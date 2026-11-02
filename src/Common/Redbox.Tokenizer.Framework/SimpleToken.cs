@@ -24,7 +24,7 @@ public class SimpleToken : TokenBase<SimpleTokenType>, ICloneable<SimpleToken>
 		PairSeparator = "=";
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (this == obj)
 		{

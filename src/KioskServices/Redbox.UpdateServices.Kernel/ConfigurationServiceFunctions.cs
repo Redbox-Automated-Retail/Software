@@ -8,7 +8,7 @@ namespace Redbox.UpdateServices.Kernel;
 public static class ConfigurationServiceFunctions
 {
 	[KernelFunction(Name = "kernel.config_getsettingdata")]
-	internal static LuaTable ConfigGetResultTable(string configFile, string categoryName, string settingName)
+	internal static LuaTable? ConfigGetResultTable(string configFile, string categoryName, string settingName)
 	{
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService == null)
@@ -31,7 +31,7 @@ public static class ConfigurationServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.config_getvalue")]
-	internal static object ConfigGetValue(string configFile, string categoryName, string settingName)
+	internal static object? ConfigGetValue(string configFile, string categoryName, string settingName)
 	{
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService == null)
@@ -46,7 +46,7 @@ public static class ConfigurationServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.config_getvalidconfigdata")]
-	internal static LuaTable ConfigGetTable(string configFile, string categoryName)
+	internal static LuaTable? ConfigGetTable(string configFile, string categoryName)
 	{
 		IConfigurationService configurationService = ServiceLocator.Instance.GetService<IConfigurationService>();
 		if (configurationService == null)
@@ -68,7 +68,7 @@ public static class ConfigurationServiceFunctions
 				if (!(configurationData.EffectiveTime > DateTime.Now) && (configurationData == null || !(configurationData.ExpireTime < DateTime.Now)))
 				{
 					LuaTable settingTable = (LuaTable)kernelService.NewTable();
-					settingTable["category_name"] = configurationData.CategoryName;
+					settingTable["category_name"] = configurationData!.CategoryName;
 					settingTable["setting_name"] = configurationData.SettingName;
 					settingTable["value"] = configurationData.Value;
 					resultTable[i + 1] = settingTable;

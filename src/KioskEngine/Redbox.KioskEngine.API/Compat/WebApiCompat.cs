@@ -76,13 +76,13 @@ namespace Swashbuckle.Swagger.Annotations
 		{
 		}
 
-		public SwaggerResponseAttribute(HttpStatusCode statusCode, string description = null, Type type = null)
+		public SwaggerResponseAttribute(HttpStatusCode statusCode, string? description = null, Type? type = null)
 		{
 		}
 
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
-		public Type Type { get; set; }
+		public Type? Type { get; set; }
 	}
 }
 
@@ -98,7 +98,7 @@ namespace Redbox.KioskEngine.API
 
 		public async Task WriteAsync(OutputFormatterWriteContext context)
 		{
-			HttpResponseMessage message = (HttpResponseMessage)context.Object;
+			HttpResponseMessage message = (HttpResponseMessage)context.Object!; // CanWriteResult accepted it
 			Microsoft.AspNetCore.Http.HttpResponse response = context.HttpContext.Response;
 			response.StatusCode = (int)message.StatusCode;
 			foreach (var header in message.Headers)

@@ -13,9 +13,9 @@ public class TaskList : IEnumerable, IDisposable
 
 		private int curIndex;
 
-		private Task curTask;
+		private Task? curTask;
 
-		public object Current => curTask;
+		public object? Current => curTask;
 
 		internal Enumerator(ScheduledTasks st)
 		{
@@ -43,9 +43,9 @@ public class TaskList : IEnumerable, IDisposable
 
 	private ScheduledTasks st;
 
-	private string nameComputer;
+	private string? nameComputer;
 
-	internal string TargetComputer
+	internal string? TargetComputer
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public class TaskList : IEnumerable, IDisposable
 		}
 	}
 
-	public Task this[string name] => st.OpenTask(name);
+	public Task? this[string name] => st.OpenTask(name);
 
 	internal TaskList()
 	{
@@ -71,7 +71,7 @@ public class TaskList : IEnumerable, IDisposable
 		st = new ScheduledTasks(computer);
 	}
 
-	public Task NewTask(string name)
+	public Task? NewTask(string name)
 	{
 		return st.CreateTask(name);
 	}

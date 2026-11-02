@@ -37,11 +37,11 @@ internal sealed class RedboxConfigurationFile : IConfigurationFile
 			errors.Add(Error.NewError("C001", "Invalid XML file", ex.Message));
 			return ConversionResult.InvalidFile;
 		}
-		XmlNode xmlNode = xmlDocument.DocumentElement.SelectSingleNode("Controller/Decks");
-		XmlNode lastChild = xmlNode.LastChild;
+		XmlNode xmlNode = xmlDocument.DocumentElement!.SelectSingleNode("Controller/Decks")!;
+		XmlNode lastChild = xmlNode.LastChild!;
 		if (lastChild.GetAttributeValue<bool>("IsQlm"))
 		{
-			XmlNode xmlNode2 = null;
+			XmlNode? xmlNode2 = null;
 			foreach (XmlNode childNode in xmlNode.ChildNodes)
 			{
 				int attributeValue = childNode.GetAttributeValue<int>("Number");
@@ -51,7 +51,7 @@ internal sealed class RedboxConfigurationFile : IConfigurationFile
 					break;
 				}
 			}
-			XmlNode xmlNode4 = xmlNode2.Clone();
+			XmlNode xmlNode4 = xmlNode2!.Clone();
 			xmlNode4.SetAttributeValue("Number", 8);
 			xmlNode4.SetAttributeValue("Offset", lastChild.GetAttributeValue<int>("Offset"));
 			xmlNode.ReplaceChild(xmlNode4, lastChild);

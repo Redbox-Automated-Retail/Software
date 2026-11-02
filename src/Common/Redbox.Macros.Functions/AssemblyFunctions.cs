@@ -33,7 +33,7 @@ public class AssemblyFunctions : FunctionSetBase
 	}
 
 	[Function("get-full-name")]
-	public static string GetFullName(Assembly assembly)
+	public static string? GetFullName(Assembly assembly)
 	{
 		return assembly.FullName;
 	}

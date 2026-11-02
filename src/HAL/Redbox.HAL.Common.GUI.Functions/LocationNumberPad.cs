@@ -7,35 +7,35 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public class LocationNumberPad : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Button button1;
+	private Button button1 = null!;
 
-	private Button button2;
+	private Button button2 = null!;
 
-	private Button button3;
+	private Button button3 = null!;
 
-	private Button button4;
+	private Button button4 = null!;
 
-	private Button button5;
+	private Button button5 = null!;
 
-	private Button button7;
+	private Button button7 = null!;
 
-	private Button button8;
+	private Button button8 = null!;
 
-	private Button button9;
+	private Button button9 = null!;
 
-	private Button button6;
+	private Button button6 = null!;
 
-	private TextBox m_displayTextBox;
+	private TextBox m_displayTextBox = null!;
 
-	private Button button11;
+	private Button button11 = null!;
 
-	private Button button12;
+	private Button button12 = null!;
 
-	private Button button10;
+	private Button button10 = null!;
 
-	private Button button13;
+	private Button button13 = null!;
 
 	public int Number
 	{
@@ -49,19 +49,20 @@ public class LocationNumberPad : Form
 		}
 	}
 
+	// The controls above are created by InitializeComponent.
 	public LocationNumberPad()
 	{
 		InitializeComponent();
 	}
 
-	private void OnNumberButtonPush(object sender, EventArgs e)
+	private void OnNumberButtonPush(object? sender, EventArgs e)
 	{
 		string text = m_displayTextBox.Text;
 		string number = GetNumber(sender);
 		m_displayTextBox.Text = text + number;
 	}
 
-	private string GetNumber(object sender)
+	private string GetNumber(object? sender)
 	{
 		if (!(sender is Button button))
 		{
@@ -74,7 +75,7 @@ public class LocationNumberPad : Form
 		return string.Empty;
 	}
 
-	private void button11_Click(object sender, EventArgs e)
+	private void button11_Click(object? sender, EventArgs e)
 	{
 		if (string.IsNullOrEmpty(m_displayTextBox.Text))
 		{
@@ -87,12 +88,12 @@ public class LocationNumberPad : Form
 		Close();
 	}
 
-	private void button12_Click(object sender, EventArgs e)
+	private void button12_Click(object? sender, EventArgs e)
 	{
 		m_displayTextBox.Text = string.Empty;
 	}
 
-	private void button10_Click(object sender, EventArgs e)
+	private void button10_Click(object? sender, EventArgs e)
 	{
 		base.DialogResult = DialogResult.Cancel;
 		Close();

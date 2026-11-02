@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class RepositoryServiceProxy : IRepositoryService, IDisposable
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	public static RepositoryServiceProxy Instance => Singleton<RepositoryServiceProxy>.Instance;
 

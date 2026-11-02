@@ -143,7 +143,7 @@ public class TransferService : ITransferService
 		{
 			if (item.Status != TransferStatus.Error)
 			{
-				ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
+				ChangeSet? changeSet = dataStoreService.Get<ChangeSet>(item.ID);
 				if (changeSet != null && !inTransit.Contains(changeSet.Name))
 				{
 					inTransit.Add(changeSet.Name);
@@ -158,7 +158,7 @@ public class TransferService : ITransferService
 		jobs = new List<ITransferJob>();
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IEnumBackgroundCopyJobs ppenum = null;
+		IEnumBackgroundCopyJobs? ppenum = null;
 		try
 		{
 			backgroundCopyManager.EnumJobs(allUsers ? 1u : 0u, out ppenum);
@@ -200,12 +200,12 @@ public class TransferService : ITransferService
 		return errorList;
 	}
 
-	public ErrorList CreateDownloadJob(string name, out ITransferJob job)
+	public ErrorList CreateDownloadJob(string name, out ITransferJob? job)
 	{
 		job = null;
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			backgroundCopyManager.CreateJob(name, BG_JOB_TYPE.BG_JOB_TYPE_DOWNLOAD, out var pJobId, out ppJob);
@@ -226,12 +226,12 @@ public class TransferService : ITransferService
 		return errorList;
 	}
 
-	public ErrorList CreateUploadJob(string name, out ITransferJob job)
+	public ErrorList CreateUploadJob(string name, out ITransferJob? job)
 	{
 		job = null;
 		ErrorList errorList = new ErrorList();
 		IBackgroundCopyManager backgroundCopyManager = (IBackgroundCopyManager)new BackgroundCopyManager();
-		IBackgroundCopyJob ppJob = null;
+		IBackgroundCopyJob? ppJob = null;
 		try
 		{
 			backgroundCopyManager.CreateJob(name, BG_JOB_TYPE.BG_JOB_TYPE_UPLOAD, out var pJobId, out ppJob);
@@ -252,7 +252,7 @@ public class TransferService : ITransferService
 		return errorList;
 	}
 
-	public ErrorList GetJob(Guid id, out ITransferJob job)
+	public ErrorList GetJob(Guid id, out ITransferJob? job)
 	{
 		ErrorList errorList = new ErrorList();
 		job = null;

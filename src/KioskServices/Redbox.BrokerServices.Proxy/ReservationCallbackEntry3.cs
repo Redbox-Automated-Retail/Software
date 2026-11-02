@@ -17,7 +17,7 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 
 	public ReservationResult BrokerResult { get; private set; }
 
-	public ReservationCart3 Cart { get; internal set; }
+	public ReservationCart3 Cart { get; internal set; } = null!; // set by BrokerServicesProxy.Reserve3
 
 	public ReservationCallbackEntry3()
 	{
@@ -29,22 +29,22 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 		Dictionary<string, object> cartData = Cart.ToJson().ToObject<Dictionary<string, object>>();
 		if (cartData.ContainsKey("Email") && cartData["Email"] != null)
 		{
-			cartData["Email"] = ObfuscateMessageData(cartData["Email"].ToString(), 'x', 1, 0);
+			cartData["Email"] = ObfuscateMessageData(cartData["Email"].ToString()!, 'x', 1, 0);
 		}
 		if (cartData.ContainsKey("CardID") && cartData["CardID"] != null)
 		{
-			cartData["CardID"] = ObfuscateMessageData(cartData["CardID"].ToString(), 'x', 3, 3);
+			cartData["CardID"] = ObfuscateMessageData(cartData["CardID"].ToString()!, 'x', 3, 3);
 		}
 		if (cartData.ContainsKey("ReservationCardHash") && cartData["ReservationCardHash"] != null)
 		{
 			Dictionary<string, object> cardHash = (Dictionary<string, object>)cartData["ReservationCardHash"];
 			if (cardHash.ContainsKey("CardBinHash") && cardHash["CardBinHash"] != null)
 			{
-				cardHash["CardBinHash"] = ObfuscateMessageData(cardHash["CardBinHash"].ToString(), 'x', 3, 3);
+				cardHash["CardBinHash"] = ObfuscateMessageData(cardHash["CardBinHash"].ToString()!, 'x', 3, 3);
 			}
 			if (cardHash.ContainsKey("Last4") && cardHash["Last4"] != null)
 			{
-				cardHash["Last4"] = ObfuscateMessageData(cardHash["Last4"].ToString(), 'x', 1, 0);
+				cardHash["Last4"] = ObfuscateMessageData(cardHash["Last4"].ToString()!, 'x', 1, 0);
 			}
 		}
 		if (cartData.ContainsKey("AlternateCardHashes") && cartData["AlternateCardHashes"] != null)
@@ -53,11 +53,11 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 			{
 				if (alternateCardHash.ContainsKey("CardBinHash") && alternateCardHash["CardBinHash"] != null)
 				{
-					alternateCardHash["CardBinHash"] = ObfuscateMessageData(alternateCardHash["CardBinHash"].ToString(), 'x', 3, 3);
+					alternateCardHash["CardBinHash"] = ObfuscateMessageData(alternateCardHash["CardBinHash"].ToString()!, 'x', 3, 3);
 				}
 				if (alternateCardHash.ContainsKey("Last4") && alternateCardHash["Last4"] != null)
 				{
-					alternateCardHash["Last4"] = ObfuscateMessageData(alternateCardHash["Last4"].ToString(), 'x', 1, 0);
+					alternateCardHash["Last4"] = ObfuscateMessageData(alternateCardHash["Last4"].ToString()!, 'x', 1, 0);
 				}
 			}
 		}
@@ -71,7 +71,7 @@ public class ReservationCallbackEntry3 : ICallbackEntry
 			return;
 		}
 		Dictionary<string, List<int>> titleIdsByType = new Dictionary<string, List<int>>();
-		foreach (ReservationTitle3 title in Cart.Titles)
+		foreach (ReservationTitle3 title in Cart.Titles!)
 		{
 			string key = ((title.ReservationType == ReservationType.Purchase) ? "purchase" : "rental");
 			List<int> titleIds = (titleIdsByType.ContainsKey(key) ? titleIdsByType[key] : (titleIdsByType[key] = new List<int>()));

@@ -9,7 +9,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class SchedulerProxy : ITaskScheduler
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	public static SchedulerProxy Instance => Singleton<SchedulerProxy>.Instance;
 
@@ -85,7 +85,7 @@ public class SchedulerProxy : ITaskScheduler
 		return ConvertToComponentErrors(clientCommandResult.Errors);
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList ScheduleCronJob(string name, string payload, string payloadTypeString, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, string cronExpression)
+	public Redbox.UpdateManager.ComponentModel.ErrorList ScheduleCronJob(string name, string payload, string? payloadTypeString, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, string cronExpression)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendFormat("SCHEDULE-EVENT create name:'{0}' payload:'{1}' payloadType:'{2}'  cronExpression:'{3}'", name, payload, payloadTypeString, cronExpression);
@@ -109,7 +109,7 @@ public class SchedulerProxy : ITaskScheduler
 		return ScheduleCronJob(name, payload, Enum.GetName(typeof(PayloadType), payloadType), startOffset, startTime, endTime, cronExpression);
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList ScheduleSimpleJob(string name, string payload, string payloadTypeString, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, TimeSpan repeatInterval)
+	public Redbox.UpdateManager.ComponentModel.ErrorList ScheduleSimpleJob(string name, string payload, string? payloadTypeString, TimeSpan? startOffset, DateTime? startTime, DateTime? endTime, TimeSpan repeatInterval)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendFormat("SCHEDULE-EVENT create name:'{0}' payload:'{1}' payloadType:'{2}' repeatInterval:'{3}'", name, payload, payloadTypeString, repeatInterval);

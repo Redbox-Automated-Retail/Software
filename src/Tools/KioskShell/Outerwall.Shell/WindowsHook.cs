@@ -52,7 +52,7 @@ internal abstract class WindowsHook : IDisposable
 		try
 		{
 			using Process process = Process.GetCurrentProcess();
-			using ProcessModule processModule = process.MainModule;
+			using ProcessModule processModule = process.MainModule!;
 			bool result = false;
 			IntPtr moduleHandle = GetModuleHandle(processModule.ModuleName);
 			if (_handle == IntPtr.Zero)

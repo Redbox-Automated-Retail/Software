@@ -8,13 +8,13 @@ namespace Redbox.KioskEngine.Drawing;
 
 public class RenderingService : IRenderingService
 {
-	private IScene m_activeScene;
+	private IScene? m_activeScene;
 
-	private IDictionary<string, Scene> m_scenes;
+	private IDictionary<string, Scene>? m_scenes;
 
 	public static RenderingService Instance => Singleton<RenderingService>.Instance;
 
-	public IScene ActiveScene
+	public IScene? ActiveScene
 	{
 		get
 		{
@@ -25,7 +25,7 @@ public class RenderingService : IRenderingService
 			if (m_activeScene != value)
 			{
 				m_activeScene = value;
-				m_activeScene.MakeDirty(null);
+				m_activeScene!.MakeDirty(null);
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public class RenderingService : IRenderingService
 		return scene;
 	}
 
-	public IScene GetScene(string name)
+	public IScene? GetScene(string name)
 	{
 		if (!Scenes.ContainsKey(name))
 		{
@@ -89,7 +89,7 @@ public class RenderingService : IRenderingService
 
 	public void RemoveScene(string name)
 	{
-		IScene scene = GetScene(name);
+		IScene? scene = GetScene(name);
 		if (scene != null)
 		{
 			Scenes.Remove(name);

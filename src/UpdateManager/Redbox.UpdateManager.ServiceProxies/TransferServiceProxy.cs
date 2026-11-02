@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class TransferServiceProxy : ITransferService
 {
-	private string m_url;
+	private string m_url = null!; // set by Initialize
 
 	public static TransferServiceProxy Instance => Singleton<TransferServiceProxy>.Instance;
 
@@ -122,7 +122,7 @@ public class TransferServiceProxy : ITransferService
 		return ConvertFromIPCErrors(clientCommandResult.Errors);
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList CreateDownloadJob(string name, out ITransferJob job)
+	public Redbox.UpdateManager.ComponentModel.ErrorList CreateDownloadJob(string name, out ITransferJob? job)
 	{
 		job = null;
 		ClientCommandResult clientCommandResult = ExecuteCommandString($"transfer create-download name: '{name}'");
@@ -135,7 +135,7 @@ public class TransferServiceProxy : ITransferService
 		return ConvertFromIPCErrors(clientCommandResult.Errors);
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList CreateUploadJob(string name, out ITransferJob job)
+	public Redbox.UpdateManager.ComponentModel.ErrorList CreateUploadJob(string name, out ITransferJob? job)
 	{
 		job = null;
 		ClientCommandResult clientCommandResult = ExecuteCommandString($"transfer create-upload name: '{name}'");
@@ -148,7 +148,7 @@ public class TransferServiceProxy : ITransferService
 		return ConvertFromIPCErrors(clientCommandResult.Errors);
 	}
 
-	public Redbox.UpdateManager.ComponentModel.ErrorList GetJob(Guid id, out ITransferJob job)
+	public Redbox.UpdateManager.ComponentModel.ErrorList GetJob(Guid id, out ITransferJob? job)
 	{
 		job = null;
 		ClientCommandResult clientCommandResult = ExecuteCommandString($"transfer get-job id: '{id}'");

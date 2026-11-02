@@ -4,11 +4,12 @@ namespace Redbox.UpdateManager.ServiceProxies;
 
 public class TransferItem : ITransferItem
 {
-	public string Name { get; set; }
+	// The string properties are set by the JSON reader.
+	public string Name { get; set; } = null!;
 
-	public string Path { get; set; }
+	public string Path { get; set; } = null!;
 
-	public string RemoteURL { get; set; }
+	public string RemoteURL { get; set; } = null!;
 
 	public ulong TotalTransferd { get; set; }
 

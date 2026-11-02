@@ -8,7 +8,7 @@ namespace Redbox.UpdateServices.Kernel;
 public static class UpdateManagerServiceFunctions
 {
 	[KernelFunction(Name = "kernel.updmgrsvc_forcesubscriptionpublish")]
-	internal static LuaTable ForceSubscriptionPublish()
+	internal static LuaTable? ForceSubscriptionPublish()
 	{
 		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
 		if (updateManagerService == null)
@@ -19,7 +19,7 @@ public static class UpdateManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_forcescheduleevent")]
-	internal static LuaTable ForceScheduleEvent(string name)
+	internal static LuaTable? ForceScheduleEvent(string name)
 	{
 		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
 		if (updateManagerService == null)
@@ -32,7 +32,7 @@ public static class UpdateManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_getsubscriptionstate")]
-	internal static LuaTable GetSubscriptionState()
+	internal static LuaTable? GetSubscriptionState()
 	{
 		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
 		if (updateManagerService == null)
@@ -46,7 +46,7 @@ public static class UpdateManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_executecommand")]
-	internal static LuaTable ExecuteCommand(string command)
+	internal static LuaTable? ExecuteCommand(string command)
 	{
 		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
 		if (updateManagerService == null)
@@ -65,7 +65,7 @@ public static class UpdateManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.updmgrsvc_getdownloads")]
-	internal static LuaTable GetDownloads()
+	internal static LuaTable? GetDownloads()
 	{
 		IUpdateManagerService updateManagerService = ServiceLocator.Instance.GetService<IUpdateManagerService>();
 		if (updateManagerService == null)

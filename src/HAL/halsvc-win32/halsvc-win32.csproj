@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>halsvc-win32</AssemblyName>
     <RootNamespace>Redbox.HAL.Service.Win32</RootNamespace>
     <OutputType>WinExe</OutputType>

@@ -56,6 +56,6 @@ public class ShoppingCartController : ApiController
 			}
 		});
 		response?.SetResponseTime((int?)stopwatch?.ElapsedMilliseconds);
-		return base.Request.CreateResponse(response.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
+		return base.Request.CreateResponse(response!.StatusCode, response, base.Configuration.Formatters.JsonFormatter);
 	}
 }
