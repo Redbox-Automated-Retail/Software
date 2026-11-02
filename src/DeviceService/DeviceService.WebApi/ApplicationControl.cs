@@ -17,7 +17,7 @@ public class ApplicationControl : IApplicationControl
 
 	private IIUC285Notifier _iuc285Notifier;
 
-	private AutoResetEvent _canShutDownAutoResetEvent;
+	private AutoResetEvent? _canShutDownAutoResetEvent;
 
 	private bool _canShutDownClientResponse;
 
@@ -32,7 +32,7 @@ public class ApplicationControl : IApplicationControl
 
 	public bool CanShutDown(ShutDownReason shutDownReason)
 	{
-		string text = null;
+		string? text = null;
 		_canShutDownClientResponse = true;
 		if (_canShutDownClientResponse)
 		{

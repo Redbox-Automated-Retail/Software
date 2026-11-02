@@ -1,3 +1,3 @@
 namespace Redbox.Lua;
 
-internal delegate object RegisteredMethodHandler(object[] values);
+internal delegate object? RegisteredMethodHandler(object?[] values);

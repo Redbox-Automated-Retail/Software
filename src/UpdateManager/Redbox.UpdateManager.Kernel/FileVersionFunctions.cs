@@ -10,7 +10,7 @@ namespace Redbox.UpdateManager.Kernel;
 public static class FileVersionFunctions
 {
 	[KernelFunction(Name = "kernel.getfileversion")]
-	internal static string GetFileVersion(string fileName)
+	internal static string? GetFileVersion(string fileName)
 	{
 		try
 		{
@@ -24,7 +24,7 @@ public static class FileVersionFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getfileversiontable")]
-	internal static LuaTable GetFileVersionInfo(string fileName)
+	internal static LuaTable? GetFileVersionInfo(string fileName)
 	{
 		try
 		{
@@ -66,6 +66,6 @@ public static class FileVersionFunctions
 	[KernelFunction(Name = "kernel.getfrontendversion")]
 	internal static string GetFrontendVersion()
 	{
-		return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		return Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 	}
 }

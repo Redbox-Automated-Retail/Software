@@ -11,21 +11,21 @@ namespace Redbox.IPC.Framework;
 
 public abstract class ServerSession : ISession, IMessageSink
 {
-	private Action<string, string> _paramAction;
+	private Action<string, string>? _paramAction;
 
-	private Action<ISession> _beforeCommandAction;
+	private Action<ISession>? _beforeCommandAction;
 
 	private List<string> _filters = new List<string>();
 
 	private bool _enableFilters;
 
-	private StringBuilder m_readBuilder;
+	private StringBuilder? m_readBuilder;
 
-	private ParameterDictionary m_context;
+	private ParameterDictionary? m_context;
 
-	private List<string> m_messageSinkQueue;
+	private List<string>? m_messageSinkQueue;
 
-	private IDictionary<string, object> m_properties;
+	private IDictionary<string, object>? m_properties;
 
 	private readonly object m_syncLock = new object();
 
@@ -67,9 +67,9 @@ public abstract class ServerSession : ISession, IMessageSink
 		}
 	}
 
-	protected byte[] ReadBuffer { get; set; }
+	protected byte[] ReadBuffer { get; set; } = null!; // checked out by Read
 
-	protected Stream Stream { get; set; }
+	protected Stream Stream { get; set; } = null!; // set by the subclass (NegotiateSecurityLayer) before Start
 
 	private IPCServiceHost ServiceHost { get; set; }
 
@@ -109,7 +109,7 @@ public abstract class ServerSession : ISession, IMessageSink
 		}
 	}
 
-	public event EventHandler Disconnect;
+	public event EventHandler? Disconnect;
 
 	public void Start()
 	{
@@ -123,7 +123,7 @@ public abstract class ServerSession : ISession, IMessageSink
 		filters.ForEach(_filters.Add);
 	}
 
-	public void SetParamAction(Action<string, string> paramAction)
+	public void SetParamAction(Action<string, string>? paramAction)
 	{
 		_paramAction = paramAction;
 	}
@@ -173,7 +173,7 @@ public abstract class ServerSession : ISession, IMessageSink
 			ReadTimeout = 30000,
 			WriteTimeout = 30000
 		};
-		sslStream.AuthenticateAsServer(ServiceHost.Certificate, clientCertificateRequired: false, SslProtocols.None, checkCertificateRevocation: true);
+		sslStream.AuthenticateAsServer(ServiceHost.Certificate!, clientCertificateRequired: false, SslProtocols.None, checkCertificateRevocation: true);
 		Stream = sslStream;
 	}
 

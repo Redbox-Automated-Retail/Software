@@ -15,7 +15,7 @@ internal sealed class CortexService : ScannerAdapter, IScannerDevice, IDisposabl
 		}
 	}
 
-	private ICommPort Port;
+	private ICommPort? Port;
 
 	private string ConfiguredPortName = "NONE";
 
@@ -130,7 +130,7 @@ internal sealed class CortexService : ScannerAdapter, IScannerDevice, IDisposabl
 			LogHelper.Instance.Log("[CortexService]: There was a communication error.");
 			return new SnapResult(text);
 		}
-		ImagePacket imagePacket = takePictureCommand.ImagePacket;
+		ImagePacket? imagePacket = takePictureCommand.ImagePacket;
 		if (imagePacket == null)
 		{
 			LogHelper.Instance.Log("[CortexService]: unable to locate image packet during snap.");
@@ -156,9 +156,9 @@ internal sealed class CortexService : ScannerAdapter, IScannerDevice, IDisposabl
 		return ValidateSettings(new ValidatorSink());
 	}
 
-	public bool ValidateSettings(IMessageSink sink)
+	public bool ValidateSettings(IMessageSink? sink)
 	{
-		return new CortexSettingsValidator(this, RuntimeService).Validate(sink);
+		return new CortexSettingsValidator(this, RuntimeService).Validate(sink!);
 	}
 
 	public void NotifyConfigurationLoaded()
@@ -190,7 +190,7 @@ internal sealed class CortexService : ScannerAdapter, IScannerDevice, IDisposabl
 		Configuration.WriteTimeout = 2000;
 	}
 
-	internal ICommPort ConfiguredPort()
+	internal ICommPort? ConfiguredPort()
 	{
 		return Port;
 	}

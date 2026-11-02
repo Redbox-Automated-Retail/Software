@@ -6,11 +6,11 @@ namespace Redbox.HAL.Client.Executors;
 
 public sealed class HardwareSurveyExecutor : JobExecutor
 {
-	public string Kiosk { get; private set; }
+	public string? Kiosk { get; private set; }
 
 	public DateTime Timestamp { get; private set; }
 
-	public string CameraVersion { get; private set; }
+	public string? CameraVersion { get; private set; }
 
 	public DeviceStatus QuickReturn { get; private set; }
 
@@ -26,19 +26,19 @@ public sealed class HardwareSurveyExecutor : JobExecutor
 
 	public long FreeDiskSpace { get; private set; }
 
-	public string PcModel { get; private set; }
+	public string? PcModel { get; private set; }
 
-	public string PcManufacturer { get; private set; }
+	public string? PcManufacturer { get; private set; }
 
-	public string Touchscreen { get; private set; }
+	public string? Touchscreen { get; private set; }
 
-	public string TouchscreenFirmware { get; private set; }
+	public string? TouchscreenFirmware { get; private set; }
 
-	public string UpsModel { get; private set; }
+	public string? UpsModel { get; private set; }
 
-	public string SerialControllerVersion { get; private set; }
+	public string? SerialControllerVersion { get; private set; }
 
-	public string Monitor { get; private set; }
+	public string? Monitor { get; private set; }
 
 	protected override string JobName => "hardware-survey-job";
 
@@ -50,7 +50,7 @@ public sealed class HardwareSurveyExecutor : JobExecutor
 	protected override void OnJobCompleted()
 	{
 		Timestamp = DateTime.Now;
-		foreach (ProgramResult result in base.Results)
+		foreach (ProgramResult result in base.Results!)
 		{
 			switch (result.Code)
 			{

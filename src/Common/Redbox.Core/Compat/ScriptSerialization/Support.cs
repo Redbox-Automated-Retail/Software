@@ -1,3 +1,4 @@
+#nullable disable // reference source kept as it is; stays oblivious where it is linked into nullable-enabled projects
 // Written for the modernize branch (not decompiled, not from referencesource): the System.Web internals that the
 // referencesource copy of System.Web.Script.Serialization uses, for the .NET 10 build of Redbox.Core. See README.md.
 using System.Configuration;

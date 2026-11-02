@@ -56,7 +56,7 @@ internal class UpdateManagerService : IDisposable
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		ErrorList errorList = new ErrorList();
-		string storeNumber;
+		string? storeNumber;
 		if (string.IsNullOrEmpty(storeNumberFromConfigFile))
 		{
 			storeNumber = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "ID", "N\\A") as string;
@@ -74,7 +74,7 @@ internal class UpdateManagerService : IDisposable
 			storeNumber = storeNumberFromConfigFile;
 		}
 		_storeNumber = storeNumber;
-		string directoryName = Path.GetDirectoryName(typeof(UpdateManagerService).Assembly.Location);
+		string directoryName = Path.GetDirectoryName(typeof(UpdateManagerService).Assembly.Location)!;
 		macroService["StoreNumber"] = storeNumber;
 		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";
 		macroService["RedboxProgramFiles"] = "C:\\Program Files\\Redbox";

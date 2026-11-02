@@ -7,13 +7,13 @@ namespace Redbox.HAL.Common.GUI.Functions;
 
 public sealed class ConfigItem
 {
-	private object m_value;
+	private object? m_value;
 
 	public bool ReadOnly { get; private set; }
 
-	public string Name { get; private set; }
+	public string? Name { get; private set; }
 
-	public object Value
+	public object? Value
 	{
 		get
 		{
@@ -22,17 +22,17 @@ public sealed class ConfigItem
 		set
 		{
 			m_value = value;
-			Node.SetAttributeValue("value", value.ToString());
+			Node.SetAttributeValue("value", value!.ToString());
 		}
 	}
 
-	public string Description { get; private set; }
+	public string? Description { get; private set; }
 
-	public object DefaultValue { get; set; }
+	public object? DefaultValue { get; set; }
 
-	public string DisplayName { get; set; }
+	public string? DisplayName { get; set; }
 
-	public string CategoryName { get; private set; }
+	public string? CategoryName { get; private set; }
 
 	public List<string>? ValidValues { get; private set; }
 
@@ -65,7 +65,7 @@ public sealed class ConfigItem
 		ValidValues = new List<string>();
 		foreach (XmlNode childNode in node.ChildNodes)
 		{
-			string attributeValue2 = childNode.GetAttributeValue<string>("value");
+			string? attributeValue2 = childNode.GetAttributeValue<string>("value");
 			if (attributeValue2 != null)
 			{
 				ValidValues.Add(attributeValue2);

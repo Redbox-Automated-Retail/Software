@@ -15,17 +15,18 @@ namespace Redbox.UpdateManager.FileSets;
 
 internal class FileSetService : IPollRequestReply, IFileSetService
 {
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
 	private bool _rebootRequired;
 
-	private Timer _timer;
+	// Set by Initialize.
+	private Timer _timer = null!;
 
 	private bool _isRunning;
 
 	private int _inDoWork;
 
-	private string _root;
+	private string _root = null!;
 
 	private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
@@ -332,10 +333,10 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 				{
 					errors.AddRange(item.Set.ProcessChangeSet(downloads));
 				});
-				Dictionary<long, FileSetDependencyState> dependencyStates = GetDependencyStates();
+				Dictionary<long, FileSetDependencyState>? dependencyStates = GetDependencyStates();
 				bothGood.ForEach(item =>
 				{
-					errors.AddRange(item.Set.ProcessActivationDependencyCheck(dependencyStates));
+					errors.AddRange(item.Set.ProcessActivationDependencyCheck(dependencyStates!));
 				});
 				bothGood.ForEach(item =>
 				{
@@ -399,7 +400,7 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 		}
 	}
 
-	private Dictionary<long, FileSetDependencyState> GetDependencyStates()
+	private Dictionary<long, FileSetDependencyState>? GetDependencyStates()
 	{
 		ErrorList errorList = new ErrorList();
 		Dictionary<long, FileSetDependencyState> dependencies = new Dictionary<long, FileSetDependencyState>();
@@ -424,10 +425,10 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 				};
 				if (item.HasInProgress())
 				{
-					ChangeSetFile changeSetFile = changeSets.Where((ChangeSetFile cs) => cs.FileSetId == item.FileSetId).FirstOrDefault();
+					ChangeSetFile? changeSetFile = changeSets.Where((ChangeSetFile cs) => cs.FileSetId == item.FileSetId).FirstOrDefault();
 					if (changeSetFile != null)
 					{
-						ClientFileSetRevision revision = GetRevision(item.FileSetId, changeSetFile.RevisionId, changeSetFile.PatchRevisionId);
+						ClientFileSetRevision? revision = GetRevision(item.FileSetId, changeSetFile.RevisionId, changeSetFile.PatchRevisionId);
 						if (revision != null)
 						{
 							fileSetDependencyState.InProgressRevisionId = changeSetFile.RevisionId;
@@ -439,7 +440,7 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 				if (item.HasActive())
 				{
 					fileSetDependencyState.ActiveRevisionId = item.RevisionId;
-					ClientFileSetRevision revision2 = GetRevision(item.FileSetId, item.RevisionId);
+					ClientFileSetRevision? revision2 = GetRevision(item.FileSetId, item.RevisionId);
 					if (revision2 != null)
 					{
 						fileSetDependencyState.ActiveVersion = revision2.RevisionVersion;
@@ -456,38 +457,38 @@ internal class FileSetService : IPollRequestReply, IFileSetService
 		return null;
 	}
 
-	private ClientFileSetRevision GetRevision(long fileSetId, long revisionId, long patchRevisionId)
+	private ClientFileSetRevision? GetRevision(long fileSetId, long revisionId, long patchRevisionId)
 	{
 		if (FileCacheService.RevisionExists(fileSetId, revisionId, patchRevisionId) && FileCacheService.GetRevision(fileSetId, revisionId, patchRevisionId, out var data))
 		{
-			return Encoding.ASCII.GetString(data).ToObject<ClientFileSetRevision>();
+			return Encoding.ASCII.GetString(data!).ToObject<ClientFileSetRevision>();
 		}
 		return null;
 	}
 
-	public ClientFileSetRevision GetRevision(long fileSetId, long revisionId)
+	public ClientFileSetRevision? GetRevision(long fileSetId, long revisionId)
 	{
 		if (FileCacheService.GetRevision(fileSetId, revisionId, out var data))
 		{
-			return Encoding.ASCII.GetString(data).ToObject<ClientFileSetRevision>();
+			return Encoding.ASCII.GetString(data!).ToObject<ClientFileSetRevision>();
 		}
 		return null;
 	}
 
-	public ClientFileSetRevision GetRevision(string path)
+	public ClientFileSetRevision? GetRevision(string path)
 	{
 		if (FileCacheService.GetRevision(path, out var data))
 		{
-			return Encoding.ASCII.GetString(data).ToObject<ClientFileSetRevision>();
+			return Encoding.ASCII.GetString(data!).ToObject<ClientFileSetRevision>();
 		}
 		return null;
 	}
 
-	internal FileSetFileInfo GetFileInfo(string path)
+	internal FileSetFileInfo? GetFileInfo(string path)
 	{
 		if (FileCacheService.GetFileInfo(path, out var data))
 		{
-			return Encoding.ASCII.GetString(data).ToObject<FileSetFileInfo>();
+			return Encoding.ASCII.GetString(data!).ToObject<FileSetFileInfo>();
 		}
 		return null;
 	}

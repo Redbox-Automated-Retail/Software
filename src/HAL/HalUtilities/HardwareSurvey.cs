@@ -48,10 +48,10 @@ internal sealed class HardwareSurvey
 		writer.WriteLine("\tFraud sensor            :  {0}", hardwareSurveyExecutor.FraudDevice.ToString());
 		writer.WriteLine("\tABE device              :  {0}", hardwareSurveyExecutor.ABEDevice);
 		writer.WriteLine("\tTouchscreen model       :  {0}", hardwareSurveyExecutor.Touchscreen);
-		string firmware = hardwareSurveyExecutor.TouchscreenFirmware;
+		string? firmware = hardwareSurveyExecutor.TouchscreenFirmware;
 		try
 		{
-			Version version = new Version(hardwareSurveyExecutor.TouchscreenFirmware);
+			Version version = new Version(hardwareSurveyExecutor.TouchscreenFirmware!);
 			bool isMostCurrent = version.Major == 4 && version.Minor == 30;
 			firmware = string.Format("{0} ( {1} CURRENT )", hardwareSurveyExecutor.TouchscreenFirmware, isMostCurrent ? "MOST" : "NOT MOST");
 		}

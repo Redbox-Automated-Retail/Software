@@ -16,7 +16,7 @@ public class ObjectCache
 		m_id = 1;
 	}
 
-	public object GetObject(int id)
+	public object? GetObject(int id)
 	{
 		if (m_idToObject.ContainsKey(id))
 		{

@@ -5,7 +5,7 @@ namespace Redbox.HAL.DataMatrix.Framework.Cortex;
 
 internal abstract class TextCommand : AbstractCortexCommand
 {
-	private byte[] m_command;
+	private byte[]? m_command;
 
 	protected override byte[] CoreCommand
 	{
@@ -40,5 +40,5 @@ internal abstract class TextCommand : AbstractCortexCommand
 
 	protected abstract string Prefix { get; }
 
-	protected abstract string Data { get; }
+	protected abstract string? Data { get; }
 }

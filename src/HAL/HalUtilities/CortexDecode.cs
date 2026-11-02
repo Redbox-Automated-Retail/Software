@@ -4,13 +4,14 @@ namespace HALUtilities;
 
 internal class CortexDecode
 {
-	internal string Image;
+	// Image, Matrix and Location are set by CortexDecoderFile's object initializer.
+	internal string Image = null!;
 
-	internal string Matrix;
+	internal string Matrix = null!;
 
 	internal int MatrixCount;
 
 	internal int SecureCount;
 
-	internal Location Location;
+	internal Location Location = null!;
 }

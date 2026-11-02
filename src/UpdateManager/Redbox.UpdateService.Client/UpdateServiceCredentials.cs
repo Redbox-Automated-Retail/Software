@@ -7,9 +7,9 @@ namespace Redbox.UpdateService.Client;
 
 public class UpdateServiceCredentials
 {
-	public static UpdateServiceCredentials _instance;
+	public static UpdateServiceCredentials? _instance;
 
-	private Credentials _credentials;
+	private Credentials? _credentials;
 
 	private static readonly string _key1 = "{EFFBA16E-4871-4495-9E6B-BB78452BBD97}";
 
@@ -27,13 +27,13 @@ public class UpdateServiceCredentials
 		}
 	}
 
-	public Credentials GetCredentials()
+	public Credentials? GetCredentials()
 	{
 		try
 		{
-			string directoryName = Path.GetDirectoryName(typeof(UpdateService).Assembly.Location);
-			string path = Path.Combine(directoryName, "usdata.active");
-			string stagedPath = Path.Combine(directoryName, "usdata.staged");
+			string? directoryName = Path.GetDirectoryName(typeof(UpdateService).Assembly.Location);
+			string path = Path.Combine(directoryName!, "usdata.active"); // Path.Combine throws on null, as before
+			string stagedPath = Path.Combine(directoryName!, "usdata.staged");
 			if (File.Exists(stagedPath))
 			{
 				if (File.Exists(path))
@@ -69,8 +69,8 @@ public class UpdateServiceCredentials
 
 	public string GetCredentialHash(string kioskId)
 	{
-		Credentials credentials = GetCredentials();
-		return GetCredentialHash(kioskId, credentials.Key1, credentials.Key2);
+		Credentials? credentials = GetCredentials();
+		return GetCredentialHash(kioskId, credentials!.Key1, credentials.Key2); // throws on null, as before
 	}
 
 	private string GetCredentialHash(string kioskId, string key1, string key2)

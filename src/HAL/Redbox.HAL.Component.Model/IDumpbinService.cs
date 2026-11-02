@@ -6,11 +6,11 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IDumpbinService
 {
-	ILocation PutLocation { get; }
+	ILocation? PutLocation { get; }
 
 	int Capacity { get; }
 
-	ILocation RotationLocation { get; }
+	ILocation? RotationLocation { get; }
 
 	bool IsFull();
 

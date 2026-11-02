@@ -65,7 +65,8 @@ internal abstract class StreamBase : IDisposable
 		}
 	}
 
-	internal Stream Stream { get; set; }
+	// Set by the MemoryStream constructors.
+	internal Stream Stream { get; set; } = null!;
 
 	public static implicit operator Stream(StreamBase wrapper)
 	{
@@ -116,7 +117,7 @@ internal abstract class StreamBase : IDisposable
 		}
 	}
 
-	internal IAsyncResult BeginRead(byte[] array, int offset, int numBytes, AsyncCallback userCallback, object stateObject)
+	internal IAsyncResult? BeginRead(byte[] array, int offset, int numBytes, AsyncCallback userCallback, object stateObject)
 	{
 		if (Stream != null)
 		{
@@ -133,7 +134,7 @@ internal abstract class StreamBase : IDisposable
 		}
 	}
 
-	internal IAsyncResult BeginWrite(byte[] array, int offset, int numBytes, AsyncCallback userCallback, object stateObject)
+	internal IAsyncResult? BeginWrite(byte[] array, int offset, int numBytes, AsyncCallback userCallback, object stateObject)
 	{
 		if (Stream != null)
 		{

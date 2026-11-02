@@ -7,9 +7,9 @@ namespace Redbox.Rental.Kernel;
 
 public class BaseSettingFunctions
 {
-	public object ConvertValueToPropertyType(PropertyInfo propertyInfo, object value)
+	public object? ConvertValueToPropertyType(PropertyInfo propertyInfo, object? value)
 	{
-		object result = value;
+		object? result = value;
 		if (value != null)
 		{
 			Type type = propertyInfo.PropertyType;
@@ -27,13 +27,13 @@ public class BaseSettingFunctions
 			}
 			else if (type.IsEnum)
 			{
-				result = Enum.Parse(type, value.ToString());
+				result = Enum.Parse(type, value.ToString()!);
 			}
 		}
 		return result;
 	}
 
-	public void GetProperty(object obj, string name, out object resultObject, out PropertyInfo resultPropertyInfo)
+	public void GetProperty(object? obj, string name, out object? resultObject, out PropertyInfo? resultPropertyInfo)
 	{
 		resultObject = null;
 		resultPropertyInfo = null;
@@ -45,7 +45,7 @@ public class BaseSettingFunctions
 			{
 				continue;
 			}
-			PropertyInfo property = obj.GetType().GetProperty(propertyName);
+			PropertyInfo? property = obj.GetType().GetProperty(propertyName);
 			if (property != null)
 			{
 				if (i != list.Count - 1)
@@ -59,7 +59,7 @@ public class BaseSettingFunctions
 		}
 	}
 
-	public object GetPropertyValue(object obj, string name)
+	public object? GetPropertyValue(object? obj, string name)
 	{
 		if (obj != null)
 		{
@@ -71,7 +71,7 @@ public class BaseSettingFunctions
 					break;
 				}
 				found = false;
-				PropertyInfo property = obj.GetType().GetProperty(propertyName);
+				PropertyInfo? property = obj.GetType().GetProperty(propertyName);
 				if (property == null)
 				{
 					break;

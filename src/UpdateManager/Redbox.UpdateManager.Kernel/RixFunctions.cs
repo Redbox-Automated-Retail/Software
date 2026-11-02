@@ -58,17 +58,17 @@ public static class RixFunctions
 		{
 			return false;
 		}
-		return !string.IsNullOrEmpty((string)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null));
+		return !string.IsNullOrEmpty((string?)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null));
 	}
 
 	[KernelFunction(Name = "kernel.rixfindinstalldirectory")]
-	internal static string FindInstalledDirectory(string productGuid)
+	internal static string? FindInstalledDirectory(string productGuid)
 	{
 		if (string.IsNullOrEmpty(productGuid))
 		{
 			return null;
 		}
-		string text = (string)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "InstallPath", null);
+		string? text = (string?)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "InstallPath", null);
 		if (!string.IsNullOrEmpty(text))
 		{
 			return text;
@@ -83,12 +83,12 @@ public static class RixFunctions
 		{
 			return -1;
 		}
-		string uninstallString = (string)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null);
+		string? uninstallString = (string?)Registry.GetValue($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{productGuid}", "SilentUninstallString", null);
 		if (string.IsNullOrEmpty(uninstallString))
 		{
 			return -1;
 		}
-		int index = uninstallString.IndexOf(".exe");
+		int index = uninstallString!.IndexOf(".exe"); // checked by IsNullOrEmpty above
 		string uninstaller = uninstallString.Substring(0, index + 5);
 		string arguments = uninstallString.Substring(index + 5);
 		if (!File.Exists(uninstaller))

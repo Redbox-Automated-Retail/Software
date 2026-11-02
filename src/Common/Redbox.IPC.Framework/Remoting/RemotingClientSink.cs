@@ -38,7 +38,7 @@ public class RemotingClientSink : BaseChannelSinkWithProperties, IClientChannelS
 		NextChannelSink.AsyncProcessResponse(sinkStack, state, headers, stream);
 	}
 
-	public Stream GetRequestStream(IMessage msg, ITransportHeaders headers)
+	public Stream? GetRequestStream(IMessage msg, ITransportHeaders headers)
 	{
 		return null;
 	}

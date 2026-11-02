@@ -2,7 +2,7 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IQueryUsbDeviceResult
 {
-	IDeviceDescriptor Descriptor { get; }
+	IDeviceDescriptor? Descriptor { get; }
 
 	bool Found { get; }
 

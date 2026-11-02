@@ -7,11 +7,11 @@ namespace Redbox.HardwareServices.Proxy;
 
 public class HardwareStatusChangeCallback : ICallbackEntry
 {
-	public HardwareStatusChangeHandler EventHandler { get; set; }
+	public HardwareStatusChangeHandler? EventHandler { get; set; }
 
-	public string JobId { get; set; }
+	public string? JobId { get; set; }
 
-	public string Status { get; set; }
+	public string? Status { get; set; }
 
 	public string Name => "HardwareStatusChangeCallback - " + (JobId ?? string.Empty);
 

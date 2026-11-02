@@ -6,7 +6,7 @@ public interface IAspectType
 {
 	string Name { get; }
 
-	string this[string name] { get; set; }
+	string? this[string name] { get; set; }
 
 	ErrorList ParseAspect(IResourceBundle bundle, IAspect aspect, XmlNode aspectNode);
 }

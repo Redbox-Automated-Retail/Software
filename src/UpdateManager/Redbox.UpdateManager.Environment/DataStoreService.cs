@@ -12,14 +12,14 @@ public class DataStoreService : IDataStoreService
 
 	public static DataStoreService Instance => Singleton<DataStoreService>.Instance;
 
-	private string Root { get; set; }
+	private string Root { get; set; } = null!; // set by Initialize
 
 	public void Initialize(string rootPath)
 	{
 		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(rootPath);
 		if (!Path.IsPathRooted(text))
 		{
-			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), text);
+			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, text);
 		}
 		Root = text;
 		if (!Directory.Exists(Root))
@@ -60,14 +60,14 @@ public class DataStoreService : IDataStoreService
 		}
 	}
 
-	public T Get<T>(string id)
+	public T? Get<T>(string id)
 	{
-		string raw = GetRaw(id);
+		string? raw = GetRaw(id);
 		if (raw == null)
 		{
 			return default(T);
 		}
-		T result;
+		T? result;
 		try
 		{
 			return raw.ToObject<T>();
@@ -81,12 +81,12 @@ public class DataStoreService : IDataStoreService
 		return result;
 	}
 
-	public string GetRaw(Guid id)
+	public string? GetRaw(Guid id)
 	{
 		return GetRaw(id.ToString());
 	}
 
-	public string GetRaw(string id)
+	public string? GetRaw(string id)
 	{
 		string path = FormatFilePath(id);
 		if (!File.Exists(path))
@@ -112,7 +112,7 @@ public class DataStoreService : IDataStoreService
 		Set(id.ToString(), o);
 	}
 
-	public T Get<T>(Guid id)
+	public T? Get<T>(Guid id)
 	{
 		return Get<T>(id.ToString());
 	}

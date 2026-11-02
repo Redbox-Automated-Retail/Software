@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.DownloadFile;
 
 internal class DownloadFileBase : IDownloadFile
 {
-	private IDownloadFileData _downloadFileData;
+	private IDownloadFileData _downloadFileData = null!; // set by the constructor
 
 	private const string ResultTableName = "Results";
 
@@ -64,7 +64,7 @@ internal class DownloadFileBase : IDownloadFile
 		return errorList;
 	}
 
-	internal ErrorList SendDownloadFileStatus(StatusMessage.StatusMessageType statusMessageType, string description, string message)
+	internal ErrorList SendDownloadFileStatus(StatusMessage.StatusMessageType statusMessageType, string description, string? message)
 	{
 		var data = new
 		{
@@ -133,7 +133,7 @@ internal class DownloadFileBase : IDownloadFile
 		string resultJson = string.Empty;
 		string scriptText = Encoding.Unicode.GetString(DownloadFileData.ActivateScript.Base64ToBytes());
 		LogHelper.Instance.Log("DownloadFileBase.RunScript: DownloadFile Id {0} Name {1} running attached script", DownloadFileData.Id, DownloadFileData.Name);
-		Exception ex = null;
+		Exception? ex = null;
 		try
 		{
 			kernelService.ExecuteChunkNoLock(scriptText, reset: true, "Results", out var result, out scriptCompleted);

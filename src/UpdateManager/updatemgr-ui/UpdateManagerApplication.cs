@@ -18,7 +18,7 @@ public class UpdateManagerApplication : ApplicationContext
 
 	public bool InitialSubscriptionState { get; private set; }
 
-	public string UpdateManagerServiceUrl { get; private set; }
+	public string UpdateManagerServiceUrl { get; private set; } = null!; // set by Initialize
 
 	public bool Run()
 	{
@@ -55,7 +55,7 @@ public class UpdateManagerApplication : ApplicationContext
 			{
 				storeNumber.Errors.ForEach(delegate(Redbox.IPC.Framework.Error e)
 				{
-					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!));
 				});
 				return errorlist;
 			}
@@ -64,7 +64,7 @@ public class UpdateManagerApplication : ApplicationContext
 			{
 				storeNumber.Errors.ForEach(delegate(Redbox.IPC.Framework.Error e)
 				{
-					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!));
 				});
 				return errorlist;
 			}
@@ -73,7 +73,7 @@ public class UpdateManagerApplication : ApplicationContext
 			{
 				storeNumber.Errors.ForEach(delegate(Redbox.IPC.Framework.Error e)
 				{
-					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+					errorlist.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!));
 				});
 				return errorlist;
 			}
@@ -86,7 +86,7 @@ public class UpdateManagerApplication : ApplicationContext
 
 	public void ThreadSafeHostUpdate(MethodInvoker invoker)
 	{
-		if (base.MainForm.InvokeRequired)
+		if (base.MainForm!.InvokeRequired) // set by Run
 		{
 			base.MainForm.Invoke(invoker);
 		}
@@ -96,7 +96,7 @@ public class UpdateManagerApplication : ApplicationContext
 		}
 	}
 
-	public void AsyncButtonAction(Control button, Action action)
+	public void AsyncButtonAction(Control? button, Action action)
 	{
 		if (button != null)
 		{
@@ -104,7 +104,7 @@ public class UpdateManagerApplication : ApplicationContext
 		}
 		ThreadPool.QueueUserWorkItem(delegate
 		{
-			Cursor cursor = base.MainForm.Cursor;
+			Cursor cursor = base.MainForm!.Cursor;
 			try
 			{
 				if (button != null)

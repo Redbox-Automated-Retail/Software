@@ -117,7 +117,7 @@ public class Program
 			}
 			if (!string.IsNullOrEmpty(Opts.Script))
 			{
-				string fullPath = Path.GetFullPath(m_properties.ExpandProperties(Opts.Script, Location.UnknownLocation));
+				string fullPath = Path.GetFullPath(m_properties.ExpandProperties(Opts.Script, Location.UnknownLocation)!); // Script checked above; GetFullPath throws on null anyway
 				if (!File.Exists(fullPath))
 				{
 					Console.Error.WriteLine("{0} does not exists.", fullPath);

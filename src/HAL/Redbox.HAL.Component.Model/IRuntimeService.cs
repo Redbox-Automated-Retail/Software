@@ -15,7 +15,7 @@ public interface IRuntimeService
 
 	int PageSize { get; }
 
-	string ScriptsPath { get; }
+	string? ScriptsPath { get; }
 
 	string ExpandRuntimeMacros(string value);
 
@@ -31,7 +31,7 @@ public interface IRuntimeService
 
 	string GenerateUniqueFile(string suffix);
 
-	byte[] ReadToBuffer(string fileName);
+	byte[]? ReadToBuffer(string? fileName);
 
 	bool ForceSafeCopy(string source, string dest);
 

@@ -42,16 +42,17 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private class ConfigDefault
 	{
-		public string Group { get; set; }
+		// Set by the object initializers in _configDefaults.
+		public string Group { get; set; } = null!;
 
-		public string Index { get; set; }
+		public string Index { get; set; } = null!;
 
-		public string Value { get; set; }
+		public string Value { get; set; } = null!;
 	}
 
 	private class EncodedData
 	{
-		public byte[] EncData { get; set; }
+		public byte[] EncData { get; set; } = null!; // set by GetEncodedData before it returns
 
 		public int DataLength { get; set; }
 
@@ -81,9 +82,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		WriteFileDirectly
 	}
 
-	private static ILogger<IUC285Proxy> _logger;
+	private static ILogger<IUC285Proxy>? _logger;
 
-	private static IRBA_API _rba_api;
+	private static IRBA_API _rba_api = null!; // set by the constructor
 
 	private static int _attemptingReconnect = 0;
 
@@ -97,21 +98,21 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private readonly System.Timers.Timer _healthTimer;
 
-	private UnitDataModel _unitData;
+	private UnitDataModel? _unitData;
 
 	private static int _continuousResultTimeouts = 0;
 
-	private readonly KioskData _kioskData;
+	private readonly KioskData? _kioskData;
 
-	private readonly IKioskDataServiceClient _statusClient;
+	private readonly IKioskDataServiceClient? _statusClient;
 
-	private readonly IApplicationSettings _settings;
+	private readonly IApplicationSettings? _settings;
 
 	private RebootStatus _currentRebootStatus = new RebootStatus();
 
 	private RebootType _rebootType;
 
-	private readonly IIUC285Notifier _iuc285Notifier;
+	private readonly IIUC285Notifier? _iuc285Notifier;
 
 	private readonly IOptionsMonitor<DeviceServiceConfig> _deviceConfig;
 
@@ -119,7 +120,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private static TimeSpan REBOOT_THRESHOLD = TimeSpan.FromMinutes(3.0);
 
-	private static string _keys;
+	private static string? _keys;
 
 	private const string RKI_VAS_KEY_VALID_PROD = "KCV_VKBPK=713F7E";
 
@@ -279,15 +280,15 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private DateTime? _deviceRebootTime;
 
-	private Task _rebootTask;
+	private Task? _rebootTask;
 
 	private static object _getKeysLock = new object();
 
-	public Version EMVClessVersion { get; private set; }
+	public Version? EMVClessVersion { get; private set; }
 
-	public Version EMVContactVersion { get; private set; }
+	public Version? EMVContactVersion { get; private set; }
 
-	public UnitDataModel UnitData
+	public UnitDataModel? UnitData
 	{
 		get
 		{
@@ -417,7 +418,8 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	public ErrorState ErrorState { get; set; }
 
-	private ReadCardContext ReadCardContextData { get; set; }
+	// Set by ReadCardInner before the reader sends any card read message; OnDisconnect checks it for null.
+	private ReadCardContext ReadCardContextData { get; set; } = null!;
 
 	private bool IsProdEnvironment => (Registry.LocalMachine.OpenSubKey("Software\\Redbox\\REDS\\Kiosk Engine\\Store")?.GetValue("Environment"))?.ToString() == "Production";
 
@@ -440,11 +442,11 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		}
 	}
 
-	public event OnConnected OnConnectedHandler;
+	public event OnConnected? OnConnectedHandler;
 
-	public event OnDisconnected OnDisconnectedHandler;
+	public event OnDisconnected? OnDisconnectedHandler;
 
-	public IUC285Proxy(IRBA_API rba_api, ILogger<IUC285Proxy> logger, IIUC285Notifier iuc285Notifier, IKioskDataServiceClient statusClient, IApplicationSettings settings, IOptionsMonitor<DeviceServiceConfig> deviceConfig)
+	public IUC285Proxy(IRBA_API rba_api, ILogger<IUC285Proxy> logger, IIUC285Notifier? iuc285Notifier, IKioskDataServiceClient? statusClient, IApplicationSettings? settings, IOptionsMonitor<DeviceServiceConfig> deviceConfig)
 	{
 		_rba_api = rba_api;
 		_logger = logger;
@@ -454,7 +456,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_deviceConfig = deviceConfig;
 		if (_settings != null)
 		{
-			_kioskData = DataFileHelper.GetFileData<KioskData>(settings.DataFilePath, "KioskData.json", LogException);
+			_kioskData = DataFileHelper.GetFileData<KioskData>(settings!.DataFilePath, "KioskData.json", LogException); // _settings is settings
 		}
 		_reconnectTimer = new System.Timers.Timer
 		{
@@ -475,7 +477,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_deviceConfig.OnChange(OnConfigChange);
 	}
 
-	private void OnConfigChange(DeviceServiceConfig config, string data)
+	private void OnConfigChange(DeviceServiceConfig config, string? data)
 	{
 		if (IsConnected)
 		{
@@ -498,7 +500,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		Log($"Connected after {_connectAttempts} attempts.");
 		StartHealthTimer();
 		_areWaitForReconnect.Set();
-		UnitDataModel unitData = UnitData;
+		UnitDataModel? unitData = UnitData;
 		if (unitData != null && unitData.IsTampered)
 		{
 			_iuc285Notifier?.SendDeviceTamperedEvent();
@@ -521,19 +523,19 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		};
 	}
 
-	private Version GetXMLVersion(string fileName)
+	private Version? GetXMLVersion(string fileName)
 	{
-		Version version = null;
+		Version? version = null;
 		try
 		{
-			using Stream stream = RetrieveFile(RetrieveFileDataFormat.Text, Path.Combine("/HOST/", fileName));
+			using Stream? stream = RetrieveFile(RetrieveFileDataFormat.Text, Path.Combine("/HOST/", fileName));
 			if (stream != null)
 			{
 				StreamReader streamReader = new StreamReader(stream);
 				bool found = false;
-				while (!found && !streamReader.EndOfStream)
+				while (!found && !streamReader!.EndOfStream) // created just above
 				{
-					string line = streamReader?.ReadLine()?.Trim();
+					string? line = streamReader?.ReadLine()?.Trim();
 					if (!string.IsNullOrEmpty(line) && line.StartsWith("<!--") && line.ToUpper().Contains("VERSION") && line.EndsWith("-->"))
 					{
 						found = true;
@@ -554,7 +556,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return version;
 	}
 
-	private void OnReconnect(object s, EventArgs e)
+	private void OnReconnect(object? s, EventArgs e)
 	{
 		if (!IsConnected && Interlocked.CompareExchange(ref _attemptingReconnect, 1, 0) == 0)
 		{
@@ -563,10 +565,10 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		}
 	}
 
-	private void OnDisconnect(Exception exception)
+	private void OnDisconnect(Exception? exception)
 	{
 		RebootStatus currentRebootStatus = _currentRebootStatus;
-		bool isDailyReboot = currentRebootStatus != null && currentRebootStatus.DisconnectTime.HasValue && DateTime.Now >= _currentRebootStatus.DisconnectTime.Value.AddDays(1.0) - REBOOT_THRESHOLD && DateTime.Now <= _currentRebootStatus.DisconnectTime.Value.AddDays(1.0) + REBOOT_THRESHOLD;
+		bool isDailyReboot = currentRebootStatus != null && currentRebootStatus.DisconnectTime.HasValue && DateTime.Now >= _currentRebootStatus.DisconnectTime!.Value.AddDays(1.0) - REBOOT_THRESHOLD && DateTime.Now <= _currentRebootStatus.DisconnectTime.Value.AddDays(1.0) + REBOOT_THRESHOLD;
 		_rebootType = ((_rebootType == RebootType.ServiceStart || _rebootType == RebootType.Scheduled || _rebootType == RebootType.Manual || _rebootType == RebootType.FileUpdate) ? _rebootType : (isDailyReboot ? RebootType.Automatic : RebootType.Disconnect));
 		_currentRebootStatus.DisconnectTime = DateTime.Now;
 		if (ReadCardContextData != null)
@@ -603,7 +605,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_logger?.LogError(s);
 	}
 
-	public void HandleAndLogResult(ERROR_ID result, string resultName = null, bool includeResultLog = true)
+	public void HandleAndLogResult(ERROR_ID result, string? resultName = null, bool includeResultLog = true)
 	{
 		if (includeResultLog)
 		{
@@ -632,7 +634,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_logger?.LogError(e, "Unhandled Exception in " + message);
 	}
 
-	private void OnHealthTimer(object sender, ElapsedEventArgs e)
+	private void OnHealthTimer(object? sender, ElapsedEventArgs e)
 	{
 		Log("OnHealthTimer Elapsed Begin");
 		if (!PingDevice())
@@ -754,7 +756,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				else if (connected && !deviceUpdated)
 				{
 					ErrorState = ErrorState.FailedToUpdateDevice;
-					UnitDataModel unitData = GetUnitData();
+					UnitDataModel? unitData = GetUnitData();
 					if (unitData != null && unitData.IsTampered)
 					{
 						ErrorState = ErrorState.Tampered;
@@ -774,7 +776,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return IsConnected;
 	}
 
-	public UnitHealthModel GetUnitHealth()
+	public UnitHealthModel? GetUnitHealth()
 	{
 		_rba_api.SetParam(PARAMETER_ID.P08_REQ_REQUEST_TYPE, "0");
 		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M08_HEALTH_STAT);
@@ -831,7 +833,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return unitHealthModel;
 	}
 
-	private UnitDataModel GetUnitData()
+	private UnitDataModel? GetUnitData()
 	{
 		ERROR_ID errorId = _rba_api.ProcessMessage(MESSAGE_ID.M07_UNIT_DATA);
 		HandleAndLogResult(errorId, "07 Unit Data");
@@ -889,7 +891,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return unitDataModel;
 	}
 
-	public async Task<bool> ReadCard(ICardReadRequest request, CancellationToken token, Action<Base87CardReadModel> jobCompletedCallback, Action<string, string> eventsCallback)
+	public async Task<bool> ReadCard(ICardReadRequest request, CancellationToken token, Action<Base87CardReadModel> jobCompletedCallback, Action<string, string?>? eventsCallback)
 	{
 		Log("ENTER READ CARD");
 		return await ReadCardInner(request, token, jobCompletedCallback, eventsCallback);
@@ -922,7 +924,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return true;
 	}
 
-	private void PerformActionAndCheckSuccess<T>(Func<ReadCardContext, T> action, Predicate<T> checkSuccess, ReadCardContext context, VasMode vasMode = VasMode.VasAndPay)
+	private void PerformActionAndCheckSuccess<T>(Func<ReadCardContext, T>? action, Predicate<T>? checkSuccess, ReadCardContext context, VasMode vasMode = VasMode.VasAndPay)
 	{
 		if (typeof(T) == typeof(bool) && checkSuccess == null)
 		{
@@ -944,7 +946,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			});
 			return;
 		}
-		UnitDataModel unitData = _unitData;
+		UnitDataModel? unitData = _unitData;
 		if (unitData != null && unitData.IsTampered)
 		{
 			Log("PerformActionAndCheckSuccess on " + action?.Method?.Name + " is Tampered and can no longer continue.");
@@ -962,7 +964,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			Log("PerformActionAndCheckSuccess on " + action?.Method?.Name + " - context is cancelled and can no longer continue.");
 			context.State = ReadCardContextState.Canceled;
 		}
-		T actionResult = action(context);
+		T actionResult = action!(context); // checked for null above
 		if (!checkSuccess(actionResult))
 		{
 			Log("PerformActionAndCheckSuccess on " + action?.Method?.Name + " did not complete successfully.");
@@ -970,11 +972,11 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		}
 	}
 
-	private async Task<bool> ReadCardInner(ICardReadRequest request, CancellationToken cancel, Action<Base87CardReadModel> jobCompletedCallback, Action<string, string> eventsCallback)
+	private async Task<bool> ReadCardInner(ICardReadRequest request, CancellationToken cancel, Action<Base87CardReadModel> jobCompletedCallback, Action<string, string?>? eventsCallback)
 	{
 		InitializeReadCard();
 		IUC285Proxy iUC285Proxy = this;
-		ReadCardContext newContext = new ReadCardContext(_logger)
+		ReadCardContext newContext = new ReadCardContext(_logger!) // set by the constructor
 		{
 			Request = request,
 			UserInteractionTimeout = _deviceConfig?.CurrentValue.CardReadUserInteractionTimeout,
@@ -1103,13 +1105,13 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			if (TryGetCurrentTgzVersion(out var version))
 			{
-				context.CardStats.TgzVersion = version?.ToString();
+				context.CardStats!.TgzVersion = version?.ToString(); // CardStats is set by SendCompletedCallback above
 			}
 			if (_kioskData != null && _kioskData.KioskId != 0L)
 			{
-				context.CardStats.KioskId = _kioskData.KioskId;
+				context.CardStats!.KioskId = _kioskData.KioskId;
 			}
-			Task.Run(() => _statusClient?.PostCardStats(context.CardStats));
+			Task.Run(() => _statusClient?.PostCardStats(context.CardStats!));
 		}
 		return true;
 	}
@@ -1152,7 +1154,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		int attemptsLeft = 3;
 		foreach (ConfigDefault configDefault in _configDefaults)
 		{
-			string Data = null;
+			string? Data = null;
 			success = false;
 			while (!success && attemptsLeft > 0)
 			{
@@ -1242,9 +1244,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return success;
 	}
 
-	private Stream RetrieveFile(RetrieveFileDataFormat dataFormat, string filename)
+	private Stream? RetrieveFile(RetrieveFileDataFormat dataFormat, string filename)
 	{
-		Stream stream = null;
+		Stream? stream = null;
 		Log("Starting RetrieveFile for filename " + filename);
 		try
 		{
@@ -1377,7 +1379,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return result;
 	}
 
-	public bool TryGetCurrentTgzVersion(out Version version)
+	public bool TryGetCurrentTgzVersion(out Version? version)
 	{
 		version = new Version();
 		if (!IsConnected)
@@ -1392,11 +1394,11 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	{
 		Regex ingenicoDeviceId = new Regex("^VID_0B00.PID_0057", RegexOptions.IgnoreCase);
 		List<string> portNames = new List<string>();
-		RegistryKey enumKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum");
+		RegistryKey enumKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum")!; // the registry keys below throw when missing, as before
 		string[] busNames = enumKey.GetSubKeyNames();
 		foreach (string busName in busNames)
 		{
-			RegistryKey busKey = enumKey.OpenSubKey(busName);
+			RegistryKey busKey = enumKey.OpenSubKey(busName)!;
 			string[] deviceIds = busKey.GetSubKeyNames();
 			foreach (string deviceId in deviceIds)
 			{
@@ -1404,17 +1406,17 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				{
 					continue;
 				}
-				RegistryKey deviceKey = busKey.OpenSubKey(deviceId);
+				RegistryKey deviceKey = busKey.OpenSubKey(deviceId)!;
 				string[] instanceNames = deviceKey.GetSubKeyNames();
 				foreach (string instanceName in instanceNames)
 				{
-					RegistryKey instanceKey = deviceKey?.OpenSubKey(instanceName);
-					_ = (string)instanceKey?.GetValue("LocationInformation");
-					RegistryKey parametersKey = instanceKey.OpenSubKey("Device Parameters");
-					string portName = (string)parametersKey?.GetValue("PortName");
+					RegistryKey? instanceKey = deviceKey?.OpenSubKey(instanceName);
+					_ = (string?)instanceKey?.GetValue("LocationInformation");
+					RegistryKey? parametersKey = instanceKey!.OpenSubKey("Device Parameters");
+					string? portName = (string?)parametersKey?.GetValue("PortName");
 					if (!string.IsNullOrEmpty(portName) && Enumerable.Contains(SerialPort.GetPortNames(), portName))
 					{
-						portNames.Add((string)parametersKey.GetValue("PortName"));
+						portNames.Add((string)parametersKey!.GetValue("PortName")!); // portName (the same value) was checked above
 					}
 				}
 			}
@@ -1450,7 +1452,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		};
 	}
 
-	private VasResult M17_6SendVasMessage(VasCmd vasCmd, params string[] vasParams)
+	private VasResult M17_6SendVasMessage(VasCmd vasCmd, params string?[] vasParams)
 	{
 		VasResult vasResult = new VasResult
 		{
@@ -1463,7 +1465,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		_rba_api.SetParam(PARAMETER_ID.P17_REQ_VAS_CMD, vasCmdText);
 		if (vasParams.Length != 0)
 		{
-			foreach (string v in vasParams)
+			foreach (string? v in vasParams)
 			{
 				_rba_api.AddParam(PARAMETER_ID.P17_REQ_VAS_PARAMETER, v);
 			}
@@ -1474,7 +1476,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			return vasResult;
 		}
 		string statusCode = _rba_api.GetParam(PARAMETER_ID.P17_RES_STATUS);
-		vasResult.Status = (Enum.TryParse(typeof(VasStatus), statusCode, out object parsedStatus) ? ((VasStatus)parsedStatus) : VasStatus.Unknown);
+		vasResult.Status = (Enum.TryParse(typeof(VasStatus), statusCode, out object? parsedStatus) ? ((VasStatus)parsedStatus!) : VasStatus.Unknown);
 		vasResult.AdditionalData = _rba_api.GetParam(PARAMETER_ID.P17_RES_IS_ADDITIONAL_DATA);
 		string vasDataResult = _rba_api.GetParam(PARAMETER_ID.P17_RES_VAS_RESULT);
 		vasResult.VasDataResult = vasDataResult;
@@ -1624,7 +1626,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			}
 			if (parseTags.Tag9F27CryptogramDeclined)
 			{
-				ReadCardContextData.Errors.Add(new Error
+				ReadCardContextData!.Errors.Add(new Error
 				{
 					Code = "EMVCardDecline",
 					Message = "Card Declined Transaction."
@@ -1633,7 +1635,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			}
 			if (!string.IsNullOrEmpty(parseTags.ErrorCode))
 			{
-				ReadCardContextData.Errors.Add(new Error
+				ReadCardContextData!.Errors.Add(new Error
 				{
 					Code = parseTags.ErrorCode,
 					Message = "Error During Read."
@@ -1643,8 +1645,8 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			emvCardReadModel.FirstSix = parseTags.First6;
 			emvCardReadModel.LastFour = parseTags.Last4;
 			emvCardReadModel.AID = parseTags.AID;
-			emvCardReadModel.MfgSerialNumber = UnitData.ManufacturingSerialNumber;
-			if (ReadCardContextData.CardSource == CardSourceType.EMVContactless && parseTags.IsMobileWallet)
+			emvCardReadModel.MfgSerialNumber = UnitData!.ManufacturingSerialNumber; // throws when the unit data could not be read, as before
+			if (ReadCardContextData!.CardSource == CardSourceType.EMVContactless && parseTags.IsMobileWallet)
 			{
 				ReadCardContext readCardContextData = ReadCardContextData;
 				CardSourceType cardSource = (emvCardReadModel.CardSource = CardSourceType.Mobile);
@@ -1787,7 +1789,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				ReadCardContextData.UpdateStopStateFor(VasMode.PayOnly);
 				return false;
 			}
-			Base87CardReadModel responseDataModel = ParseOnGuardData(cardData);
+			Base87CardReadModel? responseDataModel = ParseOnGuardData(cardData);
 			ReadCardContextData.ResponseDataModel = responseDataModel;
 			return true;
 		}
@@ -1905,7 +1907,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		string param = _rba_api.GetParam(PARAMETER_ID.P16_RES_DATA);
 		string param2 = _rba_api.GetParam(PARAMETER_ID.P16_RES_IS_ADDITIONAL_DATA);
 		string param3 = _rba_api.GetParam(PARAMETER_ID.P16_RES_STATUS);
-		VasMessageStatus vasMessageStatus = (Enum.TryParse(typeof(VasMessageStatus), param, out object result) ? ((VasMessageStatus)result) : VasMessageStatus.VAS_ERROR_UNKNOWN);
+		VasMessageStatus vasMessageStatus = (Enum.TryParse(typeof(VasMessageStatus), param, out object? result) ? ((VasMessageStatus)result!) : VasMessageStatus.VAS_ERROR_UNKNOWN);
 		vasMessageStatus = (Enum.IsDefined(typeof(VasMessageStatus), vasMessageStatus) ? vasMessageStatus : VasMessageStatus.VAS_ERROR_UNKNOWN);
 		if ((!(param3 == "0") && !(param3 == "6")) || (vasMessageStatus != VasMessageStatus.VAS_STATUS_OK && vasMessageStatus != VasMessageStatus.VAS_STATUS_CANCELLED && vasMessageStatus != VasMessageStatus.VAS_STATUS_COMPLETE_TAP && vasMessageStatus != VasMessageStatus.VAS_STATUS_EXPECT_PAYMENT && vasMessageStatus != VasMessageStatus.VAS_ERROR_MOBILE_DATA_NOT_AVAILABLE))
 		{
@@ -1978,7 +1980,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		};
 	}
 
-	public Base87CardReadModel ParseOnGuardData(string cardData)
+	public Base87CardReadModel? ParseOnGuardData(string? cardData)
 	{
 		if (string.IsNullOrWhiteSpace(cardData))
 		{
@@ -2100,7 +2102,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 					int track1Length = Convert.ToInt32(cardData.Substring(offset, 2));
 					offset += 2;
 					Log("Track1 length: " + track1Length);
-					string track1 = null;
+					string? track1 = null;
 					if (track1Length > 0)
 					{
 						track1 = cardData.Substring(offset, track1Length);
@@ -2109,7 +2111,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 					int track2Length = Convert.ToInt32(cardData.Substring(offset, 2));
 					offset += 2;
 					Log("Track2 length: " + track2Length);
-					string track2 = null;
+					string? track2 = null;
 					if (track2Length > 0)
 					{
 						track2 = cardData.Substring(offset, track2Length);
@@ -2203,10 +2205,10 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	private bool SetAmount(ReadCardContext context)
 	{
-		string amount = (((context?.Request?.Amount).GetValueOrDefault() > 0m) ? ((context?.Request.Amount).Value * 100m).ToString("0") : "100");
+		string amount = (((context?.Request?.Amount).GetValueOrDefault() > 0m) ? ((context?.Request.Amount)!.Value * 100m).ToString("0") : "100");
 		if (!SetAmount(amount))
 		{
-			context.Errors.Add(new Error
+			context!.Errors.Add(new Error
 			{
 				Code = "RBA001",
 				Message = "Set Amount Message Failed."
@@ -2319,7 +2321,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		if (!CardReadRequestEncrypted(context.Request.InputType))
 		{
 			Log("Encrypted Read Failed.");
-			context.Errors.Add(new Error
+			context!.Errors.Add(new Error
 			{
 				Code = "RBA001",
 				Message = "87 Read Card Encrypted Message Failed."
@@ -2345,12 +2347,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			_rba_api.SetParam(PARAMETER_ID.P87_REQ_FORM_NAME, formName);
 		}
-		string description = inputs.GetDescription();
+		string? description = inputs.GetDescription();
 		if (!string.IsNullOrEmpty(description))
 		{
 			_rba_api.SetParam(PARAMETER_ID.P87_REQ_PROMPT_INDEX, description);
 		}
-		string enabledDevices = inputs.ToString();
+		string? enabledDevices = inputs.ToString();
 		if (!string.IsNullOrEmpty(enabledDevices))
 		{
 			_rba_api.SetParam(PARAMETER_ID.P87_REQ_ENABLE_DEVICES, enabledDevices);
@@ -2371,12 +2373,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			_rba_api.SetParam(PARAMETER_ID.P23_REQ_FORM_NAME, formName);
 		}
-		string description = inputs.GetDescription();
+		string? description = inputs.GetDescription();
 		if (!string.IsNullOrEmpty(description))
 		{
 			_rba_api.SetParam(PARAMETER_ID.P23_REQ_PROMPT_INDEX, description);
 		}
-		string enabledDevices = inputs.ToString();
+		string? enabledDevices = inputs.ToString();
 		if (!string.IsNullOrEmpty(enabledDevices))
 		{
 			_rba_api.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, enabledDevices);
@@ -2386,9 +2388,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
-	private string VasModeToIngenicoVasMode(VasMode mode)
+	private string? VasModeToIngenicoVasMode(VasMode mode)
 	{
-		string result = null;
+		string? result = null;
 		switch (mode)
 		{
 		case VasMode.VasOnly:
@@ -2410,7 +2412,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return M17_6SendVasMessage(VasCmd.SetEnable, enable ? "1" : "0").Success;
 	}
 
-	private bool AddAppleVas(string identifier, ReadCardContext context)
+	private bool AddAppleVas(string identifier, ReadCardContext? context)
 	{
 		if (context?.Request.AppleVasUrl == null)
 		{
@@ -2419,7 +2421,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return M17_6SendVasMessage(VasCmd.AddAppleMerchantId, identifier, "tbd", "0100000000", "1").Success;
 	}
 
-	private bool AddGoogleVas(string identifier, ReadCardContext context)
+	private bool AddGoogleVas(string identifier, ReadCardContext? context)
 	{
 		return M17_6SendVasMessage(VasCmd.AddGoogleMerchantId, identifier, "PLACE03", "TRMNL01", "Google Store", "en", "1", "0").Success;
 	}
@@ -2450,7 +2452,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		{
 			return false;
 		}
-		string text = VasModeToIngenicoVasMode((context?.Request?.VasMode).GetValueOrDefault());
+		string? text = VasModeToIngenicoVasMode((context?.Request?.VasMode).GetValueOrDefault());
 		if (context != null && context.IsVasEnabled)
 		{
 			M17_6SendVasMessage(VasCmd.SetMode, text);
@@ -2538,7 +2540,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		if (!EMVTransInitiation() || !_mre3302TransactionPrepareResponse.WaitOne(20000))
 		{
 			Log("Failed EMV Transaction Initiation or Timed out waiting for response.");
-			context.Errors.Add(new Error
+			context!.Errors.Add(new Error
 			{
 				Code = "RBA001",
 				Message = "EMV Initiate Message Failed."
@@ -2579,7 +2581,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 	{
 		if (!SetPaymentType_04("B", "00"))
 		{
-			context.Errors.Add(new Error
+			context!.Errors.Add(new Error
 			{
 				Code = "RBA001",
 				Message = "Set Payment Message Failed."
@@ -2657,7 +2659,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		HandleAndLogResult(result, $"33.04 EMV Auth Response: {success}");
 	}
 
-	public bool ReadConfig(string group, string index, out string Data, bool sendOffline = true)
+	public bool ReadConfig(string? group, string? index, out string Data, bool sendOffline = true)
 	{
 		if (sendOffline)
 		{
@@ -2673,7 +2675,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return errorId == ERROR_ID.RESULT_SUCCESS;
 	}
 
-	public bool WriteConfig(string group, string index, string value, bool sendOffline = true)
+	public bool WriteConfig(string group, string index, string? value, bool sendOffline = true)
 	{
 		if (sendOffline)
 		{
@@ -2822,9 +2824,9 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return WriteFileRecordType.Continuation;
 	}
 
-	private static Stream ReduceRkiStream(StreamReader sr, string serialNumber)
+	private static Stream? ReduceRkiStream(StreamReader sr, string serialNumber)
 	{
-		string line;
+		string? line;
 		while (sr != null && !sr.EndOfStream && !string.IsNullOrWhiteSpace(line = sr?.ReadLine()))
 		{
 			if (line.StartsWith(serialNumber))
@@ -2835,7 +2837,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return null;
 	}
 
-	private async Task<bool> WriteStreamInner(Stream stream, string fileName, bool rebootAfterWrite)
+	private async Task<bool> WriteStreamInner(Stream? stream, string fileName, bool rebootAfterWrite)
 	{
 		if (string.IsNullOrEmpty(fileName) || fileName.Length > 15)
 		{
@@ -2843,14 +2845,14 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			return false;
 		}
 		Log($"Write Steam File: {fileName} - Length: {stream?.Length ?? 0} bytes - reboot: {rebootAfterWrite}");
-		if (!stream.CanRead)
+		if (!stream!.CanRead) // throws on a null stream, as before
 		{
 			LogError("WriteFileInner Can't Read Stream for " + fileName);
 			return false;
 		}
 		if (Path.GetExtension(fileName).ToUpper() == ".RKI")
 		{
-			stream = ReduceRkiStream(new StreamReader(stream), UnitData?.UnitSerialNumber);
+			stream = ReduceRkiStream(new StreamReader(stream), UnitData?.UnitSerialNumber!); // StartsWith throws on a null serial number, as before
 			if (stream == null)
 			{
 				return true;
@@ -2864,7 +2866,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		long bytesWritten = 0L;
 		while (moreData)
 		{
-			EncodedData encodedData = GetEncodedData(stream);
+			EncodedData encodedData = GetEncodedData(stream!); // checked by CanRead above
 			bytesWritten += encodedData.DataLength;
 			switch (encodedData.Result)
 			{
@@ -3080,7 +3082,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 
 	public async Task PostDeviceStatus()
 	{
-		KioskData kioskData = _kioskData;
+		KioskData? kioskData = _kioskData;
 		int hasKioskData;
 		if (kioskData == null)
 		{
@@ -3091,8 +3093,8 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			_ = kioskData.KioskId;
 			hasKioskData = 1;
 		}
-		DeviceStatus deviceStatus = ((hasKioskData == 0) ? null : (await CheckDeviceStatus(_kioskData.KioskId)));
-		DeviceStatus deviceStatus2 = deviceStatus;
+		DeviceStatus? deviceStatus = ((hasKioskData == 0) ? null : (await CheckDeviceStatus(_kioskData!.KioskId)));
+		DeviceStatus? deviceStatus2 = deviceStatus;
 		if (deviceStatus2 != null)
 		{
 			_statusClient?.PostDeviceStatus(deviceStatus2);
@@ -3107,7 +3109,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 			Serial = _unitData?.UnitSerialNumber,
 			MfgSerial = _unitData?.ManufacturingSerialNumber,
 			RBA = _unitData?.GetApplicationVersionString(),
-			Assembly = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+			Assembly = Assembly.GetExecutingAssembly().GetName().Version!.ToString(),
 			EMVClessVersion = EMVClessVersion?.ToString(),
 			EMVContactVersion = EMVContactVersion?.ToString(),
 			LocalTime = DateTime.Now,
@@ -3124,12 +3126,12 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 		return deviceStatus;
 	}
 
-	private string GetKeys()
+	private string? GetKeys()
 	{
 		Log("Begin GetKeys");
 		lock (_getKeysLock)
 		{
-			if (!IsConnected || _unitData.IsTampered)
+			if (!IsConnected || _unitData!.IsTampered) // throws when connected without unit data, as before
 			{
 				return null;
 			}

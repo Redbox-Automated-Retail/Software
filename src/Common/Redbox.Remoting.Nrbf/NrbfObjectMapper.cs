@@ -20,17 +20,17 @@ internal sealed class NrbfObjectMapper
 {
 	private readonly Dictionary<object, object> _materialized = new Dictionary<object, object>(ReferenceEqualityComparer.Instance);
 
-	public static object Map(object value, Type targetType) => new NrbfObjectMapper().MapValue(value, targetType);
+	public static object? Map(object? value, Type targetType) => new NrbfObjectMapper().MapValue(value, targetType);
 
-	public static T Map<T>(object value) => (T)Map(value, typeof(T));
+	public static T Map<T>(object? value) => (T)Map(value, typeof(T))!;
 
-	private object MapValue(object value, Type targetType)
+	private object? MapValue(object? value, Type targetType)
 	{
 		if (value == null)
 		{
 			return targetType.IsValueType && Nullable.GetUnderlyingType(targetType) == null ? Activator.CreateInstance(targetType) : null;
 		}
-		Type nullableUnderlying = Nullable.GetUnderlyingType(targetType);
+		Type? nullableUnderlying = Nullable.GetUnderlyingType(targetType);
 		if (nullableUnderlying != null)
 		{
 			targetType = nullableUnderlying;
@@ -61,7 +61,7 @@ internal sealed class NrbfObjectMapper
 
 	private object MapObject(NrbfObject obj, Type targetType)
 	{
-		if (_materialized.TryGetValue(obj, out object done))
+		if (_materialized.TryGetValue(obj, out object? done))
 		{
 			return done;
 		}
@@ -73,16 +73,16 @@ internal sealed class NrbfObjectMapper
 		{
 			throw new InvalidDataException($"Cannot map {obj.TypeName} to System.Object without a declared type.");
 		}
-		if (IsGenericList(targetType, out Type itemType))
+		if (IsGenericList(targetType, out Type? itemType))
 		{
-			return MapList(obj, targetType, itemType);
+			return MapList(obj, targetType, itemType!);
 		}
 		object instance = RuntimeHelpers.GetUninitializedObject(targetType);
 		_materialized[obj] = instance;
 		Dictionary<string, FieldInfo> fields = FieldsByName(targetType);
 		for (int i = 0; i < obj.MemberNames.Count; i++)
 		{
-			if (fields.TryGetValue(obj.MemberNames[i], out FieldInfo field))
+			if (fields.TryGetValue(obj.MemberNames[i], out FieldInfo? field))
 			{
 				field.SetValue(instance, MapValue(obj.Values[i], field.FieldType));
 			}
@@ -93,9 +93,9 @@ internal sealed class NrbfObjectMapper
 	// List<T> is serialized as { _items: T[capacity], _size, _version }; only the first _size items are real.
 	private object MapList(NrbfObject obj, Type listType, Type itemType)
 	{
-		IList list = (IList)Activator.CreateInstance(listType);
+		IList list = (IList)Activator.CreateInstance(listType)!;
 		_materialized[obj] = list;
-		object[] items = (obj["_items"] as NrbfArray)?.Items ?? Array.Empty<object>();
+		object?[] items = (obj["_items"] as NrbfArray)?.Items ?? Array.Empty<object?>();
 		int size = obj["_size"] is int count ? Math.Min(count, items.Length) : items.Length;
 		for (int i = 0; i < size; i++)
 		{
@@ -106,11 +106,11 @@ internal sealed class NrbfObjectMapper
 
 	private object MapArray(NrbfArray array, Type targetType)
 	{
-		if (_materialized.TryGetValue(array, out object done))
+		if (_materialized.TryGetValue(array, out object? done))
 		{
 			return done;
 		}
-		Type elementType = targetType.IsArray ? targetType.GetElementType() : typeof(object);
+		Type elementType = targetType.IsArray ? targetType.GetElementType()! : typeof(object);
 		Array result = Array.CreateInstance(elementType, array.Items.Length);
 		_materialized[array] = result;
 		for (int i = 0; i < array.Items.Length; i++)
@@ -120,7 +120,7 @@ internal sealed class NrbfObjectMapper
 		return result;
 	}
 
-	private static bool IsGenericList(Type type, out Type itemType)
+	private static bool IsGenericList(Type type, out Type? itemType)
 	{
 		if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
 		{
@@ -134,7 +134,7 @@ internal sealed class NrbfObjectMapper
 	private static Dictionary<string, FieldInfo> FieldsByName(Type type)
 	{
 		Dictionary<string, FieldInfo> fields = new Dictionary<string, FieldInfo>(StringComparer.Ordinal);
-		for (Type current = type; current != null && current != typeof(object); current = current.BaseType)
+		for (Type? current = type; current != null && current != typeof(object); current = current.BaseType)
 		{
 			foreach (FieldInfo field in current.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
 			{

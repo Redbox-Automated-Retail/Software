@@ -8,15 +8,16 @@ namespace Redbox.HardwareServices.Proxy;
 
 public class HardwareImmediateExecutionCallback : ICallbackEntry
 {
-	public HardwareImmediateExecutionHandler EventHandler { get; set; }
+	// Set by the object initializer in HardwareService.ExecuteImmediate (also Command, Stack and Errors).
+	public HardwareImmediateExecutionHandler EventHandler { get; set; } = null!;
 
-	public string Command { get; set; }
+	public string Command { get; set; } = null!;
 
 	public bool Success { get; set; }
 
-	public Stack<string> Stack { get; set; }
+	public Stack<string> Stack { get; set; } = null!;
 
-	public List<string> Errors { get; set; }
+	public List<string> Errors { get; set; } = null!;
 
 	public string Name => "HardwareImmediateExecutionCallback";
 

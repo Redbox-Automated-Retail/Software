@@ -146,7 +146,7 @@ public class DeviceServiceClient : IDeviceServiceClientCore
 		}
 	}
 
-	private void _signalRClient_OnDisconnectedHandler(Exception exception)
+	private void _signalRClient_OnDisconnectedHandler(Exception? exception)
 	{
 		Log($"DeviceService disconnected. {exception}");
 		OnDisconnectedHandler?.Invoke(exception);

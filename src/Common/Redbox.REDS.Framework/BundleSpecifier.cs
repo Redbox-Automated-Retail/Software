@@ -10,15 +10,15 @@ public class BundleSpecifier : IBundleSpecifier
 
 	public BundleType Type { get; internal set; }
 
-	public IResourceBundle Instance { get; internal set; }
+	public IResourceBundle? Instance { get; internal set; }
 
-	public BundleSpecifier(string specifier)
+	public BundleSpecifier(string? specifier)
 	{
 		if (string.IsNullOrEmpty(specifier))
 		{
 			throw new ArgumentException("specifier cannot be null.");
 		}
-		string[] parts = specifier.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+		string[] parts = specifier!.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		if (parts.Length < 2)
 		{
 			throw new ArgumentException("specifier must be in the format: product,version");
@@ -27,7 +27,7 @@ public class BundleSpecifier : IBundleSpecifier
 		Version = new Version((parts[1] == "*") ? "999999.999999" : parts[1].Replace("*", "999999"));
 	}
 
-	public BundleSpecifier(string productName, string productVersion, BundleType type, IResourceBundle bundle)
+	public BundleSpecifier(string? productName, string? productVersion, BundleType type, IResourceBundle bundle)
 		: this($"{productName},{productVersion}")
 	{
 		Instance = bundle;

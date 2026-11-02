@@ -334,7 +334,7 @@ internal class StateFile
 		{
 			lock (_lock)
 			{
-				List<ClientFileSetState> stateFiles = null;
+				List<ClientFileSetState>? stateFiles = null;
 				errorList.AddRange(GetAllFiles(out stateFiles));
 				if (errorList.ContainsError())
 				{

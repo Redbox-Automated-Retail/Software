@@ -109,7 +109,7 @@ public class GroupButton : RoundedButton
 	{
 		if ((bool)e.NewValue)
 		{
-			Unregister(d as GroupButton);
+			Unregister((d as GroupButton)!);
 		}
 	}
 
@@ -117,11 +117,11 @@ public class GroupButton : RoundedButton
 	{
 		if (string.IsNullOrEmpty(e.NewValue as string))
 		{
-			Unregister(d as GroupButton);
+			Unregister((d as GroupButton)!);
 		}
 		else
 		{
-			Register(d as GroupButton);
+			Register((d as GroupButton)!);
 		}
 	}
 

@@ -13,31 +13,31 @@ internal static class ViewFunctions
 	}
 
 	[KernelFunction(Name = "kernel.popview")]
-	internal static string PopView()
+	internal static string? PopView()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.Pop();
 	}
 
 	[KernelFunction(Name = "kernel.popviewdiscard")]
-	internal static string PopViewDiscard()
+	internal static string? PopViewDiscard()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.PopDiscard();
 	}
 
 	[KernelFunction(Name = "kernel.peekview")]
-	internal static string PeekView()
+	internal static string? PeekView()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.Peek();
 	}
 
 	[KernelFunction(Name = "kernel.peekpriorview")]
-	internal static string PeekPriorView()
+	internal static string? PeekPriorView()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.Peek(1);
 	}
 
 	[KernelFunction(Name = "kernel.getviewframe")]
-	internal static LuaTable GetViewFrame()
+	internal static LuaTable? GetViewFrame()
 	{
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		if (viewService == null)
@@ -52,7 +52,7 @@ internal static class ViewFunctions
 		{
 			return new LuaTable(KernelService.Instance.LuaRuntime)
 			{
-				["x"] = viewFrame.ViewWindow.Value.X,
+				["x"] = viewFrame.ViewWindow!.Value.X,
 				["y"] = viewFrame.ViewWindow.Value.Y,
 				["width"] = viewFrame.ViewWindow.Value.Width,
 				["height"] = viewFrame.ViewWindow.Value.Height
@@ -62,9 +62,9 @@ internal static class ViewFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getviewrendertype")]
-	internal static string GetViewRenderType()
+	internal static string? GetViewRenderType()
 	{
-		string result = null;
+		string? result = null;
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		if (viewService != null)
 		{
@@ -96,7 +96,7 @@ internal static class ViewFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getlastshownview")]
-	internal static string GetLastShownView()
+	internal static string? GetLastShownView()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.GetLastShownView();
 	}
@@ -108,7 +108,7 @@ internal static class ViewFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_start_over_view_name")]
-	internal static string GetStartOverViewName()
+	internal static string? GetStartOverViewName()
 	{
 		return ServiceLocator.Instance.GetService<IViewService>()?.GetStartOverViewName();
 	}

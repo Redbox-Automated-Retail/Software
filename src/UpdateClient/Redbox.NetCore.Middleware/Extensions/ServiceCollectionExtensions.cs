@@ -43,12 +43,12 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IGrafanaMetrics, GrafanaMetrics>();
 	}
 
-	public static void AddHttpService(this IServiceCollection services, bool trackMetrics = true, Func<HttpClientHandler> primaryMessageHandler = null)
+	public static void AddHttpService(this IServiceCollection services, bool trackMetrics = true, Func<HttpClientHandler>? primaryMessageHandler = null)
 	{
 		services.TryAddSingleton<ICommonMetricsFactory, CommonMetricsFactory>();
 		if (trackMetrics)
 		{
-			services.AddSingleton<HttpMetrics>().AddSingleton<ICommonMetrics, HttpMetrics>((IServiceProvider s) => s.GetService<HttpMetrics>());
+			services.AddSingleton<HttpMetrics>().AddSingleton<ICommonMetrics, HttpMetrics>((IServiceProvider s) => s.GetService<HttpMetrics>()!); // registered just before
 		}
 		if (primaryMessageHandler == null)
 		{

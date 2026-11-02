@@ -10,11 +10,12 @@ namespace Redbox.HAL.IPC.Framework.Sockets;
 
 internal sealed class TcpClientSession : Redbox.HAL.IPC.Framework.Client.ClientSession
 {
-	private IIPCChannel m_channel;
+	// m_channel, TransportClient and Stream are set by OnConnect.
+	private IIPCChannel m_channel = null!;
 
-	private TcpClient TransportClient;
+	private TcpClient TransportClient = null!;
 
-	private Stream Stream;
+	private Stream Stream = null!;
 
 	private readonly int m_clientPort;
 
@@ -41,7 +42,7 @@ internal sealed class TcpClientSession : Redbox.HAL.IPC.Framework.Client.ClientS
 		}
 		else
 		{
-			SslStream sslStream = new SslStream(stream, leaveInnerStreamOpen: false, (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => true);
+			SslStream sslStream = new SslStream(stream, leaveInnerStreamOpen: false, (object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) => true);
 			sslStream.ReadTimeout = base.Timeout;
 			sslStream.WriteTimeout = base.Timeout;
 			sslStream.AuthenticateAsClient(base.Protocol.Host);

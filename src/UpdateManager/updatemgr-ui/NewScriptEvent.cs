@@ -9,60 +9,61 @@ namespace Redbox.UpdateManager.UI;
 
 public class NewScriptEvent : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Button m_submit;
+	private Button m_submit = null!;
 
-	private Button m_cancel;
+	private Button m_cancel = null!;
 
-	private ErrorProvider m_errors;
+	private ErrorProvider m_errors = null!;
 
-	private TabControl m_newScriptTabControl;
+	private TabControl m_newScriptTabControl = null!;
 
-	private TabPage BasicPage;
+	private TabPage BasicPage = null!;
 
-	private TextBox m_basic_path;
+	private TextBox m_basic_path = null!;
 
-	private Label m_recurrenceLabel;
+	private Label m_recurrenceLabel = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label scriptlocationlabel;
+	private Label scriptlocationlabel = null!;
 
-	private TabPage AdvancedPage;
+	private TabPage AdvancedPage = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private TextBox Instructions;
+	private TextBox Instructions = null!;
 
-	private TextBox m_advanced_cronExpression;
+	private TextBox m_advanced_cronExpression = null!;
 
-	private TextBox m_advanced_path;
+	private TextBox m_advanced_path = null!;
 
-	private TextBox m_basic_recurrence;
+	private TextBox m_basic_recurrence = null!;
 
-	private TextBox m_basic_initial;
+	private TextBox m_basic_initial = null!;
 
-	private TextBox m_basic_name;
+	private TextBox m_basic_name = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private TextBox m_advanced_name;
+	private TextBox m_advanced_name = null!;
 
-	private TextBox m_advanced_initial;
+	private TextBox m_advanced_initial = null!;
 
-	private Label label6;
+	private Label label6 = null!;
 
+	// The controls above are created by InitializeComponent.
 	public NewScriptEvent()
 	{
 		InitializeComponent();
 	}
 
-	private void OnSubmitClick(object sender, EventArgs e)
+	private void OnSubmitClick(object? sender, EventArgs e)
 	{
 		m_errors.SetError(m_basic_path, string.Empty);
 		m_errors.SetError(m_basic_name, string.Empty);
@@ -156,7 +157,7 @@ public class NewScriptEvent : Form
 		Close();
 	}
 
-	private void OnCancel(object sender, EventArgs e)
+	private void OnCancel(object? sender, EventArgs e)
 	{
 		Close();
 	}

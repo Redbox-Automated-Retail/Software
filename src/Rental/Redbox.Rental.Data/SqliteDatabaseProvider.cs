@@ -16,7 +16,7 @@ internal class SqliteDatabaseProvider : IDisposable
 
 	private readonly string _name;
 
-	private SqliteConnection _connection;
+	private SqliteConnection? _connection;
 
 	public SqliteDatabaseProvider(string name, string path)
 	{
@@ -62,18 +62,18 @@ internal class SqliteDatabaseProvider : IDisposable
 		}
 	}
 
-	public DataTable GetSqlData(string sql)
+	public DataTable? GetSqlData(string sql)
 	{
 		return GetSqlData(sql, nolog: false);
 	}
 
-	public DataTable GetSqlData(string sql, bool nolog)
+	public DataTable? GetSqlData(string sql, bool nolog)
 	{
 		DateTime now = DateTime.Now;
 		try
 		{
 			DataTable dataTable = new DataTable();
-			using (SqliteCommand command = _connection.CreateCommand())
+			using (SqliteCommand command = _connection!.CreateCommand()) // opened by Open; throws otherwise (caught below), as before
 			{
 				command.CommandText = sql;
 				using SqliteDataReader reader = command.ExecuteReader();

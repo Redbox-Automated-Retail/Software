@@ -31,7 +31,7 @@ public class RemotingServerSink : BaseChannelSinkWithProperties, IServerChannelS
 		throw new NotImplementedException();
 	}
 
-	public Stream GetResponseStream(IServerResponseChannelSinkStack sinkStack, object state, IMessage msg, ITransportHeaders headers)
+	public Stream? GetResponseStream(IServerResponseChannelSinkStack sinkStack, object state, IMessage msg, ITransportHeaders headers)
 	{
 		return null;
 	}

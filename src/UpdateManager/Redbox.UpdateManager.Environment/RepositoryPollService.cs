@@ -70,7 +70,7 @@ public class RepositoryPollService : IPollRequestReply
 					{
 						PollRequestType = PollRequestType.Repositories,
 						SyncId = m_syncId,
-						Data = RepositoryDiffMerge.Minimize(rdw)
+						Data = RepositoryDiffMerge.Minimize(rdw!) // set when TryDiff succeeds
 					};
 					pollRequestList.Add(diffRequest);
 					m_previousClientRepositoryDataDTOHash = currentHash;
@@ -155,11 +155,11 @@ public class RepositoryPollService : IPollRequestReply
 				errorList.AddRange(transferService.GetJobs(out var jobs, allUsers: true));
 				foreach (ITransferJob item in jobs)
 				{
-					ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
-					ClientRepositoryDataDTO clientRepositoryDataDTO = currentClientRepositoryDataDTO.FirstOrDefault((ClientRepositoryDataDTO crd) => crd.R == changeSet.Name);
+					ChangeSet? changeSet = dataStoreService.Get<ChangeSet>(item.ID);
+					ClientRepositoryDataDTO? clientRepositoryDataDTO = currentClientRepositoryDataDTO.FirstOrDefault((ClientRepositoryDataDTO crd) => crd.R == changeSet!.Name); // throws on a missing change set, as before
 					if (clientRepositoryDataDTO != null)
 					{
-						clientRepositoryDataDTO.I = changeSet.Head;
+						clientRepositoryDataDTO.I = changeSet!.Head;
 					}
 				}
 			}

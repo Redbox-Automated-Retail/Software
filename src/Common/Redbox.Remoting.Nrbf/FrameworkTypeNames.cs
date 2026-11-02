@@ -22,7 +22,7 @@ internal static class FrameworkTypeNames
 	{
 		while (type.IsArray)
 		{
-			type = type.GetElementType();
+			type = type.GetElementType()!;
 		}
 		if (type.IsGenericType)
 		{
@@ -36,17 +36,17 @@ internal static class FrameworkTypeNames
 	{
 		if (type.IsArray)
 		{
-			return TypeName(type.GetElementType()) + "[" + new string(',', type.GetArrayRank() - 1) + "]";
+			return TypeName(type.GetElementType()!) + "[" + new string(',', type.GetArrayRank() - 1) + "]";
 		}
 		if (type.IsGenericType && !type.IsGenericTypeDefinition)
 		{
 			string arguments = string.Join(",", type.GetGenericArguments().Select(a => "[" + AssemblyQualifiedName(a) + "]"));
 			return type.GetGenericTypeDefinition().FullName + "[" + arguments + "]";
 		}
-		return type.FullName;
+		return type.FullName!;
 	}
 
-	public static string AssemblyName(Type type) => IsSystemType(type) ? Mscorlib : AssemblyOf(type).FullName;
+	public static string AssemblyName(Type type) => IsSystemType(type) ? Mscorlib : AssemblyOf(type).FullName!;
 
 	public static string AssemblyQualifiedName(Type type) => TypeName(type) + ", " + AssemblyName(type);
 
@@ -54,7 +54,7 @@ internal static class FrameworkTypeNames
 	{
 		while (type.IsArray)
 		{
-			type = type.GetElementType();
+			type = type.GetElementType()!;
 		}
 		return type.Assembly;
 	}

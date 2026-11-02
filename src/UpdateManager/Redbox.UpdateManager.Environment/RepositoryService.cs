@@ -36,9 +36,10 @@ public class RepositoryService : IRepositoryService, IDisposable
 
 	public static RepositoryService Instance => Singleton<RepositoryService>.Instance;
 
-	private string Root { get; set; }
+	// Set by Initialize.
+	private string Root { get; set; } = null!;
 
-	private string StagingDirectory { get; set; }
+	private string StagingDirectory { get; set; } = null!;
 
 	public Redbox.UpdateManager.ComponentModel.ErrorList Repair(string name, out bool deferredMove)
 	{
@@ -217,7 +218,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 			}
 			foreach (ITransferJob item in jobs2)
 			{
-				ChangeSet changeSet = dataStoreService.Get<ChangeSet>(item.ID);
+				ChangeSet? changeSet = dataStoreService.Get<ChangeSet>(item.ID);
 				if (changeSet == null || changeSet.Name != name)
 				{
 					continue;
@@ -241,7 +242,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 						Composite = changeSetItem.Composite,
 						ContentHash = changeSetItem.ContentHash,
 						TargetName = Path.GetFileName(changeSetItem.TargetName),
-						TargetPath = Path.GetDirectoryName(changeSetItem.TargetPath),
+						TargetPath = Path.GetDirectoryName(changeSetItem.TargetPath)!,
 						VersionHash = changeSetItem.VersionHash
 					});
 				}
@@ -282,7 +283,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 	public string FormatStagedFileName(string file)
 	{
 		string fileName = Path.GetFileName(file);
-		return Path.Combine(Path.GetDirectoryName(file), $".staged_\\{fileName}");
+		return Path.Combine(Path.GetDirectoryName(file)!, $".staged_\\{fileName}");
 	}
 
 	public void RemoveRevision(string name, string hash)
@@ -301,10 +302,10 @@ public class RepositoryService : IRepositoryService, IDisposable
 			List<int> list = new List<int>();
 			PersistentList<RevLog> revLog = GetRevLog(name);
 			List<RevLog> revLogs = revLog.AsList();
-			Predicate<RevLog> predicate2 = default(Predicate<RevLog>);
+			Predicate<RevLog>? predicate2 = default(Predicate<RevLog>);
 			while (true)
 			{
-				Predicate<RevLog> predicate = predicate2;
+				Predicate<RevLog>? predicate = predicate2;
 				if (predicate == null)
 				{
 					predicate = (predicate2 = (RevLog l) => l.Hash == hash);
@@ -413,8 +414,8 @@ public class RepositoryService : IRepositoryService, IDisposable
 		try
 		{
 			LogHelper.Instance.Log("Unpacking change set.");
-			ChangeSet changeSet = ServiceLocator.Instance.GetService<IDataStoreService>().Get<ChangeSet>(id);
-			if ((byte)changeSet.CompressionType != 0)
+			ChangeSet? changeSet = ServiceLocator.Instance.GetService<IDataStoreService>().Get<ChangeSet>(id);
+			if ((byte)changeSet!.CompressionType != 0) // throws on a missing change set, as before
 			{
 				using ExecutionTimer executionTimer = new ExecutionTimer();
 				CompressionAlgorithm algorithm = CompressionAlgorithm.GetAlgorithm((CompressionType)(byte)changeSet.CompressionType);
@@ -883,7 +884,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 			IsPlaceHolder = isPlaceHolder,
 			ContentHash = contentHash,
 			TargetName = Path.GetFileName(file),
-			TargetPath = Path.GetDirectoryName(file),
+			TargetPath = Path.GetDirectoryName(file)!,
 			VersionHash = versionHash
 		};
 		AddDelta(name, new List<DeltaItem> { item });
@@ -895,7 +896,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 		Root = macroService.ExpandProperties(rootPath);
 		if (!Path.IsPathRooted(Root))
 		{
-			Root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), rootPath);
+			Root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, rootPath);
 		}
 		StagingDirectory = Path.Combine(Root, "____");
 		if (!Directory.Exists(Root))
@@ -1122,7 +1123,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 	}
 
 	[DllImport("Kernel32.dll")]
-	private static extern bool MoveFileEx(string lpExistingFileName, string lpNewFileName, MoveFileFlags dwFlags);
+	private static extern bool MoveFileEx(string lpExistingFileName, string? lpNewFileName, MoveFileFlags dwFlags);
 
 	public Redbox.UpdateManager.ComponentModel.ErrorList RebuildToInternal(string name, string targetHash)
 	{
@@ -1338,11 +1339,11 @@ public class RepositoryService : IRepositoryService, IDisposable
 					{
 						stagedHash = inputStream.ToASCIISHA1Hash();
 					}
-					Predicate<ChangeItem> predicate2 = default(Predicate<ChangeItem>);
+					Predicate<ChangeItem>? predicate2 = default(Predicate<ChangeItem>);
 					for (int j = 0; j < target; j++)
 					{
 						List<ChangeItem> changes = logList[j].Changes;
-						Predicate<ChangeItem> predicate = predicate2;
+						Predicate<ChangeItem>? predicate = predicate2;
 						if (predicate == null)
 						{
 							predicate = (predicate2 = (ChangeItem c) => !c.Composite && c.VersionHash == stagedHash && c.TargetPath == targetPath && c.TargetName == targetName);
@@ -1586,7 +1587,7 @@ public class RepositoryService : IRepositoryService, IDisposable
 		Redbox.UpdateManager.ComponentModel.ErrorList errors = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		xDeltaErrors.ForEach(delegate(Redbox.DeltaCompression.Error e)
 		{
-			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!)); // details passed on as they are, as before
 		});
 		return errors;
 	}

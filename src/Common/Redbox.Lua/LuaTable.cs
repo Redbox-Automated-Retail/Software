@@ -10,9 +10,9 @@ namespace Redbox.Lua;
 
 public class LuaTable : LuaObject
 {
-	private readonly IDictionary<object, object> m_pairs = new Dictionary<object, object>();
+	private readonly IDictionary<object, object?> m_pairs = new Dictionary<object, object?>();
 
-	public object this[object key]
+	public object? this[object key]
 	{
 		get
 		{
@@ -22,7 +22,7 @@ public class LuaTable : LuaObject
 				base.VirtualMachineInstance.Stack.GetReference(base.Reference.Value);
 				base.VirtualMachineInstance.Stack.Push(key);
 				base.VirtualMachineInstance.Stack.GetTable();
-				object top = base.VirtualMachineInstance.Stack.Top;
+				object? top = base.VirtualMachineInstance.Stack.Top;
 				base.VirtualMachineInstance.Stack.SetTop(count);
 				return top;
 			}
@@ -72,7 +72,7 @@ public class LuaTable : LuaObject
 			{
 				return GetTableDictionary().Values;
 			}
-			List<object> list = new List<object>();
+			List<object?> list = new List<object?>();
 			m_pairs.Values.ForEach(list.Add);
 			return list;
 		}
@@ -96,7 +96,7 @@ public class LuaTable : LuaObject
 			return;
 		}
 		base.VirtualMachineInstance.Stack.NewTable();
-		foreach (KeyValuePair<object, object> pair in m_pairs)
+		foreach (KeyValuePair<object, object?> pair in m_pairs)
 		{
 			base.VirtualMachineInstance.Stack.Push(pair.Key);
 			base.VirtualMachineInstance.Stack.Push(pair.Value);
@@ -113,7 +113,7 @@ public class LuaTable : LuaObject
 
 	public string ToJson()
 	{
-		Dictionary<string, object> dictionary = new Dictionary<string, object>();
+		Dictionary<string, object?> dictionary = new Dictionary<string, object?>();
 		BuildPropertiesDictionary(dictionary, this);
 		return dictionary.ToJson();
 	}
@@ -203,12 +203,12 @@ public class LuaTable : LuaObject
 		BuildLuaTable(this, properties);
 	}
 
-	private static void BuildPropertiesDictionary(IDictionary<string, object> properties, LuaTable table)
+	private static void BuildPropertiesDictionary(IDictionary<string, object?> properties, LuaTable table)
 	{
 		foreach (object key2 in table.Keys)
 		{
-			string key = key2.ToString();
-			object entry = table[key2];
+			string key = key2.ToString()!;
+			object? entry = table[key2];
 			if (entry is LuaTable table2)
 			{
 				BuildPropertiesDictionary(properties, table2);
@@ -235,7 +235,7 @@ public class LuaTable : LuaObject
 		}
 	}
 
-	private static string FormatKey(object eachKey)
+	private static string? FormatKey(object eachKey)
 	{
 		if (eachKey is double)
 		{
@@ -277,9 +277,9 @@ public class LuaTable : LuaObject
 		base.VirtualMachineInstance.Stack.Push(null);
 		while (base.VirtualMachineInstance.Stack.NextKey() != 0)
 		{
-			object value = base.VirtualMachineInstance.Stack.Pop();
-			object top = base.VirtualMachineInstance.Stack.Top;
-			listDictionary[top] = value;
+			object? value = base.VirtualMachineInstance.Stack.Pop();
+			object? top = base.VirtualMachineInstance.Stack.Top;
+			listDictionary[top!] = value; // lua_next pushed a key, never nil
 		}
 		base.VirtualMachineInstance.Stack.SetTop(count);
 		return listDictionary;

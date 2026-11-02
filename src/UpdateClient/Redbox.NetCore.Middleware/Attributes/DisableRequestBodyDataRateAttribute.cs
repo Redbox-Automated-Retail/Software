@@ -13,7 +13,7 @@ public class DisableRequestBodyDataRateAttribute : Attribute, IResourceFilter, I
 
 	public void OnResourceExecuting(ResourceExecutingContext context)
 	{
-		IHttpMinRequestBodyDataRateFeature httpMinRequestBodyDataRateFeature = context.HttpContext.Features.Get<IHttpMinRequestBodyDataRateFeature>();
+		IHttpMinRequestBodyDataRateFeature? httpMinRequestBodyDataRateFeature = context.HttpContext.Features.Get<IHttpMinRequestBodyDataRateFeature>();
 		if (httpMinRequestBodyDataRateFeature != null)
 		{
 			httpMinRequestBodyDataRateFeature.MinDataRate = null;

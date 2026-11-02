@@ -14,7 +14,7 @@ public class LuaFunction : LuaObject
 
 		public long Elapsed { get; set; }
 
-		public string Stack { get; set; }
+		public string Stack { get; set; } = null!; // set by Call's object initializer
 	}
 
 	private static ConcurrentDictionary<Guid, TrackLuaCall> _trackLuaCall = new ConcurrentDictionary<Guid, TrackLuaCall>();
@@ -29,9 +29,9 @@ public class LuaFunction : LuaObject
 		return "(function)";
 	}
 
-	public ReadOnlyCollection<object> Call(params object[] args)
+	public ReadOnlyCollection<object?> Call(params object?[] args)
 	{
-		TrackLuaCall trackLuaCall = null;
+		TrackLuaCall? trackLuaCall = null;
 		Guid key = Guid.NewGuid();
 		try
 		{
@@ -49,7 +49,7 @@ public class LuaFunction : LuaObject
 					throw new LuaException("Lua stack overflow");
 				}
 				Push();
-				foreach (object value in args)
+				foreach (object? value in args)
 				{
 					base.VirtualMachineInstance.Stack.Push(value);
 				}
@@ -70,7 +70,7 @@ public class LuaFunction : LuaObject
 				_trackLuaCall.TryRemove(key, out var _);
 			}
 		}
-		return null;
+		return null!; // not reached: ThrowExceptionFromError always throws
 	}
 
 	public static void LogLuaFunctions()

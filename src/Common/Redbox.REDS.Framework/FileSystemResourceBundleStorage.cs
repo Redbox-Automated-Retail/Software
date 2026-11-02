@@ -9,7 +9,7 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 {
 	public bool SupportsSave => true;
 
-	public string BundlePath { get; internal set; }
+	public string BundlePath { get; internal set; } = null!; // set by Open or Create
 
 	public void Dispose()
 	{
@@ -24,7 +24,7 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 	{
 	}
 
-	public void Create(string path, string trimPrefix)
+	public void Create(string path, string? trimPrefix)
 	{
 		try
 		{
@@ -39,7 +39,7 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 		}
 	}
 
-	public void AddEntry(string path, string trimPrefix)
+	public void AddEntry(string path, string? trimPrefix)
 	{
 	}
 
@@ -51,13 +51,13 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 	{
 	}
 
-	public byte[] GetEntryContent(string path)
+	public byte[]? GetEntryContent(string? path)
 	{
 		if (string.IsNullOrEmpty(path))
 		{
 			return null;
 		}
-		string path2 = Path.Combine(BundlePath, path);
+		string path2 = Path.Combine(BundlePath, path!);
 		if (File.Exists(path2))
 		{
 			return File.ReadAllBytes(path2);
@@ -65,7 +65,7 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 		return null;
 	}
 
-	public IResourceBundleStorageEntry GetEntry(string path)
+	public IResourceBundleStorageEntry? GetEntry(string path)
 	{
 		string text = Path.Combine(BundlePath, path);
 		if (!File.Exists(text))
@@ -81,7 +81,7 @@ public class FileSystemResourceBundleStorage : IResourceBundleStorage, IDisposab
 		};
 	}
 
-	public byte[] GetEntryContent(IResourceBundleStorageEntry entry)
+	public byte[]? GetEntryContent(IResourceBundleStorageEntry entry)
 	{
 		return GetEntryContent(entry.Path);
 	}

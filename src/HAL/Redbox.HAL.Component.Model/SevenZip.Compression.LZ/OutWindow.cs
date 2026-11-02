@@ -6,7 +6,7 @@ namespace SevenZip.Compression.LZ;
 [ComVisible(true)]
 public class OutWindow
 {
-	private byte[] _buffer;
+	private byte[]? _buffer;
 
 	private uint _pos;
 
@@ -14,7 +14,7 @@ public class OutWindow
 
 	private uint _streamPos;
 
-	private Stream _stream;
+	private Stream? _stream;
 
 	public void Create(uint windowSize)
 	{
@@ -54,7 +54,7 @@ public class OutWindow
 		uint size = _pos - _streamPos;
 		if (size != 0)
 		{
-			_stream.Write(_buffer, (int)_streamPos, (int)size);
+			_stream!.Write(_buffer!, (int)_streamPos, (int)size);
 			if (_pos >= _windowSize)
 			{
 				_pos = 0u;
@@ -76,7 +76,7 @@ public class OutWindow
 			{
 				pos = 0u;
 			}
-			_buffer[_pos++] = _buffer[pos++];
+			_buffer![_pos++] = _buffer[pos++];
 			if (_pos >= _windowSize)
 			{
 				Flush();
@@ -87,7 +87,7 @@ public class OutWindow
 
 	public void PutByte(byte b)
 	{
-		_buffer[_pos++] = b;
+		_buffer![_pos++] = b;
 		if (_pos >= _windowSize)
 		{
 			Flush();
@@ -101,6 +101,6 @@ public class OutWindow
 		{
 			pos += _windowSize;
 		}
-		return _buffer[pos];
+		return _buffer![pos];
 	}
 }

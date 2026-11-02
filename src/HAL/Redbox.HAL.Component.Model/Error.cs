@@ -6,17 +6,17 @@ namespace Redbox.HAL.Component.Model;
 [Serializable]
 public sealed class Error
 {
-	private readonly string m_code;
+	private readonly string? m_code;
 
 	private readonly bool m_isWarning;
 
-	private readonly string m_details;
+	private readonly string? m_details;
 
 	private readonly string m_description;
 
-	public string Code => m_code;
+	public string? Code => m_code;
 
-	public string Details => m_details;
+	public string? Details => m_details;
 
 	public bool IsWarning => m_isWarning;
 
@@ -24,10 +24,10 @@ public sealed class Error
 
 	public static Error Parse(string error)
 	{
-		string code = ExtractCodeFromBrackets(error, "[", "]");
+		string? code = ExtractCodeFromBrackets(error, "[", "]");
 		int startIndex = error.IndexOf("]");
 		string[] parts = error.Substring(startIndex).Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-		string details = null;
+		string? details = null;
 		if (parts.Length > 1)
 		{
 			details = parts[1];
@@ -48,12 +48,12 @@ public sealed class Error
 		return new Error(code, description, details.ToString(), isWarning: false);
 	}
 
-	public static Error NewError(string code, string description, string details)
+	public static Error NewError(string code, string description, string? details)
 	{
 		return new Error(code, description, details, isWarning: false);
 	}
 
-	public static Error NewWarning(string code, string description, string details)
+	public static Error NewWarning(string code, string description, string? details)
 	{
 		return new Error(code, description, details, isWarning: true);
 	}
@@ -63,7 +63,7 @@ public sealed class Error
 		return string.Format("[{0}] {1}: {2}", Code, IsWarning ? "WARNING" : "ERROR", Description);
 	}
 
-	private Error(string code, string description, string details, bool isWarning)
+	private Error(string? code, string description, string? details, bool isWarning)
 	{
 		m_code = code;
 		m_details = details;
@@ -71,7 +71,7 @@ public sealed class Error
 		m_description = description;
 	}
 
-	private static string ExtractCodeFromBrackets(string value, string prefix, string postfix)
+	private static string? ExtractCodeFromBrackets(string value, string prefix, string postfix)
 	{
 		int depth = 0;
 		int codeStart = -1;

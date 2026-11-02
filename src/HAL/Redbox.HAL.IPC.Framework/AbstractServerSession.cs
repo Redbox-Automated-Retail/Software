@@ -25,7 +25,7 @@ public abstract class AbstractServerSession : ISession, IMessageSink
 
 	protected abstract IIPCChannel Channel { get; }
 
-	public event EventHandler Disconnect;
+	public event EventHandler? Disconnect;
 
 	public void Start()
 	{

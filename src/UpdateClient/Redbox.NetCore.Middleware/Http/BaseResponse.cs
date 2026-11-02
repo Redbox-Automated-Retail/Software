@@ -20,7 +20,7 @@ public class BaseResponse
 
 	public int? ResponseTime { get; set; }
 
-	public string Content { get; set; }
+	public string? Content { get; set; }
 
 	public BaseResponse(HttpStatusCode statusCode)
 	{

@@ -12,10 +12,10 @@ namespace Redbox.Controls.BaseControls;
 [ContentProperty("Child")]
 public class BaseContainer : FrameworkElement, IAddChild
 {
-	private UIElement _childElement;
+	private UIElement? _childElement;
 
 	[DefaultValue(null)]
-	public virtual UIElement Child
+	public virtual UIElement? Child
 	{
 		get
 		{
@@ -41,7 +41,7 @@ public class BaseContainer : FrameworkElement, IAddChild
 
 	protected override int VisualChildrenCount => (_childElement != null) ? 1 : 0;
 
-	protected UIElement IntChild
+	protected UIElement? IntChild
 	{
 		get
 		{
@@ -74,7 +74,7 @@ public class BaseContainer : FrameworkElement, IAddChild
 		}
 	}
 
-	private void SetChild(UIElement child)
+	private void SetChild(UIElement? child)
 	{
 		if (_childElement != child)
 		{
@@ -98,7 +98,7 @@ public class BaseContainer : FrameworkElement, IAddChild
 
 	protected override Size MeasureOverride(Size constraint)
 	{
-		UIElement child = Child;
+		UIElement? child = Child;
 		if (child == null)
 		{
 			return default(Size);

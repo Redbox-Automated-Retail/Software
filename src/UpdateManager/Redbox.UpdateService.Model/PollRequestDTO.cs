@@ -8,7 +8,8 @@ public class PollRequestDTO
 
 	public int SId { get; set; }
 
-	public string D { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string D { get; set; } = null!;
 
 	public static List<PollRequestDTO> GetPollReplyDTOList(List<PollRequest> list)
 	{

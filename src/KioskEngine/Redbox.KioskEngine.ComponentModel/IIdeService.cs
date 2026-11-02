@@ -23,7 +23,7 @@ public interface IIdeService
 
 	void Close();
 
-	void ActivateDebugger(string resourceName, int lineNumber, string error);
+	void ActivateDebugger(string resourceName, int lineNumber, string? error);
 
 	void SetDebuggerInstance(object instance);
 }

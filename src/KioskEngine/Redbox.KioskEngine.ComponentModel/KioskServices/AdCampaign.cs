@@ -7,7 +7,7 @@ public class AdCampaign
 {
 	public Guid CampaignId { get; set; }
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public DateTime StartDate { get; set; }
 
@@ -19,5 +19,5 @@ public class AdCampaign
 
 	public int? DaysOfWeek { get; set; }
 
-	public List<AdImpression> Impressions { get; set; }
+	public List<AdImpression>? Impressions { get; set; }
 }

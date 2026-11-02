@@ -11,7 +11,7 @@ public interface ITheme
 
 	bool IsAnimated { get; set; }
 
-	FrameworkElement GetNewThemedControlInstance(string controlName);
+	FrameworkElement? GetNewThemedControlInstance(string? controlName);
 
 	Type GetThemedControlType(string controlName);
 

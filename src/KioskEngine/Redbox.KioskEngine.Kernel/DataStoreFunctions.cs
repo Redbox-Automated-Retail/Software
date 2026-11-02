@@ -10,7 +10,7 @@ namespace Redbox.KioskEngine.Kernel;
 internal static class DataStoreFunctions
 {
 	[KernelFunction(Name = "kernel.datastoreget")]
-	internal static object Get(string dataStore, string tableName, string keyName)
+	internal static object? Get(string dataStore, string tableName, string keyName)
 	{
 		try
 		{
@@ -25,7 +25,7 @@ internal static class DataStoreFunctions
 	}
 
 	[KernelFunction(Name = "kernel.datastoregetall")]
-	internal static LuaTable GetAll(string dataStore, string tableName)
+	internal static LuaTable? GetAll(string dataStore, string tableName)
 	{
 		try
 		{
@@ -123,7 +123,7 @@ internal static class DataStoreFunctions
 	}
 
 	[KernelFunction(Name = "kernel.datastoregetkeys")]
-	internal static LuaTable GetKeys(string dataStore, string tableName)
+	internal static LuaTable? GetKeys(string dataStore, string tableName)
 	{
 		try
 		{

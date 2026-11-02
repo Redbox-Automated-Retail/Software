@@ -10,16 +10,17 @@ public class LuaDelegate
 
 	internal LuaFunction m_function;
 
+	// Both are set by DelegateFactory.GetDelegate right after it creates the wrapper.
 	public LuaDelegate()
 	{
-		m_function = null;
-		m_returnTypes = null;
+		m_function = null!;
+		m_returnTypes = null!;
 	}
 
-	public object CallFunction(object[] args, object[] inArgs, int[] outArgs)
+	public object? CallFunction(object?[] args, object?[] inArgs, int[] outArgs)
 	{
-		ReadOnlyCollection<object> readOnlyCollection = m_function.Call(inArgs);
-		object result;
+		ReadOnlyCollection<object?> readOnlyCollection = m_function.Call(inArgs);
+		object? result;
 		int resultIndex;
 		if (m_returnTypes[0] == typeof(void))
 		{

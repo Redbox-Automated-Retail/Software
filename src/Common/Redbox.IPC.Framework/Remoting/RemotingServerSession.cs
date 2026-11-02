@@ -7,17 +7,17 @@ namespace Redbox.IPC.Framework.Remoting;
 
 public class RemotingServerSession : ISession, Redbox.Core.IMessageSink
 {
-	private Action<string, string> _paramAction;
+	private Action<string, string>? _paramAction;
 
-	private Action<ISession> _beforeCommandAction;
+	private Action<ISession>? _beforeCommandAction;
 
 	private List<string> _filters = new List<string>();
 
 	private bool _enableFilters;
 
-	private ParameterDictionary m_context;
+	private ParameterDictionary? m_context;
 
-	private Dictionary<string, object> m_properties;
+	private Dictionary<string, object>? m_properties;
 
 	public List<string> Filters => _filters;
 
@@ -37,7 +37,7 @@ public class RemotingServerSession : ISession, Redbox.Core.IMessageSink
 
 	public IDictionary<string, object> Properties => m_properties ?? (m_properties = new Dictionary<string, object>());
 
-	public event EventHandler Disconnect;
+	public event EventHandler? Disconnect;
 
 	public bool Send(string message)
 	{
@@ -49,7 +49,7 @@ public class RemotingServerSession : ISession, Redbox.Core.IMessageSink
 		throw new NotImplementedException("Not valid for RemotingChannel");
 	}
 
-	public void SetParamAction(Action<string, string> paramAction)
+	public void SetParamAction(Action<string, string>? paramAction)
 	{
 		_paramAction = paramAction;
 	}
@@ -65,13 +65,13 @@ public class RemotingServerSession : ISession, Redbox.Core.IMessageSink
 		filters.ForEach(_filters.Add);
 	}
 
-	public string ProcessRequest(string commandString)
+	public string? ProcessRequest(string commandString)
 	{
 		if (_beforeCommandAction != null)
 		{
 			_beforeCommandAction(this);
 		}
-		string originIP = CallContext.GetData("RemoteHostIP") as string;
+		string? originIP = CallContext.GetData("RemoteHostIP") as string;
 		CommandResult commandResult = CommandService.Instance.Execute(this, originIP, commandString, Filters, EnableFilters, _paramAction);
 		if (commandResult == null)
 		{

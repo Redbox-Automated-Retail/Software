@@ -6,15 +6,16 @@ public class StoreFileCache
 {
 	public long Id { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
-	public string Path { get; set; }
+	public string Path { get; set; } = null!;
 
-	public List<StoreFileDataCache> StoreFileDataCacheList { get; set; }
+	public List<StoreFileDataCache> StoreFileDataCacheList { get; set; } = null!;
 
-	public List<StoreFileStateCache> StoreFileStateCacheList { get; set; }
+	public List<StoreFileStateCache> StoreFileStateCacheList { get; set; } = null!;
 
-	public Dictionary<string, StoreFileDataStateCache> DataStateCache { get; set; }
+	public Dictionary<string, StoreFileDataStateCache> DataStateCache { get; set; } = null!;
 
 	public void UpdateDataStateCache()
 	{

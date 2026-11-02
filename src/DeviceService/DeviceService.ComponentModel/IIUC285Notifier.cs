@@ -13,7 +13,7 @@ public interface IIUC285Notifier
 
 	void SendDeviceServiceShutDownStartingEvent(ShutDownReason shutDownReason);
 
-	void SendCardReaderDisconnectedEvent(Exception exception);
+	void SendCardReaderDisconnectedEvent(Exception? exception);
 
 	void SetCommandQueueState(bool commandQueuePaused);
 

@@ -4,11 +4,11 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public class ConfigurationClientItem
 {
-	public string Key { get; set; }
+	public string? Key { get; set; }
 
-	public string FilePath { get; set; }
+	public string? FilePath { get; set; }
 
-	public string DefaultCategory { get; set; }
+	public string? DefaultCategory { get; set; }
 
 	public TimeSpan CheckTime { get; set; }
 

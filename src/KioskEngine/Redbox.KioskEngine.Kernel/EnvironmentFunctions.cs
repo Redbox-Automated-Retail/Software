@@ -13,7 +13,7 @@ public static class EnvironmentFunctions
 {
 	private static bool m_safeShutdownFlagged;
 
-	private static LuaFunction m_dataStoreErrorHandler;
+	private static LuaFunction? m_dataStoreErrorHandler;
 
 	public static bool CanShutdown()
 	{
@@ -22,7 +22,7 @@ public static class EnvironmentFunctions
 			return false;
 		}
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
-		IManifestInfo manifestInfo = null;
+		IManifestInfo? manifestInfo = null;
 		resourceBundleService?.GetManifest(out manifestInfo);
 		string message = "Kiosk Engine is checking if it can shut-down";
 		if (manifestInfo?.ProductName == "Field Maintenance Application" || manifestInfo?.ProductName == "Control Panel Application")
@@ -87,12 +87,12 @@ public static class EnvironmentFunctions
 		{
 			return false;
 		}
-		ReadOnlyCollection<object> readOnlyCollection = m_dataStoreErrorHandler.Call(dataStore);
+		ReadOnlyCollection<object?> readOnlyCollection = m_dataStoreErrorHandler.Call(dataStore);
 		if (readOnlyCollection == null || readOnlyCollection.Count <= 0)
 		{
 			return false;
 		}
-		return (bool)readOnlyCollection[0];
+		return (bool)readOnlyCollection[0]!;
 	}
 
 	public static void FlagForSafeShutdown()

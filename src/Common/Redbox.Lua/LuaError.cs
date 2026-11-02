@@ -6,18 +6,18 @@ public class LuaError
 {
 	public int? LineNumber { get; internal set; }
 
-	public string Message { get; internal set; }
+	public string? Message { get; internal set; }
 
-	public string ChunkName { get; internal set; }
+	public string? ChunkName { get; internal set; }
 
-	public string RawMessage { get; internal set; }
+	public string RawMessage { get; internal set; } = null!; // set by FromString's object initializer
 
 	public static LuaError FromString(string rawMessage)
 	{
 		string[] parts = rawMessage.Split(new char[1] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 		int? lineNumber = null;
-		string message = null;
-		string chunkName = null;
+		string? message = null;
+		string? chunkName = null;
 		if (parts.Length == 3)
 		{
 			int firstQuote = parts[0].IndexOf('"');

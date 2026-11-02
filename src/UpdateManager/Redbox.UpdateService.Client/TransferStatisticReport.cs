@@ -8,11 +8,12 @@ public class TransferStatisticReport
 
 	public double AverageSpeedInKPS { get; set; }
 
-	public string ChangeSet { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string ChangeSet { get; set; } = null!;
 
-	public string Repository { get; set; }
+	public string Repository { get; set; } = null!;
 
-	public string StoreNumber { get; set; }
+	public string StoreNumber { get; set; } = null!;
 
 	public ulong TotalBytesTransfered { get; set; }
 

@@ -6,13 +6,14 @@ internal class FileSetRevisionChangeSet
 
 	public long RevisionId { get; set; }
 
-	public string Path { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string Path { get; set; } = null!;
 
 	public int CompressionType { get; set; }
 
-	public string ContentHash { get; set; }
+	public string ContentHash { get; set; } = null!;
 
-	public string FileHash { get; set; }
+	public string FileHash { get; set; } = null!;
 
 	public long ContentSize { get; set; }
 

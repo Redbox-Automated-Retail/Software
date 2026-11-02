@@ -15,25 +15,25 @@ public interface IDeviceServiceClient
 
 	Version AssemblyVersion { get; }
 
-	IDeviceServiceShutDownInfo DeviceServiceShutDownInfo { get; }
+	IDeviceServiceShutDownInfo? DeviceServiceShutDownInfo { get; }
 
-	event LogHandler OnLog;
+	event LogHandler? OnLog;
 
-	event OnConnected OnConnectedHandler;
+	event OnConnected? OnConnectedHandler;
 
-	event OnDisconnected OnDisconnectedHandler;
+	event OnDisconnected? OnDisconnectedHandler;
 
-	event OnConnected OnCardReaderConnectedHandler;
+	event OnConnected? OnCardReaderConnectedHandler;
 
-	event OnDisconnected OnCardReaderDisconnectedHandler;
+	event OnDisconnected? OnCardReaderDisconnectedHandler;
 
-	event OnDeviceServiceCanShutDown OnDeviceServiceCanShutDownHandler;
+	event OnDeviceServiceCanShutDown? OnDeviceServiceCanShutDownHandler;
 
-	event OnDeviceServiceShutDownInfoChange OnDeviceServiceShutDownInfoChangeHandler;
+	event OnDeviceServiceShutDownInfoChange? OnDeviceServiceShutDownInfoChangeHandler;
 
-	event Action OnDeviceTamperedEventHandler;
+	event Action? OnDeviceTamperedEventHandler;
 
-	event OnCardReaderState OnCardReaderStateHandler;
+	event OnCardReaderState? OnCardReaderStateHandler;
 
 	void StartConnectionToDeviceService(string url, int? connectionTimeout);
 
@@ -45,13 +45,13 @@ public interface IDeviceServiceClient
 
 	bool IsCardReaderConnected();
 
-	UnitHealthModel GetUnitHealth();
+	UnitHealthModel? GetUnitHealth();
 
 	void ReadCard(Guid requestId, CardReadRequest request, Action<BaseResponseEvent> onComplete, Action<BaseResponseEvent> onJobEvent, int? timeout);
 
 	IReadCardJob CreateReadCardJob(CardReadRequest request, Action<BaseResponseEvent> readCardJobCompleteCallback, Action<BaseResponseEvent> readCardEventCallback, int? timeout);
 
-	bool CancelCommand(Guid guid, Action<BaseResponseEvent> cancelCompleteCallback);
+	bool CancelCommand(Guid guid, Action<BaseResponseEvent>? cancelCompleteCallback);
 
 	bool RebootCardReader();
 

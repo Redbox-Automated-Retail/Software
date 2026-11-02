@@ -18,11 +18,12 @@ public class CardReaderHub : Hub
 {
 	private class QueuedCommand
 	{
-		public BaseCommandRequest Command { get; set; }
+		// Command and Caller are set by the object initializers below, ConnectionId by AddQueuedCommand.
+		public BaseCommandRequest Command { get; set; } = null!;
 
-		public string ConnectionId { get; set; }
+		public string ConnectionId { get; set; } = null!;
 
-		public IClientProxy Caller { get; set; }
+		public IClientProxy Caller { get; set; } = null!;
 
 		public bool Cancelled { get; set; }
 	}
@@ -45,11 +46,11 @@ public class CardReaderHub : Hub
 
 	private static int _configureOccurred = 0;
 
-	private static QueuedCommand ActiveCommand = null;
+	private static QueuedCommand? ActiveCommand = null;
 
-	private static Task _processCommandQueue;
+	private static Task? _processCommandQueue;
 
-	private static Dictionary<string, Action<QueuedCommand>> _commandProcessors;
+	private static Dictionary<string, Action<QueuedCommand>> _commandProcessors = null!; // created by ConfigureCommandProcessors, called from the constructor
 
 	private static ConcurrentQueue<QueuedCommand> _commandQueue = new ConcurrentQueue<QueuedCommand>();
 
@@ -123,7 +124,7 @@ public class CardReaderHub : Hub
 				base.Clients.All.SendAsync("DeviceServiceCanShutDownEvent", simpleEvent);
 				break;
 			default:
-				base.Clients.All.SendAsync(simpleEvent.EventName, simpleEvent);
+				base.Clients.All.SendAsync(simpleEvent.EventName!, simpleEvent);
 				break;
 			}
 		}
@@ -138,7 +139,7 @@ public class CardReaderHub : Hub
 		queuedCommand.ConnectionId = base.Context.ConnectionId;
 		lock (_syncObject)
 		{
-			Action<QueuedCommand> value;
+			Action<QueuedCommand>? value;
 			if (queuedCommand.Command.IsQueuedCommand && queuedCommand.Command.CommandName != "IsConnected" && queuedCommand.Command.CommandName != "SupportsEMV")
 			{
 				_commandQueue.Enqueue(queuedCommand);
@@ -204,10 +205,10 @@ public class CardReaderHub : Hub
 		while (queuedCount > 0 && ActiveCommand != null)
 		{
 			_logger?.LogInformation($"Begining processing for queued command {ActiveCommand?.Command?.CommandName} with ID {ActiveCommand?.Command.RequestId}");
-			if (_commandProcessors.TryGetValue(ActiveCommand?.Command?.CommandName, out var processor))
+			if (_commandProcessors.TryGetValue((ActiveCommand?.Command?.CommandName)!, out var processor))
 			{
 				_proxy.StopHealthTimer();
-				processor(ActiveCommand);
+				processor(ActiveCommand!); // the loop condition checked ActiveCommand
 			}
 			else
 			{
@@ -225,7 +226,7 @@ public class CardReaderHub : Hub
 				{
 					continue;
 				}
-				List<string> commandNames = new List<string>();
+				List<string?> commandNames = new List<string?>();
 				foreach (QueuedCommand queuedCommand in _commandQueue)
 				{
 					commandNames.Add(queuedCommand?.Command?.CommandName);
@@ -250,19 +251,19 @@ public class CardReaderHub : Hub
 			Success = true
 		};
 		LogEvent(">>> IsConnectedResponseEvent", isConnectedResponseEvent);
-		queuedCommand.Caller.SendAsync(isConnectedResponseEvent.EventName, isConnectedResponseEvent);
+		queuedCommand.Caller.SendAsync(isConnectedResponseEvent.EventName!, isConnectedResponseEvent); // EventName is set by the event's constructor (also below)
 	}
 
 	private void ProcessGetUnitHealthCommand(QueuedCommand queuedCommand)
 	{
-		UnitHealthModel unitHealthModel = _proxy?.GetUnitHealth();
+		UnitHealthModel? unitHealthModel = _proxy?.GetUnitHealth();
 		GetUnitHealthResponseEvent getUnitHealthResponseEvent = new GetUnitHealthResponseEvent(queuedCommand.Command)
 		{
 			UnitHealthModel = unitHealthModel,
 			Success = (unitHealthModel != null)
 		};
 		LogEvent(">>> GetUnitHealthResponseEvent", getUnitHealthResponseEvent);
-		queuedCommand.Caller.SendAsync(getUnitHealthResponseEvent.EventName, getUnitHealthResponseEvent);
+		queuedCommand.Caller.SendAsync(getUnitHealthResponseEvent.EventName!, getUnitHealthResponseEvent);
 	}
 
 	private void ProcessRebootCardReaderCommand(QueuedCommand queuedCommand)
@@ -273,13 +274,13 @@ public class CardReaderHub : Hub
 			Success = success
 		};
 		LogEvent(">>> Reboot Card Reader", rebootCardReaderResponseEvent);
-		queuedCommand.Caller.SendAsync(rebootCardReaderResponseEvent.EventName, rebootCardReaderResponseEvent);
+		queuedCommand.Caller.SendAsync(rebootCardReaderResponseEvent.EventName!, rebootCardReaderResponseEvent);
 	}
 
 	private void ProcessReadConfigurationCommand(QueuedCommand queuedCommand)
 	{
-		ConfigCommand configCommand = queuedCommand.Command as ConfigCommand;
-		Task<string> task = Task.Run(() => (!_proxy.ReadConfig(configCommand.GroupNumber, configCommand.IndexNumber, out var Data)) ? null : Data);
+		ConfigCommand? configCommand = queuedCommand.Command as ConfigCommand;
+		Task<string?> task = Task.Run(() => (!_proxy.ReadConfig(configCommand!.GroupNumber, configCommand.IndexNumber, out var Data)) ? null : Data);
 		task.Wait();
 		SimpleResponseEvent simpleResponseEvent = new SimpleResponseEvent(queuedCommand.Command, "ReadConfiguration")
 		{
@@ -291,8 +292,8 @@ public class CardReaderHub : Hub
 
 	private void ProcessWriteConfigurationCommand(QueuedCommand queuedCommand)
 	{
-		ConfigCommand configCommand = queuedCommand.Command as ConfigCommand;
-		Task<bool> task = Task.Run(() => _proxy.WriteConfig(configCommand.GroupNumber, configCommand.IndexNumber, configCommand.Value));
+		ConfigCommand? configCommand = queuedCommand.Command as ConfigCommand;
+		Task<bool> task = Task.Run(() => _proxy.WriteConfig(configCommand!.GroupNumber!, configCommand.IndexNumber!, configCommand.Value)); // WriteConfig throws on a null group or index, as before
 		task.Wait();
 		SimpleResponseEvent simpleResponseEvent = new SimpleResponseEvent(queuedCommand.Command, "WriteConfiguration")
 		{
@@ -373,27 +374,27 @@ public class CardReaderHub : Hub
 			CheckDeviceStatusResponseEvent responseEvent = new CheckDeviceStatusResponseEvent(checkDeviceStatusCommand);
 			try
 			{
-				StandardResponse standardResponse = ((checkDeviceStatusCommand.Request == null) ? (await _deviceStatusService.PostDeviceStatus()) : (await _deviceStatusService.PostDeviceStatus(checkDeviceStatusCommand.Request)));
-				responseEvent.Success = standardResponse.Success && standardResponse.StatusCode == 200;
+				StandardResponse? standardResponse = ((checkDeviceStatusCommand.Request == null) ? (await _deviceStatusService.PostDeviceStatus()) : (await _deviceStatusService.PostDeviceStatus(checkDeviceStatusCommand.Request)));
+				responseEvent.Success = standardResponse!.Success && standardResponse.StatusCode == 200; // a null response throws into the catch, as before
 			}
 			catch (Exception ex)
 			{
 				_logger?.LogError(ex, "ProcessCheckDeviceStatusCommand Error: " + ex.Message);
 				responseEvent.Success = false;
 			}
-			await queuedCommand.Caller.SendAsync(responseEvent.EventName, responseEvent);
+			await queuedCommand.Caller.SendAsync(responseEvent.EventName!, responseEvent);
 		}
 	}
 
 	private async void ProcessReadCardCommand(QueuedCommand queuedCommand)
 	{
-		ReadCardCommand command = queuedCommand?.Command as ReadCardCommand;
+		ReadCardCommand? command = queuedCommand?.Command as ReadCardCommand;
 		if (command == null)
 		{
 			return;
 		}
 		_logger?.LogInformation("<<<CardReaderHub.ExecuteBaseCommand " + JsonConvert.SerializeObject(command));
-		if (queuedCommand.Cancelled)
+		if (queuedCommand!.Cancelled) // command (from queuedCommand) was checked above
 		{
 			_logger?.LogInformation($"Queued ReadCardCommand not run because it was Canceled.  RequestId: {command.RequestId}");
 			return;
@@ -406,7 +407,7 @@ public class CardReaderHub : Hub
 			IClientProxy caller = queuedCommand.Caller;
 			if (caller != null)
 			{
-				BaseResponseEvent baseResponseEvent = null;
+				BaseResponseEvent? baseResponseEvent = null;
 				if (cardResult is EMVCardReadModel data)
 				{
 					baseResponseEvent = new EMVCardReadResponseEvent(command)
@@ -431,13 +432,13 @@ public class CardReaderHub : Hub
 					};
 					ProcessCardReadModel(baseResponseEvent, cancellationToken);
 				}
-				caller.SendAsync(baseResponseEvent.EventName, baseResponseEvent);
+				caller.SendAsync(baseResponseEvent.EventName!, baseResponseEvent);
 			}
 			else
 			{
-				_logger.LogInformation($"Unable to find active read card client proxy for {command?.RequestId}.");
+				_logger!.LogInformation($"Unable to find active read card client proxy for {command?.RequestId}.");
 			}
-		}, delegate(string eventName, string eventData)
+		}, delegate(string eventName, string? eventData)
 		{
 			IClientProxy caller = queuedCommand.Caller;
 			if (caller != null)
@@ -448,12 +449,12 @@ public class CardReaderHub : Hub
 				}
 				else
 				{
-					caller.SendAsync(eventName, new SimpleResponseEvent(command, eventName, eventData));
+					caller.SendAsync(eventName!, new SimpleResponseEvent(command, eventName!, eventData)); // only the null check above makes eventName look nullable
 				}
 			}
 			else
 			{
-				_logger.LogInformation($"Unable to find remove card client proxy for {command?.RequestId}.");
+				_logger!.LogInformation($"Unable to find remove card client proxy for {command?.RequestId}.");
 			}
 		});
 		_cancellationTokenSources.TryRemove(command.RequestId, out var _);
@@ -466,7 +467,7 @@ public class CardReaderHub : Hub
 			_logger?.LogInformation("<<< " + command?.CommandName + " Command " + JsonConvert.SerializeObject(command));
 			AddQueuedCommand(new QueuedCommand
 			{
-				Command = command,
+				Command = command!, // checked above
 				Caller = base.Clients.Caller
 			});
 		}
@@ -479,12 +480,12 @@ public class CardReaderHub : Hub
 			return;
 		}
 		_logger?.LogInformation("<<< " + command?.CommandName + " Command " + JsonConvert.SerializeObject(command));
-		IClientProxy clientProxy = base.Clients?.Caller;
+		IClientProxy? clientProxy = base.Clients?.Caller;
 		if (_applicationControl != null)
 		{
 			Task.Run(delegate
 			{
-				bool success = _applicationControl.ShutDown(command.ForceShutDown, command.Reason);
+				bool success = _applicationControl.ShutDown(command!.ForceShutDown, command.Reason); // checked above
 				DeviceServiceShutDownResponseEvent deviceServiceShutDownResponseEvent = new DeviceServiceShutDownResponseEvent(command)
 				{
 					Success = success
@@ -512,7 +513,7 @@ public class CardReaderHub : Hub
 		if (command != null)
 		{
 			_logger?.LogInformation("<<< " + command?.CommandName + " Command " + JsonConvert.SerializeObject(command));
-			CommandQueuePaused = command.CommandQueuePaused;
+			CommandQueuePaused = command!.CommandQueuePaused; // checked above
 		}
 	}
 
@@ -531,7 +532,7 @@ public class CardReaderHub : Hub
 
 	private void ProcessCardReadModel(BaseResponseEvent responseEvent, CancellationToken cancellationToken)
 	{
-		ICardReadResponseEvent cardReadResponseEvent = responseEvent as ICardReadResponseEvent;
+		ICardReadResponseEvent? cardReadResponseEvent = responseEvent as ICardReadResponseEvent;
 		if (cancellationToken.IsCancellationRequested)
 		{
 			responseEvent.Success = false;
@@ -541,7 +542,7 @@ public class CardReaderHub : Hub
 				{
 					unencryptedCardReadResponseEvent.Data = new UnencryptedCardReadModel();
 				}
-				cardReadResponseEvent.GetBase87CardReadModel().Status = ResponseStatus.Cancelled;
+				cardReadResponseEvent.GetBase87CardReadModel()!.Status = ResponseStatus.Cancelled; // ProcessReadCardCommand sets Data (an unencrypted one just above)
 			}
 		}
 		responseEvent.Success = cardReadResponseEvent != null && cardReadResponseEvent.GetBase87CardReadModel()?.Status == ResponseStatus.Success;
@@ -571,14 +572,14 @@ public class CardReaderHub : Hub
 				{
 					if (item?.Command.RequestId == cancelCommandRequest?.CommandToCancelRequestId)
 					{
-						item.Cancelled = true;
+						item!.Cancelled = true;
 						_logger?.LogInformation($"Canceled queued command {item?.Command.RequestId}");
 						success = true;
 					}
 				}
 			}
 		}
-		CancelCommandResponseEvent cancelCommandResponseEvent = new CancelCommandResponseEvent(cancelCommandRequest)
+		CancelCommandResponseEvent cancelCommandResponseEvent = new CancelCommandResponseEvent(cancelCommandRequest!) // checked at the top
 		{
 			Success = success
 		};
@@ -659,23 +660,23 @@ public class CardReaderHub : Hub
 		}
 	}
 
-	private void LogEvent(string eventContext, BaseEvent baseEvent)
+	private void LogEvent(string eventContext, BaseEvent? baseEvent)
 	{
 		if (baseEvent != null)
 		{
-			string logText = null;
+			string? logText = null;
 			_logger?.LogInformation(eventContext + " " + ((!(baseEvent is EMVCardReadResponseEvent responseEvent)) ? ((!(baseEvent is EncryptedCardReadResponseEvent responseEvent2)) ? ((!(baseEvent is UnencryptedCardReadResponseEvent responseEvent3)) ? JsonConvert.SerializeObject(baseEvent) : ObfuscateUnencryptedCardReadResponseEvent(responseEvent3, logText)) : ObfuscateEncryptedCardReadResponseEvent(responseEvent2, logText)) : ObfuscateEMVCardReadResponseEvent(responseEvent, logText)), Array.Empty<object>());
 		}
 	}
 
-	private string ObfuscateEMVCardReadResponseEvent(EMVCardReadResponseEvent responseEvent, string logText)
+	private string? ObfuscateEMVCardReadResponseEvent(EMVCardReadResponseEvent responseEvent, string? logText)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			EMVCardReadResponseEvent eMVCardReadResponseEvent = JsonConvert.DeserializeObject<EMVCardReadResponseEvent>(json);
+			EMVCardReadResponseEvent? eMVCardReadResponseEvent = JsonConvert.DeserializeObject<EMVCardReadResponseEvent>(json);
 			if (eMVCardReadResponseEvent != null)
 			{
-				EMVCardReadModel data = eMVCardReadResponseEvent.Data;
+				EMVCardReadModel? data = eMVCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -687,14 +688,14 @@ public class CardReaderHub : Hub
 		});
 	}
 
-	private string ObfuscateEncryptedCardReadResponseEvent(EncryptedCardReadResponseEvent responseEvent, string logText)
+	private string? ObfuscateEncryptedCardReadResponseEvent(EncryptedCardReadResponseEvent responseEvent, string? logText)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			EncryptedCardReadResponseEvent encryptedCardReadResponseEvent = JsonConvert.DeserializeObject<EncryptedCardReadResponseEvent>(json);
+			EncryptedCardReadResponseEvent? encryptedCardReadResponseEvent = JsonConvert.DeserializeObject<EncryptedCardReadResponseEvent>(json);
 			if (encryptedCardReadResponseEvent != null)
 			{
-				EncryptedCardReadModel data = encryptedCardReadResponseEvent.Data;
+				EncryptedCardReadModel? data = encryptedCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -706,14 +707,14 @@ public class CardReaderHub : Hub
 		});
 	}
 
-	private string ObfuscateUnencryptedCardReadResponseEvent(UnencryptedCardReadResponseEvent responseEvent, string logText)
+	private string? ObfuscateUnencryptedCardReadResponseEvent(UnencryptedCardReadResponseEvent responseEvent, string? logText)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			UnencryptedCardReadResponseEvent unencryptedCardReadResponseEvent = JsonConvert.DeserializeObject<UnencryptedCardReadResponseEvent>(json);
+			UnencryptedCardReadResponseEvent? unencryptedCardReadResponseEvent = JsonConvert.DeserializeObject<UnencryptedCardReadResponseEvent>(json);
 			if (unencryptedCardReadResponseEvent != null)
 			{
-				UnencryptedCardReadModel data = unencryptedCardReadResponseEvent.Data;
+				UnencryptedCardReadModel? data = unencryptedCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -725,9 +726,9 @@ public class CardReaderHub : Hub
 		});
 	}
 
-	private string CreateResponseEventLogText(BaseEvent responseEvent, Func<string, object> ObfuscateJsonAction)
+	private string? CreateResponseEventLogText(BaseEvent responseEvent, Func<string, object?> ObfuscateJsonAction)
 	{
-		string result = null;
+		string? result = null;
 		try
 		{
 			JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
@@ -751,7 +752,7 @@ public class CardReaderHub : Hub
 		{
 			SendSimpleEvent(new DeviceTamperedEvent());
 		}
-		CardReaderState cardReaderState = _proxy?.GetCardReaderState();
+		CardReaderState? cardReaderState = _proxy?.GetCardReaderState();
 		if (cardReaderState != null)
 		{
 			SendCardReaderStateEvent(new CardReaderStateEvent
@@ -789,7 +790,7 @@ public class CardReaderHub : Hub
 		CommandQueuePaused = false;
 	}
 
-	public override Task OnDisconnectedAsync(Exception exception)
+	public override Task OnDisconnectedAsync(Exception? exception)
 	{
 		_logger.LogInformation("CardReaderHub.OnDisconnectedAsync event");
 		_analytics?.ClientDisconnectedFromHub();

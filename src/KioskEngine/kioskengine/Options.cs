@@ -10,7 +10,7 @@ public class Options
 {
 	[Option(LongName = "bundle")]
 	[Description("The name of the resource bundle to load.")]
-	public string BundleFile;
+	public string? BundleFile;
 
 	[Option(ShortName = "D")]
 	[Description("Define properties to inject into runtime environment.")]

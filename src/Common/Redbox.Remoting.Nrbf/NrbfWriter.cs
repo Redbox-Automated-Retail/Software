@@ -17,7 +17,7 @@ namespace Redbox.Remoting.Nrbf;
 /// </summary>
 internal sealed class NrbfSyntheticObject
 {
-	public NrbfSyntheticObject(string typeName, string assemblyName, params (string Name, NrbfMemberType Type, object Value)[] members)
+	public NrbfSyntheticObject(string typeName, string? assemblyName, params (string Name, NrbfMemberType Type, object? Value)[] members)
 	{
 		TypeName = typeName;
 		AssemblyName = assemblyName;
@@ -27,9 +27,9 @@ internal sealed class NrbfSyntheticObject
 	public string TypeName { get; }
 
 	/// <summary>Null for mscorlib types.</summary>
-	public string AssemblyName { get; }
+	public string? AssemblyName { get; }
 
-	public (string Name, NrbfMemberType Type, object Value)[] Members { get; }
+	public (string Name, NrbfMemberType Type, object? Value)[] Members { get; }
 }
 
 /// <summary>
@@ -61,7 +61,7 @@ internal sealed class NrbfWriter
 	/// A BinaryMethodCall. Primitive/string arguments go inline (ArgsInline); otherwise they go in an argument array
 	/// wrapped by the call array (ArgsInArray: callArray = { args }), which is what the broker expects (5.1).
 	/// </summary>
-	public static byte[] MethodCall(string methodName, string typeName, object[] args)
+	public static byte[] MethodCall(string methodName, string typeName, object?[] args)
 	{
 		NrbfWriter writer = new NrbfWriter();
 		bool inline = args.All(IsInlineValue);
@@ -91,7 +91,7 @@ internal sealed class NrbfWriter
 	/// A BinaryMethodReturn for a successful call. Void → ReturnValueVoid; null → NoReturnValue; a primitive or string →
 	/// ReturnValueInline; an object graph → ReturnValueInArray (callArray = { returnValue }), as the real client does.
 	/// </summary>
-	public static byte[] MethodReturn(object returnValue, bool isVoid)
+	public static byte[] MethodReturn(object? returnValue, bool isVoid)
 	{
 		NrbfWriter writer = new NrbfWriter();
 		NrbfMessageFlags flags = NrbfMessageFlags.NoArgs | NrbfMessageFlags.NoContext;
@@ -122,7 +122,7 @@ internal sealed class NrbfWriter
 		}
 		if (inArray)
 		{
-			writer.WriteTopObject(new object[] { returnValue });
+			writer.WriteTopObject(new object?[] { returnValue });
 		}
 		writer._out.WriteByte((byte)NrbfRecordType.MessageEnd);
 		return writer._out.ToArray();
@@ -231,7 +231,7 @@ internal sealed class NrbfWriter
 	/// A class record: ClassWithId when this type was written before, otherwise (System)ClassWithMembersAndTypes,
 	/// preceded by the BinaryLibrary records it needs (its own assembly first, then member types' assemblies).
 	/// </summary>
-	private void WriteClass(int id, string typeName, string assemblyName, string[] memberNames, NrbfMemberType[] memberTypes, object[] values)
+	private void WriteClass(int id, string typeName, string? assemblyName, string[] memberNames, NrbfMemberType[] memberTypes, object?[] values)
 	{
 		string key = typeName + "|" + assemblyName;
 		if (_classes.TryGetValue(key, out var known))
@@ -248,7 +248,7 @@ internal sealed class NrbfWriter
 			{
 				if (memberType.BinaryType == NrbfBinaryType.Class)
 				{
-					EnsureLibrary(memberType.AssemblyName);
+					EnsureLibrary(memberType.AssemblyName!);
 				}
 			}
 			_out.WriteByte((byte)(assemblyName == null ? NrbfRecordType.SystemClassWithMembersAndTypes : NrbfRecordType.ClassWithMembersAndTypes));
@@ -293,20 +293,20 @@ internal sealed class NrbfWriter
 				_out.WriteByte((byte)memberType.Primitive);
 				break;
 			case NrbfBinaryType.SystemClass:
-				WireBinary.WriteString(_out, memberType.ClassName);
+				WireBinary.WriteString(_out, memberType.ClassName!);
 				break;
 			case NrbfBinaryType.Class:
-				WireBinary.WriteString(_out, memberType.ClassName);
-				WireBinary.WriteInt32(_out, _libraries[memberType.AssemblyName]);
+				WireBinary.WriteString(_out, memberType.ClassName!);
+				WireBinary.WriteInt32(_out, _libraries[memberType.AssemblyName!]);
 				break;
 		}
 	}
 
-	private void WriteMemberValue(NrbfMemberType memberType, object value)
+	private void WriteMemberValue(NrbfMemberType memberType, object? value)
 	{
 		if (memberType.BinaryType == NrbfBinaryType.Primitive)
 		{
-			WritePrimitive(memberType.Primitive, value);
+			WritePrimitive(memberType.Primitive, value!);
 			return;
 		}
 		if (value != null && value.GetType().IsValueType && memberType.BinaryType != NrbfBinaryType.Object)
@@ -319,7 +319,7 @@ internal sealed class NrbfWriter
 	}
 
 	/// <summary>A value in an Object/class/array slot: null, an inline string or primitive, or a reference.</summary>
-	private void WriteReferenceOrInline(object value)
+	private void WriteReferenceOrInline(object? value)
 	{
 		switch (value)
 		{
@@ -362,7 +362,7 @@ internal sealed class NrbfWriter
 
 	private void WriteArray(Array array, int id)
 	{
-		Type elementType = array.GetType().GetElementType();
+		Type elementType = array.GetType().GetElementType()!;
 		if (array.Rank != 1)
 		{
 			throw new NotSupportedException("Only single-dimension arrays are supported.");
@@ -391,7 +391,7 @@ internal sealed class NrbfWriter
 			NrbfMemberType itemType = MemberTypeOf(elementType);
 			if (itemType.BinaryType == NrbfBinaryType.Class)
 			{
-				EnsureLibrary(itemType.AssemblyName);
+				EnsureLibrary(itemType.AssemblyName!);
 			}
 			_out.WriteByte((byte)NrbfRecordType.BinaryArray);
 			WireBinary.WriteInt32(_out, id);
@@ -461,10 +461,10 @@ internal sealed class NrbfWriter
 
 	// ---------------------------------------------------------------- values
 
-	private static bool IsInlineValue(object value) =>
+	private static bool IsInlineValue(object? value) =>
 		value == null || value is string || FrameworkTypeNames.PrimitiveOf(value.GetType()) != NrbfPrimitiveType.None;
 
-	private void WriteValueWithCode(object value)
+	private void WriteValueWithCode(object? value)
 	{
 		if (value == null)
 		{
@@ -482,10 +482,10 @@ internal sealed class NrbfWriter
 		WritePrimitive(primitive, value);
 	}
 
-	private void WriteArrayOfValueWithCode(object[] values)
+	private void WriteArrayOfValueWithCode(object?[] values)
 	{
 		WireBinary.WriteInt32(_out, values.Length);
-		foreach (object value in values)
+		foreach (object? value in values)
 		{
 			WriteValueWithCode(value);
 		}
@@ -516,7 +516,7 @@ internal sealed class NrbfWriter
 
 	// ---------------------------------------------------------------- reflection
 
-	private static string LibraryNameOf(Type type) => FrameworkTypeNames.IsSystemType(type) ? null : FrameworkTypeNames.AssemblyName(type);
+	private static string? LibraryNameOf(Type type) => FrameworkTypeNames.IsSystemType(type) ? null : FrameworkTypeNames.AssemblyName(type);
 
 	/// <summary>The MemberTypeInfo entry BinaryFormatter writes for a field of this declared type.</summary>
 	internal static NrbfMemberType MemberTypeOf(Type type)
@@ -536,7 +536,7 @@ internal sealed class NrbfWriter
 		}
 		if (type.IsArray && type.GetArrayRank() == 1)
 		{
-			Type element = type.GetElementType();
+			Type element = type.GetElementType()!;
 			if (element == typeof(string))
 			{
 				return NrbfMemberType.StringArray;
@@ -563,7 +563,7 @@ internal sealed class NrbfWriter
 	internal static FieldInfo[] SerializableFields(Type type) => FieldCache.GetOrAdd(type, t =>
 	{
 		List<FieldInfo> fields = new List<FieldInfo>();
-		for (Type current = t; current != null && current != typeof(object); current = current.BaseType)
+		for (Type? current = t; current != null && current != typeof(object); current = current.BaseType)
 		{
 			fields.AddRange(current.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
 				.Where(f => !f.IsNotSerialized));
@@ -573,5 +573,5 @@ internal sealed class NrbfWriter
 
 	// Inherited fields are named "BaseType+field".
 	private static string[] SerializableFieldNames(Type type, FieldInfo[] fields) =>
-		fields.Select(f => f.DeclaringType == type ? f.Name : f.DeclaringType.Name + "+" + f.Name).ToArray();
+		fields.Select(f => f.DeclaringType == type ? f.Name : f.DeclaringType!.Name + "+" + f.Name).ToArray();
 }

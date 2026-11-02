@@ -32,15 +32,15 @@ public class UpdateManagerService : ServiceBase
 
 	public bool ScriptLockedNeedsReboot;
 
-	private Thread m_thread;
+	private Thread m_thread = null!; // created by StartService
 
-	private IPCServiceHost m_listener;
+	private IPCServiceHost? m_listener;
 
 	private const string ServiceApplicationId = "{C423B0E3-95B3-4191-B326-AB3EA516F825}";
 
-	private static NamedLock m_instanceLock;
+	private static NamedLock? m_instanceLock;
 
-	private IContainer components;
+	private IContainer? components;
 
 	public UpdateManagerService()
 	{
@@ -207,7 +207,7 @@ public class UpdateManagerService : ServiceBase
 		{
 			MacroService macroService = new MacroService();
 			ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
-			string directoryName = Path.GetDirectoryName(typeof(UpdateManagerService).Assembly.Location);
+			string directoryName = Path.GetDirectoryName(typeof(UpdateManagerService).Assembly.Location)!;
 			macroService["RunningPath"] = directoryName;
 			LogHelper.Instance.Log("Start the daemon thread.", LogEntryType.Info);
 			LogHelper.Instance.Log("Initializing status message service");
@@ -227,7 +227,7 @@ public class UpdateManagerService : ServiceBase
 			string url = Settings.Default.Url;
 			m_listener = IPCServiceHost.Create(IPCProtocol.Parse(url), AssemblyInfoHelper.GetProductName(typeof(EngineCommand).Assembly), AssemblyInfoHelper.GetVersion(typeof(EngineCommand).Assembly), AssemblyInfoHelper.GetCopyright(typeof(EngineCommand).Assembly), Settings.Default.MaximumWorkerThreads, Settings.Default.MaximumWorkerThreads, 8192, 64, 5);
 			LogHelper.Instance.Log("Traffic is non-encrypted; no valid certificate specified or found.", LogEntryType.Info);
-			LogHelper.Instance.Log($"Start Service Listener for interface '{m_listener.Protocol.Host}' on port '{m_listener.Protocol.Port}'.", LogEntryType.Info);
+			LogHelper.Instance.Log($"Start Service Listener for interface '{m_listener!.Protocol.Host}' on port '{m_listener.Protocol.Port}'.", LogEntryType.Info);
 			m_listener.Start();
 			LogHelper.Instance.Log("Initializing work service");
 			WorkService.Instance.Initialize();
@@ -267,7 +267,7 @@ public class UpdateManagerService : ServiceBase
 				try
 				{
 					bool enabled = true;
-					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "HealthServiceScriptCheck", "true");
+					object? value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "HealthServiceScriptCheck", "true");
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{
 						enabled = result;
@@ -295,7 +295,7 @@ public class UpdateManagerService : ServiceBase
 								if (ScriptLockedNeedsReboot)
 								{
 									LogHelper.Instance.Log("Health Check Script - attempting reboot");
-									object registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RunInitialSync", "false");
+									object? registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RunInitialSync", "false");
 									bool runInitialSync = false;
 									if (registryValue != null && registryValue is string && bool.TryParse(registryValue as string, out var parsedRunInitialSync))
 									{
@@ -344,7 +344,7 @@ public class UpdateManagerService : ServiceBase
 				try
 				{
 					LogHelper.Instance.Log("Running Health Entry for serverpoll.");
-					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunServerPoll", "true");
+					object? value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunServerPoll", "true");
 					bool enabled = true;
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{
@@ -374,7 +374,7 @@ public class UpdateManagerService : ServiceBase
 				try
 				{
 					LogHelper.Instance.Log("Running Health Entry for Watchdog.");
-					object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunWatchdog", "true");
+					object? value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager\\Health Service", "RunWatchdog", "true");
 					bool enabled = true;
 					if (value != null && value is string && bool.TryParse(value as string, out var result))
 					{

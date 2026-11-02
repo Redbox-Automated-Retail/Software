@@ -48,7 +48,7 @@ internal static class CallbackFunctions
 		{
 			foreach (object key in luaTable.Keys)
 			{
-				list.Add(luaTable[key]);
+				list.Add(luaTable[key]!); // a key in a Lua table never maps to nil
 			}
 			luaTable.Dispose();
 		}

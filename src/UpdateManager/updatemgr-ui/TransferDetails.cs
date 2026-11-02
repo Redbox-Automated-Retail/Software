@@ -12,50 +12,51 @@ public class TransferDetails : Form
 {
 	private readonly ErrorList m_errors;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label m_labelTotalBytes;
+	private Label m_labelTotalBytes = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private ProgressBar m_downloadProgress;
+	private ProgressBar m_downloadProgress = null!;
 
-	private Label m_totalBytes;
+	private Label m_totalBytes = null!;
 
-	private Label m_statusDisplay;
+	private Label m_statusDisplay = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private Label m_startDate;
+	private Label m_startDate = null!;
 
-	private Label label9;
+	private Label label9 = null!;
 
-	private Label m_finishDate;
+	private Label m_finishDate = null!;
 
-	private Label label10;
+	private Label label10 = null!;
 
-	private Button m_showErrors;
+	private Button m_showErrors = null!;
 
-	private Label m_localFile;
+	private Label m_localFile = null!;
 
-	private Label label100;
+	private Label label100 = null!;
 
-	private Label label11;
+	private Label label11 = null!;
 
-	private ToolTip m_longUrl;
+	private ToolTip m_longUrl = null!;
 
-	private TextBox m_urlDisplay;
+	private TextBox m_urlDisplay = null!;
 
-	private TextBox m_id;
+	private TextBox m_id = null!;
 
-	private TextBox m_name;
+	private TextBox m_name = null!;
 
+	// The controls above are created by InitializeComponent.
 	public TransferDetails(ITransferJob job)
 	{
 		InitializeComponent();
@@ -74,7 +75,7 @@ public class TransferDetails : Form
 		m_startDate.Text = job.StartTime.ToLongTimeString();
 		m_finishDate.Text = (job.FinishTime.HasValue ? job.FinishTime.Value.ToLongTimeString() : "Job is still running.");
 		m_errors.AddRange(job.GetItems(out var items));
-		ITransferItem transferItem = ((items.Count > 0) ? items[0] : null);
+		ITransferItem? transferItem = ((items.Count > 0) ? items[0] : null);
 		if (transferItem != null)
 		{
 			if (transferItem.RemoteURL.Length > 80)
@@ -90,7 +91,7 @@ public class TransferDetails : Form
 		}
 	}
 
-	private void OnShowErrors(object sender, EventArgs e)
+	private void OnShowErrors(object? sender, EventArgs e)
 	{
 		ErrorForm errorForm = new ErrorForm();
 		errorForm.Errors = m_errors;
@@ -293,7 +294,7 @@ public class TransferDetails : Form
 		base.Controls.Add(this.label1);
 		this.Font = new System.Drawing.Font("Consolas", 9.75f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.Name = "TransferDetails";
 		base.ShowIcon = false;
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

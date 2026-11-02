@@ -91,7 +91,7 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 	[ValidValueListProvider("GetComPorts")]
 	[Description("The COM port to which to which the motion controller board is connected.")]
 	[XmlConfiguration(DefaultValue = "COM3")]
-	public string MotionControllerPortName { get; set; }
+	public string MotionControllerPortName { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Category("Configuration")]
 	[DisplayName("Motion Controller Timeout (ms)")]
@@ -118,7 +118,7 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 	[ValidValueListProvider("GetComPorts")]
 	[Description("The COM port the main, picker, auxiliary, and alternate motion controller boards are connected to.")]
 	[XmlConfiguration(DefaultValue = "COM1")]
-	public string ControllerPortName { get; set; }
+	public string ControllerPortName { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Recurse]
 	[ExcludeType]
@@ -410,13 +410,13 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 	[DisplayName("Quick Return Power Off Window")]
 	[Description("The number of slots the kiosk must not to try and file disks to.")]
 	[XmlConfiguration(DefaultValue = "0:6")]
-	public string QuickReturnPowerOffWindow { get; set; }
+	public string QuickReturnPowerOffWindow { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Category("Configuration")]
 	[DisplayName("Quick Return Port")]
 	[Description("The COM port on which the Quick return device is configured.")]
 	[XmlConfiguration(DefaultValue = "NONE")]
-	public string QuickReturnComPort { get; set; }
+	public string QuickReturnComPort { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Browsable(false)]
 	[Category("Behavior")]
@@ -789,13 +789,13 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 		get
 		{
 			int result = 90;
-			RegistryKey registryKey = null;
+			RegistryKey? registryKey = null;
 			try
 			{
 				registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
 				if (registryKey != null)
 				{
-					object registryValue = registryKey.GetValue("MaxSlots");
+					object? registryValue = registryKey.GetValue("MaxSlots");
 					if (registryValue != null)
 					{
 						result = ConversionHelper.ChangeType<int>(registryValue);
@@ -973,77 +973,77 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 
 	protected override void UpgradeInner(XmlDocument document, ErrorList errors)
 	{
-		document.DocumentElement.SelectSingleNodeAndSetValue("Controller/AggressiveClearPickerOnPut", value: false);
-		document.DocumentElement.SelectSingleNodeAndSetValue("Controller/RestartControllerDuringUserJobs", value: true);
-		document.DocumentElement.SelectSingleNodeAndSetValue("Controller/TrackHardwareCorrections", value: true);
-		document.DocumentElement.SelectSingleNodeAndSetValue("Controller/PrepositionVendFraudMove", value: true);
+		document.DocumentElement!.SelectSingleNodeAndSetValue("Controller/AggressiveClearPickerOnPut", value: false);
+		document.DocumentElement!.SelectSingleNodeAndSetValue("Controller/RestartControllerDuringUserJobs", value: true);
+		document.DocumentElement!.SelectSingleNodeAndSetValue("Controller/TrackHardwareCorrections", value: true);
+		document.DocumentElement!.SelectSingleNodeAndSetValue("Controller/PrepositionVendFraudMove", value: true);
 	}
 
 	protected override void StorePropertiesInner(XmlDocument document, ErrorList errors)
 	{
-		GearX.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/GearX"));
-		GearY.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/GearY"));
-		InitAxisXSpeed.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/InitAxisXSpeed"));
-		InitAxisYSpeed.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/InitAxisYSpeed"));
-		MoveAxisXSpeed.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/MoveXAxisSpeed"));
-		MoveAxisYSpeed.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/MoveYAxisSpeed"));
-		MoveAxisXYSpeed.SaveToXml(document.DocumentElement.SelectSingleNode("Controller/MoveXYAxisSpeed"));
+		GearX.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/GearX")!);
+		GearY.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/GearY")!);
+		InitAxisXSpeed.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/InitAxisXSpeed")!);
+		InitAxisYSpeed.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/InitAxisYSpeed")!);
+		MoveAxisXSpeed.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/MoveXAxisSpeed")!);
+		MoveAxisYSpeed.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/MoveYAxisSpeed")!);
+		MoveAxisXYSpeed.SaveToXml(document.DocumentElement!.SelectSingleNode("Controller/MoveXYAxisSpeed")!);
 		Manager.SaveConfiguration(document);
 	}
 
 	protected override void LoadPropertiesInner(XmlDocument document, ErrorList errors)
 	{
 		_ = document.DocumentElement;
-		XmlNode xmlNode = document.DocumentElement.SelectSingleNode("Controller/GearX");
+		XmlNode? xmlNode = document.DocumentElement!.SelectSingleNode("Controller/GearX");
 		if (xmlNode == null)
 		{
 			errors.Add(Error.NewError("P002", "The required GearX node does not exist.", "Add a valid GearX node to the configuration file."));
 			return;
 		}
 		GearX = MotorGear.FromXmlNode(xmlNode);
-		XmlNode xmlNode2 = document.DocumentElement.SelectSingleNode("Controller/GearY");
+		XmlNode? xmlNode2 = document.DocumentElement!.SelectSingleNode("Controller/GearY");
 		if (xmlNode2 == null)
 		{
 			errors.Add(Error.NewError("P002", "The required GearY node does not exist.", "Add a valid GearY node to the configuration file."));
 			return;
 		}
 		GearY = MotorGear.FromXmlNode(xmlNode2);
-		XmlNode xmlNode3 = document.DocumentElement.SelectSingleNode("Controller/InitAxisXSpeed");
+		XmlNode? xmlNode3 = document.DocumentElement!.SelectSingleNode("Controller/InitAxisXSpeed");
 		if (xmlNode3 == null)
 		{
 			errors.Add(Error.NewError("P003", "The required InitAxisXSpeed node does not exist.", "Add a valid InitAxisXSpeed node to the configuration file."));
 			return;
 		}
 		InitAxisXSpeed = MotorSpeed.FromXmlNode(xmlNode3, GearX);
-		XmlNode xmlNode4 = document.DocumentElement.SelectSingleNode("Controller/InitAxisYSpeed");
+		XmlNode? xmlNode4 = document.DocumentElement!.SelectSingleNode("Controller/InitAxisYSpeed");
 		if (xmlNode4 == null)
 		{
 			errors.Add(Error.NewError("P003", "The required InitYAxisSpeed node does not exist.", "Add a valid InitYAxisSpeed node to the configuration file."));
 			return;
 		}
 		InitAxisYSpeed = MotorSpeed.FromXmlNode(xmlNode4, GearY);
-		XmlNode xmlNode5 = document.DocumentElement.SelectSingleNode("Controller/MoveXAxisSpeed");
+		XmlNode? xmlNode5 = document.DocumentElement!.SelectSingleNode("Controller/MoveXAxisSpeed");
 		if (xmlNode5 == null)
 		{
 			errors.Add(Error.NewError("P004", "The required MoveXAxisSpeed node does not exist.", "Add a valid MoveXAxisSpeed node to the configuration file."));
 			return;
 		}
 		MoveAxisXSpeed = MotorSpeed.FromXmlNode(xmlNode5, GearX);
-		XmlNode xmlNode6 = document.DocumentElement.SelectSingleNode("Controller/MoveYAxisSpeed");
+		XmlNode? xmlNode6 = document.DocumentElement!.SelectSingleNode("Controller/MoveYAxisSpeed");
 		if (xmlNode6 == null)
 		{
 			errors.Add(Error.NewError("P004", "The required MoveYAxisSpeed node does not exist.", "Add a valid MoveYAxisSpeed node to the configuration file."));
 			return;
 		}
 		MoveAxisYSpeed = MotorSpeed.FromXmlNode(xmlNode6, GearY);
-		XmlNode xmlNode7 = document.DocumentElement.SelectSingleNode("Controller/MoveXYAxisSpeed");
+		XmlNode? xmlNode7 = document.DocumentElement!.SelectSingleNode("Controller/MoveXYAxisSpeed");
 		if (xmlNode7 == null)
 		{
 			errors.Add(Error.NewError("P004", "The required MoveXYAxisSpeed node does not exist.", "Add a valid MoveXYAxisSpeed node to the configuration file."));
 			return;
 		}
 		MoveAxisXYSpeed = MotorSpeed.FromXmlNode(xmlNode7, GearY);
-		XmlNode xmlNode8 = document.DocumentElement.SelectSingleNode("Controller/Decks");
+		XmlNode? xmlNode8 = document.DocumentElement!.SelectSingleNode("Controller/Decks");
 		if (xmlNode8 == null)
 		{
 			LogHelper.Instance.Log("There are no decks nodes in the configuration file.");
@@ -1064,7 +1064,7 @@ public sealed class ControllerConfiguration : AttributeXmlConfiguration
 		{
 			errors.Add(Error.NewError("P005", "Machine configuration mismatch.", $"The store key shows {registrySlotCount}, but the deck shows {first.NumberOfSlots}"));
 		}
-		IDeck qlmDeck = Manager.QlmDeck;
+		IDeck? qlmDeck = Manager.QlmDeck;
 		MerchMode = ((qlmDeck == null) ? MerchandizingMode.VMZ_Gen2 : MerchandizingMode.QLM);
 		LogHelper.Instance.Log("Kiosk is configured for merchandizing mode {0}", MerchMode.ToString().ToUpper());
 	}

@@ -20,26 +20,27 @@ public class ClientRepositoryData
 
 	public class Repository
 	{
-		public string Name;
+		public string Name = null!; // set by the object initializer or the JSON reader
 
 		public long OID;
 	}
 
 	public const string EmptyHash = "0000000000000000000000000000000000000000";
 
-	public string RepositoryName;
+	// Filled by the constructor from a DTO, the object initializer or the JSON reader; the revlogs can be missing.
+	public string RepositoryName = null!;
 
 	public long RepositoryOID;
 
-	public Revlog Assigned;
+	public Revlog? Assigned;
 
-	public Revlog InTransit;
+	public Revlog? InTransit;
 
-	public Revlog Head;
+	public Revlog? Head;
 
-	public Revlog Staged;
+	public Revlog? Staged;
 
-	public Revlog Active;
+	public Revlog? Active;
 
 	public ClientRepositoryData()
 	{

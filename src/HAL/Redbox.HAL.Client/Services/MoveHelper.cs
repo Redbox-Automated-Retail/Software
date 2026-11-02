@@ -16,7 +16,7 @@ public sealed class MoveHelper
 		{
 			return ErrorCodes.ServiceChannelError;
 		}
-		return Enum<ErrorCodes>.ParseIgnoringCase(job.GetTopOfStack(), ErrorCodes.ServiceChannelError);
+		return Enum<ErrorCodes>.ParseIgnoringCase(job!.GetTopOfStack(), ErrorCodes.ServiceChannelError);
 	}
 
 	public ErrorCodes MoveTo(int deck, int slot)
@@ -24,7 +24,7 @@ public sealed class MoveHelper
 		return MoveTo(deck, slot, "NORMAL");
 	}
 
-	public IControllerPosition GetPosition()
+	public IControllerPosition? GetPosition()
 	{
 		using MotionControlDataExecutor motionControlDataExecutor = new MotionControlDataExecutor(Service);
 		motionControlDataExecutor.Run();
@@ -43,10 +43,10 @@ public sealed class MoveHelper
 		{
 			return ErrorCodes.ServiceChannelError;
 		}
-		return Enum<ErrorCodes>.ParseIgnoringCase(job.GetTopOfStack(), ErrorCodes.ServiceChannelError);
+		return Enum<ErrorCodes>.ParseIgnoringCase(job!.GetTopOfStack(), ErrorCodes.ServiceChannelError);
 	}
 
-	public IMotionControlLimitResponse ReadLimits()
+	public IMotionControlLimitResponse? ReadLimits()
 	{
 		using MotionControlDataExecutor motionControlDataExecutor = new MotionControlDataExecutor(Service);
 		motionControlDataExecutor.Run();

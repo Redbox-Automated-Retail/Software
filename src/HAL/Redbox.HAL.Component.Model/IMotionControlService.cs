@@ -2,7 +2,7 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IMotionControlService
 {
-	ILocation CurrentLocation { get; }
+	ILocation? CurrentLocation { get; }
 
 	bool AtVendDoor { get; }
 

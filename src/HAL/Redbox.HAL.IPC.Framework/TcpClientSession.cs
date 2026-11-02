@@ -9,9 +9,10 @@ namespace Redbox.HAL.IPC.Framework;
 
 public sealed class TcpClientSession : ClientSession
 {
-	private Stream m_stream;
+	private Stream? m_stream;
 
-	private TcpClient m_transportClient;
+	// Set by OnConnectThrowOnError.
+	private TcpClient m_transportClient = null!;
 
 	private int m_clientPort;
 
@@ -28,7 +29,7 @@ public sealed class TcpClientSession : ClientSession
 				}
 				else
 				{
-					SslStream sslStream = new SslStream(TransportClient.GetStream(), leaveInnerStreamOpen: false, (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => true)
+					SslStream sslStream = new SslStream(TransportClient.GetStream(), leaveInnerStreamOpen: false, (object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) => true)
 					{
 						ReadTimeout = base.Timeout,
 						WriteTimeout = base.Timeout

@@ -21,7 +21,7 @@ public sealed class PeekOperation : AbstractOperation<IPeekResult>
 
 	private IPeekResult OnPeek()
 	{
-		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
+		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation!;
 		LocationTestResult locationTestResult = new LocationTestResult(currentLocation.Deck, currentLocation.Slot);
 		if (currentLocation.IsWide)
 		{

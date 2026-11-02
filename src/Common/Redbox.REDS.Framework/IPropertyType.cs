@@ -8,7 +8,7 @@ public interface IPropertyType
 
 	string Name { get; }
 
-	string Label { get; }
+	string? Label { get; }
 
 	bool IsFilter { get; }
 
@@ -16,13 +16,13 @@ public interface IPropertyType
 
 	int FilterScore { get; }
 
-	string Category { get; }
+	string? Category { get; }
 
-	string Description { get; }
+	string? Description { get; }
 
-	object DefaultValue { get; }
+	object? DefaultValue { get; }
 
-	void SetDefaultValue(object value);
+	void SetDefaultValue(object? value);
 
-	object GetTypedValue(object value);
+	object? GetTypedValue(object? value);
 }

@@ -20,7 +20,7 @@ public static class StringExtensionMethods
 		return text.Substring(0, index) + replace + text.Substring(index + search.Length);
 	}
 
-	public static string ToPrettyJson(this string source)
+	public static string ToPrettyJson(this string? source)
 	{
 		if (source == null)
 		{
@@ -61,11 +61,11 @@ public static class StringExtensionMethods
 		return Encoding.UTF8.GetString(buffer);
 	}
 
-	public static string CheckNotAvailable(this string source)
+	public static string CheckNotAvailable(this string? source)
 	{
 		if (!string.IsNullOrEmpty(source))
 		{
-			return source;
+			return source!;
 		}
 		return "N/A";
 	}

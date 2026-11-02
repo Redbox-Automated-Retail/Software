@@ -8,9 +8,9 @@ public interface IHardwareErrorEntry
 
 	DateTime Timestamp { get; }
 
-	ILocation Location { get; }
+	ILocation? Location { get; }
 
-	string ProgramName { get; }
+	string? ProgramName { get; }
 
-	string ProgramId { get; }
+	string? ProgramId { get; }
 }

@@ -5,11 +5,12 @@ namespace Redbox.KioskEngine.ComponentModel.KioskServices;
 
 public sealed class RemoteServiceCallbackEntry : ICallbackEntry
 {
-	public RemoteServiceCallback Callback { get; set; }
+	public RemoteServiceCallback? Callback { get; set; }
 
-	public IRemoteServiceResult Result { get; set; }
+	// Set with Callback by the proxy that queues the entry.
+	public IRemoteServiceResult Result { get; set; } = null!;
 
-	public string Message { get; set; }
+	public string? Message { get; set; }
 
 	public string Name => "RemoteServiceCallbackEntry";
 

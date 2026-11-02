@@ -9,21 +9,21 @@ namespace Redbox.IPC.Framework;
 
 public class ClientCommand<T> where T : ClientCommandResult, new()
 {
-	private IPCProtocol m_protocol;
+	private IPCProtocol? m_protocol;
 
 	public string CommandText { get; internal set; }
 
 	public int CommandTimeout { get; internal set; }
 
-	public IPCProtocol Protocol { get; internal set; }
+	public IPCProtocol? Protocol { get; internal set; }
 
 	public TimeSpan? ExecutionTime { get; private set; }
 
 	internal bool DisposeWhenDone { get; set; }
 
-	internal ClientSession Session { get; set; }
+	internal ClientSession? Session { get; set; }
 
-	public static T ExecuteCommand(ClientSession session, bool disposeWhenDone, string command)
+	public static T ExecuteCommand(ClientSession? session, bool disposeWhenDone, string command)
 	{
 		return new ClientCommand<T>(session, disposeWhenDone, command).Execute();
 	}
@@ -38,8 +38,8 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 		bool disposeSession = Session == null || DisposeWhenDone;
 		try
 		{
-			Session = Session ?? ClientSession.GetClientSession(Protocol, CommandTimeout);
-			if (!Session.IsConnected)
+			Session = Session ?? ClientSession.GetClientSession(Protocol!, CommandTimeout);
+			if (!Session!.IsConnected)
 			{
 				Session.ConnectThrowOnError();
 			}
@@ -98,7 +98,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 		CommandText = command;
 	}
 
-	protected ClientCommand(ClientSession session, bool disposeWhenDone, string command)
+	protected ClientCommand(ClientSession? session, bool disposeWhenDone, string command)
 	{
 		Session = session;
 		CommandText = command;
@@ -112,7 +112,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 	protected virtual void OnConnectionFailure(Exception e, ClientCommandResult result)
 	{
 		result.Success = false;
-		result.Errors.Add(Error.NewError("J001", $"Unable to connect to command service on {m_protocol.Scheme}://{m_protocol.Host}:{m_protocol.Port}.", e));
+		result.Errors.Add(Error.NewError("J001", $"Unable to connect to command service on {m_protocol!.Scheme}://{m_protocol.Host}:{m_protocol.Port}.", e));
 	}
 
 	protected virtual void OnUnhandledException(Exception e, ClientCommandResult result)

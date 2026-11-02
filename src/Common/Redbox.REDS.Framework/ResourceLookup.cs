@@ -11,10 +11,10 @@ internal static class ResourceLookup
 	{
 		public int Score { get; set; }
 
-		public IResource Resource { get; set; }
+		public IResource Resource { get; set; } = null!; // set by the object initializer
 	}
 
-	public static IResource GetResource(MultiDictionary<string, IResource> resources, string name, IResourceBundleFilter filter)
+	public static IResource? GetResource(MultiDictionary<string, IResource> resources, string name, IResourceBundleFilter? filter)
 	{
 		ICollection<IResource> collection = resources[name];
 		if (collection == null)
@@ -66,7 +66,7 @@ internal static class ResourceLookup
 		return scoredResources[0].Resource;
 	}
 
-	public static IResource GetResource2(MultiDictionary<string, IResource> resources, string name, IResourceBundleFilter filter)
+	public static IResource? GetResource2(MultiDictionary<string, IResource> resources, string name, IResourceBundleFilter? filter)
 	{
 		ICollection<IResource> collection = resources[name];
 		if (collection == null)

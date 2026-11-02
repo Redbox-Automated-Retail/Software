@@ -7,9 +7,10 @@ namespace Redbox.KioskEngine.Kernel;
 
 internal sealed class SimpleCallback : ICallbackEntry, IDisposable
 {
-	public LuaFunction Function { get; set; }
+	public LuaFunction? Function { get; set; }
 
-	public object[] Parameters { get; set; }
+	// Set with Function by CallbackFunctions (object initializer).
+	public object[] Parameters { get; set; } = null!;
 
 	public bool EnableDebugger { get; set; }
 

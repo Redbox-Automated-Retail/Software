@@ -11,44 +11,45 @@ namespace Redbox.UpdateManager.UI;
 
 public class ManageScheduleEvents : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private ListView m_events;
+	private ListView m_events = null!;
 
-	private Button m_deleteEvent;
+	private Button m_deleteEvent = null!;
 
-	private Button m_stopScheduler;
+	private Button m_stopScheduler = null!;
 
-	private Button m_resetScheduler;
+	private Button m_resetScheduler = null!;
 
-	private Button m_forceEvent;
+	private Button m_forceEvent = null!;
 
-	private Button m_startScheduler;
+	private Button m_startScheduler = null!;
 
-	private Button m_newScriptEvent;
+	private Button m_newScriptEvent = null!;
 
-	private Button m_newShellEvent;
+	private Button m_newShellEvent = null!;
 
-	private Button m_refreshButton;
+	private Button m_refreshButton = null!;
 
-	private ColumnHeader payload;
+	private ColumnHeader payload = null!;
 
-	private ColumnHeader type;
+	private ColumnHeader type = null!;
 
-	private ColumnHeader cronexpression;
+	private ColumnHeader cronexpression = null!;
 
-	private ColumnHeader TaskName;
+	private ColumnHeader TaskName = null!;
 
-	private Button m_newServerpollEvent;
+	private Button m_newServerpollEvent = null!;
 
+	// The controls above are created by InitializeComponent.
 	public ManageScheduleEvents()
 	{
 		InitializeComponent();
 	}
 
-	private void OnRestartSchdeuler(object sender, EventArgs e)
+	private void OnRestartSchdeuler(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			ErrorList errorList = ServiceLocator.Instance.GetService<ITaskScheduler>().Restart();
 			if (errorList.ContainsError())
@@ -59,9 +60,9 @@ public class ManageScheduleEvents : Form
 		});
 	}
 
-	private void OnStopScheduler(object sender, EventArgs e)
+	private void OnStopScheduler(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			ErrorList errorList = ServiceLocator.Instance.GetService<ITaskScheduler>().Stop();
 			if (errorList.ContainsError())
@@ -72,9 +73,9 @@ public class ManageScheduleEvents : Form
 		});
 	}
 
-	private void OnStartScheduler(object sender, EventArgs e)
+	private void OnStartScheduler(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			ErrorList errorList = ServiceLocator.Instance.GetService<ITaskScheduler>().Start();
 			if (errorList.ContainsError())
@@ -85,7 +86,7 @@ public class ManageScheduleEvents : Form
 		});
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		LoadScheduleEvents();
 		SetButtonState();
@@ -122,7 +123,7 @@ public class ManageScheduleEvents : Form
 						};
 						listViewItem.SubItems.Add(item.Payload);
 						listViewItem.SubItems.Add(Enum.GetName(typeof(PayloadType), item.PayloadType));
-						string text = ((item.ScheduleType == ScheduleType.Cron) ? item.CronExpression : item.RepeatInterval.ToString());
+						string? text = ((item.ScheduleType == ScheduleType.Cron) ? item.CronExpression : item.RepeatInterval.ToString());
 						if (item.StartOffset.HasValue)
 						{
 							text = text + " Offset:" + item.StartOffset.ToString();
@@ -141,25 +142,25 @@ public class ManageScheduleEvents : Form
 		});
 	}
 
-	private void OnNewScriptEvent(object sender, EventArgs e)
+	private void OnNewScriptEvent(object? sender, EventArgs e)
 	{
 		new NewScriptEvent().ShowDialog();
 		LoadScheduleEvents();
 	}
 
-	private void OnNewShellEvent(object sender, EventArgs e)
+	private void OnNewShellEvent(object? sender, EventArgs e)
 	{
 		new NewShellEvent().ShowDialog();
 		LoadScheduleEvents();
 	}
 
-	private void OnNewServerpollEvent(object sender, EventArgs e)
+	private void OnNewServerpollEvent(object? sender, EventArgs e)
 	{
 		new NewServerpollEvent().ShowDialog();
 		LoadScheduleEvents();
 	}
 
-	private void OnDelete(object sender, EventArgs e)
+	private void OnDelete(object? sender, EventArgs e)
 	{
 		if (m_events.SelectedItems.Count < 1)
 		{
@@ -177,8 +178,8 @@ public class ManageScheduleEvents : Form
 				IEnumerable<ListViewItem> source = from ListViewItem item in m_events.SelectedItems
 					where item != null
 					select item;
-				Func<ListViewItem, ErrorList> func2 = default(Func<ListViewItem, ErrorList>);
-				Func<ListViewItem, ErrorList> func = func2;
+				Func<ListViewItem, ErrorList>? func2 = default(Func<ListViewItem, ErrorList>);
+				Func<ListViewItem, ErrorList>? func = func2;
 				if (func == null)
 				{
 					func = (func2 = (ListViewItem item) => scheduler.Delete(item.SubItems[0].Text));
@@ -230,7 +231,7 @@ public class ManageScheduleEvents : Form
 		}
 	}
 
-	private void OnForce(object sender, EventArgs e)
+	private void OnForce(object? sender, EventArgs e)
 	{
 		if (m_events.SelectedItems.Count < 1)
 		{
@@ -239,13 +240,13 @@ public class ManageScheduleEvents : Form
 		try
 		{
 			List<ITask> list = (from item in m_events.SelectedItems.OfType<ListViewItem>()
-				select (ITask)item.Tag into scheduleEvent
+				select (ITask)item.Tag! into scheduleEvent
 				where scheduleEvent != null
 				select scheduleEvent).ToList();
 			if (list.Count > 0)
 			{
 				ITaskScheduler scheduler = ServiceLocator.Instance.GetService<ITaskScheduler>();
-				UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+				UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 				{
 					foreach (ITask item in list)
 					{
@@ -269,7 +270,7 @@ public class ManageScheduleEvents : Form
 		}
 	}
 
-	private void OnRefresh(object sender, EventArgs e)
+	private void OnRefresh(object? sender, EventArgs e)
 	{
 		LoadScheduleEvents();
 	}

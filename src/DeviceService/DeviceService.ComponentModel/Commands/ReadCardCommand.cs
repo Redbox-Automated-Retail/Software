@@ -9,7 +9,8 @@ public class ReadCardCommand : BaseCommandRequest
 
 	public override string CommandName => "ReadCard";
 
-	public CardReadRequest Request { get; set; }
+	// Set by the sender's object initializer (DeviceServiceClient's read card commands).
+	public CardReadRequest Request { get; set; } = null!;
 
 	public ReadCardCommand(Version deviceServiceClientVersion)
 		: base("ReadCard", deviceServiceClientVersion)

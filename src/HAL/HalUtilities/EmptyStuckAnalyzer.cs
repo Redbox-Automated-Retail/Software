@@ -84,7 +84,7 @@ internal class EmptyStuckAnalyzer
 					while (true)
 					{
 						StuckType type = StuckType.None;
-						string line = textReader.ReadLine();
+						string? line = textReader.ReadLine();
 						if (line == null)
 						{
 							break;
@@ -105,13 +105,13 @@ internal class EmptyStuckAnalyzer
 						{
 							type = StuckType.LookupFail;
 							sampleCount++;
-							typeStats.Find((TypeStat each) => each.Type == type).Increment();
+							typeStats.Find((TypeStat each) => each.Type == type)!.Increment();
 							if (type == StuckType.LookupFail)
 							{
 								int index = line.IndexOf("item") + 5;
 								int matrixEnd = line.IndexOf("returned") - 1;
 								string _bc = line.Substring(index, matrixEnd - index);
-								LookupFailStat lookupFailStat = lookupFailStats.Find((LookupFailStat each) => each.Matrix == _bc);
+								LookupFailStat? lookupFailStat = lookupFailStats.Find((LookupFailStat each) => each.Matrix == _bc);
 								if (lookupFailStat == null)
 								{
 									lookupFailStat = new LookupFailStat(_bc);
@@ -131,7 +131,7 @@ internal class EmptyStuckAnalyzer
 							continue;
 						}
 						sampleCount++;
-						typeStats.Find((TypeStat each) => each.Type == type).Increment();
+						typeStats.Find((TypeStat each) => each.Type == type)!.Increment();
 						string s = line.Substring(markerIndex + deckMarker.Length, 1);
 						int deck = int.Parse(s);
 						markerIndex = line.IndexOf(slotMarker);
@@ -147,7 +147,7 @@ internal class EmptyStuckAnalyzer
 									log.WriteLine("Unable to parse {0}", slotNumberText);
 									Environment.Exit(1);
 								}
-								LocStat locStat = locStats.Find((LocStat each) => each.Deck == deck && each.Slot == _targetSlot);
+								LocStat? locStat = locStats.Find((LocStat each) => each.Deck == deck && each.Slot == _targetSlot);
 								if (locStat == null)
 								{
 									locStat = new LocStat(deck, _targetSlot);

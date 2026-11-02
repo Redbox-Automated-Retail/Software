@@ -18,17 +18,18 @@ internal class RevisionChangeSet
 
 	public ChangesetState State { get; set; }
 
-	public string Message { get; set; }
+	public string? Message { get; set; }
 
 	public int RetryCount { get; set; }
 
-	public string Path { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string Path { get; set; } = null!;
 
 	public int CompressionType { get; set; }
 
-	public string ContentHash { get; set; }
+	public string ContentHash { get; set; } = null!;
 
-	public string FileHash { get; set; }
+	public string FileHash { get; set; } = null!;
 
 	public long PatchRevisionId { get; set; }
 
@@ -38,11 +39,11 @@ internal class RevisionChangeSet
 
 	public DateTime ActiveOn { get; set; }
 
-	public string ActivateStartTime { get; set; }
+	public string ActivateStartTime { get; set; } = null!;
 
-	public string ActivateEndTime { get; set; }
+	public string ActivateEndTime { get; set; } = null!;
 
-	public string DownloadUrl { get; set; }
+	public string DownloadUrl { get; set; } = null!;
 
-	public string StateText => Enum.GetName(typeof(ChangesetState), State);
+	public string StateText => Enum.GetName(typeof(ChangesetState), State)!; // State is a ChangesetState
 }

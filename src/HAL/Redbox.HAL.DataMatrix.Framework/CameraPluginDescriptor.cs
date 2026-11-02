@@ -6,19 +6,19 @@ namespace Redbox.HAL.DataMatrix.Framework;
 
 internal sealed class CameraPluginDescriptor
 {
-	internal string PluginName { get; set; }
+	internal string? PluginName { get; set; }
 
-	internal string AssemblyName { get; set; }
+	internal string? AssemblyName { get; set; }
 
-	internal string PluginNamespace { get; set; }
+	internal string? PluginNamespace { get; set; }
 
-	internal string PluginServiceProviderMethodName { get; set; }
+	internal string? PluginServiceProviderMethodName { get; set; }
 
-	internal string Version { get; set; }
+	internal string? Version { get; set; }
 
-	internal string DescriptorPath { get; private set; }
+	internal string? DescriptorPath { get; private set; }
 
-	internal static CameraPluginDescriptor FromXml(string xmlPath)
+	internal static CameraPluginDescriptor? FromXml(string xmlPath)
 	{
 		try
 		{
@@ -29,7 +29,7 @@ internal sealed class CameraPluginDescriptor
 				LogHelper.Instance.Log(LogEntryType.Error, "[Camera Plugin Manager] The descriptor file '{0}' doesn't have a root element.", xmlPath);
 				return null;
 			}
-			XmlNode xmlNode = xmlDocument.SelectSingleNode("Plugin");
+			XmlNode? xmlNode = xmlDocument.SelectSingleNode("Plugin");
 			if (xmlNode == null)
 			{
 				LogHelper.Instance.Log(LogEntryType.Error, "[Camera Plugin Manager] The descriptor file '{0}' is missing the required Plugin node.", xmlPath);
@@ -41,17 +41,17 @@ internal sealed class CameraPluginDescriptor
 			{
 				if (childNode.Name.Equals("PluginType"))
 				{
-					cameraPluginDescriptor.PluginName = childNode.Attributes.GetNamedItem("Name").Value;
-					cameraPluginDescriptor.Version = childNode.Attributes.GetNamedItem("Version").Value;
+					cameraPluginDescriptor.PluginName = childNode.Attributes!.GetNamedItem("Name")!.Value;
+					cameraPluginDescriptor.Version = childNode.Attributes!.GetNamedItem("Version")!.Value;
 				}
 				else if (childNode.Name.Equals("Assembly"))
 				{
-					cameraPluginDescriptor.AssemblyName = childNode.Attributes.GetNamedItem("Name").Value;
+					cameraPluginDescriptor.AssemblyName = childNode.Attributes!.GetNamedItem("Name")!.Value;
 				}
 				else if (childNode.Name.Equals("PluginProvider"))
 				{
-					cameraPluginDescriptor.PluginServiceProviderMethodName = childNode.Attributes.GetNamedItem("Method").Value;
-					cameraPluginDescriptor.PluginNamespace = childNode.Attributes.GetNamedItem("Namespace").Value;
+					cameraPluginDescriptor.PluginServiceProviderMethodName = childNode.Attributes!.GetNamedItem("Method")!.Value;
+					cameraPluginDescriptor.PluginNamespace = childNode.Attributes!.GetNamedItem("Namespace")!.Value;
 				}
 			}
 			return cameraPluginDescriptor;

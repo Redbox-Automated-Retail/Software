@@ -42,7 +42,7 @@ public sealed class Deck : IDeck
 		return Number;
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (!(obj is Deck deck))
 		{
@@ -51,18 +51,18 @@ public sealed class Deck : IDeck
 		return deck == this;
 	}
 
-	public static bool operator !=(Deck lhs, Deck rhs)
+	public static bool operator !=(Deck? lhs, Deck? rhs)
 	{
 		return !(lhs == rhs);
 	}
 
-	public static bool operator ==(Deck lhs, Deck rhs)
+	public static bool operator ==(Deck? lhs, Deck? rhs)
 	{
-		if ((object)lhs == rhs)
+		if ((object?)lhs == rhs)
 		{
 			return true;
 		}
-		if ((object)lhs == null || (object)rhs == null)
+		if ((object?)lhs == null || (object?)rhs == null)
 		{
 			return false;
 		}
@@ -124,11 +124,11 @@ public sealed class Deck : IDeck
 			throw new ArgumentException($"The computed quadrant offset {quadrantIndex} is outside the range of defined quadrants.  This usuallys means the deck is incorrectly configured.");
 		}
 		int offset = Quadrants[quadrantIndex].Offset;
-		IQuadrant quadrant = FindQuadrantThatContainsSlot(slot);
+		IQuadrant? quadrant = FindQuadrantThatContainsSlot(slot);
 		int slotInQuadrant = slotIndex % SlotsPerQuadrant;
 		if (quadrant != null)
 		{
-			slotInQuadrant = slot - quadrant.Slots.Start;
+			slotInQuadrant = slot - quadrant.Slots!.Start;
 			offset = quadrant.Offset;
 		}
 		decimal slotOffset = (decimal)slotInQuadrant * SlotWidth;
@@ -185,7 +185,7 @@ public sealed class Deck : IDeck
 			int? startSlot = childNode.GetAttributeValue<int?>("StartSlot", null);
 			int? endSlot = childNode.GetAttributeValue<int?>("EndSlot", null);
 			bool isExcluded = childNode.GetAttributeValue("IsExcluded", defaultValue: false);
-			Range range = null;
+			Range? range = null;
 			if (startSlot.HasValue && endSlot.HasValue)
 			{
 				range = new Range(startSlot.Value, endSlot.Value);
@@ -251,7 +251,7 @@ public sealed class Deck : IDeck
 		m_quadrants.AddRange(newProperties.Quadrants);
 	}
 
-	private IQuadrant FindQuadrantThatContainsSlot(int slot)
+	private IQuadrant? FindQuadrantThatContainsSlot(int slot)
 	{
 		foreach (IQuadrant quadrant in Quadrants)
 		{

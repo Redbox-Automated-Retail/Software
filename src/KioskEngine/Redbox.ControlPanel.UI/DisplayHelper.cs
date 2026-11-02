@@ -71,9 +71,9 @@ public static class DisplayHelper
 			return $"{dmPelsWidth}x{dmPelsHeight}, Frequency: {dmDisplayFrequency}, Interlaced: {Interlaced}, BitsPerPixel: {dmBitsPerPel}";
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
-			return GetHashCode() == obj.GetHashCode();
+			return GetHashCode() == obj!.GetHashCode();
 		}
 
 		public override int GetHashCode()
@@ -95,7 +95,7 @@ public static class DisplayHelper
 	private const int ENUM_CURRENT_SETTINGS = -1;
 
 	[DllImport("user32.dll", CharSet = CharSet.Ansi)]
-	private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DisplayDEVMODE devMode);
+	private static extern bool EnumDisplaySettings(string? deviceName, int modeNum, ref DisplayDEVMODE devMode);
 
 	[DllImport("user32.dll", CharSet = CharSet.Ansi)]
 	private static extern int ChangeDisplaySettings(ref DisplayDEVMODE devMode, int flags);

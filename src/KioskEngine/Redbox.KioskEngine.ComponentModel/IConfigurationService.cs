@@ -11,7 +11,7 @@ public interface IConfigurationService
 
 	ErrorList Add(string key, string filepath, string defaultCategory);
 
-	ErrorList Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool> canActivate, Action activateAction);
+	ErrorList Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool>? canActivate, Action activateAction);
 
 	ErrorList Remove(string key);
 
@@ -19,19 +19,19 @@ public interface IConfigurationService
 
 	List<ConfigurationClientItem> GetItems();
 
-	bool TryGetValue<T>(string key, string setting, out T value);
+	bool TryGetValue<T>(string key, string setting, out T? value);
 
-	bool TryGetValue<T>(string key, string category, string setting, out T value);
+	bool TryGetValue<T>(string key, string category, string setting, out T? value);
 
 	bool TryGetTimeSpanRangeValue(string key, string category, string setting, out TimeSpan? startTime, out TimeSpan? endTime);
 
-	bool TryGetObject(string key, string setting, out object value);
+	bool TryGetObject(string key, string setting, out object? value);
 
-	bool TryGetObject(string key, string category, string setting, out object value);
+	bool TryGetObject(string key, string category, string setting, out object? value);
 
-	bool TryGetConfigurationData(string key, string setting, out ConfigurationData value);
+	bool TryGetConfigurationData(string key, string setting, out ConfigurationData? value);
 
-	bool TryGetConfigurationData(string key, string category, string setting, out ConfigurationData value);
+	bool TryGetConfigurationData(string key, string category, string setting, out ConfigurationData? value);
 
 	bool GetAllConfigurationData(string key, out List<ConfigurationData> list);
 

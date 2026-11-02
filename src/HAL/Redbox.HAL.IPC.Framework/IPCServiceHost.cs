@@ -34,7 +34,7 @@ public abstract class IPCServiceHost : IIpcServiceHost
 
 	public IHostInfo HostInfo { get; private set; }
 
-	public X509Certificate2 Certificate { get; set; }
+	public X509Certificate2? Certificate { get; set; }
 
 	public SslProtocols EncryptionProtocol { get; set; }
 

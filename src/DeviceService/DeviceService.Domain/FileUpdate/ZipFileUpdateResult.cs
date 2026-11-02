@@ -8,13 +8,15 @@ public class ZipFileUpdateResult : IZipFileUpdateResult
 {
 	private List<IFileUpdateResult> _fileUpdateResultCollection = new List<IFileUpdateResult>();
 
-	public string FileName { get; set; }
+	// FileName and StatusMessage are set by the object initializer in FileUpdateService.FindZipFileUpdates,
+	// UpdateFileManifestProperties by FileUpdateService.ReadManifestFiles right after.
+	public string FileName { get; set; } = null!;
 
 	public ZipFileUpdateStatus Status { get; set; }
 
-	public string StatusMessage { get; set; }
+	public string StatusMessage { get; set; } = null!;
 
-	public IUpdateFileManifestProperties UpdateFileManifestProperties { get; set; }
+	public IUpdateFileManifestProperties UpdateFileManifestProperties { get; set; } = null!;
 
 	public List<IFileUpdateResult> FileUpdateResultCollection
 	{

@@ -8,7 +8,8 @@ internal class ClientFileSetRevisionDependency
 
 	public DependencyType DependencyType { get; set; }
 
-	public string MinimumVersion { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string MinimumVersion { get; set; } = null!;
 
-	public string MaximumVersion { get; set; }
+	public string MaximumVersion { get; set; } = null!;
 }

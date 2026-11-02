@@ -5,6 +5,7 @@
     transport (Redbox.BrokerServices.Proxy) and KioskServices' HTTP channel (Redbox.KioskServices.Proxy).
   -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.Remoting.Nrbf</AssemblyName>
     <RootNamespace>Redbox.Remoting.Nrbf</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>

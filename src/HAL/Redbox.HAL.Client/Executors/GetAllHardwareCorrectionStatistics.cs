@@ -27,6 +27,6 @@ public sealed class GetAllHardwareCorrectionStatistics : JobExecutor
 
 	protected override void OnJobCompleted()
 	{
-		HWCorrectionStat.From(base.Job, Stats);
+		HWCorrectionStat.From(base.Job!, Stats);
 	}
 }

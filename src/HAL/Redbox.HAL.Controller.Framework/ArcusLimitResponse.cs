@@ -7,7 +7,7 @@ internal sealed class ArcusLimitResponse : IMotionControlLimitResponse
 {
 	public bool ReadOk { get; private set; }
 
-	public IMotionControlLimit[] Limits { get; private set; }
+	public IMotionControlLimit[]? Limits { get; private set; }
 
 	public bool IsLimitBlocked(MotionControlLimits limit)
 	{
@@ -27,7 +27,7 @@ internal sealed class ArcusLimitResponse : IMotionControlLimitResponse
 		return true;
 	}
 
-	internal ArcusLimitResponse(string queryResponse)
+	internal ArcusLimitResponse(string? queryResponse)
 	{
 		ReadOk = false;
 		Limits = null;

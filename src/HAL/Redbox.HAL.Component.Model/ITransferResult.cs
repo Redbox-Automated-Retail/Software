@@ -8,7 +8,7 @@ public interface ITransferResult
 
 	ErrorCodes TransferError { get; }
 
-	ILocation Source { get; }
+	ILocation? Source { get; }
 
-	ILocation Destination { get; }
+	ILocation? Destination { get; }
 }

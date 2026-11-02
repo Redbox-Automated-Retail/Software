@@ -9,68 +9,69 @@ namespace Redbox.UpdateManager.UI;
 
 public class NewShellEvent : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private ErrorProvider m_errors;
+	private ErrorProvider m_errors = null!;
 
-	private Button m_cancel;
+	private Button m_cancel = null!;
 
-	private Button m_submit;
+	private Button m_submit = null!;
 
-	private TabControl tabControl1;
+	private TabControl tabControl1 = null!;
 
-	private TabPage BasicPage;
+	private TabPage BasicPage = null!;
 
-	private TextBox m_args_basic;
+	private TextBox m_args_basic = null!;
 
-	private Label label7;
+	private Label label7 = null!;
 
-	private TextBox Simple_name;
+	private TextBox Simple_name = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private TextBox m_recurrance_sec;
+	private TextBox m_recurrance_sec = null!;
 
-	private TextBox m_initial_sec;
+	private TextBox m_initial_sec = null!;
 
-	private TextBox m_path;
+	private TextBox m_path = null!;
 
-	private Label m_recurrenceLabel;
+	private Label m_recurrenceLabel = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label scriptlocationlabel;
+	private Label scriptlocationlabel = null!;
 
-	private TabPage AdvancedPage;
+	private TabPage AdvancedPage = null!;
 
-	private TextBox m_arguments_adv;
+	private TextBox m_arguments_adv = null!;
 
-	private Label label6;
+	private Label label6 = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private TextBox m_adv_name;
+	private TextBox m_adv_name = null!;
 
-	private TextBox Instructions;
+	private TextBox Instructions = null!;
 
-	private TextBox m_cron;
+	private TextBox m_cron = null!;
 
-	private TextBox m_pathAdvanced;
+	private TextBox m_pathAdvanced = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private TextBox m_initial_sec_adv;
+	private TextBox m_initial_sec_adv = null!;
 
-	private Label label8;
+	private Label label8 = null!;
 
+	// The controls above are created by InitializeComponent.
 	public NewShellEvent()
 	{
 		InitializeComponent();
 	}
 
-	private void OnSubmitClick(object sender, EventArgs e)
+	private void OnSubmitClick(object? sender, EventArgs e)
 	{
 		m_errors.SetError(m_path, string.Empty);
 		m_errors.SetError(m_cron, string.Empty);
@@ -164,7 +165,7 @@ public class NewShellEvent : Form
 		Close();
 	}
 
-	private void OnCancelClick(object sender, EventArgs e)
+	private void OnCancelClick(object? sender, EventArgs e)
 	{
 		Close();
 	}

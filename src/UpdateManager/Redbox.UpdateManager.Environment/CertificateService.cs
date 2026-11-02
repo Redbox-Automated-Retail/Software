@@ -9,7 +9,7 @@ namespace Redbox.UpdateManager.Environment;
 
 public class CertificateService
 {
-	private Timer _timer;
+	private Timer _timer = null!; // created by Initialize
 
 	private bool _isRunning;
 

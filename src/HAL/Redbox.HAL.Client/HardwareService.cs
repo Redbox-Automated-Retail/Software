@@ -82,22 +82,22 @@ public sealed class HardwareService
 		Protocol = protocol;
 	}
 
-	public HardwareCommandResult Init(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Init(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("init", schedule, out job);
 	}
 
-	public HardwareCommandResult Unload(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Unload(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("qlm-unload", schedule, out job);
 	}
 
-	public HardwareCommandResult CleanZone(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult CleanZone(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("clean-vmz", schedule, out job);
 	}
 
-	public HardwareCommandResult CleanZone(out HardwareJob job)
+	public HardwareCommandResult CleanZone(out HardwareJob? job)
 	{
 		HardwareJobSchedule schedule = new HardwareJobSchedule
 		{
@@ -106,232 +106,232 @@ public sealed class HardwareService
 		return ScheduleJob("clean-vmz", schedule, out job);
 	}
 
-	public HardwareCommandResult Thin(string[] ids, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Thin(string[] ids, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("thin", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(ids, job);
+			PushArray(ids, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ThinVMZ(string[] toBin, string[] rebalance, string[] thins, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ThinVMZ(string[] toBin, string[] rebalance, string[] thins, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("thin-vmz", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(thins, job);
-			PushArray(null, job);
-			PushArray(rebalance, job);
-			PushArray(toBin, job);
+			PushArray(thins, job!);
+			PushArray(null, job!);
+			PushArray(rebalance, job!);
+			PushArray(toBin, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ThinVMZ(string[] toBin, string[] rebalance, string[] thinRedeploys, string[] thins, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ThinVMZ(string[] toBin, string[] rebalance, string[] thinRedeploys, string[] thins, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("thin-vmz", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(thins, job);
-			PushArray(thinRedeploys, job);
-			PushArray(rebalance, job);
-			PushArray(toBin, job);
+			PushArray(thins, job!);
+			PushArray(thinRedeploys, job!);
+			PushArray(rebalance, job!);
+			PushArray(toBin, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ThinVMZ(string[] toBin, string[] thins, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ThinVMZ(string[] toBin, string[] thins, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("thin-vmz", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(thins, job);
-			PushArray(null, job);
-			PushArray(null, job);
-			PushArray(toBin, job);
+			PushArray(thins, job!);
+			PushArray(null, job!);
+			PushArray(null, job!);
+			PushArray(toBin, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult GetNonBarcodeInventory(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetNonBarcodeInventory(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("get-non-barcode-inventory", schedule, out job);
 	}
 
-	public HardwareCommandResult GetInventoryStats(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetInventoryStats(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("get-inventory-stats", schedule, out job);
 	}
 
-	public HardwareCommandResult ChangeAudioChannelState(HardwareJobSchedule schedule, SpeakerState newState, out HardwareJob job)
+	public HardwareCommandResult ChangeAudioChannelState(HardwareJobSchedule schedule, SpeakerState newState, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("change-audio-channel-state", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(newState.ToString());
+			job!.Push(newState.ToString());
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ResetLocations(List<Location> locs, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ResetLocations(List<Location> locs, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("reset-locations", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushLocs(locs, job);
+			PushLocs(locs, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult SyncUnknowns(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult SyncUnknowns(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ExecuteServiceCommand("SERVICE sync-unknowns");
 		job = (hardwareCommandResult.Success ? HardwareJob.Parse(this, hardwareCommandResult.CommandMessages[0]) : null);
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult PrepUnloadZone(int rotation, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult PrepUnloadZone(int rotation, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("prep-zone-for-unload", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(0);
-			job.Push(rotation);
+			job!.Push(0);
+			job!.Push(rotation);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult PrepUnloadZone(int rotation, int deckCount, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult PrepUnloadZone(int rotation, int deckCount, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("prep-zone-for-unload", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(deckCount);
-			job.Push(rotation);
+			job!.Push(deckCount);
+			job!.Push(rotation);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult PrepDeckForRedeploy(string deckNumber, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult PrepDeckForRedeploy(string deckNumber, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("prep-deck-for-redeploy", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(deckNumber);
-			job.Push(1);
+			job!.Push(deckNumber);
+			job!.Push(1);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult PrepForRedeploy(string[] decks, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult PrepForRedeploy(string[] decks, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("prep-deck-for-redeploy", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(decks, job);
+			PushArray(decks, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult VMZRemovedThins(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult VMZRemovedThins(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("vmz-removed-thins", schedule, out job);
 	}
 
-	public HardwareCommandResult ClearMerchStatus(string[] barcodesToClear, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ClearMerchStatus(string[] barcodesToClear, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("clear-merch-status", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(barcodesToClear, job);
+			PushArray(barcodesToClear, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult LoadBin(List<Location> locs, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult LoadBin(List<Location> locs, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("load-bin", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushLocs(locs, job);
-			job.Push("LOCATION");
+			PushLocs(locs, job!);
+			job!.Push("LOCATION");
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult LoadBin(string[] barcodes, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult LoadBin(string[] barcodes, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("load-bin", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(barcodes, job);
-			job.Push("BARCODE");
+			PushArray(barcodes, job!);
+			job!.Push("BARCODE");
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult Vend(string[] ids, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Vend(string[] ids, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("vend", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(ids, job);
-			job.Push("BY-ID");
+			PushArray(ids, job!);
+			job!.Push("BY-ID");
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult Vend(List<Location> locations, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Vend(List<Location> locations, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("vend", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushLocs(locations, job);
-			job.Push("BY-LOCATION");
+			PushLocs(locations, job!);
+			job!.Push("BY-LOCATION");
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult GetBarcodeVMZPosition(string[] idsToQuery, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetBarcodeVMZPosition(string[] idsToQuery, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("get-barcode-vmz-location", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(idsToQuery, job);
+			PushArray(idsToQuery, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult VMZDetail(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult VMZDetail(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("vmz-details", schedule, out job);
 	}
 
-	public HardwareCommandResult VMZMerchSummary(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult VMZMerchSummary(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("vmz-merch-summary", schedule, out job);
 	}
 
-	public HardwareCommandResult FileMarkerDisk(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult FileMarkerDisk(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("file-marker-disk", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(slot);
-			job.Push(deck);
+			job!.Push(slot);
+			job!.Push(deck);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult MerchandizeClearAndOffset(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult MerchandizeClearAndOffset(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("merch-clear-and-offset", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(slot);
-			job.Push(deck);
+			job!.Push(slot);
+			job!.Push(deck);
 		}
 		return hardwareCommandResult;
 	}
@@ -341,154 +341,154 @@ public sealed class HardwareService
 		return ExecuteCommand($"SERVICE mm-status status: '{goingIntoMM.ToString()}'");
 	}
 
-	public HardwareCommandResult GetNonThinsInVMZ(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetNonThinsInVMZ(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("get-nonthins-in-vmz", schedule, out job);
 	}
 
-	public HardwareCommandResult GetBarcodesInBin(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetBarcodesInBin(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("get-barcodes-in-bin", schedule, out job);
 	}
 
-	public HardwareCommandResult HardSync(SyncRange range, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult HardSync(SyncRange range, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("sync", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(range.Slots.End, range.EndDeck, range.Slots.Start, range.StartDeck);
+			job!.Push(range.Slots!.End, range.EndDeck, range.Slots!.Start, range.StartDeck);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult HardSync(List<Location> locations, string label, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult HardSync(List<Location> locations, string? label, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("sync-locations", label, enableDebugging: false, schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushLocs(locations, job);
+			PushLocs(locations, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult HardSync(List<Location> locations, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult HardSync(List<Location> locations, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return HardSync(locations, null, schedule, out job);
 	}
 
-	public HardwareCommandResult FieldInsertFraudWithCheck(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult FieldInsertFraudWithCheck(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("field-insert-with-fraud-check", schedule, out job);
 	}
 
-	public HardwareCommandResult FraudHardwarePost(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult FraudHardwarePost(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("fraud-sensor-post-test", schedule, out job);
 	}
 
-	public HardwareCommandResult ReadFraudDisc(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ReadFraudDisc(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("read-fraud-disc", schedule, out job);
 	}
 
-	public HardwareCommandResult Return(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult Return(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("return", schedule, out job);
 	}
 
-	public HardwareCommandResult SoftSync(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult SoftSync(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("soft-sync", schedule, out job);
 	}
 
-	public HardwareCommandResult QlmUnload(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult QlmUnload(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("qlm-unload", schedule, out job);
 	}
 
-	public HardwareCommandResult CheckPicker(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult CheckPicker(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("check-picker", schedule, out job);
 	}
 
-	public HardwareCommandResult GetMachineInfo(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetMachineInfo(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("get-machine-info", schedule, out job);
 	}
 
-	public HardwareCommandResult GetHardwareStatus(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult GetHardwareStatus(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("hardware-status", schedule, out job);
 	}
 
-	public HardwareCommandResult QlmUnloadAndThin(string[] ids, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult QlmUnloadAndThin(string[] ids, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("unload-thin", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(ids, job);
+			PushArray(ids, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult VendUnknown(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult VendUnknown(int deck, int slot, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("vend-unknown", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(slot);
-			job.Push(deck);
+			job!.Push(slot);
+			job!.Push(deck);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ReturnUnknown(HardwareJobSchedule schedule, string returnTime, out HardwareJob job)
+	public HardwareCommandResult ReturnUnknown(HardwareJobSchedule schedule, string returnTime, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("return-unknown", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(returnTime);
+			job!.Push(returnTime);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult PreposVend(HardwareJobSchedule schedule, string[] ids, out HardwareJob job)
+	public HardwareCommandResult PreposVend(HardwareJobSchedule schedule, string[] ids, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("vend", schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(ids, job);
-			job.Push("PREPOSITION-PICKER");
+			PushArray(ids, job!);
+			job!.Push("PREPOSITION-PICKER");
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ExchangerStatus(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ExchangerStatus(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("air-exchanger-status", schedule, out job);
 	}
 
-	public HardwareCommandResult MarkBarcodesUnknown(HardwareJobSchedule s, string[] barcodes, out HardwareJob job)
+	public HardwareCommandResult MarkBarcodesUnknown(HardwareJobSchedule s, string[] barcodes, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("mark-barcodes-unknown", s, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushArray(barcodes, job);
+			PushArray(barcodes, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult MarkLocationsUnknown(HardwareJobSchedule s, List<Location> locs, out HardwareJob job)
+	public HardwareCommandResult MarkLocationsUnknown(HardwareJobSchedule s, List<Location> locs, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("mark-locations-unknown", s, out job);
 		if (hardwareCommandResult.Success)
 		{
-			PushLocs(locs, job);
+			PushLocs(locs, job!);
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ResetTouchscreenController(HardwareJobSchedule s, out HardwareJob job)
+	public HardwareCommandResult ResetTouchscreenController(HardwareJobSchedule s, out HardwareJob? job)
 	{
 		return ScheduleJob("reset-touchscreen-controller", s, out job);
 	}
@@ -517,17 +517,17 @@ public sealed class HardwareService
 		return getAllHardwareCorrectionStatistics.ScheduleResult;
 	}
 
-	public HardwareCommandResult RemoveHardwareCorrectionStats(HardwareCorrectionStatistic stat, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult RemoveHardwareCorrectionStats(HardwareCorrectionStatistic stat, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		HardwareCommandResult hardwareCommandResult = ScheduleJob("clear-hardware-statistics", null, enableDebugging: false, schedule, out job);
 		if (hardwareCommandResult.Success)
 		{
-			job.Push(stat.ToString());
+			job!.Push(stat.ToString());
 		}
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult RemoveHardwareCorrectionStats(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult RemoveHardwareCorrectionStats(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("clear-all-hardware-statistics", null, enableDebugging: false, schedule, out job);
 	}
@@ -572,7 +572,7 @@ public sealed class HardwareService
 		return ExecuteCommand($"CONFIG set-inventory-state data: '{Convert.ToBase64String(inArray)}'");
 	}
 
-	public HardwareCommandResult PowerCycleRouter(HardwareJobSchedule s, out HardwareJob job)
+	public HardwareCommandResult PowerCycleRouter(HardwareJobSchedule s, out HardwareJob? job)
 	{
 		return ScheduleJob("power-cycle-router", s, out job);
 	}
@@ -610,7 +610,7 @@ public sealed class HardwareService
 	public HardwareCommandResult SuspendJobsBelowPriority(HardwareJobPriority priority, out HardwareJob[] suspendedJobs)
 	{
 		List<HardwareJob> hardwareJobs = new List<HardwareJob>();
-		HardwareJob[] jobs = null;
+		HardwareJob[]? jobs = null;
 		HardwareCommandResult hardwareCommandResult = new HardwareCommandResult();
 		HardwareCommandResult jobs2 = GetJobs(out jobs);
 		if (!jobs2.Success)
@@ -661,7 +661,7 @@ public sealed class HardwareService
 		return ExecuteCommand($"JOB trash job: {jobId}");
 	}
 
-	public HardwareCommandResult GetJob(string jobId, out HardwareJob job)
+	public HardwareCommandResult GetJob(string jobId, out HardwareJob? job)
 	{
 		job = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB get job: '{jobId}'");
@@ -675,7 +675,7 @@ public sealed class HardwareService
 	public HardwareCommandResult GetJobs(out HardwareJob[] jobs)
 	{
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand("JOB list");
-		jobs = (hardwareCommandResult.Success ? hardwareCommandResult.CommandMessages.ConvertAll((string each) => HardwareJob.Parse(this, each)).ToArray() : new HardwareJob[0]);
+		jobs = (hardwareCommandResult.Success ? hardwareCommandResult.CommandMessages.ConvertAll((string each) => HardwareJob.Parse(this, each)!).ToArray() : new HardwareJob[0]);
 		return hardwareCommandResult;
 	}
 
@@ -689,7 +689,7 @@ public sealed class HardwareService
 		return ExecuteCommand($"PROGRAM remove name: '{programName}'");
 	}
 
-	public HardwareCommandResult ScheduleJob(string programName, string label, bool enableDebugging, HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult ScheduleJob(string programName, string? label, bool enableDebugging, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		string text = $"JOB schedule name: '{programName}' priority: {schedule.Priority}";
 		if (enableDebugging)
@@ -718,7 +718,7 @@ public sealed class HardwareService
 		return ExecuteCommand("PROGRAM list");
 	}
 
-	public HardwareCommandResult ExecuteImmediate(string statement, int? timeout, out HardwareJob job)
+	public HardwareCommandResult ExecuteImmediate(string statement, int? timeout, out HardwareJob? job)
 	{
 		job = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB execute-immediate statement: '{statement}'", timeout.HasValue ? timeout.Value : 30000);
@@ -729,7 +729,7 @@ public sealed class HardwareService
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ExecuteImmediate(string statement, out HardwareJob job)
+	public HardwareCommandResult ExecuteImmediate(string statement, out HardwareJob? job)
 	{
 		job = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB execute-immediate statement: '{statement}'");
@@ -740,7 +740,7 @@ public sealed class HardwareService
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult GetSchedulerStatus(out string status)
+	public HardwareCommandResult GetSchedulerStatus(out string? status)
 	{
 		status = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand("JOB scheduler-status");
@@ -751,7 +751,7 @@ public sealed class HardwareService
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult ExecuteImmediateProgram(byte[] bytes, out HardwareJob job)
+	public HardwareCommandResult ExecuteImmediateProgram(byte[] bytes, out HardwareJob? job)
 	{
 		job = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"JOB execute-immediate-base64 statement: '{Convert.ToBase64String(bytes)}'");
@@ -762,7 +762,7 @@ public sealed class HardwareService
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult GetInitStatus(out string status)
+	public HardwareCommandResult GetInitStatus(out string? status)
 	{
 		status = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand("JOB init-status");
@@ -784,7 +784,7 @@ public sealed class HardwareService
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult GetQuickReturnStatus(out string status)
+	public HardwareCommandResult GetQuickReturnStatus(out string? status)
 	{
 		status = null;
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand("JOB quick-return-status");
@@ -810,12 +810,12 @@ public sealed class HardwareService
 		return ExecuteCommand("SERVICE full-sync");
 	}
 
-	public HardwareCommandResult RebuildInventory(HardwareJobSchedule s, out HardwareJob job)
+	public HardwareCommandResult RebuildInventory(HardwareJobSchedule s, out HardwareJob? job)
 	{
 		return ScheduleJob("rebuild-inventory-database", s, out job);
 	}
 
-	public HardwareCommandResult TestAndResetCCR(HardwareJobSchedule schedule, out HardwareJob job)
+	public HardwareCommandResult TestAndResetCCR(HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob("test-and-reset-ccr", null, enableDebugging: false, schedule, out job);
 	}
@@ -867,39 +867,39 @@ public sealed class HardwareService
 
 	internal IIpcClientSession GetSession()
 	{
-		return ClientSessionFactory.GetClientSession(Protocol);
+		return ClientSessionFactory.GetClientSession(Protocol)!;
 	}
 
-	private HardwareCommandResult ScheduleJob(string name, HardwareJobSchedule schedule, out HardwareJob job)
+	private HardwareCommandResult ScheduleJob(string name, HardwareJobSchedule schedule, out HardwareJob? job)
 	{
 		return ScheduleJob(name, null, enableDebugging: false, schedule, out job);
 	}
 
-	private void PushLocs(List<Location> locs, HardwareJob job)
+	private void PushLocs(List<Location>? locs, HardwareJob job)
 	{
 		if (locs == null || locs.Count == 0)
 		{
-			job.Push(0);
+			job!.Push(0);
 			return;
 		}
 		locs.ForEach(delegate(Location loc)
 		{
-			job.Push(loc.Slot);
-			job.Push(loc.Deck);
+			job!.Push(loc.Slot);
+			job!.Push(loc.Deck);
 		});
 		job.Push(locs.Count);
 	}
 
-	private void PushArray(string[] array, HardwareJob job)
+	private void PushArray(string[]? array, HardwareJob job)
 	{
 		if (array == null || array.Length == 0)
 		{
-			job.Push(0);
+			job!.Push(0);
 		}
 		else
 		{
-			job.Push(array);
-			job.Push(array.Length);
+			job!.Push(array);
+			job!.Push(array.Length);
 		}
 	}
 }

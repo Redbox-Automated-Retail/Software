@@ -4,13 +4,13 @@ namespace Redbox.UpdateManager.ComponentModel;
 
 public class ChangeItem
 {
-	public string VersionHash { get; set; }
+	public string? VersionHash { get; set; }
 
-	public string ContentHash { get; set; }
+	public string? ContentHash { get; set; }
 
-	public string TargetName { get; set; }
+	public string? TargetName { get; set; }
 
-	public string TargetPath { get; set; }
+	public string? TargetPath { get; set; }
 
 	public bool IsSeed { get; set; }
 
@@ -18,6 +18,6 @@ public class ChangeItem
 
 	public string FormatFileName()
 	{
-		return Path.Combine(TargetPath, TargetName);
+		return Path.Combine(TargetPath!, TargetName!); // throws on a missing path or name, as before
 	}
 }

@@ -13,9 +13,9 @@ public interface IAspect
 
 	IDictionary<string, string> Properties { get; }
 
-	object GetContent();
+	object? GetContent();
 
-	void SetContent(object value);
+	void SetContent(object? value);
 
 	ErrorList Save(XmlTextWriter writer);
 }

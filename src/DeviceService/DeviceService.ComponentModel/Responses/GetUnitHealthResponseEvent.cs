@@ -4,7 +4,7 @@ namespace DeviceService.ComponentModel.Responses;
 
 public class GetUnitHealthResponseEvent : BaseResponseEvent
 {
-	public UnitHealthModel UnitHealthModel { get; set; }
+	public UnitHealthModel? UnitHealthModel { get; set; }
 
 	public GetUnitHealthResponseEvent(BaseCommandRequest request)
 		: base(request)

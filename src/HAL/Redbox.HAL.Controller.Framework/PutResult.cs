@@ -22,7 +22,7 @@ internal sealed class PutResult : IPutResult
 
 	public string StoredMatrix { get; internal set; }
 
-	public ILocation OriginalMatrixLocation { get; internal set; }
+	public ILocation? OriginalMatrixLocation { get; internal set; }
 
 	public override string ToString()
 	{

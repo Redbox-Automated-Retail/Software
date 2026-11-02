@@ -79,13 +79,13 @@ public class Startup
 				{
 					Log.Information("Using RBA_SDK_Simulator");
 					services.AddMvc().AddApplicationPart(assembly).AddControllersAsServices();
-					Type type = assembly.GetType("RBA_SDK_Simulator.ISimulatorDataProvider");
-					Type type2 = assembly.GetType("RBA_SDK_Simulator.SimulatorDataProvider");
-					Type type3 = assembly.GetType("RBA_SDK_Simulator.ICommandQueue");
-					Type type4 = assembly.GetType("RBA_SDK_Simulator.CommandQueue");
+					Type type = assembly.GetType("RBA_SDK_Simulator.ISimulatorDataProvider")!; // the simulator assembly has these types
+					Type type2 = assembly.GetType("RBA_SDK_Simulator.SimulatorDataProvider")!;
+					Type type3 = assembly.GetType("RBA_SDK_Simulator.ICommandQueue")!;
+					Type type4 = assembly.GetType("RBA_SDK_Simulator.CommandQueue")!;
 					services.AddSingleton(type, type2);
 					services.AddSingleton(type3, type4);
-					services.AddSingleton(typeof(IRBA_API), assembly.GetType("RBA_SDK_Simulator.RBA_API_Simulator"));
+					services.AddSingleton(typeof(IRBA_API), assembly.GetType("RBA_SDK_Simulator.RBA_API_Simulator")!);
 				}
 			}
 		}
@@ -95,7 +95,7 @@ public class Startup
 		}
 		services.AddSingleton((Func<IServiceProvider, IAnalyticsService>)((IServiceProvider provider2) => new AnalyticsService(provider2.GetRequiredService<IApplicationSettings>(), provider2.GetRequiredService<ILogger<AnalyticsService>>())));
 		services.AddSingleton((Func<IServiceProvider, IIUC285Notifier>)((IServiceProvider provider2) => new IUC285Notifier(provider2.GetRequiredService<ILogger<IUC285Notifier>>(), provider2.GetRequiredService<IHttpService>(), provider2.GetRequiredService<IApplicationSettings>())));
-		IIUC285Proxy singletonIUC285Proxy = null;
+		IIUC285Proxy? singletonIUC285Proxy = null;
 		services.AddSingleton(delegate(IServiceProvider provider2)
 		{
 			if (singletonIUC285Proxy == null)
@@ -106,7 +106,7 @@ public class Startup
 			}
 			return singletonIUC285Proxy;
 		});
-		services.AddSingleton((IServiceProvider serviceProvider) => singletonIUC285Proxy as IFileUpdater);
+		services.AddSingleton((IServiceProvider serviceProvider) => (singletonIUC285Proxy as IFileUpdater)!); // null if resolved before IIUC285Proxy, as before
 		services.AddSingleton(Log.Logger);
 		// The engine's SignalR 1.1 client speaks the hub's JSON protocol as Newtonsoft.Json wrote it on 2.2,
 		// including System.Version as an object.
@@ -120,7 +120,7 @@ public class Startup
 		services.AddSingleton<IActivationService, ActivationService>();
 		services.AddSingleton<IDeviceStatusService, DeviceStatusService>();
 		services.AddSingleton<IHttpService, HttpService>();
-		IApplicationControl singletonApplicationControl = null;
+		IApplicationControl? singletonApplicationControl = null;
 		services.AddSingleton(delegate(IServiceProvider provider2)
 		{
 			if (singletonApplicationControl == null)

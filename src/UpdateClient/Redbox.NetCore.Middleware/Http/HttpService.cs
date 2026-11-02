@@ -21,7 +21,7 @@ public class HttpService : IHttpService
 {
 	private readonly HttpClient _httpClient;
 
-	private readonly ICommonMetrics _metrics;
+	private readonly ICommonMetrics? _metrics;
 
 	private readonly ILogger<HttpService> _logger;
 
@@ -34,9 +34,9 @@ public class HttpService : IHttpService
 		_logger = logger;
 	}
 
-	public HttpRequestMessage GenerateRequest(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false)
+	public HttpRequestMessage GenerateRequest(string? baseUrl, string endpoint, object? requestObject, HttpMethod method, List<Header>? headers = null, bool isForm = false)
 	{
-		HttpContent httpContent = null;
+		HttpContent? httpContent = null;
 		if (requestObject != null && !isForm)
 		{
 			httpContent = new StringContent(JsonConvert.SerializeObject(requestObject, Formatting.None, new JsonSerializerSettings
@@ -51,7 +51,7 @@ public class HttpService : IHttpService
 		return GenerateRequest(baseUrl, endpoint, httpContent, method, headers);
 	}
 
-	public HttpRequestMessage GenerateRequest(string baseUrl, string endpoint, HttpContent httpContent, HttpMethod method, List<Header> headers = null)
+	public HttpRequestMessage GenerateRequest(string? baseUrl, string endpoint, HttpContent? httpContent, HttpMethod method, List<Header>? headers = null)
 	{
 		Uri requestUri;
 		if (string.IsNullOrEmpty(baseUrl))
@@ -72,7 +72,7 @@ public class HttpService : IHttpService
 		return httpRequest;
 	}
 
-	public async Task<HttpResponseMessage> SendRequestAsync(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", bool logResponse = true)
+	public async Task<HttpResponseMessage> SendRequestAsync(string? baseUrl, string endpoint, object? requestObject, HttpMethod method, List<Header>? headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", bool logResponse = true)
 	{
 		using HttpRequestMessage genRequest = GenerateRequest(baseUrl, endpoint, requestObject, method, headers, isForm);
 		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -102,16 +102,16 @@ public class HttpService : IHttpService
 		{
 			await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, result?.StatusCode ?? HttpStatusCode.InternalServerError), sw.ElapsedMilliseconds);
 		}
-		return result;
+		return result!; // set by the try or the catch above
 	}
 
-	public async Task<APIResponse<T>> SendRequestAsync<T>(string baseUrl, string endpoint, object requestObject, HttpMethod method, List<Header> headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	public async Task<APIResponse<T>> SendRequestAsync<T>(string? baseUrl, string endpoint, object? requestObject, HttpMethod method, List<Header>? headers = null, bool isForm = false, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object? originalRequestObject = null, bool logRequest = true, bool logResponse = true)
 	{
 		using HttpRequestMessage genRequest = GenerateRequest(baseUrl, endpoint, requestObject, method, headers, isForm);
 		return await SendRequestAsync<T>(genRequest, timeout, callerMethod, callerLocation, requestObject, logRequest, logResponse);
 	}
 
-	public async Task<APIResponse<T>> SendRequestAsync<T>(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	public async Task<APIResponse<T>> SendRequestAsync<T>(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object? originalRequestObject = null, bool logRequest = true, bool logResponse = true)
 	{
 		using (request)
 		{
@@ -122,8 +122,8 @@ public class HttpService : IHttpService
 			sw.Start();
 			try
 			{
-				string text = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
-				string value = text;
+				string? text = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
+				string? value = text;
 				if (originalRequestObject != null && originalRequestObject is IMessageScrub)
 				{
 					apiResponse.RequestContent = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
@@ -134,7 +134,7 @@ public class HttpService : IHttpService
 				}
 				using HttpResponseMessage result = await _httpClient.SendAsync(request, timeoutTokenSource.Token);
 				sw.Stop();
-				apiResponse.SetAPIResponse(requestTime: (int)sw.ElapsedMilliseconds, responseMessage: result, content: await (result.Content?.ReadAsStringAsync()));
+				apiResponse.SetAPIResponse(requestTime: (int)sw.ElapsedMilliseconds, responseMessage: result, content: await result.Content.ReadAsStringAsync());
 			}
 			catch (Exception exception)
 			{
@@ -150,7 +150,7 @@ public class HttpService : IHttpService
 		}
 	}
 
-	public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object originalRequestObject = null, bool logRequest = true, bool logResponse = true)
+	public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, int? timeout = null, [CallerMemberName] string callerMethod = "", [CallerFilePath] string callerLocation = "", object? originalRequestObject = null, bool logRequest = true, bool logResponse = true)
 	{
 		using (request)
 		{
@@ -164,8 +164,8 @@ public class HttpService : IHttpService
 				result = await _httpClient.SendAsync(request, cancellationTokenSource.Token);
 				sw.Stop();
 				_ = sw.ElapsedMilliseconds;
-				string requestContent = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
-				string loggedRequest = requestContent;
+				string? requestContent = ((request.Content == null) ? null : (await request.Content.ReadAsStringAsync()));
+				string? loggedRequest = requestContent;
 				if (originalRequestObject != null && originalRequestObject is IMessageScrub)
 				{
 					loggedRequest = ((IMessageScrub)originalRequestObject).Scrub()?.ToString();
@@ -191,7 +191,7 @@ public class HttpService : IHttpService
 			{
 				await _metrics.CaptureMetrics(GetMetricTags(callerLocation.ServiceName(), callerMethod, result?.StatusCode ?? HttpStatusCode.InternalServerError), sw.ElapsedMilliseconds);
 			}
-			return result;
+			return result!; // set by the try or the catch above
 		}
 	}
 

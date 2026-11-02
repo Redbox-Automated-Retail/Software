@@ -18,11 +18,11 @@ internal class FileSetDownloader
 
 	private DownloadPriority _downloadPriority;
 
-	private List<FileSetFileInfo> _fileSetInfoList;
+	private List<FileSetFileInfo>? _fileSetInfoList;
 
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
-	private IDownloadService _downloadService;
+	private IDownloadService? _downloadService;
 
 	public ClientFileSetRevision Revision => _revision;
 
@@ -34,7 +34,7 @@ internal class FileSetDownloader
 			{
 				UpdateFileSetInfoList();
 			}
-			return _fileSetInfoList;
+			return _fileSetInfoList!; // set by UpdateFileSetInfoList
 		}
 	}
 
@@ -155,7 +155,7 @@ internal class FileSetDownloader
 			fileSetFileInfo.Url = GetFileUrl(f);
 			if (!fileSetFileInfo.Exists)
 			{
-				ClientPatchFileSetFile clientPatchFileSetFile = _revision.PatchFiles.FirstOrDefault((ClientPatchFileSetFile pf) => pf.FileId == f.FileId);
+				ClientPatchFileSetFile? clientPatchFileSetFile = _revision.PatchFiles.FirstOrDefault((ClientPatchFileSetFile pf) => pf.FileId == f.FileId);
 				if (clientPatchFileSetFile != null)
 				{
 					string fileKey = GetFileKey(f.FileId, clientPatchFileSetFile.PatchFileRevisionId);
@@ -235,7 +235,7 @@ internal class FileSetDownloader
 				errorList.AddRange(AddDownload(key, _revision.SetFileHash, fileSetUrl, out var download));
 				if (!errorList.ContainsError())
 				{
-					_downloads.Add(download);
+					_downloads.Add(download!); // set when AddDownload has no error
 				}
 			}
 		}
@@ -260,7 +260,7 @@ internal class FileSetDownloader
 				{
 					return errors;
 				}
-				_downloads.Add(download);
+				_downloads.Add(download!); // set when AddDownload has no error
 			}
 			FileSetInfoList.ForEach(delegate(FileSetFileInfo item)
 			{
@@ -269,7 +269,7 @@ internal class FileSetDownloader
 					errors.AddRange(AddDownload(item.Key, item.FileHash, item.Url, out var download2));
 					if (!errors.ContainsError())
 					{
-						_downloads.Add(download2);
+						_downloads.Add(download2!); // set when AddDownload has no error
 					}
 				}
 			});
@@ -297,7 +297,7 @@ internal class FileSetDownloader
 							errors.AddRange(AddDownload(item.Key, item.FileHash, item.Url, out var download));
 							if (!errors.ContainsError())
 							{
-								_downloads.Add(download);
+								_downloads.Add(download!); // set when AddDownload has no error
 							}
 						}
 					}
@@ -306,7 +306,7 @@ internal class FileSetDownloader
 						errors.AddRange(AddDownload(item.PatchKey, item.PatchHash, item.PatchUrl, out var download2));
 						if (!errors.ContainsError())
 						{
-							_downloads.Add(download2);
+							_downloads.Add(download2!); // set when AddDownload has no error
 						}
 					}
 				}
@@ -331,7 +331,7 @@ internal class FileSetDownloader
 					errors.AddRange(AddDownload(item.Key, item.FileHash, item.Url, out var download));
 					if (!errors.ContainsError())
 					{
-						_downloads.Add(download);
+						_downloads.Add(download!); // set when AddDownload has no error
 					}
 				}
 			});
@@ -343,7 +343,7 @@ internal class FileSetDownloader
 		return errors;
 	}
 
-	private ErrorList AddDownload(string key, string hash, string url, out IDownloader download)
+	private ErrorList AddDownload(string key, string hash, string url, out IDownloader? download)
 	{
 		Redbox.UpdateManager.DownloadService.DownloadPriority downloadPriority = (Redbox.UpdateManager.DownloadService.DownloadPriority)_downloadPriority;
 		return DownloadService.AddDownload(key, hash, url, downloadPriority, out download);

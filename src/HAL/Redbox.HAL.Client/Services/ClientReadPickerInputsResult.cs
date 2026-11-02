@@ -10,7 +10,7 @@ internal sealed class ClientReadPickerInputsResult : AbstractClientReadInputsRes
 
 	protected override InputState OnGetInputState(PickerInputs input)
 	{
-		if (!(Inputs[(int)input] == "1"))
+		if (!(Inputs![(int)input] == "1"))
 		{
 			return InputState.Inactive;
 		}

@@ -11,9 +11,9 @@ internal sealed class CoreResponse : IControlResponse
 
 	private string m_commandResponse = string.Empty;
 
-	private static CoreResponse m_timeoutResponse = null;
+	private static CoreResponse? m_timeoutResponse = null;
 
-	private static CoreResponse m_commErrorResponse = null;
+	private static CoreResponse? m_commErrorResponse = null;
 
 	private static readonly char[] TrimChars = Environment.NewLine.ToCharArray();
 
@@ -23,7 +23,7 @@ internal sealed class CoreResponse : IControlResponse
 
 	public bool CommError => ErrorCodes.CommunicationError == Error;
 
-	public string Diagnostic { get; internal set; }
+	public string? Diagnostic { get; internal set; }
 
 	internal static CoreResponse CommErrorResponse
 	{
@@ -89,7 +89,7 @@ internal sealed class CoreResponse : IControlResponse
 		}
 	}
 
-	public override string ToString()
+	public override string? ToString()
 	{
 		if (!CommError)
 		{

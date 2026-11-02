@@ -17,7 +17,7 @@ public sealed class OneDiskRandomSyncExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(VendTime);
-		base.Job.Push(VendFrequency);
+		base.Job!.Push(VendTime);
+		base.Job!.Push(VendFrequency);
 	}
 }

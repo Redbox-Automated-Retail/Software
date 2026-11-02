@@ -120,7 +120,7 @@ internal sealed class DumpbinService : IDumpbinService
 	{
 		ITableTypeFactory tableTypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
 		ClearItems();
-		XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes("bin-item");
+		XmlNodeList? xmlNodeList = xmlDocument.DocumentElement!.SelectNodes("bin-item");
 		if (xmlNodeList == null || xmlNodeList.Count <= 0)
 		{
 			return;
@@ -131,7 +131,7 @@ internal sealed class DumpbinService : IDumpbinService
 			foreach (XmlNode item in xmlNodeList)
 			{
 				string attributeValue = item.GetAttributeValue("id", "UNKNOWN");
-				string attributeValue2 = item.GetAttributeValue<string>("PutTime", null);
+				string? attributeValue2 = item.GetAttributeValue<string?>("PutTime", null);
 				DateTime timestamp = DateTime.Now;
 				if (attributeValue2 != null)
 				{
@@ -161,7 +161,7 @@ internal sealed class DumpbinService : IDumpbinService
 		Deck = decksService.Last.Number;
 		Slots = new Range(82, 84);
 		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = dataTableService.GetTable<IDumpBinInventoryItem>();
+		Table = dataTableService.GetTable<IDumpBinInventoryItem>()!;
 		m_itemCount = Table.GetRowCount();
 		LogHelper.Instance.Log("[DumpbinService] Loaded {0} items.", m_itemCount);
 	}

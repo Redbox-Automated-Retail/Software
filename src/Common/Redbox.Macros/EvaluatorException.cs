@@ -8,7 +8,7 @@ namespace Redbox.Macros;
 [Serializable]
 public class EvaluatorException : ApplicationException
 {
-	private Location _location = Location.UnknownLocation;
+	private Location? _location = Location.UnknownLocation;
 
 	public override string Message
 	{
@@ -30,7 +30,7 @@ public class EvaluatorException : ApplicationException
 
 	public string RawMessage => base.Message;
 
-	public Location Location => _location;
+	public Location? Location => _location;
 
 	public EvaluatorException()
 	{
@@ -41,7 +41,7 @@ public class EvaluatorException : ApplicationException
 	{
 	}
 
-	public EvaluatorException(string message, Exception innerException)
+	public EvaluatorException(string message, Exception? innerException)
 		: base(message, innerException)
 	{
 	}
@@ -52,7 +52,7 @@ public class EvaluatorException : ApplicationException
 		_location = location;
 	}
 
-	public EvaluatorException(string message, Location location, Exception innerException)
+	public EvaluatorException(string message, Location location, Exception? innerException)
 		: base(message, innerException)
 	{
 		_location = location;
@@ -73,6 +73,6 @@ public class EvaluatorException : ApplicationException
 	protected EvaluatorException(SerializationInfo info, StreamingContext context)
 		: base(info, context)
 	{
-		_location = info.GetValue("Location", _location.GetType()) as Location;
+		_location = info.GetValue("Location", _location!.GetType()) as Location;
 	}
 }

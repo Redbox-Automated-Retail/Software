@@ -10,11 +10,11 @@ namespace Redbox.UpdateManager.FileSets;
 
 internal class FileSetRevisionDownloader
 {
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
-	private IDownloadService _downloadService;
+	private IDownloadService? _downloadService;
 
-	private IDownloader _downloader;
+	private IDownloader? _downloader;
 
 	private long _fileSetId;
 
@@ -56,7 +56,7 @@ internal class FileSetRevisionDownloader
 		}
 	}
 
-	internal IDownloader Downloader => _downloader;
+	internal IDownloader? Downloader => _downloader;
 
 	internal FileSetRevisionDownloader(List<IDownloader> downloads, long fileSetId, long revisionId, long patchRevisionId, string hash, string downloadUrl, string path, string contentHash, DownloadPriority priority)
 	{
@@ -104,7 +104,7 @@ internal class FileSetRevisionDownloader
 		return _downloader.DownloadData.DownloadState == DownloadState.PostDownload;
 	}
 
-	internal IDownloader AddDownload()
+	internal IDownloader? AddDownload()
 	{
 		if (AddDownload(GetRevisionKey(), _hash, GetRevisionUrl(), out var download).ContainsError())
 		{
@@ -114,7 +114,7 @@ internal class FileSetRevisionDownloader
 		return _downloader;
 	}
 
-	private ErrorList AddDownload(string key, string hash, string url, out IDownloader download)
+	private ErrorList AddDownload(string key, string hash, string url, out IDownloader? download)
 	{
 		Redbox.UpdateManager.DownloadService.DownloadPriority downloadPriority = (Redbox.UpdateManager.DownloadService.DownloadPriority)_downloadPriority;
 		return DownloadService.AddDownload(key, hash, url, downloadPriority, out download);
@@ -122,7 +122,7 @@ internal class FileSetRevisionDownloader
 
 	internal bool CompleteDownload()
 	{
-		ErrorList errorList = new ZipDownloadHelper(_downloader.DownloadData.Path, _fileSetId, _revisionId, _patchRevisionId).Extract();
+		ErrorList errorList = new ZipDownloadHelper(_downloader!.DownloadData.Path, _fileSetId, _revisionId, _patchRevisionId).Extract();
 		if (!errorList.ContainsError())
 		{
 			_downloader.Complete();
@@ -130,13 +130,13 @@ internal class FileSetRevisionDownloader
 		return !errorList.ContainsError();
 	}
 
-	internal ClientFileSetRevision GetRevision()
+	internal ClientFileSetRevision? GetRevision()
 	{
 		if (!FileCacheService.GetRevision(_fileSetId, _revisionId, _patchRevisionId, out var data))
 		{
 			return null;
 		}
-		return Encoding.ASCII.GetString(data).ToObject<ClientFileSetRevision>();
+		return Encoding.ASCII.GetString(data!).ToObject<ClientFileSetRevision>(); // set when GetRevision succeeds
 	}
 
 	private string GetRevisionKey()

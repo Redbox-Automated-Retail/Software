@@ -12,7 +12,7 @@ public interface IFileCacheService
 
 	void SetFileContent(string fileName, string data, bool overwrite);
 
-	byte[] GetFileContent(string fileName);
+	byte[]? GetFileContent(string fileName);
 
-	string GetFileContentAsString(string fileName);
+	string? GetFileContentAsString(string fileName);
 }

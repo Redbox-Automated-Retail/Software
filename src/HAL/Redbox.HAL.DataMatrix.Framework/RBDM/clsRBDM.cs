@@ -1,3 +1,5 @@
+#nullable disable
+// Obfuscated DataMatrix decoder (decompiled as-is), so it is not annotated.
 using System;
 using System.Collections;
 using ClearImage;

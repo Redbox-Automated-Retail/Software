@@ -25,7 +25,7 @@ internal class FileSetTransition
 
 	private ClientFileSetRevision _revision;
 
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
 	private const string FileSetChangeSetPath = "staging";
 
@@ -135,7 +135,7 @@ internal class FileSetTransition
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			FileData fileData = (from item in GetFileData()
+			FileData? fileData = (from item in GetFileData()
 				where Path.GetFileName(item.FileDestination).ToLower() == "beforeactivate.lua"
 				select item).FirstOrDefault();
 			if (fileData != null)
@@ -149,7 +149,7 @@ internal class FileSetTransition
 				string details = string.Empty;
 				if (result.ContainsKey("Message"))
 				{
-					details = Convert.ToString(result["Message"]);
+					details = Convert.ToString(result["Message"])!;
 				}
 				if (result.ContainsKey("Success"))
 				{
@@ -174,7 +174,7 @@ internal class FileSetTransition
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			FileData fileData = (from item in GetFileData()
+			FileData? fileData = (from item in GetFileData()
 				where Path.GetFileName(item.FileDestination).ToLower() == "afteractivate.lua"
 				select item).FirstOrDefault();
 			if (fileData != null)
@@ -188,7 +188,7 @@ internal class FileSetTransition
 				string details = string.Empty;
 				if (result.ContainsKey("Message"))
 				{
-					details = Convert.ToString(result["Message"]);
+					details = Convert.ToString(result["Message"])!;
 				}
 				if (scriptFailed)
 				{
@@ -222,7 +222,7 @@ internal class FileSetTransition
 			}
 			fileData.ForEach(delegate(FileData f)
 			{
-				string directoryName = Path.GetDirectoryName(f.FileDestination);
+				string directoryName = Path.GetDirectoryName(f.FileDestination)!;
 				if (!Directory.Exists(directoryName))
 				{
 					Directory.CreateDirectory(directoryName);

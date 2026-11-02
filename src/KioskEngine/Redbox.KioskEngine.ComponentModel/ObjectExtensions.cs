@@ -5,12 +5,12 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public static class ObjectExtensions
 {
-	public static IDictionary<string, object> ToDictionary(this object source)
+	public static IDictionary<string, object>? ToDictionary(this object? source)
 	{
 		return source.ToDictionary<object>();
 	}
 
-	public static IDictionary<string, T> ToDictionary<T>(this object source)
+	public static IDictionary<string, T>? ToDictionary<T>(this object? source)
 	{
 		if (source == null)
 		{
@@ -26,14 +26,14 @@ public static class ObjectExtensions
 
 	private static void AddPropertyToDictionary<T>(PropertyDescriptor property, object source, Dictionary<string, T> dictionary)
 	{
-		object value = property.GetValue(source);
+		object? value = property.GetValue(source);
 		if (IsOfType<T>(value))
 		{
-			dictionary.Add(property.Name, (T)value);
+			dictionary.Add(property.Name, (T)value!);
 		}
 	}
 
-	private static bool IsOfType<T>(object value)
+	private static bool IsOfType<T>(object? value)
 	{
 		return value is T;
 	}

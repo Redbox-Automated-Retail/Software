@@ -12,7 +12,7 @@ public class CommonMetricsFactory : ICommonMetricsFactory
 		_provider = provider;
 	}
 
-	public ICommonMetrics GetImplementation<T>()
+	public ICommonMetrics? GetImplementation<T>()
 	{
 		return _provider.GetService(typeof(T)) as ICommonMetrics;
 	}

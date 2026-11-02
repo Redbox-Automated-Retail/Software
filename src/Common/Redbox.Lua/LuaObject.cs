@@ -31,7 +31,7 @@ public class LuaObject : IDisposable
 		}
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (this == obj)
 		{
@@ -45,7 +45,7 @@ public class LuaObject : IDisposable
 		{
 			return false;
 		}
-		if (!VirtualMachineInstance.CompareReference(luaObject.Reference.Value, Reference.Value))
+		if (!VirtualMachineInstance.CompareReference(luaObject.Reference!.Value, Reference.Value))
 		{
 			return base.Equals(obj);
 		}

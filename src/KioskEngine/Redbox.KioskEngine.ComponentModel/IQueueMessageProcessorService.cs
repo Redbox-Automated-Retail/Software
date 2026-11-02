@@ -10,11 +10,11 @@ public interface IQueueMessageProcessorService
 
 	List<string> SupportedMessageTypes { get; }
 
-	BeforeMessageProcessingDelegate BeforeMessageProcessing { get; }
+	BeforeMessageProcessingDelegate? BeforeMessageProcessing { get; }
 
 	ProcessMessageDelegate ProcessMessage { get; }
 
-	MessageProcessedSuccessfullyDelegate MessageProcessedSuccessfully { get; }
+	MessageProcessedSuccessfullyDelegate? MessageProcessedSuccessfully { get; }
 
-	AfterMessageProcessedDelegate AfterMessageProcessed { get; }
+	AfterMessageProcessedDelegate? AfterMessageProcessed { get; }
 }

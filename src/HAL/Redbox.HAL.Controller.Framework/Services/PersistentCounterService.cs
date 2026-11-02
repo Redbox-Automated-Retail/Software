@@ -12,7 +12,7 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 
 	private readonly Dictionary<string, IPersistentCounter> Counters = new Dictionary<string, IPersistentCounter>();
 
-	public IPersistentCounter Find(string name)
+	public IPersistentCounter? Find(string name)
 	{
 		if (Counters.ContainsKey(name))
 		{
@@ -28,16 +28,16 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 		return null;
 	}
 
-	public IPersistentCounter Find(TimeoutCounters counter)
+	public IPersistentCounter? Find(TimeoutCounters counter)
 	{
 		return Find(KeyFrom(counter));
 	}
 
-	public IPersistentCounter Increment(string name)
+	public IPersistentCounter? Increment(string name)
 	{
 		try
 		{
-			IPersistentCounter persistentCounter = Find(name);
+			IPersistentCounter? persistentCounter = Find(name);
 			if (persistentCounter == null)
 			{
 				return null;
@@ -52,16 +52,16 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 		}
 	}
 
-	public IPersistentCounter Increment(TimeoutCounters counter)
+	public IPersistentCounter? Increment(TimeoutCounters counter)
 	{
 		return Increment(KeyFrom(counter));
 	}
 
-	public IPersistentCounter Decrement(string name)
+	public IPersistentCounter? Decrement(string name)
 	{
 		try
 		{
-			IPersistentCounter persistentCounter = Find(name);
+			IPersistentCounter? persistentCounter = Find(name);
 			if (persistentCounter == null)
 			{
 				return null;
@@ -76,7 +76,7 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 		}
 	}
 
-	public IPersistentCounter Decrement(TimeoutCounters counter)
+	public IPersistentCounter? Decrement(TimeoutCounters counter)
 	{
 		return Decrement(KeyFrom(counter));
 	}
@@ -97,7 +97,7 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 
 	public bool Reset(string name)
 	{
-		IPersistentCounter persistentCounter = Find(name);
+		IPersistentCounter? persistentCounter = Find(name);
 		if (persistentCounter == null)
 		{
 			return false;
@@ -120,7 +120,7 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 		{
 			foreach (string weeklyResettableCounter in WeeklyResettableCounters)
 			{
-				IPersistentCounter persistentCounter = Find(weeklyResettableCounter);
+				IPersistentCounter? persistentCounter = Find(weeklyResettableCounter);
 				if (persistentCounter != null && persistentCounter.Value != 0)
 				{
 					persistentCounter.Reset();
@@ -141,7 +141,7 @@ internal sealed class PersistentCounterService : IPersistentCounterService
 				WeeklyResettableCounters.Add(key);
 			}
 		}
-		CounterTable = dts.GetTable<IPersistentCounter>();
+		CounterTable = dts.GetTable<IPersistentCounter>()!;
 		List<IPersistentCounter> counters = CounterTable.LoadEntries();
 		using (new DisposeableList<IPersistentCounter>(counters))
 		{

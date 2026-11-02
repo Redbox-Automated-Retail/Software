@@ -11,13 +11,14 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 
 	private readonly List<IMoveVeto> Vetoers = new List<IMoveVeto>();
 
-	private AbstractMotionController Controller;
+	// Set by NotifyConfigurationLoaded.
+	private AbstractMotionController Controller = null!;
 
 	private bool YAxisHomed;
 
 	private bool XAxisHomed;
 
-	public ILocation CurrentLocation { get; private set; }
+	public ILocation? CurrentLocation { get; private set; }
 
 	public bool AtVendDoor { get; private set; }
 
@@ -112,7 +113,7 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 
 	public ErrorCodes MoveTo(int deck, int slot, MoveMode mode, IFormattedLog _log, ref OffsetMoveData data)
 	{
-		IDeck byNumber = ServiceLocator.Instance.GetService<IDecksService>().GetByNumber(deck);
+		IDeck? byNumber = ServiceLocator.Instance.GetService<IDecksService>().GetByNumber(deck);
 		if (byNumber == null)
 		{
 			return ErrorCodes.DeckOutOfRange;
@@ -158,7 +159,7 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 					MoveWithCheck(ref target);
 					break;
 				case MoveMode.Put:
-					if (targetX < controllerPosition.XCoordinate.Value)
+					if (targetX < controllerPosition.XCoordinate!.Value)
 					{
 						MoveWithCheck(ref target);
 					}
@@ -315,7 +316,7 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		if (motionControlService.CurrentLocation != null)
 		{
-			result = motionControlService.CurrentLocation.ToString();
+			result = motionControlService.CurrentLocation.ToString()!;
 		}
 		else if (motionControlService.AtVendDoor)
 		{
@@ -471,7 +472,7 @@ internal sealed class MotionControlService_v2 : IConfigurationObserver, IMotionC
 		InsertCorrectionStat(activeContext, ok);
 	}
 
-	private void InsertCorrectionStat(IExecutionContext activeContext, bool ok)
+	private void InsertCorrectionStat(IExecutionContext? activeContext, bool ok)
 	{
 		if (activeContext != null)
 		{

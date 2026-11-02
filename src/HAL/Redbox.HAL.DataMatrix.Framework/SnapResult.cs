@@ -33,13 +33,13 @@ internal sealed class SnapResult : ISnapResult, IDisposable
 		}
 	}
 
-	internal SnapResult(string path)
+	internal SnapResult(string? path)
 	{
 		SnapOk = TestPath(path);
-		Path = (SnapOk ? path : string.Empty);
+		Path = (SnapOk ? path! : string.Empty);
 	}
 
-	private bool TestPath(string path)
+	private bool TestPath(string? path)
 	{
 		if (!string.IsNullOrEmpty(path))
 		{

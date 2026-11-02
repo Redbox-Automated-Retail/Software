@@ -13,7 +13,7 @@ namespace Redbox.Rental.Kernel;
 public static class RentalDataFunctions
 {
 	[KernelFunction(Name = "kernel.rental_get_default_culture")]
-	internal static string GetDefaultCulture()
+	internal static string? GetDefaultCulture()
 	{
 		IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
 		if (service == null)
@@ -27,7 +27,7 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_get_alternate_culture")]
-	internal static string GetAlternateCulture()
+	internal static string? GetAlternateCulture()
 	{
 		IStoreManager service = ServiceLocator.Instance.GetService<IStoreManager>();
 		if (service == null)
@@ -55,11 +55,11 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_all_unmatched_multi_disc_barcodes")]
-	internal static LuaTable GetAllUnmatchedMultiDiscBarcodes()
+	internal static LuaTable? GetAllUnmatchedMultiDiscBarcodes()
 	{
 		try
 		{
-			LuaTable result = null;
+			LuaTable? result = null;
 			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			if (dataService != null)
 			{
@@ -75,12 +75,12 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_product_type")]
-	internal static LuaTable GetProductType(long productTypeId)
+	internal static LuaTable? GetProductType(long productTypeId)
 	{
 		try
 		{
-			LuaTable result = null;
-			ProductType productType = (ServiceLocator.Instance.GetService<IDataService>()?.GetProductTypes())?.FirstOrDefault((ProductType x) => x.ProductTypeId == productTypeId);
+			LuaTable? result = null;
+			ProductType? productType = (ServiceLocator.Instance.GetService<IDataService>()?.GetProductTypes())?.FirstOrDefault((ProductType x) => x.ProductTypeId == productTypeId);
 			if (productType != null)
 			{
 				result = new Dictionary<string, object>
@@ -100,15 +100,15 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_product_catalog_title")]
-	internal static LuaTable GetProductCatalogTitle(long productId)
+	internal static LuaTable? GetProductCatalogTitle(long productId)
 	{
 		try
 		{
-			LuaTable result = null;
-			Title title = ServiceLocator.Instance.GetService<IDataService>()?.GetProductCatalogTitle(productId);
+			LuaTable? result = null;
+			Title? title = ServiceLocator.Instance.GetService<IDataService>()?.GetProductCatalogTitle(productId);
 			if (title != null)
 			{
-				result = new Dictionary<string, object>
+				result = new Dictionary<string, object?>
 				{
 					["product_id"] = title.ProductId,
 					["merchandise_date"] = title.MerchandiseDate,
@@ -131,12 +131,12 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_coming_soon_product_ids")]
-	internal static LuaTable GetComingSoonProductIds()
+	internal static LuaTable? GetComingSoonProductIds()
 	{
 		try
 		{
-			LuaTable result = null;
-			Dictionary<long, Title> dictionary = ServiceLocator.Instance.GetService<IDataService>()?.GetProductCatalogTitles();
+			LuaTable? result = null;
+			Dictionary<long, Title>? dictionary = ServiceLocator.Instance.GetService<IDataService>()?.GetProductCatalogTitles();
 			if (dictionary != null)
 			{
 				List<long> list = new List<long>();
@@ -164,12 +164,12 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_store")]
-	internal static LuaTable GetStore(long kioskId)
+	internal static LuaTable? GetStore(long kioskId)
 	{
 		try
 		{
-			LuaTable result = null;
-			Store store = ServiceLocator.Instance.GetService<IDataService>()?.GetStore(kioskId);
+			LuaTable? result = null;
+			Store? store = ServiceLocator.Instance.GetService<IDataService>()?.GetStore(kioskId);
 			if (store != null)
 			{
 				result = new Dictionary<string, object>
@@ -190,11 +190,11 @@ public static class RentalDataFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_profile_version")]
-	internal static LuaTable GetProfileVersion()
+	internal static LuaTable? GetProfileVersion()
 	{
 		try
 		{
-			LuaTable result = null;
+			LuaTable? result = null;
 			IDataService dataService = ServiceLocator.Instance.GetService<IDataService>();
 			if (dataService?.ProfileDataVersion != null)
 			{

@@ -7,9 +7,10 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 {
 	private static readonly char[] HwidSeparator = new char[1] { '&' };
 
-	public string Vendor { get; internal set; }
+	// Vendor and Product are set by Create's object initializer.
+	public string Vendor { get; internal set; } = null!;
 
-	public string Product { get; internal set; }
+	public string Product { get; internal set; } = null!;
 
 	public string Friendlyname
 	{
@@ -19,7 +20,7 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 		}
 	}
 
-	public IDeviceSetupClass SetupClass { get; internal set; }
+	public IDeviceSetupClass? SetupClass { get; internal set; }
 
 	public override string ToString()
 	{
@@ -50,13 +51,13 @@ internal class GenericDeviceDescriptor : IDeviceDescriptor
 		throw new NotImplementedException();
 	}
 
-	internal static GenericDeviceDescriptor Create(string hwid, DeviceClass clazz)
+	internal static GenericDeviceDescriptor? Create(string? hwid, DeviceClass clazz)
 	{
 		if (string.IsNullOrEmpty(hwid))
 		{
 			return null;
 		}
-		hwid = hwid.ToLower();
+		hwid = hwid!.ToLower();
 		string[] parts = hwid.Split('\\');
 		if (parts.Length != 2)
 		{

@@ -20,7 +20,7 @@ internal class ZipDownloadHelper
 
 	private long _patchRevisionId;
 
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
 	internal IFileCacheService FileCacheService
 	{
@@ -64,7 +64,7 @@ internal class ZipDownloadHelper
 							dictionary = text.ToDictionary();
 						}
 						string fileEntryName = Path.GetFileNameWithoutExtension(entry.FileName);
-						ZipEntry zipEntry = zip.Where((ZipEntry zipEntry2) => zipEntry2.FileName.Equals(fileEntryName)).FirstOrDefault();
+						ZipEntry? zipEntry = zip.Where((ZipEntry zipEntry2) => zipEntry2.FileName.Equals(fileEntryName)).FirstOrDefault();
 						if (fileEntryName == null)
 						{
 							errors.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("ZipDownloadHelper.Extract", $"File {fileEntryName} is missing from zip file"));
@@ -74,7 +74,7 @@ internal class ZipDownloadHelper
 							byte[] bytes;
 							using (MemoryStream memoryStream2 = new MemoryStream())
 							{
-								zipEntry.Extract(memoryStream2);
+								zipEntry!.Extract(memoryStream2); // throws when the entry is missing, as before
 								memoryStream2.Position = 0L;
 								bytes = memoryStream2.GetBytes();
 							}

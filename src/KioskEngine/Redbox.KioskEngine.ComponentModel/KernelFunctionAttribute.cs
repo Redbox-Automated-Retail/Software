@@ -10,9 +10,10 @@ namespace Redbox.KioskEngine.ComponentModel;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class KernelFunctionAttribute : Attribute
 {
-	public string Name { get; set; }
+	// Set where the attribute is applied ([KernelFunction(Name = ...)]).
+	public string Name { get; set; } = null!;
 
-	public string ExtensionName { get; set; }
+	public string? ExtensionName { get; set; }
 
 	public static ReadOnlyCollection<KernelFunctionInfo> GetKernelFunctionInfos(Assembly assembly, string extension)
 	{
@@ -23,8 +24,8 @@ public class KernelFunctionAttribute : Attribute
 			MethodInfo[] methods = types[i].GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 			foreach (MethodInfo methodInfo in methods)
 			{
-				DescriptionAttribute descriptionAttribute = (DescriptionAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute));
-				ObsoleteAttribute obsoleteAttribute = (ObsoleteAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(ObsoleteAttribute));
+				DescriptionAttribute? descriptionAttribute = (DescriptionAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute));
+				ObsoleteAttribute? obsoleteAttribute = (ObsoleteAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(ObsoleteAttribute));
 				KernelFunctionAttribute[] attributes = (KernelFunctionAttribute[])Attribute.GetCustomAttributes(methodInfo, typeof(KernelFunctionAttribute));
 				if (attributes != null && attributes.Length != 0)
 				{

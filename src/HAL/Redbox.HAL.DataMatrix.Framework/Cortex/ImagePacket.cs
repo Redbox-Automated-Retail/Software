@@ -7,7 +7,8 @@ internal class ImagePacket : CortexPacket
 {
 	protected const int DataStart = 22;
 
-	protected string m_imageName;
+	// Set by ParseData, which the CortexPacket constructor calls.
+	protected string m_imageName = null!;
 
 	internal string ImageName => m_imageName;
 

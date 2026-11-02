@@ -17,7 +17,7 @@ internal sealed class NamedPipeServiceHost : AbstractIPCServiceHost
 		{
 			while (base.Alive)
 			{
-				BasePipeChannel basePipeChannel = namedPipeServer.WaitForClientConnect();
+				BasePipeChannel? basePipeChannel = namedPipeServer.WaitForClientConnect();
 				if (basePipeChannel != null)
 				{
 					string id = Interlocked.Increment(ref m_identifier).ToString();

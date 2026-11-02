@@ -9,9 +9,9 @@ namespace Redbox.UpdateManager.DownloadFile;
 
 internal class DownloadFileFactory
 {
-	private IDataStoreService _dataStoreService;
+	private IDataStoreService? _dataStoreService;
 
-	private IStatusMessageService _statusMessageService;
+	private IStatusMessageService? _statusMessageService;
 
 	private object _lock = new object();
 
@@ -55,16 +55,16 @@ internal class DownloadFileFactory
 			{
 				try
 				{
-					DownloadFileData downloadFileData = dataStoreService.Get<DownloadFileData>(string.Concat(downLoad, ".downloaddat"));
+					DownloadFileData? downloadFileData = dataStoreService.Get<DownloadFileData>(string.Concat(downLoad, ".downloaddat"));
 					if (downloadFileData == null)
 					{
 						DeleteDownloadFile(downLoad);
 						continue;
 					}
-					IDownloadFile downloadFileFromData = GetDownloadFileFromData(downloadFileData);
+					IDownloadFile? downloadFileFromData = GetDownloadFileFromData(downloadFileData);
 					if (downloadFileData != null)
 					{
-						list.Add(downloadFileFromData);
+						list.Add(downloadFileFromData!); // null for an unknown type: the check above tests downloadFileData, as before
 					}
 				}
 				catch (Exception e)
@@ -104,12 +104,12 @@ internal class DownloadFileFactory
 		};
 	}
 
-	internal IDownloadFile GetDownloadFileFromChangeSet(DownloadFileChangeSetData changeSet)
+	internal IDownloadFile? GetDownloadFileFromChangeSet(DownloadFileChangeSetData changeSet)
 	{
 		return GetDownloadFileFromData(ChangeSetToDownloadFile(changeSet));
 	}
 
-	internal IDownloadFile GetDownloadFileFromData(IDownloadFileData downloadFileData)
+	internal IDownloadFile? GetDownloadFileFromData(IDownloadFileData downloadFileData)
 	{
 		return downloadFileData.DownloadFileDataType switch
 		{
@@ -175,7 +175,7 @@ internal class DownloadFileFactory
 
 	internal List<Guid> GetDownLoadList()
 	{
-		List<Guid> list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".download");
+		List<Guid>? list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".download");
 		if (list == null)
 		{
 			list = new List<Guid>();

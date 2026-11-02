@@ -13,19 +13,20 @@ public sealed class ProgramResult
 
 	public int Slot { get; internal set; }
 
-	public string Code { get; internal set; }
+	// Code and Message are set by the constructor or by FromString.
+	public string Code { get; internal set; } = null!;
 
-	public ResultItem ItemID { get; internal set; }
+	public ResultItem? ItemID { get; internal set; }
 
-	public string Message { get; internal set; }
+	public string Message { get; internal set; } = null!;
 
 	public DateTime TimeStamp { get; internal set; }
 
 	public DateTime? ReturnTime { get; internal set; }
 
-	public ResultItem PreviousItem { get; internal set; }
+	public ResultItem? PreviousItem { get; internal set; }
 
-	public IDictionary<string, object> MessageData { get; internal set; }
+	public IDictionary<string, object>? MessageData { get; internal set; }
 
 	public ProgramResult(Guid id, DateTime timeStamp, int deck, int slot, string code, string itemId, string message)
 	{
@@ -38,7 +39,7 @@ public sealed class ProgramResult
 		TimeStamp = timeStamp;
 	}
 
-	public static ProgramResult FromString(string value)
+	public static ProgramResult? FromString(string value)
 	{
 		string[] parts = value.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 		if (string.Compare(parts[0], "RESULT", ignoreCase: true) == 0 && parts.Length >= 7)

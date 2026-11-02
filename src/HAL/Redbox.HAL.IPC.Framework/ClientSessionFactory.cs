@@ -10,7 +10,7 @@ public static class ClientSessionFactory
 {
 	private static int m_session;
 
-	public static IIpcClientSession GetClientSession(IPCProtocol protocol)
+	public static IIpcClientSession? GetClientSession(IPCProtocol protocol)
 	{
 		string identifier = $"Session-{Interlocked.Increment(ref m_session)}";
 		if (protocol.Channel == ChannelType.NamedPipe)

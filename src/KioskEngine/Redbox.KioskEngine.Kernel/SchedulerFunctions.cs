@@ -57,7 +57,7 @@ internal static class SchedulerFunctions
 			{
 				foreach (object key in parameterTable.Keys)
 				{
-					parameterValues.Add(parameterTable[key]);
+					parameterValues.Add(parameterTable[key]!); // a key in a Lua table never maps to nil
 				}
 			}
 			else
@@ -69,7 +69,7 @@ internal static class SchedulerFunctions
 	}
 
 	[KernelFunction(Name = "scheduler_services.get_entries")]
-	internal static LuaTable GetScheduleEntries()
+	internal static LuaTable? GetScheduleEntries()
 	{
 		if (ServiceLocator.Instance.GetService<IKernelService>() == null)
 		{
@@ -102,7 +102,7 @@ internal static class SchedulerFunctions
 	}
 
 	[KernelFunction(Name = "scheduler_services.get_entry")]
-	internal static LuaTable GetScheduleEntry(string jobname)
+	internal static LuaTable? GetScheduleEntry(string jobname)
 	{
 		if (ServiceLocator.Instance.GetService<IKernelService>() == null)
 		{

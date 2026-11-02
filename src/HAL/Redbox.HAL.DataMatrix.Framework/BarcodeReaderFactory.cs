@@ -6,11 +6,12 @@ public sealed class BarcodeReaderFactory : IBarcodeReaderFactory
 {
 	private readonly IBarcodeReader NilReader = new NilReader();
 
-	private ClearImageReaderV2 m_clearImageReader;
+	private ClearImageReaderV2? m_clearImageReader;
 
-	private CortexDecoder m_cortexDecoder;
+	private CortexDecoder? m_cortexDecoder;
 
-	private IBarcodeReader Reader;
+	// Set by Initialize (SetConfiguredReader).
+	private IBarcodeReader Reader = null!;
 
 	public string ImagePath => BarcodeConfiguration.Instance.WorkingPath;
 
@@ -36,7 +37,7 @@ public sealed class BarcodeReaderFactory : IBarcodeReaderFactory
 	private void SetConfiguredReader()
 	{
 		LogHelper.Instance.Log("Set Configured Reader -- get cortex decoder");
-		IBarcodeReader barcodeReader = GetCortexDecoder();
+		IBarcodeReader? barcodeReader = GetCortexDecoder();
 		if (barcodeReader == null || !barcodeReader.IsLicensed)
 		{
 			LogHelper.Instance.Log("Set Configured Reader -- get inlite reader");
@@ -59,7 +60,7 @@ public sealed class BarcodeReaderFactory : IBarcodeReaderFactory
 		return m_cortexDecoder;
 	}
 
-	private ClearImageReaderV2 GetInliteReader()
+	private ClearImageReaderV2? GetInliteReader()
 	{
 		if (m_clearImageReader == null)
 		{

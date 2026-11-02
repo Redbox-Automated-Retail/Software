@@ -6,9 +6,9 @@ namespace Redbox.IPC.Framework;
 
 public class ClientCommandResult
 {
-	private ErrorList m_errors;
+	private ErrorList? m_errors;
 
-	private List<string> m_commandMessages;
+	private List<string>? m_commandMessages;
 
 	public ErrorList Errors
 	{
@@ -36,9 +36,9 @@ public class ClientCommandResult
 
 	public bool Success { get; set; }
 
-	public string CommandText { get; internal set; }
+	public string CommandText { get; internal set; } = null!; // set by ClientCommand.Execute's object initializer
 
-	public string StatusMessage { get; internal set; }
+	public string? StatusMessage { get; internal set; }
 
 	public TimeSpan ExecutionTime { get; internal set; }
 

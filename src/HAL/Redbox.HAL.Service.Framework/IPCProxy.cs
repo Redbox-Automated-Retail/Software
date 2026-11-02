@@ -58,7 +58,7 @@ public sealed class IPCProxy : IDisposable
 		IIpcServiceHostFactory ipcServiceHostFactory = ServiceLocator.Instance.GetService<IIpcServiceHostFactory>();
 		IHostInfo info = ipcServiceHostFactory.Create(assembly);
 		m_listener = ipcServiceHostFactory.Create(Protocol, info);
-		m_listener.Start();
+		m_listener!.Start();
 	}
 
 	public void StopListener()

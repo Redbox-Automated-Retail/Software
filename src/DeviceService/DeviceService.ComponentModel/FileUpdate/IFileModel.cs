@@ -2,7 +2,7 @@ namespace DeviceService.ComponentModel.FileUpdate;
 
 public interface IFileModel
 {
-	string Path { get; set; }
+	string? Path { get; set; }
 
 	int Order { get; set; }
 

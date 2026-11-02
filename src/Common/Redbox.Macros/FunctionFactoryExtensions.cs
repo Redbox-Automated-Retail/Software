@@ -6,7 +6,7 @@ public static class FunctionFactoryExtensions
 {
 	public static bool IsSubclassOfFunctionSetBase(this Type type)
 	{
-		if (type.BaseType.FullName == "System.Object")
+		if (type.BaseType!.FullName == "System.Object")
 		{
 			return false;
 		}

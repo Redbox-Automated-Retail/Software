@@ -9,15 +9,15 @@ public interface IResourceBundle : IDisposable
 
 	IResourceBundleStorage Storage { get; }
 
-	ErrorList Activate(IResourceBundleFilter filter, out IManifestInfo manifestInfo);
+	ErrorList Activate(IResourceBundleFilter? filter, out IManifestInfo? manifestInfo);
 
-	IResource GetResource(string name, IResourceBundleFilter filter);
+	IResource? GetResource(string name, IResourceBundleFilter? filter);
 
-	IResource GetManifest(IResourceBundleFilter filter, out IManifestInfo manifestInfo);
+	IResource? GetManifest(IResourceBundleFilter? filter, out IManifestInfo? manifestInfo);
 
 	ErrorList StoreResource(string name, string data);
 
-	List<IResource> GetResources(string typeName, IResourceBundleFilter filter);
+	List<IResource> GetResources(string typeName, IResourceBundleFilter? filter);
 
 	List<IResource> GetAllResources();
 
@@ -29,5 +29,5 @@ public interface IResourceBundle : IDisposable
 
 	List<IResource> GetAllResources(string typeName);
 
-	IResourceBundleStorageEntry GetEntry(string name);
+	IResourceBundleStorageEntry? GetEntry(string name);
 }

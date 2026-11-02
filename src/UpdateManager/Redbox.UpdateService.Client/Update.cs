@@ -5,13 +5,14 @@ namespace Redbox.UpdateService.Client;
 
 public class Update
 {
-	public string Title;
+	// The fields below are filled by the JSON reader or by the sender's object initializer.
+	public string Title = null!;
 
 	public Guid Id;
 
-	public List<string> Categories;
+	public List<string> Categories = null!;
 
-	public Uri MoreInfoUrl;
+	public Uri? MoreInfoUrl;
 
 	public bool IsDownloaded;
 

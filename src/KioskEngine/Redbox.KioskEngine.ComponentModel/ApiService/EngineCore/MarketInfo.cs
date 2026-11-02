@@ -4,5 +4,5 @@ public class MarketInfo
 {
 	public long MarketId { get; set; }
 
-	public string MarketName { get; set; }
+	public string? MarketName { get; set; }
 }

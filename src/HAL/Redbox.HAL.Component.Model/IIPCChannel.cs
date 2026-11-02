@@ -6,9 +6,9 @@ public interface IIPCChannel : IDisposable
 {
 	bool IsConnected { get; }
 
-	byte[] Read();
+	byte[]? Read();
 
-	byte[] Read(int timeout);
+	byte[]? Read(int timeout);
 
 	void Read(IIPCResponse response);
 

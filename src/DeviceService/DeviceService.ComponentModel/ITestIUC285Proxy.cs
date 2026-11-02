@@ -8,5 +8,5 @@ public interface ITestIUC285Proxy : IIUC285Proxy
 
 	bool SetAmount(string amount);
 
-	Base87CardReadModel ParseOnGuardData(string cardData);
+	Base87CardReadModel? ParseOnGuardData(string? cardData);
 }

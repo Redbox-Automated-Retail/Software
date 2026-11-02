@@ -16,13 +16,13 @@ internal static class MacroFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getmacro")]
-	internal static string GetMacro(string name)
+	internal static string? GetMacro(string name)
 	{
 		return ServiceLocator.Instance.GetService<IMacroService>()?[name];
 	}
 
 	[KernelFunction(Name = "kernel.expandmacros")]
-	internal static string ExpandRuntimeMacros(string value)
+	internal static string? ExpandRuntimeMacros(string value)
 	{
 		return ServiceLocator.Instance.GetService<IMacroService>()?.ExpandProperties(value);
 	}

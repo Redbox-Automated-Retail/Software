@@ -14,9 +14,9 @@ internal class VistaDBDatabaseProvider : IDisposable
 
 	private string _name;
 
-	private IVistaDBDDA _dda;
+	private IVistaDBDDA? _dda;
 
-	private IVistaDBDatabase _database;
+	private IVistaDBDatabase? _database;
 
 	public VistaDBDatabaseProvider(string name, string path)
 	{
@@ -68,12 +68,12 @@ internal class VistaDBDatabaseProvider : IDisposable
 		}
 	}
 
-	public DataTable GetSqlData(string sql)
+	public DataTable? GetSqlData(string sql)
 	{
 		return GetSqlData(sql, nolog: false);
 	}
 
-	public DataTable GetSqlData(string sql, bool nolog)
+	public DataTable? GetSqlData(string sql, bool nolog)
 	{
 		DateTime now = DateTime.Now;
 		try

@@ -59,7 +59,7 @@ internal static class ProcessFunctions
 
 	private const uint WM_CLOSE = 16u;
 
-	internal static int LaunchProcess(string processName, string args, bool hiddenProcess)
+	internal static int LaunchProcess(string processName, string? args, bool hiddenProcess)
 	{
 		string defaultAdmin = "rbadmin";
 		try
@@ -125,7 +125,7 @@ internal static class ProcessFunctions
 	internal static bool KillProcesses(List<int> processIds)
 	{
 		LogHelper.Instance.Log($"Killing {processIds?.Count() ?? 0} processes.");
-		foreach (int processId in processIds)
+		foreach (int processId in processIds!)
 		{
 			try
 			{
@@ -195,18 +195,18 @@ internal static class ProcessFunctions
 			List<int> processes = dictionary.Keys.ToList();
 			if (killHandler != null && killHandler(processes))
 			{
-				string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
-				InnerSendAuditEvent(kioskId.ToString(), "CP_Process_Killed", userName, "CP Bundle", KilledProcesses);
+				string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+				InnerSendAuditEvent(kioskId.ToString()!, "CP_Process_Killed", userName, "CP Bundle", KilledProcesses);
 				form.RefreshList();
 			}
 		};
 		form.Show();
 	}
 
-	internal static object GetServicePath(string serviceName)
+	internal static object? GetServicePath(string serviceName)
 	{
 		string name = string.Format("{0}\\{1}", "System\\CurrentControlSet\\Services", serviceName);
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.OpenSubKey(name);
@@ -214,7 +214,7 @@ internal static class ProcessFunctions
 			{
 				return null;
 			}
-			return Path.GetDirectoryName(((string)registryKey.GetValue("ImagePath")).TrimStart('"').TrimEnd('"'));
+			return Path.GetDirectoryName(((string)registryKey.GetValue("ImagePath")!).TrimStart('"').TrimEnd('"'));
 		}
 		catch (Exception ex)
 		{
@@ -227,7 +227,7 @@ internal static class ProcessFunctions
 		}
 	}
 
-	internal static string GetFullPath(string path)
+	internal static string? GetFullPath(string path)
 	{
 		if (InvalidPath(path))
 		{
@@ -236,7 +236,7 @@ internal static class ProcessFunctions
 		return Path.GetFullPath(path);
 	}
 
-	internal static string GetFileName(string path)
+	internal static string? GetFileName(string path)
 	{
 		if (InvalidPath(path))
 		{
@@ -245,7 +245,7 @@ internal static class ProcessFunctions
 		return Path.GetFileName(path);
 	}
 
-	internal static void ReplaceInFile(string filePath, string pattern, string token, string newvalue)
+	internal static void ReplaceInFile(string? filePath, string pattern, string token, string newvalue)
 	{
 		if (File.Exists(filePath))
 		{
@@ -258,12 +258,12 @@ internal static class ProcessFunctions
 		return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue(path, key, defaultValue);
 	}
 
-	internal static void SetMachineSettingValue(string path, string key, string value)
+	internal static void SetMachineSettingValue(string path, string key, string? value)
 	{
 		ServiceLocator.Instance.GetService<IMachineSettingsStore>().SetValue(path, key, value);
 	}
 
-	internal static ErrorList HardwareNotifyMaintModeState(bool goingIntoMM)
+	internal static ErrorList? HardwareNotifyMaintModeState(bool goingIntoMM)
 	{
 		return ServiceLocator.Instance.GetService<IHardwareService>()?.NotifyMaintModeState(goingIntoMM);
 	}
@@ -273,7 +273,7 @@ internal static class ProcessFunctions
 		ServiceLocator.Instance.GetService<IHealthServices>()?.EnqueueStatistic(name, value);
 	}
 
-	internal static string GetServiceStatus(string serviceName)
+	internal static string? GetServiceStatus(string serviceName)
 	{
 		try
 		{
@@ -369,7 +369,7 @@ internal static class ProcessFunctions
 		return Directory.Exists(path);
 	}
 
-	internal static string CombinePaths(string first, string second)
+	internal static string? CombinePaths(string first, string second)
 	{
 		if (InvalidPath(first) || InvalidPath(second))
 		{
@@ -430,21 +430,21 @@ internal static class ProcessFunctions
 			KeyValuePair<string, object> keyValuePair = approvedUrls.ElementAt(i);
 			if (!(settingFound & fieldVisitFormDisabled) || !(keyValuePair.Key == "------------Field Visit Form------------"))
 			{
-				string url = ((!(keyValuePair.Key == "------------Field Visit Form------------") && !(keyValuePair.Key == "------------Install Check List------------")) ? ((string)keyValuePair.Value) : keyValuePair.Value.ToString().Replace("${StoreNumber}", kioskId.ToString()));
+				string url = ((!(keyValuePair.Key == "------------Field Visit Form------------") && !(keyValuePair.Key == "------------Install Check List------------")) ? ((string)keyValuePair.Value) : keyValuePair.Value.ToString()!.Replace("${StoreNumber}", kioskId.ToString()));
 				urls[keyValuePair.Key] = url;
 			}
 		}
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>().LaunchSecureBrowser(urls, navigateUrlCallback);
 	}
 
-	internal static Dictionary<string, object> GetTable(string name)
+	internal static Dictionary<string, object>? GetTable(string name)
 	{
 		XmlNode xml = ServiceLocator.Instance.GetService<IResourceBundleService>().GetXml(name);
 		if (xml == null)
 		{
 			return null;
 		}
-		XmlNodeList xmlNodeList = xml.SelectNodes("row");
+		XmlNodeList? xmlNodeList = xml.SelectNodes("row");
 		if (xmlNodeList == null)
 		{
 			return null;
@@ -452,7 +452,7 @@ internal static class ProcessFunctions
 		Dictionary<string, object> dictionary = new Dictionary<string, object>();
 		foreach (XmlNode item in xmlNodeList)
 		{
-			XmlNodeList xmlNodeList2 = item.SelectNodes("column");
+			XmlNodeList? xmlNodeList2 = item.SelectNodes("column");
 			if (xmlNodeList2 == null)
 			{
 				continue;
@@ -487,11 +487,11 @@ internal static class ProcessFunctions
 
 	internal static void SendAudit(string browseType, string url)
 	{
-		string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
-		InnerSendAuditEvent(kioskId.ToString(), browseType, userName, "CP_SecureBrowser", url);
+		string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+		InnerSendAuditEvent(kioskId.ToString()!, browseType, userName, "CP_SecureBrowser", url);
 	}
 
-	internal static void SendAuditEvent(string storeNumber, string eventType, string userName, string source, string message)
+	internal static void SendAuditEvent(string storeNumber, string eventType, string? userName, string source, string message)
 	{
 		InnerSendAuditEvent(storeNumber, eventType, userName, source, message);
 	}
@@ -517,15 +517,15 @@ internal static class ProcessFunctions
 		}
 	}
 
-	internal static List<IHardwareResult> HardwareGetProgramResults(string jobId)
+	internal static List<IHardwareResult>? HardwareGetProgramResults(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		ReadOnlyCollection<IHardwareResult> hardwareResults = null;
-		List<IHardwareResult> result = null;
+		ReadOnlyCollection<IHardwareResult>? hardwareResults = null;
+		List<IHardwareResult>? result = null;
 		hardwareService.GetProgramResults(jobId, out hardwareResults);
 		if (hardwareResults != null)
 		{
@@ -598,7 +598,7 @@ internal static class ProcessFunctions
 			LogHelper.Instance.Log("Unexpected error, unable to get StoreServices!");
 		}
 		RemoteServiceCallback completeCallback = GetPendingStateResult;
-		storeServices.GetPendingStates(completeCallback);
+		storeServices!.GetPendingStates(completeCallback);
 	}
 
 	public static void GetPendingStateResult(IRemoteServiceResult result)
@@ -620,7 +620,7 @@ internal static class ProcessFunctions
 			LogHelper.Instance.Log("No Pending Banners were returned, unable to get StoreServices!");
 		}
 		new List<IBanner>();
-		storeServices.GetPendingBanners(stateId, resultCallback);
+		storeServices!.GetPendingBanners(stateId, resultCallback);
 	}
 
 	internal static void GetPendingStores(int bannerId, int stateId, RemoteServiceCallback resultCallback)
@@ -631,7 +631,7 @@ internal static class ProcessFunctions
 			LogHelper.Instance.Log("No Stores were returned, unable to get StoreServices!");
 		}
 		new List<IStore>();
-		storeServices.GetPendingStores(bannerId, stateId, resultCallback);
+		storeServices!.GetPendingStores(bannerId, stateId, resultCallback);
 	}
 
 	private static void TaskKill(int processId)
@@ -665,7 +665,7 @@ internal static class ProcessFunctions
 		}
 	}
 
-	private static int LaunchProcessInner(string programPath, string args, string userName, bool useAdminPassword, bool hiddenProcess)
+	private static int LaunchProcessInner(string programPath, string? args, string? userName, bool useAdminPassword, bool hiddenProcess)
 	{
 		try
 		{
@@ -692,7 +692,7 @@ internal static class ProcessFunctions
 				}
 				if (!File.Exists(Path.Combine(processStartInfo.WorkingDirectory, processStartInfo.FileName)))
 				{
-					string text = Environment.GetEnvironmentVariable("SystemRoot");
+					string? text = Environment.GetEnvironmentVariable("SystemRoot");
 					if (string.IsNullOrEmpty(text))
 					{
 						text = "c:\\windows";
@@ -704,7 +704,7 @@ internal static class ProcessFunctions
 					}
 				}
 			}
-			Process process = Process.Start(processStartInfo);
+			Process? process = Process.Start(processStartInfo);
 			if (process != null)
 			{
 				return process.Id;
@@ -723,7 +723,7 @@ internal static class ProcessFunctions
 		DirectoryEntry directoryEntry = new DirectoryEntry("WinNT://" + Environment.MachineName).Children.Find("administrators", "group");
 		try
 		{
-			foreach (object item in (IEnumerable)directoryEntry.Invoke("members", null))
+			foreach (object item in (IEnumerable)directoryEntry.Invoke("members", null)!)
 			{
 				DirectoryEntry directoryEntry2 = new DirectoryEntry(item);
 				if (directoryEntry2.SchemaClassName == "User")
@@ -761,16 +761,16 @@ internal static class ProcessFunctions
 		return true;
 	}
 
-	internal static void InnerSendAuditEvent(string storeNumber, string eventType, string userName, string source, string message)
+	internal static void InnerSendAuditEvent(string storeNumber, string eventType, string? userName, string source, string message)
 	{
 		ServiceLocator.Instance.GetService<IHealthServices>()?.SendAuditEvent(storeNumber, eventType, DateTime.Now, userName, message, source, null);
 	}
 
 	internal static void PerformActivityLogAndSendAuditEvent(string tag)
 	{
-		string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+		string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
 		LogHelper.Instance.LogTo("ControlPanelActionLog", tag);
-		InnerSendAuditEvent(kioskId.ToString(), tag, userName, "CP Bundle", "Activate Control Panel function.");
+		InnerSendAuditEvent(kioskId.ToString()!, tag, userName, "CP Bundle", "Activate Control Panel function.");
 	}
 
 	private static bool EnumWindowsCallback(IntPtr hwnd, IntPtr lParam)

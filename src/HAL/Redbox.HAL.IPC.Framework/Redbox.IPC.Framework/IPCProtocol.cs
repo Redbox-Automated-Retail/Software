@@ -27,11 +27,11 @@ public class IPCProtocol : IIpcProtocol
 
 		internal bool IsSecure { get; private set; }
 
-		internal string Host { get; private set; }
+		internal string? Host { get; private set; }
 
-		internal string Port { get; private set; }
+		internal string? Port { get; private set; }
 
-		internal string Scheme { get; private set; }
+		internal string? Scheme { get; private set; }
 
 		public ProtocolTokenizer(string statement)
 			: base(0, statement)
@@ -252,7 +252,7 @@ public class IPCProtocol : IIpcProtocol
 		}
 	}
 
-	private string PipeName;
+	private string? PipeName;
 
 	private readonly string RawUri;
 
@@ -260,11 +260,12 @@ public class IPCProtocol : IIpcProtocol
 
 	public ChannelType Channel { get; private set; }
 
-	public string Host { get; private set; }
+	// Host, Port and Scheme are set by Parse.
+	public string Host { get; private set; } = null!;
 
-	public string Port { get; private set; }
+	public string Port { get; private set; } = null!;
 
-	public string Scheme { get; private set; }
+	public string Scheme { get; private set; } = null!;
 
 	public static IPCProtocol Parse(string protocolURI)
 	{
@@ -292,11 +293,12 @@ public class IPCProtocol : IIpcProtocol
 			}
 			throw new UriFormatException("URI is malformed: see log for details.");
 		}
-		iPCProtocol.Host = protocolTokenizer.Host;
-		iPCProtocol.Port = protocolTokenizer.Port;
+		// Parse throws below when the host, port or channel (which comes with the scheme) is missing.
+		iPCProtocol.Host = protocolTokenizer.Host!;
+		iPCProtocol.Port = protocolTokenizer.Port!;
 		iPCProtocol.IsSecure = protocolTokenizer.IsSecure;
 		iPCProtocol.Channel = protocolTokenizer.Channel;
-		iPCProtocol.Scheme = protocolTokenizer.Scheme;
+		iPCProtocol.Scheme = protocolTokenizer.Scheme!;
 		if (string.IsNullOrEmpty(iPCProtocol.Host) || string.IsNullOrEmpty(iPCProtocol.Port))
 		{
 			throw new UriFormatException("Host or port isn't set.");

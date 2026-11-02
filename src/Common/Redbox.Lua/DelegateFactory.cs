@@ -31,7 +31,7 @@ public static class DelegateFactory
 			wrapperType = GenerateDelegate(delegateType);
 			m_delegateCollection[delegateType] = wrapperType;
 		}
-		MethodInfo method = delegateType.GetMethod("Invoke");
+		MethodInfo method = delegateType.GetMethod("Invoke")!;
 		returnTypes.Add(method.ReturnType);
 		ParameterInfo[] parameters = method.GetParameters();
 		foreach (ParameterInfo parameterInfo in parameters)
@@ -41,7 +41,7 @@ public static class DelegateFactory
 				returnTypes.Add(parameterInfo.ParameterType);
 			}
 		}
-		LuaDelegate luaDelegate = (LuaDelegate)Activator.CreateInstance(wrapperType);
+		LuaDelegate luaDelegate = (LuaDelegate)Activator.CreateInstance(wrapperType)!;
 		luaDelegate.m_function = luaFunc;
 		luaDelegate.m_returnTypes = returnTypes.ToArray();
 		return Delegate.CreateDelegate(delegateType, luaDelegate, "CallFunction");
@@ -68,7 +68,7 @@ public static class DelegateFactory
 			m_luaClassNumber++;
 		}
 		TypeBuilder typeBuilder = m_newModule.DefineType(name, TypeAttributes.Public, typeof(LuaDelegate));
-		MethodInfo method = delegateType.GetMethod("Invoke");
+		MethodInfo method = delegateType.GetMethod("Invoke")!;
 		ParameterInfo[] parameters = method.GetParameters();
 		Type[] paramTypes = new Type[parameters.Length];
 		Type returnType = method.ReturnType;
@@ -118,10 +118,10 @@ public static class DelegateFactory
 			generator.Emit(OpCodes.Ldarg, j + 1);
 			if (paramTypes[j].IsByRef)
 			{
-				if (paramTypes[j].GetElementType().IsValueType)
+				if (paramTypes[j].GetElementType()!.IsValueType)
 				{
-					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType());
-					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType());
+					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType()!);
+					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType()!);
 				}
 				else
 				{
@@ -151,10 +151,10 @@ public static class DelegateFactory
 			generator.Emit(OpCodes.Ldarg, j + 1);
 			if (paramTypes[j].IsByRef)
 			{
-				if (paramTypes[j].GetElementType().IsValueType)
+				if (paramTypes[j].GetElementType()!.IsValueType)
 				{
-					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType());
-					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType());
+					generator.Emit(OpCodes.Ldobj, paramTypes[j].GetElementType()!);
+					generator.Emit(OpCodes.Box, paramTypes[j].GetElementType()!);
 				}
 				else
 				{
@@ -172,7 +172,7 @@ public static class DelegateFactory
 		generator.Emit(OpCodes.Ldloc_0);
 		generator.Emit(OpCodes.Ldloc_1);
 		generator.Emit(OpCodes.Ldloc_2);
-		MethodInfo method2 = typeof(LuaDelegate).GetMethod("CallFunction");
+		MethodInfo method2 = typeof(LuaDelegate).GetMethod("CallFunction")!;
 		generator.Emit(OpCodes.Call, method2);
 		if (returnType == typeof(void))
 		{
@@ -195,15 +195,15 @@ public static class DelegateFactory
 			generator.Emit(OpCodes.Ldloc_0);
 			generator.Emit(OpCodes.Ldc_I4, refArgs[k]);
 			generator.Emit(OpCodes.Ldelem_Ref);
-			if (paramTypes[refArgs[k]].GetElementType().IsValueType)
+			if (paramTypes[refArgs[k]].GetElementType()!.IsValueType)
 			{
-				generator.Emit(OpCodes.Unbox, paramTypes[refArgs[k]].GetElementType());
-				generator.Emit(OpCodes.Ldobj, paramTypes[refArgs[k]].GetElementType());
-				generator.Emit(OpCodes.Stobj, paramTypes[refArgs[k]].GetElementType());
+				generator.Emit(OpCodes.Unbox, paramTypes[refArgs[k]].GetElementType()!);
+				generator.Emit(OpCodes.Ldobj, paramTypes[refArgs[k]].GetElementType()!);
+				generator.Emit(OpCodes.Stobj, paramTypes[refArgs[k]].GetElementType()!);
 			}
 			else
 			{
-				generator.Emit(OpCodes.Castclass, paramTypes[refArgs[k]].GetElementType());
+				generator.Emit(OpCodes.Castclass, paramTypes[refArgs[k]].GetElementType()!);
 				generator.Emit(OpCodes.Stind_Ref);
 			}
 		}

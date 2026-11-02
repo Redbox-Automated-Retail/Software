@@ -106,7 +106,7 @@ public class ProfileData : IProfileData
 
 	private void LoadMarkets(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "Market"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "Market"));
 		ConvertToList(sqlData, "LoadMarkets", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -121,7 +121,7 @@ public class ProfileData : IProfileData
 
 	private void LoadTitles(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductCatalog"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductCatalog"));
 		ConvertToList(sqlData, "LoadTitles", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -176,7 +176,7 @@ public class ProfileData : IProfileData
 
 	private void LoadProductFamily(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductFamily"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductFamily"));
 		ConvertToList(sqlData, "LoadProductFamily", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -199,7 +199,7 @@ public class ProfileData : IProfileData
 
 	private void LoadProductGroup(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductGroup"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductGroup"));
 		ConvertToList(sqlData, "LoadProductGroup", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -249,7 +249,7 @@ public class ProfileData : IProfileData
 
 	private void LoadProductType(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductType"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "ProductType"));
 		ConvertToList(sqlData, "LoadProductType", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -266,7 +266,7 @@ public class ProfileData : IProfileData
 	private void LoadStore(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
 		long kioskId = ServiceLocator.Instance.GetService<IStoreManager>()?.KioskId ?? 0;
-		DataTable data = ((kioskId <= 0) ? db.GetSqlData(string.Format(_keyValueSql, "Store")) : db.GetSqlData(string.Format(_keyValueSqlKey, "Store", kioskId)));
+		DataTable? data = ((kioskId <= 0) ? db.GetSqlData(string.Format(_keyValueSql, "Store")) : db.GetSqlData(string.Format(_keyValueSqlKey, "Store", kioskId)));
 		ConvertToList(data, "LoadStore", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -310,7 +310,7 @@ public class ProfileData : IProfileData
 
 	private void LoadSubPlatform(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "SubPlatform"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "SubPlatform"));
 		ConvertToList(sqlData, "LoadSubPlatform", delegate(string key, string value)
 		{
 			Dictionary<string, object> dictionary = value.ParseLuaValue();
@@ -325,7 +325,7 @@ public class ProfileData : IProfileData
 
 	private void LoadVersion(ProfileDatabaseProvider db, ProfileDataInstance instance)
 	{
-		DataTable sqlData = db.GetSqlData(string.Format(_keyValueSql, "Version"));
+		DataTable? sqlData = db.GetSqlData(string.Format(_keyValueSql, "Version"));
 		instance.ProfileDataVersion = new ProfileDataVersion();
 		ConvertToList(sqlData, "LoadVersion", delegate(string key, string value)
 		{
@@ -336,7 +336,7 @@ public class ProfileData : IProfileData
 			}
 			if (key.Equals("generated_on", StringComparison.CurrentCultureIgnoreCase))
 			{
-				instance.ProfileDataVersion.GeneratedOn = dictionary.ToDateTime("date", null).Value;
+				instance.ProfileDataVersion.GeneratedOn = dictionary.ToDateTime("date", null)!.Value;
 			}
 		});
 	}
@@ -348,14 +348,14 @@ public class ProfileData : IProfileData
 		{
 			Directory.CreateDirectory(_imagesPath);
 		}
-		DataTable sqlData = db.GetSqlData(" SELECT [NAME] FROM CACHE");
+		DataTable? sqlData = db.GetSqlData(" SELECT [NAME] FROM CACHE");
 		if (sqlData == null)
 		{
 			return;
 		}
 		foreach (DataRow row in sqlData.Rows)
 		{
-			string name = Convert.ToString(row["NAME"]);
+			string name = Convert.ToString(row["NAME"])!;
 			string path = Path.Combine(_imagesPath, name);
 			if (File.Exists(path))
 			{
@@ -363,8 +363,8 @@ public class ProfileData : IProfileData
 			}
 			TryCatchData("ProfileData.ExtractImages", name, delegate
 			{
-				DataTable sqlData2 = db.GetSqlData($"SELECT DATA FROM CACHE WHERE [NAME] = '{name}'", nolog: true);
-				if (sqlData2.Rows.Count > 0)
+				DataTable? sqlData2 = db.GetSqlData($"SELECT DATA FROM CACHE WHERE [NAME] = '{name}'", nolog: true);
+				if (sqlData2!.Rows.Count > 0) // throws on a failed query (caught by TryCatchData), as before
 				{
 					byte[] imageData = (byte[])sqlData2.Rows[0]["Data"];
 					using FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
@@ -375,7 +375,7 @@ public class ProfileData : IProfileData
 		}
 	}
 
-	private void ConvertToList(DataTable data, string name, Action<string, string> action)
+	private void ConvertToList(DataTable? data, string name, Action<string, string> action)
 	{
 		LogHelper.Instance.Log("ProfileData.{0} - Loading", name);
 		if (data != null)
@@ -385,8 +385,8 @@ public class ProfileData : IProfileData
 			{
 				foreach (DataRow row in data.Rows)
 				{
-					string key = Convert.ToString(row[keyColumnIndex]);
-					string value = Convert.ToString(row[valueColumnIndex]);
+					string key = Convert.ToString(row[keyColumnIndex])!;
+					string value = Convert.ToString(row[valueColumnIndex])!;
 					try
 					{
 						action(key, value);

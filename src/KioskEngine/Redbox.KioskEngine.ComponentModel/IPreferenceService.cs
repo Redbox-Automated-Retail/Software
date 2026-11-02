@@ -13,7 +13,7 @@ public interface IPreferenceService
 
 	void RemoveAll();
 
-	IPreferencePage AddPreferencePage(string name, string settingPath, string displayPath, PreferencePageTarget target, IPreferencePageHost host, Func<IPreferencePageHost> getPreferencePageHost = null);
+	IPreferencePage AddPreferencePage(string name, string settingPath, string displayPath, PreferencePageTarget target, IPreferencePageHost host, Func<IPreferencePageHost>? getPreferencePageHost = null);
 
 	bool RemovePreferencePage(string pageName);
 

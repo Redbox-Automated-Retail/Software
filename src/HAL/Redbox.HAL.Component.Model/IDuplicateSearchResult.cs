@@ -4,5 +4,5 @@ public interface IDuplicateSearchResult
 {
 	bool IsDuplicate { get; }
 
-	ILocation Original { get; }
+	ILocation? Original { get; }
 }

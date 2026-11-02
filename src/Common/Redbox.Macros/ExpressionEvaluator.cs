@@ -26,24 +26,24 @@ public class ExpressionEvaluator : ExpressionEvalBase
 	{
 		if (m_properties.IsDynamicProperty(propertyName))
 		{
-			if ((string)m_state[propertyName] == "VISITING")
+			if ((string?)m_state[propertyName] == "VISITING")
 			{
 				throw PropertyDictionary.CreateCircularException(propertyName, m_visiting);
 			}
 			m_visiting.Push(propertyName);
 			m_state[propertyName] = "VISITING";
-			string propertyValue = m_properties.GetPropertyValue(propertyName);
+			string? propertyValue = m_properties.GetPropertyValue(propertyName);
 			if (propertyValue == null)
 			{
 				throw new EvaluatorException(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1053"), propertyName));
 			}
 			Location unknownLocation = Location.UnknownLocation;
-			propertyValue = m_properties.ExpandProperties(propertyValue, unknownLocation, m_state, m_visiting);
+			propertyValue = m_properties.ExpandProperties(propertyValue, unknownLocation, m_state, m_visiting)!; // not null for a non-null input
 			m_visiting.Pop();
 			m_state[propertyName] = "VISITED";
 			return propertyValue;
 		}
-		string text = m_properties.GetPropertyValue(propertyName);
+		string? text = m_properties.GetPropertyValue(propertyName);
 		if (text == null)
 		{
 			if (m_properties.TreatUndefinedPropertyAsError)
@@ -60,7 +60,7 @@ public class ExpressionEvaluator : ExpressionEvalBase
 		return GetPropertyValue(propertyName);
 	}
 
-	protected override object EvaluateFunction(MethodInfo methodInfo, object[] args)
+	protected override object? EvaluateFunction(MethodInfo methodInfo, object?[] args)
 	{
 		try
 		{
@@ -68,11 +68,11 @@ public class ExpressionEvaluator : ExpressionEvalBase
 			{
 				return methodInfo.Invoke(null, args);
 			}
-			if (methodInfo.DeclaringType.IsAssignableFrom(typeof(ExpressionEvaluator)))
+			if (methodInfo.DeclaringType!.IsAssignableFrom(typeof(ExpressionEvaluator)))
 			{
 				return methodInfo.Invoke(this, args);
 			}
-			object functionSet = methodInfo.DeclaringType.GetConstructor(new Type[1] { typeof(PropertyDictionary) }).Invoke(new object[1] { m_properties });
+			object functionSet = methodInfo.DeclaringType!.GetConstructor(new Type[1] { typeof(PropertyDictionary) })!.Invoke(new object[1] { m_properties });
 			return methodInfo.Invoke(functionSet, args);
 		}
 		catch (TargetInvocationException ex)

@@ -4,7 +4,8 @@ namespace Redbox.FMA.Models;
 
 public class PopupMessageViewModel
 {
-	public string MessageText { get; set; }
+	// Both are set in PopupMessageViewController.ConfigureView (object initializer).
+	public string MessageText { get; set; } = null!;
 
-	public DynamicRoutedCommand ContinueCommand { get; set; }
+	public DynamicRoutedCommand ContinueCommand { get; set; } = null!;
 }

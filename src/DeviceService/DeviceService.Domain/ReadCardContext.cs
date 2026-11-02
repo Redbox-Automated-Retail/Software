@@ -20,7 +20,8 @@ public class ReadCardContext
 
 	public Guid Id { get; set; }
 
-	public ICardReadRequest Request { get; set; }
+	// Request and JobCompletedCallback are set by the object initializer in IUC285Proxy.ReadCard.
+	public ICardReadRequest Request { get; set; } = null!;
 
 	public int? UserInteractionTimeout { get; set; }
 
@@ -39,9 +40,9 @@ public class ReadCardContext
 
 	public CancellationToken CancelToken { get; set; }
 
-	public Action<Base87CardReadModel> JobCompletedCallback { get; set; }
+	public Action<Base87CardReadModel> JobCompletedCallback { get; set; } = null!;
 
-	public Action<string, string> EventsCallback { get; set; }
+	public Action<string, string?>? EventsCallback { get; set; }
 
 	public CardSourceType CardSource { get; set; }
 
@@ -51,15 +52,15 @@ public class ReadCardContext
 
 	public ReadCardContextState State { get; set; } = ReadCardContextState.Continue;
 
-	public Base87CardReadModel ResponseDataModel { get; set; }
+	public Base87CardReadModel? ResponseDataModel { get; set; }
 
 	public bool CardRemoved { get; set; }
 
 	public CardBrandEnum CardBrand { get; set; }
 
-	public CardStats CardStats { get; set; }
+	public CardStats? CardStats { get; set; }
 
-	public UnitDataModel UnitData { get; set; }
+	public UnitDataModel? UnitData { get; set; }
 
 	public CardReadExitType ExitType { get; set; } = CardReadExitType.NotPerformed;
 
@@ -87,7 +88,7 @@ public class ReadCardContext
 		}
 	}
 
-	public string VasData { get; set; }
+	public string? VasData { get; set; }
 
 	public WalletType Wallet { get; set; }
 

@@ -8,9 +8,10 @@ public class SelectPlanogramViewModel
 {
 	public IEnumerable<Planogram> Planograms { get; set; } = new List<Planogram>();
 
-	public DynamicRoutedCommand CloseCommand { get; set; }
+	// The commands are set in SelectPlanogramViewController.ConfigureView (object initializer).
+	public DynamicRoutedCommand CloseCommand { get; set; } = null!;
 
-	public DynamicRoutedCommand SelectCommand { get; set; }
+	public DynamicRoutedCommand SelectCommand { get; set; } = null!;
 
-	public DynamicRoutedCommand ForceSyncCommand { get; set; }
+	public DynamicRoutedCommand ForceSyncCommand { get; set; } = null!;
 }

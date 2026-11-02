@@ -8,16 +8,16 @@ namespace Redbox.KioskEngine.Kernel;
 internal static class RegistryFunctions
 {
 	[KernelFunction(Name = "kernel.getregistryvalue")]
-	internal static string GetValue(string path, string key)
+	internal static string? GetValue(string path, string key)
 	{
 		try
 		{
-			RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(path, writable: false);
+			RegistryKey? registryKey = Registry.LocalMachine.OpenSubKey(path, writable: false);
 			if (registryKey == null)
 			{
 				return null;
 			}
-			object registryValue = registryKey.GetValue(key);
+			object? registryValue = registryKey.GetValue(key);
 			registryKey.Close();
 			if (registryValue == null)
 			{
@@ -63,7 +63,7 @@ internal static class RegistryFunctions
 	{
 		try
 		{
-			RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(path, writable: true);
+			RegistryKey? registryKey = Registry.LocalMachine.OpenSubKey(path, writable: true);
 			if (registryKey != null)
 			{
 				registryKey.DeleteValue(key);

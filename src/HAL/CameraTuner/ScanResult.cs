@@ -29,7 +29,7 @@ internal sealed class ScanResult
 		{
 			return ErrorResult();
 		}
-		IScanResult scanResult = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>().GetConfiguredReader().Scan(file);
+		IScanResult scanResult = ServiceLocator.Instance.GetService<IBarcodeReaderFactory>().GetConfiguredReader().Scan(file!);
 		ScanResult scanResult2 = new ScanResult
 		{
 			SnapOk = true

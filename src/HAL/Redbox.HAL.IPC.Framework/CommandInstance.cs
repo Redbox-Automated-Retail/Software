@@ -7,13 +7,14 @@ internal class CommandInstance
 {
 	public readonly IDictionary<string, FormMethod> FormMethodCache = new Dictionary<string, FormMethod>();
 
-	public Type CommandType { get; set; }
+	// Set by CommandRepository.GetCommand's object initializer.
+	public Type CommandType { get; set; } = null!;
 
-	public string CommandDescription { get; set; }
+	public string? CommandDescription { get; set; }
 
 	public object GetInstance()
 	{
-		return Activator.CreateInstance(CommandType);
+		return Activator.CreateInstance(CommandType)!;
 	}
 
 	public bool HasDefault()
@@ -38,7 +39,7 @@ internal class CommandInstance
 		}
 	}
 
-	public FormMethod GetMethod(string formName)
+	public FormMethod? GetMethod(string formName)
 	{
 		if (string.IsNullOrEmpty(formName))
 		{

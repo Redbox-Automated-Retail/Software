@@ -36,11 +36,11 @@ public class SignalRClient
 
 	public delegate void OnEvent(BaseEvent baseEvent);
 
-	private string _url;
+	private string? _url;
 
-	private HubConnection _hubConnection;
+	private HubConnection? _hubConnection;
 
-	public string Url => _url;
+	public string? Url => _url;
 
 	public bool IsConnectedToDeviceService
 	{
@@ -54,55 +54,55 @@ public class SignalRClient
 		}
 	}
 
-	public event LogHandler OnLog;
+	public event LogHandler? OnLog;
 
-	public event OnConnected OnConnectedHandler;
+	public event OnConnected? OnConnectedHandler;
 
-	public event OnDisconnected OnDisconnectedHandler;
+	public event OnDisconnected? OnDisconnectedHandler;
 
-	public event OnEvent OnCardReaderConnectedHandler;
+	public event OnEvent? OnCardReaderConnectedHandler;
 
-	public event OnEvent OnCardReaderDisconnectedHandler;
+	public event OnEvent? OnCardReaderDisconnectedHandler;
 
-	public event OnIsConnectedResponseEvent OnIsConnectedResponseEventHandler;
+	public event OnIsConnectedResponseEvent? OnIsConnectedResponseEventHandler;
 
-	public event OnGetUnitHealthResponseEvent OnGetUnitHealthResponseEventHandler;
+	public event OnGetUnitHealthResponseEvent? OnGetUnitHealthResponseEventHandler;
 
-	public event Action<BaseResponseEvent> OnCardReadResponseEventHandler;
+	public event Action<BaseResponseEvent>? OnCardReadResponseEventHandler;
 
-	public event Action<SimpleResponseEvent> OnReadConfigurationEventHandler;
+	public event Action<SimpleResponseEvent>? OnReadConfigurationEventHandler;
 
-	public event Action<SimpleResponseEvent> OnWriteConfigurationEventHandler;
+	public event Action<SimpleResponseEvent>? OnWriteConfigurationEventHandler;
 
-	public event Action<SimpleResponseEvent> OnCardRemovedEventHandler;
+	public event Action<SimpleResponseEvent>? OnCardRemovedEventHandler;
 
-	public event Action<SimpleResponseEvent> OnDeviceServiceCanShutDownEventHandler;
+	public event Action<SimpleResponseEvent>? OnDeviceServiceCanShutDownEventHandler;
 
-	public event Action<BaseResponseEvent> OnCardReadEvent;
+	public event Action<BaseResponseEvent>? OnCardReadEvent;
 
-	public event Action<CancelCommandResponseEvent> OnCancelCommandResponseEventHandler;
+	public event Action<CancelCommandResponseEvent>? OnCancelCommandResponseEventHandler;
 
-	public event Action<RebootCardReaderResponseEvent> OnRebootCardReaderResponseEventHandler;
+	public event Action<RebootCardReaderResponseEvent>? OnRebootCardReaderResponseEventHandler;
 
-	public event Action<ReportAuthorizationResultResponseEvent> OnReportAuthorizationResultResponseEventHandler;
+	public event Action<ReportAuthorizationResultResponseEvent>? OnReportAuthorizationResultResponseEventHandler;
 
-	public event OnValidateVersionResponseEvent OnValidateVersionResponseEventHandler;
+	public event OnValidateVersionResponseEvent? OnValidateVersionResponseEventHandler;
 
-	public event OnCheckActivationResponseEvent OnCheckActivationResponseEventHandler;
+	public event OnCheckActivationResponseEvent? OnCheckActivationResponseEventHandler;
 
-	public event OnCheckDeviceStatusResponseEvent OnCheckDeviceStatusResponseEventHandler;
+	public event OnCheckDeviceStatusResponseEvent? OnCheckDeviceStatusResponseEventHandler;
 
-	public event OnGetCardInsertedStatusResponseEvent OnGetCardInsertedStatusResponseEventHandler;
+	public event OnGetCardInsertedStatusResponseEvent? OnGetCardInsertedStatusResponseEventHandler;
 
-	public event OnDeviceServiceShutDownResponseEvent OnDeviceServiceShutDownResponseEventHandler;
+	public event OnDeviceServiceShutDownResponseEvent? OnDeviceServiceShutDownResponseEventHandler;
 
-	public event OnDeviceServiceShutDownStartingEvent OnDeviceServiceShutDownStartingEventHandler;
+	public event OnDeviceServiceShutDownStartingEvent? OnDeviceServiceShutDownStartingEventHandler;
 
-	public event OnSupportsEMVResponseEvent OnSupportsEMVResponseEventHandler;
+	public event OnSupportsEMVResponseEvent? OnSupportsEMVResponseEventHandler;
 
-	public event OnEvent OnDeviceTamperedEventHandler;
+	public event OnEvent? OnDeviceTamperedEventHandler;
 
-	public event OnCardReaderStateEvent OnCardReaderStateEventHandler;
+	public event OnCardReaderStateEvent? OnCardReaderStateEventHandler;
 
 	public async Task Connect(string url, int? connectionTimeout)
 	{
@@ -183,7 +183,7 @@ public class SignalRClient
 
 	public bool Disconnect()
 	{
-		_hubConnection.StopAsync();
+		_hubConnection!.StopAsync(); // throws if Connect was never called, as before
 		return _hubConnection.State == HubConnectionState.Disconnected;
 	}
 
@@ -297,14 +297,14 @@ public class SignalRClient
 		}
 	}
 
-	private Task HubConnection_Closed(Exception arg)
+	private Task HubConnection_Closed(Exception? arg)
 	{
 		OnDisconnectedHandler?.Invoke(arg);
-		return null;
+		return null!; // as decompiled: no Task
 	}
 
 	public void SendCommand(BaseCommandRequest baseCommandRequest)
 	{
-		_hubConnection.SendAsync(baseCommandRequest.SignalRCommand, baseCommandRequest);
+		_hubConnection!.SendAsync(baseCommandRequest.SignalRCommand, baseCommandRequest); // throws if never connected, as before
 	}
 }

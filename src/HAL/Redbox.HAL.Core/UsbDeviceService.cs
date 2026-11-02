@@ -260,9 +260,9 @@ public sealed class UsbDeviceService : IUsbDeviceService
 
 	private const int SPDRP_BASE_CONTAINERID = 36;
 
-	public IDeviceDescriptor FindActiveCamera(bool matchDriver)
+	public IDeviceDescriptor? FindActiveCamera(bool matchDriver)
 	{
-		IDeviceDescriptor deviceDescriptor = Cameras.Find((IDeviceDescriptor each) => each.Locate());
+		IDeviceDescriptor? deviceDescriptor = Cameras.Find((IDeviceDescriptor each) => each.Locate());
 		if (deviceDescriptor == null)
 		{
 			return null;
@@ -280,7 +280,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		return deviceDescriptor;
 	}
 
-	public IDeviceDescriptor FromQueryString(string hwid)
+	public IDeviceDescriptor? FromQueryString(string? hwid)
 	{
 		return GenericDeviceDescriptor.Create(hwid, DeviceClass.None);
 	}
@@ -290,14 +290,14 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		MakeBuffer();
 		int lastError = 0;
 		int failures = 0;
-		EnumerateDevices(descriptor.SetupClass.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
+		EnumerateDevices(descriptor.SetupClass!.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 			if (hardwareId == null)
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
+			IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId);
 			if (deviceDescriptor != null && Match(deviceDescriptor, descriptor))
 			{
 				bool changed = ChangeState(devInfo, ref did, state);
@@ -315,14 +315,14 @@ public sealed class UsbDeviceService : IUsbDeviceService
 	public bool ChangeByHWID(IDeviceDescriptor descriptor, DeviceState state)
 	{
 		int error = 0;
-		return EnumerateDevices(descriptor.SetupClass.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
+		return EnumerateDevices(descriptor.SetupClass!.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(devInfo, ref did, out error);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out error);
 			if (hardwareId == null)
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
+			IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId);
 			ProcessDeviceInfoResult result = ProcessDeviceInfoResult.Continue;
 			if (deviceDescriptor != null && Match(deviceDescriptor, descriptor))
 			{
@@ -340,14 +340,14 @@ public sealed class UsbDeviceService : IUsbDeviceService
 	{
 		DeviceStatus rv = DeviceStatus.None;
 		int lastError;
-		EnumerateDevices(deviceInfo.SetupClass.Guid, SearchFlags(deviceInfo), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
+		EnumerateDevices(deviceInfo.SetupClass!.Guid, SearchFlags(deviceInfo), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 			if (hardwareId == null)
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
-			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
+			IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId);
 			LogHelper.Instance.Log("[USBService] Find device status hwid = {0}", hardwareId);
 			rv = DeviceStatus.None;
 			if (deviceDescriptor != null && Match(deviceDescriptor, deviceInfo))
@@ -382,9 +382,9 @@ public sealed class UsbDeviceService : IUsbDeviceService
 	public bool MatchDriverByVendor(IDeviceDescriptor desc, IDriverDescriptor driverInfo)
 	{
 		int lastError;
-		return EnumerateDevices(desc.SetupClass.Guid, SearchFlags(desc), delegate(IntPtr hDevInfo, ref SP_DEVINFO_DATA did)
+		return EnumerateDevices(desc.SetupClass!.Guid, SearchFlags(desc), delegate(IntPtr hDevInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(hDevInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(hDevInfo, ref did, out lastError);
 			if (hardwareId == null)
 			{
 				return ProcessDeviceInfoResult.Continue;
@@ -401,15 +401,15 @@ public sealed class UsbDeviceService : IUsbDeviceService
 	public bool MatchDriver(IDeviceDescriptor descriptor, IDriverDescriptor driverInfo)
 	{
 		int lastError;
-		return EnumerateDevices(descriptor.SetupClass.Guid, 2u, delegate(IntPtr hDevInfo, ref SP_DEVINFO_DATA did)
+		return EnumerateDevices(descriptor.SetupClass!.Guid, 2u, delegate(IntPtr hDevInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(hDevInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(hDevInfo, ref did, out lastError);
 			if (hardwareId == null)
 			{
 				return ProcessDeviceInfoResult.Continue;
 			}
 			LogHelper.Instance.Log("[MatchDriver] Processing HWID {0}", hardwareId.ToString());
-			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId.ToString());
+			IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId.ToString());
 			if (deviceDescriptor == null || !Match(deviceDescriptor, descriptor))
 			{
 				return ProcessDeviceInfoResult.Continue;
@@ -425,15 +425,15 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		UsbDeviceSearchResult result = new UsbDeviceSearchResult();
 		if (Debug)
 		{
-			LogHelper.Instance.Log("[FindDevice] Search device class {0}", descriptor.SetupClass.Class.ToString());
+			LogHelper.Instance.Log("[FindDevice] Search device class {0}", descriptor.SetupClass!.Class.ToString());
 		}
-		EnumerateDevices(descriptor.SetupClass.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
+		EnumerateDevices(descriptor.SetupClass!.Guid, SearchFlags(descriptor), delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 			if (hardwareId != null)
 			{
 				LogHelper.Instance.Log("  [FindDeviceWithVid] found hwid = {0}", hardwareId);
-				IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
+				IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId);
 				if (deviceDescriptor != null && Match(deviceDescriptor, descriptor))
 				{
 					result.Matches.Add(deviceDescriptor);
@@ -454,12 +454,12 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		}
 		EnumerateDevices(Guid.Empty, 6u, delegate(IntPtr devInfo, ref SP_DEVINFO_DATA did)
 		{
-			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 			if (Debug && hardwareId != null)
 			{
 				LogHelper.Instance.Log("  [FindVendorDevices] Examine hwid = {0} for match", hardwareId);
 			}
-			IDeviceDescriptor deviceDescriptor = FromQueryString(hardwareId);
+			IDeviceDescriptor? deviceDescriptor = FromQueryString(hardwareId);
 			if (deviceDescriptor != null && _vendor.Equals(deviceDescriptor.Vendor, StringComparison.CurrentCultureIgnoreCase))
 			{
 				result.Matches.Add(deviceDescriptor);
@@ -481,10 +481,10 @@ public sealed class UsbDeviceService : IUsbDeviceService
 				LogHelper.Instance.Log("[{0}] SetupDiGetDeviceRegistryProperty returned error {1}", GetType().Name, lastError);
 				return ProcessDeviceInfoResult.Error;
 			}
-			string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+			string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 			if (!string.IsNullOrEmpty(hardwareId))
 			{
-				onDeviceFound(clazzNameBuffer.ToString(), hardwareId);
+				onDeviceFound(clazzNameBuffer.ToString(), hardwareId!);
 			}
 			return ProcessDeviceInfoResult.Continue;
 		});
@@ -500,7 +500,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		}
 		StringBuilder clazzNameBuffer = MakeBuffer();
 		Guid deviceClass = Guid.Empty;
-		IDeviceSetupClass deviceSetupClass = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>().Get(clazz);
+		IDeviceSetupClass? deviceSetupClass = ServiceLocator.Instance.GetService<IDeviceSetupClassFactory>().Get(clazz);
 		if (deviceSetupClass != null)
 		{
 			deviceClass = deviceSetupClass.Guid;
@@ -519,14 +519,14 @@ public sealed class UsbDeviceService : IUsbDeviceService
 			}
 			if (deviceClass2 == clazz)
 			{
-				string hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
+				string? hardwareId = QueryHardwareId(devInfo, ref did, out lastError);
 				if (!string.IsNullOrEmpty(hardwareId))
 				{
 					if (Debug)
 					{
 						LogHelper.Instance.Log("[{0}] Requested search = {1}, found clazz = {2} HWID = {3}", GetType().Name, clazz.ToString(), clazzNameBuffer.ToString(), hardwareId);
 					}
-					GenericDeviceDescriptor genericDeviceDescriptor = GenericDeviceDescriptor.Create(hardwareId, deviceClass2);
+					GenericDeviceDescriptor? genericDeviceDescriptor = GenericDeviceDescriptor.Create(hardwareId, deviceClass2);
 					if (genericDeviceDescriptor != null)
 					{
 						result.Add(genericDeviceDescriptor);
@@ -538,7 +538,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		return result;
 	}
 
-	public ITouchscreenDescriptor FindTouchScreen(bool matchDriver)
+	public ITouchscreenDescriptor? FindTouchScreen(bool matchDriver)
 	{
 		foreach (ITouchscreenDescriptor touchScreenDescriptor in TouchScreenDescriptors)
 		{
@@ -561,7 +561,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		return null;
 	}
 
-	public ITouchscreenDescriptor FindTouchScreen()
+	public ITouchscreenDescriptor? FindTouchScreen()
 	{
 		return FindTouchScreen(matchDriver: false);
 	}
@@ -635,14 +635,14 @@ public sealed class UsbDeviceService : IUsbDeviceService
 	private uint SearchFlags(IDeviceDescriptor desc)
 	{
 		uint flags = 2u;
-		if (desc.SetupClass.Class == DeviceClass.None)
+		if (desc.SetupClass!.Class == DeviceClass.None)
 		{
 			flags |= 4;
 		}
 		return flags;
 	}
 
-	private string QueryDeviceDescription(IntPtr devInfo, ref SP_DEVINFO_DATA deviceInfoData, out int lastError)
+	private string? QueryDeviceDescription(IntPtr devInfo, ref SP_DEVINFO_DATA deviceInfoData, out int lastError)
 	{
 		lastError = 0;
 		StringBuilder stringBuilder = MakeBuffer();
@@ -654,7 +654,7 @@ public sealed class UsbDeviceService : IUsbDeviceService
 		return stringBuilder.ToString().ToLower();
 	}
 
-	private string QueryHardwareId(IntPtr devInfo, ref SP_DEVINFO_DATA did, out int lastError)
+	private string? QueryHardwareId(IntPtr devInfo, ref SP_DEVINFO_DATA did, out int lastError)
 	{
 		lastError = 0;
 		StringBuilder stringBuilder = MakeBuffer();

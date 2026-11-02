@@ -13,58 +13,59 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class DeviceServicePage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Panel panelTopHeader;
+	private Panel panelTopHeader = null!;
 
-	private Label labelHeader;
+	private Label labelHeader = null!;
 
-	private GroupBox groupBoxShutDown;
+	private GroupBox groupBoxShutDown = null!;
 
-	private TextBox textBoxDeviceServiceClientVersion;
+	private TextBox textBoxDeviceServiceClientVersion = null!;
 
-	private Label labelDeviceServiceClientVersion;
+	private Label labelDeviceServiceClientVersion = null!;
 
-	private CheckBox checkBoxDeviceServiceClientCompatible;
+	private CheckBox checkBoxDeviceServiceClientCompatible = null!;
 
-	private TextBox textBoxDeviceServiceVersion;
+	private TextBox textBoxDeviceServiceVersion = null!;
 
-	private Label labelDeviceServiceVersionLabel;
+	private Label labelDeviceServiceVersionLabel = null!;
 
-	private CheckBox checkBoxDeviceServiceCardReaderConnected;
+	private CheckBox checkBoxDeviceServiceCardReaderConnected = null!;
 
-	private CheckBox checkBoxDeviceServiceConnected;
+	private CheckBox checkBoxDeviceServiceConnected = null!;
 
-	private Panel panelBottom;
+	private Panel panelBottom = null!;
 
-	private Button buttonRefresh;
+	private Button buttonRefresh = null!;
 
-	private TextBox textBoxResult;
+	private TextBox textBoxResult = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Button buttonDeviceServiceShutdown;
+	private Button buttonDeviceServiceShutdown = null!;
 
-	private ComboBox comboBoxShutdownReason;
+	private ComboBox comboBoxShutdownReason = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private CheckBox checkBoxForceShutdown;
+	private CheckBox checkBoxForceShutdown = null!;
 
-	private Panel panelLoading;
+	private Panel panelLoading = null!;
 
-	private Label labelLoading;
+	private Label labelLoading = null!;
 
-	private CheckBox checkBoxSupportsEMV;
+	private CheckBox checkBoxSupportsEMV = null!;
 
-	private Button buttonDeviceServiceSendTamperedAlert;
+	private Button buttonDeviceServiceSendTamperedAlert = null!;
 
+	// The controls above are created by InitializeComponent.
 	public DeviceServicePage()
 	{
 		InitializeComponent();
 		foreach (object value in Enum.GetValues(typeof(ShutDownReason)))
 		{
-			comboBoxShutdownReason.Items.Add(value.ToString());
+			comboBoxShutdownReason.Items.Add(value.ToString()!);
 		}
 		comboBoxShutdownReason.SelectedIndex = 0;
 	}
@@ -74,11 +75,11 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 		return true;
 	}
 
-	public void LoadValues(IPreferencePage preferencePage)
+	public void LoadValues(IPreferencePage? preferencePage)
 	{
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		panelLoading.Visible = true;
-		ValidateVersionModel validateVersionModel = null;
+		ValidateVersionModel? validateVersionModel = null;
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		bool supportsEMV = false;
 		Task.Factory.StartNew(delegate
@@ -91,18 +92,18 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 			checkBoxDeviceServiceCardReaderConnected.Checked = deviceServiceClientHelper?.IsCardReaderConnected ?? false;
 			checkBoxSupportsEMV.Checked = supportsEMV;
 			panelLoading.Visible = false;
-		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler);
+		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler!); // throws without a view service, as before
 		textBoxDeviceServiceVersion.Text = deviceServiceClientHelper?.DeviceServiceVersion?.ToString();
 		textBoxDeviceServiceClientVersion.Text = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString();
 		checkBoxDeviceServiceConnected.Checked = deviceServiceClientHelper?.IsConnectedToDeviceService ?? false;
 	}
 
-	private void buttonDeviceServiceShutdown_Click(object sender, EventArgs e)
+	private void buttonDeviceServiceShutdown_Click(object? sender, EventArgs e)
 	{
 		bool result = false;
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		ShutDownReason shutDownReason = ShutDownReason.None;
-		Enum.TryParse<ShutDownReason>(comboBoxShutdownReason.SelectedItem.ToString(), out shutDownReason);
+		Enum.TryParse<ShutDownReason>(comboBoxShutdownReason.SelectedItem!.ToString(), out shutDownReason); // the constructor selects the first reason
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
 		Task.Factory.StartNew(delegate
 		{
@@ -116,12 +117,12 @@ public class DeviceServicePage : UserControl, IPreferencePageHost
 		}, viewService.UITaskScheduler);
 	}
 
-	private void buttonDeviceServiceSendTamperedAlert_Click(object sender, EventArgs e)
+	private void buttonDeviceServiceSendTamperedAlert_Click(object? sender, EventArgs e)
 	{
 		ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>().SendTamperedCardReaderKioskAlertMessage();
 	}
 
-	private void buttonRefresh_Click(object sender, EventArgs e)
+	private void buttonRefresh_Click(object? sender, EventArgs e)
 	{
 		LoadValues(null);
 	}

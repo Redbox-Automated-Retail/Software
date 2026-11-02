@@ -4,7 +4,8 @@ namespace Redbox.UpdateService.Model;
 
 public class ThinData
 {
-	public string Barcode { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Barcode { get; set; } = null!;
 
 	public long TitleId { get; set; }
 

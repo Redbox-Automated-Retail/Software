@@ -14,7 +14,7 @@ public interface IInventoryService
 
 	bool EmptyCountExceeds(int numberOfEmpty);
 
-	ILocation Lookup(string id);
+	ILocation? Lookup(string id);
 
 	ILocation Get(int deck, int slot);
 
@@ -34,7 +34,7 @@ public interface IInventoryService
 
 	List<ILocation> GetUnknowns();
 
-	bool IsBarcodeDuplicate(string id, out ILocation original);
+	bool IsBarcodeDuplicate(string id, out ILocation? original);
 
 	int GetMachineEmptyCount();
 

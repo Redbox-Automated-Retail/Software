@@ -89,17 +89,17 @@ public sealed class CameraAdapter
 		State = CameraState.Unknown;
 	}
 
-	public ISnapResult Snap()
+	public ISnapResult? Snap()
 	{
 		if (!Service.ExecuteImmediateProgram(CameraSnapImmediate, out var job).Success)
 		{
 			return null;
 		}
 		_SnapResult snapResult = new _SnapResult();
-		string topOfStack = job.GetTopOfStack();
+		string topOfStack = job!.GetTopOfStack();
 		if ("SUCCESS" == topOfStack)
 		{
-			string[] stackEntries = job.GetStackEntries(2);
+			string[] stackEntries = job!.GetStackEntries(2);
 			snapResult.SnapOk = true;
 			snapResult.Path = stackEntries[1];
 		}
@@ -108,7 +108,7 @@ public sealed class CameraAdapter
 
 	public bool ResetReturnCounter()
 	{
-		HardwareJob job;
+		HardwareJob? job;
 		return Service.ExecuteImmediate("CAMERA RESETRETURNCOUNTER", out job).Success;
 	}
 

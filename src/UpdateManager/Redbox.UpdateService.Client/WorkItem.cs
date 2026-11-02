@@ -9,7 +9,8 @@ public class WorkItem
 
 	public long ScriptId { get; set; }
 
-	public List<Store> Targets { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public List<Store> Targets { get; set; } = null!;
 
 	public DateTime EffectiveDate { get; set; }
 

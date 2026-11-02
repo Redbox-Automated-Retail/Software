@@ -13,7 +13,7 @@ namespace Redbox.Remoting.Nrbf;
 /// </summary>
 internal sealed class NrbfReader
 {
-	private sealed record ClassMetadata(string Name, string LibraryName, string[] MemberNames, NrbfMemberType[] MemberTypes);
+	private sealed record ClassMetadata(string Name, string? LibraryName, string[] MemberNames, NrbfMemberType[]? MemberTypes);
 
 	private readonly WireReader _reader;
 	private readonly Dictionary<int, object> _objects = new Dictionary<int, object>();
@@ -26,10 +26,11 @@ internal sealed class NrbfReader
 	private NrbfMessageFlags _flags;
 	private bool _isCall;
 	private bool _isReturn;
-	private string _methodName;
-	private string _typeName;
-	private object[] _inlineArgs;
-	private object _inlineReturnValue;
+	// Set by ReadMethodCallRecord; BuildCall runs only after it (ReadMethodCall checks _isCall).
+	private string _methodName = null!;
+	private string _typeName = null!;
+	private object?[]? _inlineArgs;
+	private object? _inlineReturnValue;
 
 	private NrbfReader(byte[] data)
 	{
@@ -59,7 +60,7 @@ internal sealed class NrbfReader
 	}
 
 	/// <summary>Reads a plain serialized object graph (no method record) and returns its root object.</summary>
-	public static object ReadGraph(byte[] content)
+	public static object? ReadGraph(byte[] content)
 	{
 		NrbfReader reader = new NrbfReader(content);
 		reader.ReadStream();
@@ -108,8 +109,8 @@ internal sealed class NrbfReader
 	{
 		_isCall = true;
 		_flags = (NrbfMessageFlags)_reader.ReadInt32();
-		_methodName = (string)ReadValueWithCode();
-		_typeName = (string)ReadValueWithCode();
+		_methodName = (string)ReadValueWithCode()!;
+		_typeName = (string)ReadValueWithCode()!;
 		if ((_flags & NrbfMessageFlags.ContextInline) != 0)
 		{
 			ReadValueWithCode();
@@ -142,11 +143,11 @@ internal sealed class NrbfReader
 	// The call array (MS-NRBF 2.2.3.2) holds, in this order, whatever the flags put "InArray".
 	private NrbfMethodCall BuildCall()
 	{
-		object[] args = _inlineArgs ?? Array.Empty<object>();
-		object[] callArray = (Root() as NrbfArray)?.Items;
+		object?[] args = _inlineArgs ?? Array.Empty<object?>();
+		object?[]? callArray = (Root() as NrbfArray)?.Items;
 		if ((_flags & NrbfMessageFlags.ArgsIsArray) != 0)
 		{
-			args = callArray ?? Array.Empty<object>();
+			args = callArray ?? Array.Empty<object?>();
 		}
 		else if ((_flags & NrbfMessageFlags.ArgsInArray) != 0)
 		{
@@ -157,9 +158,9 @@ internal sealed class NrbfReader
 
 	private NrbfMethodReturn BuildReturn()
 	{
-		object returnValue = _inlineReturnValue;
-		object exception = null;
-		object[] callArray = (Root() as NrbfArray)?.Items;
+		object? returnValue = _inlineReturnValue;
+		object? exception = null;
+		object?[]? callArray = (Root() as NrbfArray)?.Items;
 		if (callArray != null && (_flags & NrbfMessageFlags.ArgsIsArray) == 0)
 		{
 			int index = 0;
@@ -179,19 +180,19 @@ internal sealed class NrbfReader
 		return new NrbfMethodReturn { Flags = _flags, ReturnValue = returnValue, Exception = exception };
 	}
 
-	private object Root() => _rootId != 0 && _objects.TryGetValue(_rootId, out object root) ? root : null;
+	private object? Root() => _rootId != 0 && _objects.TryGetValue(_rootId, out object? root) ? root : null;
 
 	/// <summary>
 	/// Reads the record that stands for one value (a member, an array element or a top-level object). BinaryLibrary
 	/// records may precede it. <paramref name="nullCount"/> is set for ObjectNullMultiple records.
 	/// </summary>
-	private object ReadValueRecord(out int nullCount)
+	private object? ReadValueRecord(out int nullCount)
 	{
 		NrbfRecordType type = (NrbfRecordType)_reader.ReadByte();
 		return ReadRecordBody(type, out nullCount);
 	}
 
-	private object ReadRecordBody(NrbfRecordType type, out int nullCount)
+	private object? ReadRecordBody(NrbfRecordType type, out int nullCount)
 	{
 		nullCount = 0;
 		switch (type)
@@ -236,7 +237,7 @@ internal sealed class NrbfReader
 				int id = _reader.ReadInt32();
 				int length = _reader.ReadInt32();
 				NrbfPrimitiveType primitive = (NrbfPrimitiveType)_reader.ReadByte();
-				object[] items = new object[length];
+				object?[] items = new object?[length];
 				for (int i = 0; i < length; i++)
 				{
 					items[i] = ReadPrimitive(primitive);
@@ -267,16 +268,16 @@ internal sealed class NrbfReader
 		{
 			memberNames[i] = _reader.ReadString();
 		}
-		NrbfMemberType[] memberTypes = null;
+		NrbfMemberType[]? memberTypes = null;
 		if (type == NrbfRecordType.SystemClassWithMembersAndTypes || type == NrbfRecordType.ClassWithMembersAndTypes)
 		{
 			memberTypes = ReadMemberTypeInfo(count);
 		}
-		string library = null;
+		string? library = null;
 		if (type == NrbfRecordType.ClassWithMembers || type == NrbfRecordType.ClassWithMembersAndTypes)
 		{
 			int libraryId = _reader.ReadInt32();
-			library = _libraries.TryGetValue(libraryId, out string libraryName) ? libraryName : null;
+			library = _libraries.TryGetValue(libraryId, out string? libraryName) ? libraryName : null;
 		}
 		ClassMetadata metadata = new ClassMetadata(name, library, memberNames, memberTypes);
 		_metadata[id] = metadata;
@@ -353,10 +354,10 @@ internal sealed class NrbfReader
 			}
 		}
 		NrbfMemberType elementType = ReadAdditionalInfo((NrbfBinaryType)_reader.ReadByte());
-		object[] items;
+		object?[] items;
 		if (elementType.BinaryType == NrbfBinaryType.Primitive)
 		{
-			items = new object[total];
+			items = new object?[total];
 			for (int i = 0; i < total; i++)
 			{
 				items[i] = ReadPrimitive(elementType.Primitive);
@@ -369,13 +370,13 @@ internal sealed class NrbfReader
 		return Register(new NrbfArray(id, items));
 	}
 
-	private object[] ReadElements(int length)
+	private object?[] ReadElements(int length)
 	{
-		object[] items = new object[length];
+		object?[] items = new object?[length];
 		int index = 0;
 		while (index < length)
 		{
-			object value = ReadValueRecord(out int nullCount);
+			object? value = ReadValueRecord(out int nullCount);
 			if (nullCount > 0)
 			{
 				index += nullCount; // the slots are already null
@@ -388,15 +389,15 @@ internal sealed class NrbfReader
 		return items;
 	}
 
-	private object ReadValueWithCode()
+	private object? ReadValueWithCode()
 	{
 		return ReadPrimitive((NrbfPrimitiveType)_reader.ReadByte());
 	}
 
-	private object[] ReadArrayOfValueWithCode()
+	private object?[] ReadArrayOfValueWithCode()
 	{
 		int length = _reader.ReadInt32();
-		object[] values = new object[length];
+		object?[] values = new object?[length];
 		for (int i = 0; i < length; i++)
 		{
 			values[i] = ReadValueWithCode();
@@ -404,7 +405,7 @@ internal sealed class NrbfReader
 		return values;
 	}
 
-	private object ReadPrimitive(NrbfPrimitiveType type)
+	private object? ReadPrimitive(NrbfPrimitiveType type)
 	{
 		switch (type)
 		{
@@ -458,13 +459,13 @@ internal sealed class NrbfReader
 		}
 	}
 
-	private void Resolve(object[] values)
+	private void Resolve(object?[] values)
 	{
 		for (int i = 0; i < values.Length; i++)
 		{
 			if (values[i] is NrbfReference reference)
 			{
-				values[i] = _objects.TryGetValue(reference.Id, out object target)
+				values[i] = _objects.TryGetValue(reference.Id, out object? target)
 					? target
 					: throw new InvalidDataException($"NRBF reference to unknown object {reference.Id}.");
 			}

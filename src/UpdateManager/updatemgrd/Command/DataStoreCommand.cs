@@ -19,7 +19,7 @@ internal class DataStoreCommand
 	[Usage("data get id:")]
 	public void Get(CommandContext context, [CommandKeyValue(IsRequired = true)] string id)
 	{
-		string raw = ServiceLocator.Instance.GetService<IDataStoreService>().GetRaw(id);
+		string? raw = ServiceLocator.Instance.GetService<IDataStoreService>().GetRaw(id);
 		if (raw != null)
 		{
 			context.Messages.Add(raw.Replace(System.Environment.NewLine, ""));

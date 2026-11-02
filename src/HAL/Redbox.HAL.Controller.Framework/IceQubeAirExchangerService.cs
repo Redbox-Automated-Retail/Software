@@ -93,7 +93,7 @@ internal class IceQubeAirExchangerService : IAirExchangerService, IConfiguration
 
 	public bool ShouldRetry()
 	{
-		IPersistentCounter persistentCounter = ServiceLocator.Instance.GetService<IPersistentCounterService>().Find("IceQubeResetFailures");
+		IPersistentCounter? persistentCounter = ServiceLocator.Instance.GetService<IPersistentCounterService>().Find("IceQubeResetFailures");
 		if (persistentCounter == null)
 		{
 			return false;

@@ -21,7 +21,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 
 	private int _syncID;
 
-	private string _clientConfigFileHash;
+	private string? _clientConfigFileHash;
 
 	private const string ConfigFile = ".config";
 
@@ -35,7 +35,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 
 	public static ConfigFileService Instance => Singleton<ConfigFileService>.Instance;
 
-	private string _root { get; set; }
+	private string _root { get; set; } = null!; // set by Initialize
 
 	public void Initialize(string rootPath)
 	{
@@ -43,7 +43,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		_root = macroService.ExpandProperties(rootPath);
 		if (!Path.IsPathRooted(_root))
 		{
-			_root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), rootPath);
+			_root = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, rootPath);
 		}
 		MakePathExist();
 		if (ServiceLocator.Instance.GetService<IConfigFileService>() == null)
@@ -107,7 +107,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 				LogHelper.Instance.Log("Config File server is clearing the sync id as requested by the server.");
 				return new ErrorList();
 			}
-			PollReply pollReply = (from pr in pollReplyList.ToList()
+			PollReply? pollReply = (from pr in pollReplyList.ToList()
 				where pr.PollReplyType == PollReplyType.ConfigFileChangeSet
 				select pr).FirstOrDefault();
 			if (pollReply != null)
@@ -174,7 +174,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		{
 			return configFileChangeSetData;
 		}
-		return ActivateChangeSet(changeSet);
+		return ActivateChangeSet(changeSet!); // set when there is no error
 	}
 
 	private ErrorList SetHash()
@@ -198,7 +198,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 			{
 				CCFDTO cCFDTO = new CCFDTO();
 				cCFDTO.Id = allConfigFile;
-				cCFDTO.Name = changeSet.Name;
+				cCFDTO.Name = changeSet!.Name; // set when there is no error
 				if (stagedState != null)
 				{
 					cCFDTO.SGId = stagedState.GenerationId;
@@ -215,7 +215,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		return errorList;
 	}
 
-	private ErrorList GetConfigFileChangeSetData(long configFileId, out ConfigFileChangeSetData changeSet, out ConfigFileStateLabel stagedState, out ConfigFileStateLabel activeState)
+	private ErrorList GetConfigFileChangeSetData(long configFileId, out ConfigFileChangeSetData? changeSet, out ConfigFileStateLabel? stagedState, out ConfigFileStateLabel? activeState)
 	{
 		changeSet = null;
 		stagedState = null;
@@ -309,7 +309,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(changeSet.Path);
 		if (!Path.IsPathRooted(text))
 		{
-			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), text);
+			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, text);
 		}
 		return Path.ChangeExtension(Path.Combine(text, changeSet.Name), ".config");
 	}
@@ -319,7 +319,7 @@ public class ConfigFileService : IConfigFileService, IPollRequestReply
 		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(changeSet.Path);
 		if (!Path.IsPathRooted(text))
 		{
-			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), text);
+			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, text);
 		}
 		return Path.ChangeExtension(Path.Combine(text, changeSet.Name), ".configstaged");
 	}

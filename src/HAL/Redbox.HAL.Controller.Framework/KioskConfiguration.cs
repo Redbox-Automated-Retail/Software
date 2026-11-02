@@ -29,7 +29,7 @@ public sealed class KioskConfiguration
 			{
 				return runtimeService.RuntimePath("Kiosk.xml");
 			}
-			return Path.Combine(Path.GetDirectoryName(typeof(KioskConfiguration).Assembly.Location), "Kiosk.xml");
+			return Path.Combine(Path.GetDirectoryName(typeof(KioskConfiguration).Assembly.Location)!, "Kiosk.xml");
 		}
 	}
 
@@ -79,7 +79,7 @@ public sealed class KioskConfiguration
 			_loaded = false;
 			if (File.Exists(FilePath))
 			{
-				KioskConfiguration kioskConfiguration = null;
+				KioskConfiguration? kioskConfiguration = null;
 				using (StreamReader textReader = new StreamReader(FilePath))
 				{
 					kioskConfiguration = _serializer.Deserialize(textReader) as KioskConfiguration;

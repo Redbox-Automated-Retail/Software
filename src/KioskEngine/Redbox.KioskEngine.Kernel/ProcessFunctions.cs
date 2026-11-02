@@ -197,7 +197,7 @@ internal static class ProcessFunctions
 		Application.OpenForms["TaskRunnerForm"]?.Close();
 	}
 
-	private static int LaunchProcessInner(string programPath, string args, string userName, bool useAdminPassword, bool hiddenProcess)
+	private static int LaunchProcessInner(string programPath, string args, string? userName, bool useAdminPassword, bool hiddenProcess)
 	{
 		try
 		{
@@ -224,7 +224,7 @@ internal static class ProcessFunctions
 				}
 				if (!File.Exists(Path.Combine(processStartInfo.WorkingDirectory, processStartInfo.FileName)))
 				{
-					string text = Environment.GetEnvironmentVariable("SystemRoot");
+					string? text = Environment.GetEnvironmentVariable("SystemRoot");
 					if (string.IsNullOrEmpty(text))
 					{
 						text = "c:\\windows";
@@ -236,7 +236,7 @@ internal static class ProcessFunctions
 					}
 				}
 			}
-			Process process = Process.Start(processStartInfo);
+			Process? process = Process.Start(processStartInfo);
 			if (process != null)
 			{
 				return process.Id;
@@ -255,7 +255,7 @@ internal static class ProcessFunctions
 		DirectoryEntry directoryEntry = new DirectoryEntry("WinNT://" + Environment.MachineName).Children.Find("administrators", "group");
 		try
 		{
-			foreach (object item in (IEnumerable)directoryEntry.Invoke("members", null))
+			foreach (object item in (IEnumerable)directoryEntry.Invoke("members", null)!)
 			{
 				DirectoryEntry directoryEntry2 = new DirectoryEntry(item);
 				if (directoryEntry2.SchemaClassName == "User")

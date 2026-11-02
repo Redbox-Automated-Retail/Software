@@ -40,7 +40,7 @@ public static class BundleFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getresourcestoragename")]
-	internal static string GetResourceStorageName(string name)
+	internal static string? GetResourceStorageName(string name)
 	{
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		if (resourceBundleService == null)
@@ -51,11 +51,11 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		return resourceBundleService.GetResource(name)?.StorageEntry.Path;
+		return resourceBundleService.GetResource(name)?.StorageEntry!.Path;
 	}
 
 	[KernelFunction(Name = "kernel.getresourceaspectproperty")]
-	internal static string GetResourceAspectProperty(string resourceName, string aspectName, string propertyName)
+	internal static string? GetResourceAspectProperty(string resourceName, string aspectName, string propertyName)
 	{
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		if (resourceBundleService == null)
@@ -71,7 +71,7 @@ public static class BundleFunctions
 		{
 			return null;
 		}
-		IAspect aspect = resource.GetAspect(aspectName);
+		IAspect? aspect = resource.GetAspect(aspectName);
 		if (aspect == null)
 		{
 			return null;
@@ -106,7 +106,7 @@ public static class BundleFunctions
 			{
 				if (value != null)
 				{
-					list.Add(value.ToString());
+					list.Add(value.ToString()!);
 				}
 			}
 		}
@@ -114,10 +114,10 @@ public static class BundleFunctions
 	}
 
 	[KernelFunction(Name = "kernel.executescript")]
-	public static object[] ExecuteScript(string name)
+	public static object?[] ExecuteScript(string name)
 	{
-		List<object> list = new List<object>();
-		ReadOnlyCollection<object> readOnlyCollection = KernelService.Instance.ExecuteScript(name);
+		List<object?> list = new List<object?>();
+		ReadOnlyCollection<object?>? readOnlyCollection = KernelService.Instance.ExecuteScript(name);
 		if (readOnlyCollection != null)
 		{
 			list.AddRange(readOnlyCollection);
@@ -126,20 +126,20 @@ public static class BundleFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getresourceproperty")]
-	internal static object GetResourceProperty(string resourceName, string propertyName)
+	internal static object? GetResourceProperty(string resourceName, string propertyName)
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>()?.GetResource(resourceName)?[propertyName];
 	}
 
 	[KernelFunction(Name = "kernel.gettable")]
-	internal static LuaTable GetTable(string name)
+	internal static LuaTable? GetTable(string name)
 	{
 		XmlNode xml = ServiceLocator.Instance.GetService<IResourceBundleService>().GetXml(name);
 		if (xml == null)
 		{
 			return null;
 		}
-		XmlNodeList rowNodes = xml.SelectNodes("row");
+		XmlNodeList? rowNodes = xml.SelectNodes("row");
 		if (rowNodes == null)
 		{
 			return null;
@@ -148,7 +148,7 @@ public static class BundleFunctions
 		decimal rowIndex = 1m;
 		foreach (XmlNode rowNode in rowNodes)
 		{
-			XmlNodeList columnNodes = rowNode.SelectNodes("column");
+			XmlNodeList? columnNodes = rowNode.SelectNodes("column");
 			if (columnNodes == null)
 			{
 				continue;
@@ -175,14 +175,14 @@ public static class BundleFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getdictionary")]
-	public static LuaTable GetDictionary(string name)
+	public static LuaTable? GetDictionary(string name)
 	{
 		XmlNode xml = ServiceLocator.Instance.GetService<IResourceBundleService>().GetXml(name);
 		if (xml == null)
 		{
 			return null;
 		}
-		XmlNodeList rowNodes = xml.SelectNodes("row");
+		XmlNodeList? rowNodes = xml.SelectNodes("row");
 		if (rowNodes == null)
 		{
 			return null;
@@ -190,7 +190,7 @@ public static class BundleFunctions
 		LuaTable dictionary = new LuaTable(KernelService.Instance.LuaRuntime);
 		foreach (XmlNode rowNode in rowNodes)
 		{
-			XmlNodeList columnNodes = rowNode.SelectNodes("column");
+			XmlNodeList? columnNodes = rowNode.SelectNodes("column");
 			if (columnNodes == null)
 			{
 				continue;
@@ -215,7 +215,7 @@ public static class BundleFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getfilter")]
-	internal static string GetFilterProperty(string name)
+	internal static string? GetFilterProperty(string name)
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter[name];
 	}
@@ -228,7 +228,7 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getvendor")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetVendor()
+	internal static string? GetVendor()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["vendor"];
 	}
@@ -243,7 +243,7 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getmarket")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetMarket()
+	internal static string? GetMarket()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["market"];
 	}
@@ -258,7 +258,7 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getstorenumber")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetStoreNumber()
+	internal static string? GetStoreNumber()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["store_number"];
 	}
@@ -273,7 +273,7 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getculture")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetCulture()
+	internal static string? GetCulture()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["culture"];
 	}
@@ -288,7 +288,7 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getenvironment")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetEnvironment()
+	internal static string? GetEnvironment()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["environment"];
 	}
@@ -303,21 +303,21 @@ public static class BundleFunctions
 
 	[KernelFunction(Name = "kernel.getruntime")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetRuntime()
+	internal static string? GetRuntime()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["runtime"];
 	}
 
 	[KernelFunction(Name = "kernel.getplatform")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetPlatform()
+	internal static string? GetPlatform()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["platform"];
 	}
 
 	[KernelFunction(Name = "kernel.getapplication")]
 	[Obsolete("Kernel function is deprecated in favor of kernel.getfilter.")]
-	internal static string GetApplication()
+	internal static string? GetApplication()
 	{
 		return ServiceLocator.Instance.GetService<IResourceBundleService>().Filter["application"];
 	}

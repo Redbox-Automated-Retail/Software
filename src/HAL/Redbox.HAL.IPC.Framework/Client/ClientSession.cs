@@ -35,7 +35,7 @@ public abstract class ClientSession : IIpcClientSession, IDisposable
 
 	internal bool SupportsEvents => ServerEvent != null;
 
-	public event Action<string> ServerEvent;
+	public event Action<string>? ServerEvent;
 
 	public void Dispose()
 	{

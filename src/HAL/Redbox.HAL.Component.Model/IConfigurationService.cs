@@ -10,17 +10,17 @@ public interface IConfigurationService
 
 	void Save(ErrorList errors);
 
-	string FormatAsXml(string key);
+	string? FormatAsXml(string key);
 
 	void UpdateFromXml(string key, string data, ErrorList errors);
 
 	void RegisterConfiguration(string name, IAttributeXmlConfiguration config);
 
-	object GetPropertyByName(string key, string name);
+	object? GetPropertyByName(string key, string name);
 
 	void SetPropertyByName(string key, string name, object[] value);
 
-	IAttributeXmlConfiguration FindConfiguration(string name);
+	IAttributeXmlConfiguration? FindConfiguration(string name);
 
-	IAttributeXmlConfiguration FindConfiguration(Configurations configuration);
+	IAttributeXmlConfiguration? FindConfiguration(Configurations configuration);
 }

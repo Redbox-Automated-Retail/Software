@@ -23,7 +23,7 @@ public static class ConversionHelper
 		return type.GetGenericArguments()[0];
 	}
 
-	public static object ChangeType(object value, Type convertToType)
+	public static object? ChangeType(object? value, Type convertToType)
 	{
 		if (value == null)
 		{

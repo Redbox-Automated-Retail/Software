@@ -41,7 +41,7 @@ public static class RentalShoppingCartFunctions
 		value = 0m;
 		if (luaTable != null)
 		{
-			object rawValue = luaTable[propertyName];
+			object? rawValue = luaTable[propertyName];
 			if (rawValue != null && decimal.TryParse(rawValue.ToString(), out var parsedValue))
 			{
 				value = parsedValue;
@@ -61,9 +61,9 @@ public static class RentalShoppingCartFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_shopping_cart_assign_barcodes_to_vend")]
-	public static LuaTable AssignBarcodesToVend(string sessionId)
+	public static LuaTable? AssignBarcodesToVend(string sessionId)
 	{
-		List<string> barcodeList = null;
+		List<string>? barcodeList = null;
 		ProcessRentalShoppingCartAction(sessionId, delegate(IRentalShoppingCart rentalShoppingCart)
 		{
 			barcodeList = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.AssignBarcodesToVend(rentalShoppingCart);
@@ -74,7 +74,7 @@ public static class RentalShoppingCartFunctions
 	private static void ProcessRentalShoppingCartAction(string sessionId, Action<IRentalShoppingCart> rentalShoppingCartAction)
 	{
 		Guid id = new Guid(sessionId);
-		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id);
+		IRentalShoppingCart? rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id);
 		if (rentalShoppingCart != null)
 		{
 			if (rentalShoppingCartAction != null)
@@ -86,10 +86,10 @@ public static class RentalShoppingCartFunctions
 		}
 	}
 
-	private static T GetValueFromRentalShoppingCartFunction<T>(string sessionId, Func<IRentalShoppingCart, T> rentalShoppingCartFunction)
+	private static T? GetValueFromRentalShoppingCartFunction<T>(string sessionId, Func<IRentalShoppingCart, T> rentalShoppingCartFunction)
 	{
 		Guid id = new Guid(sessionId);
-		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id);
+		IRentalShoppingCart? rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id);
 		if (rentalShoppingCart != null)
 		{
 			if (rentalShoppingCartFunction != null)
@@ -135,11 +135,11 @@ public static class RentalShoppingCartFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_rental_shopping_cart_items")]
-	public static LuaTable GetRentalShoppingCartItems(string id)
+	public static LuaTable? GetRentalShoppingCartItems(string id)
 	{
-		LuaTable result = null;
+		LuaTable? result = null;
 		Guid id2 = new Guid(id);
-		IRentalShoppingCart rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id2);
+		IRentalShoppingCart? rentalShoppingCart = ServiceLocator.Instance.GetService<IRentalShoppingCartService>()?.GetRentalShoppingCart(id2);
 		if (rentalShoppingCart != null)
 		{
 			List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
@@ -180,7 +180,7 @@ public static class RentalShoppingCartFunctions
 			dictionary["status"] = rentalShoppingCartItem.Status.ToString();
 			dictionary["quantity"] = rentalShoppingCartItem.Quantity;
 			dictionary["source_type"] = rentalShoppingCartItem.SourceType.ToString();
-			IUpsellItem upsellItem = rentalShoppingCart?.UpsellInfo?.Items.FirstOrDefault((IUpsellItem x) => x.OriginalProductId == rentalShoppingCartItem.ProductId || x.UpsellProductId == rentalShoppingCartItem.ProductId);
+			IUpsellItem? upsellItem = rentalShoppingCart?.UpsellInfo?.Items.FirstOrDefault((IUpsellItem x) => x.OriginalProductId == rentalShoppingCartItem.ProductId || x.UpsellProductId == rentalShoppingCartItem.ProductId);
 			Dictionary<string, object> upsellTable = new Dictionary<string, object>();
 			if (upsellItem != null)
 			{
@@ -195,12 +195,12 @@ public static class RentalShoppingCartFunctions
 		return dictionary;
 	}
 
-	private static string GetLuaTableStringValue(LuaTable luaTable, string propertyName)
+	private static string? GetLuaTableStringValue(LuaTable luaTable, string propertyName)
 	{
-		string result = null;
+		string? result = null;
 		if (luaTable != null && luaTable[propertyName] != null)
 		{
-			result = luaTable[propertyName].ToString();
+			result = luaTable[propertyName]!.ToString(); // checked above
 		}
 		return result;
 	}

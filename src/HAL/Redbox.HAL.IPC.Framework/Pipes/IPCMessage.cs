@@ -10,7 +10,8 @@ internal sealed class IPCMessage : IIPCMessage
 
 	public MessageSeverity Severity { get; internal set; }
 
-	public string Message { get; internal set; }
+	// Set by IPCMessageFactory's object initializers.
+	public string Message { get; internal set; } = null!;
 
 	public Guid UID { get; internal set; }
 

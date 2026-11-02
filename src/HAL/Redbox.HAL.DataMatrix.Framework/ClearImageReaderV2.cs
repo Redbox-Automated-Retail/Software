@@ -9,7 +9,7 @@ namespace Redbox.HAL.DataMatrix.Framework;
 
 internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 {
-	private readonly clsRBDM TheReader;
+	private readonly clsRBDM? TheReader;
 
 	protected override void OnScan(ScanResult result)
 	{
@@ -25,14 +25,14 @@ internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 			bool failed = false;
 			try
 			{
-				TheReader.Image.Open(result.ImagePath);
+				TheReader!.Image.Open(result.ImagePath);
 				using ExecutionTimer executionTimer = new ExecutionTimer();
-				int found = TheReader.Find(maxBcIn);
+				int found = TheReader!.Find(maxBcIn);
 				executionTimer.Stop();
 				result.ExecutionTime = executionTimer.Elapsed;
 				if (found > 0)
 				{
-					foreach (CiBarcode barcode in TheReader.Barcodes)
+					foreach (CiBarcode barcode in TheReader!.Barcodes)
 					{
 						result.Add(barcode.Text);
 					}
@@ -46,7 +46,7 @@ internal sealed class ClearImageReaderV2 : AbstractBarcodeReader
 			}
 			try
 			{
-				TheReader.Image.Close();
+				TheReader!.Image.Close();
 			}
 			catch (Exception e2)
 			{

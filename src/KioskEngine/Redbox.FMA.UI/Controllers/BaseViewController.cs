@@ -23,9 +23,9 @@ public class BaseViewController
 
 	protected static bool IsADAMode => ApplicationState?.IsADAAccessible ?? false;
 
-	protected static FrameworkElement GetViewUserControl()
+	protected static FrameworkElement? GetViewUserControl()
 	{
-		IViewFrameInstance viewFrameInstance = ServiceLocator.Instance.GetService<IViewService>()?.PeekViewFrame();
+		IViewFrameInstance? viewFrameInstance = ServiceLocator.Instance.GetService<IViewService>()?.PeekViewFrame();
 		if (viewFrameInstance != null)
 		{
 			_ = viewFrameInstance.Id;
@@ -34,22 +34,22 @@ public class BaseViewController
 		return null;
 	}
 
-	protected static FrameworkElement GetViewUserControl(Guid userControlId)
+	protected static FrameworkElement? GetViewUserControl(Guid userControlId)
 	{
 		return ServiceLocator.Instance.GetService<IRenderingService>().GetScene("Default")?.GetWPFGridChild(userControlId);
 	}
 
-	protected static T GetViewModel<T>() where T : class
+	protected static T? GetViewModel<T>() where T : class
 	{
 		return GetViewModel<T>(GetViewUserControl());
 	}
 
-	protected static T GetViewModel<T>(Guid userControlId) where T : class
+	protected static T? GetViewModel<T>(Guid userControlId) where T : class
 	{
 		return GetViewModel<T>(GetViewUserControl(userControlId));
 	}
 
-	private static T GetViewModel<T>(FrameworkElement userControl) where T : class
+	private static T? GetViewModel<T>(FrameworkElement? userControl) where T : class
 	{
 		if (userControl != null)
 		{
@@ -60,7 +60,7 @@ public class BaseViewController
 
 	protected static void ProcessWPFHit()
 	{
-		ServiceLocator.Instance.GetService<IRenderingService>()?.ActiveScene.PrcoessWPFHit();
+		ServiceLocator.Instance.GetService<IRenderingService>()?.ActiveScene!.PrcoessWPFHit();
 		PostHealthActivity();
 	}
 
@@ -99,11 +99,11 @@ public class BaseViewController
 		OrchestrationService.SetCurrentUICulture();
 	}
 
-	protected static BitmapImage GetBundleBitmapImage(string resourceName)
+	protected static BitmapImage? GetBundleBitmapImage(string resourceName)
 	{
 		IBitmapCacheService bitmapCacheService = ServiceLocator.Instance.GetService<IBitmapCacheService>();
-		BitmapImage result = null;
-		Image image = null;
+		BitmapImage? result = null;
+		Image? image = null;
 		image = ((!resourceName.StartsWith("cache:")) ? ServiceLocator.Instance.GetService<IResourceBundleService>().GetBitmap(resourceName) : bitmapCacheService?.GetImage(resourceName.Substring(6)));
 		if (image != null)
 		{
@@ -127,7 +127,7 @@ public class BaseViewController
 		Application.Current.Dispatcher.BeginInvoke(action, DispatcherPriority.SystemIdle);
 	}
 
-	protected static SecureString StringToSecureString(string source)
+	protected static SecureString? StringToSecureString(string source)
 	{
 		if (string.IsNullOrWhiteSpace(source))
 		{

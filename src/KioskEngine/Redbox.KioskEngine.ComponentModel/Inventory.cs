@@ -2,7 +2,7 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public class Inventory
 {
-	public string Barcode { get; set; }
+	public string? Barcode { get; set; }
 
 	public InventoryStatusCode Code { get; set; }
 

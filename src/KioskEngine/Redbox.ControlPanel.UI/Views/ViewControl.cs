@@ -67,7 +67,7 @@ public class ViewControl : UserControl
 		base.Dispatcher.BeginInvoke(method, DispatcherPriority.SystemIdle);
 	}
 
-	protected static void InvokeRoutedCommand(DynamicRoutedCommand routeCommand, object parameter = null)
+	protected static void InvokeRoutedCommand(DynamicRoutedCommand routeCommand, object? parameter = null)
 	{
 		if (routeCommand != null && routeCommand.CanExecute(parameter))
 		{
@@ -75,7 +75,7 @@ public class ViewControl : UserControl
 		}
 	}
 
-	protected static void InvokeRoutedCommand(RoutedCommand routeCommand, IInputElement target, object parameter = null)
+	protected static void InvokeRoutedCommand(RoutedCommand routeCommand, IInputElement target, object? parameter = null)
 	{
 		if (routeCommand != null && routeCommand.CanExecute(parameter, target))
 		{

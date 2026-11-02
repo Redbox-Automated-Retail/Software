@@ -8,9 +8,9 @@ public class SingleChildEnumerator : IEnumerator
 
 	private int _count;
 
-	private object _child;
+	private object? _child;
 
-	object IEnumerator.Current
+	object? IEnumerator.Current
 	{
 		get
 		{
@@ -22,7 +22,7 @@ public class SingleChildEnumerator : IEnumerator
 		}
 	}
 
-	public SingleChildEnumerator(object Child)
+	public SingleChildEnumerator(object? Child)
 	{
 		_child = Child;
 		_count = ((Child != null) ? 1 : 0);

@@ -42,9 +42,10 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		public static readonly List<string> CloseOnlyList = new List<string> { "cmd.exe", "control.exe", "mmc.exe", "notepad.exe" };
 	}
 
-	private static Dictionary<int, string> _priorExistingProcesses;
+	// _priorExistingProcesses and _pidList are set by AcquireExistingProcesses, called from the constructor.
+	private static Dictionary<int, string> _priorExistingProcesses = null!;
 
-	private static List<int> _pidList;
+	private static List<int> _pidList = null!;
 
 	private bool _maintenancemodestate;
 
@@ -84,7 +85,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		_pidList = new List<int>();
 	}
 
-	private static int LaunchProcess(string processName, string args, bool hiddenProcess)
+	private static int LaunchProcess(string processName, string? args, bool hiddenProcess)
 	{
 		int processId = ProcessFunctions.LaunchProcess(processName, args, hiddenProcess);
 		if (!processName.Equals("explorer.exe") && processId > 0 && !_pidList.Contains(processId))
@@ -97,7 +98,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 	private void CloseControlPanel()
 	{
 		System.Windows.Forms.Application.OpenForms["SecureBrowser"]?.Close();
-		List<int> list = (from x in ProcessFunctions.GetRunningProcesses()
+		List<int>? list = (from x in ProcessFunctions.GetRunningProcesses()
 			where string.Compare(x.Value.Name, "MSHALTESTER", ignoreCase: true) == 0
 			select x)?.Select((KeyValuePair<int, ProcessDetails> x) => x.Value.Pid).ToList();
 		if (list != null && list.Any())
@@ -172,7 +173,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		string path = "Field Maintenance";
 		string key = "MaintenanceMode";
 		bool.TryParse(machineSettingsStore.GetValue<string>(path, key), out _maintenancemodestate);
-		string text = toggle_maintenance_mode_button.Content.ToString();
+		string text = toggle_maintenance_mode_button.Content.ToString()!;
 		text = ((!_maintenancemodestate) ? text.Replace("Off", "On") : text.Replace("On", "Off"));
 		toggle_maintenance_mode_button.Content = text;
 	}
@@ -183,14 +184,14 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		string path = "Field Maintenance";
 		string key = "MaintenanceMode";
 		machineSettingsStore.SetValue(path, key, _maintenancemodestate.ToString().ToLower());
-		string text = toggle_maintenance_mode_button.Content.ToString();
+		string text = toggle_maintenance_mode_button.Content.ToString()!;
 		text = ((!_maintenancemodestate) ? text.Replace("Off", "On") : text.Replace("On", "Off"));
 		toggle_maintenance_mode_button.Content = text;
 	}
 
 	private void SetOutOfOrderMode()
 	{
-		string text = toggle_out_of_order_button.Content.ToString();
+		string text = toggle_out_of_order_button.Content.ToString()!;
 		if (ProcessFunctions.GetMachineSettingValue("Store", "OutOfOrder", "false") == "true")
 		{
 			toggle_out_of_order_button.Content = text.Replace("On", "Off");
@@ -302,7 +303,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 
 	private void UpdateWatchDogStatus()
 	{
-		string text = watch_dog_toggle_button.Content.ToString();
+		string text = watch_dog_toggle_button.Content.ToString()!;
 		bool.TryParse(ProcessFunctions.GetMachineSettingValue("Store", "WatchDogEnabled", "true"), out var result);
 		if (result)
 		{
@@ -466,7 +467,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		}
 		if (_maintenancemodestate)
 		{
-			ErrorList errorList = service.SuspendAllJobsForMaintenance();
+			ErrorList errorList = service!.SuspendAllJobsForMaintenance();
 			if (errorList.Count > 0)
 			{
 				LogErrorsFromList(errorList);
@@ -475,7 +476,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		}
 		else
 		{
-			ErrorList errorList2 = service.ResumeAllMaintenanceSuspendedJobs();
+			ErrorList errorList2 = service!.ResumeAllMaintenanceSuspendedJobs();
 			if (errorList2.Count > 0)
 			{
 				LogErrorsFromList(errorList2);
@@ -497,13 +498,13 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("open_camera_directory");
 		try
 		{
-			object servicePath = ProcessFunctions.GetServicePath("HalSvc$Default");
+			object? servicePath = ProcessFunctions.GetServicePath("HalSvc$Default");
 			if (servicePath != null)
 			{
-				string fullPath = ProcessFunctions.GetFullPath(servicePath?.ToString() + "\\..\\video");
+				string? fullPath = ProcessFunctions.GetFullPath(servicePath?.ToString() + "\\..\\video");
 				if (!string.IsNullOrEmpty(fullPath))
 				{
-					LaunchProcess("explorer.exe", fullPath.ToString(), hiddenProcess: false);
+					LaunchProcess("explorer.exe", fullPath!.ToString(), hiddenProcess: false);
 					return;
 				}
 				LogHelper.Instance.Log("Unexpected error: Could not find path to video directory: " + servicePath);
@@ -526,9 +527,9 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("secure_browser");
 		try
 		{
-			Dictionary<string, object> table = ProcessFunctions.GetTable("approved_urls");
+			Dictionary<string, object>? table = ProcessFunctions.GetTable("approved_urls");
 			NavigateUrlCallback navigateUrlCallback = ProcessFunctions.SendAudit;
-			ProcessFunctions.LaunchSecureBrowser(table, navigateUrlCallback);
+			ProcessFunctions.LaunchSecureBrowser(table!, navigateUrlCallback);
 		}
 		catch (Exception ex)
 		{
@@ -540,7 +541,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 	private void OpenKaseyaConfigButtonClick(object sender, RoutedEventArgs e)
 	{
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("open_kaseya_config");
-		string kaseyaIniDPath = KaseyaMethods.GetKaseyaIniDPath();
+		string? kaseyaIniDPath = KaseyaMethods.GetKaseyaIniDPath();
 		if (!string.IsNullOrEmpty(kaseyaIniDPath))
 		{
 			LaunchProcess("notepad.exe", kaseyaIniDPath, hiddenProcess: false);
@@ -607,7 +608,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		string text = ProcessFunctions.TouchScreenDriver();
 		if (!string.IsNullOrEmpty(text))
 		{
-			ProcessFunctions.LaunchProcess(ProcessFunctions.GetFileName(text), text, hiddenProcess: false);
+			ProcessFunctions.LaunchProcess(ProcessFunctions.GetFileName(text)!, text, hiddenProcess: false);
 		}
 	}
 
@@ -632,7 +633,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("start_field_maintanence_application");
 		while (System.Windows.Forms.Application.OpenForms["SecureBrowser"] != null)
 		{
-			System.Windows.Forms.Application.OpenForms["SecureBrowser"].Close();
+			System.Windows.Forms.Application.OpenForms["SecureBrowser"]!.Close();
 		}
 		if (_idleTimer != null)
 		{
@@ -655,7 +656,7 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		ProcessFunctions.PerformActivityLogAndSendAuditEvent("toggle_hal_service");
 		try
 		{
-			string serviceStatus = ProcessFunctions.GetServiceStatus("halsvc$default");
+			string? serviceStatus = ProcessFunctions.GetServiceStatus("halsvc$default");
 			if (serviceStatus == "Running")
 			{
 				ProcessFunctions.StopService("halsvc$default");
@@ -687,9 +688,9 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 		}
 		else
 		{
-			string processName = ProcessFunctions.CombinePaths(text, "mshaltester.exe");
-			string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
-			ProcessFunctions.LaunchProcess(processName, "--secure --username:" + userName, hiddenProcess: false);
+			string? processName = ProcessFunctions.CombinePaths(text, "mshaltester.exe");
+			string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+			ProcessFunctions.LaunchProcess(processName!, "--secure --username:" + userName, hiddenProcess: false);
 		}
 	}
 
@@ -711,10 +712,10 @@ public partial class ControlPanelViewUserControl : System.Windows.Controls.UserC
 	private bool IsWindows10()
 	{
 		bool result = false;
-		RegistryKey key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion");
+		RegistryKey? key = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion");
 		if (key != null)
 		{
-			object registryValue = key.GetValue("CurrentMajorVersionNumber");
+			object? registryValue = key.GetValue("CurrentMajorVersionNumber");
 			if (registryValue != null)
 			{
 				result = Convert.ToInt32(registryValue) == 10;

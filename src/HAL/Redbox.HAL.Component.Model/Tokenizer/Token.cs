@@ -39,7 +39,7 @@ public class Token : ICloneable<Token>
 		PairSeparator = "=";
 	}
 
-	public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if (this == obj)
 		{

@@ -15,7 +15,9 @@ public abstract class ExpressionEvalBase
 		ParseOnly
 	}
 
-	private ExpressionTokenizer _tokenizer;
+	// Set by Evaluate/CheckSyntax before parsing starts. The Parse* methods return null only in ParseOnly mode, where
+	// the value is not used.
+	private ExpressionTokenizer _tokenizer = null!;
 
 	private EvalMode _evalMode;
 
@@ -145,7 +147,7 @@ public abstract class ExpressionEvalBase
 			ExpressionTokenizer.Position end = _tokenizer.CurrentPosition;
 			if (SyntaxCheckOnly())
 			{
-				return null;
+				return null!;
 			}
 			switch (op)
 			{
@@ -1074,7 +1076,7 @@ public abstract class ExpressionEvalBase
 				}
 				throw BuildParseError(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1040"), GetSimpleTypeName(operand.GetType())), operandStart, operandEnd);
 			}
-			return null;
+			return null!;
 		}
 		if (_tokenizer.IsKeyword("not"))
 		{
@@ -1086,7 +1088,7 @@ public abstract class ExpressionEvalBase
 			{
 				return !(bool)SafeConvert(typeof(bool), operand, "the argument of 'not' operator", operandStart, operandEnd);
 			}
-			return null;
+			return null!;
 		}
 		if (_tokenizer.CurrentToken == ExpressionTokenizer.TokenType.LeftParen)
 		{
@@ -1144,7 +1146,7 @@ public abstract class ExpressionEvalBase
 				{
 					_tokenizer.GetNextToken();
 				}
-				MethodInfo function = null;
+				MethodInfo? function = null;
 				if (isFunction)
 				{
 					if (_tokenizer.CurrentToken != ExpressionTokenizer.TokenType.LeftParen)
@@ -1204,11 +1206,12 @@ public abstract class ExpressionEvalBase
 					{
 						if (isFunction)
 						{
-							return EvaluateFunction(function, args.ToArray());
+							// function was looked up above (not ParseOnly); a void or null result flows on as before.
+							return EvaluateFunction(function!, args.ToArray())!;
 						}
 						return EvaluateProperty(name);
 					}
-					return null;
+					return null!;
 				}
 				catch (Exception ex)
 				{
@@ -1355,10 +1358,10 @@ public abstract class ExpressionEvalBase
 		{
 			return "timespan";
 		}
-		return t.FullName;
+		return t.FullName!;
 	}
 
-	protected abstract object EvaluateFunction(MethodInfo method, object[] args);
+	protected abstract object? EvaluateFunction(MethodInfo method, object?[] args);
 
 	protected abstract object EvaluateProperty(string propertyName);
 

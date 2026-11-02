@@ -26,7 +26,7 @@ public class LocalDataInstance : ILocalDataInstance
 	{
 		if (!string.IsNullOrEmpty(hashId))
 		{
-			IBadCard value = null;
+			IBadCard? value = null;
 			if (!BadCardList.TryGetValue(hashId, out value))
 			{
 				value = new BadCard
@@ -44,7 +44,7 @@ public class LocalDataInstance : ILocalDataInstance
 
 	public void RemoveAccountFromOfflineBadCardList(string hashId)
 	{
-		IBadCard value = null;
+		IBadCard? value = null;
 		if (!string.IsNullOrEmpty(hashId) && BadCardList.TryGetValue(hashId, out value))
 		{
 			BadCardList.Remove(hashId);

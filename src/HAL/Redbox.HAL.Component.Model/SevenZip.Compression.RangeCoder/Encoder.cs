@@ -6,7 +6,7 @@ internal class Encoder
 {
 	public const uint kTopValue = 16777216u;
 
-	private Stream Stream;
+	private Stream? Stream;
 
 	public ulong Low;
 
@@ -30,7 +30,7 @@ internal class Encoder
 
 	public void Init()
 	{
-		StartPosition = Stream.Position;
+		StartPosition = Stream!.Position;
 		Low = 0uL;
 		Range = uint.MaxValue;
 		_cacheSize = 1u;
@@ -47,12 +47,12 @@ internal class Encoder
 
 	public void FlushStream()
 	{
-		Stream.Flush();
+		Stream!.Flush();
 	}
 
 	public void CloseStream()
 	{
-		Stream.Close();
+		Stream!.Close();
 	}
 
 	public void Encode(uint start, uint size, uint total)
@@ -73,7 +73,7 @@ internal class Encoder
 			byte b = _cache;
 			do
 			{
-				Stream.WriteByte((byte)(b + (Low >> 32)));
+				Stream!.WriteByte((byte)(b + (Low >> 32)));
 				b = byte.MaxValue;
 			}
 			while (--_cacheSize != 0);
@@ -121,6 +121,6 @@ internal class Encoder
 
 	public long GetProcessedSizeAdd()
 	{
-		return _cacheSize + Stream.Position - StartPosition + 4;
+		return _cacheSize + Stream!.Position - StartPosition + 4;
 	}
 }

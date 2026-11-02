@@ -66,7 +66,7 @@ internal static class StopwatchFunctions
 	}
 
 	[KernelFunction(Name = "kernel.stopwatchformat")]
-	internal static string GetFormattedTimespan(string name)
+	internal static string? GetFormattedTimespan(string name)
 	{
 		if (!m_stopwatches.ContainsKey(name))
 		{

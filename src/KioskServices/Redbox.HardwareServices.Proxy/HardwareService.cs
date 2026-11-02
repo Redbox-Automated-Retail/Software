@@ -22,7 +22,7 @@ public class HardwareService : IHardwareService
 
 	internal const string DefaultHardwareServiceUrl = "rcp://localhost:7001";
 
-	private Redbox.HAL.Client.HardwareJob[] SuspendedMaintenanceModeJobs;
+	private Redbox.HAL.Client.HardwareJob[]? SuspendedMaintenanceModeJobs;
 
 	private readonly IList<Redbox.HAL.Client.HardwareJob> m_activeJobs = new List<Redbox.HAL.Client.HardwareJob>();
 
@@ -64,7 +64,7 @@ public class HardwareService : IHardwareService
 		}
 	}
 
-	internal Redbox.HAL.Client.HardwareService Service { get; set; }
+	internal Redbox.HAL.Client.HardwareService Service { get; set; } = null!; // created by Reset (from Initialize)
 
 	public bool CanSwitch()
 	{
@@ -138,7 +138,7 @@ public class HardwareService : IHardwareService
 	{
 		lock (this)
 		{
-			Redbox.HAL.Client.HardwareJob hardwareJob = m_activeJobs.FirstOrDefault((Redbox.HAL.Client.HardwareJob x) => x.ID == jobId);
+			Redbox.HAL.Client.HardwareJob? hardwareJob = m_activeJobs.FirstOrDefault((Redbox.HAL.Client.HardwareJob x) => x.ID == jobId);
 			if (hardwareJob != null)
 			{
 				Redbox.Core.LogHelper.Instance.Log("Removing From Active Job List JobId: " + jobId + " - ProgramName: " + hardwareJob.ProgramName + " - Label: " + hardwareJob.Label + " - Status: " + hardwareJob.Status);
@@ -153,7 +153,7 @@ public class HardwareService : IHardwareService
 		string version = AssemblyInfoHelper.GetVersion(typeof(Redbox.HAL.Client.HardwareService).Assembly);
 		IMacroService service = Redbox.Core.ServiceLocator.Instance.GetService<IMacroService>();
 		service["HALVersion"] = version;
-		service["HALServiceVersion"] = (string)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\HAL", "Product Version", version);
+		service["HALServiceVersion"] = (string)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\HAL", "Product Version", version)!; // null when the HAL key is missing; stored as it is
 		Service = new Redbox.HAL.Client.HardwareService(IPCProtocol.Parse(Url));
 		try
 		{
@@ -184,7 +184,7 @@ public class HardwareService : IHardwareService
 		return result;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList Init(out string jobId, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	public Redbox.KioskEngine.ComponentModel.ErrorList Init(out string? jobId, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -198,16 +198,16 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ScheduleJob(string scriptName, string label, bool enableDebugging, string priority, string startTimeString, ReadOnlyCollection<object> stackValues, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, bool allowMultiple, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ScheduleJob(string scriptName, string label, bool enableDebugging, string priority, string startTimeString, ReadOnlyCollection<object> stackValues, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, bool allowMultiple, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		IHardwareJob hardwareJob = null;
+		IHardwareJob? hardwareJob = null;
 		if (!allowMultiple)
 		{
 			Redbox.KioskEngine.ComponentModel.ErrorList hardwareJobs = GetHardwareJobs(out var hardwareJobs2);
@@ -218,7 +218,7 @@ public class HardwareService : IHardwareService
 			}
 			hardwareJob = hardwareJobs2.ToList().Find((IHardwareJob item) => string.Compare(scriptName, item.ProgramName, ignoreCase: true) == 0 && string.Compare(label, item.Label, ignoreCase: true) == 0 && (string.Compare(HardwareJobStatus.Pending.ToString(), item.Status, ignoreCase: true) == 0 || string.Compare(HardwareJobStatus.Running.ToString(), item.Status, ignoreCase: true) == 0 || string.Compare(HardwareJobStatus.Suspended.ToString(), item.Status, ignoreCase: true) == 0));
 		}
-		Redbox.HAL.Client.HardwareJob job;
+		Redbox.HAL.Client.HardwareJob? job;
 		if (hardwareJob == null)
 		{
 			DateTime? startTime = null;
@@ -239,9 +239,9 @@ public class HardwareService : IHardwareService
 			{
 				foreach (object stackValue in stackValues)
 				{
-					job.Push(stackValue);
+					job!.Push(stackValue); // the HAL command succeeded, so it returned the job (also at each ConfigureJob(job!, ...) below)
 				}
-				jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+				jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 			}
 		}
 		else
@@ -249,7 +249,7 @@ public class HardwareService : IHardwareService
 			HardwareCommandResult job2 = Service.GetJob(hardwareJob.ID, out job);
 			if (job2.Success)
 			{
-				jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+				jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 			}
 			else
 			{
@@ -259,12 +259,12 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList Vend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string[] barcodes, int? prepositionedDeck, int? prepositionedSlot, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList Vend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string[] barcodes, int? prepositionedDeck, int? prepositionedSlot, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult hardwareCommandResult;
-		Redbox.HAL.Client.HardwareJob job;
+		Redbox.HAL.Client.HardwareJob? job;
 		if (!prepositionedDeck.HasValue && !prepositionedSlot.HasValue)
 		{
 			hardwareCommandResult = Service.Vend(barcodes, new HardwareJobSchedule
@@ -280,7 +280,7 @@ public class HardwareService : IHardwareService
 			}, out job);
 			if (hardwareCommandResult.Success && prepositionedSlot.HasValue && prepositionedDeck.HasValue)
 			{
-				job.Push(barcodes);
+				job!.Push(barcodes);
 				job.Push(prepositionedSlot.Value);
 				job.Push(prepositionedDeck.Value);
 				job.Push(barcodes.Length);
@@ -293,12 +293,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList PreposVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string[] barcodes, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList PreposVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string[] barcodes, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -312,12 +312,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList CheckPicker(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList CheckPicker(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -331,12 +331,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList VendLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList VendLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string? jobId)
 	{
 		jobId = null;
 		int position = 1;
@@ -367,12 +367,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ResetLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ResetLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, IList<int> locations, out string? jobId)
 	{
 		jobId = null;
 		int position = 1;
@@ -403,12 +403,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList VendUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int deck, int slot, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList VendUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int deck, int slot, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -422,12 +422,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList Return(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList Return(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -441,12 +441,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ReturnUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string returnTime, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ReturnUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string returnTime, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -460,12 +460,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList Sync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, DateTime? startTime, int startDeck, int startSlot, int endDeck, int endSlot, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList Sync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, DateTime? startTime, int startDeck, int startSlot, int endDeck, int endSlot, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -480,13 +480,13 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job.SetLabel(label);
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			job!.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList SyncLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, DateTime? startTime, IList<int> locations, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList SyncLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, DateTime? startTime, IList<int> locations, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -508,16 +508,16 @@ public class HardwareService : IHardwareService
 		{
 			foreach (int location in locations)
 			{
-				job.Push(location);
+				job!.Push(location);
 			}
-			job.Push(locations.Count / 2);
-			job.SetLabel(label);
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			job!.Push(locations.Count / 2);
+			job!.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetMachineInfo(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetMachineInfo(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -531,12 +531,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareStatus(DateTime? startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareStatus(DateTime? startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -550,17 +550,17 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList SoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList SoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		return SoftSync(eventHandler, statusChangeHandler, null, null, out jobId);
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList SoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, DateTime? startTime, string label, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList SoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, DateTime? startTime, string? label, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -575,16 +575,16 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 			if (!string.IsNullOrEmpty(label))
 			{
-				job.SetLabel(label);
+				job!.SetLabel(label!); // checked just above
 			}
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList QlmUnload(string label, DateTime? startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList QlmUnload(string label, DateTime? startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -599,13 +599,13 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
-			job.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
+			job!.SetLabel(label);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList QlmThin(string label, DateTime? startTime, string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList QlmThin(string label, DateTime? startTime, string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -625,13 +625,13 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
-			job.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
+			job!.SetLabel(label);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList VmzThin(string label, DateTime? startTime, string[] barcodesToBin, string[] rebalances, string[] redeployments, string[] barcodesToVmz, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList VmzThin(string label, DateTime? startTime, string[] barcodesToBin, string[] rebalances, string[] redeployments, string[] barcodesToVmz, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -651,13 +651,13 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
-			job.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
+			job!.SetLabel(label);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList QlmUnloadAndThin(string label, DateTime? startTime, string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList QlmUnloadAndThin(string label, DateTime? startTime, string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -677,13 +677,13 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
-			job.SetLabel(label);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
+			job!.SetLabel(label);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetBarcodesInBin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetBarcodesInBin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -697,12 +697,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetInventoryStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetInventoryStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -716,12 +716,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList VMZRemovedThins(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList VMZRemovedThins(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -735,12 +735,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetNonThinsInVMZ(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetNonThinsInVMZ(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -754,12 +754,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList VMZMerchSummary(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList VMZMerchSummary(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -773,12 +773,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList FileMarkerDisk(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int markerDeck, int markerSlot, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList FileMarkerDisk(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int markerDeck, int markerSlot, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -793,12 +793,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ClearMerchStatus(string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ClearMerchStatus(string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -813,12 +813,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetBarcodeVMZPosition(string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetBarcodeVMZPosition(string[] ids, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -833,16 +833,16 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetKioskFunctionCheckData(out IList<Redbox.KioskEngine.ComponentModel.IKioskFunctionCheckData> data)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetKioskFunctionCheckData(out IList<Redbox.KioskEngine.ComponentModel.IKioskFunctionCheckData>? data)
 	{
 		data = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		IList<Redbox.HAL.Component.Model.IKioskFunctionCheckData> sessions = null;
+		IList<Redbox.HAL.Component.Model.IKioskFunctionCheckData>? sessions = null;
 		HardwareCommandResult kioskFunctionCheckData = Service.GetKioskFunctionCheckData(out sessions);
 		Redbox.Core.LogHelper.Instance.Log($"HardwareService.GetKioskFunctionCheckData result.Success| {kioskFunctionCheckData.Success}");
 		if (!kioskFunctionCheckData.Success)
@@ -882,7 +882,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.Trash();
+			job = job2!.Trash(); // GetJob succeeded
 			RemoveJobFromActiveJobList(jobId);
 			if (!job.Success)
 			{
@@ -902,7 +902,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.Resume();
+			job = job2!.Resume(); // GetJob succeeded
 			if (!job.Success)
 			{
 				job.Errors.AddToLocalErrorList(errorList);
@@ -921,7 +921,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.Suspend();
+			job = job2!.Suspend(); // GetJob succeeded
 			if (!job.Success)
 			{
 				job.Errors.AddToLocalErrorList(errorList);
@@ -940,7 +940,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.Terminate();
+			job = job2!.Terminate(); // GetJob succeeded
 			RemoveJobFromActiveJobList(jobId);
 			if (!job.Success)
 			{
@@ -983,7 +983,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.GetResults(out var results);
+			job = job2!.GetResults(out var results); // GetJob succeeded
 			if (!job.Success)
 			{
 				job.Errors.AddToLocalErrorList(errorList);
@@ -1006,7 +1006,7 @@ public class HardwareService : IHardwareService
 					{
 						itemID = "UNDEFINED";
 					}
-					string previousItem = ((programResult.PreviousItem != null) ? programResult.PreviousItem.Barcode : "NONE");
+					string? previousItem = ((programResult.PreviousItem != null) ? programResult.PreviousItem.Barcode : "NONE");
 					if (programResult.PreviousItem != null && programResult.PreviousItem.IsEmpty())
 					{
 						previousItem = "EMPTY";
@@ -1047,7 +1047,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			job = job2.GetErrors(out var errors2);
+			job = job2!.GetErrors(out var errors2); // GetJob succeeded
 			if (!job.Success)
 			{
 				job.Errors.AddToLocalErrorList(errorList);
@@ -1060,7 +1060,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack, string bundleName = null)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack, string? bundleName = null)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList result = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		Interlocked.Increment(ref m_working);
@@ -1126,7 +1126,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetSchedulerStatus(out string status)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetSchedulerStatus(out string? status)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult schedulerStatus = Service.GetSchedulerStatus(out status);
@@ -1155,8 +1155,8 @@ public class HardwareService : IHardwareService
 			List<IHardwareJob> list = new List<IHardwareJob>();
 			foreach (Redbox.HAL.Client.HardwareJob hardwareJob in jobs2)
 			{
-				string startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
-				string executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());
+				string? startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
+				string? executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());
 				list.Add(new HardwareJob
 				{
 					ID = hardwareJob.ID,
@@ -1192,11 +1192,11 @@ public class HardwareService : IHardwareService
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList result = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		List<IHardwareJob> hardwareJobs = new List<IHardwareJob>();
-		Redbox.HAL.Client.HardwareJob[] suspendedMaintenanceModeJobs = SuspendedMaintenanceModeJobs;
+		Redbox.HAL.Client.HardwareJob[] suspendedMaintenanceModeJobs = SuspendedMaintenanceModeJobs!; // throws before SuspendAllJobsForMaintenance, as before
 		foreach (Redbox.HAL.Client.HardwareJob hardwareJob in suspendedMaintenanceModeJobs)
 		{
-			string startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
-			string executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());
+			string? startTime = ((!hardwareJob.StartTime.HasValue) ? null : hardwareJob.StartTime.Value.ToString("MM/dd/yyyy hh:mm tt"));
+			string? executionTime = ((!hardwareJob.ExecutionTime.HasValue) ? null : hardwareJob.ExecutionTime.Value.ToString());
 			hardwareJobs.Add(new HardwareJob
 			{
 				ID = hardwareJob.ID,
@@ -1228,7 +1228,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetInitStatus(out string status)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetInitStatus(out string? status)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult initStatus = Service.GetInitStatus(out status);
@@ -1239,7 +1239,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetQuickReturnStatus(out string status)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetQuickReturnStatus(out string? status)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult quickReturnStatus = Service.GetQuickReturnStatus(out status);
@@ -1261,7 +1261,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ReadFraudDisc(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ReadFraudDisc(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -1275,12 +1275,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList PrepForRedeploy(string[] decksToChange, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList PrepForRedeploy(string[] decksToChange, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
@@ -1299,16 +1299,16 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList PrepUnloadZone(int rotation, int last_deck, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList PrepUnloadZone(int rotation, int last_deck, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		jobId = null;
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		HardwareCommandResult hardwareCommandResult = null;
+		HardwareCommandResult? hardwareCommandResult = null;
 		hardwareCommandResult = ((last_deck != 0) ? Service.PrepUnloadZone(rotation, last_deck, new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.Highest
@@ -1322,7 +1322,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
@@ -1339,7 +1339,7 @@ public class HardwareService : IHardwareService
 		return new Redbox.KioskEngine.ComponentModel.ErrorList();
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList ResetTouchScreenController(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList ResetTouchScreenController(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult hardwareCommandResult = Service.ResetTouchscreenController(new HardwareJobSchedule
@@ -1353,12 +1353,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList PowerCycleRouter(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList PowerCycleRouter(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		HardwareCommandResult hardwareCommandResult = Service.PowerCycleRouter(new HardwareJobSchedule
@@ -1372,12 +1372,12 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareCorrectionStats(out ReadOnlyCollection<Redbox.HardwareServices.Proxy.ComponentModel.IHardwareCorrectionStatistic> stats)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareCorrectionStats(out ReadOnlyCollection<Redbox.HardwareServices.Proxy.ComponentModel.IHardwareCorrectionStatistic>? stats)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		stats = null;
@@ -1393,7 +1393,7 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareCorrectionStats(HardwareCorrectionStatisticType stat, out ReadOnlyCollection<Redbox.HardwareServices.Proxy.ComponentModel.IHardwareCorrectionStatistic> stats)
+	public Redbox.KioskEngine.ComponentModel.ErrorList GetHardwareCorrectionStats(HardwareCorrectionStatisticType stat, out ReadOnlyCollection<Redbox.HardwareServices.Proxy.ComponentModel.IHardwareCorrectionStatistic>? stats)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
 		stats = null;
@@ -1409,10 +1409,10 @@ public class HardwareService : IHardwareService
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList RemoveHardwareCorrectionStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList RemoveHardwareCorrectionStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		Redbox.HAL.Client.HardwareJob job = null;
+		Redbox.HAL.Client.HardwareJob? job = null;
 		HardwareCommandResult hardwareCommandResult = Service.RemoveHardwareCorrectionStats(new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.Highest
@@ -1424,15 +1424,15 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.ErrorList RemoveHardwareCorrectionStats(HardwareCorrectionStatisticType stat, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string jobId)
+	public Redbox.KioskEngine.ComponentModel.ErrorList RemoveHardwareCorrectionStats(HardwareCorrectionStatisticType stat, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, out string? jobId)
 	{
 		Redbox.KioskEngine.ComponentModel.ErrorList errorList = new Redbox.KioskEngine.ComponentModel.ErrorList();
-		Redbox.HAL.Client.HardwareJob job = null;
+		Redbox.HAL.Client.HardwareJob? job = null;
 		HardwareCommandResult hardwareCommandResult = Service.RemoveHardwareCorrectionStats(stat.ToStat(), new HardwareJobSchedule
 		{
 			Priority = HardwareJobPriority.Highest
@@ -1444,7 +1444,7 @@ public class HardwareService : IHardwareService
 		}
 		else
 		{
-			jobId = ConfigureJob(job, eventHandler, statusChangeHandler, errorList);
+			jobId = ConfigureJob(job!, eventHandler, statusChangeHandler, errorList);
 		}
 		return errorList;
 	}

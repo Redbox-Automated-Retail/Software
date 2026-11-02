@@ -18,7 +18,7 @@ public class TransferStatisticService : IPollRequestReply
 		try
 		{
 			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
-			for (TransferStatisticReport transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"); transferStatisticReport != null; transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"))
+			for (TransferStatisticReport? transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"); transferStatisticReport != null; transferStatisticReport = queueService.Peek<TransferStatisticReport>("statistic"))
 			{
 				PollRequest item = new PollRequest
 				{

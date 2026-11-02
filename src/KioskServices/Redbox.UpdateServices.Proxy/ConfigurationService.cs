@@ -26,7 +26,7 @@ public class ConfigurationService : IConfigurationService
 		return errorList;
 	}
 
-	public ErrorList Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool> canActivate, Action activateAction)
+	public ErrorList Add(string key, string filepath, string defaultCategory, TimeSpan? checkTime, Func<bool>? canActivate, Action activateAction)
 	{
 		ErrorList errorList = new ErrorList();
 		try

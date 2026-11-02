@@ -18,19 +18,19 @@ internal class FormMethod
 
 	private object m_lock = new object();
 
-	private DynamicMethod m_dynamicMethod;
+	private DynamicMethod? m_dynamicMethod;
 
-	private FormMethodHandler m_methodHandler;
+	private FormMethodHandler? m_methodHandler;
 
-	private List<FormMethodParameter> m_orderedParameters;
+	private List<FormMethodParameter>? m_orderedParameters;
 
-	private List<FormMethodParameter> m_requiredParameters;
+	private List<FormMethodParameter>? m_requiredParameters;
 
-	public string Usage { get; set; }
+	public string? Usage { get; set; }
 
-	public MethodInfo Method { get; set; }
+	public MethodInfo Method { get; set; } = null!; // set by the object initializer in CommandInstance
 
-	public string Description { get; set; }
+	public string? Description { get; set; }
 
 	public List<string> Filters => _filters;
 
@@ -80,19 +80,19 @@ internal class FormMethod
 		}
 	}
 
-	public void Invoke(CommandResult result, CommandContext context, CommandTokenizer tokenizer, object commandInstance, bool enable, List<string> sourceFilters)
+	public void Invoke(CommandResult result, CommandContext context, CommandTokenizer tokenizer, object commandInstance, bool enable, List<string>? sourceFilters)
 	{
 		if (!IsInFilter(enable, sourceFilters))
 		{
 			LogHelper.Instance.Log($"Command {Method.Name} is not in filters.");
 			result.Errors.Add(Error.NewError("S514", $"Invalid Command: {Method.Name}", ""));
 		}
-		object[] arguments = new object[OrderedParameters.Count + 1];
+		object?[] arguments = new object?[OrderedParameters.Count + 1];
 		arguments[0] = context;
 		int index = 1;
 		foreach (FormMethodParameter orderedParameter in OrderedParameters)
 		{
-			KeyValuePair keyValuePair = tokenizer.Tokens.GetKeyValuePair(orderedParameter.KeyName);
+			KeyValuePair? keyValuePair = tokenizer.Tokens.GetKeyValuePair(orderedParameter.KeyName);
 			if (keyValuePair == null)
 			{
 				arguments[index++] = null;
@@ -100,7 +100,7 @@ internal class FormMethod
 			}
 			try
 			{
-				arguments[index++] = orderedParameter.ConvertValue(keyValuePair.Value);
+				arguments[index++] = orderedParameter.ConvertValue(keyValuePair.Value!); // a pair found by its key has both parts
 			}
 			catch (Exception e)
 			{
@@ -121,14 +121,14 @@ internal class FormMethod
 		}
 	}
 
-	public bool ValidateParameters(CommandResult result, CommandTokenizer tokenizer, Action<string, string> paramAction)
+	public bool ValidateParameters(CommandResult result, CommandTokenizer tokenizer, Action<string, string>? paramAction)
 	{
 		foreach (FormMethodParameter requiredParameter in RequiredParameters)
 		{
-			KeyValuePair keyValuePair = tokenizer.Tokens.GetKeyValuePair(requiredParameter.KeyName);
+			KeyValuePair? keyValuePair = tokenizer.Tokens.GetKeyValuePair(requiredParameter.KeyName);
 			if (keyValuePair != null)
 			{
-				paramAction?.Invoke(keyValuePair.Key, keyValuePair.Value);
+				paramAction?.Invoke(keyValuePair.Key!, keyValuePair.Value!); // a pair found by its key has both parts
 			}
 			else
 			{
@@ -138,7 +138,7 @@ internal class FormMethod
 		return !result.Errors.ContainsError();
 	}
 
-	private bool IsInFilter(bool enable, List<string> sourceFilters)
+	private bool IsInFilter(bool enable, List<string>? sourceFilters)
 	{
 		if (!enable)
 		{
@@ -197,10 +197,10 @@ internal class FormMethod
 			}
 			iLGenerator.Emit(OpCodes.Ret);
 		}
-		m_methodHandler = (FormMethodHandler)m_dynamicMethod.CreateDelegate(typeof(FormMethodHandler));
+		m_methodHandler = (FormMethodHandler)m_dynamicMethod!.CreateDelegate(typeof(FormMethodHandler));
 	}
 
-	internal void InvokeMethod(object instance, object[] values)
+	internal void InvokeMethod(object instance, object?[] values)
 	{
 		if (m_methodHandler == null)
 		{

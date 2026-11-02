@@ -94,7 +94,7 @@ public class ShellHelper
 		return StartProcessAsShellUser(processName, null);
 	}
 
-	public static int StartProcessAsShellUser(string processName, string args)
+	public static int StartProcessAsShellUser(string processName, string? args)
 	{
 		Process[] processesByName = Process.GetProcessesByName("KioskShell");
 		if (processesByName.Length == 0 || processesByName.Length > 1)
@@ -115,9 +115,9 @@ public class ShellHelper
 				}
 				try
 				{
-					string directoryName = Path.GetDirectoryName(processName);
+					string? directoryName = Path.GetDirectoryName(processName);
 					string fileName = Path.GetFileName(processName);
-					string text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
+					string? text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
 					Console.WriteLine($"starting from path: '{processName}' with file: '{fileName}' in directory: '{directoryName}' with command line: '{text}'");
 					STARTUPINFO lpStartupInfo = default(STARTUPINFO);
 					lpStartupInfo.cb = Marshal.SizeOf(lpStartupInfo);
@@ -158,7 +158,7 @@ public class ShellHelper
 	private static extern bool CloseHandle(IntPtr handle);
 
 	[DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-	private static extern bool CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string lpCommandLine, IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+	private static extern bool CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string? lpCommandLine, IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string? lpCurrentDirectory, ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
 
 	private static IntPtr DuplicateToken(IntPtr sourceToken)
 	{

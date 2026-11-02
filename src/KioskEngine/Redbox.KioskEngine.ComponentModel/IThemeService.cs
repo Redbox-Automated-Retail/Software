@@ -15,5 +15,5 @@ public interface IThemeService
 
 	void RegisterThemedControls(string assemblyName);
 
-	FrameworkElement GetNewThemedControlInstance(string controlName);
+	FrameworkElement? GetNewThemedControlInstance(string? controlName);
 }

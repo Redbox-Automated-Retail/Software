@@ -13,7 +13,7 @@ namespace Redbox.Rental.Kernel;
 public static class InventoryFunctions
 {
 	[KernelFunction(Name = "kernel.rental_inventory_get_rapidstatus_all")]
-	internal static LuaTable GetRapidStatus()
+	internal static LuaTable? GetRapidStatus()
 	{
 		try
 		{
@@ -27,7 +27,7 @@ public static class InventoryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_inventory_get_rapidstatus_by_status")]
-	internal static LuaTable GetRapidStatusByStatus(string status)
+	internal static LuaTable? GetRapidStatusByStatus(string status)
 	{
 		try
 		{
@@ -41,11 +41,11 @@ public static class InventoryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_inventory_get_barcodes_by_status")]
-	internal static LuaTable GetBarcodesByStatus(string status, bool orderByTitle)
+	internal static LuaTable? GetBarcodesByStatus(string status, bool orderByTitle)
 	{
 		try
 		{
-			List<Inventory> allInventory = GetAllInventory(status);
+			List<Inventory>? allInventory = GetAllInventory(status);
 			if (allInventory == null)
 			{
 				return null;
@@ -68,7 +68,7 @@ public static class InventoryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_inventory_get_rapidstatus")]
-	internal static LuaTable GetRapidStatus(string barcode)
+	internal static LuaTable? GetRapidStatus(string barcode)
 	{
 		try
 		{
@@ -87,7 +87,7 @@ public static class InventoryFunctions
 		LuaTable result = new List<Dictionary<string, object>>().ToLuaTable();
 		try
 		{
-			List<Dictionary<string, object>> rebalancesInAsLuaFormat = GetRebalancesInAsLuaFormat();
+			List<Dictionary<string, object>>? rebalancesInAsLuaFormat = GetRebalancesInAsLuaFormat();
 			if (rebalancesInAsLuaFormat == null)
 			{
 				return result;
@@ -129,7 +129,7 @@ public static class InventoryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_inventory_get_inventory_action_modification_time")]
-	internal static string GetInventoryActionModificationTime(string format)
+	internal static string? GetInventoryActionModificationTime(string format)
 	{
 		try
 		{
@@ -152,7 +152,7 @@ public static class InventoryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.rental_inventory_get_rapid_status_modification_time")]
-	internal static string GetRadpidStatusModificationTime(string format)
+	internal static string? GetRadpidStatusModificationTime(string format)
 	{
 		try
 		{
@@ -183,7 +183,7 @@ public static class InventoryFunctions
 			List<string> list = new List<string>();
 			foreach (LuaTable value in unmerchandizedBarcodesTable.Values)
 			{
-				list.Add(value["barcode"].ToString());
+				list.Add(value["barcode"]!.ToString()!); // throws on a missing barcode, as before
 			}
 			inventoryService?.ReportUnmerchandizedBarcodes(list);
 		}
@@ -193,7 +193,7 @@ public static class InventoryFunctions
 		}
 	}
 
-	private static Dictionary<string, object> GetAllRapidStatusAsLuaFormat(string filter)
+	private static Dictionary<string, object>? GetAllRapidStatusAsLuaFormat(string? filter)
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService == null)
@@ -215,20 +215,20 @@ public static class InventoryFunctions
 			}
 			if (string.IsNullOrEmpty(filter) || text.Equals(filter, StringComparison.CurrentCultureIgnoreCase))
 			{
-				Dictionary<string, object> value = new Dictionary<string, object>
+				Dictionary<string, object?> value = new Dictionary<string, object?>
 				{
 					["barcode"] = item.Value.Barcode,
 					["product_id"] = item.Value.TitleId,
 					["status"] = text,
 					["total_rental_count"] = item.Value.TotalRentalCount
 				};
-				dict[item.Value.Barcode] = value;
+				dict[item.Value.Barcode!] = value;
 			}
 		});
 		return dict;
 	}
 
-	private static List<Inventory> GetAllInventory(string filter)
+	private static List<Inventory>? GetAllInventory(string filter)
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService == null)
@@ -256,7 +256,7 @@ public static class InventoryFunctions
 		return list;
 	}
 
-	private static Dictionary<string, object> GetRapidStatusAsLuaFormat(string barcode)
+	private static Dictionary<string, object?>? GetRapidStatusAsLuaFormat(string barcode)
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService == null)
@@ -273,7 +273,7 @@ public static class InventoryFunctions
 		{
 			value = "Wrong Title";
 		}
-		return new Dictionary<string, object>
+		return new Dictionary<string, object?>
 		{
 			["barcode"] = rapidStatus.Barcode,
 			["product_id"] = rapidStatus.TitleId,
@@ -282,7 +282,7 @@ public static class InventoryFunctions
 		};
 	}
 
-	private static List<Dictionary<string, object>> GetRebalancesInAsLuaFormat()
+	private static List<Dictionary<string, object>>? GetRebalancesInAsLuaFormat()
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService == null)
@@ -319,7 +319,7 @@ public static class InventoryFunctions
 		InnerReturn(storeNumber, returnType, barcode, deck, slot, returnTime, failedSecurityRead, fileName, null);
 	}
 
-	private static void InnerReturn(string storeNumber, string returnType, string barcode, int deck, int slot, string returnTime, bool failedSecurityRead, string fileName, LuaFunction callback)
+	private static void InnerReturn(string storeNumber, string returnType, string barcode, int deck, int slot, string returnTime, bool failedSecurityRead, string? fileName, LuaFunction? callback)
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
 		if (inventoryService == null)
@@ -336,7 +336,7 @@ public static class InventoryFunctions
 		{
 			return;
 		}
-		RemoteServiceCallback callback2 = null;
+		RemoteServiceCallback? callback2 = null;
 		if (callback != null)
 		{
 			callback2 = delegate(IRemoteServiceResult r)
@@ -380,25 +380,25 @@ public static class InventoryFunctions
 		}
 		foreach (object key in items.Keys)
 		{
-			LuaTable luaTable = (LuaTable)items[key];
+			LuaTable? luaTable = (LuaTable?)items[key];
 			if (luaTable == null)
 			{
 				LogHelper.Instance.Log($"InventoryFunctions.InnerShapshot unable to cast item key {key} to a LuaTable; skipping this item.", LogEntryType.Error);
 				continue;
 			}
-			object deckValue = luaTable["deck"];
+			object? deckValue = luaTable["deck"];
 			int? deckNumber = null;
 			if (deckValue != null)
 			{
 				deckNumber = Convert.ToInt32(deckValue);
 			}
-			object slotValue = luaTable["slot"];
+			object? slotValue = luaTable["slot"];
 			int? slotNumber = null;
 			if (slotValue != null)
 			{
 				slotNumber = Convert.ToInt32(slotValue);
 			}
-			string text = Convert.ToString(luaTable["barcode"]);
+			string text = Convert.ToString(luaTable["barcode"])!;
 			if (string.IsNullOrEmpty(text))
 			{
 				LogHelper.Instance.Log($"A null or empty barcode was passed into InventoryFunctions.Snapshot where deck = {deckNumber} and slot = {slotNumber}; skipping this item.", LogEntryType.Error);
@@ -449,10 +449,10 @@ public static class InventoryFunctions
 			List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
 			for (int i = 1; i <= barcode_list.Keys.Count; i++)
 			{
-				LuaTable luaTable = (LuaTable)barcode_list[i];
+				LuaTable luaTable = (LuaTable)barcode_list[i]!;
 				Dictionary<string, string> dictionary = new Dictionary<string, string>();
-				dictionary.Add("Barcode", luaTable[1] as string);
-				dictionary.Add("Action", luaTable[2] as string);
+				dictionary.Add("Barcode", (luaTable[1] as string)!);
+				dictionary.Add("Action", (luaTable[2] as string)!);
 				list.Add(dictionary);
 			}
 			inventoryService.FmaDiscAction(storeNumber, username, jobName, jobTimeStamp, list, delegate(IRemoteServiceResult r)

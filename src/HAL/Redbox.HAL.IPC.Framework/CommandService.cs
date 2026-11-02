@@ -31,8 +31,8 @@ public class CommandService
 			{
 				return commandResult;
 			}
-			Token mnemonic = tokenizer.Tokens.GetMnemonic();
-			CommandInstance command = CommandRepository.GetCommand(mnemonic.Value);
+			Token mnemonic = tokenizer.Tokens.GetMnemonic()!;
+			CommandInstance? command = CommandRepository.GetCommand(mnemonic.Value);
 			if (command == null)
 			{
 				commandResult.Errors.Add(Error.NewError("S514", $"Command {mnemonic.Value} not recognized.", "Use HELP command to learn more about available commands."));
@@ -56,7 +56,7 @@ public class CommandService
 					commandResult.Errors.Add(Error.NewError("S001", $"No form symbol was specified for the {mnemonic.Value.ToUpper()} comand.", $"Use the HELP command to learn how to properly invoke the {mnemonic.Value.ToUpper()} command and its forms."));
 					return commandResult;
 				}
-				FormMethod method = command.GetMethod(symbols[0].Value);
+				FormMethod? method = command.GetMethod(symbols[0].Value);
 				if (method == null)
 				{
 					commandResult.Errors.Add(Error.NewError("S001", $"An unknown form was used for the {mnemonic.Value.ToUpper()} comand.", $"Use the HELP command to learn how to properly invoke the {mnemonic.Value.ToUpper()} command and its forms."));

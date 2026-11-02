@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>kioskengine</AssemblyName>
     <RootNamespace>Redbox.KioskEngine.Bootstrap</RootNamespace>
     <OutputType>WinExe</OutputType>

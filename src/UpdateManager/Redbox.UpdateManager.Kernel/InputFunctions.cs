@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.Kernel;
 public static class InputFunctions
 {
 	[KernelFunction(Name = "kernel.inputyesno")]
-	internal static string AskYesNoQuestion(string title, string message)
+	internal static string? AskYesNoQuestion(string title, string message)
 	{
 		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
 		if (inputService != null)
@@ -19,7 +19,7 @@ public static class InputFunctions
 	}
 
 	[KernelFunction(Name = "kernel.inputfindfile")]
-	internal static LuaTable FindFile()
+	internal static LuaTable? FindFile()
 	{
 		IInputService inputService = ServiceLocator.Instance.GetService<IInputService>();
 		if (inputService == null)

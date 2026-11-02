@@ -14,5 +14,5 @@ internal interface IConsole : IDisposable
 
 	void WriteLine(string value);
 
-	void WriteLine(string format, params object[] parms);
+	void WriteLine(string format, params object?[] parms);
 }

@@ -17,7 +17,7 @@ internal class ImageDescriptorPacket : ImagePacket
 		}
 		m_imageName = Encoding.ASCII.GetString(nameBytes.ToArray());
 		index += 2;
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder? stringBuilder = new StringBuilder();
 		for (; Packet[index] != 41; index++)
 		{
 			stringBuilder.Append((byte)(Packet[index] - 48));

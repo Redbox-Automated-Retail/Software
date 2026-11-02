@@ -8,13 +8,13 @@ namespace Redbox.Macros;
 
 public static class ResourceUtils
 {
-	private static ResourceManager _sharedResourceManager;
+	private static ResourceManager? _sharedResourceManager;
 
 	private static readonly Hashtable _resourceManagerDictionary = new Hashtable();
 
 	public static void RegisterSharedAssembly(Assembly assembly)
 	{
-		_sharedResourceManager = new ResourceManager(assembly.GetName().Name, assembly);
+		_sharedResourceManager = new ResourceManager(assembly.GetName().Name!, assembly);
 	}
 
 	[MethodImpl(MethodImplOptions.NoInlining)]
@@ -25,32 +25,33 @@ public static class ResourceUtils
 	}
 
 	[MethodImpl(MethodImplOptions.NoInlining)]
-	public static string GetString(string name, CultureInfo culture)
+	public static string GetString(string name, CultureInfo? culture)
 	{
 		Assembly callingAssembly = Assembly.GetCallingAssembly();
 		return GetString(name, culture, callingAssembly);
 	}
 
-	public static string GetString(string name, CultureInfo culture, Assembly assembly)
+	// Callers pass the NA#### keys of Strings.resx, which are all there, so the lookups below are not null.
+	public static string GetString(string name, CultureInfo? culture, Assembly assembly)
 	{
-		string name2 = assembly.GetName().Name;
+		string name2 = assembly.GetName().Name!;
 		if (!_resourceManagerDictionary.Contains(name2))
 		{
 			RegisterAssembly(assembly);
 		}
-		string text = ((ResourceManager)_resourceManagerDictionary[name2]).GetString(name, culture);
+		string? text = ((ResourceManager)_resourceManagerDictionary[name2]!).GetString(name, culture);
 		if (text == null && _sharedResourceManager != null)
 		{
-			return _sharedResourceManager.GetString(name, culture);
+			return _sharedResourceManager.GetString(name, culture)!;
 		}
-		return text;
+		return text!;
 	}
 
 	private static void RegisterAssembly(Assembly assembly)
 	{
 		lock (_resourceManagerDictionary)
 		{
-			string name = assembly.GetName().Name;
+			string name = assembly.GetName().Name!;
 			_resourceManagerDictionary.Add(name, new ResourceManager(GetResourceName(name), assembly));
 		}
 	}

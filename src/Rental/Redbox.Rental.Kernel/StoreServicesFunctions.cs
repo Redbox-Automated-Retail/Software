@@ -95,17 +95,17 @@ internal static class StoreServicesFunctions
 	[KernelFunction(Name = "kernel.storesvcs_issinglebilling")]
 	internal static bool IsSingleBilling(byte? collectionMethod)
 	{
-		return (collectionMethod.Value & 4) != 0;
+		return (collectionMethod!.Value & 4) != 0; // throws on null, as before
 	}
 
 	[KernelFunction(Name = "kernel.storesvcs_getkaseyainipath")]
-	internal static string GetKaseyainiPath()
+	internal static string? GetKaseyainiPath()
 	{
 		return KaseyaMethods.GetKaseyaIniDPath();
 	}
 
 	[KernelFunction(Name = "kernel.storesvcs_getopsmarketandkaseyaserverfromfile")]
-	internal static LuaTable GetOpsMarketAndKaseyaServerFromFile(string path)
+	internal static LuaTable? GetOpsMarketAndKaseyaServerFromFile(string path)
 	{
 		try
 		{

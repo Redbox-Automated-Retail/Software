@@ -22,7 +22,7 @@ public class Program
 		bool runAsService = !Debugger.IsAttached && !Enumerable.Contains(args, "--console");
 		if (runAsService)
 		{
-			Directory.SetCurrentDirectory(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName));
+			Directory.SetCurrentDirectory(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName)!);
 		}
 		ApplicationControl.IsService = runAsService;
 		IConfiguration configuration = Configuration;
@@ -52,7 +52,7 @@ public class Program
 		Log.Information($"CreateWebHostBuilder: url={deviceServiceUri.AbsoluteUri}  port={deviceServiceUri.Port}");
 		return Host.CreateDefaultBuilder(args)
 			.UseWindowsService()
-			.UseContentRoot(Path.GetDirectoryName(Environment.ProcessPath))
+			.UseContentRoot(Path.GetDirectoryName(Environment.ProcessPath)!)
 			.ConfigureAppConfiguration((context, conf) => GetConfiguration(conf))
 			.UseSerilog()
 			.ConfigureServices(services =>
@@ -70,7 +70,7 @@ public class Program
 
 	public static Uri GetDeviceServiceUri(IConfiguration config)
 	{
-		return new Uri(config.GetValue<string>("AppSettings:DeviceServiceUrl"));
+		return new Uri(config.GetValue<string>("AppSettings:DeviceServiceUrl")!); // throws when the setting is missing, as before
 	}
 
 	private static IConfigurationBuilder GetConfiguration(IConfigurationBuilder builder)

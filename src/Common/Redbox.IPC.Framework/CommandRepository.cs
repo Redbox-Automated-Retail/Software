@@ -15,7 +15,7 @@ public class CommandRepository
 {
 	private static readonly IDictionary<string, CommandInstance> m_commandInstanceCache = new Dictionary<string, CommandInstance>();
 
-	public static string[] AssemblyPatterns { get; set; }
+	public static string[]? AssemblyPatterns { get; set; }
 
 	internal static ICollection<string> AllCommands => m_commandInstanceCache.Keys;
 
@@ -54,7 +54,7 @@ public class CommandRepository
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		List<string> list = new List<string>();
-		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 		List<string> assemblyFiles = new List<string>();
 		if (AssemblyPatterns == null || AssemblyPatterns.Length == 0)
 		{
@@ -114,13 +114,13 @@ public class CommandRepository
 		return list;
 	}
 
-	internal static CommandInstance GetCommand(string name)
+	internal static CommandInstance? GetCommand(string? name)
 	{
 		if (string.IsNullOrEmpty(name))
 		{
 			return null;
 		}
-		string key = name.ToUpper();
+		string key = name!.ToUpper();
 		if (!m_commandInstanceCache.ContainsKey(key))
 		{
 			return null;
@@ -143,7 +143,7 @@ public class CommandRepository
 					m_commandInstanceCache[text] = commandInstance;
 					if (!string.IsNullOrEmpty(commandAttribute.Filter))
 					{
-						commandAttribute.Filter.Trim().Split('|').ToList()
+						commandAttribute.Filter!.Trim().Split('|').ToList()
 							.ForEach(commandInstance.Filters.Add);
 					}
 				}

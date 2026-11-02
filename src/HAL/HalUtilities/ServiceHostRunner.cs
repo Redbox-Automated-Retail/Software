@@ -16,8 +16,8 @@ internal static class ServiceHostRunner
 		Assembly assembly = typeof(Program).Assembly;
 		IHostInfo info = ((IIpcServiceHostFactory)ipcServiceHostFactory).Create(assembly);
 		IPCProtocol protocol2 = IPCProtocol.Parse(protocol);
-		IIpcServiceHost ipcServiceHost = ((IIpcServiceHostFactory)ipcServiceHostFactory).Create((IIpcProtocol)protocol2, info);
-		Thread thread = new Thread(ipcServiceHost.Start);
+		IIpcServiceHost? ipcServiceHost = ((IIpcServiceHostFactory)ipcServiceHostFactory).Create((IIpcProtocol)protocol2, info);
+		Thread thread = new Thread(ipcServiceHost!.Start);
 		thread.Start();
 		Console.WriteLine("Press any key to halt.");
 		Console.ReadLine();

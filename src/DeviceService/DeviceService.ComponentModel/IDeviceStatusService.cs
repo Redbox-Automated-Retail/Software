@@ -6,9 +6,9 @@ namespace DeviceService.ComponentModel;
 
 public interface IDeviceStatusService
 {
-	Task<StandardResponse> PostDeviceStatus(DeviceStatusRequest request);
+	Task<StandardResponse?> PostDeviceStatus(DeviceStatusRequest request);
 
-	Task<StandardResponse> PostDeviceStatus();
+	Task<StandardResponse?> PostDeviceStatus();
 
-	Task<DeviceStatus> GetDeviceStatus();
+	Task<DeviceStatus?> GetDeviceStatus();
 }

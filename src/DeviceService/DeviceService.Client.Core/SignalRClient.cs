@@ -102,7 +102,7 @@ public class SignalRClient
 
 	private Task HubConnection_Closed(Exception? arg)
 	{
-		OnDisconnectedHandler?.Invoke(arg!); // null when the connection closed without an error (OnDisconnected is not annotated yet)
+		OnDisconnectedHandler?.Invoke(arg);
 		return null!;
 	}
 }

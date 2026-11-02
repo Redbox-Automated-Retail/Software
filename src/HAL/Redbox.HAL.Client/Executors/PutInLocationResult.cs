@@ -17,6 +17,6 @@ public sealed class PutInLocationResult : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Deck, Slot);
+		base.Job!.Push(Deck, Slot);
 	}
 }

@@ -18,7 +18,7 @@ internal sealed class TransferOperation : IDisposable, IPutObserver
 
 	private bool m_disposed;
 
-	private IGetResult GetResult;
+	private IGetResult? GetResult;
 
 	internal bool PreserveFlagsOnPut { get; set; }
 
@@ -110,7 +110,7 @@ internal sealed class TransferOperation : IDisposable, IPutObserver
 			return;
 		}
 		ControlSystem.TrackCycle();
-		IPutResult putResult = ControllerService.Put(this, GetResult.Previous);
+		IPutResult putResult = ControllerService.Put(this, GetResult!.Previous);
 		result.TransferError = putResult.Code;
 		if (putResult.Success)
 		{
@@ -127,7 +127,7 @@ internal sealed class TransferOperation : IDisposable, IPutObserver
 			return;
 		}
 		ControlSystem.TrackCycle();
-		if (ControllerService.Put(GetResult.Previous).Success)
+		if (ControllerService.Put(GetResult!.Previous).Success)
 		{
 			result.ReturnedToSource = true;
 			OnRestoreState(Source, preserve: true);
@@ -138,9 +138,9 @@ internal sealed class TransferOperation : IDisposable, IPutObserver
 	{
 		if (preserve)
 		{
-			location.Flags = GetResult.Flags;
+			location.Flags = GetResult!.Flags;
 		}
-		location.ReturnDate = GetResult.ReturnTime;
+		location.ReturnDate = GetResult!.ReturnTime;
 		InventoryService.Save(location);
 	}
 

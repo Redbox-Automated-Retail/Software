@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>updatemgrd</AssemblyName>
     <RootNamespace>Redbox.UpdateManager</RootNamespace>
     <OutputType>Exe</OutputType>

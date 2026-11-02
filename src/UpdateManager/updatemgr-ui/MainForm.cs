@@ -12,68 +12,69 @@ namespace Redbox.UpdateManager.UI;
 
 public class MainForm : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private GroupBox BITSGroup;
+	private GroupBox BITSGroup = null!;
 
-	private GroupBox RepositoryGroup;
+	private GroupBox RepositoryGroup = null!;
 
-	private Button m_resetSelectedRepository;
+	private Button m_resetSelectedRepository = null!;
 
-	private Label m_revisiosForSelectedRepositoryLabel;
+	private Label m_revisiosForSelectedRepositoryLabel = null!;
 
-	private Label m_repositoryListLabel;
+	private Label m_repositoryListLabel = null!;
 
-	private Button m_rebuild;
+	private Button m_rebuild = null!;
 
-	private Button m_activateTo;
+	private Button m_activateTo = null!;
 
-	private Button m_updateTo;
+	private Button m_updateTo = null!;
 
-	private Button m_manageBITS;
+	private Button m_manageBITS = null!;
 
-	private Button m_resetBITS;
+	private Button m_resetBITS = null!;
 
-	private GroupBox updateServiceGroup;
+	private GroupBox updateServiceGroup = null!;
 
-	private Button m_pollUpdateService;
+	private Button m_pollUpdateService = null!;
 
-	private ListView m_changes;
+	private ListView m_changes = null!;
 
-	private ListView m_repositories;
+	private ListView m_repositories = null!;
 
-	private ColumnHeader m_nameColumn;
+	private ColumnHeader m_nameColumn = null!;
 
-	private ColumnHeader m_labelColumn;
+	private ColumnHeader m_labelColumn = null!;
 
-	private ColumnHeader m_activeVersion;
+	private ColumnHeader m_activeVersion = null!;
 
-	private ColumnHeader m_updatedVersion;
+	private ColumnHeader m_updatedVersion = null!;
 
-	private ColumnHeader m_hashColumn;
+	private ColumnHeader m_hashColumn = null!;
 
-	private ColumnHeader m_labelColumnRevision;
+	private ColumnHeader m_labelColumnRevision = null!;
 
-	private Button m_details;
+	private Button m_details = null!;
 
-	private Button m_refresh;
+	private Button m_refresh = null!;
 
-	private Button m_refreshChanges;
+	private Button m_refreshChanges = null!;
 
-	private ColumnHeader m_isActive;
+	private ColumnHeader m_isActive = null!;
 
-	private Button m_optInOut;
+	private Button m_optInOut = null!;
 
-	private GroupBox manageScheduleEvents;
+	private GroupBox manageScheduleEvents = null!;
 
-	private Button m_resetScheduleEvent;
+	private Button m_resetScheduleEvent = null!;
 
-	private Button m_manageEventScheduler;
+	private Button m_manageEventScheduler = null!;
 
-	private Button TrimButton;
+	private Button TrimButton = null!;
 
-	private Button m_serverPollUpdateService;
+	private Button m_serverPollUpdateService = null!;
 
+	// The controls above are created by InitializeComponent.
 	public MainForm()
 	{
 		InitializeComponent();
@@ -90,7 +91,7 @@ public class MainForm : Form
 		}
 	}
 
-	private void ManageTransfersOnClick(object sender, EventArgs e)
+	private void ManageTransfersOnClick(object? sender, EventArgs e)
 	{
 		try
 		{
@@ -105,13 +106,13 @@ public class MainForm : Form
 		}
 	}
 
-	private void OnResetBITS(object sender, EventArgs e)
+	private void OnResetBITS(object? sender, EventArgs e)
 	{
 		if (MessageBox.Show("Are you sure you want to cancel all running transfer jobs?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly) != DialogResult.Yes)
 		{
 			return;
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
 			ErrorList errors = transferService.CancelAll();
@@ -127,9 +128,9 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnPollUpdateService(object sender, EventArgs e)
+	private void OnPollUpdateService(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
 			ErrorList errors = updateService.Poll();
@@ -145,7 +146,7 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		try
 		{
@@ -226,7 +227,7 @@ public class MainForm : Form
 		try
 		{
 			int count = 0;
-			string repositoryName = null;
+			string? repositoryName = null;
 			UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
 			{
 				m_changes.Items.Clear();
@@ -234,7 +235,7 @@ public class MainForm : Form
 				if (count == 1)
 				{
 					ListViewItem listViewItem = m_repositories.SelectedItems[0];
-					repositoryName = (string)listViewItem.Tag;
+					repositoryName = (string)listViewItem.Tag!;
 				}
 			});
 			if (count != 1)
@@ -242,9 +243,9 @@ public class MainForm : Form
 				return;
 			}
 			IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
-			List<IRevLog> changes = repositoryService.GetAllChanges(repositoryName);
-			string activeRevision = repositoryService.GetActiveRevision(repositoryName);
-			string stagedRevision = repositoryService.GetStagedRevision(repositoryName);
+			List<IRevLog> changes = repositoryService.GetAllChanges(repositoryName!); // set above when one repository is selected
+			string activeRevision = repositoryService.GetActiveRevision(repositoryName!);
+			string stagedRevision = repositoryService.GetStagedRevision(repositoryName!);
 			changes.Reverse();
 			UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
 			{
@@ -294,7 +295,7 @@ public class MainForm : Form
 		}
 	}
 
-	private void OnRepositorySelectionChange(object sender, EventArgs e)
+	private void OnRepositorySelectionChange(object? sender, EventArgs e)
 	{
 		try
 		{
@@ -309,13 +310,13 @@ public class MainForm : Form
 		}
 	}
 
-	private void UpdateToSelectedVersion(object sender, EventArgs e)
+	private void UpdateToSelectedVersion(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1 || m_changes.SelectedItems.Count < 1)
 		{
 			return;
 		}
-		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag;
+		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag!; // the repository name, set by LoadRepositories
 		if (!(m_changes.SelectedItems[0].Tag is IRevLog revLog))
 		{
 			return;
@@ -371,13 +372,13 @@ public class MainForm : Form
 		});
 	}
 
-	private void ActivateToSelectedVersion(object sender, EventArgs e)
+	private void ActivateToSelectedVersion(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1 || m_changes.SelectedItems.Count < 1)
 		{
 			return;
 		}
-		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag;
+		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag!; // the repository name, set by LoadRepositories
 		if (!(m_changes.SelectedItems[0].Tag is IRevLog revLog))
 		{
 			return;
@@ -448,13 +449,13 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnRebuildToSelectedVersion(object sender, EventArgs e)
+	private void OnRebuildToSelectedVersion(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1 || m_changes.SelectedItems.Count < 1)
 		{
 			return;
 		}
-		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag;
+		string selectedRepository = (string)m_repositories.SelectedItems[0].Tag!; // the repository name, set by LoadRepositories
 		if (!(m_changes.SelectedItems[0].Tag is IRevLog revLog))
 		{
 			return;
@@ -510,14 +511,14 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnResetSelectedRepository(object sender, EventArgs e)
+	private void OnResetSelectedRepository(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1)
 		{
 			return;
 		}
 		bool shouldReboot = false;
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			try
 			{
@@ -525,7 +526,7 @@ public class MainForm : Form
 				{
 					if (selectedItem is ListViewItem listViewItem)
 					{
-						ServiceLocator.Instance.GetService<IRepositoryService>().Reset((string)listViewItem.Tag, out var defferedDelete);
+						ServiceLocator.Instance.GetService<IRepositoryService>().Reset((string)listViewItem.Tag!, out var defferedDelete);
 						if (defferedDelete)
 						{
 							UpdateManagerApplication.Instance.ThreadSafeHostUpdate(delegate
@@ -551,7 +552,7 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnDetails(object sender, EventArgs e)
+	private void OnDetails(object? sender, EventArgs e)
 	{
 		try
 		{
@@ -569,30 +570,30 @@ public class MainForm : Form
 		}
 	}
 
-	private void OnRefreshRepositories(object sender, EventArgs e)
+	private void OnRefreshRepositories(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, LoadRepositories);
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, LoadRepositories);
 	}
 
-	private void OnRefreshChanges(object sender, EventArgs e)
+	private void OnRefreshChanges(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, LoadChanges);
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, LoadChanges);
 	}
 
-	private void OnToggleSubscription(object sender, EventArgs e)
+	private void OnToggleSubscription(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1)
 		{
 			return;
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			foreach (object selectedItem in m_repositories.SelectedItems)
 			{
 				if (selectedItem is ListViewItem listViewItem)
 				{
 					IRepositoryService repositoryService = ServiceLocator.Instance.GetService<IRepositoryService>();
-					string name = (string)listViewItem.Tag;
+					string name = (string)listViewItem.Tag!;
 					if (repositoryService.Subscribed(name))
 					{
 						repositoryService.DisableSubscription(name);
@@ -608,23 +609,23 @@ public class MainForm : Form
 		});
 	}
 
-	private void OnManageEventSchedulerClick(object sender, EventArgs e)
+	private void OnManageEventSchedulerClick(object? sender, EventArgs e)
 	{
 		new ManageScheduleEvents().Show(this);
 	}
 
-	private void OnResetScheduleEventClick(object sender, EventArgs e)
+	private void OnResetScheduleEventClick(object? sender, EventArgs e)
 	{
 		if (MessageBox.Show("Are you sure you want to delete all running schedule events?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly) == DialogResult.Yes)
 		{
-			UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+			UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 			{
 				ServiceLocator.Instance.GetService<ITaskScheduler>().Clear();
 			});
 		}
 	}
 
-	private void OnSelectedChangeChanged(object sender, EventArgs e)
+	private void OnSelectedChangeChanged(object? sender, EventArgs e)
 	{
 		if (m_changes.SelectedItems.Count > 0)
 		{
@@ -636,13 +637,13 @@ public class MainForm : Form
 		}
 	}
 
-	private void TrimButton_Click(object sender, EventArgs e)
+	private void TrimButton_Click(object? sender, EventArgs e)
 	{
 		if (m_repositories.SelectedItems.Count < 1)
 		{
 			return;
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			try
 			{
@@ -650,7 +651,7 @@ public class MainForm : Form
 				{
 					if (selectedItem is ListViewItem listViewItem)
 					{
-						ServiceLocator.Instance.GetService<IRepositoryService>().TrimRepository((string)listViewItem.Tag);
+						ServiceLocator.Instance.GetService<IRepositoryService>().TrimRepository((string)listViewItem.Tag!);
 					}
 				}
 			}
@@ -662,9 +663,9 @@ public class MainForm : Form
 		});
 	}
 
-	private void m_serverPollUpdateService_Click(object sender, EventArgs e)
+	private void m_serverPollUpdateService_Click(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
 			ErrorList errors = updateService.ServerPoll();
@@ -937,7 +938,7 @@ public class MainForm : Form
 		base.Controls.Add(this.RepositoryGroup);
 		base.Controls.Add(this.BITSGroup);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.MaximizeBox = false;
 		this.MaximumSize = new System.Drawing.Size(864, 517);
 		base.MinimizeBox = false;

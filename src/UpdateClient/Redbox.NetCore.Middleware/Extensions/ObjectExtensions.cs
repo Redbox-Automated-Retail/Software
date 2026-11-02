@@ -47,9 +47,9 @@ public static class ObjectExtensions
 			return false;
 		}
 
-		protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+		protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
 		{
-			Stream compressedStream = null;
+			Stream? compressedStream = null;
 			if (encodingType == "gzip")
 			{
 				compressedStream = new GZipStream(stream, CompressionMode.Compress, leaveOpen: true);
@@ -58,7 +58,7 @@ public static class ObjectExtensions
 			{
 				compressedStream = new DeflateStream(stream, CompressionMode.Compress, leaveOpen: true);
 			}
-			return originalContent.CopyToAsync(compressedStream).ContinueWith(delegate
+			return originalContent.CopyToAsync(compressedStream!).ContinueWith(delegate // the constructor allows only gzip and deflate
 			{
 				if (compressedStream != null)
 				{

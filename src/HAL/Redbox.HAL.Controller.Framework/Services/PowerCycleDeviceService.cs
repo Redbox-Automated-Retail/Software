@@ -10,7 +10,7 @@ internal sealed class PowerCycleDeviceService : IPowerCycleDeviceService
 {
 	private readonly Dictionary<PowerCycleDevices, IPowerCycleDevice> Devices = new Dictionary<PowerCycleDevices, IPowerCycleDevice>();
 
-	public IPowerCycleDevice Get(PowerCycleDevices device)
+	public IPowerCycleDevice? Get(PowerCycleDevices device)
 	{
 		if (!Devices.ContainsKey(device))
 		{
@@ -37,7 +37,7 @@ internal sealed class PowerCycleDeviceService : IPowerCycleDeviceService
 				PowerCycleDeviceAttribute[] attributes = (PowerCycleDeviceAttribute[])type.GetCustomAttributes(typeof(PowerCycleDeviceAttribute), inherit: false);
 				if (attributes.Length != 0)
 				{
-					IPowerCycleDevice device = (IPowerCycleDevice)Activator.CreateInstance(type, nonPublic: true);
+					IPowerCycleDevice device = (IPowerCycleDevice)Activator.CreateInstance(type, nonPublic: true)!;
 					if (!Devices.ContainsKey(attributes[0].Device))
 					{
 						Devices[attributes[0].Device] = device;

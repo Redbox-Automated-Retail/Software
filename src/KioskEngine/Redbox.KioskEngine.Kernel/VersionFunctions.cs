@@ -8,7 +8,7 @@ namespace Redbox.KioskEngine.Kernel;
 internal static class VersionFunctions
 {
 	[KernelFunction(Name = "kernel.fileversion")]
-	internal static string FileVersion(string filePath)
+	internal static string? FileVersion(string filePath)
 	{
 		if (File.Exists(filePath))
 		{

@@ -14,6 +14,6 @@ public static class Singleton<T> where T : class
 		{
 			throw new SingletonException("A Singleton<T> class must not implement public instance constructors.");
 		}
-		Instance = (typeFromHandle.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null) ?? throw new SingletonException("A Singleton<T> class must implement a non-public instance constructor.")).Invoke(null) as T;
+		Instance = ((typeFromHandle.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null) ?? throw new SingletonException("A Singleton<T> class must implement a non-public instance constructor.")).Invoke(null) as T)!;
 	}
 }

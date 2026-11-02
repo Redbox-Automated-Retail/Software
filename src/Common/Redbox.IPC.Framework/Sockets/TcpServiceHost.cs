@@ -7,11 +7,11 @@ namespace Redbox.IPC.Framework.Sockets;
 
 public class TcpServiceHost : IPCServiceHost
 {
-	private Socket m_serverSocket;
+	private Socket m_serverSocket = null!; // set by Start
 
 	private readonly int? m_backlogSize;
 
-	private IPEndPoint m_serverSocketEndPoint;
+	private IPEndPoint m_serverSocketEndPoint = null!; // set by Start
 
 	public TcpServiceHost(int? backlogSize)
 	{
@@ -90,7 +90,7 @@ public class TcpServiceHost : IPCServiceHost
 				Socket socket = m_serverSocket.EndAccept(result);
 				base.WorkerPool.QueueWorkItem(delegate
 				{
-					TcpServerSession tcpServerSession = new TcpServerSession(socket, result.AsyncState as IPCServiceHost);
+					TcpServerSession tcpServerSession = new TcpServerSession(socket, (result.AsyncState as IPCServiceHost)!); // BeginAccept passes this
 					RegiserSession(tcpServerSession);
 					tcpServerSession.Start();
 				});

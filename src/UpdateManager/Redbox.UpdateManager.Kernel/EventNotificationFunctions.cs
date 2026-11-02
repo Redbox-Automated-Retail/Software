@@ -7,7 +7,7 @@ namespace Redbox.UpdateManager.Kernel;
 public static class EventNotificationFunctions
 {
 	[KernelFunction(Name = "kernel.notifyaddevent")]
-	internal static LuaTable AddEvent(string name, string description)
+	internal static LuaTable? AddEvent(string name, string description)
 	{
 		IEventNotifyService eventNotifyService = ServiceLocator.Instance.GetService<IEventNotifyService>();
 		if (eventNotifyService != null)
@@ -18,7 +18,7 @@ public static class EventNotificationFunctions
 	}
 
 	[KernelFunction(Name = "kernel.notifyeventstart")]
-	internal static LuaTable EventStart(string name)
+	internal static LuaTable? EventStart(string name)
 	{
 		IEventNotifyService eventNotifyService = ServiceLocator.Instance.GetService<IEventNotifyService>();
 		if (eventNotifyService != null)
@@ -29,7 +29,7 @@ public static class EventNotificationFunctions
 	}
 
 	[KernelFunction(Name = "kernel.notifyeventerror")]
-	internal static LuaTable EventError(string name, string code, string description, string details)
+	internal static LuaTable? EventError(string name, string code, string description, string details)
 	{
 		IEventNotifyService eventNotifyService = ServiceLocator.Instance.GetService<IEventNotifyService>();
 		if (eventNotifyService != null)
@@ -40,7 +40,7 @@ public static class EventNotificationFunctions
 	}
 
 	[KernelFunction(Name = "kernel.notifyeventcomplete")]
-	internal static LuaTable EventComplete(string name)
+	internal static LuaTable? EventComplete(string name)
 	{
 		IEventNotifyService eventNotifyService = ServiceLocator.Instance.GetService<IEventNotifyService>();
 		if (eventNotifyService != null)
@@ -51,7 +51,7 @@ public static class EventNotificationFunctions
 	}
 
 	[KernelFunction(Name = "kernel.notifyexit")]
-	internal static LuaTable Exit()
+	internal static LuaTable? Exit()
 	{
 		IEventNotifyService eventNotifyService = ServiceLocator.Instance.GetService<IEventNotifyService>();
 		if (eventNotifyService != null)

@@ -54,13 +54,14 @@ public class GenericMetrics : ICommonMetrics
 						CaptureHistogramMetric(metricTagCollection, elapsedMilliseconds);
 						break;
 					default:
-						_logger.LogErrorWithSource(null, $"Unsupported MetricType {metricTypeFromMetricTags.Item2}", "CaptureMetrics", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
+						// LogErrorWithSource does not take a null exception yet (Redbox.NetCore.Logging); the logger accepts one.
+						_logger.LogErrorWithSource(null!, $"Unsupported MetricType {metricTypeFromMetricTags.Item2}", "CaptureMetrics", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
 						break;
 					}
 				}
 				else
 				{
-					_logger.LogErrorWithSource(null, $"metricTagCollection missing tag {metricTypeFromMetricTags.Item2}", "CaptureMetrics", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
+					_logger.LogErrorWithSource(null!, $"metricTagCollection missing tag {metricTypeFromMetricTags.Item2}", "CaptureMetrics", "/var/lib/jenkins/workspace/a_common_redbox.netcore.middleware/Redbox.NetCore.Middleware/Metrics/GenericMetrics.cs");
 				}
 			}
 			catch (Exception ex)

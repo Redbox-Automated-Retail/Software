@@ -10,11 +10,12 @@ internal class FormMethodParameter
 {
 	public int Index { get; set; }
 
-	public string KeyName { get; set; }
+	// KeyName and Parameter are set by CommandRepository.GetCommand.
+	public string KeyName { get; set; } = null!;
 
-	public ParameterInfo Parameter { get; set; }
+	public ParameterInfo Parameter { get; set; } = null!;
 
-	public CommandKeyValueAttribute MetaData { get; set; }
+	public CommandKeyValueAttribute? MetaData { get; set; }
 
 	public bool IsRequired()
 	{
@@ -33,16 +34,16 @@ internal class FormMethodParameter
 		return false;
 	}
 
-	public object ConvertValue(string value)
+	public object? ConvertValue(string? value)
 	{
 		if (Parameter.ParameterType != typeof(byte[]))
 		{
 			return ConversionHelper.ChangeType(value, Parameter.ParameterType);
 		}
-		byte[] bytes = MetaData.BinaryEncoding switch
+		byte[] bytes = MetaData!.BinaryEncoding switch
 		{
-			BinaryEncoding.Hex => StringExtensions.HexToBytes(value), 
-			BinaryEncoding.Base64 => StringExtensions.Base64ToBytes(value), 
+			BinaryEncoding.Hex => StringExtensions.HexToBytes(value!), 
+			BinaryEncoding.Base64 => StringExtensions.Base64ToBytes(value!), 
 			BinaryEncoding.Ascii95 => throw new NotImplementedException("Ascii95 support is not implemented."), 
 			_ => throw new ArgumentException("The named paramete accepts binary data and the command form method doesn't specify a valid BinaryEncoding."), 
 		};

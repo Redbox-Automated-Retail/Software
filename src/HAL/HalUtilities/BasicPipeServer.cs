@@ -23,8 +23,8 @@ internal sealed class BasicPipeServer : AbstractPipeSever
 	{
 		LogHelper.Instance.Log("[BasicPipeServer] {0} Session connected.", DateTime.Now);
 		channel.Write(Encoding.ASCII.GetBytes("Hello"));
-		byte[] received = channel.Read();
-		LogHelper.Instance.Log("[BasicPipeServer] Bytes received: {0}", received.Length);
+		byte[]? received = channel.Read();
+		LogHelper.Instance.Log("[BasicPipeServer] Bytes received: {0}", received!.Length);
 		channel.Write(AckMessage);
 		channel.Dispose();
 	}

@@ -23,7 +23,7 @@ internal sealed class LoopyExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Iterations);
+		base.Job!.Push(Iterations);
 	}
 
 	internal LoopyExecutor(HardwareService s, int iter)

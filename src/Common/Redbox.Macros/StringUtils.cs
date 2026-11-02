@@ -19,7 +19,7 @@ public static class StringUtils
 		return false;
 	}
 
-	public static string ConvertEmptyToNull(string value)
+	public static string? ConvertEmptyToNull(string? value)
 	{
 		if (string.IsNullOrEmpty(value))
 		{
@@ -28,12 +28,12 @@ public static class StringUtils
 		return value;
 	}
 
-	public static string ConvertNullToEmpty(string value)
+	public static string ConvertNullToEmpty(string? value)
 	{
 		return value ?? string.Empty;
 	}
 
-	public static string Join(string separator, StringCollection value)
+	public static string Join(string? separator, StringCollection value)
 	{
 		if (value == null)
 		{

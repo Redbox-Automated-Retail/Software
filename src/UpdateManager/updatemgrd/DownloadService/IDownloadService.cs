@@ -7,5 +7,5 @@ internal interface IDownloadService
 {
 	List<IDownloader> GetDownloads();
 
-	ErrorList AddDownload(string key, string hash, string url, DownloadPriority priority, out IDownloader download);
+	ErrorList AddDownload(string key, string hash, string url, DownloadPriority priority, out IDownloader? download);
 }

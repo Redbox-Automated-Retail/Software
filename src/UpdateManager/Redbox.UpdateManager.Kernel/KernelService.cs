@@ -19,7 +19,7 @@ public sealed class KernelService : IKernelService
 
 	public static KernelService Instance => Singleton<KernelService>.Instance;
 
-	public string StartupScript { get; set; }
+	public string StartupScript { get; set; } = null!; // IKernelService declares it non-null; nothing sets it
 
 	public bool ScriptCompleted { get; private set; }
 
@@ -27,7 +27,7 @@ public sealed class KernelService : IKernelService
 
 	public bool IsShuttingDown => ShutdownType != ShutdownType.None;
 
-	internal LuaVirtualMachine LuaRuntime { get; set; }
+	internal LuaVirtualMachine LuaRuntime { get; set; } = null!; // created by Initialize (Reset)
 
 	internal LuaDebug? DebugState { get; set; }
 
@@ -59,12 +59,12 @@ public sealed class KernelService : IKernelService
 	{
 		if (!(LuaRuntime[name] is LuaTable luaTable))
 		{
-			return null;
+			return null!; // IKernelService declares a non-null table; null when there is none, as before
 		}
 		Dictionary<object, object> dictionary = new Dictionary<object, object>();
 		foreach (object key in luaTable.Keys)
 		{
-			dictionary.Add(key, luaTable[key]);
+			dictionary.Add(key, luaTable[key]!); // a Lua value can be nil; IKernelService declares object
 		}
 		return dictionary;
 	}
@@ -87,15 +87,15 @@ public sealed class KernelService : IKernelService
 		{
 			locked = true;
 			new ErrorList().Add(Redbox.UpdateManager.ComponentModel.Error.NewError("KernelService.ExecuteChunck(chunk)", "TryEnterWriteLock timeout expired prior to acquiring the lock."));
-			return null;
+			return null!; // IKernelService declares non-null results; null on a lock timeout or shutdown, as before
 		}
 		try
 		{
 			if (IsShuttingDown)
 			{
-				return null;
+				return null!;
 			}
-			return LuaRuntime.DoString(chunk);
+			return LuaRuntime.DoString(chunk)!; // Lua values can be nil; IKernelService declares object
 		}
 		finally
 		{
@@ -108,19 +108,19 @@ public sealed class KernelService : IKernelService
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			new ErrorList().Add(Redbox.UpdateManager.ComponentModel.Error.NewError("KernelService.ExecuteChunck(chunk,reset)", "TryEnterWriteLock timeout expired prior to acquiring the lock."));
-			return null;
+			return null!;
 		}
 		try
 		{
 			if (IsShuttingDown)
 			{
-				return null;
+				return null!;
 			}
 			if (reset)
 			{
 				InternalReset();
 			}
-			return LuaRuntime.DoString(chunk);
+			return LuaRuntime.DoString(chunk)!; // Lua values can be nil; IKernelService declares object
 		}
 		finally
 		{
@@ -138,9 +138,9 @@ public sealed class KernelService : IKernelService
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			new ErrorList().Add(Redbox.UpdateManager.ComponentModel.Error.NewError("KernelService.ExecuteChunck(chunck,reset,resulttablename,out,out", "TryEnterWriteLock timeout expired prior to acquiring the lock."));
-			result = null;
+			result = null!;
 			scriptCompleted = false;
-			return null;
+			return null!;
 		}
 		try
 		{
@@ -222,7 +222,7 @@ public sealed class KernelService : IKernelService
 		if (LuaRuntime != null)
 		{
 			LuaRuntime.Dispose();
-			LuaRuntime = null;
+			LuaRuntime = null!; // replaced right below
 		}
 		LuaRuntime = new LuaVirtualMachine();
 		ConfigureKernelFunctions();
@@ -231,17 +231,17 @@ public sealed class KernelService : IKernelService
 
 	internal ReadOnlyCollection<object> InternalExecuteChunk(string chunk, bool reset, string resultTableName, out Dictionary<object, object> result, out bool scriptCompleted)
 	{
-		result = null;
+		result = null!;
 		scriptCompleted = false;
 		if (IsShuttingDown)
 		{
-			return null;
+			return null!;
 		}
 		if (reset)
 		{
 			InternalReset();
 		}
-		ReadOnlyCollection<object> returnValues = LuaRuntime.DoString(chunk);
+		ReadOnlyCollection<object> returnValues = LuaRuntime.DoString(chunk)!;
 		result = GetTable(resultTableName);
 		scriptCompleted = ScriptCompleted;
 		return returnValues;
@@ -258,7 +258,7 @@ public sealed class KernelService : IKernelService
 				MethodInfo[] methods = types[i].GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 				foreach (MethodInfo methodInfo in methods)
 				{
-					KernelFunctionAttribute kernelFunctionAttribute = (KernelFunctionAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(KernelFunctionAttribute));
+					KernelFunctionAttribute? kernelFunctionAttribute = (KernelFunctionAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(KernelFunctionAttribute));
 					if (kernelFunctionAttribute != null)
 					{
 						LuaRuntime.RegisterMethod(kernelFunctionAttribute.Name, methodInfo, compileStaticCallSite: true);
@@ -268,9 +268,9 @@ public sealed class KernelService : IKernelService
 		}
 		catch (ReflectionTypeLoadException ex)
 		{
-			Exception[] loaderExceptions = ex.LoaderExceptions;
+			Exception?[] loaderExceptions = ex.LoaderExceptions;
 			LogHelper.Instance.Log("There was a ReflectionTypeLoadException in ConfigureKernelFunctions", ex);
-			foreach (Exception e in loaderExceptions)
+			foreach (Exception? e in loaderExceptions)
 			{
 				LogHelper.Instance.Log("Loader Exception: ", e);
 			}

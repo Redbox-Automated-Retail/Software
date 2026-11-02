@@ -6,7 +6,7 @@ namespace Redbox.IPC.Framework;
 
 public class PerformanceCounterHelper
 {
-	private string m_groupName;
+	private string m_groupName = null!; // set by Initialize
 
 	private volatile bool m_countersEnabled;
 

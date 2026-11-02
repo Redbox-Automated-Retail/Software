@@ -29,6 +29,6 @@ internal abstract class AWSBaseMessageProcessorService<S, D> : BaseMessageProces
 
 	private static void OnAfterMessageProcessed(IMessage message, object clientData)
 	{
-		message.Data = clientData as byte[];
+		message.Data = (clientData as byte[])!; // the original message.Data saved by OnBeforeMessageProcessing
 	}
 }

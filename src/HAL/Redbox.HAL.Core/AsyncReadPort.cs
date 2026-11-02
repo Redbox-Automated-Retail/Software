@@ -58,7 +58,7 @@ internal sealed class AsyncReadPort : RedboxSerialPort
 		}
 		try
 		{
-			Port.BaseStream.BeginRead(response.Buffer, 0, response.Buffer.Length, EndReadCallback, response);
+			Port.BaseStream.BeginRead(response.Buffer!, 0, response.Buffer!.Length, EndReadCallback, response);
 		}
 		catch (Exception e)
 		{
@@ -69,10 +69,10 @@ internal sealed class AsyncReadPort : RedboxSerialPort
 	private void EndReadCallback(IAsyncResult result)
 	{
 		int bytesRead = 0;
-		ChannelResponse channelResponse = null;
+		ChannelResponse? channelResponse = null;
 		try
 		{
-			channelResponse = (ChannelResponse)result.AsyncState;
+			channelResponse = (ChannelResponse)result.AsyncState!;
 			bytesRead = Port.BaseStream.EndRead(result);
 			if (base.EnableDebugging)
 			{

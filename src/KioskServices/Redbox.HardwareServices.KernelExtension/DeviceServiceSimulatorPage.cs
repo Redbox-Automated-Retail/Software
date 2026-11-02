@@ -9,18 +9,19 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class DeviceServiceSimulatorPage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private CheckBox cbServiceConnected;
+	private CheckBox cbServiceConnected = null!;
 
-	private CheckBox cbCardReaderConnected;
+	private CheckBox cbCardReaderConnected = null!;
 
-	private CheckBox cbReaderTampered;
+	private CheckBox cbReaderTampered = null!;
 
-	private Panel panelTopHeader;
+	private Panel panelTopHeader = null!;
 
-	private Label labelHeader;
+	private Label labelHeader = null!;
 
+	// The controls above are created by InitializeComponent.
 	public DeviceServiceSimulatorPage()
 	{
 		InitializeComponent();
@@ -38,17 +39,17 @@ public class DeviceServiceSimulatorPage : UserControl, IPreferencePageHost
 		cbReaderTampered.Checked = DeviceServiceClientHelperSimulator.Instance.IsCardReaderTampered;
 	}
 
-	private void cbServiceConnected_CheckedChanged(object sender, EventArgs e)
+	private void cbServiceConnected_CheckedChanged(object? sender, EventArgs e)
 	{
 		DeviceServiceClientHelperSimulator.Instance.IsConnectedToDeviceService = cbServiceConnected.Checked;
 	}
 
-	private void cbCardReaderConnected_CheckedChanged(object sender, EventArgs e)
+	private void cbCardReaderConnected_CheckedChanged(object? sender, EventArgs e)
 	{
 		DeviceServiceClientHelperSimulator.Instance.IsCardReaderConnected = cbCardReaderConnected.Checked;
 	}
 
-	private void cbReaderTampered_CheckedChanged(object sender, EventArgs e)
+	private void cbReaderTampered_CheckedChanged(object? sender, EventArgs e)
 	{
 		DeviceServiceClientHelperSimulator.Instance.IsCardReaderTampered = cbReaderTampered.Checked;
 	}

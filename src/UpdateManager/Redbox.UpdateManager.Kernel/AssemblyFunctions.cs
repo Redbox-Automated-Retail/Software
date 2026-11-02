@@ -21,7 +21,7 @@ public static class AssemblyFunctions
 			{
 				if (option != null)
 				{
-					arguments.Add(option.ToString());
+					arguments.Add(option.ToString()!);
 				}
 			}
 		}
@@ -73,7 +73,7 @@ public static class AssemblyFunctions
 			startInfo.ArgumentList.Add(option.StartsWith("/") || option.StartsWith("-") ? option : "/" + option);
 		}
 		startInfo.ArgumentList.Add(fileName);
-		using Process process = Process.Start(startInfo);
+		using Process process = Process.Start(startInfo)!; // used right below; throws on null, as before
 		string output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
 		process.WaitForExit();
 		if (process.ExitCode != 0)

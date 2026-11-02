@@ -11,13 +11,13 @@ public class BaseControl : Control
 {
 	private object[] objArray = new object[1] { true };
 
-	private object UpdateVisualStateInfo;
+	private object? UpdateVisualStateInfo;
 
 	public new static readonly DependencyProperty IsEnabledProperty = CreateDependencyProperty("IsEnabled", typeof(bool), false, OnVisualStatePropertyChanged);
 
 	public static readonly DependencyProperty IsMouseOverPropertyKey = CreateDependencyProperty("IsMouseOver", typeof(bool), false, OnVisualStatePropertyChanged);
 
-	public static DependencyProperty CreateDependencyProperty(string propertyName, Type propertyType, object defaultValue, PropertyChangedCallback callback = null)
+	public static DependencyProperty CreateDependencyProperty(string propertyName, Type propertyType, object defaultValue, PropertyChangedCallback? callback = null)
 	{
 		FrameworkPropertyMetadata typeMetadata = ((callback == null) ? new FrameworkPropertyMetadata(defaultValue)
 		{
@@ -49,7 +49,7 @@ public class BaseControl : Control
 			UpdateVisualStateInfo = GetType().GetMethod("UpdateVisualState", new Type[1] { typeof(bool) });
 		}
 		objArray[0] = useTransitions;
-		((MethodInfo)UpdateVisualStateInfo).Invoke(this, objArray);
+		((MethodInfo)UpdateVisualStateInfo!).Invoke(this, objArray);
 	}
 
 	protected virtual void ChangeVisualState(bool useTransitions)

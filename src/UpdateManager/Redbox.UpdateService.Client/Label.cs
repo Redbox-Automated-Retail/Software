@@ -6,11 +6,12 @@ public class Label
 {
 	public long ID { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
-	public Identifier Hash { get; set; }
+	public Identifier Hash { get; set; } = null!;
 
-	public Identifier Repository { get; set; }
+	public Identifier Repository { get; set; } = null!;
 
-	public List<Identifier> Stores { get; set; }
+	public List<Identifier> Stores { get; set; } = null!;
 }

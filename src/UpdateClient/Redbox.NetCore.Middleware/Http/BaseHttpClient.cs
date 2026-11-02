@@ -7,7 +7,7 @@ namespace Redbox.NetCore.Middleware.Http;
 
 public abstract class BaseHttpClient
 {
-	public string ActivityId { get; private set; }
+	public string? ActivityId { get; private set; }
 
 	public long? KioskId { get; private set; }
 
@@ -20,7 +20,7 @@ public abstract class BaseHttpClient
 		KioskId = middlewareData.KioskId;
 	}
 
-	protected List<Header> CreateHeaders(string bearer = null, string apikey = null, string applicationName = null)
+	protected List<Header> CreateHeaders(string? bearer = null, string? apikey = null, string? applicationName = null)
 	{
 		List<Header> list = new List<Header>();
 		if (bearer != null)

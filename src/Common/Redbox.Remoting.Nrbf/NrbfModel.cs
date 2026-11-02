@@ -88,7 +88,7 @@ internal enum NrbfMessageFlags
 
 /// <summary>A member's declared type: MS-NRBF BinaryTypeEnum plus its AdditionalInfo.</summary>
 internal readonly record struct NrbfMemberType(NrbfBinaryType BinaryType, NrbfPrimitiveType Primitive = NrbfPrimitiveType.None,
-	string ClassName = null, string AssemblyName = null)
+	string? ClassName = null, string? AssemblyName = null)
 {
 	public static readonly NrbfMemberType String = new NrbfMemberType(NrbfBinaryType.String);
 	public static readonly NrbfMemberType Object = new NrbfMemberType(NrbfBinaryType.Object);
@@ -103,13 +103,13 @@ internal readonly record struct NrbfMemberType(NrbfBinaryType BinaryType, NrbfPr
 /// <summary>A deserialized class instance: its type name, library and members in stream order.</summary>
 internal sealed class NrbfObject
 {
-	public NrbfObject(int id, string typeName, string libraryName, IReadOnlyList<string> memberNames)
+	public NrbfObject(int id, string typeName, string? libraryName, IReadOnlyList<string> memberNames)
 	{
 		Id = id;
 		TypeName = typeName;
 		LibraryName = libraryName;
 		MemberNames = memberNames;
-		Values = new object[memberNames.Count];
+		Values = new object?[memberNames.Count];
 	}
 
 	public int Id { get; }
@@ -117,13 +117,13 @@ internal sealed class NrbfObject
 	public string TypeName { get; }
 
 	/// <summary>Null for system (mscorlib) classes.</summary>
-	public string LibraryName { get; }
+	public string? LibraryName { get; }
 
 	public IReadOnlyList<string> MemberNames { get; }
 
-	internal object[] Values { get; }
+	internal object?[] Values { get; }
 
-	public bool TryGetMember(string name, out object value)
+	public bool TryGetMember(string name, out object? value)
 	{
 		for (int i = 0; i < MemberNames.Count; i++)
 		{
@@ -137,7 +137,7 @@ internal sealed class NrbfObject
 		return false;
 	}
 
-	public object this[string name] => TryGetMember(name, out object value) ? value : null;
+	public object? this[string name] => TryGetMember(name, out object? value) ? value : null;
 
 	public override string ToString() => $"{TypeName} (id {Id})";
 }
@@ -145,7 +145,7 @@ internal sealed class NrbfObject
 /// <summary>A deserialized single-dimension array of any element type.</summary>
 internal sealed class NrbfArray
 {
-	public NrbfArray(int id, object[] items)
+	public NrbfArray(int id, object?[] items)
 	{
 		Id = id;
 		Items = items;
@@ -153,7 +153,7 @@ internal sealed class NrbfArray
 
 	public int Id { get; }
 
-	public object[] Items { get; }
+	public object?[] Items { get; }
 
 	public override string ToString() => $"array[{Items.Length}] (id {Id})";
 }
@@ -172,13 +172,14 @@ internal sealed class NrbfReference
 /// <summary>A BinaryMethodCall with its arguments and call context taken out of the call array.</summary>
 internal sealed class NrbfMethodCall
 {
-	public string MethodName { get; init; }
+	// MethodName and TypeName are set by NrbfReader's object initializer.
+	public string MethodName { get; init; } = null!;
 
-	public string TypeName { get; init; }
+	public string TypeName { get; init; } = null!;
 
 	public NrbfMessageFlags Flags { get; init; }
 
-	public object[] Args { get; init; } = Array.Empty<object>();
+	public object?[] Args { get; init; } = Array.Empty<object?>();
 }
 
 /// <summary>A BinaryMethodReturn with its return value or exception taken out of the call array.</summary>
@@ -186,10 +187,10 @@ internal sealed class NrbfMethodReturn
 {
 	public NrbfMessageFlags Flags { get; init; }
 
-	public object ReturnValue { get; init; }
+	public object? ReturnValue { get; init; }
 
 	/// <summary>The serialized exception (usually an <see cref="NrbfObject"/> of a System.Exception type), if any.</summary>
-	public object Exception { get; init; }
+	public object? Exception { get; init; }
 
 	public bool IsException => (Flags & NrbfMessageFlags.ExceptionInArray) != 0;
 }

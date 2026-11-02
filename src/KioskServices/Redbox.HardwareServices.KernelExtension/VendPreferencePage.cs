@@ -18,14 +18,15 @@ public class VendPreferencePage : UserControl, IPreferencePageHost
 
 	private bool _initializing;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private ComboBox cmb_vendResult;
+	private ComboBox cmb_vendResult = null!;
 
+	// The controls above are created by InitializeComponent.
 	public VendPreferencePage()
 	{
 		InitializeComponent();
@@ -46,11 +47,11 @@ public class VendPreferencePage : UserControl, IPreferencePageHost
 		_initializing = false;
 	}
 
-	private void cmb_vendResult_SelectedValueChanged(object sender, EventArgs e)
+	private void cmb_vendResult_SelectedValueChanged(object? sender, EventArgs e)
 	{
 		if (!_initializing)
 		{
-			_hardwareService.VendResult = (Common.PreposResultType)cmb_vendResult.SelectedItem;
+			_hardwareService.VendResult = (Common.PreposResultType)cmb_vendResult.SelectedItem!; // the combo always has a selection
 		}
 	}
 

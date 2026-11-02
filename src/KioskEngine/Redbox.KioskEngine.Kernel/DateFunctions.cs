@@ -9,7 +9,7 @@ namespace Redbox.KioskEngine.Kernel;
 public static class DateFunctions
 {
 	[KernelFunction(Name = "kernel.dateadd")]
-	internal static LuaTable DateAdd(LuaTable date, string interval)
+	internal static LuaTable? DateAdd(LuaTable date, string interval)
 	{
 		DateTime? workingDate = date.ToDateTime();
 		string s = string.Empty;
@@ -59,7 +59,7 @@ public static class DateFunctions
 	{
 		return new LuaTable(KernelService.Instance.LuaRuntime)
 		{
-			["month"] = workingDate.Value.Month,
+			["month"] = workingDate!.Value.Month,
 			["day"] = workingDate.Value.Day,
 			["year"] = workingDate.Value.Year,
 			["hour"] = workingDate.Value.Hour,
@@ -88,7 +88,7 @@ public static class DateFunctions
 		}
 		finally
 		{
-			result = dateTime.Value.CompareTo(dateTime2.Value);
+			result = dateTime!.Value.CompareTo(dateTime2!.Value);
 			left.Dispose();
 			right.Dispose();
 		}
@@ -106,7 +106,7 @@ public static class DateFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getelapseddays")]
-	public static object GetElapsedDays(string startDateString, string endDateString)
+	public static object? GetElapsedDays(string startDateString, string endDateString)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
 		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var startDate) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var endDate))
@@ -125,7 +125,7 @@ public static class DateFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getelapsedhours")]
-	internal static object GetElapsedHours(string startDateString, string endDateString)
+	internal static object? GetElapsedHours(string startDateString, string endDateString)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
 		if (DateTime.TryParseExact(startDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var startDate) && DateTime.TryParseExact(endDateString, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var endDate))
@@ -136,7 +136,7 @@ public static class DateFunctions
 	}
 
 	[KernelFunction(Name = "kernel.datetimeparsefromstringdate")]
-	internal static LuaTable ParseFromStringDateTime(string datetime)
+	internal static LuaTable? ParseFromStringDateTime(string datetime)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
 		if (DateTime.TryParseExact(datetime, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result))
@@ -147,7 +147,7 @@ public static class DateFunctions
 	}
 
 	[KernelFunction(Name = "kernel.datetimeparsefromstringtime")]
-	internal static LuaTable ParseFromStringTime(string time)
+	internal static LuaTable? ParseFromStringTime(string time)
 	{
 		DateTime value;
 		try
@@ -174,7 +174,7 @@ public static class DateFunctions
 	}
 
 	[KernelFunction(Name = "kernel.tolocaltime")]
-	internal static string ToLocalTime(string datetime, string format)
+	internal static string? ToLocalTime(string datetime, string format)
 	{
 		string[] formats = new string[3] { "yyyyMMdd", "yyyyMMddHHmm", "yyyyMMddHHmmss" };
 		if (DateTime.TryParseExact(datetime, formats, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal, out var result))

@@ -6,7 +6,8 @@ public class Release
 {
 	public long ID { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
-	public List<Identifier> Labels { get; set; }
+	public List<Identifier> Labels { get; set; } = null!;
 }

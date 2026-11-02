@@ -109,20 +109,20 @@ internal sealed class IpcClientTester : IDisposable
 		using ClientPipeChannel clientPipeChannel = new ClientPipeChannel(pipeName, "basic client");
 		if (clientPipeChannel.Connect())
 		{
-			string arg = Encoding.ASCII.GetString(clientPipeChannel.Read());
+			string arg = Encoding.ASCII.GetString(clientPipeChannel.Read()!);
 			Console.WriteLine("Received message {0} from server.", arg);
 			byte[] buffer = new byte[65536];
 			rNGCryptoServiceProvider.GetBytes(buffer);
 			bool sent = clientPipeChannel.Write(buffer);
 			Console.WriteLine("[PipeClient] {0} Message sent {1}", DateTime.Now.ToString(), sent ? "successfully" : "failed");
-			arg = Encoding.ASCII.GetString(clientPipeChannel.Read());
+			arg = Encoding.ASCII.GetString(clientPipeChannel.Read()!);
 			Console.WriteLine("[PipeClient] {0} Received message '{0}' from server", DateTime.Now, arg);
 		}
 	}
 
-	private void RunDataTest(object o)
+	private void RunDataTest(object? o)
 	{
-		int size = (int)o;
+		int size = (int)o!;
 		RunDataTest(size);
 	}
 

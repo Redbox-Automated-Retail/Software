@@ -4,9 +4,9 @@ namespace Redbox.HAL.Client;
 
 public sealed class ResultItem
 {
-	private string m_rawResult;
+	private string? m_rawResult;
 
-	public string RawResult
+	public string? RawResult
 	{
 		get
 		{
@@ -21,11 +21,11 @@ public sealed class ResultItem
 		}
 	}
 
-	public string Barcode { get; private set; }
+	public string? Barcode { get; private set; }
 
-	public string Metadata { get; private set; }
+	public string? Metadata { get; private set; }
 
-	public ResultItem(string item)
+	public ResultItem(string? item)
 	{
 		Parse(item);
 	}
@@ -34,7 +34,7 @@ public sealed class ResultItem
 	{
 		if (Barcode == null)
 		{
-			if (!Metadata.ToUpper().Equals("UNKNOWN"))
+			if (!Metadata!.ToUpper().Equals("UNKNOWN"))
 			{
 				return Metadata.ToUpper().Equals("REDBOX");
 			}
@@ -47,24 +47,24 @@ public sealed class ResultItem
 	{
 		if (Barcode == null)
 		{
-			return Metadata.Equals("EMPTY");
+			return Metadata!.Equals("EMPTY");
 		}
 		return false;
 	}
 
-	public override string ToString()
+	public override string? ToString()
 	{
 		return RawResult;
 	}
 
-	private bool Parse(string item)
+	private bool Parse(string? item)
 	{
 		RawResult = item;
 		if (RawResult == null)
 		{
 			return false;
 		}
-		string[] parts = item.Split('(');
+		string[] parts = item!.Split('(');
 		if (parts[0].Equals("UNKNOWN", StringComparison.CurrentCultureIgnoreCase) || parts[0].Equals("EMPTY", StringComparison.CurrentCultureIgnoreCase) || parts[0].Equals("redbox", StringComparison.CurrentCultureIgnoreCase))
 		{
 			Metadata = parts[0];

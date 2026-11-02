@@ -14,11 +14,11 @@ namespace Redbox.HAL.IPC.Framework;
 
 public class ClientCommand<T> where T : ClientCommandResult, new()
 {
-	private TextWriter m_logFile;
+	private TextWriter? m_logFile;
 
 	private const string IPCLogsDirectory = "C:\\Program Files\\Redbox\\KioskLogs\\IPCFramework";
 
-	private IPCProtocol m_protocol;
+	private IPCProtocol? m_protocol;
 
 	public string CommandText { get; internal set; }
 
@@ -75,8 +75,8 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 
 	public T Execute()
 	{
-		using IIpcClientSession session = ClientSessionFactory.GetClientSession(m_protocol);
-		return Execute(session);
+		using IIpcClientSession? session = ClientSessionFactory.GetClientSession(m_protocol!);
+		return Execute(session!);
 	}
 
 	public T Execute(IIpcClientSession session)
@@ -161,7 +161,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 	protected virtual void OnConnectionFailure(Exception e, ClientCommandResult result)
 	{
 		result.Success = false;
-		result.Errors.Add(Error.NewError("J001", $"Unable to connect to command service on {m_protocol.Host}:{m_protocol.Port}.", "Check that the host and port values are correct and that the command service is running on the specified host."));
+		result.Errors.Add(Error.NewError("J001", $"Unable to connect to command service on {m_protocol!.Host}:{m_protocol.Port}.", "Check that the host and port values are correct and that the command service is running on the specified host."));
 	}
 
 	protected virtual void OnUnhandledException(Exception e, ClientCommandResult result)
@@ -192,7 +192,7 @@ public class ClientCommand<T> where T : ClientCommandResult, new()
 				stringBuilder.Replace("|*", string.Empty);
 				stringBuilder.Replace("*|", string.Empty);
 				string errorText = stringBuilder.ToString();
-				string errorCode = StringExtensions.ExtractCodeFromBrackets(errorText, "[", "]");
+				string? errorCode = StringExtensions.ExtractCodeFromBrackets(errorText, "[", "]");
 				if (errorCode != null)
 				{
 					string[] errorParts = errorText.Substring(errorCode.Length + 2).Split("|".ToCharArray());

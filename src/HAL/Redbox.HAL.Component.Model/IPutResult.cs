@@ -20,5 +20,5 @@ public interface IPutResult
 
 	string StoredMatrix { get; }
 
-	ILocation OriginalMatrixLocation { get; }
+	ILocation? OriginalMatrixLocation { get; }
 }

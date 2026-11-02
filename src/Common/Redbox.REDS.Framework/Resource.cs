@@ -10,19 +10,19 @@ namespace Redbox.REDS.Framework;
 
 public class Resource : IResource
 {
-	private IDictionary<string, Aspect> m_aspects;
+	private IDictionary<string, Aspect>? m_aspects;
 
-	private IDictionary<string, object> m_properties;
+	private IDictionary<string, object?>? m_properties;
 
 	private readonly List<string> m_dependencies = new List<string>();
 
-	public string Name => (Properties.ContainsKey("name") ? Properties["name"] : null) as string;
+	public string? Name => (Properties.ContainsKey("name") ? Properties["name"] : null) as string;
 
-	public object this[string name]
+	public object? this[string name]
 	{
 		get
 		{
-			IPropertyType propertyType = Type.GetPropertyType(name);
+			IPropertyType? propertyType = Type.GetPropertyType(name);
 			if (propertyType == null)
 			{
 				return null;
@@ -35,7 +35,7 @@ public class Resource : IResource
 		}
 		set
 		{
-			IPropertyType propertyType = Type.GetPropertyType(name);
+			IPropertyType? propertyType = Type.GetPropertyType(name);
 			if (propertyType == null)
 			{
 				throw new ArgumentException($"Property '{name}' is not a valid part of the type.");
@@ -44,11 +44,11 @@ public class Resource : IResource
 		}
 	}
 
-	public IResourceBundleStorageEntry StorageEntry { get; internal set; }
+	public IResourceBundleStorageEntry? StorageEntry { get; internal set; }
 
 	public ReadOnlyCollection<string> Dependencies => m_dependencies.AsReadOnly();
 
-	public IResourceType Type { get; internal set; }
+	public IResourceType Type { get; internal set; } = null!; // set by ResourceType.NewResourceInstance
 
 	internal List<string> InnerDependencies => m_dependencies;
 
@@ -64,19 +64,19 @@ public class Resource : IResource
 		}
 	}
 
-	internal IDictionary<string, object> Properties
+	internal IDictionary<string, object?> Properties
 	{
 		get
 		{
 			if (m_properties == null)
 			{
-				m_properties = new Dictionary<string, object>();
+				m_properties = new Dictionary<string, object?>();
 			}
 			return m_properties;
 		}
 	}
 
-	public static ErrorList FromXml(ResourceBundle bundle, XmlDocument document, out IResource resource)
+	public static ErrorList FromXml(ResourceBundle bundle, XmlDocument document, out IResource? resource)
 	{
 		resource = null;
 		ErrorList errorList = new ErrorList();
@@ -99,20 +99,20 @@ public class Resource : IResource
 				return errorList;
 			}
 			IResourceType resourceType = bundle.ResourceTypes[typeName];
-			XmlNode node = document.DocumentElement.SelectSingleNode("property[@name='name']");
+			XmlNode? node = document.DocumentElement.SelectSingleNode("property[@name='name']");
 			resource = resourceType.NewResourceInstance(node.GetAttributeValue<string>("value"));
-			XmlNodeList propertyNodes = document.DocumentElement.SelectNodes("property");
+			XmlNodeList? propertyNodes = document.DocumentElement.SelectNodes("property");
 			if (propertyNodes != null)
 			{
 				foreach (XmlNode propertyNode in propertyNodes)
 				{
 					string propertyName = propertyNode.GetAttributeValue<string>("name");
-					if (propertyNode.Attributes["value"] != null)
+					if (propertyNode.Attributes!["value"] != null)
 					{
 						resource[propertyName] = propertyNode.GetAttributeValue<object>("value");
 						continue;
 					}
-					XmlNodeList valueNodes = propertyNode.SelectNodes("value");
+					XmlNodeList? valueNodes = propertyNode.SelectNodes("value");
 					if (valueNodes == null || valueNodes.Count == 0)
 					{
 						errorList.Add(Error.NewError("R006", $"The property '{typeName}' does not have a value attribute or child value nodes.", "Each property must have a valid value attribute or one or more valid value child nodes."));
@@ -139,7 +139,7 @@ public class Resource : IResource
 					}
 				}
 			}
-			XmlNodeList aspectNodes = document.DocumentElement.SelectNodes("aspect");
+			XmlNodeList? aspectNodes = document.DocumentElement.SelectNodes("aspect");
 			if (aspectNodes != null)
 			{
 				foreach (XmlNode aspectNode in aspectNodes)
@@ -150,14 +150,14 @@ public class Resource : IResource
 						errorList.Add(Error.NewError("R004", "The name attribute on the aspect element must be specified.", "Specify the name attribute on the aspect element in the resource XML and recompile."));
 						continue;
 					}
-					IAspectType aspectType = resource.Type.GetAspectType(aspectName);
+					IAspectType? aspectType = resource.Type.GetAspectType(aspectName);
 					if (aspectType == null)
 					{
 						errorList.Add(Error.NewError("R005", $"The aspect type '{aspectName}' is not defined.", "Specify a valid aspect type in the resource XML and recompile."));
 						return errorList;
 					}
 					IAspect aspect = resource.NewAspect(aspectName, aspectType);
-					foreach (XmlAttribute attribute in aspectNode.Attributes)
+					foreach (XmlAttribute attribute in aspectNode.Attributes!)
 					{
 						if (!(attribute.Name == "name"))
 						{
@@ -203,7 +203,7 @@ public class Resource : IResource
 		return aspect;
 	}
 
-	public IAspect GetAspect(string name)
+	public IAspect? GetAspect(string name)
 	{
 		if (!Aspects.ContainsKey(name))
 		{
@@ -218,7 +218,7 @@ public class Resource : IResource
 		stringBuilder.Append(Name);
 		foreach (IPropertyType filterProperty in Type.GetFilterProperties())
 		{
-			string text = this[filterProperty.Name] as string;
+			string? text = this[filterProperty.Name] as string;
 			if (!string.IsNullOrEmpty(text))
 			{
 				stringBuilder.AppendFormat("_{0}", text);
@@ -248,9 +248,9 @@ public class Resource : IResource
 		}
 	}
 
-	public void ForEachPropertyValueDo(Action<object> action)
+	public void ForEachPropertyValueDo(Action<object?> action)
 	{
-		foreach (object value in Properties.Values)
+		foreach (object? value in Properties.Values)
 		{
 			action(value);
 		}
@@ -267,7 +267,7 @@ public class Resource : IResource
 		xmlTextWriter.WriteStartDocument();
 		xmlTextWriter.WriteStartElement("resource");
 		xmlTextWriter.WriteAttributeString("type", Type.Name);
-		foreach (KeyValuePair<string, object> property in Properties)
+		foreach (KeyValuePair<string, object?> property in Properties)
 		{
 			if (property.Value == null)
 			{
@@ -294,17 +294,17 @@ public class Resource : IResource
 		}
 		xmlTextWriter.WriteEndElement();
 		xmlTextWriter.WriteEndDocument();
-		bundle?.StoreResource(GetStorageFriendlyName(Name), stringBuilder.ToString());
+		bundle?.StoreResource(GetStorageFriendlyName(Name!), stringBuilder.ToString());
 		return result;
 	}
 
-	public bool PropertyEquals(string name, object value)
+	public bool PropertyEquals(string name, object? value)
 	{
 		if (string.IsNullOrEmpty(name))
 		{
 			return false;
 		}
-		if (this[name] is List<object> list)
+		if (this[name] is List<object?> list)
 		{
 			return list.Contains(value);
 		}
@@ -314,19 +314,19 @@ public class Resource : IResource
 		}
 		if (this[name] != null)
 		{
-			return this[name].Equals(value);
+			return this[name]!.Equals(value);
 		}
 		return false;
 	}
 
-	public bool PropertyEquals2(string name, object value)
+	public bool PropertyEquals2(string name, object? value)
 	{
 		if (string.IsNullOrEmpty(name))
 		{
 			return false;
 		}
 		bool negate = name.Substring(0, 2) == "!=";
-		if (this[name] is List<object> list)
+		if (this[name] is List<object?> list)
 		{
 			if (!negate)
 			{
@@ -346,13 +346,13 @@ public class Resource : IResource
 		{
 			if (this[name] != null)
 			{
-				return this[name].Equals(value);
+				return this[name]!.Equals(value);
 			}
 			return false;
 		}
 		if (this[name] != null)
 		{
-			return !this[name].Equals(value);
+			return !this[name]!.Equals(value);
 		}
 		return false;
 	}

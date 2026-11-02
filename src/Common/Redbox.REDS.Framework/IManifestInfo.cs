@@ -4,15 +4,15 @@ namespace Redbox.REDS.Framework;
 
 public interface IManifestInfo
 {
-	string ProductName { get; }
+	string? ProductName { get; }
 
-	string ProductVersion { get; }
+	string? ProductVersion { get; }
 
-	string StartupScript { get; }
+	string? StartupScript { get; }
 
-	string TestControl { get; }
+	string? TestControl { get; }
 
-	string ControlAssembly { get; }
+	string? ControlAssembly { get; }
 
 	BundleType BundleType { get; }
 

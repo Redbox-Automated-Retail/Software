@@ -36,7 +36,7 @@ internal struct BitDecoder
 			Prob += 2048 - Prob >> 5;
 			if (rangeDecoder.Range < 16777216)
 			{
-				rangeDecoder.Code = (rangeDecoder.Code << 8) | (byte)rangeDecoder.Stream.ReadByte();
+				rangeDecoder.Code = (rangeDecoder.Code << 8) | (byte)rangeDecoder.Stream!.ReadByte();
 				rangeDecoder.Range <<= 8;
 			}
 			return 0u;
@@ -46,7 +46,7 @@ internal struct BitDecoder
 		Prob -= Prob >> 5;
 		if (rangeDecoder.Range < 16777216)
 		{
-			rangeDecoder.Code = (rangeDecoder.Code << 8) | (byte)rangeDecoder.Stream.ReadByte();
+			rangeDecoder.Code = (rangeDecoder.Code << 8) | (byte)rangeDecoder.Stream!.ReadByte();
 			rangeDecoder.Range <<= 8;
 		}
 		return 1u;

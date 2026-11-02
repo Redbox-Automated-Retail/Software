@@ -16,7 +16,7 @@ internal sealed class CoreCommand
 
 	internal readonly int CommandWait;
 
-	internal readonly string ResetCommand;
+	internal readonly string? ResetCommand;
 
 	internal readonly AddressSelector Address;
 
@@ -26,7 +26,7 @@ internal sealed class CoreCommand
 
 	private static readonly char[] CommaSplit = new char[1] { ',' };
 
-	internal string Command { get; private set; }
+	internal string? Command { get; private set; }
 
 	internal static CoreCommand Create(CommandType type, int? timeout, ICommPort port)
 	{
@@ -44,7 +44,7 @@ internal sealed class CoreCommand
 		try
 		{
 			trace.Trace("[CoreCommand] Executing command {0}", CommandName);
-			CoreResponse coreResponse = SendCommand(Command, trace);
+			CoreResponse coreResponse = SendCommand(Command!, trace);
 			try
 			{
 				if (coreResponse.CommError || !StatusBit.HasValue)
@@ -54,7 +54,7 @@ internal sealed class CoreCommand
 				coreResponse.Error = WaitForCommand(trace);
 				if (coreResponse.TimedOut && !string.IsNullOrEmpty(ResetCommand))
 				{
-					Array.ForEach(ResetCommand.Split(CommaSplit, StringSplitOptions.RemoveEmptyEntries), delegate(string s)
+					Array.ForEach(ResetCommand!.Split(CommaSplit, StringSplitOptions.RemoveEmptyEntries), delegate(string s)
 					{
 						SendCommand(s, trace);
 					});
@@ -93,7 +93,7 @@ internal sealed class CoreCommand
 					return ErrorCodes.CommunicationError;
 				}
 				trace.Trace("[WaitForCommand] {0}", coreResponse.OpCodeResponse);
-				if (!coreResponse.IsBitSet(StatusBit.Value))
+				if (!coreResponse.IsBitSet(StatusBit!.Value))
 				{
 					return ErrorCodes.Success;
 				}
@@ -161,13 +161,13 @@ internal sealed class CoreCommand
 	{
 		Port = port;
 		CommandName = type.ToString();
-		FieldInfo field = typeof(CommandType).GetField(type.ToString());
+		FieldInfo? field = typeof(CommandType).GetField(type.ToString());
 		if (field == null)
 		{
 			LogHelper.Instance.Log("[CoreCommand] Could not locate type field on {0}", CommandName);
 			return;
 		}
-		CommandPropertiesAttribute properties = CommandPropertiesAttribute.GetProperties(field);
+		CommandPropertiesAttribute? properties = CommandPropertiesAttribute.GetProperties(field);
 		if (properties == null)
 		{
 			LogHelper.Instance.Log("[CoreCommand] Could not locate PropertiesAttribute on {0}", CommandName);

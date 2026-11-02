@@ -129,7 +129,7 @@ public class StreamTokenReader : ITokenReader, IDisposable
 	{
 		if (GetCurrentToken() == '\r')
 		{
-			if (PeekNextToken().HasValue && PeekNextToken().Value == '\n')
+			if (PeekNextToken().HasValue && PeekNextToken()!.Value == '\n')
 			{
 				m_twoCharNewLine = true;
 				m_resetColumnOnNextMove = false;

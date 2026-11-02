@@ -4,11 +4,11 @@ namespace DeviceService.ComponentModel.Responses;
 
 public class UnencryptedCardReadModel : Base87CardReadModel
 {
-	public string Track1 { get; set; }
+	public string? Track1 { get; set; }
 
-	public string Track2 { get; set; }
+	public string? Track2 { get; set; }
 
-	public string Track3 { get; set; }
+	public string? Track3 { get; set; }
 
 	public CardType CardType { get; set; }
 

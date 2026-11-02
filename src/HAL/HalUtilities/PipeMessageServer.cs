@@ -27,7 +27,7 @@ internal sealed class PipeMessageServer : AbstractPipeSever
 	{
 		IIPCMessage iIPCMessage = Factory.Read(channel);
 		LogHelper.Instance.Log("[PipeMessageServer] {0} Message received.", DateTime.Now);
-		LogHelper.Instance.Log(iIPCMessage.ToString());
+		LogHelper.Instance.Log(iIPCMessage.ToString()!);
 		IIPCMessage msg = Factory.CreateAck(iIPCMessage.UID);
 		Factory.Write(msg, channel);
 		channel.Dispose();

@@ -7,11 +7,11 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal sealed class NilDumpbinService : IDumpbinService
 {
-	public ILocation PutLocation => null;
+	public ILocation? PutLocation => null;
 
 	public int Capacity => 0;
 
-	public ILocation RotationLocation { get; private set; }
+	public ILocation? RotationLocation { get; private set; }
 
 	public bool IsFull()
 	{

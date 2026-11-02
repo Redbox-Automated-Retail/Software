@@ -11,11 +11,11 @@ public interface IPortManagerService
 
 	ICommChannelConfiguration CreateConfiguration();
 
-	ICommPort Create(SerialPort port);
+	ICommPort? Create(SerialPort port);
 
-	ICommPort Create(SerialPort port, CommPortReadModes mode);
+	ICommPort? Create(SerialPort port, CommPortReadModes mode);
 
-	ICommPort Scan(ICommChannelConfiguration conf, Predicate<ICommPort> probe, CommPortReadModes mode);
+	ICommPort? Scan(ICommChannelConfiguration conf, Predicate<ICommPort> probe, CommPortReadModes mode);
 
-	ICommPort Scan(string tryFirst, ICommChannelConfiguration conf, Predicate<ICommPort> probe, CommPortReadModes mode);
+	ICommPort? Scan(string? tryFirst, ICommChannelConfiguration conf, Predicate<ICommPort> probe, CommPortReadModes mode);
 }

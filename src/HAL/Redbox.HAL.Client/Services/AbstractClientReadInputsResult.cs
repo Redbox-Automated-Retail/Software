@@ -6,7 +6,7 @@ namespace Redbox.HAL.Client.Services;
 
 internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 {
-	protected readonly string[] Inputs;
+	protected readonly string[]? Inputs;
 
 	private static readonly string[] ErrorInputs = new string[0];
 
@@ -14,7 +14,7 @@ internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 
 	public bool Success => Error == ErrorCodes.Success;
 
-	public int InputCount => Inputs.Length;
+	public int InputCount => Inputs!.Length;
 
 	protected abstract string LogHeader { get; }
 
@@ -25,11 +25,11 @@ internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 
 	public void Log(LogEntryType type)
 	{
-		LogHelper.Instance.Log("--{0} inputs dump Error = {1} icount = {2}--", LogHeader, Error, Inputs.Length);
+		LogHelper.Instance.Log("--{0} inputs dump Error = {1} icount = {2}--", LogHeader, Error, Inputs!.Length);
 		int input = 0;
-		Array.ForEach(Inputs, delegate
+		Array.ForEach(Inputs!, delegate
 		{
-			LogHelper.Instance.Log(" input {0} = {1}", input, Inputs[input]);
+			LogHelper.Instance.Log(" input {0} = {1}", input, Inputs![input]);
 			input++;
 		});
 	}
@@ -64,7 +64,7 @@ internal abstract class AbstractClientReadInputsResult<T> : IReadInputsResult<T>
 			Error = ErrorCodes.ServiceChannelError;
 			return;
 		}
-		if (!job.GetStack(out var stack).Success)
+		if (!job!.GetStack(out var stack).Success)
 		{
 			Error = ErrorCodes.ServiceChannelError;
 			return;

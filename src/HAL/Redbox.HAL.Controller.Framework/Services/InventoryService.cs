@@ -23,7 +23,8 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 
 	private ErrorCodes m_storeState;
 
-	private ILocation[][] LocationInfo;
+	// Set by NotifyConfigurationLoaded (InitializeUnderLock).
+	private ILocation[][] LocationInfo = null!;
 
 	public bool IsTrackingEmptyStuck => ControllerConfiguration.Instance.TrackProblemLocations;
 
@@ -73,7 +74,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 					{
 						deck.Quadrants.ForEach(delegate(IQuadrant q)
 						{
-							for (int i = q.Slots.Start; i <= q.Slots.End; i++)
+							for (int i = q.Slots!.Start; i <= q.Slots!.End; i++)
 							{
 								ILocation underLock = GetUnderLock(deck.Number, i);
 								if (underLock.Excluded != q.IsExcluded)
@@ -125,11 +126,11 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		return GetMachineEmptyCount() > numberOfEmpty;
 	}
 
-	public ILocation Lookup(string id)
+	public ILocation? Lookup(string id)
 	{
 		using (new WithReadLock(Lock))
 		{
-			ILocation location = LookupUnderLock(id);
+			ILocation? location = LookupUnderLock(id);
 			if (location == null)
 			{
 				string msg = $"LOOKUP of item {id} returned NOT FOUND.";
@@ -207,7 +208,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		return ComputeList((ILocation loc) => !loc.Excluded && loc.ID == "UNKNOWN");
 	}
 
-	public bool IsBarcodeDuplicate(string id, out ILocation original)
+	public bool IsBarcodeDuplicate(string id, out ILocation? original)
 	{
 		new DuplicateSearchResult().Original = null;
 		original = null;
@@ -364,7 +365,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 			{
 				try
 				{
-					XmlNodeList xmlNodeList = xmlDocument.DocumentElement.SelectNodes("item");
+					XmlNodeList? xmlNodeList = xmlDocument.DocumentElement!.SelectNodes("item");
 					if (xmlNodeList == null)
 					{
 						errors.Add(Error.NewError("I001", "Invalid document.", "The specified document has no nodes."));
@@ -372,7 +373,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 					}
 					foreach (XmlNode item in xmlNodeList)
 					{
-						ILocation location = FromXML(item, errors);
+						ILocation? location = FromXML(item, errors);
 						if (location == null)
 						{
 							errors.Add(Error.NewError("I002", "Load error.", "Unable to load the deck from the XML."));
@@ -505,7 +506,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 	internal InventoryService()
 	{
 		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = dataTableService.GetTable<ILocation>();
+		Table = dataTableService.GetTable<ILocation>()!;
 		string path = ServiceLocator.Instance.GetService<IFormattedLogFactoryService>().CreateSubpath("ErrorLogs");
 		EmptyStuckLogFile = Path.Combine(path, "ErrorLocationsHistory.txt");
 		ControllerConfiguration.Instance.AddObserver(this);
@@ -579,7 +580,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		int length = LocationInfo.GetLength(0);
 		for (int i = 0; i < length; i++)
 		{
-			IDeck byNumber = decksService.GetByNumber(i + 1);
+			IDeck byNumber = decksService.GetByNumber(i + 1)!;
 			if (excludeQLM && byNumber.IsQlm)
 			{
 				continue;
@@ -596,9 +597,9 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		}
 	}
 
-	private ILocation LookupUnderLock(string id)
+	private ILocation? LookupUnderLock(string id)
 	{
-		ILocation location = null;
+		ILocation? location = null;
 		ForeachUnderLock(delegate(ILocation loc)
 		{
 			if (loc.ID == id)
@@ -641,7 +642,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 						}
 						deckEntries.Clear();
 					}
-					ILocation[] deckLocations = InitializeDeck(deck);
+					ILocation[]? deckLocations = InitializeDeck(deck);
 					if (deckLocations != null)
 					{
 						LocationInfo[deck.Number - 1] = deckLocations;
@@ -661,7 +662,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		}
 	}
 
-	private ILocation[] InitializeDeck(IDeck deck)
+	private ILocation[]? InitializeDeck(IDeck deck)
 	{
 		ITableTypeFactory tableTypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
 		List<ILocation> list = new List<ILocation>();
@@ -688,15 +689,15 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 		return deckEntries.ToArray();
 	}
 
-	private ILocation FromXML(XmlNode node, ErrorList errors)
+	private ILocation? FromXML(XmlNode node, ErrorList errors)
 	{
 		IDecksService service = ServiceLocator.Instance.GetService<IDecksService>();
 		int? attributeValue = node.GetAttributeValue<int?>("deck", null);
 		int? attributeValue2 = node.GetAttributeValue<int?>("slot", null);
-		string attributeValue3 = node.GetAttributeValue<string>("id", null);
-		string attributeValue4 = node.GetAttributeValue<string>("ReturnTime", null);
+		string? attributeValue3 = node.GetAttributeValue<string?>("id", null);
+		string? attributeValue4 = node.GetAttributeValue<string?>("ReturnTime", null);
 		DateTime? returnTime = null;
-		if (!string.IsNullOrEmpty(attributeValue4) && !attributeValue4.Equals("NONE"))
+		if (!string.IsNullOrEmpty(attributeValue4) && !attributeValue4!.Equals("NONE"))
 		{
 			try
 			{
@@ -717,7 +718,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 			LogHelper.Instance.Log($"Attempt to import invalid item. XmlNode: {node.OuterXml}", LogEntryType.Error);
 			return null;
 		}
-		IDeck byNumber = service.GetByNumber(attributeValue.Value);
+		IDeck? byNumber = service.GetByNumber(attributeValue.Value);
 		if (byNumber == null)
 		{
 			errors.Add(Error.NewError("P003", $"The deck value must be between 1 and {service.DeckCount}.", "Ensure the deck attribute value is within the valid range."));
@@ -730,7 +731,7 @@ public sealed class InventoryService : IConfigurationObserver, IInventoryService
 			LogHelper.Instance.Log($"Deck {byNumber.Number} expects a value between 1 and {byNumber.NumberOfSlots}, received {attributeValue2}", LogEntryType.Error);
 			return null;
 		}
-		return ServiceLocator.Instance.GetService<ITableTypeFactory>().NewLocation(attributeValue.Value, attributeValue2.Value, attributeValue3, returnTime, attributeValue5, attributeValue6, flags);
+		return ServiceLocator.Instance.GetService<ITableTypeFactory>().NewLocation(attributeValue.Value, attributeValue2.Value, attributeValue3!, returnTime, attributeValue5, attributeValue6, flags);
 	}
 
 	private ILocation GetUnderLock(int deck, int slot)

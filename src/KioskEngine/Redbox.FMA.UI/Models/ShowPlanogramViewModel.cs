@@ -11,25 +11,26 @@ internal class ShowPlanogramViewModel : DependencyObject
 {
 	private static DependencyProperty DocumentScalingProperty = DependencyProperty.Register("DocumentScaling", typeof(DocumentScaling), typeof(ShowPlanogramViewModel), new PropertyMetadata(DocumentScaling.Normal));
 
-	public DynamicRoutedCommand SelectCommand { get; set; }
+	// The commands are set in ShowPlanogramViewController.ConfigureView right after construction.
+	public DynamicRoutedCommand SelectCommand { get; set; } = null!;
 
-	public DynamicRoutedCommand CloseCommand { get; set; }
+	public DynamicRoutedCommand CloseCommand { get; set; } = null!;
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public DateTime StartDate { get; set; }
 
 	public FileType FileType { get; set; }
 
-	public IDocumentPaginatorSource XpsDocumentSource { get; set; }
+	public IDocumentPaginatorSource? XpsDocumentSource { get; set; }
 
-	public byte[] rtfDocument { get; set; }
+	public byte[]? rtfDocument { get; set; }
 
-	public DynamicRoutedCommand FitWidthCommand { get; set; }
+	public DynamicRoutedCommand FitWidthCommand { get; set; } = null!;
 
-	public DynamicRoutedCommand FitHeightCommand { get; set; }
+	public DynamicRoutedCommand FitHeightCommand { get; set; } = null!;
 
-	public DynamicRoutedCommand DefaultScaleCommand { get; set; }
+	public DynamicRoutedCommand DefaultScaleCommand { get; set; } = null!;
 
 	public DocumentScaling DocumentScaling
 	{

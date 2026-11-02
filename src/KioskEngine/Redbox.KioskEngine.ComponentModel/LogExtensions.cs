@@ -7,7 +7,7 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public static class LogExtensions
 {
-	public static void LogEntireException(this LogHelper log, string message, Exception e, [CallerMemberName] string memberName = null)
+	public static void LogEntireException(this LogHelper log, string message, Exception e, [CallerMemberName] string? memberName = null)
 	{
 		Type type = e.GetType();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -21,7 +21,7 @@ public static class LogExtensions
 				stringBuilder.AppendLine("Stack Trace");
 				stringBuilder.AppendLine(e.StackTrace);
 			}
-			e = e.InnerException;
+			e = e.InnerException!; // null ends the loop
 		}
 		log.Log(stringBuilder.ToString());
 	}

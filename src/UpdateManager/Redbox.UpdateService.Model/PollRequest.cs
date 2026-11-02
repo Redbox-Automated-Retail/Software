@@ -6,5 +6,6 @@ public class PollRequest
 
 	public int SyncId { get; set; }
 
-	public string Data { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Data { get; set; } = null!;
 }

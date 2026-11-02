@@ -16,9 +16,9 @@ public class SelectPlanogramViewController : BaseViewController
 {
 	public static void ConfigureView()
 	{
-		IKioskClientServicePlanogram kioskClientServicePlanogram = ServiceLocator.Instance.GetService<IKioskClientService>()?.Planogram;
-		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
-		SelectPlanogramViewModel selectPlanogramViewModel = GetViewModel();
+		IKioskClientServicePlanogram? kioskClientServicePlanogram = ServiceLocator.Instance.GetService<IKioskClientService>()?.Planogram;
+		FrameworkElement? viewUserControl = BaseViewController.GetViewUserControl();
+		SelectPlanogramViewModel? selectPlanogramViewModel = GetViewModel();
 		if (selectPlanogramViewModel == null)
 		{
 			selectPlanogramViewModel = new SelectPlanogramViewModel
@@ -26,7 +26,7 @@ public class SelectPlanogramViewController : BaseViewController
 				CloseCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), (Action)delegate
 				{
 					CloseButtonClickedAction();
-				}, (Func<bool>)null),
+				}, (Func<bool>?)null),
 				SelectCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), delegate(Planogram p)
 				{
 					SelectPlanogram(p);
@@ -34,15 +34,15 @@ public class SelectPlanogramViewController : BaseViewController
 				ForceSyncCommand = DynamicRouting.RegisterRoutedCommand(new DynamicRoutedCommand(), (Action)delegate
 				{
 					ForceSyncPlanograms();
-				}, (Func<bool>)null)
+				}, (Func<bool>?)null)
 			};
-			List<Planogram> list = kioskClientServicePlanogram?.GetActivePlanograms();
+			List<Planogram>? list = kioskClientServicePlanogram?.GetActivePlanograms();
 			if (list != null)
 			{
 				selectPlanogramViewModel.Planograms = list.OrderBy((Planogram p) => p.Name);
 			}
 		}
-		viewUserControl.DataContext = selectPlanogramViewModel;
+		viewUserControl!.DataContext = selectPlanogramViewModel;
 	}
 
 	private static void SelectPlanogram(Planogram p)
@@ -56,9 +56,9 @@ public class SelectPlanogramViewController : BaseViewController
 		OrchestrationService.ViewGoBackSafe("select_planogram_view", popOnly: false);
 	}
 
-	private static SelectPlanogramViewModel GetViewModel()
+	private static SelectPlanogramViewModel? GetViewModel()
 	{
-		FrameworkElement viewUserControl = BaseViewController.GetViewUserControl();
+		FrameworkElement? viewUserControl = BaseViewController.GetViewUserControl();
 		if (viewUserControl != null)
 		{
 			return viewUserControl.DataContext as SelectPlanogramViewModel;

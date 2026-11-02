@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.DownloadService;
 
 internal class DownloadFactory
 {
-	private IDataStoreService _dataStoreService;
+	private IDataStoreService? _dataStoreService;
 
 	private object _lock = new object();
 
@@ -40,7 +40,7 @@ internal class DownloadFactory
 			{
 				try
 				{
-					DownloadData downloadData = dataStoreService.Get<DownloadData>(string.Concat(downLoad, ".dldat"));
+					DownloadData? downloadData = dataStoreService.Get<DownloadData>(string.Concat(downLoad, ".dldat"));
 					if (downloadData == null)
 					{
 						DeleteDownload(downLoad);
@@ -150,7 +150,7 @@ internal class DownloadFactory
 
 	internal List<Guid> GetDownLoadList()
 	{
-		List<Guid> list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".dl");
+		List<Guid>? list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".dl");
 		if (list == null)
 		{
 			list = new List<Guid>();

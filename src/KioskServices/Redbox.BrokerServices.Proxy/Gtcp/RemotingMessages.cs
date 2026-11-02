@@ -43,7 +43,7 @@ internal static class RemotingMessages
 	/// <see cref="BrokerRemoteException"/> if the broker reported an exception, either as a BinaryMethodReturn with
 	/// ExceptionInArray or as a bare serialized exception flagged by the __gensrlex header (section 4).
 	/// </summary>
-	public static object ReadReturnValue(GtcpMessage reply, string methodName)
+	public static object? ReadReturnValue(GtcpMessage reply, string methodName)
 	{
 		if (reply.Headers.ContainsKey(GtcpMessage.SerializedExceptionHeader))
 		{
@@ -73,7 +73,7 @@ public sealed class BrokerRemoteException : Exception
 
 	public string? RemoteStackTrace { get; }
 
-	internal static BrokerRemoteException From(string methodName, object serializedException)
+	internal static BrokerRemoteException From(string methodName, object? serializedException)
 	{
 		NrbfObject? exception = serializedException as NrbfObject;
 		string type = exception?["ClassName"] as string ?? exception?.TypeName ?? "unknown exception";

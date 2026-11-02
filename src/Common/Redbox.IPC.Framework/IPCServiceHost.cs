@@ -17,11 +17,11 @@ public abstract class IPCServiceHost
 
 	private List<string> _filters = new List<string>();
 
-	private Action<string, string> _paramAction;
+	private Action<string, string>? _paramAction;
 
-	private Action<ISession> _registerSessionAction;
+	private Action<ISession>? _registerSessionAction;
 
-	private static IPCServiceHost m_serviceHost;
+	private static IPCServiceHost? m_serviceHost;
 
 	private readonly object m_syncObject = new object();
 
@@ -29,17 +29,18 @@ public abstract class IPCServiceHost
 
 	public bool Alive { get; set; }
 
-	public string Name { get; protected set; }
+	// Name, Version, Copyright, Protocol and WorkerPool are set by Create.
+	public string Name { get; protected set; } = null!;
 
-	public string Version { get; protected set; }
+	public string Version { get; protected set; } = null!;
 
-	public string Copyright { get; protected set; }
+	public string Copyright { get; protected set; } = null!;
 
-	public IPCProtocol Protocol { get; protected set; }
+	public IPCProtocol Protocol { get; protected set; } = null!;
 
-	public WorkerPool WorkerPool { get; internal set; }
+	public WorkerPool WorkerPool { get; internal set; } = null!;
 
-	public X509Certificate2 Certificate { get; set; }
+	public X509Certificate2? Certificate { get; set; }
 
 	public SslProtocols EncryptionProtocol { get; set; }
 
@@ -59,7 +60,7 @@ public abstract class IPCServiceHost
 
 	public List<string> Filters => _filters;
 
-	public Action<string, string> ParamAction
+	public Action<string, string>? ParamAction
 	{
 		get
 		{
@@ -71,7 +72,7 @@ public abstract class IPCServiceHost
 		}
 	}
 
-	public Action<ISession> RegisterSessionAction
+	public Action<ISession>? RegisterSessionAction
 	{
 		get
 		{
@@ -83,12 +84,12 @@ public abstract class IPCServiceHost
 		}
 	}
 
-	public static IPCServiceHost Create(IPCProtocol protocol, string product, string version, string copyright, int minThreads, int maxThreads, int bufferSize, int numberOfBuffers, int? backlogSize)
+	public static IPCServiceHost? Create(IPCProtocol protocol, string product, string version, string copyright, int minThreads, int maxThreads, int bufferSize, int numberOfBuffers, int? backlogSize)
 	{
 		return Create(protocol, product, version, copyright, minThreads, maxThreads, bufferSize, numberOfBuffers, backlogSize, null);
 	}
 
-	public static IPCServiceHost Create(IPCProtocol protocol, string product, string version, string copyright, int minThreads, int maxThreads, int bufferSize, int numberOfBuffers, int? backlogSize, string poolName)
+	public static IPCServiceHost? Create(IPCProtocol protocol, string product, string version, string copyright, int minThreads, int maxThreads, int bufferSize, int numberOfBuffers, int? backlogSize, string? poolName)
 	{
 		switch (protocol.Channel)
 		{

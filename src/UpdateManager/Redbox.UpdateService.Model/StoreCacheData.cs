@@ -10,29 +10,29 @@ public class StoreCacheData
 
 	private readonly object _lock = new object();
 
-	public StoreData Store { get; set; }
+	public StoreData? Store { get; set; }
 
 	public long KioskClient_ID { get; set; }
 
-	public string City { get; set; }
+	public string? City { get; set; }
 
-	public string County { get; set; }
+	public string? County { get; set; }
 
-	public string State { get; set; }
+	public string? State { get; set; }
 
-	public string Zip { get; set; }
+	public string? Zip { get; set; }
 
-	public Identifier KioskStatus { get; set; }
+	public Identifier? KioskStatus { get; set; }
 
-	public Identifier Vendor { get; set; }
+	public Identifier? Vendor { get; set; }
 
-	public Identifier Market { get; set; }
+	public Identifier? Market { get; set; }
 
-	public Identifier Banner { get; set; }
+	public Identifier? Banner { get; set; }
 
-	public string WindowsTimeZoneID { get; set; }
+	public string? WindowsTimeZoneID { get; set; }
 
-	public List<ClientRepositoryData> ClientRepositoryData { get; set; }
+	public List<ClientRepositoryData>? ClientRepositoryData { get; set; }
 
 	public int ClientRepositoryDataSyncID { get; set; }
 
@@ -40,7 +40,7 @@ public class StoreCacheData
 
 	public int ClientConfigFileSyncID { get; set; }
 
-	public ClientStoreInfo ClientStoreInfo { get; set; }
+	public ClientStoreInfo? ClientStoreInfo { get; set; }
 
 	public int ClientStoreInfoSyncID { get; set; }
 
@@ -200,7 +200,7 @@ public class StoreCacheData
 			foreach (ClientRepositoryData clientRepositoryDatum in clientRepositoryData)
 			{
 				ClientRepositoryData data = clientRepositoryDatum;
-				ClientRepositoryData clientRepositoryData2 = ClientRepositoryData.FirstOrDefault((ClientRepositoryData c) => string.Equals(data.RepositoryName, c.RepositoryName, StringComparison.CurrentCultureIgnoreCase));
+				ClientRepositoryData? clientRepositoryData2 = ClientRepositoryData.FirstOrDefault((ClientRepositoryData c) => string.Equals(data.RepositoryName, c.RepositoryName, StringComparison.CurrentCultureIgnoreCase));
 				if (clientRepositoryData2 == null)
 				{
 					ClientRepositoryData.Add(clientRepositoryDatum);
@@ -238,7 +238,7 @@ public class StoreCacheData
 			foreach (KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> assignment in assigned)
 			{
 				KeyValuePair<ClientRepositoryData.Repository, ClientRepositoryData.Revlog> repository1 = assignment;
-				ClientRepositoryData clientRepositoryData = ClientRepositoryData.FirstOrDefault((ClientRepositoryData c) => string.Equals(repository1.Key.Name, c.RepositoryName, StringComparison.CurrentCultureIgnoreCase));
+				ClientRepositoryData? clientRepositoryData = ClientRepositoryData.FirstOrDefault((ClientRepositoryData c) => string.Equals(repository1.Key.Name, c.RepositoryName, StringComparison.CurrentCultureIgnoreCase));
 				if (clientRepositoryData != null)
 				{
 					clientRepositoryData.Assigned = assignment.Value;

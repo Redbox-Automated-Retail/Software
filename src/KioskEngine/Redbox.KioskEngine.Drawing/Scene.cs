@@ -478,7 +478,7 @@ public class Scene : IScene, IDisposable
 		}
 	}
 
-	private void OnWPFActorHit(IActor actor)
+	private void OnWPFActorHit(IActor? actor)
 	{
 		if (OnWPFHit != null)
 		{

@@ -6,14 +6,14 @@ public class LuaVar
 
 	public string Name { get; private set; }
 
-	public object Value { get; internal set; }
+	public object? Value { get; internal set; }
 
 	public override string ToString()
 	{
 		return LuaHelper.FormatLuaValue(Value);
 	}
 
-	internal LuaVar(int index, string name, object value)
+	internal LuaVar(int index, string name, object? value)
 	{
 		Index = index;
 		Name = name;

@@ -9,23 +9,23 @@ public class HardwareResult : IHardwareResult
 
 	public int Slot { get; internal set; }
 
-	public string ID { get; internal set; }
+	public string? ID { get; internal set; }
 
-	public string Code { get; internal set; }
+	public string? Code { get; internal set; }
 
-	public string ItemID { get; internal set; }
+	public string? ItemID { get; internal set; }
 
-	public string Message { get; internal set; }
+	public string? Message { get; internal set; }
 
-	public string MetaData { get; internal set; }
+	public string? MetaData { get; internal set; }
 
-	public string Timestamp { get; internal set; }
+	public string? Timestamp { get; internal set; }
 
-	public string PreviousItem { get; internal set; }
+	public string? PreviousItem { get; internal set; }
 
-	public string ReturnTime { get; internal set; }
+	public string? ReturnTime { get; internal set; }
 
-	public IDictionary<string, object> MessageData { get; internal set; }
+	public IDictionary<string, object>? MessageData { get; internal set; }
 
 	public override string ToString()
 	{

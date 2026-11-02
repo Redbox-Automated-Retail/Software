@@ -47,15 +47,15 @@ public class FileUpdateService : IFileUpdateService
 		public const string MissingManifestRevisionMessage = "Manifest Revision is missing.";
 	}
 
-	private string _updateFolderPath;
+	private string? _updateFolderPath;
 
-	private string _completedFolderPath;
+	private string? _completedFolderPath;
 
-	private string _notProcessedFolderPath;
+	private string? _notProcessedFolderPath;
 
 	private readonly ILogger<FileUpdateService> _logger;
 
-	private Timer _timer;
+	private Timer _timer = null!; // created by StartTimer, called from the constructor
 
 	private static object _lock = new object();
 
@@ -123,7 +123,7 @@ public class FileUpdateService : IFileUpdateService
 		}
 	}
 
-	private string _baseFolder => Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
+	private string _baseFolder => Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)!.FullName;
 
 	public FileUpdateService(ILogger<FileUpdateService> logger, IFileUpdater fileUpdater, IApplicationControl applicationControl)
 	{
@@ -231,7 +231,7 @@ public class FileUpdateService : IFileUpdateService
 				}
 			}
 		}
-		UpdateFileUpdateResultStatus(fileUpdateResults);
+		UpdateFileUpdateResultStatus(fileUpdateResults!);
 	}
 
 	private void UpdateFileUpdateResultStatus(IFileUpdateResults fileUpdateResults)
@@ -327,17 +327,17 @@ public class FileUpdateService : IFileUpdateService
 								foreach (IFileUpdateResult fileUpdateResult in activeZipFileUpdateResult.FileUpdateResultCollection.OrderBy((IFileUpdateResult x) => x.UpdateFileModel.Order))
 								{
 									bool isLastFile = fileUpdateResult.UpdateFileModel.Order == lastOrder;
-									string rebootNote = (isLastFile ? "  - Forcing device reboot because this is the last file in the update." : null);
+									string? rebootNote = (isLastFile ? "  - Forcing device reboot because this is the last file in the update." : null);
 									Log("    Processing file: " + fileUpdateResult.UpdateFileModel.Path + rebootNote);
 									bool written = false;
-									ZipArchiveEntry zipArchiveEntry = zipArchive?.GetEntry(fileUpdateResult.UpdateFileModel.Path);
+									ZipArchiveEntry? zipArchiveEntry = zipArchive?.GetEntry(fileUpdateResult.UpdateFileModel.Path!); // GetEntry throws on a null path, as before
 									if (zipArchiveEntry != null)
 									{
 										try
 										{
 											Stream stream = zipArchiveEntry.Open();
 											bool rebootRequired = isLastFile || fileUpdateResult.UpdateFileModel.RebootRequired;
-											Task<bool> task = FileUpdater.WriteStream(stream, fileUpdateResult.UpdateFileModel.Path, rebootRequired, waitForReconnect: true);
+											Task<bool> task = FileUpdater!.WriteStream(stream, fileUpdateResult.UpdateFileModel.Path!, rebootRequired, waitForReconnect: true);
 											task.Wait();
 											written = task.Result;
 										}
@@ -367,14 +367,14 @@ public class FileUpdateService : IFileUpdateService
 							if (!updateFailed)
 							{
 								Log($"Updating IUC285 file update revision number to {(activeZipFileUpdateResult?.UpdateFileManifestProperties?.Revision).GetValueOrDefault()}");
-								if (activeZipFileUpdateResult?.UpdateFileManifestProperties != null && FileUpdater.SetFileUpdateRevisionNumber(activeZipFileUpdateResult.UpdateFileManifestProperties.Revision.ToString()))
+								if (activeZipFileUpdateResult?.UpdateFileManifestProperties != null && FileUpdater!.SetFileUpdateRevisionNumber(activeZipFileUpdateResult.UpdateFileManifestProperties.Revision.ToString()))
 								{
 									CompleteUpdate(activeZipFileUpdateResult);
 									FileUpdater?.PostDeviceStatus();
 								}
 								else
 								{
-									activeZipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
+									activeZipFileUpdateResult!.Status = ZipFileUpdateStatus.Errored;
 									activeZipFileUpdateResult.StatusMessage = "Unable to update revision number on device.";
 								}
 							}
@@ -399,7 +399,7 @@ public class FileUpdateService : IFileUpdateService
 		{
 			MoveOldRevisionFiles(fileUpdateResults, activeZipFileUpdateResults);
 		}
-		UpdateFileUpdateResultStatus(fileUpdateResults);
+		UpdateFileUpdateResultStatus(fileUpdateResults!);
 	}
 
 	private void MoveOldRevisionFiles(IFileUpdateResults fileUpdateResults, List<IZipFileUpdateResult> activeZipFileUpdateResults)
@@ -460,7 +460,7 @@ public class FileUpdateService : IFileUpdateService
 			using ZipArchive zipArchive = ZipFile.OpenRead(zipFileUpdateResult.FileName);
 			foreach (IFileUpdateResult item in zipFileUpdateResult.FileUpdateResultCollection)
 			{
-				if (zipArchive.GetEntry(item.UpdateFileModel.Path) == null)
+				if (zipArchive.GetEntry(item.UpdateFileModel.Path!) == null) // GetEntry throws on a null path, as before
 				{
 					item.FileUpdateStatus = FileUpdateStatus.FileMissing;
 					result = false;
@@ -528,13 +528,13 @@ public class FileUpdateService : IFileUpdateService
 							RebootRequired = fileModel.RebootRequired
 						}
 					};
-					if (Path.GetFileName(fileUpdateResult?.UpdateFileModel?.Path).Length > 15)
+					if (Path.GetFileName(fileUpdateResult?.UpdateFileModel?.Path)!.Length > 15) // throws on a missing path, as before
 					{
-						fileUpdateResult.FileUpdateStatus = FileUpdateStatus.FileNameTooLong;
+						fileUpdateResult!.FileUpdateStatus = FileUpdateStatus.FileNameTooLong;
 						zipFileUpdateResult.Status = ZipFileUpdateStatus.Errored;
 						zipFileUpdateResult.StatusMessage = "Error in Manifest file.  File Name is too long " + Path.GetFileName(fileUpdateResult.UpdateFileModel.Path);
 					}
-					zipFileUpdateResult.FileUpdateResultCollection.Add(fileUpdateResult);
+					zipFileUpdateResult.FileUpdateResultCollection.Add(fileUpdateResult!);
 				}
 			}
 		}
@@ -552,7 +552,7 @@ public class FileUpdateService : IFileUpdateService
 			string[] revisionSummaries = fileUpdateResults.ZipFileUpdateResultCollection.Select((IZipFileUpdateResult eachZipFileUpdate) => $"{Path.GetFileName(eachZipFileUpdate?.FileName)} revision: {eachZipFileUpdate?.UpdateFileManifestProperties.Revision ?? (-1)}").ToArray();
 			Log("Sorted update files by revision: " + string.Join(", ", revisionSummaries));
 		}
-		UpdateFileUpdateResultStatus(fileUpdateResults);
+		UpdateFileUpdateResultStatus(fileUpdateResults!);
 	}
 
 	private void InitializeOutputFolders(IFileUpdateResults fileUpdateResults)
@@ -602,20 +602,20 @@ public class FileUpdateService : IFileUpdateService
 				return;
 			}
 			using ZipArchive zipArchive = ZipFile.OpenRead(zipFileName);
-			ZipArchiveEntry entry = zipArchive.GetEntry("manifest.json");
+			ZipArchiveEntry? entry = zipArchive.GetEntry("manifest.json");
 			if (entry == null)
 			{
 				manifestData.Status = ManifestPropertiesStatus.MissingManifestFile;
 				Log("GetManifestData No Manifest File Found in zip file update: " + zipFileName);
 				return;
 			}
-			UpdateFileManifest updateFileManifest = null;
+			UpdateFileManifest? updateFileManifest = null;
 			using StreamReader reader = new StreamReader(entry.Open());
 			JsonSerializer jsonSerializer = new JsonSerializer();
 			new JsonSerializerSettings();
 			try
 			{
-				updateFileManifest = (UpdateFileManifest)jsonSerializer.Deserialize(reader, typeof(UpdateFileManifest));
+				updateFileManifest = (UpdateFileManifest?)jsonSerializer.Deserialize(reader, typeof(UpdateFileManifest));
 				if (updateFileManifest != null)
 				{
 					if (updateFileManifest.Revision <= 0)
@@ -720,9 +720,9 @@ public class FileUpdateService : IFileUpdateService
 	private static string GetUniqueFileName(string destPath)
 	{
 		string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(destPath);
-		string directoryName = Path.GetDirectoryName(destPath);
+		string? directoryName = Path.GetDirectoryName(destPath);
 		string extension = Path.GetExtension(destPath);
-		string format = Path.Combine(directoryName, fileNameWithoutExtension + "{0}" + extension);
+		string format = Path.Combine(directoryName!, fileNameWithoutExtension + "{0}" + extension); // destPath is a file in a folder (MoveFile)
 		int suffix = 1;
 		string candidate = string.Format(format, "");
 		while (File.Exists(candidate))
@@ -733,7 +733,7 @@ public class FileUpdateService : IFileUpdateService
 		return destPath;
 	}
 
-	private void Log(string message)
+	private void Log(string? message)
 	{
 		_logger?.LogInformation(message);
 	}
@@ -756,7 +756,7 @@ public class FileUpdateService : IFileUpdateService
 		_timer.Start();
 	}
 
-	private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+	private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
 	{
 		_timer.Stop();
 		try

@@ -50,7 +50,7 @@ public partial class DisplayViewUserControl : UserControl, IComponentConnector
 		}
 	}
 
-	private void ResolutionDropDownClosed(object sender, EventArgs e)
+	private void ResolutionDropDownClosed(object? sender, EventArgs e)
 	{
 		if (resolution_combo.SelectedItem != null)
 		{

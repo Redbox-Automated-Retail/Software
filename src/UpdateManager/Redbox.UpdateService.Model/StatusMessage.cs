@@ -15,15 +15,16 @@ public class StatusMessage
 
 	public StatusMessageType Type;
 
-	public string Key;
+	// Filled by the object initializer or the JSON reader.
+	public string Key = null!;
 
-	public string SubKey;
+	public string? SubKey;
 
-	public string Description;
+	public string Description = null!;
 
 	public DateTime TimeStamp;
 
-	public string Data;
+	public string Data = null!;
 
 	public bool Encode;
 

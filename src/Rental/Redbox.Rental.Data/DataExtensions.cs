@@ -21,7 +21,7 @@ internal static class DataExtensions
 		{
 			return defaultValue;
 		}
-		string text = Convert.ToString(value);
+		string? text = Convert.ToString(value);
 		if (string.IsNullOrEmpty(text))
 		{
 			return defaultValue;
@@ -39,7 +39,7 @@ internal static class DataExtensions
 		{
 			return string.Empty;
 		}
-		string text = Convert.ToString(value);
+		string? text = Convert.ToString(value);
 		if (string.IsNullOrEmpty(text))
 		{
 			return string.Empty;
@@ -135,7 +135,7 @@ internal static class DataExtensions
 		{
 			return defaultValue;
 		}
-		string text = Convert.ToString(value);
+		string text = Convert.ToString(value)!; // value is not null here
 		if (text.Length == "yyyyMMdd".Length)
 		{
 			return DateTime.ParseExact(text, "yyyyMMdd", CultureInfo.CurrentCulture);

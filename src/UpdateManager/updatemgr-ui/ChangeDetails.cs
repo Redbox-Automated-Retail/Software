@@ -10,30 +10,31 @@ public class ChangeDetails : Form
 {
 	private readonly IRevLog m_log;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private ListView m_changes;
+	private ListView m_changes = null!;
 
-	private ColumnHeader m_name;
+	private ColumnHeader m_name = null!;
 
-	private ColumnHeader m_path;
+	private ColumnHeader m_path = null!;
 
-	private ColumnHeader m_targetHash;
+	private ColumnHeader m_targetHash = null!;
 
-	private ColumnHeader m_patchSignature;
+	private ColumnHeader m_patchSignature = null!;
 
-	private ColumnHeader m_isComposite;
+	private ColumnHeader m_isComposite = null!;
 
-	private ColumnHeader m_isSeed;
+	private ColumnHeader m_isSeed = null!;
 
-	private Label hashLabel;
+	private Label hashLabel = null!;
 
-	private Label m_hash;
+	private Label m_hash = null!;
 
-	private Label m_label;
+	private Label m_label = null!;
 
-	private Label labelLabel;
+	private Label labelLabel = null!;
 
+	// The controls above are created by InitializeComponent.
 	public ChangeDetails(IRevLog log)
 	{
 		InitializeComponent();
@@ -62,7 +63,7 @@ public class ChangeDetails : Form
 		m_changes.EndUpdate();
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		LoadChageDetails(m_log);
 	}

@@ -144,7 +144,7 @@ public static class SystemFunctions
 			LogHelper.Instance.Log($"Not rebooting because this kiosk rebooted {timeSpan.TotalMinutes} minutes ago.", LogEntryType.Info);
 			return false;
 		}
-		string text = (string)RegistryFunctions.GetKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RebootTime");
+		string? text = (string?)RegistryFunctions.GetKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store", "RebootTime");
 		if (string.IsNullOrEmpty(text))
 		{
 			LogHelper.Instance.Log("WARNING: No reboot time was found in the registry.");
@@ -184,9 +184,9 @@ public static class SystemFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getSerialNumber")]
-	internal static string GetSerialNumber()
+	internal static string? GetSerialNumber()
 	{
-		string result = string.Empty;
+		string? result = string.Empty;
 		try
 		{
 			using ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BIOS");
@@ -202,9 +202,9 @@ public static class SystemFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getManufacturer")]
-	internal static string GetManufacturer()
+	internal static string? GetManufacturer()
 	{
-		string result = string.Empty;
+		string? result = string.Empty;
 		try
 		{
 			using ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_BIOS");
@@ -315,7 +315,7 @@ public static class SystemFunctions
 	}
 
 	[DllImport("Kernel32.dll")]
-	private static extern bool MoveFileEx(string lpExistingFileName, string lpNewFileName, MoveFileFlags dwFlags);
+	private static extern bool MoveFileEx(string lpExistingFileName, string? lpNewFileName, MoveFileFlags dwFlags);
 
 	[DllImport("user32.dll")]
 	private static extern bool UpdatePerUserSystemParameters();
@@ -334,7 +334,7 @@ public static class SystemFunctions
 			{
 				ExpandTableList((LuaTable)value, list);
 			}
-			list.Add(value.ToString());
+			list.Add(value.ToString()!);
 		}
 	}
 

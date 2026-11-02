@@ -24,5 +24,5 @@ public interface IQueueServiceData : IDisposable
 
 	ErrorList ForEach(Action<IMessage> action, string type);
 
-	ErrorList SelectNextMessage(IQueueServicePriority queueServicePriority, out IMessage message);
+	ErrorList SelectNextMessage(IQueueServicePriority? queueServicePriority, out IMessage? message);
 }

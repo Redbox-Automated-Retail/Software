@@ -14,11 +14,12 @@ namespace Redbox.HardwareServices.Proxy;
 
 public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownProcessor
 {
-	private IDataFileStoreService _fileService;
+	// The three fields below are set by Initialize.
+	private IDataFileStoreService _fileService = null!;
 
-	private IMachineSettingsStore _machineSettings;
+	private IMachineSettingsStore _machineSettings = null!;
 
-	private string _dataPath;
+	private string _dataPath = null!;
 
 	private int _maxSyncCount;
 
@@ -74,16 +75,16 @@ public class SyncUnknownProcessor : LocationSyncJobProcessorBase, ISyncUnknownPr
 		{
 			rangeEndText = "3:00";
 		}
-		_timespanBegin = TimeSpan.Parse(rangeBeginText);
-		_timespanEnd = TimeSpan.Parse(rangeEndText);
+		_timespanBegin = TimeSpan.Parse(rangeBeginText!); // TryGetValue returned true or the default was set
+		_timespanEnd = TimeSpan.Parse(rangeEndText!);
 		_timer = new Timer(60000.0);
 		_timer.Elapsed += TimerElapsed;
 		_timer.Enabled = true;
 	}
 
-	private void TimerElapsed(object sender, ElapsedEventArgs e)
+	private void TimerElapsed(object? sender, ElapsedEventArgs e)
 	{
-		IHardwareJob competedJob = GetCompetedJob(new List<string> { "SyncUnknowns" });
+		IHardwareJob? competedJob = GetCompetedJob(new List<string> { "SyncUnknowns" });
 		if (competedJob != null)
 		{
 			ProcessSoftSyncComplete(competedJob);

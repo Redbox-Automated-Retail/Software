@@ -76,7 +76,7 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 					}
 					else if (Attribute.GetCustomAttribute(property, typeof(XmlConfigurationAttribute)) is XmlConfigurationAttribute)
 					{
-						object converted = ConversionHelper.ChangeType(childNode.InnerText, property.PropertyType);
+						object? converted = ConversionHelper.ChangeType(childNode.InnerText, property.PropertyType);
 						property.SetValue(this, converted, null);
 					}
 				}
@@ -139,7 +139,7 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 			{
 				try
 				{
-					object converted = ConversionHelper.ChangeType(xmlConfigurationAttribute.DefaultValue, propertyInfo.PropertyType);
+					object? converted = ConversionHelper.ChangeType(xmlConfigurationAttribute.DefaultValue, propertyInfo.PropertyType);
 					propertyInfo.SetValue(this, converted, null);
 				}
 				catch (Exception e)
@@ -173,7 +173,7 @@ public abstract class AttributeXmlConfiguration : IAttributeXmlConfiguration, IC
 			IRuntimeService runtimeService = ServiceLocator.Instance.GetService<IRuntimeService>();
 			if (xmlNode != null && !string.IsNullOrEmpty(xmlNode.InnerText))
 			{
-				return (T)ConversionHelper.ChangeType(runtimeService.ExpandConstantMacros(xmlNode.InnerText), typeof(T));
+				return (T)ConversionHelper.ChangeType(runtimeService.ExpandConstantMacros(xmlNode.InnerText), typeof(T))!;
 			}
 		}
 		catch (ArgumentException)

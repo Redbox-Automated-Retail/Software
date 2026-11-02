@@ -11,7 +11,7 @@ public class UpdateFileManifest : IUpdateFileManifest
 
 	public int Revision { get; set; }
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public DateTime? StartDate { get; set; }
 
@@ -19,7 +19,7 @@ public class UpdateFileManifest : IUpdateFileManifest
 
 	public TimeSpan? UpdateRangeEnd { get; set; }
 
-	public List<FileModel> FileModels { get; set; }
+	public List<FileModel>? FileModels { get; set; }
 
 	public override string ToString()
 	{

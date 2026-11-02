@@ -10,7 +10,7 @@ namespace Redbox.UpdateManager.Daemon;
 [RunInstaller(true)]
 public class UpdateManagerServiceInstaller : Installer
 {
-	private IContainer components;
+	private IContainer? components;
 
 	public UpdateManagerServiceInstaller()
 	{

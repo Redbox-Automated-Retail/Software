@@ -117,17 +117,17 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 		IDumpbinService dumpbinService = ServiceLocator.Instance.GetService<IDumpbinService>();
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
 		IPutObserver observer = PutObserver;
-		if (dumpbinService.IsBin(motionControlService.CurrentLocation))
+		if (dumpbinService.IsBin(motionControlService.CurrentLocation!))
 		{
 			observer = DumpObserver;
 		}
-		return OnPut(observer, id, motionControlService.CurrentLocation);
+		return OnPut(observer, id, motionControlService.CurrentLocation!);
 	}
 
 	public IPutResult Put(IPutObserver observer, string id)
 	{
 		IMotionControlService motionControlService = ServiceLocator.Instance.GetService<IMotionControlService>();
-		return OnPut(observer, id, motionControlService.CurrentLocation);
+		return OnPut(observer, id, motionControlService.CurrentLocation!);
 	}
 
 	public IPutToResult PutTo(string id, ILocation location)
@@ -268,7 +268,7 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 	private void OnCheckInventory(string expected, IFormattedLog log)
 	{
 		IInventoryService inventoryService = ServiceLocator.Instance.GetService<IInventoryService>();
-		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
+		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation!;
 		ILocation location = inventoryService.Get(currentLocation.Deck, currentLocation.Slot);
 		if (location.ID != expected)
 		{
@@ -276,11 +276,11 @@ public sealed class ControllerService : IMoveVeto, IControllerService
 		}
 	}
 
-	private GetResult OnGet(IGetObserver observer, ILocation location)
+	private GetResult OnGet(IGetObserver observer, ILocation? location)
 	{
 		if (location == null)
 		{
-			GetResult getResult = new GetResult(location);
+			GetResult getResult = new GetResult(location!);
 			getResult.Update(ErrorCodes.LocationOutOfRange);
 			return getResult;
 		}

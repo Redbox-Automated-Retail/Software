@@ -7,7 +7,8 @@ public class ClientWorkScript
 {
 	public long ID { get; set; }
 
-	public string Command { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Command { get; set; } = null!;
 
 	public string GetScriptText()
 	{

@@ -37,7 +37,7 @@ internal static class QueueFunctions
 	}
 
 	[KernelFunction(Name = "kernel.queueclear")]
-	internal static LuaTable ClearQueue()
+	internal static LuaTable? ClearQueue()
 	{
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		if (queueService != null)
@@ -82,7 +82,7 @@ internal static class QueueFunctions
 	}
 
 	[KernelFunction(Name = "kernel.queuedequeue")]
-	internal static LuaTable Dequeue(LuaFunction predicate)
+	internal static LuaTable? Dequeue(LuaFunction predicate)
 	{
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		if (queueService == null)
@@ -95,8 +95,8 @@ internal static class QueueFunctions
 			{
 				return false;
 			}
-			ReadOnlyCollection<object> returnValues = predicate.Call(CreateMessageTable(m));
-			return returnValues != null && returnValues.Count > 0 && (bool)returnValues[0];
+			ReadOnlyCollection<object?> returnValues = predicate.Call(CreateMessageTable(m));
+			return returnValues != null && returnValues.Count > 0 && (bool)returnValues[0]!;
 		}));
 	}
 
@@ -107,7 +107,7 @@ internal static class QueueFunctions
 	}
 
 	[KernelFunction(Name = "kernel.queuedeletemessage")]
-	internal static LuaTable DeleteMessage(int id)
+	internal static LuaTable? DeleteMessage(int id)
 	{
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		if (queueService != null)
@@ -118,7 +118,7 @@ internal static class QueueFunctions
 	}
 
 	[KernelFunction(Name = "kernel.queuedeletemessagesbytype")]
-	internal static LuaTable DeleteMessageByType(string type)
+	internal static LuaTable? DeleteMessageByType(string type)
 	{
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		if (queueService != null)

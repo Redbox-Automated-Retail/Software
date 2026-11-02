@@ -7,14 +7,14 @@ namespace Redbox.HAL.IPC.Framework;
 
 public class TcpServiceHost : IPCServiceHost
 {
-	private TcpListener m_listener;
+	private TcpListener? m_listener;
 
 	private int m_listenerPort;
 
 	protected override void OnStart()
 	{
 		base.Alive = true;
-		IPAddress iPAddress;
+		IPAddress? iPAddress;
 		if (IPAddress.TryParse(base.Protocol.Host, out var address))
 		{
 			iPAddress = address;
@@ -63,7 +63,7 @@ public class TcpServiceHost : IPCServiceHost
 	protected override void OnStop()
 	{
 		base.Alive = false;
-		m_listener.Stop();
+		m_listener!.Stop();
 	}
 
 	internal TcpServiceHost(IIpcProtocol protocol, IHostInfo info)

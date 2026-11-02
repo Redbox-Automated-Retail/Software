@@ -19,7 +19,7 @@ internal sealed class GetFileCommand : TextCommand
 
 	internal byte[] ImageBytes => ImageData.ToArray();
 
-	internal ImageDescriptorPacket Descriptor { get; private set; }
+	internal ImageDescriptorPacket? Descriptor { get; private set; }
 
 	protected override bool CoreValidate()
 	{

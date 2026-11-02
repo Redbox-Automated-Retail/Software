@@ -4,9 +4,9 @@ public class LuaCompiler
 {
 	private readonly LuaVirtualMachine m_virtualMachine;
 
-	public string Version { get; private set; }
+	public string? Version { get; private set; }
 
-	public string Architecture { get; private set; }
+	public string? Architecture { get; private set; }
 
 	public LuaCompiler(LuaVirtualMachine virtualMachine)
 	{

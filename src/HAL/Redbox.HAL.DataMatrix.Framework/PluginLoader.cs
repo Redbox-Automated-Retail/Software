@@ -15,10 +15,10 @@ internal sealed class PluginLoader
 
 	internal static PluginLoader Instance => Singleton<PluginLoader>.Instance;
 
-	internal CameraPluginDescriptor LocatePlugin(string name, out ICameraPlugin plugin)
+	internal CameraPluginDescriptor? LocatePlugin(string name, out ICameraPlugin? plugin)
 	{
 		plugin = null;
-		CameraPluginDescriptor cameraPluginDescriptor = PluginDescriptors.Find((CameraPluginDescriptor d) => name.Equals(d.PluginName, StringComparison.CurrentCultureIgnoreCase));
+		CameraPluginDescriptor? cameraPluginDescriptor = PluginDescriptors.Find((CameraPluginDescriptor d) => name.Equals(d.PluginName, StringComparison.CurrentCultureIgnoreCase));
 		if (cameraPluginDescriptor == null)
 		{
 			return null;
@@ -44,7 +44,7 @@ internal sealed class PluginLoader
 		string[] descriptorFiles = files;
 		for (int i = 0; i < descriptorFiles.Length; i++)
 		{
-			CameraPluginDescriptor cameraPluginDescriptor = CameraPluginDescriptor.FromXml(descriptorFiles[i]);
+			CameraPluginDescriptor? cameraPluginDescriptor = CameraPluginDescriptor.FromXml(descriptorFiles[i]);
 			if (cameraPluginDescriptor != null)
 			{
 				PluginDescriptors.Add(cameraPluginDescriptor);
@@ -52,15 +52,15 @@ internal sealed class PluginLoader
 		}
 	}
 
-	private bool LocatePluginInner(CameraPluginDescriptor descriptor, out ICameraPlugin plugin)
+	private bool LocatePluginInner(CameraPluginDescriptor descriptor, out ICameraPlugin? plugin)
 	{
 		plugin = null;
-		Type[] exportedTypes = Assembly.LoadFrom(Path.Combine(PluginsDirectory, descriptor.AssemblyName)).GetExportedTypes();
+		Type[] exportedTypes = Assembly.LoadFrom(Path.Combine(PluginsDirectory, descriptor.AssemblyName!)).GetExportedTypes();
 		foreach (Type type in exportedTypes)
 		{
-			if (type.FullName.Equals(descriptor.PluginNamespace))
+			if (type.FullName!.Equals(descriptor.PluginNamespace))
 			{
-				MethodInfo method = type.GetMethod(descriptor.PluginServiceProviderMethodName, BindingFlags.Static | BindingFlags.Public);
+				MethodInfo? method = type.GetMethod(descriptor.PluginServiceProviderMethodName!, BindingFlags.Static | BindingFlags.Public);
 				if (method != null)
 				{
 					plugin = method.Invoke(null, null) as ICameraPlugin;

@@ -10,7 +10,7 @@ namespace Redbox.Rental.Kernel;
 public static class FieldMaintenanceFunctions
 {
 	[KernelFunction(Name = "kernel.fieldmaintenancegetcurrentsafetytip")]
-	internal static string GetCurrentSafetyTip()
+	internal static string? GetCurrentSafetyTip()
 	{
 		return ServiceLocator.Instance.GetService<IFieldMaintenanceService>()?.GetCurrentSafetyTip();
 	}
@@ -18,7 +18,7 @@ public static class FieldMaintenanceFunctions
 	[KernelFunction(Name = "kernel.planogramsexist")]
 	internal static bool PlanogramsExist()
 	{
-		List<Planogram> list = ServiceLocator.Instance.GetService<IKioskClientService>()?.Planogram?.GetActivePlanograms();
+		List<Planogram>? list = ServiceLocator.Instance.GetService<IKioskClientService>()?.Planogram?.GetActivePlanograms();
 		if (list != null)
 		{
 			return list.Count > 0;

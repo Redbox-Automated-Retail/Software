@@ -8,5 +8,5 @@ public interface IControlResponse
 
 	bool CommError { get; }
 
-	string Diagnostic { get; }
+	string? Diagnostic { get; }
 }

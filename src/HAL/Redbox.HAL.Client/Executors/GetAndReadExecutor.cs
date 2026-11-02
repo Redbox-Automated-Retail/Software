@@ -20,6 +20,6 @@ public sealed class GetAndReadExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Center.ToString(), Deck, Slot);
+		base.Job!.Push(Center.ToString(), Deck, Slot);
 	}
 }

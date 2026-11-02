@@ -11,9 +11,9 @@ namespace Redbox.IPC.Framework.Sockets;
 
 public class TcpClientSession : ClientSession
 {
-	private Stream m_stream;
+	private Stream? m_stream;
 
-	private TcpClient m_transportClient;
+	private TcpClient m_transportClient = null!; // set by ConnectThrowOnError
 
 	private bool _validateCallback = true;
 
@@ -31,7 +31,7 @@ public class TcpClientSession : ClientSession
 				}
 				else
 				{
-					SslStream sslStream = new SslStream(TransportClient.GetStream(), leaveInnerStreamOpen: false, delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+					SslStream sslStream = new SslStream(TransportClient.GetStream(), leaveInnerStreamOpen: false, delegate(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
 					{
 						if (sslPolicyErrors == SslPolicyErrors.None)
 						{
@@ -96,7 +96,7 @@ public class TcpClientSession : ClientSession
 
 	public override void ConnectThrowOnError()
 	{
-		TransportClient = new TcpClient(base.Protocol.Host, int.Parse(base.Protocol.Port))
+		TransportClient = new TcpClient(base.Protocol.Host, int.Parse(base.Protocol.Port!))
 		{
 			SendTimeout = base.Timeout,
 			ReceiveTimeout = base.Timeout
@@ -111,7 +111,7 @@ public class TcpClientSession : ClientSession
 		base.Timeout = timeout ?? 30000;
 		try
 		{
-			object value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox", "ValidateCallback", "true");
+			object? value = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox", "ValidateCallback", "true");
 			_validateCallback = true;
 			if (value != null && value is string && bool.TryParse(value as string, out var result))
 			{

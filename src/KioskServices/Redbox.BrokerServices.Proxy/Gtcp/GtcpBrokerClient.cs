@@ -66,7 +66,7 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 	{
 		GtcpConnection connection = EnsureConnection();
 		byte[] call = NrbfWriter.MethodCall(nameof(IsRegistered), RegisterTypeName, new object[] { kioskID });
-		object result = RemotingMessages.ReadReturnValue(connection.Invoke(_objectUri, call), nameof(IsRegistered));
+		object? result = RemotingMessages.ReadReturnValue(connection.Invoke(_objectUri, call), nameof(IsRegistered));
 		return result is bool registered && registered;
 	}
 
@@ -132,7 +132,7 @@ internal sealed class GtcpBrokerClient : IKioskRegister, IDisposable
 			.FirstOrDefault(m => m.Name == call.MethodName && m.GetParameters().Length == call.Args.Length)
 			?? throw new InvalidDataException($"IKioskOperations has no method {call.MethodName} with {call.Args.Length} argument(s).");
 		ParameterInfo[] parameters = method.GetParameters();
-		object[] args = new object[parameters.Length];
+		object?[] args = new object?[parameters.Length];
 		for (int i = 0; i < parameters.Length; i++)
 		{
 			args[i] = NrbfObjectMapper.Map(call.Args[i], parameters[i].ParameterType);

@@ -8,22 +8,23 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class GeneralPreferencePage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private ErrorProvider m_errorProvider;
+	private ErrorProvider m_errorProvider = null!;
 
-	private TextBox m_hardwareServiceUrlTextBox;
+	private TextBox m_hardwareServiceUrlTextBox = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private CheckBox m_liveCallCheckBox;
+	private CheckBox m_liveCallCheckBox = null!;
 
-	private TextBox m_hardwareServiceTimeoutTextBox;
+	private TextBox m_hardwareServiceTimeoutTextBox = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
+	// The controls above are created by InitializeComponent.
 	public GeneralPreferencePage()
 	{
 		InitializeComponent();

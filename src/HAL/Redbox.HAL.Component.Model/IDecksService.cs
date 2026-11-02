@@ -4,7 +4,7 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IDecksService
 {
-	IDeck QlmDeck { get; }
+	IDeck? QlmDeck { get; }
 
 	IDeck First { get; }
 
@@ -12,9 +12,9 @@ public interface IDecksService
 
 	int DeckCount { get; }
 
-	IDeck GetByNumber(int number);
+	IDeck? GetByNumber(int number);
 
-	IDeck GetFrom(ILocation location);
+	IDeck? GetFrom(ILocation location);
 
 	bool IsValidLocation(ILocation loc);
 

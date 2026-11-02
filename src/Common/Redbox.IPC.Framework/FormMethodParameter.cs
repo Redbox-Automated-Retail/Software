@@ -9,11 +9,12 @@ internal class FormMethodParameter
 {
 	public int Index { get; set; }
 
-	public string KeyName { get; set; }
+	// KeyName and Parameter are set by CommandInstance.GetCommandInstance.
+	public string KeyName { get; set; } = null!;
 
-	public ParameterInfo Parameter { get; set; }
+	public ParameterInfo Parameter { get; set; } = null!;
 
-	public CommandKeyValueAttribute MetaData { get; set; }
+	public CommandKeyValueAttribute? MetaData { get; set; }
 
 	public bool IsRequired()
 	{
@@ -32,13 +33,13 @@ internal class FormMethodParameter
 		return false;
 	}
 
-	public object ConvertValue(string value)
+	public object? ConvertValue(string value)
 	{
 		if (Parameter.ParameterType != typeof(byte[]))
 		{
 			return ConversionHelper.ChangeType(value, Parameter.ParameterType);
 		}
-		byte[] bytes = MetaData.BinaryEncoding switch
+		byte[] bytes = MetaData!.BinaryEncoding switch
 		{
 			BinaryEncoding.Hex => value.HexToBytes(), 
 			BinaryEncoding.Base64 => value.Base64ToBytes(), 

@@ -6,5 +6,5 @@ public interface IQuadrant
 
 	bool IsExcluded { get; }
 
-	IRange<int> Slots { get; }
+	IRange<int>? Slots { get; }
 }

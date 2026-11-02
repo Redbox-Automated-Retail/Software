@@ -60,7 +60,7 @@ public class TcpServerSession : ServerSession
 	{
 		if (ClientSocket != null && ClientSocket.Connected)
 		{
-			IPEndPoint iPEndPoint = (IPEndPoint)ClientSocket.RemoteEndPoint;
+			IPEndPoint iPEndPoint = (IPEndPoint)ClientSocket.RemoteEndPoint!; // the socket is connected
 			switch (iPEndPoint.AddressFamily)
 			{
 			case AddressFamily.InterNetworkV6:

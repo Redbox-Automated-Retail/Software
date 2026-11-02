@@ -12,7 +12,7 @@ public class FileUpdateResults : IFileUpdateResults
 
 	public FileUpdateHighLevelStatus Status { get; set; }
 
-	public string StatusMessage { get; set; }
+	public string? StatusMessage { get; set; }
 
 	public List<IZipFileUpdateResult> ZipFileUpdateResultCollection
 	{

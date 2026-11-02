@@ -4,15 +4,15 @@ namespace Redbox.REDS.Framework;
 
 public interface IResource
 {
-	string Name { get; }
+	string? Name { get; }
 
 	IResourceType Type { get; }
 
-	object this[string name] { get; set; }
+	object? this[string name] { get; set; }
 
 	ReadOnlyCollection<string> Dependencies { get; }
 
-	IResourceBundleStorageEntry StorageEntry { get; }
+	IResourceBundleStorageEntry? StorageEntry { get; }
 
 	bool IsOverriden(ReadOnlyCollection<string> exclusions);
 
@@ -20,7 +20,7 @@ public interface IResource
 
 	string GetFullName();
 
-	IAspect GetAspect(string name);
+	IAspect? GetAspect(string name);
 
 	void AddDependency(string name);
 
@@ -28,7 +28,7 @@ public interface IResource
 
 	ErrorList Save(IResourceBundle bundle);
 
-	bool PropertyEquals(string name, object value);
+	bool PropertyEquals(string name, object? value);
 
-	bool PropertyEquals2(string name, object value);
+	bool PropertyEquals2(string name, object? value);
 }

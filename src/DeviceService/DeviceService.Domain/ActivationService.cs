@@ -30,17 +30,17 @@ public class ActivationService : IActivationService
 
 	public async Task<bool> CheckAndActivate(IBluefinActivationRequest request)
 	{
-		UnitDataModel unitData = _deviceProxy.UnitData;
+		UnitDataModel unitData = _deviceProxy.UnitData!; // null when the reader is not connected: throws below, as before
 		return await CheckAndActivate(request, unitData.ManufacturingSerialNumber, unitData.UnitSerialNumber);
 	}
 
-	public async Task<bool> CheckAndActivate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber)
+	public async Task<bool> CheckAndActivate(IBluefinActivationRequest request, string? mfgSerialNumber, string? injectedSerialNumber)
 	{
 		bool isSuccess = true;
 		try
 		{
 			_logger.Log(LogLevel.Information, $"ActivationService.CheckAndActivate called with kioskId {request.KioskId}, mfgSerialNumber {mfgSerialNumber}, injectedSerialNumber {injectedSerialNumber}");
-			DeviceActivationData activationData = GetActivationData();
+			DeviceActivationData? activationData = GetActivationData();
 			if (activationData == null)
 			{
 				_logger.Log(LogLevel.Information, "No previous activation info was found.");
@@ -52,8 +52,8 @@ public class ActivationService : IActivationService
 			if (activationData == null || activationData.KioskId != request.KioskId || activationData.MfgSerialNumber != mfgSerialNumber)
 			{
 				_logger.Log(LogLevel.Information, "Calling BluefinService.Activate");
-				StandardResponse standardResponse = await _bluefinService.Activate(request, mfgSerialNumber, injectedSerialNumber, DateTime.Now);
-				if (standardResponse.Success)
+				StandardResponse? standardResponse = await _bluefinService.Activate(request, mfgSerialNumber, injectedSerialNumber, DateTime.Now);
+				if (standardResponse!.Success) // a null response throws into the catch below, as before
 				{
 					_logger.Log(LogLevel.Information, "Activation Successful.");
 					UpdateActivationData(request.KioskId, mfgSerialNumber);
@@ -77,7 +77,7 @@ public class ActivationService : IActivationService
 		return isSuccess;
 	}
 
-	private void FailedRetry(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber)
+	private void FailedRetry(IBluefinActivationRequest request, string? mfgSerialNumber, string? injectedSerialNumber)
 	{
 		if (!_settings.ActivationFailureRetry)
 		{
@@ -99,19 +99,19 @@ public class ActivationService : IActivationService
 		});
 	}
 
-	private DeviceActivationData GetActivationData()
+	private DeviceActivationData? GetActivationData()
 	{
 		string path = Path.Combine(_settings.DataFilePath, "BluefinActivationData.json");
-		DeviceActivationData result = null;
+		DeviceActivationData? result = null;
 		if (File.Exists(path))
 		{
 			using StreamReader reader = File.OpenText(path);
-			result = (DeviceActivationData)new JsonSerializer().Deserialize(reader, typeof(DeviceActivationData));
+			result = (DeviceActivationData?)new JsonSerializer().Deserialize(reader, typeof(DeviceActivationData));
 		}
 		return result;
 	}
 
-	private void UpdateActivationData(long kioskId, string mfgSerialNumber)
+	private void UpdateActivationData(long kioskId, string? mfgSerialNumber)
 	{
 		try
 		{
@@ -134,14 +134,14 @@ public class ActivationService : IActivationService
 		}
 	}
 
-	private void LogErrors(string message, StandardResponse response)
+	private void LogErrors(string message, StandardResponse? response)
 	{
 		if ((response?.Errors?.Count).GetValueOrDefault() == 0)
 		{
 			return;
 		}
 		_logger.Log(LogLevel.Error, message);
-		foreach (Error error in response.Errors)
+		foreach (Error error in response!.Errors!) // the Count check above returned when either is null
 		{
 			_logger.Log(LogLevel.Error, "Code: " + error.Code + " Message: " + error.Message);
 		}

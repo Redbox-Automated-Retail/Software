@@ -2,7 +2,7 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public interface IMachineSettingsStore
 {
-	T GetValue<T>(string path, string key);
+	T? GetValue<T>(string path, string key);
 
 	T GetValue<T>(string path, string key, T defaultValue);
 

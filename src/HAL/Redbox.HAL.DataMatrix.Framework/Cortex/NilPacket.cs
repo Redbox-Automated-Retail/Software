@@ -4,7 +4,7 @@ internal sealed class NilPacket : CortexPacket
 {
 	internal override PacketType PacketType => PacketType.Invalid;
 
-	internal NilPacket(byte[] packet)
+	internal NilPacket(byte[]? packet)
 	{
 	}
 }

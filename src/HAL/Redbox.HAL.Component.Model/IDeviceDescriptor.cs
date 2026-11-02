@@ -8,7 +8,7 @@ public interface IDeviceDescriptor
 
 	string Friendlyname { get; }
 
-	IDeviceSetupClass SetupClass { get; }
+	IDeviceSetupClass? SetupClass { get; }
 
 	bool ResetDriver();
 

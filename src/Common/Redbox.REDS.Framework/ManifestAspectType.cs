@@ -14,7 +14,7 @@ public class ManifestAspectType : AspectType
 		{
 			return;
 		}
-		XmlNodeList resourceTypeNodes = aspectNode.SelectNodes("resourceType");
+		XmlNodeList? resourceTypeNodes = aspectNode.SelectNodes("resourceType");
 		if (resourceTypeNodes == null)
 		{
 			return;
@@ -27,7 +27,7 @@ public class ManifestAspectType : AspectType
 				errors.Add(Error.NewError("R005", "The name attribute must be defined on the aspect element.", "Add a valid name attribute to the aspect element."));
 				break;
 			}
-			IResourceType superType = null;
+			IResourceType? superType = null;
 			string superTypeName = typeNode.GetAttributeValue<string>("superType");
 			if (!string.IsNullOrEmpty(superTypeName))
 			{
@@ -39,7 +39,7 @@ public class ManifestAspectType : AspectType
 				superType = bundle.ResourceTypes[superTypeName];
 			}
 			string runtimeTypeName = typeNode.GetAttributeValue<string>("runtimeType");
-			Type runtimeType = null;
+			Type? runtimeType = null;
 			if (!string.IsNullOrEmpty(runtimeTypeName))
 			{
 				runtimeType = GetType(runtimeTypeName);
@@ -49,7 +49,7 @@ public class ManifestAspectType : AspectType
 				}
 			}
 			IResourceType newType = ((superType == null) ? bundle.ResourceTypes["root"] : superType.NewType(typeName, runtimeType));
-			XmlNodeList propertyTypeNodes = typeNode.SelectNodes("propertyType");
+			XmlNodeList? propertyTypeNodes = typeNode.SelectNodes("propertyType");
 			if (propertyTypeNodes != null)
 			{
 				foreach (XmlNode propertyTypeNode in propertyTypeNodes)
@@ -58,13 +58,13 @@ public class ManifestAspectType : AspectType
 					newType.AddPropertyType(propertyTypeNode.GetAttributeValue<string>("name"), valueType, propertyTypeNode.GetAttributeValue<string>("description"), propertyTypeNode.GetAttributeValue<bool>("isRequired"), propertyTypeNode.GetAttributeValue<bool>("isFilter"), propertyTypeNode.GetAttributeValue<int?>("score"), propertyTypeNode.GetAttributeValue<string>("label"), propertyTypeNode.GetAttributeValue<string>("category")).SetDefaultValue(propertyTypeNode.GetAttributeValue<string>("defaultValue"));
 				}
 			}
-			XmlNodeList aspectTypeNodes = typeNode.SelectNodes("aspectType");
+			XmlNodeList? aspectTypeNodes = typeNode.SelectNodes("aspectType");
 			if (aspectTypeNodes != null)
 			{
 				foreach (XmlNode aspectTypeNode in aspectTypeNodes)
 				{
 					IAspectType aspectType = newType.AddAspectType(aspectTypeNode.GetAttributeValue<string>("name"), GetType(aspectTypeNode.GetAttributeValue<string>("type")));
-					XmlNodeList propertyNodes = aspectTypeNode.SelectNodes("property");
+					XmlNodeList? propertyNodes = aspectTypeNode.SelectNodes("property");
 					if (propertyNodes == null)
 					{
 						continue;
@@ -82,7 +82,7 @@ public class ManifestAspectType : AspectType
 		}
 	}
 
-	private static Type GetType(string typeName)
+	private static Type? GetType(string typeName)
 	{
 		if (string.IsNullOrEmpty(typeName))
 		{

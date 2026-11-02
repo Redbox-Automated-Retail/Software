@@ -4,15 +4,15 @@ namespace Redbox.REDS.Framework;
 
 public class TextContentLoader : IAspectContentLoader
 {
-	internal object Value { get; set; }
+	internal object? Value { get; set; }
 
-	internal IResourceBundle Bundle { get; set; }
+	internal IResourceBundle Bundle { get; set; } = null!; // set by the object initializer
 
-	public object GetContent()
+	public object? GetContent()
 	{
 		if (Value is IResourceBundleStorageEntry)
 		{
-			return Encoding.UTF8.GetString(Bundle.Storage.GetEntryContent((IResourceBundleStorageEntry)Value));
+			return Encoding.UTF8.GetString(Bundle.Storage.GetEntryContent((IResourceBundleStorageEntry)Value)!);
 		}
 		return Value;
 	}

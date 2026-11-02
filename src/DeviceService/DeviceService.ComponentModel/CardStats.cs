@@ -12,11 +12,11 @@ public class CardStats
 
 	public long KioskId { get; set; }
 
-	public string ManufacturerSerialNumber { get; set; }
+	public string? ManufacturerSerialNumber { get; set; }
 
-	public string RBAVersion { get; set; }
+	public string? RBAVersion { get; set; }
 
-	public string TgzVersion { get; set; }
+	public string? TgzVersion { get; set; }
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	public CardBrandEnum CardBrand { get; set; }
@@ -27,7 +27,7 @@ public class CardStats
 	[JsonConverter(typeof(StringEnumConverter))]
 	public CardReadExitType ReadResult { get; set; }
 
-	public string ErrorCode { get; set; }
+	public string? ErrorCode { get; set; }
 
 	public int RevisionNumber { get; set; }
 
@@ -38,5 +38,5 @@ public class CardStats
 	[JsonConverter(typeof(StringEnumConverter))]
 	public WalletType WalletFormat { get; set; }
 
-	public string VasErrorCode { get; set; }
+	public string? VasErrorCode { get; set; }
 }

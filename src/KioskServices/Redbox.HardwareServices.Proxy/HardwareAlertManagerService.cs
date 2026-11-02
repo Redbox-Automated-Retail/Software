@@ -32,11 +32,11 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		}
 	}
 
-	private static Func<object, bool> IsNotNull = (object value) => value != null;
+	private static Func<object?, bool> IsNotNull = (object? value) => value != null;
 
-	private static Func<object, bool> IsValidString = (object value) => value != null && value is string;
+	private static Func<object?, bool> IsValidString = (object? value) => value != null && value is string;
 
-	private static Func<object, bool> IsNullOrValidString = (object value) => value == null || value is string;
+	private static Func<object?, bool> IsNullOrValidString = (object? value) => value == null || value is string;
 
 	public static HardwareAlertManagerService Instance => Singleton<HardwareAlertManagerService>.Instance;
 
@@ -55,7 +55,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 	{
 		Validate(jobResult, "Jobresult", IsNotNull);
 		Validate(jobResult?.Code, "Jobresult code", IsNotNull);
-		return $"<p>Code: {jobResult.Code}, Deck: {jobResult.Deck}, Slot: {jobResult.Slot}, Item ID: {jobResult.ItemID}, Message: {jobResult.Message}</p>";
+		return $"<p>Code: {jobResult!.Code}, Deck: {jobResult.Deck}, Slot: {jobResult.Slot}, Item ID: {jobResult.ItemID}, Message: {jobResult.Message}</p>"; // throws on a null result (Validate only logs), as before
 	}
 
 	public string FormatErrors(string jobId)
@@ -80,8 +80,8 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 
 	public void SendJobAlert(string alertType, string source, string description, string jobId, string subType)
 	{
-		string jobResults = null;
-		string jobErrors = null;
+		string? jobResults = null;
+		string? jobErrors = null;
 		if (jobId != null)
 		{
 			description = "HAL Job " + jobId + " <br>" + description;
@@ -91,7 +91,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		SendAlert(alertType, source, description, jobResults, jobErrors, subType);
 	}
 
-	public void SendAlert(string alertType, string source, string description, string jobResults, string jobErrors, string subType)
+	public void SendAlert(string alertType, string source, string description, string? jobResults, string? jobErrors, string? subType)
 	{
 		Validate(alertType, "Class", IsValidString);
 		Validate(source, "Source", IsValidString);
@@ -190,7 +190,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		Validate(jobResult, "Jobresult", IsNotNull);
 		Validate(jobResult?.Code, "Jobresult code", IsNotNull);
 		stringBuilder.Append($"<p>D: {jobResult?.Deck} S: {jobResult?.Slot}");
-		string jobResultItem = GetJobResultItem(jobResult);
+		string? jobResultItem = GetJobResultItem(jobResult);
 		if (!string.IsNullOrEmpty(jobResultItem))
 		{
 			switch (jobResultItem)
@@ -206,7 +206,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 			}
 		}
 		stringBuilder.Append(" UNDEFINED");
-		stringBuilder.Append("<b> | Error - " + jobResult?.Code + " - " + jobResult.Message + "</b>");
+		stringBuilder.Append("<b> | Error - " + jobResult?.Code + " - " + jobResult!.Message + "</b>"); // throws on a null result (Validate only logs), as before
 		goto IL_0252;
 		IL_01d2:
 		stringBuilder.Append(" EMPTY");
@@ -223,7 +223,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		goto IL_0252;
 		IL_00fe:
 		stringBuilder.Append(" UNKNOWN");
-		if ((jobResult?.Code != "InventoryState" && jobResult.Code != "ItemReturned") || (jobResult?.Code == "ServiceNotConfigured" && onlyOneServiceNotConfigured < 1))
+		if ((jobResult?.Code != "InventoryState" && jobResult!.Code != "ItemReturned") || (jobResult?.Code == "ServiceNotConfigured" && onlyOneServiceNotConfigured < 1))
 		{
 			stringBuilder.Append("<b> | Error - " + jobResult?.Code + " - " + jobResult?.Message + "</b>");
 			if (jobResult?.Code == "ServiceNotConfigured")
@@ -241,12 +241,12 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		{
 			foreach (IHardwareResult hardwareResult in hardwareResults)
 			{
-				string jobResultItem = GetJobResultItem(hardwareResult);
+				string? jobResultItem = GetJobResultItem(hardwareResult);
 				if (jobResultItem != null)
 				{
 					LogHelper.Instance.Log("Found Item: " + jobResultItem + " with code: " + hardwareResult?.Code);
 				}
-				if (hardwareResult.Code == "ExcludedSlotSkipped")
+				if (hardwareResult!.Code == "ExcludedSlotSkipped") // results are never null; the ?. above makes it look nullable
 				{
 					jobResultSummary.ExcludedCount++;
 				}
@@ -289,9 +289,9 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		return jobResultSummary;
 	}
 
-	private string GetJobResultItem(IHardwareResult jobResult)
+	private string? GetJobResultItem(IHardwareResult? jobResult)
 	{
-		string itemId = jobResult?.ItemID;
+		string? itemId = jobResult?.ItemID;
 		if (itemId == null)
 		{
 			int commaIndex = jobResult?.MetaData.IndexOf(',') ?? (-1);
@@ -311,7 +311,7 @@ public class HardwareAlertManagerService : IHardwareAlertManagerService
 		return itemId;
 	}
 
-	private static void Validate(object value, string name, Func<object, bool> validator)
+	private static void Validate(object? value, string name, Func<object?, bool> validator)
 	{
 		if (validator != null && !validator(value))
 		{

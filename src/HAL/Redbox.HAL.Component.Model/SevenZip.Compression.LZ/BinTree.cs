@@ -27,9 +27,10 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 
 	private uint _matchMaxLen;
 
-	private uint[] _son;
+	// _son and _hash are set by Create.
+	private uint[] _son = null!;
 
-	private uint[] _hash;
+	private uint[] _hash = null!;
 
 	private uint _cutValue = 255u;
 
@@ -175,7 +176,7 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 		uint hashValue;
 		if (HASH_ARRAY)
 		{
-			uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
+			uint temp = CRC.Table[_bufferBase![cur]] ^ _bufferBase[cur + 1];
 			hash2Value = temp & 0x3FF;
 			temp ^= (uint)(_bufferBase[cur + 2] << 8);
 			hash3Value = temp & 0xFFFF;
@@ -183,7 +184,7 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 		}
 		else
 		{
-			hashValue = (uint)(_bufferBase[cur] ^ (_bufferBase[cur + 1] << 8));
+			hashValue = (uint)(_bufferBase![cur] ^ (_bufferBase[cur + 1] << 8));
 		}
 		uint curMatch = _hash[kFixHashSize + hashValue];
 		if (HASH_ARRAY)
@@ -294,7 +295,7 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 			uint hashValue;
 			if (HASH_ARRAY)
 			{
-				uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
+				uint temp = CRC.Table[_bufferBase![cur]] ^ _bufferBase[cur + 1];
 				uint hash2Value = temp & 0x3FF;
 				_hash[hash2Value] = _pos;
 				temp ^= (uint)(_bufferBase[cur + 2] << 8);
@@ -304,7 +305,7 @@ public class BinTree : InWindow, IMatchFinder, IInWindowStream
 			}
 			else
 			{
-				hashValue = (uint)(_bufferBase[cur] ^ (_bufferBase[cur + 1] << 8));
+				hashValue = (uint)(_bufferBase![cur] ^ (_bufferBase[cur + 1] << 8));
 			}
 			uint curMatch = _hash[kFixHashSize + hashValue];
 			_hash[kFixHashSize + hashValue] = _pos;

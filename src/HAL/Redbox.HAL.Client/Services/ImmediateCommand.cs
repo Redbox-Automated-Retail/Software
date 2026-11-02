@@ -6,11 +6,12 @@ namespace Redbox.HAL.Client.Services;
 
 public class ImmediateCommand
 {
-	private List<string> m_arguments;
+	private List<string>? m_arguments;
 
-	private static IDictionary<string, ImmediateCommand> m_commands;
+	private static IDictionary<string, ImmediateCommand>? m_commands;
 
-	public static HardwareService Service { get; set; }
+	// Set by the host (HalUtilities) before any command runs.
+	public static HardwareService Service { get; set; } = null!;
 
 	protected internal virtual string Token => string.Empty;
 

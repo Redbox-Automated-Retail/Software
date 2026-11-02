@@ -14,5 +14,5 @@ public interface IDebugService
 
 	void ActivateDebugger(string resourceName);
 
-	void ActivateDebugger(string resourceName, int lineNumber, string error);
+	void ActivateDebugger(string resourceName, int lineNumber, string? error);
 }

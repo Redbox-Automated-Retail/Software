@@ -7,7 +7,7 @@ namespace LzmaAlone.Properties;
 [ComVisible(true)]
 public class Settings : ApplicationSettingsBase
 {
-	private static Settings m_Value;
+	private static Settings? m_Value;
 
 	private static object m_SyncObject = new object();
 

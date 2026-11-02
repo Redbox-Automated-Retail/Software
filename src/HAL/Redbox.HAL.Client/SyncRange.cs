@@ -4,7 +4,7 @@ public sealed class SyncRange
 {
 	public int EndDeck { get; set; }
 
-	public SlotRange Slots { get; set; }
+	public SlotRange? Slots { get; set; }
 
 	public int StartDeck { get; set; }
 

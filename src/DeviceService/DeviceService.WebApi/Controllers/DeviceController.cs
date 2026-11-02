@@ -52,13 +52,13 @@ public class DeviceController : ControllerBase
 	}
 
 	[HttpPost("ReadCard")]
-	public async Task<Base87CardReadModel> ReadCard(CardReadRequest request, CancellationToken token)
+	public async Task<Base87CardReadModel?> ReadCard(CardReadRequest request, CancellationToken token)
 	{
-		Base87CardReadModel result = null;
+		Base87CardReadModel? result = null;
 		await _proxy.ReadCard(request, token, delegate(Base87CardReadModel r)
 		{
 			result = r;
-		}, delegate(string evt, string cardSource)
+		}, delegate(string evt, string? cardSource)
 		{
 			_logger.LogInformation(evt + " - " + cardSource);
 		});
@@ -66,13 +66,13 @@ public class DeviceController : ControllerBase
 	}
 
 	[HttpGet("UnitHealth")]
-	public ActionResult<UnitHealthModel> UnitHealth()
+	public ActionResult<UnitHealthModel?> UnitHealth()
 	{
 		return _proxy.GetUnitHealth();
 	}
 
 	[HttpGet("UnitData")]
-	public ActionResult<UnitDataModel> UnitData()
+	public ActionResult<UnitDataModel?> UnitData()
 	{
 		return _proxy.UnitData;
 	}
@@ -84,7 +84,7 @@ public class DeviceController : ControllerBase
 	}
 
 	[HttpGet("ReadConfig/{group}/{index}")]
-	public ActionResult<string> ReadConfiguration(string group, string index)
+	public ActionResult<string?> ReadConfiguration(string group, string index)
 	{
 		string Data;
 		return _proxy.ReadConfig(group, index, out Data) ? Data : null;
@@ -129,13 +129,13 @@ public class DeviceController : ControllerBase
 	[HttpGet("DeviceStatus")]
 	[ProducesResponseType(typeof(DeviceStatus), 200)]
 	[ProducesResponseType(typeof(NoContentResult), 204)]
-	public async Task<ActionResult<DeviceStatus>> GetDeviceStatus()
+	public async Task<ActionResult<DeviceStatus?>> GetDeviceStatus()
 	{
 		return await _deviceStatusService.GetDeviceStatus();
 	}
 
 	[HttpPost("DeviceStatus")]
-	public async Task<StandardResponse> PostDeviceStatus(DeviceStatusRequest request)
+	public async Task<StandardResponse?> PostDeviceStatus(DeviceStatusRequest request)
 	{
 		return await _deviceStatusService.PostDeviceStatus(request);
 	}

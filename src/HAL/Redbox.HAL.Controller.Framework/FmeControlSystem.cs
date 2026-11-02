@@ -11,7 +11,8 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 	{
 		public bool Success { get; internal set; }
 
-		public IBoardVersionResponse[] Responses { get; internal set; }
+		// Set by GetRevision's object initializer.
+		public IBoardVersionResponse[] Responses { get; internal set; } = null!;
 
 		public string Revision => "A";
 	}
@@ -197,7 +198,7 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 
 	internal override CoreResponse SetVendDoor(VendDoorState state)
 	{
-		CoreResponse coreResponse = null;
+		CoreResponse? coreResponse = null;
 		int timeout = 5500;
 		coreResponse = ((VendDoorState.Rent != state) ? OnCloseVendDoor(timeout) : OnRetryable(CommandType.VendDoorRent, 1, timeout));
 		LogError(coreResponse, $"VendDoor {state}", ControlBoards.Aux);
@@ -243,7 +244,8 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 
 	internal override CoreResponse OnQlm(QlmOperation op)
 	{
-		CoreResponse coreResponse = null;
+		// Every QlmOperation case below sets it (None throws).
+		CoreResponse coreResponse = null!;
 		switch (op)
 		{
 		case QlmOperation.None:
@@ -326,7 +328,7 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 	{
 		SerialPort port = new SerialPort(ControllerConfiguration.Instance.ControllerPortName, 9600, Parity.None, 8, StopBits.One);
 		IPortManagerService service = ServiceLocator.Instance.GetService<IPortManagerService>();
-		Port = service.Create(port);
+		Port = service.Create(port)!;
 		Port.WriteTerminator = new byte[1] { 13 };
 		Port.ValidateResponse = delegate(IChannelResponse response)
 		{
@@ -337,7 +339,8 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 
 	private CoreResponse OnRetryable(CommandType command, int retryCount, int timeout)
 	{
-		CoreResponse coreResponse = null;
+		// Callers pass a retryCount of at least 1, so the loop sets it.
+		CoreResponse coreResponse = null!;
 		for (int i = 0; i < retryCount; i++)
 		{
 			coreResponse = ExecuteControllerCommand(command, timeout);
@@ -353,7 +356,7 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 	{
 		if (command.Port == null || !command.Port.Open())
 		{
-			LogHelper.Instance.WithContext(LogEntryType.Error, "Unable to open control port {0}", command.Port.DisplayName);
+			LogHelper.Instance.WithContext(LogEntryType.Error, "Unable to open control port {0}", command.Port!.DisplayName);
 			return CoreResponse.CommErrorResponse;
 		}
 		try
@@ -369,7 +372,8 @@ internal sealed class FmeControlSystem : AbstractRedboxControlSystem, ICoreComma
 
 	private CoreResponse OnCloseVendDoor(int timeout)
 	{
-		CoreResponse coreResponse = null;
+		// The loop runs twice and sets it each time.
+		CoreResponse coreResponse = null!;
 		for (int i = 0; i < 2; i++)
 		{
 			coreResponse = ExecuteControllerCommand(CommandType.VendDoorClose, timeout);

@@ -14,7 +14,7 @@ internal sealed class GetImageCommand : TextCommand
 
 	private readonly string ImageName;
 
-	private byte[] ImageBytes;
+	private byte[]? ImageBytes;
 
 	protected override string Prefix => "^";
 
@@ -22,7 +22,7 @@ internal sealed class GetImageCommand : TextCommand
 
 	protected override int ReadTimeout => 10000;
 
-	internal ImageDescriptorPacket Descriptor { get; private set; }
+	internal ImageDescriptorPacket? Descriptor { get; private set; }
 
 	protected override bool OnValidateResponse()
 	{
@@ -37,7 +37,7 @@ internal sealed class GetImageCommand : TextCommand
 	{
 		if (Descriptor == null)
 		{
-			CortexPacket cortexPacket = PacketFactory.Instance.Parse(array).Find((CortexPacket each) => each.RawPacketType == 'g');
+			CortexPacket? cortexPacket = PacketFactory.Instance.Parse(array).Find((CortexPacket each) => each.RawPacketType == 'g');
 			if (cortexPacket != null)
 			{
 				Descriptor = new ImageDescriptorPacket(cortexPacket);
@@ -82,7 +82,7 @@ internal sealed class GetImageCommand : TextCommand
 	{
 		if (ImageBytes == null || Descriptor == null || ImageBytes.Length != Descriptor.ImageSize)
 		{
-			LogHelper.Instance.Log("[GetImageCommand] Unable to construct image. Imag bytes = {0} ( expected {1} )", ImageBytes.Length, Descriptor.ImageSize);
+			LogHelper.Instance.Log("[GetImageCommand] Unable to construct image. Imag bytes = {0} ( expected {1} )", ImageBytes!.Length, Descriptor!.ImageSize);
 			return false;
 		}
 		try

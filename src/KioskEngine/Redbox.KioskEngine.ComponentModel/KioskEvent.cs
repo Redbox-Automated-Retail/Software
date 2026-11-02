@@ -18,7 +18,7 @@ public class KioskEvent
 
 	public Guid? RelatedId { get; set; }
 
-	public string Data { get; set; }
+	public string? Data { get; set; }
 
 	public KioskEvent()
 	{
@@ -26,7 +26,7 @@ public class KioskEvent
 		EventTime = DateTime.UtcNow;
 	}
 
-	public static KioskEvent NewEvent(int type, int kioskEventSubType, bool success, int? elapsed = null, Guid? relatedId = null, string data = null)
+	public static KioskEvent NewEvent(int type, int kioskEventSubType, bool success, int? elapsed = null, Guid? relatedId = null, string? data = null)
 	{
 		return new KioskEvent
 		{

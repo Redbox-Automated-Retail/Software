@@ -23,7 +23,7 @@ public static class DataServiceFunctions
 	public static string CacheTableName = "cache";
 
 	[KernelFunction(Name = "kernel.dataserviceget")]
-	internal static object DataServiceGet(string dataStore, string tableName, string keyName)
+	internal static object? DataServiceGet(string dataStore, string tableName, string keyName)
 	{
 		try
 		{
@@ -41,7 +41,7 @@ public static class DataServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.dataservicegetall")]
-	internal static LuaTable DataServiceGetAll(string dataStore, string tableName)
+	internal static LuaTable? DataServiceGetAll(string dataStore, string tableName)
 	{
 		try
 		{
@@ -80,7 +80,7 @@ public static class DataServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.dataservicegetkeys")]
-	internal static LuaTable DataServiceGetKeys(string dataStore, string tableName)
+	internal static LuaTable? DataServiceGetKeys(string dataStore, string tableName)
 	{
 		try
 		{
@@ -216,7 +216,7 @@ public static class DataServiceFunctions
 		_cacheAlertTimer.Start();
 	}
 
-	private static void ResetCacheAlertSent(object sender, ElapsedEventArgs e)
+	private static void ResetCacheAlertSent(object? sender, ElapsedEventArgs e)
 	{
 		_cacheAlertSent = false;
 	}

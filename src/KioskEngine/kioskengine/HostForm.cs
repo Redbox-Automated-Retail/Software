@@ -41,11 +41,11 @@ public class HostForm : Form
 
 	private DateTime _keyPressStartAfter = DateTime.MinValue;
 
-	private IClassicTrackDataService _classicTrackDataService;
+	private IClassicTrackDataService? _classicTrackDataService;
 
 	private bool windowSizeInitialized;
 
-	private IContainer components;
+	private IContainer? components;
 
 	private IClassicTrackDataService ClassicTrackDataService
 	{
@@ -70,7 +70,7 @@ public class HostForm : Form
 			m_isCursorHidden = true;
 		}
 		base.ShowInTaskbar = machineSettingsStore.GetValue("Ide", "ShowKioskEngineInTaskBar", defaultValue: false);
-		machineSettingsStore.GetValue<string>("Store", "Environment", null);
+		machineSettingsStore.GetValue<string?>("Store", "Environment", null);
 		machineSettingsStore.GetValue("Ide", "ShowChrome", defaultValue: false);
 		if (Debugger.IsAttached)
 		{
@@ -102,14 +102,14 @@ public class HostForm : Form
 			switch (m.Msg)
 			{
 			case 74:
-				CommandHelper.ProcessCommandMessage(((COPYDATASTRUCT)m.GetLParam(typeof(COPYDATASTRUCT))).lpData);
+				CommandHelper.ProcessCommandMessage(((COPYDATASTRUCT)m.GetLParam(typeof(COPYDATASTRUCT))!).lpData);
 				break;
 			}
 		}
 		base.WndProc(ref m);
 	}
 
-	private void OnPaint(object sender, PaintEventArgs e)
+	private void OnPaint(object? sender, PaintEventArgs e)
 	{
 		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		if (renderingService.ActiveScene != null)
@@ -130,7 +130,7 @@ public class HostForm : Form
 		return BitConverter.ToString(mD5CryptoServiceProvider.ComputeHash(bytes));
 	}
 
-	public void OnKeyDown(object sender, KeyEventArgs e)
+	public void OnKeyDown(object? sender, KeyEventArgs e)
 	{
 		IResourceBundleService bundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		switch (e.KeyCode)
@@ -175,15 +175,15 @@ public class HostForm : Form
 			{
 				break;
 			}
-			XmlNodeList xmlNodeList = xml.SelectNodes("row");
+			XmlNodeList? xmlNodeList = xml.SelectNodes("row");
 			if (xmlNodeList == null)
 			{
 				break;
 			}
-			string passwordHash = null;
+			string? passwordHash = null;
 			foreach (XmlNode row in xmlNodeList)
 			{
-				XmlNodeList columns = row.SelectNodes("column");
+				XmlNodeList? columns = row.SelectNodes("column");
 				if (columns == null)
 				{
 					continue;
@@ -237,18 +237,18 @@ public class HostForm : Form
 		{
 			IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 			string name = "ADALine";
-			if (renderingService.ActiveScene.SceneRenderType == RenderType.WPF)
+			if (renderingService.ActiveScene!.SceneRenderType == RenderType.WPF)
 			{
-				System.Windows.Controls.UserControl userControl = (renderingService.ActiveScene.Actors.First?.Value)?.WPFFrameworkElement as System.Windows.Controls.UserControl;
-				Grid grid = userControl?.Content as Grid;
-				IEnumerator enumerator = grid.Children.GetEnumerator();
+				System.Windows.Controls.UserControl? userControl = (renderingService.ActiveScene.Actors.First?.Value)?.WPFFrameworkElement as System.Windows.Controls.UserControl;
+				Grid? grid = userControl?.Content as Grid;
+				IEnumerator enumerator = grid!.Children.GetEnumerator();
 				bool lineFound = false;
 				while (enumerator.MoveNext())
 				{
 					if (enumerator.Current is Line line)
 					{
 						line.Visibility = ((line.Visibility == Visibility.Visible) ? Visibility.Hidden : Visibility.Visible);
-						userControl.InvalidateVisual();
+						userControl!.InvalidateVisual();
 						lineFound = true;
 						break;
 					}
@@ -276,7 +276,7 @@ public class HostForm : Form
 			else
 			{
 				renderingService.ActiveScene.SuspendDrawing();
-				IActor actor = renderingService.ActiveScene.GetActor(name);
+				IActor? actor = renderingService.ActiveScene.GetActor(name);
 				if (actor != null)
 				{
 					renderingService.ActiveScene.Remove(actor);
@@ -324,7 +324,7 @@ public class HostForm : Form
 		}
 	}
 
-	public void OnKeyPress(object sender, KeyPressEventArgs e)
+	public void OnKeyPress(object? sender, KeyPressEventArgs e)
 	{
 		IResourceBundleService resourceBundleService = ServiceLocator.Instance.GetService<IResourceBundleService>();
 		if (e.KeyChar == '\u001b')
@@ -348,7 +348,7 @@ public class HostForm : Form
 		if (e.KeyChar == '`')
 		{
 			ResourceBundleService.Instance.GetManifest(out var manifestInfo);
-			string text = ResourceBundleService.Instance.Filter["view_name"];
+			string? text = ResourceBundleService.Instance.Filter["view_name"];
 			if (!(manifestInfo.ProductName != "Rental Application"))
 			{
 				if (!(manifestInfo.ProductName == "Rental Application"))
@@ -402,7 +402,7 @@ public class HostForm : Form
 		}
 	}
 
-	private void OnActivated(object sender, EventArgs e)
+	private void OnActivated(object? sender, EventArgs e)
 	{
 		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		if (renderingService.ActiveScene != null)
@@ -414,7 +414,7 @@ public class HostForm : Form
 		}
 	}
 
-	private void OnMouseClick(object sender, MouseEventArgs e)
+	private void OnMouseClick(object? sender, MouseEventArgs e)
 	{
 		IRenderingService renderingService = ServiceLocator.Instance.GetService<IRenderingService>();
 		if (renderingService.ActiveScene != null)
@@ -424,19 +424,19 @@ public class HostForm : Form
 		}
 	}
 
-	private void OnMouseDoubleClick(object sender, MouseEventArgs e)
+	private void OnMouseDoubleClick(object? sender, MouseEventArgs e)
 	{
 		EngineApplication.Instance.ActivateMouseDoubleClickHandlers(e);
 	}
 
-	private void HostForm_Shown(object sender, EventArgs e)
+	private void HostForm_Shown(object? sender, EventArgs e)
 	{
 		if (!Debugger.IsAttached || windowSizeInitialized)
 		{
 			return;
 		}
 		windowSizeInitialized = true;
-		string value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>("Core", "DebugWindowSize");
+		string? value = ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>("Core", "DebugWindowSize");
 		if (value != null)
 		{
 			string[] size = value.Split(',');
@@ -448,7 +448,7 @@ public class HostForm : Form
 		}
 	}
 
-	private void HostForm_FormClosing(object sender, FormClosingEventArgs e)
+	private void HostForm_FormClosing(object? sender, FormClosingEventArgs e)
 	{
 		if (Debugger.IsAttached)
 		{
@@ -478,7 +478,7 @@ public class HostForm : Form
 		base.ControlBox = false;
 		this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.MaximizeBox = false;
 		this.MaximumSize = new System.Drawing.Size(1024, 768);
 		base.MinimizeBox = false;

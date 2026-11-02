@@ -148,7 +148,7 @@ internal static class CaptureChecks
 
 	private static void RegisterAndExceptionReplies()
 	{
-		object value = RemotingMessages.ReadReturnValue(GtcpMessage.Decode(Capture("register-reply.s2c.bin")), "Register");
+		object? value = RemotingMessages.ReadReturnValue(GtcpMessage.Decode(Capture("register-reply.s2c.bin")), "Register");
 		Check.Equal(null, value, "Register reply (Mono, ArgsInline|ContextInArray|NoReturnValue) is a plain success");
 		try
 		{
@@ -229,7 +229,7 @@ internal static class CaptureChecks
 		NrbfMethodCall call = NrbfReader.ReadMethodCall(content);
 		Check.Equal(NrbfMessageFlags.ArgsInArray | NrbfMessageFlags.NoContext, call.Flags, "written Register: ArgsInArray|NoContext (call array wraps args)");
 		Check.Equal((object)990012, call.Args[0], "written Register: kioskID");
-		NrbfObject written = (NrbfObject)call.Args[1];
+		NrbfObject written = (NrbfObject)call.Args[1]!;
 		Check.Equal("/x/kiosk_operations.rem", written["uri"] as string, "written Register: ObjRef uri");
 		string? iface = ((written["typeInfo"] as NrbfObject)?["interfacesImplemented"] as NrbfArray)?.Items[0] as string;
 		Check.Equal("Redbox.Services.KioskBrokerServices.KioskShared.ServiceInterfaces.IKioskOperations, Redbox.Services.KioskBrokerServices.KioskShared, Version=0.0.0.56, Culture=neutral, PublicKeyToken=null",

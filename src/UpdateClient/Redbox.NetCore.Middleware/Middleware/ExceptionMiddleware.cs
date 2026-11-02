@@ -15,7 +15,7 @@ namespace Redbox.NetCore.Middleware.Middleware;
 
 public class ExceptionMiddleware : IMiddleware
 {
-	private Stream _responseStream;
+	private Stream _responseStream = null!; // set by InvokeAsync before anything reads it
 
 	private readonly IWebHostEnvironment _env;
 
@@ -64,8 +64,8 @@ public class ExceptionMiddleware : IMiddleware
 	{
 		context.Response.Body = _responseStream;
 		context.Response.StatusCode = (int)statusCode;
-		string activityId = context.GetActivityId();
-		string kioskId = context.GetKioskId();
+		string? activityId = context.GetActivityId();
+		string? kioskId = context.GetKioskId();
 		string message = prodMessage;
 		if (_env.IsDevelopment() && !string.IsNullOrWhiteSpace(devMessage))
 		{

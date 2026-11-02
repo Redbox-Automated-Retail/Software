@@ -4,17 +4,17 @@ namespace DeviceService.ComponentModel.Responses;
 
 public abstract class Base87CardReadModel : ResponseBaseModel
 {
-	public string FirstSix { get; set; }
+	public string? FirstSix { get; set; }
 
-	public string LastFour { get; set; }
+	public string? LastFour { get; set; }
 
 	public int PANLength { get; set; }
 
-	public string Mod10CheckFlag { get; set; }
+	public string? Mod10CheckFlag { get; set; }
 
-	public string Expiry { get; set; }
+	public string? Expiry { get; set; }
 
-	public string ServiceCode { get; set; }
+	public string? ServiceCode { get; set; }
 
 	public virtual bool HasChip
 	{
@@ -33,11 +33,11 @@ public abstract class Base87CardReadModel : ResponseBaseModel
 		}
 	}
 
-	public string LanguageCode { get; set; }
+	public string? LanguageCode { get; set; }
 
 	public int NameLength { get; set; }
 
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	public bool EncryptedFlag { get; set; }
 
@@ -47,9 +47,9 @@ public abstract class Base87CardReadModel : ResponseBaseModel
 
 	public FallbackType? FallbackReason { get; set; }
 
-	public string ErrorCode { get; set; }
+	public string? ErrorCode { get; set; }
 
-	public string VasData { get; set; }
+	public string? VasData { get; set; }
 
 	public WalletType WalletFormat { get; set; }
 
@@ -57,7 +57,7 @@ public abstract class Base87CardReadModel : ResponseBaseModel
 
 	public bool HasPayData => !string.IsNullOrWhiteSpace(FirstSix);
 
-	public string VasErrorCode { get; set; }
+	public string? VasErrorCode { get; set; }
 
 	public Base87CardReadModel()
 	{

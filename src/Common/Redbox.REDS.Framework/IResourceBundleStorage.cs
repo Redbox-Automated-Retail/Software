@@ -13,19 +13,19 @@ public interface IResourceBundleStorage : IDisposable
 
 	void Close();
 
-	void Create(string path, string trimPrefix);
+	void Create(string path, string? trimPrefix);
 
-	void AddEntry(string path, string trimPrefix);
+	void AddEntry(string path, string? trimPrefix);
 
 	void BeginUpdate();
 
 	void CommitUpdate();
 
-	byte[] GetEntryContent(string path);
+	byte[]? GetEntryContent(string path);
 
-	IResourceBundleStorageEntry GetEntry(string path);
+	IResourceBundleStorageEntry? GetEntry(string path);
 
-	byte[] GetEntryContent(IResourceBundleStorageEntry entry);
+	byte[]? GetEntryContent(IResourceBundleStorageEntry entry);
 
 	ReadOnlyCollection<IResourceBundleStorageEntry> GetResourceManifest();
 }

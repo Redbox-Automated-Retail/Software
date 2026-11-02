@@ -10,17 +10,18 @@ public class ConfigFileDataData
 
 	public long ConfigCategoryID { get; set; }
 
-	public string ConfigCategoryName { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string ConfigCategoryName { get; set; } = null!;
 
 	public long ConfigSettingID { get; set; }
 
-	public string ConfigSettingName { get; set; }
+	public string ConfigSettingName { get; set; } = null!;
 
-	public string ConfigSettingDataType { get; set; }
+	public string ConfigSettingDataType { get; set; } = null!;
 
 	public long ConfigDefaultTypeID { get; set; }
 
-	public string ConfigDefaultTypeName { get; set; }
+	public string ConfigDefaultTypeName { get; set; } = null!;
 
 	public int ConfigDefaultTypeRank { get; set; }
 
@@ -28,9 +29,9 @@ public class ConfigFileDataData
 
 	public long ConfigDefaultTypeKey { get; set; }
 
-	public string ConfigDefaultTypeValue { get; set; }
+	public string ConfigDefaultTypeValue { get; set; } = null!;
 
-	public string Value { get; set; }
+	public string Value { get; set; } = null!;
 
 	public DateTime EffectiveTime { get; set; }
 

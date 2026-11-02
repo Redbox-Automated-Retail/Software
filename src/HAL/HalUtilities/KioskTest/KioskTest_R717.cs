@@ -88,7 +88,7 @@ internal sealed class KioskTest_R717 : AbstractKioskTest
 	private bool ScheduleAndBlockLoadBinJob(List<Location> locs)
 	{
 		using ClientHelper clientHelper = new ClientHelper(Service);
-		HardwareJob job = null;
+		HardwareJob? job = null;
 		try
 		{
 			if (!Service.LoadBin(locs, new HardwareJobSchedule
@@ -99,7 +99,7 @@ internal sealed class KioskTest_R717 : AbstractKioskTest
 				LogHelper.Instance.Log("**ERROR** Failed to create bin job");
 				return false;
 			}
-			if (!clientHelper.WaitForJob(job, out var endStatus))
+			if (!clientHelper.WaitForJob(job!, out var endStatus))
 			{
 				LogHelper.Instance.Log("**ERROR** Wait for load bin job failed");
 				return false;

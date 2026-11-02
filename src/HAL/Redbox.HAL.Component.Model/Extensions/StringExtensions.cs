@@ -49,28 +49,28 @@ public static class StringExtensions
 		return Convert.FromBase64String(source);
 	}
 
-	public static object GetValueForPath(string path, object rootObject)
+	public static object? GetValueForPath(string path, object rootObject)
 	{
 		return GetObjectFromPath(path, rootObject, null);
 	}
 
-	public static void SetValueForPath(string path, object rootObject, object value)
+	public static void SetValueForPath(string path, object rootObject, object? value)
 	{
-		object parent = GetObjectFromPath(path, rootObject, 1);
+		object? parent = GetObjectFromPath(path, rootObject, 1);
 		if (parent != null)
 		{
 			string[] parts = path.Split(PropertyPathSeparators);
-			PropertyInfo property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			PropertyInfo? property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
 			property?.SetValue(parent, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}
 
-	public static Type ToType(string typeName)
+	public static Type? ToType(string typeName)
 	{
 		return Type.GetType(typeName);
 	}
 
-	public static object ExtractIndex(string part)
+	public static object? ExtractIndex(string? part)
 	{
 		if (part == null)
 		{
@@ -78,7 +78,7 @@ public static class StringExtensions
 		}
 		Match stringIndexer = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
 		Match numericIndexer = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object index = null;
+		object? index = null;
 		int number;
 		if (stringIndexer.Success)
 		{
@@ -91,7 +91,7 @@ public static class StringExtensions
 		return index;
 	}
 
-	public static string ExtractCodeFromBrackets(string value, string prefix, string postfix)
+	public static string? ExtractCodeFromBrackets(string value, string prefix, string postfix)
 	{
 		int depth = 0;
 		int codeStart = -1;
@@ -136,7 +136,7 @@ public static class StringExtensions
 		return value.Substring(codeStart, codeEnd - codeStart + postfix.Length);
 	}
 
-	private static object GetObjectFromPath(string path, object rootObject, int? depthAdjust)
+	private static object? GetObjectFromPath(string? path, object? rootObject, int? depthAdjust)
 	{
 		if (path == null)
 		{
@@ -152,12 +152,12 @@ public static class StringExtensions
 		{
 			depth -= depthAdjust.Value;
 		}
-		object current = rootObject;
+		object? current = rootObject;
 		for (int i = 0; i < depth; i++)
 		{
-			object[] args = null;
+			object[]? args = null;
 			string member = parts[i];
-			object index = ExtractIndex(member);
+			object? index = ExtractIndex(member);
 			if (index != null)
 			{
 				member = member.Substring(0, member.IndexOf("["));

@@ -60,7 +60,7 @@ internal sealed class SlimFrameService_v2 : AbstractDirectShowControl
 	{
 		if (properties.ContainsKey("ControlType"))
 		{
-			FrameControl = Enum<FrameControls>.ParseIgnoringCase(properties["ControlType"] as string, FrameControls.Legacy);
+			FrameControl = Enum<FrameControls>.ParseIgnoringCase((properties["ControlType"] as string)!, FrameControls.Legacy);
 		}
 	}
 

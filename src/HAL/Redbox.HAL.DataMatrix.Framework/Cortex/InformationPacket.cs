@@ -6,15 +6,16 @@ internal sealed class InformationPacket : NonDataPacket
 {
 	internal override PacketType PacketType => PacketType.Information;
 
-	internal string FirmwareVersion { get; private set; }
+	// FirmwareVersion, SerialNumber, OEMIdentifier and State are set by ParseData, which the base constructor calls.
+	internal string FirmwareVersion { get; private set; } = null!;
 
-	internal string SerialNumber { get; private set; }
+	internal string SerialNumber { get; private set; } = null!;
 
-	internal string OEMIdentifier { get; private set; }
+	internal string OEMIdentifier { get; private set; } = null!;
 
-	internal string DecoderVersion { get; private set; }
+	internal string? DecoderVersion { get; private set; }
 
-	internal string State { get; private set; }
+	internal string State { get; private set; } = null!;
 
 	protected override void ParseData()
 	{

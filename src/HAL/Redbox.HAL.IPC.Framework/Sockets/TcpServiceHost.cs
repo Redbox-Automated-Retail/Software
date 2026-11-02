@@ -11,13 +11,13 @@ internal sealed class TcpServiceHost : AbstractIPCServiceHost
 {
 	private static int m_counter;
 
-	private TcpListener m_listener;
+	private TcpListener? m_listener;
 
 	private int m_listenerPort;
 
 	protected override void OnStart()
 	{
-		IPAddress iPAddress;
+		IPAddress? iPAddress;
 		if (IPAddress.TryParse(base.Protocol.Host, out var address))
 		{
 			iPAddress = address;
@@ -70,7 +70,7 @@ internal sealed class TcpServiceHost : AbstractIPCServiceHost
 
 	protected override void OnStop()
 	{
-		m_listener.Stop();
+		m_listener!.Stop();
 	}
 
 	internal TcpServiceHost(IIpcProtocol protocol, IHostInfo info)

@@ -24,7 +24,7 @@ internal abstract class AbstractPipeSever
 		{
 			while (IsAlive)
 			{
-				BasePipeChannel channel = namedPipeServer.WaitForClientConnect();
+				BasePipeChannel? channel = namedPipeServer.WaitForClientConnect();
 				if (channel != null)
 				{
 					ThreadPool.QueueUserWorkItem(delegate
@@ -46,7 +46,7 @@ internal abstract class AbstractPipeSever
 	{
 		new ConsoleLogger(debug);
 		string optionVal = CommandLineOption.GetOptionVal(cmdLineArg, "HAL7001");
-		AbstractPipeSever abstractPipeSever = null;
+		AbstractPipeSever? abstractPipeSever = null;
 		switch (serverType)
 		{
 		case PipeServers.Basic:

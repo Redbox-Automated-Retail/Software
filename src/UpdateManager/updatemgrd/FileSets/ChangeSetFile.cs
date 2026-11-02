@@ -13,17 +13,17 @@ internal class ChangeSetFile
 {
 	private List<IDownloader> _downloads = new List<IDownloader>();
 
-	private IDownloadService _downloadService;
+	private IDownloadService? _downloadService;
 
-	private IFileCacheService _fileCacheService;
+	private IFileCacheService? _fileCacheService;
 
-	private FileSetRevisionDownloader _revisionDownloader;
+	private FileSetRevisionDownloader? _revisionDownloader;
 
-	private FileSetDownloader _fileSetDownloader;
+	private FileSetDownloader? _fileSetDownloader;
 
 	private static object _lock = new object();
 
-	private RevisionChangeSet _changeSet;
+	private RevisionChangeSet _changeSet = null!; // set by the constructors or Load
 
 	private const string FileSetChangeSetExt = ".changeSet";
 
@@ -83,13 +83,13 @@ internal class ChangeSetFile
 		}
 	}
 
-	internal FileSetDownloader FileSetDownloader
+	internal FileSetDownloader? FileSetDownloader
 	{
 		get
 		{
 			if (_fileSetDownloader == null)
 			{
-				ClientFileSetRevision revision = RevisionDownloader.GetRevision();
+				ClientFileSetRevision? revision = RevisionDownloader.GetRevision();
 				if (revision != null)
 				{
 					_fileSetDownloader = new FileSetDownloader(revision, _downloads, _changeSet.DownloadUrl, _changeSet.DownloadPriority);
@@ -429,7 +429,7 @@ internal class ChangeSetFile
 			}
 			if (!RevisionDownloader.Exists() && !RevisionDownloader.DownloadExists())
 			{
-				IDownloader downloader = RevisionDownloader.AddDownload();
+				IDownloader? downloader = RevisionDownloader.AddDownload();
 				if (downloader == null)
 				{
 					SetError("RevisionDownloader.AddDownloader failed");
@@ -652,7 +652,7 @@ internal class ChangeSetFile
 		Log(text, "Started");
 		try
 		{
-			_ = FileSetDownloader.Revision.Dependencies;
+			_ = FileSetDownloader!.Revision.Dependencies; // read before the null check below; throws on null, as before
 			if (FileSetDownloader == null)
 			{
 				SetError("Revision does not exist");

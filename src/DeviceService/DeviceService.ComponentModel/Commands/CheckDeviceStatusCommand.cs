@@ -10,7 +10,8 @@ public class CheckDeviceStatusCommand : BaseCommandRequest
 
 	public override string CommandName => "CheckDeviceStatus";
 
-	public DeviceStatusRequest Request { get; set; }
+	// Set by the sender's object initializer (DeviceServiceClient.CheckDeviceStatus).
+	public DeviceStatusRequest Request { get; set; } = null!;
 
 	public CheckDeviceStatusCommand(Version deviceServiceClientVersion)
 		: base("CheckDeviceStatus", deviceServiceClientVersion)

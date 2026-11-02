@@ -70,7 +70,7 @@ public class TransactionServiceFunctions
 			return;
 		}
 		IKioskClientService kioskClientService = ServiceLocator.Instance.GetService<IKioskClientService>();
-		RemoteServiceCallback completeCallback = null;
+		RemoteServiceCallback? completeCallback = null;
 		if (callback != null)
 		{
 			completeCallback = delegate(IRemoteServiceResult r)

@@ -41,16 +41,16 @@ public class SyncEmptiesProcessor : LocationSyncJobProcessorBase, ISyncEmptiesPr
 		{
 			rangeEndText = "3:00";
 		}
-		_timespanBegin = TimeSpan.Parse(rangeBeginText);
-		_timespanEnd = TimeSpan.Parse(rangeEndText);
+		_timespanBegin = TimeSpan.Parse(rangeBeginText!); // TryGetValue returned true or the default was set
+		_timespanEnd = TimeSpan.Parse(rangeEndText!);
 		_timer = new Timer(60000.0);
 		_timer.Elapsed += _timer_Elapsed;
 		_timer.Enabled = true;
 	}
 
-	private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+	private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
 	{
-		IHardwareJob competedJob = GetCompetedJob(new List<string> { "SyncEmpty" });
+		IHardwareJob? competedJob = GetCompetedJob(new List<string> { "SyncEmpty" });
 		if (competedJob != null)
 		{
 			ProcessSoftSyncComplete(competedJob);

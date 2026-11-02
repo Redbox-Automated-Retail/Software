@@ -11,5 +11,6 @@ public class ConfigFileGenerationData
 
 	public DateTime? CreatedOn { get; set; }
 
-	public List<ConfigFileDataData> ConfigFileDataList { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public List<ConfigFileDataData> ConfigFileDataList { get; set; } = null!;
 }

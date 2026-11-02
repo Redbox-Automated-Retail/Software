@@ -9,8 +9,8 @@ internal sealed class _3MTouchscreen
 
 	internal void Execute(TextWriter writer)
 	{
-		ITouchscreenDescriptor touchscreenDescriptor = ServiceLocator.Instance.GetService<IUsbDeviceService>().FindTouchScreen(matchDriver: false);
-		if (touchscreenDescriptor.Friendlyname != "3M")
+		ITouchscreenDescriptor? touchscreenDescriptor = ServiceLocator.Instance.GetService<IUsbDeviceService>().FindTouchScreen(matchDriver: false);
+		if (touchscreenDescriptor!.Friendlyname != "3M")
 		{
 			writer.WriteLine("Could not locate 3m descriptor; found {0}", touchscreenDescriptor.Friendlyname);
 			return;

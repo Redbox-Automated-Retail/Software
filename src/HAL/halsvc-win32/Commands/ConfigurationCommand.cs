@@ -43,14 +43,14 @@ public sealed class ConfigurationCommand
 			context.Errors.Add(Error.NewError("S001", "The parameter name: is required.", "Specify the name: parameter when calling the CONFIG GET command form."));
 			return;
 		}
-		string value = ServiceLocator.Instance.GetService<IConfigurationService>().FormatAsXml(name);
+		string? value = ServiceLocator.Instance.GetService<IConfigurationService>().FormatAsXml(name);
 		if (string.IsNullOrEmpty(value))
 		{
 			context.Errors.Add(Error.NewError("S001", $"The requested configuration name '{name}' is not known.", "Specify one of the valid configuration names."));
 		}
 		else
 		{
-			ProtocolHelper.FormatCompressedString(value, context);
+			ProtocolHelper.FormatCompressedString(value!, context);
 		}
 	}
 

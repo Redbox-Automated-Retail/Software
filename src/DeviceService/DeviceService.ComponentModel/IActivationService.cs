@@ -7,5 +7,5 @@ public interface IActivationService
 {
 	Task<bool> CheckAndActivate(IBluefinActivationRequest request);
 
-	Task<bool> CheckAndActivate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber);
+	Task<bool> CheckAndActivate(IBluefinActivationRequest request, string? mfgSerialNumber, string? injectedSerialNumber);
 }

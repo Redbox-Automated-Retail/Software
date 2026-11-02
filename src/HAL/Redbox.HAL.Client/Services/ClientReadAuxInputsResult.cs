@@ -10,7 +10,7 @@ internal sealed class ClientReadAuxInputsResult : AbstractClientReadInputsResult
 
 	protected override InputState OnGetInputState(AuxInputs input)
 	{
-		if (!(Inputs[(int)input] == "1"))
+		if (!(Inputs![(int)input] == "1"))
 		{
 			return InputState.Inactive;
 		}

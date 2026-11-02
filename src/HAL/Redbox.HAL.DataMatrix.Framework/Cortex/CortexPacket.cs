@@ -5,7 +5,8 @@ namespace Redbox.HAL.DataMatrix.Framework.Cortex;
 
 internal abstract class CortexPacket
 {
-	protected readonly byte[] Packet;
+	// Null only for NilPacket (the parameterless constructor), which never reads it; Length checks for it.
+	protected readonly byte[] Packet = null!;
 
 	protected readonly List<byte> PacketData = new List<byte>();
 

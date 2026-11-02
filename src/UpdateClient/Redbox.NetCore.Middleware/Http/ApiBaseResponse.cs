@@ -12,7 +12,7 @@ public class ApiBaseResponse
 	public bool Success { get; set; }
 
 	[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-	public string Error { get; set; }
+	public string? Error { get; set; }
 
 	[JsonIgnore]
 	public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;

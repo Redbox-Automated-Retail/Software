@@ -6,11 +6,11 @@ namespace Redbox.HAL.IPC.Framework.Server;
 
 internal sealed class HostInfo : IHostInfo
 {
-	public string Product { get; private set; }
+	public string? Product { get; private set; }
 
 	public string Version { get; private set; }
 
-	public string Copyright { get; private set; }
+	public string? Copyright { get; private set; }
 
 	internal HostInfo(Assembly a)
 	{
@@ -19,18 +19,18 @@ internal sealed class HostInfo : IHostInfo
 		Copyright = GetProductName(a);
 	}
 
-	private string GetProductName(Assembly assembly)
+	private string? GetProductName(Assembly assembly)
 	{
-		return ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute)))?.Product;
+		return ((AssemblyProductAttribute?)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute)))?.Product;
 	}
 
-	private string GetCopyright(Assembly assembly)
+	private string? GetCopyright(Assembly assembly)
 	{
-		return ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCopyrightAttribute)))?.Copyright;
+		return ((AssemblyCopyrightAttribute?)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCopyrightAttribute)))?.Copyright;
 	}
 
 	private string GetVersion(Assembly assembly)
 	{
-		return assembly.GetName().Version.ToString();
+		return assembly.GetName().Version!.ToString();
 	}
 }

@@ -21,7 +21,7 @@ public class InventoryData : IInventoryData
 {
 	private class BarcodeAndTotalRents
 	{
-		public string Barcode { get; set; }
+		public string Barcode { get; set; } = null!; // set by the object initializer
 
 		public int RentalCount { get; set; }
 	}
@@ -30,7 +30,7 @@ public class InventoryData : IInventoryData
 	{
 		public long ProductId { get; set; }
 
-		public string Barcode { get; set; }
+		public string Barcode { get; set; } = null!; // set by the object initializer
 	}
 
 	private IKernelHelperService _kernelHelperService;
@@ -75,15 +75,15 @@ public class InventoryData : IInventoryData
 
 	private int _lockTimeout = 3000;
 
-	private InventoryActionFile _inventoryActionFile;
+	private InventoryActionFile? _inventoryActionFile;
 
-	private ProductLookupCatalogModel _plcModel;
+	private ProductLookupCatalogModel? _plcModel;
 
-	private InventoryDataJsonFile _inventoryDataJsonFile;
+	private InventoryDataJsonFile? _inventoryDataJsonFile;
 
-	private Dictionary<string, MerchOrderBarcode> _merchOrderBarcodes;
+	private Dictionary<string, MerchOrderBarcode>? _merchOrderBarcodes;
 
-	private List<MerchandizingOrder> _merchOrders;
+	private List<MerchandizingOrder>? _merchOrders;
 
 	private DateTime? _inventoryActionModificationTime;
 
@@ -125,7 +125,7 @@ public class InventoryData : IInventoryData
 			if (Configuration.Instance.UseMerchOrdersForThinning)
 			{
 				_merchOrders = LoadMerchOrderData();
-				_inventoryActionFile = LoadInventoryActionFileFromMercOrders(_inventoryDataJsonFile.LastCompletedDate);
+				_inventoryActionFile = LoadInventoryActionFileFromMercOrders(_inventoryDataJsonFile!.LastCompletedDate); // set by LoadInventoryData; throws when it failed, as before
 				_merchOrderBarcodes = LoadMerchOrderBarcodeData();
 				MergeMerchOrdersWithRapidStatus();
 			}
@@ -204,9 +204,9 @@ public class InventoryData : IInventoryData
 		return result;
 	}
 
-	public string GetInventoryDataMachineOrigin()
+	public string? GetInventoryDataMachineOrigin()
 	{
-		string result = null;
+		string? result = null;
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			LogHelper.Instance.LogError("InventoryData.GetInventoryDataMachineOrigin", "TryEnterWriteLock timeout expired prior to acquiring the lock.");
@@ -230,9 +230,9 @@ public class InventoryData : IInventoryData
 		return result;
 	}
 
-	public string GetInventoryDataCreatedOn()
+	public string? GetInventoryDataCreatedOn()
 	{
-		string result = null;
+		string? result = null;
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			LogHelper.Instance.LogError("InventoryData.GetInventoryDataGeneratedOn", "TryEnterWriteLock timeout expired prior to acquiring the lock.");
@@ -256,9 +256,9 @@ public class InventoryData : IInventoryData
 		return result;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.Inventory GetInventory(string barcode)
+	public Redbox.KioskEngine.ComponentModel.Inventory? GetInventory(string barcode)
 	{
-		Redbox.KioskEngine.ComponentModel.Inventory value = null;
+		Redbox.KioskEngine.ComponentModel.Inventory? value = null;
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			LogHelper.Instance.LogError("InventoryData.GetInventory", "TryEnterWriteLock timeout expired prior to acquiring the lock.");
@@ -281,9 +281,9 @@ public class InventoryData : IInventoryData
 		return value;
 	}
 
-	public Dictionary<string, Redbox.KioskEngine.ComponentModel.Inventory> GetInventories(List<string> barcodes)
+	public Dictionary<string, Redbox.KioskEngine.ComponentModel.Inventory>? GetInventories(List<string> barcodes)
 	{
-		Dictionary<string, Redbox.KioskEngine.ComponentModel.Inventory> result = null;
+		Dictionary<string, Redbox.KioskEngine.ComponentModel.Inventory>? result = null;
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			LogHelper.Instance.LogError("InventoryData.GetInventories", "TryEnterWriteLock timeout expired prior to acquiring the lock.");
@@ -323,7 +323,7 @@ public class InventoryData : IInventoryData
 		{
 			foreach (string barcode in barcodes)
 			{
-				_plcModel.Barcodes.TryGetValue(barcode, out var value);
+				_plcModel.Barcodes!.TryGetValue(barcode, out var value);
 				if (value != null)
 				{
 					dictionary[barcode] = value;
@@ -356,7 +356,7 @@ public class InventoryData : IInventoryData
 			using Archive archive = Archive.Open(_inventoryDataPath);
 			foreach (string barcode in barcodes)
 			{
-				Redbox.ProductLookupCatalog.Inventory inventory = archive.Find(barcode);
+				Redbox.ProductLookupCatalog.Inventory? inventory = archive.Find(barcode);
 				if (inventory != null)
 				{
 					dictionary[barcode] = new Redbox.KioskEngine.ComponentModel.Inventory
@@ -381,7 +381,7 @@ public class InventoryData : IInventoryData
 		return code;
 	}
 
-	public Redbox.KioskEngine.ComponentModel.Inventory GetRapidStatus(string barcode)
+	public Redbox.KioskEngine.ComponentModel.Inventory? GetRapidStatus(string barcode)
 	{
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
@@ -398,7 +398,7 @@ public class InventoryData : IInventoryData
 			{
 				return null;
 			}
-			if (_plcModel.Barcodes.TryGetValue(barcode, out var value))
+			if (_plcModel.Barcodes!.TryGetValue(barcode, out var value))
 			{
 				return value;
 			}
@@ -415,7 +415,7 @@ public class InventoryData : IInventoryData
 		return null;
 	}
 
-	public ProductLookupCatalogModel GetRapidStatus()
+	public ProductLookupCatalogModel? GetRapidStatus()
 	{
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
@@ -441,9 +441,9 @@ public class InventoryData : IInventoryData
 		return null;
 	}
 
-	public InventoryActionFile GetInventoryActionFile()
+	public InventoryActionFile? GetInventoryActionFile()
 	{
-		InventoryActionFile result = null;
+		InventoryActionFile? result = null;
 		if (!_lock.TryEnterWriteLock(_lockTimeout))
 		{
 			LogHelper.Instance.LogError("InventoryData.GetInventoryActionData", "TryEnterWriteLock timeout expired prior to acquiring the lock.");
@@ -731,16 +731,16 @@ public class InventoryData : IInventoryData
 			{
 				LogHelper.Instance.Log($"InventoryData.CheckForNewMerchandizingOrders - retrieved new merch orders. {currentMerchandizingOrders.MerchandizingOrders?.Count ?? 0} orders received.");
 				_lastMerchOrderDate = DateTime.UtcNow.Date;
-				_inventoryDataJsonFile.LastMerchOrderDate = _lastMerchOrderDate;
+				_inventoryDataJsonFile!.LastMerchOrderDate = _lastMerchOrderDate;
 				if ((currentMerchandizingOrders.MerchandizingOrders?.Count ?? 0) > 0)
 				{
 					result = true;
 					_merchOrders = currentMerchandizingOrders.MerchandizingOrders;
 					_inventoryDataJsonFile.LastMerchOrdersReceivedDate = DateTime.Now;
 					_inventoryActionFile = LoadInventoryActionFileFromMercOrders(DateTime.Now);
-					SetMerchandizingBarcodes(currentMerchandizingOrders.MerchandizingOrders);
+					SetMerchandizingBarcodes(currentMerchandizingOrders.MerchandizingOrders!); // Count > 0 above
 					WriteMerchOrderBarcodeData();
-					WriteMerchOrderData(_merchOrders);
+					WriteMerchOrderData(_merchOrders!);
 					WriteInventoryData();
 				}
 			}
@@ -751,7 +751,7 @@ public class InventoryData : IInventoryData
 	private void SetMerchandizingBarcodes(List<MerchandizingOrder> merchandizingOrders)
 	{
 		RemoveOldThinAndRebalanceFromPlc();
-		List<string> list = (from b in _plcModel.Barcodes.Values
+		List<string> list = (from b in _plcModel!.Barcodes!.Values // throws without a rapid status, as before
 			where b.Code != Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Rebalancing && b.Code != Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Thinned && b.Code != Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Redeployment && b.Code != Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Known
 			select b.Barcode).ToList();
 		List<MerchandizingOrder> searchOrders = merchandizingOrders.Where((MerchandizingOrder o) => o.MerchandizingOrderType == MerchandizingOrderType.RebalancingExtract).ToList();
@@ -824,11 +824,11 @@ public class InventoryData : IInventoryData
 						where b.Status != "Reserved"
 						select b.Barcode).ToList()).Values)
 					{
-						if (!list.Any((BarcodeForProductResult x) => x.Barcode == eachInventoryEntry.Barcode) && (excludeBarcodesList == null || !excludeBarcodesList.Contains(eachInventoryEntry.Barcode)))
+						if (!list.Any((BarcodeForProductResult x) => x.Barcode == eachInventoryEntry.Barcode) && (excludeBarcodesList == null || !excludeBarcodesList.Contains(eachInventoryEntry.Barcode!)))
 						{
 							BarcodeAndTotalRents item = new BarcodeAndTotalRents
 							{
-								Barcode = eachInventoryEntry.Barcode,
+								Barcode = eachInventoryEntry.Barcode!, // inventory entries always carry their barcode
 								RentalCount = (int)eachInventoryEntry.TotalRentalCount
 							};
 							if (!dictionary.Keys.Contains(eachInventoryEntry.Code))
@@ -882,9 +882,9 @@ public class InventoryData : IInventoryData
 			return;
 		}
 		RemoveOldThinAndRebalanceFromPlc();
-		foreach (KeyValuePair<string, MerchOrderBarcode> merchOrderBarcode in _merchOrderBarcodes)
+		foreach (KeyValuePair<string, MerchOrderBarcode> merchOrderBarcode in _merchOrderBarcodes!)
 		{
-			if (_plcModel.Barcodes.ContainsKey(merchOrderBarcode.Key))
+			if (_plcModel!.Barcodes!.ContainsKey(merchOrderBarcode.Key))
 			{
 				_plcModel.Barcodes[merchOrderBarcode.Key] = merchOrderBarcode.Value;
 			}
@@ -898,7 +898,7 @@ public class InventoryData : IInventoryData
 	private bool MerchandizingOrdersAreNotExpired()
 	{
 		int expirationDays = ServiceLocator.Instance.GetService<IConfiguration>()?.MerchOrderExpirationDays ?? 7;
-		if (_inventoryDataJsonFile.LastMerchOrdersReceivedDate.HasValue)
+		if (_inventoryDataJsonFile!.LastMerchOrdersReceivedDate.HasValue)
 		{
 			return _inventoryDataJsonFile.LastMerchOrdersReceivedDate > DateTime.Now.AddDays(-expirationDays);
 		}
@@ -907,7 +907,7 @@ public class InventoryData : IInventoryData
 
 	private void RemoveOldThinAndRebalanceFromPlc()
 	{
-		foreach (string item in (from b in _plcModel.Barcodes.Values
+		foreach (string item in (from b in _plcModel!.Barcodes!.Values
 			where b.Code == Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Rebalancing || b.Code == Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Thinned || b.Code == Redbox.KioskEngine.ComponentModel.InventoryStatusCode.Redeployment
 			select b.Barcode).ToList())
 		{
@@ -924,7 +924,7 @@ public class InventoryData : IInventoryData
 		};
 		if (MerchandizingOrdersAreNotExpired())
 		{
-			foreach (MerchandizingOrder item in _merchOrders.Where((MerchandizingOrder o) => o.MerchandizingOrderType == MerchandizingOrderType.Fill))
+			foreach (MerchandizingOrder item in _merchOrders!.Where((MerchandizingOrder o) => o.MerchandizingOrderType == MerchandizingOrderType.Fill))
 			{
 				inventoryActionFile.RebalancesIn.Add(new RebalancesIn
 				{
@@ -1067,7 +1067,7 @@ public class InventoryData : IInventoryData
 				LogHelper.Instance.Log("InventoryData.LoadRapidStatus - RapidStatus file ({0}) does not exist", _rapidStatusActivePath);
 				return;
 			}
-			ProductLookupCatalogModel productLookupCatalog = ServiceLocator.Instance.GetService<IProductLookupCatalogService>().GetProductLookupCatalog(_rapidStatusActivePath);
+			ProductLookupCatalogModel? productLookupCatalog = ServiceLocator.Instance.GetService<IProductLookupCatalogService>().GetProductLookupCatalog(_rapidStatusActivePath);
 			if (productLookupCatalog == null)
 			{
 				LogHelper.Instance.LogError("InventoryData.LoadRapidStatus", "An error occurred loading file. Deleting file.");
@@ -1075,7 +1075,7 @@ public class InventoryData : IInventoryData
 			}
 			_plcModel = productLookupCatalog;
 			_rapidStatusModificationTime = File.GetLastWriteTime(_rapidStatusActivePath);
-			LogHelper.Instance.Log("InventoryData.LoadRapidStatus - Rapid status file contains {0} barcodes.", productLookupCatalog.Barcodes.Count);
+			LogHelper.Instance.Log("InventoryData.LoadRapidStatus - Rapid status file contains {0} barcodes.", productLookupCatalog!.Barcodes!.Count); // throws after a failed load (caught below), as before
 		}
 		catch (Exception e)
 		{

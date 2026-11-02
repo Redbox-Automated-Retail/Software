@@ -12,21 +12,21 @@ public interface IActor : IDisposable
 
 	int Y { get; set; }
 
-	Font Font { get; set; }
+	Font? Font { get; set; }
 
 	int Width { get; set; }
 
 	int Height { get; set; }
 
-	object Tag { get; set; }
+	object? Tag { get; set; }
 
-	string Name { get; set; }
+	string? Name { get; set; }
 
-	string Text { get; set; }
+	string? Text { get; set; }
 
-	string Html { get; set; }
+	string? Html { get; set; }
 
-	Image Image { get; set; }
+	Image? Image { get; set; }
 
 	bool Visible { get; set; }
 
@@ -34,7 +34,7 @@ public interface IActor : IDisposable
 
 	bool Enabled { get; set; }
 
-	IScene Scene { get; set; }
+	IScene? Scene { get; set; }
 
 	bool IsDirty { get; }
 
@@ -48,11 +48,11 @@ public interface IActor : IDisposable
 
 	Rectangle Bounds { get; }
 
-	string StyleName { get; set; }
+	string? StyleName { get; set; }
 
-	string ErrorText { get; set; }
+	string? ErrorText { get; set; }
 
-	float[] TabStops { get; set; }
+	float[]? TabStops { get; set; }
 
 	System.Drawing.Size? CornerSize { get; set; }
 
@@ -78,7 +78,7 @@ public interface IActor : IDisposable
 
 	Color? GradientTargetColor { get; set; }
 
-	string RelativeToActorName { get; set; }
+	string? RelativeToActorName { get; set; }
 
 	System.Drawing.Point? TextTranslationPoint { get; set; }
 
@@ -90,13 +90,13 @@ public interface IActor : IDisposable
 
 	StringAlignment HorizontalAlignment { get; set; }
 
-	IStyleSheetStyle Style { get; set; }
+	IStyleSheetStyle? Style { get; set; }
 
 	FrameworkElement WPFFrameworkElement { get; set; }
 
-	string WPFControlName { get; set; }
+	string? WPFControlName { get; set; }
 
-	string WPFControlAssemblyName { get; set; }
+	string? WPFControlAssemblyName { get; set; }
 
 	event EventHandler Hit;
 

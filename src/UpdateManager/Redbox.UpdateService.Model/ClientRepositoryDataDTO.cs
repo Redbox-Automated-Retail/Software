@@ -4,15 +4,16 @@ namespace Redbox.UpdateService.Model;
 
 public class ClientRepositoryDataDTO : IComparable
 {
-	public string R;
+	// Filled by the constructor, the object initializer or the JSON reader.
+	public string R = null!;
 
-	public string I;
+	public string I = null!;
 
-	public string S;
+	public string S = null!;
 
-	public string A;
+	public string A = null!;
 
-	public string H;
+	public string H = null!;
 
 	public ClientRepositoryDataDTO()
 	{
@@ -27,7 +28,7 @@ public class ClientRepositoryDataDTO : IComparable
 		H = ((crd.Head != null) ? crd.Head.Hash : "0000000000000000000000000000000000000000");
 	}
 
-	public int CompareTo(object obj)
+	public int CompareTo(object? obj)
 	{
 		if (obj == null)
 		{

@@ -114,7 +114,8 @@ public class Decoder : ICoder, ISetDecoderProperties
 			}
 		}
 
-		private Decoder2[] m_Coders;
+		// Set by Create.
+		private Decoder2[] m_Coders = null!;
 
 		private int m_NumPrevBits;
 
@@ -273,7 +274,7 @@ public class Decoder : ICoder, ISetDecoderProperties
 		m_PosAlignDecoder.Init();
 	}
 
-	public void Code(Stream inStream, Stream outStream, long inSize, long outSize, ICodeProgress progress)
+	public void Code(Stream inStream, Stream outStream, long inSize, long outSize, ICodeProgress? progress)
 	{
 		Init(inStream, outStream);
 		Base.State state = default(Base.State);

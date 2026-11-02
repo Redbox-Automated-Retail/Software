@@ -10,21 +10,21 @@ public interface IKernelService : IDisposable
 
 	bool IsTestPlanExecuting { get; }
 
-	event WaitingForDebuggerAction WaitingForDebuggerAction;
+	event WaitingForDebuggerAction? WaitingForDebuggerAction;
 
-	event DebuggerStopping DebuggerStopping;
+	event DebuggerStopping? DebuggerStopping;
 
 	void Reset();
 
 	string FormatLuaValue(object value);
 
-	ReadOnlyCollection<object> ExecuteFunction(string functionName, params object[] parms);
+	ReadOnlyCollection<object?>? ExecuteFunction(string functionName, params object[] parms);
 
-	ReadOnlyCollection<object> ExecuteChunk(string chunk);
+	ReadOnlyCollection<object?> ExecuteChunk(string chunk);
 
-	ReadOnlyCollection<object> ExecuteScript(string resourceName);
+	ReadOnlyCollection<object?>? ExecuteScript(string resourceName);
 
-	object ToLuaTable<T>(IEnumerable<T> enumerator);
+	object? ToLuaTable<T>(IEnumerable<T> enumerator);
 
 	bool RaiseDebuggerOrError(Exception e, string resourceName);
 

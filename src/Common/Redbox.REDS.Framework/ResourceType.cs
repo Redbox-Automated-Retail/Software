@@ -6,15 +6,15 @@ namespace Redbox.REDS.Framework;
 
 public class ResourceType : IResourceType
 {
-	private List<IAspectType> m_aspects;
+	private List<IAspectType>? m_aspects;
 
-	private List<IResourceType> m_subTypes;
+	private List<IResourceType>? m_subTypes;
 
-	private List<IPropertyType> m_properties;
+	private List<IPropertyType>? m_properties;
 
-	public string Name { get; internal set; }
+	public string Name { get; internal set; } = null!; // set by NewType or the object initializer that creates the type
 
-	public IResourceType SuperType { get; internal set; }
+	public IResourceType? SuperType { get; internal set; }
 
 	public ReadOnlyCollection<IResourceType> SubTypes => InnerSubTypes.AsReadOnly();
 
@@ -58,24 +58,24 @@ public class ResourceType : IResourceType
 		}
 	}
 
-	public IResourceType NewType(string name, Type runtimeType)
+	public IResourceType NewType(string name, Type? runtimeType)
 	{
-		ResourceType resourceType = (ResourceType)Activator.CreateInstance(runtimeType ?? typeof(ResourceType));
+		ResourceType resourceType = (ResourceType)Activator.CreateInstance(runtimeType ?? typeof(ResourceType))!;
 		resourceType.SuperType = this;
 		resourceType.Name = name;
 		InnerSubTypes.Add(resourceType);
 		return resourceType;
 	}
 
-	public IAspectType AddAspectType(string name, Type aspectType)
+	public IAspectType AddAspectType(string name, Type? aspectType)
 	{
-		AspectType aspectType2 = (AspectType)Activator.CreateInstance(aspectType ?? typeof(AspectType));
+		AspectType aspectType2 = (AspectType)Activator.CreateInstance(aspectType ?? typeof(AspectType))!;
 		aspectType2.Name = name;
 		InnerAspects.Add(aspectType2);
 		return aspectType2;
 	}
 
-	public IPropertyType AddPropertyType(string name, Type type, string description, bool isRequired, bool isFilter, int? filterScore, string label, string category)
+	public IPropertyType AddPropertyType(string name, Type type, string? description, bool isRequired, bool isFilter, int? filterScore, string? label, string? category)
 	{
 		PropertyType propertyType = new PropertyType
 		{
@@ -94,7 +94,7 @@ public class ResourceType : IResourceType
 
 	public void RemoveAspectType(string name)
 	{
-		IAspectType aspectType = GetAspectType(name);
+		IAspectType? aspectType = GetAspectType(name);
 		if (aspectType != null)
 		{
 			InnerAspects.Remove(aspectType);
@@ -103,7 +103,7 @@ public class ResourceType : IResourceType
 
 	public void RemovePropertyType(string name)
 	{
-		IPropertyType propertyType = GetPropertyType(name);
+		IPropertyType? propertyType = GetPropertyType(name);
 		if (propertyType != null)
 		{
 			InnerProperties.Remove(propertyType);
@@ -120,11 +120,11 @@ public class ResourceType : IResourceType
 		return resource;
 	}
 
-	public IAspectType GetAspectType(string name)
+	public IAspectType? GetAspectType(string name)
 	{
-		for (ResourceType resourceType = this; resourceType != null; resourceType = (ResourceType)resourceType.SuperType)
+		for (ResourceType? resourceType = this; resourceType != null; resourceType = (ResourceType?)resourceType.SuperType)
 		{
-			IAspectType aspectType = resourceType.InnerAspects.Find((IAspectType each) => each.Name == name);
+			IAspectType? aspectType = resourceType.InnerAspects.Find((IAspectType each) => each.Name == name);
 			if (aspectType != null)
 			{
 				return aspectType;
@@ -133,11 +133,11 @@ public class ResourceType : IResourceType
 		return null;
 	}
 
-	public IPropertyType GetPropertyType(string name)
+	public IPropertyType? GetPropertyType(string name)
 	{
-		for (ResourceType resourceType = this; resourceType != null; resourceType = (ResourceType)resourceType.SuperType)
+		for (ResourceType? resourceType = this; resourceType != null; resourceType = (ResourceType?)resourceType.SuperType)
 		{
-			IPropertyType propertyType = resourceType.InnerProperties.Find((IPropertyType each) => each.Name == name);
+			IPropertyType? propertyType = resourceType.InnerProperties.Find((IPropertyType each) => each.Name == name);
 			if (propertyType != null)
 			{
 				return propertyType;
@@ -149,7 +149,7 @@ public class ResourceType : IResourceType
 	public ReadOnlyCollection<IPropertyType> GetFilterProperties()
 	{
 		List<IPropertyType> propertyTypes = new List<IPropertyType>();
-		for (ResourceType resourceType = this; resourceType != null; resourceType = (ResourceType)resourceType.SuperType)
+		for (ResourceType? resourceType = this; resourceType != null; resourceType = (ResourceType?)resourceType.SuperType)
 		{
 			propertyTypes.AddRange(resourceType.InnerProperties.FindAll((IPropertyType each) => each.IsFilter));
 		}

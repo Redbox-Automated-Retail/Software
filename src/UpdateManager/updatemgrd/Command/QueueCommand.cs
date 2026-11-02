@@ -27,7 +27,7 @@ internal class QueueCommand
 	[Usage("queue peek label:")]
 	public void Peek(CommandContext context, [CommandKeyValue(IsRequired = true)] string label)
 	{
-		string text = ServiceLocator.Instance.GetService<IQueueService>().PeekRaw(label);
+		string? text = ServiceLocator.Instance.GetService<IQueueService>().PeekRaw(label);
 		if (text != null)
 		{
 			context.Messages.Add(text.Replace(System.Environment.NewLine, ""));

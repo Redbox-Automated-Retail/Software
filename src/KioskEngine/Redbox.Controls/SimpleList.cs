@@ -36,7 +36,7 @@ public class SimpleList : ItemsControl
 
 	protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
 	{
-		ContentPresenter contentPresenter = element as ContentPresenter;
+		ContentPresenter contentPresenter = (element as ContentPresenter)!;
 		Thickness margin = contentPresenter.Margin;
 		_ = margin.GetType().Name;
 		if (ItemsHeight > 0)

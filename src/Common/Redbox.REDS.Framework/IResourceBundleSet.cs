@@ -5,11 +5,11 @@ namespace Redbox.REDS.Framework;
 
 public interface IResourceBundleSet
 {
-	IResource GetResource(string name, IResourceBundleFilter filter);
+	IResource? GetResource(string name, IResourceBundleFilter? filter);
 
-	IResourceBundleFilter CreateFilter();
+	IResourceBundleFilter? CreateFilter();
 
-	ReadOnlyCollection<IResource> GetResources(string typeName, IResourceBundleFilter filter);
+	ReadOnlyCollection<IResource> GetResources(string typeName, IResourceBundleFilter? filter);
 
 	ReadOnlyCollection<IBundleSpecifier> GetBundles();
 

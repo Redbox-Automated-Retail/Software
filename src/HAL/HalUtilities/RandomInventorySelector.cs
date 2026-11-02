@@ -13,7 +13,7 @@ internal sealed class RandomInventorySelector : IDisposable
 		m_locs.Clear();
 	}
 
-	internal IInventoryLocation Select()
+	internal IInventoryLocation? Select()
 	{
 		if (0 >= m_locs.Count)
 		{

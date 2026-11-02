@@ -121,7 +121,7 @@ internal sealed class ServiceConfigurationHelper : IDisposable
 				});
 				return false;
 			}
-			if (!job.GetStack(out var stack).Success)
+			if (!job!.GetStack(out var stack).Success)
 			{
 				validateFile.WriteLine("Couldn't validate: unable to get stack.");
 			}

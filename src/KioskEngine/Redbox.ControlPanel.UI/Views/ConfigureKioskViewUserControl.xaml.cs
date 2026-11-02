@@ -16,9 +16,9 @@ public partial class ConfigureKioskViewUserControl : UserControl, IComponentConn
 {
 	private List<IState> _stateSource;
 
-	private List<IBanner> _bannerSource;
+	private List<IBanner>? _bannerSource;
 
-	private List<IStore> _storeSource;
+	private List<IStore>? _storeSource;
 
 	private int _selectedStateInd;
 
@@ -28,13 +28,13 @@ public partial class ConfigureKioskViewUserControl : UserControl, IComponentConn
 
 	private int _selectedStoreId;
 
-	private string _selectedBannerName;
+	private string? _selectedBannerName;
 
-	private string _marketName;
+	private string? _marketName;
 
-	private string _kaseyaMarketName;
+	private string? _kaseyaMarketName;
 
-	private string _dueTime;
+	private string? _dueTime;
 
 	public ConfigureKioskViewUserControl()
 	{
@@ -199,7 +199,7 @@ public partial class ConfigureKioskViewUserControl : UserControl, IComponentConn
 		{
 			next_button.IsEnabled = true;
 			next_button.Foreground = Brushes.White;
-			lblConfirmState.Content = "State: " + _storeSource[selectedIndex].State;
+			lblConfirmState.Content = "State: " + _storeSource![selectedIndex].State;
 			lblConfirmBanner.Content = "Banner: " + _selectedBannerName;
 			lblConfirmStore.Content = "Store: " + _storeSource[selectedIndex].Id;
 			_selectedStoreId = _storeSource[selectedIndex].Id;
@@ -344,7 +344,7 @@ public partial class ConfigureKioskViewUserControl : UserControl, IComponentConn
 		Spinner.IsAnimated = true;
 		try
 		{
-			string kaseyaIniDPath = KaseyaMethods.GetKaseyaIniDPath();
+			string? kaseyaIniDPath = KaseyaMethods.GetKaseyaIniDPath();
 			string newvalue = "Redbox-" + _selectedStoreId + _kaseyaMarketName;
 			ProcessFunctions.ReplaceInFile(kaseyaIniDPath, "User_Name\\s+(?<KaseyaId>[\\w|\\-|\\.]+)", "KaseyaId", newvalue);
 			ProcessFunctions.SetMachineSettingValue("Store", "ID", _selectedStoreId.ToString());
@@ -358,7 +358,7 @@ public partial class ConfigureKioskViewUserControl : UserControl, IComponentConn
 			{
 				eventType = "configure_kiosk";
 			}
-			string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+			string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
 			ProcessFunctions.SendAuditEvent(_selectedStoreId.ToString(), eventType, userName, "CP Bundle", "Activate Control Panel function.");
 			ProcessFunctions.RenameComputer("redbox-" + _selectedStoreId);
 			ProcessFunctions.SetMachineSettingValue("Store", "Banner", _selectedBannerName);

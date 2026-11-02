@@ -20,9 +20,9 @@ internal sealed class TransferResult : ITransferResult
 
 	public ErrorCodes TransferError { get; internal set; }
 
-	public ILocation Source { get; internal set; }
+	public ILocation? Source { get; internal set; }
 
-	public ILocation Destination { get; internal set; }
+	public ILocation? Destination { get; internal set; }
 
 	internal TransferResult()
 	{

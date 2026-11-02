@@ -8,11 +8,11 @@ public class ResourceBundleSet : IResourceBundleSet
 {
 	private readonly string m_name;
 
-	private BundleCollection m_bundles;
+	private BundleCollection? m_bundles;
 
 	private readonly IResourceBundle m_applicationBundle;
 
-	private MultiDictionary<string, IResource> m_resources;
+	private MultiDictionary<string, IResource>? m_resources;
 
 	internal BundleCollection Bundles
 	{
@@ -55,14 +55,14 @@ public class ResourceBundleSet : IResourceBundleSet
 		}
 	}
 
-	public ReadOnlyCollection<IResource> GetResources(string typeName, IResourceBundleFilter filter)
+	public ReadOnlyCollection<IResource> GetResources(string typeName, IResourceBundleFilter? filter)
 	{
 		List<IResource> resources = new List<IResource>();
 		foreach (string bundle in Bundles.GetBundles())
 		{
 			foreach (IBundleSpecifier bundleVersion in Bundles.GetBundleVersions(bundle))
 			{
-				resources.AddRange(bundleVersion.Instance.GetResources(typeName, filter));
+				resources.AddRange(bundleVersion.Instance!.GetResources(typeName, filter)); // added with their bundle by AddBundleVersion
 			}
 		}
 		return resources.AsReadOnly();
@@ -85,13 +85,13 @@ public class ResourceBundleSet : IResourceBundleSet
 		{
 			foreach (IBundleSpecifier bundleVersion in Bundles.GetBundleVersions(bundle))
 			{
-				resources.AddRange(bundleVersion.Instance.GetAllResources(typeName));
+				resources.AddRange(bundleVersion.Instance!.GetAllResources(typeName));
 			}
 		}
 		return resources.AsReadOnly();
 	}
 
-	public IResource GetResource(string name, IResourceBundleFilter filter)
+	public IResource? GetResource(string name, IResourceBundleFilter? filter)
 	{
 		return ResourceLookup.GetResource2(Resources, name, filter);
 	}
@@ -103,7 +103,7 @@ public class ResourceBundleSet : IResourceBundleSet
 		{
 			foreach (IBundleSpecifier bundleVersion in Bundles.GetBundleVersions(bundle))
 			{
-				foreach (KeyValuePair<string, IResourceType> resourceType in bundleVersion.Instance.ResourceTypes)
+				foreach (KeyValuePair<string, IResourceType> resourceType in bundleVersion.Instance!.ResourceTypes)
 				{
 					dictionary[resourceType.Key] = resourceType.Value;
 				}
@@ -112,7 +112,7 @@ public class ResourceBundleSet : IResourceBundleSet
 		return dictionary;
 	}
 
-	public IResourceBundleFilter CreateFilter()
+	public IResourceBundleFilter? CreateFilter()
 	{
 		if (m_applicationBundle != null)
 		{

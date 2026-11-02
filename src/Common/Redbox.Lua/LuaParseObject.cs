@@ -7,7 +7,7 @@ public class LuaParseObject : IEnumerable
 {
 	private readonly object m_instance;
 
-	public LuaParseObject this[int index]
+	public LuaParseObject? this[int index]
 	{
 		get
 		{
@@ -20,7 +20,7 @@ public class LuaParseObject : IEnumerable
 		}
 	}
 
-	public LuaParseObject this[string index]
+	public LuaParseObject? this[string index]
 	{
 		get
 		{
@@ -43,12 +43,12 @@ public class LuaParseObject : IEnumerable
 	{
 		if (!(m_instance is Dictionary<string, LuaParseObject> dictionary))
 		{
-			return null;
+			return null!; // as before: a non-table object has no enumerator
 		}
 		return dictionary.GetEnumerator();
 	}
 
-	public static implicit operator string(LuaParseObject m)
+	public static implicit operator string?(LuaParseObject m)
 	{
 		return m.m_instance as string;
 	}

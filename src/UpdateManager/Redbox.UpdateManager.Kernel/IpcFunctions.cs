@@ -13,7 +13,7 @@ public static class IpcFunctions
 		try
 		{
 			LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-			using (ClientSession clientSession = ClientSession.GetClientSession(IPCProtocol.Parse(url), timeout))
+			using (ClientSession clientSession = ClientSession.GetClientSession(IPCProtocol.Parse(url), timeout)!) // null for an unsupported protocol: throws below, as before
 			{
 				clientSession.Connect();
 				SystemFunctions.Wait(5000);

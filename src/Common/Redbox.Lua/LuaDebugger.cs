@@ -102,11 +102,11 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		}
 	}
 
-	public event EventHandler<StoppingEventArgs> Stopping;
+	public event EventHandler<StoppingEventArgs>? Stopping;
 
-	public event EventHandler<EventArgs> WaitingForAction;
+	public event EventHandler<EventArgs>? WaitingForAction;
 
-	public event EventHandler<DebugHookEventArgs> FullTraceData;
+	public event EventHandler<DebugHookEventArgs>? FullTraceData;
 
 	public LuaDebugger(LuaVirtualMachine lua)
 	{
@@ -162,13 +162,13 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 	public LuaVar[] GetGlobalVars()
 	{
 		List<LuaVar> luaVars = new List<LuaVar>();
-		LuaTable globals = (LuaTable)Lua["_G"];
+		LuaTable globals = (LuaTable)Lua["_G"]!;
 		int index = 1;
 		foreach (object key in globals.Keys)
 		{
 			if (!(key.ToString() == "_G"))
 			{
-				luaVars.Add(new LuaVar(index++, key.ToString(), globals[key]));
+				luaVars.Add(new LuaVar(index++, key.ToString()!, globals[key]));
 			}
 		}
 		return luaVars.ToArray();
@@ -200,15 +200,15 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 	{
 		List<LuaVar> luaVars = new List<LuaVar>();
 		int n = 1;
-		for (string local = Lua.GetLocal(luaDebugInfo, n); local != null; local = Lua.GetLocal(luaDebugInfo, n))
+		for (string? local = Lua.GetLocal(luaDebugInfo, n); local != null; local = Lua.GetLocal(luaDebugInfo, n))
 		{
-			object value = Lua.Stack.Pop();
+			object? value = Lua.Stack.Pop();
 			luaVars.Add(new LuaVar(n++, local, value));
 		}
 		return luaVars.ToArray();
 	}
 
-	public void SetLocalVar(LuaDebug luaDebugInfo, ref LuaVar var, object newValue)
+	public void SetLocalVar(LuaDebug luaDebugInfo, ref LuaVar var, object? newValue)
 	{
 		if (m_state == LuaDebuggerState.Stopped)
 		{
@@ -218,7 +218,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		}
 	}
 
-	public bool SetLocalVar(LuaDebug luaDebugInfo, string varName, object newValue)
+	public bool SetLocalVar(LuaDebug luaDebugInfo, string varName, object? newValue)
 	{
 		if (m_state != LuaDebuggerState.Stopped)
 		{
@@ -245,16 +245,16 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 			return luaVars.ToArray();
 		}
 		int index = 1;
-		for (string upValue = Lua.GetUpValue(functionIndex, index); upValue != null; upValue = Lua.GetUpValue(functionIndex, index))
+		for (string? upValue = Lua.GetUpValue(functionIndex, index); upValue != null; upValue = Lua.GetUpValue(functionIndex, index))
 		{
-			object value = Lua.Stack.Pop();
+			object? value = Lua.Stack.Pop();
 			luaVars.Add(new LuaVar(index, upValue, value));
 			index++;
 		}
 		return luaVars.ToArray();
 	}
 
-	public void SetUpValue(int functionIndex, ref LuaVar var, object newValue)
+	public void SetUpValue(int functionIndex, ref LuaVar var, object? newValue)
 	{
 		if (m_state == LuaDebuggerState.Stopped)
 		{
@@ -264,7 +264,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		}
 	}
 
-	public bool SetUpValue(int functionIndex, string varName, object newValue)
+	public bool SetUpValue(int functionIndex, string varName, object? newValue)
 	{
 		if (m_state != LuaDebuggerState.Stopped)
 		{
@@ -285,7 +285,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 
 	public LuaDebugFile AddFile(string fileName)
 	{
-		LuaDebugFile luaDebugFile = GetFile(fileName);
+		LuaDebugFile? luaDebugFile = GetFile(fileName);
 		if (luaDebugFile == null)
 		{
 			luaDebugFile = FileFactory.CreateFile(this, fileName);
@@ -294,7 +294,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		return luaDebugFile;
 	}
 
-	public LuaDebugFile GetFile(string fileName)
+	public LuaDebugFile? GetFile(string fileName)
 	{
 		foreach (LuaDebugFile file in m_files)
 		{
@@ -321,7 +321,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		return m_files;
 	}
 
-	public LuaDebugBreakpoint GetBreakpoint(string fileName, int line)
+	public LuaDebugBreakpoint? GetBreakpoint(string fileName, int line)
 	{
 		return GetFile(fileName)?.GetBreakpoint(line);
 	}
@@ -334,7 +334,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 
 	public LuaDebugBreakpointContainer GetBreakpoints(string fileName)
 	{
-		LuaDebugFile file = GetFile(fileName);
+		LuaDebugFile? file = GetFile(fileName);
 		if (file == null)
 		{
 			return new LuaDebugBreakpointContainer();
@@ -355,7 +355,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 	[DllImport("User32.dll")]
 	private static extern bool PeekMessage(out NativeMessage msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
 
-	private void OnDebugHook(object sender, DebugHookEventArgs e)
+	private void OnDebugHook(object? sender, DebugHookEventArgs e)
 	{
 		if (m_inDebugHook)
 		{
@@ -388,7 +388,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 			Lua.GetInfo("nS", ref luaDebug);
 			LuaDebugInfo luaDebugInfo = new LuaDebugInfo(luaDebug);
 			int line = ((luaDebugInfo.EventCode == LuaHookEventCodes.LuaHookCall) ? luaDebugInfo.LineDefined : luaDebugInfo.CurrentLine);
-			if (luaDebugInfo.Source.Length <= 0)
+			if (luaDebugInfo.Source!.Length <= 0)
 			{
 				return;
 			}
@@ -396,7 +396,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 			{
 			case DebuggerActions.Run:
 			{
-				LuaDebugBreakpoint breakpoint = GetBreakpoint(luaDebugInfo.Source, line);
+				LuaDebugBreakpoint? breakpoint = GetBreakpoint(luaDebugInfo.Source, line);
 				if (breakpoint != null && breakpoint.Enabled)
 				{
 					StopExecution(luaDebugInfo, m_action, breakpoint);
@@ -415,7 +415,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 					StopExecution(luaDebugInfo, m_action, null);
 					break;
 				}
-				LuaDebugBreakpoint breakpoint = GetBreakpoint(luaDebugInfo.Source, line);
+				LuaDebugBreakpoint? breakpoint = GetBreakpoint(luaDebugInfo.Source, line);
 				if (breakpoint != null && breakpoint.Enabled)
 				{
 					StopExecution(luaDebugInfo, m_action, breakpoint);
@@ -430,7 +430,7 @@ public class LuaDebugger : ILuaDebugFileFactory, ILuaDebugBreakpointFactory
 		}
 	}
 
-	private void StopExecution(LuaDebugInfo luaDebugInfo, DebuggerActions action, LuaDebugBreakpoint breakpoint)
+	private void StopExecution(LuaDebugInfo luaDebugInfo, DebuggerActions action, LuaDebugBreakpoint? breakpoint)
 	{
 		m_state = LuaDebuggerState.Stopped;
 		try

@@ -18,7 +18,7 @@ public static class ConfigurationServiceFunctions
 		LuaTable luaTable = CreateResultTable(new ErrorList());
 		if (configurationService.TryGetConfigurationData(configFile, categoryName, settingName, out var value))
 		{
-			luaTable["value"] = value.Value;
+			luaTable["value"] = value!.Value; // set when TryGetConfigurationData returns true
 			luaTable["success"] = true;
 			luaTable["datatype"] = value.SettingDataType;
 		}
@@ -64,7 +64,7 @@ public static class ConfigurationServiceFunctions
 		{
 			if (configurationService.TryGetConfigurationData(configFile, categoryName, settingNames[i], out var configurationData))
 			{
-				_ = configurationData.EffectiveTime;
+				_ = configurationData!.EffectiveTime; // set when TryGetConfigurationData returns true
 				if (!(configurationData.EffectiveTime > DateTime.Now) && (configurationData == null || !(configurationData.ExpireTime < DateTime.Now)))
 				{
 					LuaTable settingTable = (LuaTable)kernelService.NewTable();

@@ -61,12 +61,12 @@ public class RemotingClientSession : ClientSession
 		{
 			RegisterChannel();
 		}
-		string text = ((IRemotingHost)new RemotingClientProxy(typeof(IRemotingHost), Url, base.Timeout).GetTransparentProxy()).ExecuteCommand(command);
+		string? text = ((IRemotingHost)new RemotingClientProxy(typeof(IRemotingHost), Url, base.Timeout).GetTransparentProxy()).ExecuteCommand(command);
 		if (string.IsNullOrEmpty(text))
 		{
 			return new List<string>();
 		}
-		return new List<string>(text.Split(new string[1] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+		return new List<string>(text!.Split(new string[1] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
 	}
 
 	protected internal override bool IsConnectionAvailable()

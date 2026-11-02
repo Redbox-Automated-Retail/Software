@@ -29,13 +29,13 @@ public class Program
 		try
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "updatemgrd-log4net.config"));
+			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "updatemgrd-log4net.config"));
 			LogHelper.Instance.Logger = m_logger;
 			LogHelper.Instance.Log("Configured log4net");
 		}
 		catch (Exception ex)
 		{
-			string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\logs");
+			string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "..\\logs");
 			Directory.CreateDirectory(path);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine(DateTime.Now.ToString());

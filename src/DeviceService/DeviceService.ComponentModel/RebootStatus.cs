@@ -4,7 +4,7 @@ namespace DeviceService.ComponentModel;
 
 public class RebootStatus
 {
-	public string Id { get; set; }
+	public string? Id { get; set; }
 
 	public RebootType Type { get; set; }
 

@@ -8,8 +8,8 @@ public static class StringExtensions
 	{
 		if (!callerLocation.Contains("\\"))
 		{
-			return callerLocation.Split('/').LastOrDefault()?.TrimEnd('.', 'c', 's');
+			return callerLocation.Split('/').LastOrDefault()?.TrimEnd('.', 'c', 's')!; // Split returns at least one element
 		}
-		return callerLocation.Split("\\").LastOrDefault()?.TrimEnd('.', 'c', 's');
+		return callerLocation.Split("\\").LastOrDefault()?.TrimEnd('.', 'c', 's')!;
 	}
 }

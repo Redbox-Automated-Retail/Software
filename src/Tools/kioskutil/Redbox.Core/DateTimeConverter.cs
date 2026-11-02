@@ -41,20 +41,20 @@ internal class DateTimeConverter : JavaScriptConverter
 		return dictionary;
 	}
 
-	public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+	public override object? Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
 	{
 		if (dictionary.ContainsKey("dateString"))
 		{
-			return DateTime.Parse(dictionary["dateString"].ToString(), null, DateTimeStyles.RoundtripKind);
+			return DateTime.Parse(dictionary["dateString"].ToString()!, null, DateTimeStyles.RoundtripKind);
 		}
 		DateTimeKind kind = DateTimeKind.Unspecified;
 		if (dictionary.ContainsKey("dateTimeKind"))
 		{
-			kind = (DateTimeKind)Enum.Parse(typeof(DateTimeKind), dictionary["dateTimeKind"].ToString());
+			kind = (DateTimeKind)Enum.Parse(typeof(DateTimeKind), dictionary["dateTimeKind"].ToString()!);
 		}
 		if (dictionary.ContainsKey("theDate"))
 		{
-			return new DateTime(long.Parse(dictionary["theDate"].ToString()), kind);
+			return new DateTime(long.Parse(dictionary["theDate"].ToString()!), kind);
 		}
 		return null;
 	}

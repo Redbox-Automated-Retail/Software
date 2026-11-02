@@ -10,7 +10,7 @@ internal sealed class RegistryStore
 
 	internal T GetSecretValue<T>(string option, T def)
 	{
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.CreateSubKey(Key);
@@ -18,12 +18,12 @@ internal sealed class RegistryStore
 			{
 				return def;
 			}
-			object registryValue = registryKey.GetValue(option);
+			object? registryValue = registryKey.GetValue(option);
 			if (registryValue == null)
 			{
 				return def;
 			}
-			return (T)ChangeType(registryValue, typeof(T));
+			return (T)ChangeType(registryValue, typeof(T))!;
 		}
 		catch (Exception)
 		{
@@ -38,11 +38,11 @@ internal sealed class RegistryStore
 
 	internal void SetSecretValue<T>(string option, T value)
 	{
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.CreateSubKey(Key);
-			registryKey?.SetValue(option, value);
+			registryKey?.SetValue(option, value!);
 		}
 		catch (Exception)
 		{
@@ -56,7 +56,7 @@ internal sealed class RegistryStore
 
 	internal void RemoveValue(string option)
 	{
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.OpenSubKey(Key, writable: true);
@@ -77,7 +77,7 @@ internal sealed class RegistryStore
 		Key = key;
 	}
 
-	private object ChangeType(object value, Type convertToType)
+	private object? ChangeType(object value, Type convertToType)
 	{
 		if (value == null)
 		{

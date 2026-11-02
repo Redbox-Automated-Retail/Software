@@ -5,15 +5,15 @@ namespace Redbox.IPC.Framework;
 
 public class CommandResult
 {
-	private ErrorList m_errors;
+	private ErrorList? m_errors;
 
-	private MessageList m_messages;
+	private MessageList? m_messages;
 
 	public bool Success { get; internal set; }
 
 	public TimeSpan ExecutionTime { get; internal set; }
 
-	public string ExtendedErrorMessage { get; internal set; }
+	public string? ExtendedErrorMessage { get; internal set; }
 
 	public MessageList Messages
 	{

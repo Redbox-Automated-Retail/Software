@@ -146,8 +146,8 @@ public sealed class ZipFileService : IZipFileService
 			byte[] buffer = new byte[4096];
 			Stream inputStream = archive.GetInputStream(item);
 			string path = Path.Combine(outputPath, item.Name);
-			string directoryName = Path.GetDirectoryName(path);
-			if (directoryName.Length > 0 && !SafeCreateDirectory(directoryName))
+			string? directoryName = Path.GetDirectoryName(path);
+			if (directoryName!.Length > 0 && !SafeCreateDirectory(directoryName))
 			{
 				return unzipResult;
 			}

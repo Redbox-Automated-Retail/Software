@@ -95,7 +95,7 @@ public sealed class ServiceCommand
 		IDeck deck = service.Last;
 		if (deck.IsQlm)
 		{
-			deck = service.GetByNumber(deck.Number - 1);
+			deck = service.GetByNumber(deck.Number - 1)!;
 		}
 		executionContext.Push(deck.NumberOfSlots, StackEnd.Top);
 		executionContext.Push(deck.Number, StackEnd.Top);

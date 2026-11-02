@@ -44,7 +44,7 @@ internal static class LogFunctions
 			{
 				ExpandTableList((LuaTable)value, list);
 			}
-			list.Add(value.ToString());
+			list.Add(value.ToString()!);
 		}
 	}
 

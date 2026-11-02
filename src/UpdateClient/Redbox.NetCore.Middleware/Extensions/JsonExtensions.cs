@@ -4,7 +4,7 @@ namespace Redbox.NetCore.Middleware.Extensions;
 
 public static class JsonExtensions
 {
-	public static string ToJsonIndented(this object obj)
+	public static string ToJsonIndented(this object? obj)
 	{
 		return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
 		{
@@ -12,7 +12,7 @@ public static class JsonExtensions
 		});
 	}
 
-	public static string ToJson(this object obj)
+	public static string ToJson(this object? obj)
 	{
 		return JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings
 		{

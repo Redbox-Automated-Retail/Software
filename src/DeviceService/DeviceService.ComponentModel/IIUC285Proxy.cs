@@ -10,7 +10,7 @@ public interface IIUC285Proxy
 {
 	bool IsConnected { get; }
 
-	UnitDataModel UnitData { get; }
+	UnitDataModel? UnitData { get; }
 
 	bool SupportsEMV { get; }
 
@@ -22,19 +22,19 @@ public interface IIUC285Proxy
 
 	bool HasIntermediateVasRepairKey { get; }
 
-	event OnConnected OnConnectedHandler;
+	event OnConnected? OnConnectedHandler;
 
-	event OnDisconnected OnDisconnectedHandler;
+	event OnDisconnected? OnDisconnectedHandler;
 
 	bool UpdateDeviceConfiguration();
 
-	UnitHealthModel GetUnitHealth();
+	UnitHealthModel? GetUnitHealth();
 
-	Task<bool> ReadCard(ICardReadRequest request, CancellationToken token, Action<Base87CardReadModel> jobCompleted, Action<string, string> eventsCallback);
+	Task<bool> ReadCard(ICardReadRequest request, CancellationToken token, Action<Base87CardReadModel> jobCompleted, Action<string, string?>? eventsCallback);
 
-	bool ReadConfig(string group, string index, out string Data, bool sendOffline = true);
+	bool ReadConfig(string? group, string? index, out string Data, bool sendOffline = true);
 
-	bool WriteConfig(string group, string index, string Data, bool sendOffline = true);
+	bool WriteConfig(string group, string index, string? Data, bool sendOffline = true);
 
 	Task<bool> WriteFile(string filePath, bool rebootAfterWrite = false);
 

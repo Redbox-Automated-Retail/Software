@@ -5,7 +5,7 @@ namespace Redbox.Lua;
 
 public class LuaUserData : LuaObject
 {
-	private readonly byte[] m_buffer;
+	private readonly byte[]? m_buffer; // only for userdata not created by Lua (no Reference)
 
 	public byte this[int offset]
 	{
@@ -20,7 +20,7 @@ public class LuaUserData : LuaObject
 				}
 				return Marshal.ReadByte(userDataPointer, offset);
 			}
-			return m_buffer[offset];
+			return m_buffer![offset];
 		}
 		set
 		{
@@ -34,7 +34,7 @@ public class LuaUserData : LuaObject
 			}
 			else
 			{
-				m_buffer[offset] = value;
+				m_buffer![offset] = value;
 			}
 		}
 	}
@@ -62,8 +62,8 @@ public class LuaUserData : LuaObject
 			base.Push();
 			return;
 		}
-		IntPtr destination = base.VirtualMachineInstance.Stack.NewUserData(m_buffer.Length);
-		Marshal.Copy(m_buffer, 0, destination, m_buffer.Length);
+		IntPtr destination = base.VirtualMachineInstance.Stack.NewUserData(m_buffer!.Length);
+		Marshal.Copy(m_buffer!, 0, destination, m_buffer!.Length);
 	}
 
 	public byte[] Read(int offset, int count)
@@ -79,7 +79,7 @@ public class LuaUserData : LuaObject
 		}
 		else
 		{
-			Array.Copy(m_buffer, offset, data, 0, count);
+			Array.Copy(m_buffer!, offset, data, 0, count);
 		}
 		return data;
 	}
@@ -95,7 +95,7 @@ public class LuaUserData : LuaObject
 			}
 			return 0;
 		}
-		return BitConverter.ToInt16(m_buffer, offset);
+		return BitConverter.ToInt16(m_buffer!, offset);
 	}
 
 	public int ReadInt32(int offset)
@@ -109,7 +109,7 @@ public class LuaUserData : LuaObject
 			}
 			return 0;
 		}
-		return BitConverter.ToInt32(m_buffer, offset);
+		return BitConverter.ToInt32(m_buffer!, offset);
 	}
 
 	public void Write(byte[] bytes, int offset, int count)
@@ -124,7 +124,7 @@ public class LuaUserData : LuaObject
 		}
 		else
 		{
-			Array.Copy(bytes, 0, m_buffer, offset, count);
+			Array.Copy(bytes, 0, m_buffer!, offset, count);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class LuaUserData : LuaObject
 		}
 		else
 		{
-			Array.Copy(BitConverter.GetBytes(value), 0, m_buffer, offset, 2);
+			Array.Copy(BitConverter.GetBytes(value), 0, m_buffer!, offset, 2);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class LuaUserData : LuaObject
 		}
 		else
 		{
-			Array.Copy(BitConverter.GetBytes(value), 0, m_buffer, offset, 4);
+			Array.Copy(BitConverter.GetBytes(value), 0, m_buffer!, offset, 4);
 		}
 	}
 

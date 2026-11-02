@@ -8,7 +8,7 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public static class KaseyaMethods
 {
-	public static string GetKaseyaIniDPath()
+	public static string? GetKaseyaIniDPath()
 	{
 		List<string> iniPaths = new List<string>();
 		string programFilesPath = "C:\\Program Files\\Kaseya";
@@ -29,7 +29,7 @@ public static class KaseyaMethods
 					iniPaths.Add(iniPath);
 				}
 			}
-			string newestIniPath = iniPaths.OrderByDescending((string p) => File.GetLastWriteTimeUtc(p)).FirstOrDefault();
+			string? newestIniPath = iniPaths.OrderByDescending((string p) => File.GetLastWriteTimeUtc(p)).FirstOrDefault();
 			LogHelper.Instance.Log("KaseyaD.ini path: {0}", newestIniPath);
 			return newestIniPath;
 		}

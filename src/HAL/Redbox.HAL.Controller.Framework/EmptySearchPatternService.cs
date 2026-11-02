@@ -207,14 +207,14 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
 		int[] deckOrder = new int[5] { 3, 2, 4, 1, 5 };
 		int idx = 0;
-		IDeck deck = null;
+		IDeck? deck = null;
 		if (!ControllerConfiguration.Instance.IsVMZMachine)
 		{
 			for (int quadrant = 0; quadrant < 6; quadrant++)
 			{
 				foreach (int deckNumber in deckOrder)
 				{
-					deck = decksService.GetByNumber(deckNumber);
+					deck = decksService.GetByNumber(deckNumber)!;
 					int slotsPerQuadrant = (deck.IsSparse ? 12 : 15);
 					int firstSlot = quadrant * slotsPerQuadrant + 1;
 					for (int slot = firstSlot; slot <= firstSlot + slotsPerQuadrant - 1; slot++)
@@ -223,17 +223,17 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 					}
 				}
 			}
-			deck = decksService.GetByNumber(6);
+			deck = decksService.GetByNumber(6)!;
 			for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
 			{
 				AddLocation(deck, slot, ref idx);
 			}
-			deck = decksService.GetByNumber(7);
+			deck = decksService.GetByNumber(7)!;
 			for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
 			{
 				AddLocation(deck, slot, ref idx);
 			}
-			deck = decksService.GetByNumber(8);
+			deck = decksService.GetByNumber(8)!;
 			if (!deck.IsQlm)
 			{
 				for (int slot = 1; slot <= deck.NumberOfSlots; slot++)
@@ -247,7 +247,7 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 		{
 			foreach (int deckNumber in deckOrder)
 			{
-				deck = decksService.GetByNumber(deckNumber);
+				deck = decksService.GetByNumber(deckNumber)!;
 				int firstSlot = quadrant * deck.SlotsPerQuadrant + 1;
 				for (int slot = firstSlot; slot <= firstSlot + deck.SlotsPerQuadrant - 1; slot++)
 				{
@@ -257,7 +257,7 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 		}
 		foreach (int deckNumber in new int[3] { 6, 8, 7 })
 		{
-			deck = decksService.GetByNumber(deckNumber);
+			deck = decksService.GetByNumber(deckNumber)!;
 			for (int slot = 16; slot <= deck.NumberOfSlots; slot++)
 			{
 				AddLocation(deck, slot, ref idx);
@@ -265,7 +265,7 @@ internal sealed class EmptySearchPatternService : IInventoryObserver, IEmptySear
 		}
 		for (int deckNumber = 1; deckNumber <= 8; deckNumber++)
 		{
-			deck = decksService.GetByNumber(deckNumber);
+			deck = decksService.GetByNumber(deckNumber)!;
 			for (int slot = 15; slot >= 1; slot--)
 			{
 				AddLocation(deck, slot, ref idx);

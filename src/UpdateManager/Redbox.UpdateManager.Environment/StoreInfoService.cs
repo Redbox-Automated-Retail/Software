@@ -16,9 +16,9 @@ public class StoreInfoService : IStoreInfoService, IPollRequestReply
 {
 	private int _syncID;
 
-	private StoreInfoChangeSetData _storeInfoChangeSet;
+	private StoreInfoChangeSetData? _storeInfoChangeSet;
 
-	private string _clientStoreInfoHash;
+	private string? _clientStoreInfoHash;
 
 	public static StoreInfoService Instance => Singleton<StoreInfoService>.Instance;
 
@@ -77,7 +77,7 @@ public class StoreInfoService : IStoreInfoService, IPollRequestReply
 				LogHelper.Instance.Log("Store Info server is clearing the sync id as requested by the server.");
 				return new ErrorList();
 			}
-			PollReply pollReply = (from pr in pollReplyList.ToList()
+			PollReply? pollReply = (from pr in pollReplyList.ToList()
 				where pr.PollReplyType == PollReplyType.StoreInfoChangeSet
 				select pr).FirstOrDefault();
 			if (pollReply != null)
@@ -143,12 +143,12 @@ public class StoreInfoService : IStoreInfoService, IPollRequestReply
 			TimeZoneInfo.ClearCachedData();
 			clientStoreInfo.TimeZoneInfoString = TimeZoneInfo.Local.ToSerializedString();
 			clientStoreInfo.UTCDateTime = DateTime.UtcNow;
-			clientStoreInfo.Version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+			clientStoreInfo.Version = Assembly.GetEntryAssembly()!.GetName().Version!.ToString();
 			clientStoreInfo.Info.Add("OS Version", System.Environment.OSVersion.Version.ToString());
 			clientStoreInfo.Info.Add("OS VersionString", System.Environment.OSVersion.VersionString);
 			clientStoreInfo.Info.Add("OS Platform", System.Environment.OSVersion.Platform.ToString());
 			clientStoreInfo.Info.Add("OS ServicePack", System.Environment.OSVersion.ServicePack);
-			string value = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault((IPAddress a) => a.AddressFamily == AddressFamily.InterNetwork).ToString();
+			string value = Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault((IPAddress a) => a.AddressFamily == AddressFamily.InterNetwork)!.ToString(); // throws without an IPv4 address (caught below), as before
 			clientStoreInfo.Info.Add("IP Address", value);
 			NetworkInterface[] allNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 			if (allNetworkInterfaces.Any())

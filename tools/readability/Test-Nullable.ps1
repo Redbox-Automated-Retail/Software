@@ -1,4 +1,4 @@
-# Test-Nullable <project name or .csproj> [...] [-Enable]
+﻿# Test-Nullable <project name or .csproj> [...] [-Enable]
 # Turns nullable reference types on in each project (only there: references that aren't annotated yet stay
 # oblivious, as in the real build), rebuilds it in its own artifacts folder and prints that project's distinct
 # nullable warnings (CS86xx/CS87xx). The project keeps <Nullable>enable</Nullable> only with -Enable and no warnings
@@ -10,9 +10,11 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 foreach ($p in $Project) {
     $proj = if ($p -like "*.csproj") { Get-Item $p } else { Get-ChildItem (Join-Path $root "src"), (Join-Path $root "tests") -Recurse -Filter "$p.csproj" | Select-Object -First 1 }
     if (-not $proj) { "not found: $p"; continue }
+    $bytes = [IO.File]::ReadAllBytes($proj.FullName)
+    $encoding = New-Object Text.UTF8Encoding($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)   # keep a BOM if there is one
     $original = [IO.File]::ReadAllText($proj.FullName)
     if ($original -notmatch "<Nullable>enable</Nullable>") {
-        [IO.File]::WriteAllText($proj.FullName, [regex]::Replace($original, "(<PropertyGroup>(\r?\n)([ \t]*))", '$1<Nullable>enable</Nullable>$2$3', 1))
+        [IO.File]::WriteAllText($proj.FullName, [regex]::Replace($original, "(<PropertyGroup>(\r?\n)([ \t]*))", '$1<Nullable>enable</Nullable>$2$3', 1), $encoding)
     }
     $out = & $msbuild $proj.FullName -restore -t:Rebuild -nologo -v:q -p:Configuration=Release "-p:ArtifactsPath=$Artifacts" @($Property | ForEach-Object { "-p:$_" }) 2>&1 | ForEach-Object { "$_" }
     $errors = @($out | Where-Object { $_ -match ": error " })
@@ -23,6 +25,6 @@ foreach ($p in $Project) {
     if ($Enable -and $warnings.Count -eq 0 -and $errors.Count -eq 0) {
         if ($original -notmatch "<Nullable>enable</Nullable>") { "   enabled in $($proj.Name)" }
     } else {
-        [IO.File]::WriteAllText($proj.FullName, $original)
+        [IO.File]::WriteAllText($proj.FullName, $original, $encoding)
     }
 }

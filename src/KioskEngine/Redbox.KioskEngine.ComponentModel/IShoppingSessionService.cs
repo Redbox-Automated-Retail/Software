@@ -6,7 +6,7 @@ public interface IShoppingSessionService : IDisposable
 {
 	void Reset();
 
-	string StartNewSession(string storeNumber, string sessionId);
+	string StartNewSession(string storeNumber, string? sessionId);
 
 	void AbandonAll(string reason);
 

@@ -103,11 +103,11 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		public System.Drawing.Point p;
 	}
 
-	private ElementHost _elementHost;
+	private ElementHost? _elementHost;
 
-	public string _dataPath;
+	public string? _dataPath;
 
-	internal System.Timers.Timer _waitTimer;
+	internal System.Timers.Timer? _waitTimer;
 
 	internal object _lockObject = new object();
 
@@ -119,11 +119,11 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 
 	private bool checkMainFormStatus;
 
-	private NamedLock m_instanceLockWin7;
+	private NamedLock? m_instanceLockWin7;
 
-	private Mutex m_instanceLockWin10;
+	private Mutex? m_instanceLockWin10;
 
-	private CommandLine m_commandLine;
+	private CommandLine? m_commandLine;
 
 	private readonly AutoResetEvent m_resetEvent = new AutoResetEvent(initialState: false);
 
@@ -161,7 +161,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		{
 			if (!string.IsNullOrWhiteSpace(_dataPath))
 			{
-				return _dataPath;
+				return _dataPath!;
 			}
 			string text = string.Empty;
 			if (Debugger.IsAttached)
@@ -181,7 +181,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		}
 	}
 
-	public string RunningPath => Path.GetDirectoryName(typeof(EngineApplication).Assembly.Location);
+	public string RunningPath => Path.GetDirectoryName(typeof(EngineApplication).Assembly.Location)!;
 
 	internal static bool IsApplicationIdle
 	{
@@ -393,7 +393,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		return text;
 	}
 
-	public byte[] GetFileContent(string fileName)
+	public byte[]? GetFileContent(string fileName)
 	{
 		string path = Path.Combine(GetCachePath(), fileName);
 		if (File.Exists(path))
@@ -403,7 +403,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		return null;
 	}
 
-	public string GetFileContentAsString(string fileName)
+	public string? GetFileContentAsString(string fileName)
 	{
 		string path = Path.Combine(GetCachePath(), fileName);
 		if (File.Exists(path))
@@ -447,7 +447,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 				new System.Windows.Application();
 			}
 			Uri resourceLocator = new Uri("Redbox.Rental.UI;component/Assets/StyleDictionary.xaml", UriKind.Relative);
-			System.Windows.Application.Current.Resources.MergedDictionaries.Add(System.Windows.Application.LoadComponent(resourceLocator) as ResourceDictionary);
+			System.Windows.Application.Current!.Resources.MergedDictionaries.Add(System.Windows.Application.LoadComponent(resourceLocator) as ResourceDictionary);
 			Uri resourceLocator2 = new Uri("Redbox.ControlPanel.UI;component/Assets/StyleDictionary.xaml", UriKind.Relative);
 			System.Windows.Application.Current.Resources.MergedDictionaries.Add(System.Windows.Application.LoadComponent(resourceLocator2) as ResourceDictionary);
 			Uri resourceLocator3 = new Uri("Redbox.FMA.UI;component/Assets/StyleDictionary.xaml", UriKind.Relative);
@@ -514,20 +514,20 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		if (charFromKey.HasValue)
 		{
 			KeyPressEventArgs e2 = new KeyPressEventArgs(charFromKey.Value);
-			((HostForm)base.MainForm).OnKeyPress(sender, e2);
+			((HostForm)base.MainForm!).OnKeyPress(sender, e2);
 		}
 	}
 
 	private void Scene_OnWPFKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
 	{
 		System.Windows.Forms.KeyEventArgs e2 = new System.Windows.Forms.KeyEventArgs((Keys)KeyInterop.VirtualKeyFromKey(e.Key));
-		((HostForm)base.MainForm).OnKeyDown(sender, e2);
+		((HostForm)base.MainForm!).OnKeyDown(sender, e2);
 	}
 
-	private void Scene_OnWPFHit(IActor actor)
+	private void Scene_OnWPFHit(IActor? actor)
 	{
 		ActivateMouseClickHandlers(new System.Windows.Forms.MouseEventArgs(MouseButtons.Left, 1, System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y, 0));
-		if (!base.MainForm.Focused)
+		if (!base.MainForm!.Focused)
 		{
 			base.MainForm.Focus();
 		}
@@ -658,7 +658,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		{
 			errorList.AddRange(errorList2);
 		}
-		string text = Options.Instance.BundleFile;
+		string? text = Options.Instance.BundleFile;
 		if (string.IsNullOrEmpty(text) && !string.IsNullOrEmpty(ResourceBundleService.Instance.DefaultBundleName))
 		{
 			text = ResourceBundleService.Instance.DefaultBundleName;
@@ -811,7 +811,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		base.Dispose(disposing);
 	}
 
-	protected override void OnMainFormClosed(object sender, EventArgs e)
+	protected override void OnMainFormClosed(object? sender, EventArgs e)
 	{
 		ITimerService timerService = ServiceLocator.Instance.GetService<ITimerService>();
 		IIdleTimerService idleTimerService = ServiceLocator.Instance.GetService<IIdleTimerService>();
@@ -831,7 +831,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		idleTimerService?.Reset();
 		timerService.Reset();
 		schedulerService.Shutdown();
-		notificationService.Unregister(base.MainForm.Handle);
+		notificationService.Unregister(base.MainForm!.Handle);
 		notificationService.Reset();
 		if (renderingService.ActiveScene != null)
 		{
@@ -888,7 +888,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		}
 		checkMainFormStatus = true;
 		m_keyPressHandlers.Clear();
-		base.MainForm.Close();
+		base.MainForm!.Close();
 		return result;
 	}
 
@@ -950,7 +950,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 	{
 		lock (_lockObject)
 		{
-			while (IsApplicationIdle && !_waitTimer.Enabled)
+			while (IsApplicationIdle && !_waitTimer!.Enabled)
 			{
 				using ExecutionTimer executionTimer = new ExecutionTimer();
 				m_idleEventCounter++;
@@ -978,7 +978,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		}
 	}
 
-	private void _waitTimer_Elapsed(object sender, ElapsedEventArgs e)
+	private void _waitTimer_Elapsed(object? sender, ElapsedEventArgs e)
 	{
 		_elementHost?.Child.Dispatcher.Invoke(delegate
 		{
@@ -986,7 +986,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		});
 	}
 
-	internal void OnIdle(object sender, EventArgs e)
+	internal void OnIdle(object? sender, EventArgs e)
 	{
 		if (_waitTimer == null)
 		{
@@ -1016,7 +1016,7 @@ public class EngineApplication : ApplicationContext, IInputService, IFileCacheSe
 		{
 			return false;
 		}
-		using (BufferedGraphics bufferedGraphics = BufferedGraphicsManager.Current.Allocate(base.MainForm.CreateGraphics(), base.MainForm.DisplayRectangle))
+		using (BufferedGraphics bufferedGraphics = BufferedGraphicsManager.Current.Allocate(base.MainForm!.CreateGraphics(), base.MainForm.DisplayRectangle))
 		{
 			renderingService.ActiveScene.Render(bufferedGraphics.Graphics, out var changed);
 			if (!changed)

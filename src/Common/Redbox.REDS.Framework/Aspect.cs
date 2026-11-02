@@ -7,11 +7,12 @@ namespace Redbox.REDS.Framework;
 
 public class Aspect : IAspect
 {
-	private IDictionary<string, string> m_properties;
+	private IDictionary<string, string>? m_properties;
 
-	public string Name { get; internal set; }
+	// Name and Type are set by Resource.NewAspect's object initializer.
+	public string Name { get; internal set; } = null!;
 
-	public IAspectType Type { get; internal set; }
+	public IAspectType Type { get; internal set; } = null!;
 
 	public AspectFlags Flags { get; internal set; }
 
@@ -27,9 +28,9 @@ public class Aspect : IAspect
 		}
 	}
 
-	internal object Content { get; set; }
+	internal object? Content { get; set; }
 
-	public object GetContent()
+	public object? GetContent()
 	{
 		if (Content is IAspectContentLoader aspectContentLoader)
 		{
@@ -38,7 +39,7 @@ public class Aspect : IAspect
 		return Content;
 	}
 
-	public void SetContent(object value)
+	public void SetContent(object? value)
 	{
 		Content = value;
 	}
@@ -57,7 +58,7 @@ public class Aspect : IAspect
 		}
 		if (!Properties.ContainsKey("file"))
 		{
-			object content = GetContent();
+			object? content = GetContent();
 			if (content is byte[])
 			{
 				AspectBinaryEncodingType? aspectBinaryEncodingType = AspectBinaryEncodingType.Base64;

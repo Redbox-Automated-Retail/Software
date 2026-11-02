@@ -10,7 +10,7 @@ public class Location
 {
 	public static readonly Location UnknownLocation = new Location();
 
-	public string FileName { get; private set; }
+	public string? FileName { get; private set; }
 
 	public int LineNumber { get; private set; }
 
@@ -31,7 +31,7 @@ public class Location
 		Init(null, 0, 0);
 	}
 
-	private void Init(string fileName, int lineNumber, int columnNumber)
+	private void Init(string? fileName, int lineNumber, int columnNumber)
 	{
 		if (fileName != null)
 		{

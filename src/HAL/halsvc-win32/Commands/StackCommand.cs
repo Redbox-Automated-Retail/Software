@@ -53,7 +53,7 @@ public sealed class StackCommand
 		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
-			context.Messages.Add(job.Pop(end ?? StackEnd.Top).ToString());
+			context.Messages.Add(job.Pop(end ?? StackEnd.Top).ToString()!);
 		}
 	}
 

@@ -10,14 +10,15 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class DeviceServiceGeneralPage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Panel panelTopHeader;
+	private Panel panelTopHeader = null!;
 
-	private Label labelHeader;
+	private Label labelHeader = null!;
 
-	private CheckBox cbLiveCall;
+	private CheckBox cbLiveCall = null!;
 
+	// The controls above are created by InitializeComponent.
 	public DeviceServiceGeneralPage()
 	{
 		InitializeComponent();
@@ -36,7 +37,7 @@ public class DeviceServiceGeneralPage : UserControl, IPreferencePageHost
 		cbLiveCall.Checked = !DeviceServiceClientHelperSimulator.Instance.UseSimulatedCardReader;
 	}
 
-	private void cbLiveCall_CheckedChanged(object sender, EventArgs e)
+	private void cbLiveCall_CheckedChanged(object? sender, EventArgs e)
 	{
 		DeviceServiceClientHelperSimulator.Instance.UseSimulatedCardReader = !cbLiveCall.Checked;
 	}

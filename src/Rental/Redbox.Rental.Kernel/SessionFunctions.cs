@@ -39,7 +39,7 @@ public static class SessionFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_session_value")]
-	public static object GetSessionValue(string valueName)
+	public static object? GetSessionValue(string valueName)
 	{
 		if (valueName != null)
 		{
@@ -52,12 +52,12 @@ public static class SessionFunctions
 	public static void SetPropertyValue(string propertyName, object value)
 	{
 		_ = Session.Instance;
-		object resultObject = null;
-		PropertyInfo resultPropertyInfo = null;
+		object? resultObject = null;
+		PropertyInfo? resultPropertyInfo = null;
 		_baseSettingFunctions.GetProperty(Session.Instance, propertyName, out resultObject, out resultPropertyInfo);
 		if (resultPropertyInfo != null && resultObject != null)
 		{
-			object convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
+			object? convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
 			resultPropertyInfo.SetValue(resultObject, convertedValue, null);
 			return;
 		}

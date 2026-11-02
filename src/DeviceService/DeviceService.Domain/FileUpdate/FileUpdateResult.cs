@@ -6,5 +6,5 @@ public class FileUpdateResult : IFileUpdateResult
 {
 	public FileUpdateStatus FileUpdateStatus { get; set; }
 
-	public IFileModel UpdateFileModel { get; set; }
+	public IFileModel UpdateFileModel { get; set; } = null!; // set by the object initializer in FileUpdateService.ReadManifestFiles
 }

@@ -4,19 +4,20 @@ public class StatusMessage
 {
 	public long OID;
 
-	public string StoreNumber;
+	// The fields below are filled by the JSON reader or by the sender's object initializer.
+	public string StoreNumber = null!;
 
-	public string Key;
+	public string Key = null!;
 
-	public string SubKey;
+	public string SubKey = null!;
 
-	public string Type;
+	public string Type = null!;
 
-	public string Description;
+	public string Description = null!;
 
-	public string Data;
+	public string Data = null!;
 
-	public string KioskTimeStamp;
+	public string KioskTimeStamp = null!;
 
-	public string CreatedOn;
+	public string CreatedOn = null!;
 }

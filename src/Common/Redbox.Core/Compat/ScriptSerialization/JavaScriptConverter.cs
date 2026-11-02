@@ -1,3 +1,4 @@
+#nullable disable // reference source kept as it is; stays oblivious where it is linked into nullable-enabled projects
 //------------------------------------------------------------------------------
 // <copyright file="JavaScriptConverter.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.

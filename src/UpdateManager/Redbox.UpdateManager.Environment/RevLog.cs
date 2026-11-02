@@ -7,11 +7,12 @@ namespace Redbox.UpdateManager.Environment;
 
 public class RevLog : IRevLog
 {
-	public string Hash { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string Hash { get; set; } = null!;
 
-	public string Label { get; set; }
+	public string Label { get; set; } = null!;
 
-	public List<ChangeItem> Changes { get; set; }
+	public List<ChangeItem> Changes { get; set; } = null!;
 
 	public string HashFileName(string name)
 	{

@@ -12,19 +12,20 @@ internal class FormMethod
 {
 	public readonly IDictionary<string, FormMethodParameter> ParameterCache = new Dictionary<string, FormMethodParameter>();
 
-	private DynamicMethod m_dynamicMethod;
+	private DynamicMethod? m_dynamicMethod;
 
-	private FormMethodHandler m_methodHandler;
+	private FormMethodHandler? m_methodHandler;
 
-	private List<FormMethodParameter> m_orderedParameters;
+	private List<FormMethodParameter>? m_orderedParameters;
 
-	private List<FormMethodParameter> m_requiredParameters;
+	private List<FormMethodParameter>? m_requiredParameters;
 
-	public string Usage { get; set; }
+	public string? Usage { get; set; }
 
-	public MethodInfo Method { get; set; }
+	// Set by CommandRepository.GetCommand's object initializers.
+	public MethodInfo Method { get; set; } = null!;
 
-	public string Description { get; set; }
+	public string? Description { get; set; }
 
 	public List<FormMethodParameter> OrderedParameters
 	{
@@ -61,12 +62,12 @@ internal class FormMethod
 
 	public void Invoke(CommandResult result, CommandContext context, CommandTokenizer tokenizer, object commandInstance)
 	{
-		object[] arguments = new object[OrderedParameters.Count + 1];
+		object?[] arguments = new object?[OrderedParameters.Count + 1];
 		arguments[0] = context;
 		int argIndex = 1;
 		foreach (FormMethodParameter orderedParameter in OrderedParameters)
 		{
-			KeyValuePair keyValuePair = tokenizer.Tokens.GetKeyValuePair(orderedParameter.KeyName);
+			KeyValuePair? keyValuePair = tokenizer.Tokens.GetKeyValuePair(orderedParameter.KeyName);
 			if (keyValuePair == null)
 			{
 				arguments[argIndex++] = null;
@@ -107,7 +108,7 @@ internal class FormMethod
 		return !result.Errors.ContainsError();
 	}
 
-	internal void InvokeMethod(object instance, object[] values)
+	internal void InvokeMethod(object instance, object?[] values)
 	{
 		if (m_methodHandler == null)
 		{

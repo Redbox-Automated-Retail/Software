@@ -5,9 +5,9 @@ namespace Redbox.HAL.Component.Model.Tokenizer;
 [Serializable]
 public class KeyValuePair
 {
-	public string Key { get; private set; }
+	public string? Key { get; private set; }
 
-	public string Value { get; private set; }
+	public string? Value { get; private set; }
 
 	public TokenType Type { get; private set; }
 

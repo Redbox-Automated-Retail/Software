@@ -10,7 +10,7 @@ namespace Redbox.IPC.Framework.Remoting;
 
 public class RemotingServiceHost : IPCServiceHost
 {
-	private TcpServerChannel m_tcpChannel;
+	private TcpServerChannel m_tcpChannel = null!; // set by Start
 
 	public int MaxThreads { get; set; }
 

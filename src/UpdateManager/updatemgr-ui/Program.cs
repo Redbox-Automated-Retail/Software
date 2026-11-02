@@ -29,7 +29,7 @@ public class Program : IDisposable
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(defaultValue: false);
-			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "updatemgr-ui-log4net.config"));
+			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "updatemgr-ui-log4net.config"));
 			LogHelper.Instance.Logger = m_logger;
 			errorList.AddRange(UpdateManagerApplication.Instance.Initialize());
 		}

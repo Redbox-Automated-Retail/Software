@@ -10,13 +10,13 @@ internal sealed class CommandTrace : IDisposable
 
 	private readonly bool TraceEnabled;
 
-	private readonly StringBuilder TraceBuffer;
+	private readonly StringBuilder? TraceBuffer;
 
 	public void Dispose()
 	{
 		if (TraceEnabled)
 		{
-			LogHelper.Instance.Log(TraceBuffer.ToString());
+			LogHelper.Instance.Log(TraceBuffer!.ToString());
 		}
 	}
 
@@ -30,7 +30,7 @@ internal sealed class CommandTrace : IDisposable
 		spaceCount--;
 	}
 
-	internal void Trace(string fmt, params object[] p)
+	internal void Trace(string fmt, params object?[] p)
 	{
 		if (TraceEnabled)
 		{
@@ -44,9 +44,9 @@ internal sealed class CommandTrace : IDisposable
 		{
 			for (int i = 0; i < spaceCount; i++)
 			{
-				TraceBuffer.Append(" ");
+				TraceBuffer!.Append(" ");
 			}
-			TraceBuffer.AppendLine(msg);
+			TraceBuffer!.AppendLine(msg);
 		}
 	}
 

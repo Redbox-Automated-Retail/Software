@@ -9,9 +9,9 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 {
 	private readonly AtomicFlag ReadingFlag = new AtomicFlag();
 
-	private ChannelResponse Current;
+	private ChannelResponse? Current;
 
-	private byte[] ReadBuffer;
+	private byte[]? ReadBuffer;
 
 	protected override void OnPreOpenPort()
 	{
@@ -69,7 +69,7 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 	{
 	}
 
-	private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+	private void Port_DataReceived(object? sender, SerialDataReceivedEventArgs e)
 	{
 		try
 		{
@@ -89,7 +89,7 @@ internal sealed class CallbackReadPort : RedboxSerialPort
 			}
 			if (ReadingFlag.IsSet)
 			{
-				Current.Accumulate(ReadBuffer, bytesToRead);
+				Current.Accumulate(ReadBuffer!, bytesToRead);
 				if (base.ValidateResponse(Current))
 				{
 					Current.ReadEnd();

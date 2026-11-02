@@ -6,11 +6,12 @@ using System.Text;
 
 namespace Redbox.HAL.Component.Model.Tokenizer;
 
-public abstract class TokenizerBase<T>
+public abstract class TokenizerBase<T> where T : notnull
 {
 	internal delegate StateResult StateHandler();
 
-	protected readonly ITokenReader m_tokenReader;
+	// Set by the two constructors that take a statement or stream.
+	protected readonly ITokenReader m_tokenReader = null!;
 
 	private readonly ErrorList m_errors = new ErrorList();
 
@@ -18,9 +19,11 @@ public abstract class TokenizerBase<T>
 
 	public ErrorList Errors => m_errors;
 
-	protected internal StringBuilder Accumulator { get; private set; }
+	// Set by Reset (ResetAccumulator).
+	protected internal StringBuilder Accumulator { get; private set; } = null!;
 
-	protected internal T CurrentState { get; set; }
+	// T is a state enum; it starts at its default value, as before.
+	protected internal T CurrentState { get; set; } = default!;
 
 	protected TokenizerBase(Stream tokenStream)
 		: this()
@@ -53,7 +56,7 @@ public abstract class TokenizerBase<T>
 		}
 		while (true)
 		{
-			StateHandler handler = (m_handlers.ContainsKey(CurrentState) ? m_handlers[CurrentState] : null);
+			StateHandler? handler = (m_handlers.ContainsKey(CurrentState) ? m_handlers[CurrentState] : null);
 			if (handler == null)
 			{
 				break;
@@ -137,10 +140,10 @@ public abstract class TokenizerBase<T>
 		MethodInfo[] methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
-			StateHandlerAttribute stateHandlerAttribute = (StateHandlerAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(StateHandlerAttribute));
+			StateHandlerAttribute? stateHandlerAttribute = (StateHandlerAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(StateHandlerAttribute));
 			if (stateHandlerAttribute != null)
 			{
-				m_handlers[(T)stateHandlerAttribute.State] = (StateHandler)Delegate.CreateDelegate(typeof(StateHandler), this, methodInfo.Name);
+				m_handlers[(T)stateHandlerAttribute.State!] = (StateHandler)Delegate.CreateDelegate(typeof(StateHandler), this, methodInfo.Name);
 			}
 		}
 	}

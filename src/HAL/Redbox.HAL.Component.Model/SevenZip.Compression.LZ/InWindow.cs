@@ -6,9 +6,9 @@ namespace SevenZip.Compression.LZ;
 [ComVisible(true)]
 public class InWindow
 {
-	public byte[] _bufferBase;
+	public byte[]? _bufferBase;
 
-	private Stream _stream;
+	private Stream? _stream;
 
 	private uint _posLimit;
 
@@ -38,7 +38,7 @@ public class InWindow
 		uint numBytes = _bufferOffset + _streamPos - offset;
 		for (uint i = 0u; i < numBytes; i++)
 		{
-			_bufferBase[i] = _bufferBase[offset + i];
+			_bufferBase![i] = _bufferBase[offset + i];
 		}
 		_bufferOffset -= offset;
 	}
@@ -56,7 +56,7 @@ public class InWindow
 			{
 				return;
 			}
-			int numReadBytes = _stream.Read(_bufferBase, (int)(_bufferOffset + _streamPos), size);
+			int numReadBytes = _stream!.Read(_bufferBase!, (int)(_bufferOffset + _streamPos), size);
 			if (numReadBytes == 0)
 			{
 				break;
@@ -130,7 +130,7 @@ public class InWindow
 
 	public byte GetIndexByte(int index)
 	{
-		return _bufferBase[_bufferOffset + _pos + index];
+		return _bufferBase![_bufferOffset + _pos + index];
 	}
 
 	public uint GetMatchLen(int index, uint distance, uint limit)
@@ -142,7 +142,7 @@ public class InWindow
 		distance++;
 		uint pby = _bufferOffset + _pos + (uint)index;
 		uint i;
-		for (i = 0u; i < limit && _bufferBase[pby + i] == _bufferBase[pby + i - distance]; i++)
+		for (i = 0u; i < limit && _bufferBase![pby + i] == _bufferBase[pby + i - distance]; i++)
 		{
 		}
 		return i;

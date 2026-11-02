@@ -18,7 +18,7 @@ public class LuaDebugFile
 
 	public LuaDebugBreakpoint AddBreakpoint(int line)
 	{
-		LuaDebugBreakpoint luaDebugBreakpoint = GetBreakpoint(line);
+		LuaDebugBreakpoint? luaDebugBreakpoint = GetBreakpoint(line);
 		if (luaDebugBreakpoint != null)
 		{
 			luaDebugBreakpoint.Enabled = true;
@@ -33,7 +33,7 @@ public class LuaDebugFile
 
 	public void RemoveBreakpoint(int line)
 	{
-		RemoveBreakpoint(GetBreakpoint(line));
+		RemoveBreakpoint(GetBreakpoint(line)!); // a missing breakpoint is not in the list, so nothing is removed
 	}
 
 	public void RemoveBreakpoint(LuaDebugBreakpoint breakpoint)
@@ -41,7 +41,7 @@ public class LuaDebugFile
 		m_breakpoints.Remove(breakpoint);
 	}
 
-	public LuaDebugBreakpoint GetBreakpoint(int line)
+	public LuaDebugBreakpoint? GetBreakpoint(int line)
 	{
 		foreach (LuaDebugBreakpoint breakpoint in m_breakpoints)
 		{
@@ -53,9 +53,9 @@ public class LuaDebugFile
 		return null;
 	}
 
-	public LuaDebugBreakpoint ToggleBreakpoint(int line)
+	public LuaDebugBreakpoint? ToggleBreakpoint(int line)
 	{
-		LuaDebugBreakpoint breakpoint = GetBreakpoint(line);
+		LuaDebugBreakpoint? breakpoint = GetBreakpoint(line);
 		if (breakpoint == null)
 		{
 			return AddBreakpoint(line);

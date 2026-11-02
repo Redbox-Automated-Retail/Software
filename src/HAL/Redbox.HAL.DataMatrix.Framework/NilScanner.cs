@@ -73,7 +73,7 @@ internal sealed class NilScanner : IScannerDevice, IDisposable
 		return ValidateSettings(null);
 	}
 
-	public bool ValidateSettings(IMessageSink sink)
+	public bool ValidateSettings(IMessageSink? sink)
 	{
 		return false;
 	}

@@ -14,9 +14,9 @@ internal class CommandInstance
 
 	public readonly IDictionary<string, FormMethod> FormMethodCache = new Dictionary<string, FormMethod>();
 
-	public Type CommandType { get; set; }
+	public Type CommandType { get; set; } = null!; // set by GetCommandInstance's object initializer
 
-	public string CommandDescription { get; set; }
+	public string? CommandDescription { get; set; }
 
 	public List<string> Filters => _filters;
 
@@ -33,7 +33,7 @@ internal class CommandInstance
 		MethodInfo[] methods = commandType.GetMethods();
 		foreach (MethodInfo methodInfo in methods)
 		{
-			NotLoggableAttribute notLoggableAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(NotLoggableAttribute)) as NotLoggableAttribute;
+			NotLoggableAttribute? notLoggableAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(NotLoggableAttribute)) as NotLoggableAttribute;
 			if (!(Attribute.GetCustomAttribute(methodInfo, typeof(CommandFormAttribute)) is CommandFormAttribute commandFormAttribute))
 			{
 				continue;
@@ -43,8 +43,8 @@ internal class CommandInstance
 			{
 				continue;
 			}
-			UsageAttribute usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
-			DescriptionAttribute descriptionAttribute2 = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
+			UsageAttribute? usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
+			DescriptionAttribute? descriptionAttribute2 = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
 			FormMethod formMethod = new FormMethod
 			{
 				Method = methodInfo,
@@ -54,7 +54,7 @@ internal class CommandInstance
 			};
 			if (!string.IsNullOrEmpty(commandFormAttribute.Filter))
 			{
-				commandFormAttribute.Filter.Trim().Split('|').ToList()
+				commandFormAttribute.Filter!.Trim().Split('|').ToList()
 					.ForEach(formMethod.Filters.Add);
 			}
 			int index = 0;
@@ -69,8 +69,8 @@ internal class CommandInstance
 					Parameter = parameterInfo,
 					Index = index++
 				};
-				CommandKeyValueAttribute commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
-				formMethodParameter.KeyName = parameterInfo.Name.ToUpper();
+				CommandKeyValueAttribute? commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
+				formMethodParameter.KeyName = parameterInfo.Name!.ToUpper();
 				if (commandKeyValueAttribute != null)
 				{
 					formMethodParameter.MetaData = commandKeyValueAttribute;
@@ -84,7 +84,7 @@ internal class CommandInstance
 			formMethod.Compile(commandInstance.CommandType);
 			commandInstance.FormMethodCache[commandFormAttribute.Name.ToUpper()] = formMethod;
 		}
-		MethodInfo method = commandType.GetMethod("Default", new Type[1] { typeof(CommandContext) });
+		MethodInfo? method = commandType.GetMethod("Default", new Type[1] { typeof(CommandContext) });
 		if (method != null)
 		{
 			FormMethod formMethod2 = new FormMethod
@@ -99,7 +99,7 @@ internal class CommandInstance
 
 	public object GetInstance()
 	{
-		return Activator.CreateInstance(CommandType);
+		return Activator.CreateInstance(CommandType)!;
 	}
 
 	public bool HasDefault()
@@ -116,7 +116,7 @@ internal class CommandInstance
 		return false;
 	}
 
-	public void InvokeDefault(CommandResult result, CommandContext context, CommandTokenizer tokenizer, bool enable, List<string> sourceFilters)
+	public void InvokeDefault(CommandResult result, CommandContext context, CommandTokenizer tokenizer, bool enable, List<string>? sourceFilters)
 	{
 		if (HasDefault())
 		{
@@ -124,13 +124,13 @@ internal class CommandInstance
 		}
 	}
 
-	public FormMethod GetMethod(string formName)
+	public FormMethod? GetMethod(string? formName)
 	{
 		if (string.IsNullOrEmpty(formName))
 		{
 			return null;
 		}
-		string key = formName.ToUpper();
+		string key = formName!.ToUpper();
 		if (FormMethodCache.ContainsKey(key))
 		{
 			return FormMethodCache[key];
@@ -138,7 +138,7 @@ internal class CommandInstance
 		return null;
 	}
 
-	public bool IsInFilter(bool enable, List<string> sourceFilters)
+	public bool IsInFilter(bool enable, List<string>? sourceFilters)
 	{
 		if (!enable)
 		{

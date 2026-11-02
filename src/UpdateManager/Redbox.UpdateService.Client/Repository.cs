@@ -11,15 +11,16 @@ public class Repository
 
 	public DateTime? ModifiedOn { get; set; }
 
-	public string CreatedBy { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string CreatedBy { get; set; } = null!;
 
-	public string ModifiedBy { get; set; }
+	public string ModifiedBy { get; set; } = null!;
 
-	public string System { get; set; }
+	public string System { get; set; } = null!;
 
-	public List<Identifier> Logs { get; set; }
+	public List<Identifier> Logs { get; set; } = null!;
 
-	public List<Identifier> Files { get; set; }
+	public List<Identifier> Files { get; set; } = null!;
 
-	public List<Identifier> Groups { get; set; }
+	public List<Identifier> Groups { get; set; } = null!;
 }

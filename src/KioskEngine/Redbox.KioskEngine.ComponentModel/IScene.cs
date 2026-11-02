@@ -20,7 +20,7 @@ public interface IScene : IDisposable
 
 	Color BackgroundColor { get; set; }
 
-	System.Drawing.Image BackgroundImage { get; set; }
+	System.Drawing.Image? BackgroundImage { get; set; }
 
 	LinkedList<IActor> Actors { get; }
 
@@ -34,7 +34,7 @@ public interface IScene : IDisposable
 
 	IActor CreateActor();
 
-	IActor HitTest(int x, int y);
+	IActor? HitTest(int x, int y);
 
 	void Clear();
 
@@ -48,19 +48,19 @@ public interface IScene : IDisposable
 
 	void AddFirst(IActor actor);
 
-	IActor Remove(string name);
+	IActor? Remove(string name);
 
-	IActor GetActor(string name);
+	IActor? GetActor(string name);
 
-	IActor GetActorByNameAndTag(string name, string tag);
+	IActor? GetActorByNameAndTag(string name, string tag);
 
 	List<IActor> GetActorByTag(string tag);
 
-	IActor GetActorByTabOrder(int tabOrder);
+	IActor? GetActorByTabOrder(int tabOrder);
 
 	void Render(Graphics context, out bool changed);
 
-	void MakeDirty(Rectangle[] rectangles);
+	void MakeDirty(Rectangle[]? rectangles);
 
 	void PrcoessWPFHit();
 
@@ -68,5 +68,5 @@ public interface IScene : IDisposable
 
 	void RemoveWPFGridChild(FrameworkElement frameworkElement);
 
-	FrameworkElement GetWPFGridChild(object tag);
+	FrameworkElement? GetWPFGridChild(object tag);
 }

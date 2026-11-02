@@ -27,7 +27,7 @@ public static class AnalyticsServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.analyticsserviceaddbuttonpressevent")]
-	internal static void AddButtonPressEvent(string name, string eventSubType = null)
+	internal static void AddButtonPressEvent(string name, string? eventSubType = null)
 	{
 		ServiceLocator.Instance.GetService<IAnalyticsService>().AddButtonPressEvent(name, eventSubType);
 	}

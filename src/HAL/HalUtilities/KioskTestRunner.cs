@@ -20,14 +20,14 @@ internal sealed class KioskTestRunner : IDisposable
 
 	private readonly Guid ProgramLock = new Guid("{7B780DBE-F37B-4f4a-83FA-C59F5B2C87D2}");
 
-	private readonly AbstractKioskTest Test;
+	private readonly AbstractKioskTest? Test;
 
 	public void Dispose()
 	{
 		if (!Disposed)
 		{
 			Disposed = true;
-			Test.Dispose();
+			Test!.Dispose();
 			if (m_instanceLock != null)
 			{
 				m_instanceLock.Dispose();
@@ -97,7 +97,7 @@ internal sealed class KioskTestRunner : IDisposable
 				}
 				else
 				{
-					Test.AcceptArgument(args[i]);
+					Test!.AcceptArgument(args[i]);
 				}
 			}
 		}
@@ -112,7 +112,7 @@ internal sealed class KioskTestRunner : IDisposable
 			return -2;
 		}
 		TestLocation testLocation = new TestLocation(1, 1);
-		if (Test.SingleTestOnly())
+		if (Test!.SingleTestOnly())
 		{
 			return Test.RunSingleTests(testLocation, config);
 		}

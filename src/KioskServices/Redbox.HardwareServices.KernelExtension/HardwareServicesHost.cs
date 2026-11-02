@@ -11,7 +11,7 @@ public class HardwareServicesHost : IKernelExtensionHost, IDisposable
 {
 	private readonly IHardwareService _hardwareService;
 
-	public IKernelExtension Extension { get; set; }
+	public IKernelExtension Extension { get; set; } = null!; // set by the kernel when it loads the extension
 
 	public HardwareServicesHost()
 	{

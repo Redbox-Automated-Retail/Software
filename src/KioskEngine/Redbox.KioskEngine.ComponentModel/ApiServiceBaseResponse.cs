@@ -22,7 +22,7 @@ public class ApiServiceBaseResponse<T>
 
 	public int? ResponseTime { get; set; }
 
-	public T Content { get; set; }
+	public T? Content { get; set; }
 
 	public void SetResponseTime(int? responseTime)
 	{

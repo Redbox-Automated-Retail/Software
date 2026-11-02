@@ -36,14 +36,14 @@ public struct InstructionHelper : IDisposable
 		Service = s;
 	}
 
-	public HardwareJob Execute(string instruction)
+	public HardwareJob? Execute(string instruction)
 	{
 		return Execute(instruction, 120000);
 	}
 
-	public HardwareJob Execute(string instruction, int timeout)
+	public HardwareJob? Execute(string instruction, int timeout)
 	{
-		HardwareJob job = null;
+		HardwareJob? job = null;
 		HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediate(instruction, timeout, out job);
 		hardwareCommandResult.Dump();
 		if (!hardwareCommandResult.Success)
@@ -86,14 +86,14 @@ public struct InstructionHelper : IDisposable
 
 	public string ExecuteGeneric(string instruction, int timeout)
 	{
-		HardwareJob job = null;
+		HardwareJob? job = null;
 		HardwareCommandResult hardwareCommandResult = Service.ExecuteImmediate(instruction, timeout, out job);
 		hardwareCommandResult.Dump();
 		if (!hardwareCommandResult.Success)
 		{
 			return string.Empty;
 		}
-		return job.GetTopOfStack();
+		return job!.GetTopOfStack();
 	}
 
 	private IControlResponse From(string serviceResponse)

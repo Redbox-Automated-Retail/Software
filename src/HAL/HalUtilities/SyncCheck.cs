@@ -9,9 +9,9 @@ internal class SyncCheck
 {
 	private class SyncLocation
 	{
-		internal string GetMatrix;
+		internal string? GetMatrix;
 
-		internal string PutMatrix;
+		internal string? PutMatrix;
 
 		private const string deckTok = "Deck =";
 
@@ -175,7 +175,7 @@ internal class SyncCheck
 				Console.WriteLine("Unable to backup analysis file: {0}", ex.Message);
 			}
 		}
-		ReadData readData = null;
+		ReadData? readData = null;
 		List<ReadData> readDataList = new List<ReadData>();
 		try
 		{
@@ -185,7 +185,7 @@ internal class SyncCheck
 			{
 				while (true)
 				{
-					string text = textReader.ReadLine();
+					string? text = textReader.ReadLine();
 					if (text == null)
 					{
 						break;
@@ -218,7 +218,7 @@ internal class SyncCheck
 						}
 						if (text.Contains("GET: no disk in picker after pull."))
 						{
-							readData.IsEmpty = true;
+							readData!.IsEmpty = true;
 						}
 						else
 						{
@@ -232,11 +232,11 @@ internal class SyncCheck
 							{
 								if (text.Contains("YES") || text.Contains("yes"))
 								{
-									readData.SecureReadOk();
+									readData!.SecureReadOk();
 								}
 								else
 								{
-									readData.ReadOk();
+									readData!.ReadOk();
 								}
 							}
 						}
@@ -308,7 +308,7 @@ internal class SyncCheck
 			{
 				while (true)
 				{
-					string text = textReader.ReadLine();
+					string? text = textReader.ReadLine();
 					if (text == null)
 					{
 						break;
@@ -316,7 +316,7 @@ internal class SyncCheck
 					try
 					{
 						SyncLocation newItem = new SyncLocation(text);
-						SyncLocation syncLocation = Locations.Find((SyncLocation each) => each.Deck == newItem.Deck && each.Slot == newItem.Slot);
+						SyncLocation? syncLocation = Locations.Find((SyncLocation each) => each.Deck == newItem.Deck && each.Slot == newItem.Slot);
 						if (syncLocation == null)
 						{
 							Locations.Add(newItem);

@@ -63,7 +63,7 @@ internal static class UpdateManagerServiceRegistration
 		}
 		// As UpdateManagerServiceInstaller.OnAfterInstall: mark the service interactive, optionally start it.
 		string keyName = "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + ServiceName;
-		int type = (int)Registry.GetValue(keyName, "Type", 0);
+		int type = (int)Registry.GetValue(keyName, "Type", 0)!; // the service key exists right after CreateService
 		Registry.SetValue(keyName, "Type", type | (int)SERVICE_INTERACTIVE_PROCESS);
 		if (forceStart)
 		{
@@ -111,10 +111,10 @@ internal static class UpdateManagerServiceRegistration
 	}
 
 	[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-	private static extern IntPtr OpenSCManager(string machineName, string databaseName, uint desiredAccess);
+	private static extern IntPtr OpenSCManager(string? machineName, string? databaseName, uint desiredAccess);
 
 	[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-	private static extern IntPtr CreateService(IntPtr manager, string serviceName, string displayName, uint desiredAccess, uint serviceType, uint startType, uint errorControl, string binaryPathName, string loadOrderGroup, IntPtr tagId, string dependencies, string serviceStartName, string password);
+	private static extern IntPtr CreateService(IntPtr manager, string serviceName, string displayName, uint desiredAccess, uint serviceType, uint startType, uint errorControl, string binaryPathName, string? loadOrderGroup, IntPtr tagId, string dependencies, string? serviceStartName, string? password);
 
 	[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 	private static extern IntPtr OpenService(IntPtr manager, string serviceName, uint desiredAccess);

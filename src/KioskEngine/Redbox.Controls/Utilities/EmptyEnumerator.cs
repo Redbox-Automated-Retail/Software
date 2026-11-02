@@ -5,7 +5,7 @@ namespace Redbox.Controls.Utilities;
 
 public class EmptyEnumerator : IEnumerator
 {
-	private static IEnumerator _instance;
+	private static IEnumerator? _instance;
 
 	public static IEnumerator Instance => GetInstance();
 

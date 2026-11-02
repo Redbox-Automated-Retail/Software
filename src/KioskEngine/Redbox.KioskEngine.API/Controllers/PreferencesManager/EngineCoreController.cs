@@ -29,7 +29,7 @@ public class EngineCoreController : ApiController
 		EngineCoreKioskEngineVersionResponse response = new EngineCoreKioskEngineVersionResponse();
 		await Task.Run(delegate
 		{
-			KioskEngineVersions kioskEngineVersions = response.Content;
+			KioskEngineVersions kioskEngineVersions = response.Content!; // set by the EngineCoreKioskEngineVersionResponse constructor
 			AppDomain.CurrentDomain.GetAssemblies().ForEach(delegate(Assembly eachAssembly)
 			{
 				AssemblyName? assemblyName = eachAssembly?.GetName();
@@ -42,7 +42,7 @@ public class EngineCoreController : ApiController
 					});
 				}
 			});
-			kioskEngineVersions.Assemblies.Sort((AssemblyInfo a, AssemblyInfo b) => a.Name.CompareTo(b.Name));
+			kioskEngineVersions.Assemblies.Sort((AssemblyInfo a, AssemblyInfo b) => a.Name!.CompareTo(b.Name)); // only assemblies with a name were added above
 			ServiceLocator.Instance.GetService<IResourceBundleService>()?.Bundles?.ForEach(delegate(IBundleSpecifier eachBundle)
 			{
 				kioskEngineVersions.Bundles.Add(new BundleInfo
@@ -51,7 +51,7 @@ public class EngineCoreController : ApiController
 					Version = eachBundle?.Version?.ToString()
 				});
 			});
-			kioskEngineVersions.Bundles.Sort((BundleInfo a, BundleInfo b) => a.Name.CompareTo(b.Name));
+			kioskEngineVersions.Bundles.Sort((BundleInfo a, BundleInfo b) => a.Name!.CompareTo(b.Name)); // throws on a nameless bundle, as before
 			LogHelper.Instance.Log("EngineCoreController.GetVersions result=" + JsonConvert.SerializeObject(response.Content));
 		});
 		response.SetResponseTime((int)stopwatch.ElapsedMilliseconds);

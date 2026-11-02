@@ -6,7 +6,7 @@ namespace Redbox.HAL.DataMatrix.Framework;
 
 internal sealed class ScanResult : IScanResult, IDisposable
 {
-	private readonly ISnapResult SnapResult;
+	private readonly ISnapResult? SnapResult;
 
 	private readonly List<DecodeResult> RawDecodeResults = new List<DecodeResult>();
 
@@ -56,7 +56,7 @@ internal sealed class ScanResult : IScanResult, IDisposable
 	{
 		if (!code.Equals("redbox", StringComparison.CurrentCultureIgnoreCase))
 		{
-			DecodeResult decodeResult = RawDecodeResults.Find((DecodeResult each) => each.Matrix == code);
+			DecodeResult? decodeResult = RawDecodeResults.Find((DecodeResult each) => each.Matrix == code);
 			if (decodeResult == null)
 			{
 				decodeResult = new DecodeResult(code);

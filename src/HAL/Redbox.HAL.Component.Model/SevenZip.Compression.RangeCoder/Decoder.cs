@@ -10,7 +10,7 @@ internal class Decoder
 
 	public uint Code;
 
-	public Stream Stream;
+	public Stream? Stream;
 
 	public void Init(Stream stream)
 	{
@@ -30,14 +30,14 @@ internal class Decoder
 
 	public void CloseStream()
 	{
-		Stream.Close();
+		Stream!.Close();
 	}
 
 	public void Normalize()
 	{
 		while (Range < 16777216)
 		{
-			Code = (Code << 8) | (byte)Stream.ReadByte();
+			Code = (Code << 8) | (byte)Stream!.ReadByte();
 			Range <<= 8;
 		}
 	}
@@ -46,7 +46,7 @@ internal class Decoder
 	{
 		if (Range < 16777216)
 		{
-			Code = (Code << 8) | (byte)Stream.ReadByte();
+			Code = (Code << 8) | (byte)Stream!.ReadByte();
 			Range <<= 8;
 		}
 	}
@@ -76,7 +76,7 @@ internal class Decoder
 			result = (result << 1) | (1 - t);
 			if (range < 16777216)
 			{
-				code = (code << 8) | (byte)Stream.ReadByte();
+				code = (code << 8) | (byte)Stream!.ReadByte();
 				range <<= 8;
 			}
 		}

@@ -44,7 +44,7 @@ internal class FileSetCleanup
 					List<ClientFileSetRevision> revisions = new List<ClientFileSetRevision>();
 					revisionIds.ForEach(delegate(long r)
 					{
-						ClientFileSetRevision revision = FileSetService.Instance.GetRevision(fileSetId, r);
+						ClientFileSetRevision? revision = FileSetService.Instance.GetRevision(fileSetId, r);
 						if (revision != null)
 						{
 							revisions.Add(revision);
@@ -60,7 +60,7 @@ internal class FileSetCleanup
 							List<FileSetFileInfo> allFileInfos = new List<FileSetFileInfo>();
 							FileCacheService.Instance.GetAllFileInfos(fileSetId).ForEach(delegate(string path)
 							{
-								allFileInfos.Add(FileSetService.Instance.GetFileInfo(path));
+								allFileInfos.Add(FileSetService.Instance.GetFileInfo(path)!); // null for an unreadable file info, as before
 							});
 							List<FileSetFileInfo> requiredFiles = new List<FileSetFileInfo>();
 							List<string> revisionFiles = (from s in FileCacheService.Instance.GetAllRevisionFiles(fileSetId)
@@ -69,7 +69,7 @@ internal class FileSetCleanup
 							int pos = 1;
 							revisionFiles.ForEach(delegate(string path)
 							{
-								ClientFileSetRevision revision = FileSetService.Instance.GetRevision(path);
+								ClientFileSetRevision? revision = FileSetService.Instance.GetRevision(path);
 								if (revision != null)
 								{
 									bool keep = true;

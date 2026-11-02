@@ -7,15 +7,15 @@ namespace Redbox.HardwareServices.Proxy;
 
 public class HardwareEventCallback : ICallbackEntry
 {
-	public HardwareEventHandler EventHandler { get; set; }
+	public HardwareEventHandler? EventHandler { get; set; }
 
-	public string JobId { get; set; }
+	public string? JobId { get; set; }
 
-	public string Message { get; set; }
+	public string? Message { get; set; }
 
 	public string Name => "HardwareEventCallback - " + (JobId ?? string.Empty);
 
-	public string TimeStamp { get; set; }
+	public string? TimeStamp { get; set; }
 
 	public void Invoke()
 	{

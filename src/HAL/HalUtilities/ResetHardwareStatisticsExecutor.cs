@@ -11,7 +11,7 @@ internal sealed class ResetHardwareStatisticsExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Stat.ToString());
+		base.Job!.Push(Stat.ToString());
 	}
 
 	internal ResetHardwareStatisticsExecutor(HardwareService service, HardwareCorrectionStatistic s)

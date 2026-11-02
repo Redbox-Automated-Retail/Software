@@ -10,7 +10,7 @@ internal class HardwareCorrectionStatisticAdapter : Redbox.HardwareServices.Prox
 
 	public HardwareCorrectionStatistic Statistic { get; set; }
 
-	public string ProgramName { get; }
+	public string ProgramName { get; } = null!; // set by the constructor that takes a statistic (the parameterless one is unused)
 
 	public bool CorrectionOk { get; }
 

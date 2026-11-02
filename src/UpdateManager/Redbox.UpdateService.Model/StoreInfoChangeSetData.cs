@@ -4,7 +4,8 @@ namespace Redbox.UpdateService.Model;
 
 public class StoreInfoChangeSetData
 {
-	public string TimeZoneInfoString { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string TimeZoneInfoString { get; set; } = null!;
 
 	public bool CorrectTimeZone { get; set; }
 

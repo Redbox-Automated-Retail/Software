@@ -8,5 +8,5 @@ public interface IResourceBundleStorageEntry
 
 	string Name { get; }
 
-	string Path { get; }
+	string? Path { get; }
 }

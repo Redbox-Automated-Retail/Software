@@ -20,7 +20,7 @@ public interface ICallbackService
 
 	DateTime? GetEnqueuedDateTimeFromNextCallbackEntry();
 
-	ICallbackServiceStatistics GetStatics();
+	ICallbackServiceStatistics? GetStatics();
 
 	void ResetStatistics();
 

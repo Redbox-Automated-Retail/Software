@@ -98,7 +98,7 @@ public static class ProcessFunctions
 	[KernelFunction(Name = "kernel.processtrimworkingset")]
 	internal static void TrimWorkingSet(string name)
 	{
-		Process process = Process.GetProcesses().FirstOrDefault((Process p) => string.Compare(p.ProcessName, name, ignoreCase: true) == 0);
+		Process? process = Process.GetProcesses().FirstOrDefault((Process p) => string.Compare(p.ProcessName, name, ignoreCase: true) == 0);
 		if (process != null)
 		{
 			SetProcessWorkingSetSize(process.Handle, -1, -1);
@@ -186,9 +186,9 @@ public static class ProcessFunctions
 				}
 				try
 				{
-					string directoryName = Path.GetDirectoryName(processName);
+					string? directoryName = Path.GetDirectoryName(processName);
 					string fileName = Path.GetFileName(processName);
-					string text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
+					string? text = (string.IsNullOrEmpty(args) ? null : $"{processName} {args}");
 					LogHelper.Instance.Log("starting from path: '{0}' with file: '{1}' in directory: '{2}' with command line: '{3}'", processName, fileName, directoryName, text);
 					STARTUPINFO lpStartupInfo = default(STARTUPINFO);
 					lpStartupInfo.cb = Marshal.SizeOf(lpStartupInfo);
@@ -229,7 +229,7 @@ public static class ProcessFunctions
 	private static extern bool CloseHandle(IntPtr handle);
 
 	[DllImport("advapi32", CharSet = CharSet.Unicode, SetLastError = true)]
-	private static extern bool CreateProcessWithTokenW(IntPtr hToken, uint dwLogonFlags, string lpApplicationName, string lpCommandLine, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+	private static extern bool CreateProcessWithTokenW(IntPtr hToken, uint dwLogonFlags, string lpApplicationName, string? lpCommandLine, uint dwCreationFlags, IntPtr lpEnvironment, string? lpCurrentDirectory, [In] ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
 
 	private static IntPtr DuplicateToken(IntPtr sourceToken)
 	{

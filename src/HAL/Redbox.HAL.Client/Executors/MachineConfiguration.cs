@@ -37,7 +37,7 @@ public sealed class MachineConfiguration : JobExecutor
 
 	public bool HasFraudDevice { get; private set; }
 
-	public string DoorSensorStatus { get; private set; }
+	public string? DoorSensorStatus { get; private set; }
 
 	public bool HasAuxRelayBoard { get; private set; }
 
@@ -55,7 +55,7 @@ public sealed class MachineConfiguration : JobExecutor
 
 	public bool HasIRHardware => IRHardwareInstall.HasValue;
 
-	public IList<Location> ExcludedSlots { get; private set; }
+	public IList<Location>? ExcludedSlots { get; private set; }
 
 	public int MaxDeck { get; private set; }
 
@@ -85,7 +85,7 @@ public sealed class MachineConfiguration : JobExecutor
 	protected override void OnJobCompleted()
 	{
 		ExcludedSlots = new List<Location>();
-		base.Results.ForEach(delegate(ProgramResult result)
+		base.Results!.ForEach(delegate(ProgramResult result)
 		{
 			string code = result.Code;
 			if (code != null)
@@ -122,7 +122,7 @@ public sealed class MachineConfiguration : JobExecutor
 					case 'E':
 						if (code == "ExcludedSlot")
 						{
-							ExcludedSlots.Add(new Location
+							ExcludedSlots!.Add(new Location
 							{
 								Deck = result.Deck,
 								Slot = result.Slot

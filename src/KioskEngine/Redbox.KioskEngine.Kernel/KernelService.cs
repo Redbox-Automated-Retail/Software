@@ -17,7 +17,7 @@ public sealed class KernelService : IKernelService, IDisposable
 
 	private DateTime m_lastGarbageCollection;
 
-	private string m_startupScriptResourceName;
+	private string? m_startupScriptResourceName;
 
 	private readonly IDictionary<string, LuaFunction> m_compiledScripts = new Dictionary<string, LuaFunction>();
 
@@ -27,15 +27,16 @@ public sealed class KernelService : IKernelService, IDisposable
 
 	public bool IsTestPlanExecuting { get; private set; }
 
-	internal LuaDebugger LuaDebugger { get; set; }
+	// LuaDebugger and LuaRuntime are created by Reset (called from Initialize).
+	internal LuaDebugger LuaDebugger { get; set; } = null!;
 
-	internal LuaDebugInfo DebugState { get; set; }
+	internal LuaDebugInfo? DebugState { get; set; }
 
-	internal LuaVirtualMachine LuaRuntime { get; set; }
+	internal LuaVirtualMachine LuaRuntime { get; set; } = null!;
 
-	public event WaitingForDebuggerAction WaitingForDebuggerAction;
+	public event WaitingForDebuggerAction? WaitingForDebuggerAction;
 
-	public event DebuggerStopping DebuggerStopping;
+	public event DebuggerStopping? DebuggerStopping;
 
 	public void Reset()
 	{
@@ -61,7 +62,7 @@ public sealed class KernelService : IKernelService, IDisposable
 			}
 			finally
 			{
-				LuaRuntime = null;
+				LuaRuntime = null!; // replaced just below
 			}
 		}
 		LuaRuntime = new LuaVirtualMachine();
@@ -74,11 +75,11 @@ public sealed class KernelService : IKernelService, IDisposable
 		LuaRuntime.HookException += delegate
 		{
 		};
-		LuaDebugger.FullTraceData += delegate(object o, DebugHookEventArgs e2)
+		LuaDebugger.FullTraceData += delegate(object? o, DebugHookEventArgs e2)
 		{
 			DebugState = e2.DebugInfo;
 		};
-		LuaDebugger.Stopping += delegate(object o, StoppingEventArgs e2)
+		LuaDebugger.Stopping += delegate(object? o, StoppingEventArgs e2)
 		{
 			if (DebuggerStopping != null)
 			{
@@ -122,15 +123,15 @@ public sealed class KernelService : IKernelService, IDisposable
 		{
 			return LuaHelper.FormatLuaValue(value);
 		}
-		return value.ToString();
+		return value.ToString()!;
 	}
 
-	public ReadOnlyCollection<object> ExecuteChunk(string chunk)
+	public ReadOnlyCollection<object?> ExecuteChunk(string chunk)
 	{
 		return LuaRuntime.DoString(chunk);
 	}
 
-	public ReadOnlyCollection<object> ExecuteFunction(string functionName, params object[] parms)
+	public ReadOnlyCollection<object?>? ExecuteFunction(string functionName, params object[] parms)
 	{
 		if (LuaRuntime[functionName] is LuaFunction luaFunction)
 		{
@@ -144,7 +145,7 @@ public sealed class KernelService : IKernelService, IDisposable
 		LuaFunction.LogLuaFunctions();
 	}
 
-	public object ToLuaTable<T>(IEnumerable<T> enumerator)
+	public object? ToLuaTable<T>(IEnumerable<T> enumerator)
 	{
 		if (enumerator == null)
 		{
@@ -177,7 +178,7 @@ public sealed class KernelService : IKernelService, IDisposable
 			LogHelper.Instance.Log("No startup script resouce has been loaded into the runtime.", LogEntryType.Error);
 			return;
 		}
-		ExecuteScript(m_startupScriptResourceName);
+		ExecuteScript(m_startupScriptResourceName!);
 		IsApplicationRunning = true;
 		IDebugService debugService = ServiceLocator.Instance.GetService<IDebugService>();
 		if (debugService != null)
@@ -199,7 +200,7 @@ public sealed class KernelService : IKernelService, IDisposable
 			LogHelper.Instance.LogTo("TestServices", "Test Control resource not found; Integration tests aborted.");
 			return;
 		}
-		XmlNodeList xmlNodeList = xml.SelectNodes("testset");
+		XmlNodeList? xmlNodeList = xml.SelectNodes("testset");
 		if (xmlNodeList == null)
 		{
 			LogHelper.Instance.LogTo("TestServices", "Test Control contains no valid test sets");
@@ -210,18 +211,18 @@ public sealed class KernelService : IKernelService, IDisposable
 		{
 			LogHelper.Instance.LogTo("TestServices", "TestSet " + item.GetAttributeValue<string>("name"));
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Setup");
-			XmlNode testStageNode = item.SelectSingleNode("setup");
+			XmlNode? testStageNode = item.SelectSingleNode("setup");
 			RunTestScripts(testStageNode);
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Start Bundle Application");
 			ExecuteApplication();
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Execution");
-			XmlNode testStageNode2 = item.SelectSingleNode("execution");
+			XmlNode? testStageNode2 = item.SelectSingleNode("execution");
 			RunTestScripts(testStageNode2);
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Deactivate Bundle Application");
 			resourceBundleService.SetSwitchToBundle(resourceBundleService.ActiveBundle);
 			resourceBundleService.Switch(out var _);
 			LogHelper.Instance.LogTo("TestServices", ">  Test: Teardown");
-			XmlNode testStageNode3 = item.SelectSingleNode("teardown");
+			XmlNode? testStageNode3 = item.SelectSingleNode("teardown");
 			RunTestScripts(testStageNode3);
 		}
 		IsTestPlanExecuting = false;
@@ -283,7 +284,7 @@ public sealed class KernelService : IKernelService, IDisposable
 		return luaFunction != null;
 	}
 
-	public ReadOnlyCollection<object> ExecuteScript(string resourceName)
+	public ReadOnlyCollection<object?>? ExecuteScript(string resourceName)
 	{
 		try
 		{
@@ -297,23 +298,23 @@ public sealed class KernelService : IKernelService, IDisposable
 			{
 				return null;
 			}
-			object content = resource.GetAspect("content").GetContent();
-			string text = ((!(content is byte[])) ? ((string)content) : Encoding.ASCII.GetString((byte[])content));
+			object? content = resource.GetAspect("content")!.GetContent();
+			string? text = ((!(content is byte[])) ? ((string?)content) : Encoding.ASCII.GetString((byte[])content));
 			if (string.IsNullOrEmpty(text))
 			{
 				LogHelper.Instance.Log("*** Script resource '{0}' content aspect has no content.", resource.Name);
 				return null;
 			}
-			LuaFunction luaFunction = LoadScript(resourceName, text, out var _);
+			LuaFunction luaFunction = LoadScript(resourceName, text!, out var _);
 			if (luaFunction == null)
 			{
 				LogHelper.Instance.Log("Unable to compile script resource '{0}'", resourceName);
 				return null;
 			}
-			ReadOnlyCollection<object> result = luaFunction.Call();
+			ReadOnlyCollection<object?> result = luaFunction.Call();
 			if ((DateTime.Now - m_lastGarbageCollection).Minutes > 5 && m_compiledScripts.ContainsKey("___CollectGarbage"))
 			{
-				ReadOnlyCollection<object> readOnlyCollection = m_compiledScripts["___CollectGarbage"].Call();
+				ReadOnlyCollection<object?> readOnlyCollection = m_compiledScripts["___CollectGarbage"].Call();
 				LogHelper.Instance.Log("Lua garbage collection cycle complete, current Lua heap size: {0}", readOnlyCollection[0]);
 				m_lastGarbageCollection = DateTime.Now;
 			}
@@ -387,13 +388,13 @@ public sealed class KernelService : IKernelService, IDisposable
 					return false;
 				}
 			}
-			string text = (string)resource.GetAspect("content").GetContent();
+			string? text = (string?)resource.GetAspect("content")!.GetContent();
 			if (string.IsNullOrEmpty(text))
 			{
 				LogHelper.Instance.Log("*** Script resource '{0}' content aspect is empty.", resource.Name);
 				continue;
 			}
-			LuaFunction luaFunction = LoadScript(resource.Name, text, out var wasCached);
+			LuaFunction luaFunction = LoadScript(resource.Name!, text!, out var wasCached);
 			if (!wasCached)
 			{
 				try
@@ -403,7 +404,7 @@ public sealed class KernelService : IKernelService, IDisposable
 				}
 				catch (Exception e)
 				{
-					RaiseDebuggerOrError(e, resource.Name);
+					RaiseDebuggerOrError(e, resource.Name!);
 					return false;
 				}
 			}
@@ -411,13 +412,13 @@ public sealed class KernelService : IKernelService, IDisposable
 		return true;
 	}
 
-	private void RunTestScripts(XmlNode testStageNode)
+	private void RunTestScripts(XmlNode? testStageNode)
 	{
 		if (testStageNode == null)
 		{
 			return;
 		}
-		XmlNodeList xmlNodeList = testStageNode.SelectNodes("script");
+		XmlNodeList? xmlNodeList = testStageNode.SelectNodes("script");
 		if (xmlNodeList == null)
 		{
 			return;
@@ -426,7 +427,7 @@ public sealed class KernelService : IKernelService, IDisposable
 		foreach (XmlNode item in xmlNodeList)
 		{
 			string attributeValue = item.GetAttributeValue<string>("value");
-			string chunk = Encoding.UTF8.GetString(resourceBundleService.ActiveBundle.Storage.GetEntryContent(attributeValue));
+			string chunk = Encoding.UTF8.GetString(resourceBundleService.ActiveBundle.Storage.GetEntryContent(attributeValue)!);
 			ExecuteChunk(chunk);
 		}
 	}

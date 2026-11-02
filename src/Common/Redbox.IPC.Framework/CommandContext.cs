@@ -5,15 +5,16 @@ namespace Redbox.IPC.Framework;
 
 public class CommandContext
 {
-	private ErrorList m_errors;
+	private ErrorList? m_errors;
 
-	private MessageList m_messages;
+	private MessageList? m_messages;
 
-	private ParameterDictionary m_parameters;
+	private ParameterDictionary? m_parameters;
 
-	public ISession Session { get; internal set; }
+	// Session and MessageSink are set by CommandService.Execute's object initializer.
+	public ISession Session { get; internal set; } = null!;
 
-	public IMessageSink MessageSink { get; internal set; }
+	public IMessageSink MessageSink { get; internal set; } = null!;
 
 	public ParameterDictionary Parameters
 	{
@@ -70,7 +71,7 @@ public class CommandContext
 		ForEachNamedParameterDo(action, null);
 	}
 
-	internal void ForEachSymbolDo(Action<string> action, string[] exclusions)
+	internal void ForEachSymbolDo(Action<string> action, string[]? exclusions)
 	{
 		foreach (string key in Parameters.Keys)
 		{
@@ -85,7 +86,7 @@ public class CommandContext
 		}
 	}
 
-	internal void ForEachNamedParameterDo(Action<string> action, string[] exclusions)
+	internal void ForEachNamedParameterDo(Action<string> action, string[]? exclusions)
 	{
 		foreach (string key in Parameters.Keys)
 		{

@@ -12,15 +12,16 @@ internal class FileSetFileInfo
 
 	public long FileSize { get; set; }
 
-	public string FileHash { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string FileHash { get; set; } = null!;
 
-	public string PatchHash { get; set; }
+	public string PatchHash { get; set; } = null!;
 
-	public string Key { get; set; }
+	public string Key { get; set; } = null!;
 
-	public string PatchKey { get; set; }
+	public string PatchKey { get; set; } = null!;
 
-	public string PatchUrl { get; set; }
+	public string PatchUrl { get; set; } = null!;
 
-	public string Url { get; set; }
+	public string Url { get; set; } = null!;
 }

@@ -2,7 +2,7 @@ namespace DeviceService.ComponentModel;
 
 public class ObfuscationHelper
 {
-	public static string ObfuscateValue(string value)
+	public static string? ObfuscateValue(string? value)
 	{
 		if (!string.IsNullOrEmpty(value))
 		{

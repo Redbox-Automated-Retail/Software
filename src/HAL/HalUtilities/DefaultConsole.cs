@@ -37,7 +37,7 @@ public class DefaultConsole : IConsole, IDisposable
 		Console.WriteLine(value);
 	}
 
-	public void WriteLine(string format, params object[] parms)
+	public void WriteLine(string format, params object?[] parms)
 	{
 		Console.WriteLine(format, parms);
 	}

@@ -2,7 +2,7 @@ namespace Redbox.UpdateService.Model;
 
 public class InterServerMessage
 {
-	public InterServerTask Task { get; set; }
+	public InterServerTask Task { get; set; } = null!; // set by the constructor that takes it, or the JSON reader
 
 	public Server Server { get; set; }
 

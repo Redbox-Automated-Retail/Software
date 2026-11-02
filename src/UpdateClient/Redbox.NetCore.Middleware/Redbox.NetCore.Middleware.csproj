@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.NetCore.Middleware</AssemblyName>
     <RootNamespace>Redbox.NetCore.Middleware</RootNamespace>
     <OutputType>Library</OutputType>

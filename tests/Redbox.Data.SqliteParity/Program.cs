@@ -140,7 +140,7 @@ internal static class Program
 		Out("order of type high", Messages(queue, "high"));
 		queue.GetDepth(out int depth);
 		Out("depth", depth);
-		queue.SelectNextMessage(null, out IMessage next);
+		queue.SelectNextMessage(null, out IMessage? next);
 		Out("next", Describe(next));
 		queue.Update(highId, new byte[] { 9, 9, 9 });
 		queue.DeleteMessageByType("mid");
@@ -192,7 +192,7 @@ internal static class Program
 		return string.Join("; ", list);
 	}
 
-	private static string Describe(IMessage m)
+	private static string Describe(IMessage? m)
 	{
 		return m == null ? "null" : $"{m.ID}:{m.Type}:{m.Priority}:{BitConverter.ToString(m.Data)}:{(m.CreatedOn > DateTime.Now.AddDays(-1) ? "recent" : "old")}";
 	}

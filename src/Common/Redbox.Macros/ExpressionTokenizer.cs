@@ -52,7 +52,8 @@ public class ExpressionTokenizer
 
 	private static readonly CharToTokenType[] charToTokenType;
 
-	private string _text;
+	// _text and TokenText are set by InitTokenizer, which callers run before reading tokens.
+	private string _text = null!;
 
 	private int _position;
 
@@ -76,7 +77,7 @@ public class ExpressionTokenizer
 
 	public TokenType CurrentToken { get; private set; }
 
-	public string TokenText { get; private set; }
+	public string TokenText { get; private set; } = null!;
 
 	public Position CurrentPosition { get; private set; }
 

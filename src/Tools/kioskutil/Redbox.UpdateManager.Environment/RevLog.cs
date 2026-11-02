@@ -7,11 +7,11 @@ namespace Redbox.UpdateManager.Environment;
 
 public class RevLog : IRevLog
 {
-	public string Hash { get; set; }
+	public string? Hash { get; set; }
 
-	public string Label { get; set; }
+	public string? Label { get; set; }
 
-	public List<ChangeItem> Changes { get; set; }
+	public List<ChangeItem> Changes { get; set; } = null!; // set by the JSON reader (every rev log has its change list)
 
 	public string HashFileName(string name)
 	{

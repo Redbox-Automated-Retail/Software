@@ -265,7 +265,7 @@ public sealed class JobCommand
 
 	private static IExecutionContext ScheduleJob(string programName, string? label, DateTime? startTime, ProgramPriority priority, bool enableDebugging)
 	{
-		return ServiceLocator.Instance.GetService<IExecutionService>().ScheduleJob(programName, label, startTime, priority);
+		return ServiceLocator.Instance.GetService<IExecutionService>().ScheduleJob(programName, label!, startTime, priority);
 	}
 
 	private static void OnExecuteImmediate(byte[] statement, CommandContext context)

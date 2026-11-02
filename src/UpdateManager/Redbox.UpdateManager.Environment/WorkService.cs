@@ -12,12 +12,12 @@ public class WorkService : IPollRequestReply
 {
 	private class ResultEntry
 	{
-		public string Entry { get; set; }
+		public string Entry { get; set; } = null!; // filled by the object initializer or the JSON reader
 
 		public long ID { get; set; }
 	}
 
-	private Timer m_workTimer;
+	private Timer m_workTimer = null!; // created by Initialize
 
 	private bool m_isRunning;
 
@@ -93,7 +93,7 @@ public class WorkService : IPollRequestReply
 		pollRequestList = new List<PollRequest>();
 		IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
 		string storeNumber = ServiceLocator.Instance.GetService<IUpdateService>().StoreNumber();
-		for (ResultEntry resultEntry = queueService.Peek<ResultEntry>("script"); resultEntry != null; resultEntry = queueService.Peek<ResultEntry>("script"))
+		for (ResultEntry? resultEntry = queueService.Peek<ResultEntry>("script"); resultEntry != null; resultEntry = queueService.Peek<ResultEntry>("script"))
 		{
 			Dictionary<object, object> results = resultEntry.Entry.ToObject<Dictionary<object, object>>();
 			WorkResultPollRequestDTO instance = new WorkResultPollRequestDTO
@@ -179,7 +179,7 @@ public class WorkService : IPollRequestReply
 	{
 		ErrorList errorList = new ErrorList();
 		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
-		List<Guid> list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".incomplete");
+		List<Guid>? list = ServiceLocator.Instance.GetService<IDataStoreService>().Get<List<Guid>>(".incomplete");
 		if (list != null && list.Count > 0)
 		{
 			LogHelper.Instance.Log("Doing {0} incomplete and queued work items.", list.Count);

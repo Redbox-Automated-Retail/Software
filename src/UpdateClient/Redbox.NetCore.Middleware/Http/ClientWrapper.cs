@@ -39,7 +39,7 @@ public class ClientWrapper : IClientWrapper
 		try
 		{
 			HttpResponseMessage message = await _httpClient.SendAsync(request);
-			string content = await (message.Content?.ReadAsStringAsync());
+			string content = await message.Content.ReadAsStringAsync();
 			return new BaseResponse
 			{
 				Content = content,

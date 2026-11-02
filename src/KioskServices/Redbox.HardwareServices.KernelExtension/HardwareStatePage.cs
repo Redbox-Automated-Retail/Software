@@ -11,34 +11,35 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class HardwareStatePage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
-	private ComboBox cmb_cameraGeneration;
+	private ComboBox cmb_cameraGeneration = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private ComboBox cmb_barcodeDecoder;
+	private ComboBox cmb_barcodeDecoder = null!;
 
-	private Label label3;
+	private Label label3 = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private TextBox textBoxReadAttempts;
+	private TextBox textBoxReadAttempts = null!;
 
-	private ContextMenuStrip contextMenuStrip1;
+	private ContextMenuStrip contextMenuStrip1 = null!;
 
-	private TextBox textBoxBarcodesRead;
+	private TextBox textBoxBarcodesRead = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private TextBox textBoxSecureBarcodesRead;
+	private TextBox textBoxSecureBarcodesRead = null!;
 
-	private Label label6;
+	private Label label6 = null!;
 
+	// The controls above are created by InitializeComponent.
 	public HardwareStatePage()
 	{
 		InitializeComponent();

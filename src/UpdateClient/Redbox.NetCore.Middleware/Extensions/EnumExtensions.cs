@@ -22,12 +22,12 @@ public static class EnumExtensions
 			if (member.Length != 0)
 			{
 				object[] customAttributes = member[0].GetCustomAttributes(typeof(DisplayAttribute), inherit: false);
-				if (customAttributes.Length != 0 && ((DisplayAttribute)customAttributes[0]).Name.Equals(source.Trim(), StringComparison.OrdinalIgnoreCase))
+				if (customAttributes.Length != 0 && ((DisplayAttribute)customAttributes[0]).Name!.Equals(source.Trim(), StringComparison.OrdinalIgnoreCase)) // throws on a DisplayAttribute without a Name, as before
 				{
 					return Enum.Parse<T>(text);
 				}
 				object[] customAttributes2 = member[0].GetCustomAttributes(typeof(EnumMemberAttribute), inherit: false);
-				if (customAttributes2.Length != 0 && ((EnumMemberAttribute)customAttributes2[0]).Value.Equals(source.Trim(), StringComparison.OrdinalIgnoreCase))
+				if (customAttributes2.Length != 0 && ((EnumMemberAttribute)customAttributes2[0]).Value!.Equals(source.Trim(), StringComparison.OrdinalIgnoreCase)) // likewise
 				{
 					return Enum.Parse<T>(text);
 				}
@@ -36,9 +36,9 @@ public static class EnumExtensions
 		return default(T);
 	}
 
-	public static string GetDescriptionFromEnumValue(this Enum value)
+	public static string? GetDescriptionFromEnumValue(this Enum value)
 	{
-		if (value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(EnumMemberAttribute), inherit: false)
+		if (value.GetType().GetField(value.ToString())!.GetCustomAttributes(typeof(EnumMemberAttribute), inherit: false) // throws for a value without a field, as before
 			.SingleOrDefault() is EnumMemberAttribute enumMemberAttribute)
 		{
 			return enumMemberAttribute.Value;

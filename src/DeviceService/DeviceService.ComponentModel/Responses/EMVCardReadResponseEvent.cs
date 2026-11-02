@@ -4,7 +4,7 @@ namespace DeviceService.ComponentModel.Responses;
 
 public class EMVCardReadResponseEvent : BaseResponseEvent, ICardReadResponseEvent
 {
-	public EMVCardReadModel Data { get; set; }
+	public EMVCardReadModel? Data { get; set; }
 
 	public EMVCardReadResponseEvent(BaseCommandRequest request)
 		: base(request)
@@ -12,7 +12,7 @@ public class EMVCardReadResponseEvent : BaseResponseEvent, ICardReadResponseEven
 		base.EventName = "EMVCardReadResponseEvent";
 	}
 
-	public Base87CardReadModel GetBase87CardReadModel()
+	public Base87CardReadModel? GetBase87CardReadModel()
 	{
 		return Data;
 	}

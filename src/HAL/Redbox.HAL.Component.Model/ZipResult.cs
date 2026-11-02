@@ -6,5 +6,6 @@ public sealed class ZipResult
 
 	public int EntryCount { get; internal set; }
 
-	public string ZipFile { get; internal set; }
+	// Set by ZipFileService.Zip's object initializer.
+	public string ZipFile { get; internal set; } = null!;
 }

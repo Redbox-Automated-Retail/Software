@@ -20,7 +20,7 @@ public class HelpCommand
 		}
 		context.ForEachSymbolDo(delegate(string each)
 		{
-			CommandInstance command = CommandRepository.GetCommand(each);
+			CommandInstance? command = CommandRepository.GetCommand(each);
 			if (command == null)
 			{
 				return;
@@ -35,14 +35,14 @@ public class HelpCommand
 			}
 			foreach (string key in command.FormMethodCache.Keys)
 			{
-				string usage = command.FormMethodCache[key].Usage;
-				string description = command.FormMethodCache[key].Description;
+				string? usage = command.FormMethodCache[key].Usage;
+				string? description = command.FormMethodCache[key].Description;
 				if (!string.IsNullOrEmpty(usage))
 				{
-					context.Messages.Add(usage);
+					context.Messages.Add(usage!);
 					if (!string.IsNullOrEmpty(description))
 					{
-						context.Messages.Add(description);
+						context.Messages.Add(description!);
 						context.Messages.Add(Environment.NewLine);
 					}
 				}

@@ -28,10 +28,10 @@ public class ClientMetricsHandler : DelegatingHandler
 		Stopwatch requestTimer = Stopwatch.StartNew();
 		HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 		requestTimer.Stop();
-		string metricName = request.RequestUri.GetLeftPart(UriPartial.Authority);
+		string metricName = request.RequestUri!.GetLeftPart(UriPartial.Authority); // HttpClient has sent the request, so it has a Uri
 		if (request.Headers.TryGetValues("x-redbox-metrics", out var values))
 		{
-			string text = values.FirstOrDefault();
+			string? text = values.FirstOrDefault();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				metricName = text;

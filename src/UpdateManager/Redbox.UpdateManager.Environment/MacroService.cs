@@ -11,7 +11,7 @@ public class MacroService : IMacroService
 	{
 		get
 		{
-			return m_properties[name];
+			return m_properties[name]!; // IMacroService promises a string; an unknown name gives null, as before
 		}
 		set
 		{
@@ -21,6 +21,6 @@ public class MacroService : IMacroService
 
 	public string ExpandProperties(string input)
 	{
-		return m_properties.ExpandProperties(input, Location.UnknownLocation);
+		return m_properties.ExpandProperties(input, Location.UnknownLocation)!;
 	}
 }

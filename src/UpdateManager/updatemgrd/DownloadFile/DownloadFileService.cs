@@ -13,7 +13,7 @@ internal class DownloadFileService : IPollRequestReply, IDownloadFileService
 {
 	private bool _rebootRequired;
 
-	private Timer _timer;
+	private Timer _timer = null!; // created by Initialize
 
 	private bool _isRunning;
 
@@ -153,7 +153,7 @@ internal class DownloadFileService : IPollRequestReply, IDownloadFileService
 		{
 			foreach (DownloadFileChangeSetData changeSet in changeSets)
 			{
-				DownloadFileFactory.Instance.GetDownloadFileFromChangeSet(changeSet).SaveDownloadFile();
+				DownloadFileFactory.Instance.GetDownloadFileFromChangeSet(changeSet)!.SaveDownloadFile(); // throws for an unknown type, as before
 			}
 		}
 		catch (Exception e)

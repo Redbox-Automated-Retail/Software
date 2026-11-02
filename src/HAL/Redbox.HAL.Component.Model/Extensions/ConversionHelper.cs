@@ -14,12 +14,12 @@ public static class ConversionHelper
 		return type;
 	}
 
-	public static T ChangeType<T>(object value)
+	public static T? ChangeType<T>(object? value)
 	{
-		return (T)ChangeType(value, typeof(T));
+		return (T?)ChangeType(value, typeof(T));
 	}
 
-	public static object ChangeType(object value, Type convertToType)
+	public static object? ChangeType(object? value, Type convertToType)
 	{
 		if (value == null)
 		{

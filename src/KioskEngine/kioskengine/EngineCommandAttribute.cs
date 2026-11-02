@@ -5,5 +5,6 @@ namespace Redbox.KioskEngine.Bootstrap;
 [AttributeUsage(AttributeTargets.Method)]
 public class EngineCommandAttribute : Attribute
 {
-	public string Name { get; set; }
+	// Set where the attribute is applied ([EngineCommand(Name = ...)]).
+	public string Name { get; set; } = null!;
 }

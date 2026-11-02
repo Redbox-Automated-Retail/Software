@@ -27,7 +27,7 @@ public class SectionalBar : ProgressBar
 	{
 		private static BackgroundWorker BgWorker = new BackgroundWorker();
 
-		private static RangeLimit ActiveItem;
+		private static RangeLimit? ActiveItem;
 
 		public SectionalBar Section { get; private set; }
 
@@ -41,7 +41,7 @@ public class SectionalBar : ProgressBar
 
 		public double Threshold { get; set; }
 
-		public RangeLimit Nextlimit { get; set; }
+		public RangeLimit? Nextlimit { get; set; }
 
 		public bool canDispatch { get; set; } = true;
 
@@ -90,7 +90,7 @@ public class SectionalBar : ProgressBar
 			BgWorker.Dispose();
 		}
 
-		private static void DoWorkEventCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private static void DoWorkEventCompleted(object? sender, RunWorkerCompletedEventArgs e)
 		{
 			DisposeOfWorker();
 			Application.Current.Dispatcher.Invoke(delegate
@@ -124,7 +124,7 @@ public class SectionalBar : ProgressBar
 			return index;
 		}
 
-		private static void DoWorkEvent(object sender, DoWorkEventArgs e)
+		private static void DoWorkEvent(object? sender, DoWorkEventArgs e)
 		{
 			while (ActiveItem != null)
 			{
@@ -177,7 +177,7 @@ public class SectionalBar : ProgressBar
 
 	public static readonly DependencyProperty AutomationValueProperty;
 
-	private static List<RangeLimit> RangeLimits { get; set; }
+	private static List<RangeLimit>? RangeLimits { get; set; }
 
 	private static bool running { get; set; }
 
@@ -187,7 +187,7 @@ public class SectionalBar : ProgressBar
 
 	private SectionFlag AutomationFlag { get; set; }
 
-	public List<SectionalBar> Sections => GetSections(GroupName);
+	public List<SectionalBar>? Sections => GetSections(GroupName);
 
 	public bool IsThresholdReached
 	{
@@ -366,7 +366,7 @@ public class SectionalBar : ProgressBar
 		base.IsVisibleChanged += IsVisiblePropertyChanged;
 	}
 
-	public void SetInitState(double value, RoutedEventHandler routedEventHandler = null, bool visible = true)
+	public void SetInitState(double value, RoutedEventHandler? routedEventHandler = null, bool visible = true)
 	{
 		if (routedEventHandler != null)
 		{
@@ -404,7 +404,7 @@ public class SectionalBar : ProgressBar
 		RaiseEvent(new RoutedEventArgs(ThresholdReachedEvent, this));
 	}
 
-	private static List<SectionalBar> GetSections(string groupName)
+	private static List<SectionalBar>? GetSections(string groupName)
 	{
 		if (groupSections.ContainsKey(groupName))
 		{
@@ -429,7 +429,7 @@ public class SectionalBar : ProgressBar
 
 	protected virtual void SetThresholdReached()
 	{
-		List<SectionalBar> sections = Sections;
+		List<SectionalBar>? sections = Sections;
 		if (sections == null)
 		{
 			return;
@@ -504,7 +504,7 @@ public class SectionalBar : ProgressBar
 
 	protected static void Unregister(string groupName, SectionalBar sectionBar)
 	{
-		List<SectionalBar> sections = sectionBar.Sections;
+		List<SectionalBar>? sections = sectionBar.Sections;
 		if (sections != null)
 		{
 			if (sections.Contains(sectionBar))
@@ -529,7 +529,7 @@ public class SectionalBar : ProgressBar
 
 	protected static void CheckRegister(SectionalBar sectionBar)
 	{
-		List<SectionalBar> sections = sectionBar.Sections;
+		List<SectionalBar>? sections = sectionBar.Sections;
 		if (sections?.Count == sectionBar.GroupCount)
 		{
 			sections.Clear();
@@ -568,32 +568,32 @@ public class SectionalBar : ProgressBar
 
 	private static void OnThresholdReachedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).RaiseThresholdReachedEvent();
+		(d as SectionalBar)!.RaiseThresholdReachedEvent();
 	}
 
 	private static void OnHeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).UpdateCornerRadius();
+		(d as SectionalBar)!.UpdateCornerRadius();
 	}
 
 	private static void OnAutoCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).UpdateCornerRadius();
+		(d as SectionalBar)!.UpdateCornerRadius();
 	}
 
 	private static void OnDisposePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		Unregister(d as SectionalBar);
+		Unregister((d as SectionalBar)!);
 	}
 
 	private static void OnMinimumPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).AutomationFlag |= SectionFlag.Minimum;
+		(d as SectionalBar)!.AutomationFlag |= SectionFlag.Minimum;
 	}
 
 	private static void OnMaximumPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).AutomationFlag |= SectionFlag.Maximum;
+		(d as SectionalBar)!.AutomationFlag |= SectionFlag.Maximum;
 	}
 
 	private static void OnThresholdPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -602,12 +602,12 @@ public class SectionalBar : ProgressBar
 
 	private static void OnGroupCountPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).AutomationFlag |= SectionFlag.Count;
+		(d as SectionalBar)!.AutomationFlag |= SectionFlag.Count;
 	}
 
 	private static void OnAutomationValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SectionalBar).AutomationFlag |= SectionFlag.AutoValue;
+		(d as SectionalBar)!.AutomationFlag |= SectionFlag.AutoValue;
 	}
 
 	private void IsVisiblePropertyChanged(object s, DependencyPropertyChangedEventArgs e)
@@ -637,7 +637,7 @@ public class SectionalBar : ProgressBar
 		{
 			return;
 		}
-		List<SectionalBar> sections = sectionBar.Sections;
+		List<SectionalBar>? sections = sectionBar.Sections;
 		if (sections == null || sections.Count != sectionBar.GroupCount)
 		{
 			return;

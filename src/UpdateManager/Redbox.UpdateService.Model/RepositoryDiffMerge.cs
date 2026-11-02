@@ -11,7 +11,7 @@ public static class RepositoryDiffMerge
 {
 	private static readonly Dictionary<string, string> CompressionLibrary = new Dictionary<string, string> { { "%", "0000000000000000000000000000000000000000" } };
 
-	public static bool TryDiff(List<ClientRepositoryDataDTO> input, List<ClientRepositoryDataDTO> output, bool verify, out RepositoryDiffWrapper rdw)
+	public static bool TryDiff(List<ClientRepositoryDataDTO> input, List<ClientRepositoryDataDTO> output, bool verify, out RepositoryDiffWrapper? rdw)
 	{
 		try
 		{
@@ -21,7 +21,7 @@ public static class RepositoryDiffMerge
 			foreach (ClientRepositoryDataDTO item in output)
 			{
 				ClientRepositoryDataDTO i = item;
-				ClientRepositoryDataDTO clientRepositoryDataDTO = input.FirstOrDefault((ClientRepositoryDataDTO fromItem) => i.R == fromItem.R);
+				ClientRepositoryDataDTO? clientRepositoryDataDTO = input.FirstOrDefault((ClientRepositoryDataDTO fromItem) => i.R == fromItem.R);
 				if (clientRepositoryDataDTO != null)
 				{
 					bool changed = false;

@@ -18,7 +18,7 @@ internal sealed class GZipCompressionAlgorithm : ICompressionAlgorithm
 			gZipOutputStream.Finish();
 			gZipOutputStream.Flush();
 			result = new byte[output.Length];
-			Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
+			Array.Copy(output.GetBuffer()!, 0L, result, 0L, output.Length);
 		}
 		binaryReader.Close();
 		return result;
@@ -43,7 +43,7 @@ internal sealed class GZipCompressionAlgorithm : ICompressionAlgorithm
 			}
 		}
 		byte[] result = new byte[output.Length];
-		Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
+		Array.Copy(output.GetBuffer()!, 0L, result, 0L, output.Length);
 		binaryWriter.Close();
 		return result;
 	}

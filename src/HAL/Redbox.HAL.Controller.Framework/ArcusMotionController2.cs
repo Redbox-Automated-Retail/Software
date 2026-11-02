@@ -86,7 +86,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		if (ControllerConfiguration.Instance.QueryPositionForVendMove)
 		{
 			IControllerPosition controllerPosition = ReadPositions();
-			if (controllerPosition.ReadOk && controllerPosition.YCoordinate.Value == vendY)
+			if (controllerPosition.ReadOk && controllerPosition.YCoordinate!.Value == vendY)
 			{
 				if (LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug))
 				{
@@ -110,7 +110,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	internal override bool CommunicationOk()
 	{
-		string text = SendReciveRaw("$");
+		string? text = SendReciveRaw("$");
 		if (text == null)
 		{
 			return false;
@@ -136,7 +136,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	internal override IMotionControlLimitResponse ReadLimits()
 	{
-		string text = SendReciveRaw("???");
+		string? text = SendReciveRaw("???");
 		ArcusLimitResponse arcusLimitResponse = new ArcusLimitResponse(text);
 		if (!arcusLimitResponse.ReadOk)
 		{
@@ -174,7 +174,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		ArcusDescriptor = new ArcusDeviceDescriptor(usbDeviceService);
 		SerialPort port = new SerialPort(ControllerConfiguration.Instance.MotionControllerPortName, 115200, Parity.None, 8, StopBits.One);
 		IPortManagerService portManagerService = ServiceLocator.Instance.GetService<IPortManagerService>();
-		Port = portManagerService.Create(port);
+		Port = portManagerService.Create(port)!;
 		Port.WriteTerminator = new byte[2] { 13, 0 };
 		Port.WritePause = ControllerConfiguration.Instance.ArcusWritePause;
 		Port.WriteTimeout = ControllerConfiguration.Instance.MotionControllerTimeout;
@@ -241,7 +241,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		IDoorSensorService doorSensorService = ServiceLocator.Instance.GetService<IDoorSensorService>();
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		string command = "MST" + axis.ToString().ToUpper();
-		string text;
+		string? text;
 		MotorWaitDecoder motorWaitDecoder;
 		do
 		{
@@ -278,7 +278,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		return ErrorCodes.Timeout;
 	}
 
-	private string HaltMotor()
+	private string? HaltMotor()
 	{
 		return SendReciveRaw("RSTOP");
 	}
@@ -394,17 +394,17 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		return ErrorCodes.ArcusNotResponsive;
 	}
 
-	private string SendReciveRaw(string command)
+	private string? SendReciveRaw(string command)
 	{
 		if (string.IsNullOrEmpty(command) || command.Equals("NOP", StringComparison.CurrentCultureIgnoreCase))
 		{
 			return "OK";
 		}
 		bool logCommand = LogHelper.Instance.IsLevelEnabled(LogEntryType.Debug) || DebugEnabled;
-		StringBuilder stringBuilder = (logCommand ? new StringBuilder() : null);
+		StringBuilder? stringBuilder = (logCommand ? new StringBuilder() : null);
 		if (logCommand)
 		{
-			stringBuilder.AppendFormat("ArcusMotionController: Instruction={0}", command);
+			stringBuilder!.AppendFormat("ArcusMotionController: Instruction={0}", command);
 		}
 		using IChannelResponse channelResponse = Port.SendRecv(command, ControllerConfiguration.Instance.MotionControllerTimeout);
 		if (!channelResponse.CommOk)
@@ -413,7 +413,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 			WriteToLog("[ArcusMotionController] Send command {0}; error = {1}", command, ErrorCodes.ArcusNotResponsive.ToString());
 			if (logCommand)
 			{
-				stringBuilder.AppendFormat(", Error = {0}", ErrorCodes.ArcusNotResponsive.ToString());
+				stringBuilder!.AppendFormat(", Error = {0}", ErrorCodes.ArcusNotResponsive.ToString());
 				WriteToLog(stringBuilder.ToString());
 			}
 			return null;
@@ -423,7 +423,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		string text = Encoding.ASCII.GetString(channelResponse.RawResponse, 0, count);
 		if (logCommand)
 		{
-			stringBuilder.AppendFormat(", Response={0}", text);
+			stringBuilder!.AppendFormat(", Response={0}", text);
 			WriteToLog(stringBuilder.ToString());
 		}
 		return text;
@@ -432,7 +432,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 	private int? DecodePositionResponse(Axis axis)
 	{
 		string command = ((axis == Axis.X) ? "EX" : "PY");
-		string text = SendReciveRaw(command);
+		string? text = SendReciveRaw(command);
 		if (text != null && int.TryParse(text.Substring(text.IndexOf('=') + 1), out var result))
 		{
 			return result;
@@ -472,7 +472,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 			IControllerPosition controllerPosition = ReadPositions();
 			if (controllerPosition.ReadOk)
 			{
-				LogHelper.Instance.Log("MoveAbsoluteInternal: encoder positions (x,y) = {0}, {1}.", controllerPosition.XCoordinate.Value, controllerPosition.YCoordinate.Value);
+				LogHelper.Instance.Log("MoveAbsoluteInternal: encoder positions (x,y) = {0}, {1}.", controllerPosition.XCoordinate!.Value, controllerPosition.YCoordinate!.Value);
 			}
 			else
 			{
@@ -487,18 +487,18 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 		int moveTimeout = ControllerConfiguration.Instance.MoveTimeout;
 		if (!UseSmoothMove)
 		{
-			if (SendReciveRaw($"X{target.XCoordinate.Value}") == null)
+			if (SendReciveRaw($"X{target.XCoordinate!.Value}") == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;
 			}
-			if (SendReciveRaw($"Y{target.YCoordinate.Value}") == null)
+			if (SendReciveRaw($"Y{target.YCoordinate!.Value}") == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;
 			}
 		}
 		else
 		{
-			string command = $"Y{target.YCoordinate.Value}X{target.XCoordinate.Value}";
+			string command = $"Y{target.YCoordinate!.Value}X{target.XCoordinate!.Value}";
 			if (SendReciveRaw(command) == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;
@@ -545,7 +545,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 
 	private ErrorCodes OnAxisYMove(ref MoveTarget target)
 	{
-		string command = $"Y{target.YCoordinate.Value}";
+		string command = $"Y{target.YCoordinate!.Value}";
 		if (SendReciveRaw(command) != null)
 		{
 			return OnWaitMotor(ControllerConfiguration.Instance.MoveTimeout, Axis.Y);
@@ -556,7 +556,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 	private ErrorCodes OnAxisXMove(ref MoveTarget target)
 	{
 		int moveTimeout = ControllerConfiguration.Instance.MoveTimeout;
-		string command = $"X{target.XCoordinate.Value}";
+		string command = $"X{target.XCoordinate!.Value}";
 		if (SendReciveRaw(command) == null)
 		{
 			return ErrorCodes.ArcusNotResponsive;
@@ -604,7 +604,7 @@ internal sealed class ArcusMotionController2 : AbstractMotionController
 	{
 		if (Axis.XY == axis || Axis.Y == axis)
 		{
-			string text = SendReciveRaw("MIOY");
+			string? text = SendReciveRaw("MIOY");
 			if (text == null || SendReciveRaw("MECLEARY") == null)
 			{
 				return ErrorCodes.ArcusNotResponsive;

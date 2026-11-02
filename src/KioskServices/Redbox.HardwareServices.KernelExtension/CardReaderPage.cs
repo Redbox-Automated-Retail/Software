@@ -15,48 +15,49 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class CardReaderPage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Panel panelTopHeader;
+	private Panel panelTopHeader = null!;
 
-	private Label labelHeader;
+	private Label labelHeader = null!;
 
-	private GroupBox groupBoxDeviceService;
+	private GroupBox groupBoxDeviceService = null!;
 
-	private CheckBox checkBoxDeviceServiceCardReaderConnected;
+	private CheckBox checkBoxDeviceServiceCardReaderConnected = null!;
 
-	private CheckBox checkBoxDeviceServiceConnected;
+	private CheckBox checkBoxDeviceServiceConnected = null!;
 
-	private GroupBox groupBoxUSBCardReader;
+	private GroupBox groupBoxUSBCardReader = null!;
 
-	private CheckBox checkBoxUSBCardReaderConnected;
+	private CheckBox checkBoxUSBCardReaderConnected = null!;
 
-	private Panel panelBottom;
+	private Panel panelBottom = null!;
 
-	private Button buttonRefresh;
+	private Button buttonRefresh = null!;
 
-	private GroupBox groupBoxTrackDataService;
+	private GroupBox groupBoxTrackDataService = null!;
 
-	private Label labelRegisteredServiceValue;
+	private Label labelRegisteredServiceValue = null!;
 
-	private Label labelRegisteredService;
+	private Label labelRegisteredService = null!;
 
-	private TextBox textBoxDeviceServiceClientVersion;
+	private TextBox textBoxDeviceServiceClientVersion = null!;
 
-	private Label labelDeviceServiceClientVersion;
+	private Label labelDeviceServiceClientVersion = null!;
 
-	private CheckBox checkBoxDeviceServiceClientCompatible;
+	private CheckBox checkBoxDeviceServiceClientCompatible = null!;
 
-	private TextBox textBoxDeviceServiceVersion;
+	private TextBox textBoxDeviceServiceVersion = null!;
 
-	private Label labelDeviceServiceVersionLabel;
+	private Label labelDeviceServiceVersionLabel = null!;
 
-	private CheckBox checkBoxSupportsEMV;
+	private CheckBox checkBoxSupportsEMV = null!;
 
-	private Panel panelLoadingData;
+	private Panel panelLoadingData = null!;
 
-	private Label labelLoading;
+	private Label labelLoading = null!;
 
+	// The controls above are created by InitializeComponent.
 	public CardReaderPage()
 	{
 		InitializeComponent();
@@ -67,11 +68,11 @@ public class CardReaderPage : UserControl, IPreferencePageHost
 		return true;
 	}
 
-	public void LoadValues(IPreferencePage preferencePage)
+	public void LoadValues(IPreferencePage? preferencePage)
 	{
 		IViewService viewService = ServiceLocator.Instance.GetService<IViewService>();
 		IDeviceServiceClientHelper deviceServiceClientHelper = ServiceLocator.Instance.GetService<IDeviceServiceClientHelper>();
-		ValidateVersionModel validateVersionModel = null;
+		ValidateVersionModel? validateVersionModel = null;
 		bool supportsEMV = false;
 		panelLoadingData.Visible = true;
 		Task.Factory.StartNew(delegate
@@ -84,20 +85,20 @@ public class CardReaderPage : UserControl, IPreferencePageHost
 			checkBoxDeviceServiceCardReaderConnected.Checked = deviceServiceClientHelper?.IsCardReaderConnected ?? false;
 			checkBoxSupportsEMV.Checked = supportsEMV;
 			panelLoadingData.Visible = false;
-		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler);
+		}, CancellationToken.None, TaskContinuationOptions.None, viewService?.UITaskScheduler!); // throws without a view service, as before
 		textBoxDeviceServiceVersion.Text = deviceServiceClientHelper?.DeviceServiceVersion?.ToString();
 		textBoxDeviceServiceClientVersion.Text = deviceServiceClientHelper?.DeviceServiceClientVersion?.ToString();
 		checkBoxDeviceServiceConnected.Checked = deviceServiceClientHelper?.IsConnectedToDeviceService ?? false;
 		checkBoxUSBCardReaderConnected.Checked = CardReaderDetector.IsUSBCardReaderAttached();
-		string text = ServiceLocator.Instance.GetService<ITrackDataService>()?.GetType()?.ToString();
-		if (!string.IsNullOrEmpty(text) && text.Contains("."))
+		string? text = ServiceLocator.Instance.GetService<ITrackDataService>()?.GetType()?.ToString();
+		if (!string.IsNullOrEmpty(text) && text!.Contains("."))
 		{
 			text = text.Split('.').Last();
 		}
 		labelRegisteredServiceValue.Text = text ?? "";
 	}
 
-	private void buttonRefresh_Click(object sender, EventArgs e)
+	private void buttonRefresh_Click(object? sender, EventArgs e)
 	{
 		LoadValues(null);
 	}

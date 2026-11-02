@@ -6,7 +6,7 @@ internal sealed class RedboxSerialPortConfiguration : ICommChannelConfiguration
 {
 	public int? ReceiveBufferSize { get; set; }
 
-	public byte[] WriteTerminator { get; set; }
+	public byte[]? WriteTerminator { get; set; }
 
 	public int WritePause { get; set; }
 

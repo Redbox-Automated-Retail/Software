@@ -4,13 +4,13 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal sealed class GetOperation : AbstractOperation<GetResult>
 {
-	private IFormattedLog Log;
+	private IFormattedLog? Log;
 
 	private readonly ILocation Location;
 
 	private readonly IGetObserver Observer;
 
-	private readonly IDeck Deck;
+	private readonly IDeck? Deck;
 
 	private readonly int Slot;
 

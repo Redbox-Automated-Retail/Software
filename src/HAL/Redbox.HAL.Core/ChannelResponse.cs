@@ -8,7 +8,7 @@ namespace Redbox.HAL.Core;
 
 internal sealed class ChannelResponse : IChannelResponse, IDisposable
 {
-	internal readonly byte[] Buffer;
+	internal readonly byte[]? Buffer;
 
 	internal readonly string ID;
 
@@ -78,7 +78,7 @@ internal sealed class ChannelResponse : IChannelResponse, IDisposable
 
 	internal void Accumulate(int len)
 	{
-		Accumulate(Buffer, len);
+		Accumulate(Buffer!, len);
 	}
 
 	internal void Accumulate(byte[] bytes, int len)

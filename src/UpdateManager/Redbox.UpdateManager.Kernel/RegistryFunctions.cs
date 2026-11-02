@@ -51,7 +51,7 @@ public static class RegistryFunctions
 	{
 		try
 		{
-			RegistryKey registryKey = null;
+			RegistryKey? registryKey = null;
 			if (path.StartsWith("HKEY_CURRENT_USER"))
 			{
 				registryKey = Registry.CurrentUser.OpenSubKey(path.Replace("HKEY_CURRENT_USER\\", ""), writable: true);
@@ -91,7 +91,7 @@ public static class RegistryFunctions
 	{
 		try
 		{
-			RegistryKey registryKey = null;
+			RegistryKey? registryKey = null;
 			if (path.StartsWith("HKEY_CURRENT_USER"))
 			{
 				registryKey = Registry.CurrentUser.OpenSubKey(path.Replace("HKEY_CURRENT_USER\\", ""), writable: true);
@@ -127,7 +127,7 @@ public static class RegistryFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getregistrykey")]
-	internal static object GetKey(string path, string name)
+	internal static object? GetKey(string path, string name)
 	{
 		IMacroService macroService = ServiceLocator.Instance.GetService<IMacroService>();
 		return Registry.GetValue(macroService.ExpandProperties(path), macroService.ExpandProperties(name), string.Empty);
@@ -159,7 +159,7 @@ public static class RegistryFunctions
 		LuaTable versionsTable = new LuaTable(KernelService.Instance.LuaRuntime);
 		luaTable["success"] = false;
 		luaTable["versions"] = versionsTable;
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP");
@@ -169,7 +169,7 @@ public static class RegistryFunctions
 				string[] subKeyNames = registryKey.GetSubKeyNames();
 				foreach (string name in subKeyNames)
 				{
-					RegistryKey versionKey = registryKey.OpenSubKey(name);
+					RegistryKey? versionKey = registryKey.OpenSubKey(name);
 					if (versionKey != null)
 					{
 						LuaTable versionEntry = new LuaTable(KernelService.Instance.LuaRuntime);

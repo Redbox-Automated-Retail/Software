@@ -14,11 +14,11 @@ public static class Singleton<T> where T : class
 		{
 			throw new SingletonException("A Singleton<T> class must not implement public instance constructors.");
 		}
-		ConstructorInfo constructor = typeFromHandle.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+		ConstructorInfo? constructor = typeFromHandle.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
 		if (constructor == null)
 		{
 			throw new SingletonException("A Singleton<T> class must implement a non-public instance constructor.");
 		}
-		Instance = constructor.Invoke(null) as T;
+		Instance = (constructor.Invoke(null) as T)!; // the constructor of T makes a T
 	}
 }

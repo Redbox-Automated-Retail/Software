@@ -14,7 +14,7 @@ public class IUC285Notifier : IIUC285Notifier
 
 	private ILogger<IUC285Notifier> _logger;
 
-	private string _url;
+	private string? _url;
 
 	public IUC285Notifier(ILogger<IUC285Notifier> logger, IHttpService httpService, IApplicationSettings settings)
 	{
@@ -36,9 +36,9 @@ public class IUC285Notifier : IIUC285Notifier
 		return new Uri(_settings.DeviceServiceUrl);
 	}
 
-	private string GetDeviceServiceClientUrl()
+	private string? GetDeviceServiceClientUrl()
 	{
-		string result = null;
+		string? result = null;
 		try
 		{
 			UriBuilder uriBuilder = new UriBuilder(GetDeviceServiceUri());
@@ -66,7 +66,7 @@ public class IUC285Notifier : IIUC285Notifier
 			if (!connected)
 			{
 				int connectionTimeout = 5000;
-				connected = _deviceServiceClient.ConnectToDeviceService(_url, connectionTimeout);
+				connected = _deviceServiceClient.ConnectToDeviceService(_url!, connectionTimeout); // null when the settings' url is invalid (logged in GetDeviceServiceClientUrl)
 			}
 		}
 		if (!connected)
@@ -92,7 +92,7 @@ public class IUC285Notifier : IIUC285Notifier
 		}
 	}
 
-	public void SendCardReaderDisconnectedEvent(Exception exception)
+	public void SendCardReaderDisconnectedEvent(Exception? exception)
 	{
 		if (ConnectToDeviceServiceClient())
 		{

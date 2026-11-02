@@ -6,7 +6,7 @@ namespace Redbox.HAL.DataMatrix.Framework;
 
 internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposable, IConfigurationObserver
 {
-	private ICameraPlugin Plugin;
+	private ICameraPlugin? Plugin;
 
 	private CameraGeneration _currentCameraGeneration;
 
@@ -14,7 +14,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 
 	public bool IsConnected { get; private set; }
 
-	public bool SupportsRestart => Plugin.SupportsReset;
+	public bool SupportsRestart => Plugin!.SupportsReset;
 
 	public bool InError { get; private set; }
 
@@ -47,7 +47,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 			if (_currentCameraGeneration == CameraGeneration.Unknown)
 			{
 				LogHelper.Instance.Log("[Legacy Camera Service] locate camera generation.");
-				IDeviceDescriptor deviceDescriptor = ServiceLocator.Instance.GetService<IUsbDeviceService>().FindActiveCamera(matchDriver: false);
+				IDeviceDescriptor? deviceDescriptor = ServiceLocator.Instance.GetService<IUsbDeviceService>().FindActiveCamera(matchDriver: false);
 				if (deviceDescriptor != null)
 				{
 					LogHelper.Instance.Log("Found camera {0}", deviceDescriptor.Friendlyname);
@@ -72,7 +72,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 		try
 		{
 			InError = false;
-			IsConnected = Plugin.Start();
+			IsConnected = Plugin!.Start();
 			if (!test)
 			{
 				return IsConnected;
@@ -90,7 +90,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 	public ISnapResult Snap()
 	{
 		string text = GenerateSnapFileName();
-		Plugin.Snap(text);
+		Plugin!.Snap(text);
 		SnapResult snapResult = new SnapResult(text);
 		if (!snapResult.SnapOk)
 		{
@@ -104,7 +104,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 		return ValidateSettings(null);
 	}
 
-	public bool ValidateSettings(IMessageSink s)
+	public bool ValidateSettings(IMessageSink? s)
 	{
 		return false;
 	}
@@ -123,7 +123,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 		IsConnected = false;
 		try
 		{
-			return Plugin.Stop();
+			return Plugin!.Stop();
 		}
 		catch (Exception e)
 		{
@@ -134,7 +134,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 
 	public bool Restart()
 	{
-		if (!Plugin.SupportsReset)
+		if (!Plugin!.SupportsReset)
 		{
 			return false;
 		}
@@ -142,7 +142,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 		ServiceLocator.Instance.GetService<IRuntimeService>().SpinWait(500);
 		LogHelper.Instance.Log("[Legacy Camera Service] Cycle camera driver.");
 		IUsbDeviceService service = ServiceLocator.Instance.GetService<IUsbDeviceService>();
-		IDeviceDescriptor deviceDescriptor = service.FindActiveCamera(matchDriver: false);
+		IDeviceDescriptor? deviceDescriptor = service.FindActiveCamera(matchDriver: false);
 		if (deviceDescriptor != null)
 		{
 			LogHelper.Instance.Log("Found camera {0}", deviceDescriptor.Friendlyname);
@@ -190,7 +190,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 
 	protected override void DisposeInner()
 	{
-		Plugin.Stop();
+		Plugin!.Stop();
 	}
 
 	internal LegacyScanner()
@@ -207,7 +207,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 
 	private void LoadPlugin(string driver)
 	{
-		CameraPluginDescriptor cameraPluginDescriptor = PluginLoader.Instance.LocatePlugin(driver, out var plugin);
+		CameraPluginDescriptor? cameraPluginDescriptor = PluginLoader.Instance.LocatePlugin(driver, out var plugin);
 		if (cameraPluginDescriptor == null)
 		{
 			LogHelper.Instance.Log($"Unable to locate plugin {driver}", LogEntryType.Error);
@@ -223,7 +223,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 				xmlDocument.Load(cameraPluginDescriptor.DescriptorPath);
 				if (xmlDocument.DocumentElement != null)
 				{
-					XmlNode xmlNode = xmlDocument.SelectSingleNode("Plugin/Properties");
+					XmlNode? xmlNode = xmlDocument.SelectSingleNode("Plugin/Properties");
 					if (xmlNode != null)
 					{
 						foreach (XmlNode childNode in xmlNode.ChildNodes)
@@ -232,9 +232,9 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 							{
 								continue;
 							}
-							string name = childNode.Attributes["name"].Value;
-							string propertyValue = childNode.Attributes["value"].Value;
-							XmlAttribute xmlAttribute = childNode.Attributes["type"];
+							string name = childNode.Attributes!["name"]!.Value;
+							string propertyValue = childNode.Attributes!["value"]!.Value;
+							XmlAttribute? xmlAttribute = childNode.Attributes!["type"];
 							if (xmlAttribute == null)
 							{
 								BarcodeConfiguration.Instance.Properties[name] = propertyValue;
@@ -242,8 +242,8 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 							}
 							try
 							{
-								Type type = Type.GetType(xmlAttribute.Value);
-								BarcodeConfiguration.Instance.Properties[name] = Convert.ChangeType(propertyValue, type);
+								Type? type = Type.GetType(xmlAttribute.Value);
+								BarcodeConfiguration.Instance.Properties[name] = Convert.ChangeType(propertyValue, type!);
 							}
 							catch
 							{
@@ -254,7 +254,7 @@ internal sealed class LegacyScanner : ScannerAdapter, IScannerDevice, IDisposabl
 				}
 			}
 		}
-		Plugin.InitWithProperties(BarcodeConfiguration.Instance.Properties);
+		Plugin!.InitWithProperties(BarcodeConfiguration.Instance.Properties);
 	}
 
 	private CameraGeneration From(IDeviceDescriptor descriptor)

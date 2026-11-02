@@ -15,7 +15,7 @@ public static class FirewallHelper
 
 	private const string AuthorizedApplicationProgramID = "HNetCfg.FwAuthorizedApplication";
 
-	private static INetFwMgr m_firewallManager;
+	private static INetFwMgr? m_firewallManager;
 
 	private static INetFwMgr FirewallManager
 	{
@@ -23,7 +23,7 @@ public static class FirewallHelper
 		{
 			if (m_firewallManager == null)
 			{
-				m_firewallManager = (INetFwMgr)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwMgr"));
+				m_firewallManager = (INetFwMgr)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwMgr")!)!;
 			}
 			return m_firewallManager;
 		}
@@ -57,7 +57,7 @@ public static class FirewallHelper
 
 	internal static void AddPortExemption(int port, NET_FW_IP_PROTOCOL_ protocol, string portName)
 	{
-		INetFwOpenPort netFwOpenPort = (INetFwOpenPort)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwOpenPort"));
+		INetFwOpenPort netFwOpenPort = (INetFwOpenPort)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwOpenPort")!)!;
 		netFwOpenPort.Port = port;
 		netFwOpenPort.Name = portName;
 		netFwOpenPort.Enabled = true;
@@ -73,7 +73,7 @@ public static class FirewallHelper
 
 	internal static void AuthorizeApplication(string title, string applicationPath, NET_FW_SCOPE_ scope, NET_FW_IP_VERSION_ ipVersion)
 	{
-		INetFwAuthorizedApplication netFwAuthorizedApplication = (INetFwAuthorizedApplication)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwAuthorizedApplication"));
+		INetFwAuthorizedApplication netFwAuthorizedApplication = (INetFwAuthorizedApplication)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwAuthorizedApplication")!)!;
 		netFwAuthorizedApplication.Name = title;
 		netFwAuthorizedApplication.Scope = scope;
 		netFwAuthorizedApplication.Enabled = true;

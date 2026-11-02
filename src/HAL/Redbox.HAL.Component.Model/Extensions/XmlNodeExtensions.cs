@@ -7,21 +7,21 @@ public static class XmlNodeExtensions
 {
 	public static void SelectSingleNodeAndSetValue<T>(this XmlNode node, string path, T value)
 	{
-		GetTargetNode(node, path).InnerText = value.ToString();
+		GetTargetNode(node, path).InnerText = value!.ToString()!;
 	}
 
 	public static void SelectSingleNodeAndSetInnerXml<T>(this XmlNode node, string path, T instance)
 	{
-		GetTargetNode(node, path).InnerXml = instance.ToString();
+		GetTargetNode(node, path).InnerXml = instance!.ToString()!;
 	}
 
-	public static T GetNodeValue<T>(this XmlNode node, T defaultValue)
+	public static T GetNodeValue<T>(this XmlNode? node, T defaultValue)
 	{
 		try
 		{
 			if (node != null && !string.IsNullOrEmpty(node.InnerText))
 			{
-				return ConversionHelper.ChangeType<T>(ServiceLocator.Instance.GetService<IRuntimeService>().ExpandConstantMacros(node.InnerText));
+				return ConversionHelper.ChangeType<T>(ServiceLocator.Instance.GetService<IRuntimeService>().ExpandConstantMacros(node.InnerText))!;
 			}
 		}
 		catch (ArgumentException)
@@ -30,18 +30,18 @@ public static class XmlNodeExtensions
 		return defaultValue;
 	}
 
-	public static T GetAttributeValue<T>(this XmlNode node, string attributeName)
+	public static T? GetAttributeValue<T>(this XmlNode? node, string attributeName)
 	{
 		return node.GetAttributeValue(attributeName, default(T));
 	}
 
-	public static T GetAttributeValue<T>(this XmlNode node, string attributeName, T defaultValue)
+	public static T GetAttributeValue<T>(this XmlNode? node, string attributeName, T defaultValue)
 	{
 		try
 		{
-			if (node != null && node.Attributes[attributeName] != null)
+			if (node != null && node.Attributes![attributeName] != null)
 			{
-				return ConversionHelper.ChangeType<T>(ServiceLocator.Instance.GetService<IRuntimeService>().ExpandConstantMacros(node.Attributes[attributeName].Value));
+				return ConversionHelper.ChangeType<T>(ServiceLocator.Instance.GetService<IRuntimeService>().ExpandConstantMacros(node.Attributes[attributeName]!.Value))!;
 			}
 		}
 		catch (ArgumentException)
@@ -52,7 +52,7 @@ public static class XmlNodeExtensions
 
 	public static void SetAttributeValue<T>(this XmlNode node, string attributeName, T value)
 	{
-		XmlAttribute xmlAttribute = node.Attributes[attributeName];
+		XmlAttribute? xmlAttribute = node.Attributes![attributeName];
 		if (xmlAttribute != null && !typeof(T).IsValueType && value == null)
 		{
 			node.Attributes.Remove(xmlAttribute);
@@ -60,10 +60,10 @@ public static class XmlNodeExtensions
 		}
 		if (xmlAttribute == null)
 		{
-			xmlAttribute = node.OwnerDocument.CreateAttribute(attributeName);
+			xmlAttribute = node.OwnerDocument!.CreateAttribute(attributeName);
 			node.Attributes.Append(xmlAttribute);
 		}
-		xmlAttribute.Value = value.ToString();
+		xmlAttribute.Value = value!.ToString();
 	}
 
 	private static XmlNode GetTargetNode(XmlNode node, string path)
@@ -72,10 +72,10 @@ public static class XmlNodeExtensions
 		XmlNode current = node;
 		foreach (string name in names)
 		{
-			XmlNode child = current.SelectSingleNode(name);
+			XmlNode? child = current.SelectSingleNode(name);
 			if (child == null)
 			{
-				child = current.OwnerDocument.CreateElement(name);
+				child = current.OwnerDocument!.CreateElement(name);
 				current.AppendChild(child);
 			}
 			current = child;

@@ -9,14 +9,16 @@ public class QueueService : IQueueService
 {
 	private class QueueEntry
 	{
-		public string Label { get; set; }
+		// Filled by Enqueue or the JSON reader.
+		public string Label { get; set; } = null!;
 
-		public string Entry { get; set; }
+		public string Entry { get; set; } = null!;
 	}
 
-	private string m_root;
+	// Set by Initialize.
+	private string m_root = null!;
 
-	private PersistentList<QueueEntry> m_queueFile;
+	private PersistentList<QueueEntry> m_queueFile = null!;
 
 	private readonly object m_queueLock = new object();
 
@@ -27,14 +29,14 @@ public class QueueService : IQueueService
 		string text = ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(path);
 		if (!Path.IsPathRooted(text))
 		{
-			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), text);
+			text = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, text);
 		}
 		m_root = Path.Combine(text, ".queue");
 		m_queueFile = new PersistentList<QueueEntry>(m_root);
 		ServiceLocator.Instance.AddService(typeof(IQueueService), this);
 	}
 
-	public string PeekRaw(string label)
+	public string? PeekRaw(string label)
 	{
 		foreach (QueueEntry item in m_queueFile)
 		{
@@ -46,9 +48,9 @@ public class QueueService : IQueueService
 		return null;
 	}
 
-	public T Peek<T>(string label)
+	public T? Peek<T>(string label)
 	{
-		string text = PeekRaw(label);
+		string? text = PeekRaw(label);
 		if (text != null)
 		{
 			return text.ToObject<T>();

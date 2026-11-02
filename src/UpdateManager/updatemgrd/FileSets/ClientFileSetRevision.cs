@@ -7,7 +7,8 @@ internal class ClientFileSetRevision
 {
 	public long FileSetId { get; set; }
 
-	public string FileSetName { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string FileSetName { get; set; } = null!;
 
 	public int RetentionDays { get; set; }
 
@@ -15,33 +16,33 @@ internal class ClientFileSetRevision
 
 	public long RevisionId { get; set; }
 
-	public string RevisionName { get; set; }
+	public string RevisionName { get; set; } = null!;
 
-	public string RevisionVersion { get; set; }
+	public string RevisionVersion { get; set; } = null!;
 
 	public long PatchRevisionId { get; set; }
 
-	public string SetPath { get; set; }
+	public string SetPath { get; set; } = null!;
 
 	public int SetCompressionType { get; set; }
 
-	public string SetFileHash { get; set; }
+	public string SetFileHash { get; set; } = null!;
 
 	public long SetFileSize { get; set; }
 
-	public string PatchSetPath { get; set; }
+	public string PatchSetPath { get; set; } = null!;
 
 	public int PatchSetCompressionType { get; set; }
 
-	public string PatchSetFileHash { get; set; }
+	public string PatchSetFileHash { get; set; } = null!;
 
 	public long PatchSetFileSize { get; set; }
 
-	public IEnumerable<ClientFileSetFile> Files { get; set; }
+	public IEnumerable<ClientFileSetFile> Files { get; set; } = null!;
 
-	public IEnumerable<ClientPatchFileSetFile> PatchFiles { get; set; }
+	public IEnumerable<ClientPatchFileSetFile> PatchFiles { get; set; } = null!;
 
-	public virtual IEnumerable<ClientFileSetRevisionDependency> Dependencies { get; set; }
+	public virtual IEnumerable<ClientFileSetRevisionDependency> Dependencies { get; set; } = null!;
 
 	public ClientFileSetRevision Clone()
 	{

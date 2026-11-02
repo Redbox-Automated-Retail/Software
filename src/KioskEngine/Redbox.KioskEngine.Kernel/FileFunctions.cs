@@ -64,7 +64,7 @@ internal static class FileFunctions
 	}
 
 	[KernelFunction(Name = "kernel.tablefromfileserializeddictionary")]
-	internal static LuaTable LoadLuaTableFromFileSerializedDictionary(string filePath)
+	internal static LuaTable? LoadLuaTableFromFileSerializedDictionary(string filePath)
 	{
 		if (!File.Exists(filePath))
 		{
@@ -92,7 +92,7 @@ internal static class FileFunctions
 	}
 
 	[KernelFunction(Name = "kernel.tablefromfileserializedlistdictionary")]
-	internal static LuaTable LoadLuaTableFromFileSerializedListDictionary(string filePath, string kioskIdFilter)
+	internal static LuaTable? LoadLuaTableFromFileSerializedListDictionary(string filePath, string kioskIdFilter)
 	{
 		if (!File.Exists(filePath))
 		{

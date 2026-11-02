@@ -28,13 +28,13 @@ public sealed class BarcodeConfiguration : AttributeXmlConfiguration
 	[DisplayName("Camera Plugin")]
 	[Description("Sets the plugin to use in legacy scan mode.")]
 	[XmlConfiguration(DefaultValue = "DirectShowFrame")]
-	public string CameraPlugin { get; set; }
+	public string CameraPlugin { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Category("Settings")]
 	[DisplayName("Snap Decode Port")]
 	[Description("The port the snap/decode device is configured.")]
 	[XmlConfiguration(DefaultValue = "NONE")]
-	public string SnapDecodePort { get; set; }
+	public string SnapDecodePort { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Category("Settings")]
 	[DisplayName("Write Pause")]
@@ -131,7 +131,7 @@ public sealed class BarcodeConfiguration : AttributeXmlConfiguration
 	[DisplayName("IR HardwareInstallDate")]
 	[Description("Timestamp of when the IR hardware was installed.")]
 	[XmlConfiguration(DefaultValue = "NONE")]
-	public string IRHardwareInstallDate { get; set; }
+	public string IRHardwareInstallDate { get; set; } = null!; // set by the configuration loader ([XmlConfiguration])
 
 	[Category("Settings")]
 	[DisplayName("Use CI For Fraud Validation")]
@@ -141,7 +141,8 @@ public sealed class BarcodeConfiguration : AttributeXmlConfiguration
 
 	protected override string FileNodeName => "Camera";
 
-	internal static BarcodeConfiguration Instance { get; private set; }
+	// Set by NewInstance (or MakeNewInstance2) at start-up, before anything reads it.
+	internal static BarcodeConfiguration Instance { get; private set; } = null!;
 
 	public static BarcodeConfiguration NewInstance()
 	{
@@ -192,12 +193,12 @@ public sealed class BarcodeConfiguration : AttributeXmlConfiguration
 	{
 		try
 		{
-			XmlNode xmlNode = document.DocumentElement.SelectSingleNode("Barcode");
+			XmlNode? xmlNode = document.DocumentElement!.SelectSingleNode("Barcode");
 			if (xmlNode != null)
 			{
 				document.DocumentElement.RemoveChild(xmlNode);
 			}
-			XmlNode cameraNode = document.DocumentElement.SelectSingleNode(FileNodeName);
+			XmlNode? cameraNode = document.DocumentElement.SelectSingleNode(FileNodeName);
 			if (cameraNode == null)
 			{
 				XmlElement newChild = document.CreateElement(FileNodeName);
@@ -218,7 +219,7 @@ public sealed class BarcodeConfiguration : AttributeXmlConfiguration
 						}
 					}
 				});
-				XmlNode xmlNode2 = toRemove.Find((XmlNode x) => x.Name == "IRHardwareInstallDate");
+				XmlNode? xmlNode2 = toRemove.Find((XmlNode x) => x.Name == "IRHardwareInstallDate");
 				if (xmlNode2 != null && !string.IsNullOrEmpty(xmlNode2.InnerText))
 				{
 					Redbox.HAL.Controller.Framework.KioskConfiguration.Instance.SetConfig("IRHardwareInstallDate", xmlNode2.InnerText, saveValue: true);

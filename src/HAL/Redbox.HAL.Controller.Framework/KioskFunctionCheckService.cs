@@ -25,7 +25,7 @@ internal sealed class KioskFunctionCheckService : IKioskFunctionCheckService
 	internal KioskFunctionCheckService()
 	{
 		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = dataTableService.GetTable<IKioskFunctionCheckData>();
+		Table = dataTableService.GetTable<IKioskFunctionCheckData>()!;
 		if (!Table.Exists)
 		{
 			bool created = Table.Create();

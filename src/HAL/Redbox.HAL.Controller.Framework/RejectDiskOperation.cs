@@ -30,7 +30,7 @@ internal sealed class RejectDiskOperation : AbstractOperation<ErrorCodes>
 		{
 			return ErrorCodes.VendDoorRentTimeout;
 		}
-		IPickerSensorReadResult pickerSensorReadResult = null;
+		IPickerSensorReadResult? pickerSensorReadResult = null;
 		while (attempts-- >= 0)
 		{
 			Controller.TrackCycle();

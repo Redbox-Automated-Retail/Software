@@ -9,13 +9,14 @@ public abstract class AbstractDeviceDescriptor : IDeviceDescriptor
 
 	protected readonly IRuntimeService RuntimeService;
 
-	public string Vendor { get; protected set; }
+	// Vendor, Product and Friendlyname are set by each subclass constructor.
+	public string Vendor { get; protected set; } = null!;
 
-	public string Product { get; protected set; }
+	public string Product { get; protected set; } = null!;
 
-	public string Friendlyname { get; protected set; }
+	public string Friendlyname { get; protected set; } = null!;
 
-	public IDeviceSetupClass SetupClass { get; private set; }
+	public IDeviceSetupClass? SetupClass { get; private set; }
 
 	public override string ToString()
 	{

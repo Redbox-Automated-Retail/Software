@@ -9,9 +9,9 @@ namespace Redbox.REDS.Framework;
 
 public class ResourceBundle : IResourceBundle, IDisposable
 {
-	private MultiDictionary<string, IResource> m_resources;
+	private MultiDictionary<string, IResource>? m_resources;
 
-	private IDictionary<string, IResourceType> m_resourceTypes;
+	private IDictionary<string, IResourceType>? m_resourceTypes;
 
 	public IDictionary<string, IResourceType> ResourceTypes
 	{
@@ -25,7 +25,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		}
 	}
 
-	public IResourceBundleStorage Storage { get; internal set; }
+	public IResourceBundleStorage Storage { get; internal set; } = null!; // set by the storage-type constructor or Create
 
 	internal MultiDictionary<string, IResource> Resources
 	{
@@ -57,7 +57,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		Storage.Open(fileName);
 	}
 
-	public static ResourceBundle Create(string fileName, string trimPrefix, ResourceBundleStorageType storageType)
+	public static ResourceBundle? Create(string fileName, string trimPrefix, ResourceBundleStorageType storageType)
 	{
 		try
 		{
@@ -77,7 +77,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		Storage.Dispose();
 	}
 
-	public ErrorList Activate(IResourceBundleFilter filter, out IManifestInfo manifestInfo)
+	public ErrorList Activate(IResourceBundleFilter? filter, out IManifestInfo? manifestInfo)
 	{
 		ErrorList errorList = new ErrorList();
 		if (GetManifest(filter, out manifestInfo) == null)
@@ -85,14 +85,14 @@ public class ResourceBundle : IResourceBundle, IDisposable
 			errorList.Add(Error.NewError("E003", $"Resource bundle '{Storage.BundlePath}' does not contain: manifest.resource.", "The Redbox Engine for Distributed Stores requires one valid bundle to execute."));
 			return errorList;
 		}
-		if (manifestInfo.BundleType == BundleType.Application)
+		if (manifestInfo!.BundleType == BundleType.Application) // set whenever GetManifest found the manifest
 		{
 			if (string.IsNullOrEmpty(manifestInfo.StartupScript))
 			{
 				errorList.Add(Error.NewError("E004", $"Application resource bundle '{Storage.BundlePath}' must specify a valid startup_script in the manifest.resource.", "The Redbox Engine for Distributed Stores requires one valid startup script to execute."));
 				return errorList;
 			}
-			if (GetResource(manifestInfo.StartupScript, filter) == null)
+			if (GetResource(manifestInfo.StartupScript!, filter) == null)
 			{
 				errorList.Add(Error.NewError("E004", $"Resource bundle '{Storage.BundlePath}' does not contain: {manifestInfo.StartupScript}.resource.", "The resource specified in the startup_script property does not exist within the bundle.  Specify a valid script resource."));
 			}
@@ -105,7 +105,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 				errorList.Add(Error.NewError("E005", $"HTML Application resource bundle '{Storage.BundlePath}' must specify a valid control_assembly in the manifest.resource.", "The Redbox Engine for Distributed Stores requires a controller assembly to execute."));
 				return errorList;
 			}
-			if (GetResource(manifestInfo.ControlAssembly, filter) == null)
+			if (GetResource(manifestInfo.ControlAssembly!, filter) == null)
 			{
 				errorList.Add(Error.NewError("E005", $"Resource bundle '{Storage.BundlePath}' does not contain: {manifestInfo.ControlAssembly}.resource.", "The resource specified in the control_assembly property does not exist within the bundle.  Specify a valid control assembly resource."));
 			}
@@ -134,7 +134,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		Storage.CommitUpdate();
 	}
 
-	public IResourceBundleStorageEntry GetEntry(string path)
+	public IResourceBundleStorageEntry? GetEntry(string path)
 	{
 		return Storage.GetEntry(path);
 	}
@@ -143,7 +143,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 	{
 		ErrorList errorList = new ErrorList();
 		InitializeTypes();
-		IResourceBundleStorageEntry entry = Storage.GetEntry("manifest.resource");
+		IResourceBundleStorageEntry? entry = Storage.GetEntry("manifest.resource");
 		if (entry == null)
 		{
 			throw new MissingManifestResourceException("The manifest.resource is required.");
@@ -159,10 +159,10 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		return errorList;
 	}
 
-	public IResource GetManifest(IResourceBundleFilter filter, out IManifestInfo manifestInfo)
+	public IResource? GetManifest(IResourceBundleFilter? filter, out IManifestInfo? manifestInfo)
 	{
 		manifestInfo = null;
-		IResource resource = GetResource("manifest", filter);
+		IResource? resource = GetResource("manifest", filter);
 		if (resource == null)
 		{
 			return null;
@@ -171,7 +171,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		return resource;
 	}
 
-	public IResource GetResource(string name, IResourceBundleFilter filter)
+	public IResource? GetResource(string name, IResourceBundleFilter? filter)
 	{
 		return ResourceLookup.GetResource2(Resources, name, filter);
 	}
@@ -181,7 +181,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		return Resources[name];
 	}
 
-	public List<IResource> GetResources(string typeName, IResourceBundleFilter filter)
+	public List<IResource> GetResources(string typeName, IResourceBundleFilter? filter)
 	{
 		List<IResource> list = new List<IResource>();
 		if (string.IsNullOrEmpty(typeName) || !ResourceTypes.ContainsKey(typeName))
@@ -191,7 +191,7 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		IResourceType resourceType = ResourceTypes[typeName];
 		foreach (string key in Resources.Keys)
 		{
-			IResource resource = GetResource(key, filter);
+			IResource? resource = GetResource(key, filter);
 			if (resource != null && resource.Type == resourceType)
 			{
 				list.Add(resource);
@@ -257,14 +257,15 @@ public class ResourceBundle : IResourceBundle, IDisposable
 		ErrorList errorList = new ErrorList();
 		try
 		{
-			using MemoryStream inStream = new MemoryStream(Storage.GetEntryContent(storageEntry));
+			using MemoryStream inStream = new MemoryStream(Storage.GetEntryContent(storageEntry)!);
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.Load(inStream);
 			errorList.AddRange(Resource.FromXml(this, xmlDocument, out var resource));
 			if (!errorList.ContainsError())
 			{
-				((Resource)resource).StorageEntry = storageEntry;
-				Resources.Add(resource.Name, resource);
+				// FromXml returns the resource whenever it reports no error.
+				((Resource)resource!).StorageEntry = storageEntry;
+				Resources.Add(resource.Name!, resource);
 			}
 			return errorList;
 		}

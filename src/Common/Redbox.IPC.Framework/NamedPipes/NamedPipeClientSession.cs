@@ -9,7 +9,7 @@ public class NamedPipeClientSession : ClientSession
 {
 	private NamedPipeClientStream m_stream;
 
-	public string PipeName { get; private set; }
+	public string? PipeName { get; private set; }
 
 	protected override Stream Stream
 	{
@@ -17,7 +17,7 @@ public class NamedPipeClientSession : ClientSession
 		{
 			if (m_stream == null)
 			{
-				m_stream = new NamedPipeClientStream(base.HostName, PipeName, PipeDirection.InOut)
+				m_stream = new NamedPipeClientStream(base.HostName!, PipeName!, PipeDirection.InOut)
 				{
 					ReadTimeout = base.Timeout
 				};
@@ -81,7 +81,7 @@ public class NamedPipeClientSession : ClientSession
 		{
 			text = ".";
 		}
-		m_stream = new NamedPipeClientStream(text, protocol.Port, PipeDirection.InOut, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
+		m_stream = new NamedPipeClientStream(text, protocol.Port!, PipeDirection.InOut, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
 		base.ReadBuffer = new byte[1024];
 	}
 

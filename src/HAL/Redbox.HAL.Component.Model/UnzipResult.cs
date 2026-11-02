@@ -2,9 +2,10 @@ namespace Redbox.HAL.Component.Model;
 
 public sealed class UnzipResult
 {
-	public string SourceZip { get; internal set; }
+	// SourceZip and OutputPath are set by ZipFileService's object initializers.
+	public string SourceZip { get; internal set; } = null!;
 
-	public string OutputPath { get; internal set; }
+	public string OutputPath { get; internal set; } = null!;
 
 	public bool Success { get; internal set; }
 

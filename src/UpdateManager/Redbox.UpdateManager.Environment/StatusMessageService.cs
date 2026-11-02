@@ -21,7 +21,7 @@ public class StatusMessageService : IPollRequestReply, IStatusMessageService
 	{
 	}
 
-	public ErrorList EnqueueMessage(StatusMessage.StatusMessageType type, string key, string subKey, string description, string data, bool encodeData)
+	public ErrorList EnqueueMessage(StatusMessage.StatusMessageType type, string key, string? subKey, string description, string data, bool encodeData)
 	{
 		StatusMessage statusMessage = new StatusMessage
 		{
@@ -79,7 +79,7 @@ public class StatusMessageService : IPollRequestReply, IStatusMessageService
 		try
 		{
 			IQueueService queueService = ServiceLocator.Instance.GetService<IQueueService>();
-			for (StatusMessage statusMessage = queueService.Peek<StatusMessage>(QueueLabel); statusMessage != null; statusMessage = queueService.Peek<StatusMessage>(QueueLabel))
+			for (StatusMessage? statusMessage = queueService.Peek<StatusMessage>(QueueLabel); statusMessage != null; statusMessage = queueService.Peek<StatusMessage>(QueueLabel))
 			{
 				PollRequest item = new PollRequest
 				{

@@ -13,7 +13,7 @@ namespace Redbox.HardwareServices.Kernel;
 public static class HardwareFunctions
 {
 	[KernelFunction(Name = "kernel.hardwareinint")]
-	internal static LuaTable HardwareInit(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareInit(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -25,7 +25,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarecheckpicker")]
-	internal static LuaTable HardwareCheckPicker(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareCheckPicker(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -37,7 +37,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getnonthinsinvmz")]
-	internal static LuaTable GetNonThinsInVMZ(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? GetNonThinsInVMZ(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -49,7 +49,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.vmzremovedthins")]
-	internal static LuaTable VMZRemovedThins(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? VMZRemovedThins(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -61,7 +61,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getbarcodesinbin")]
-	internal static LuaTable GetBarcodesInBin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? GetBarcodesInBin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -73,7 +73,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getinventorystats")]
-	internal static LuaTable GetInventoryStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? GetInventoryStats(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -85,7 +85,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.vmzmerchsummary")]
-	internal static LuaTable VMZMerchSummary(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? VMZMerchSummary(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -97,7 +97,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.filemarkerdisk")]
-	internal static LuaTable FileMarkerDisk(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, object markerDeck, object markerSlot)
+	internal static LuaTable? FileMarkerDisk(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, object markerDeck, object markerSlot)
 	{
 		LogHelper.Instance.Log($"KernelFunction filemarkerdisk| markerDeck:{markerDeck} markerSlot:{markerSlot}");
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
@@ -121,17 +121,17 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.clearmerchstatus")]
-	internal static LuaTable ClearMerchStatus(LuaTable barcodes, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? ClearMerchStatus(LuaTable barcodes, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (LuaTable value in barcodes.Values)
 		{
-			string barcodeValue = (string)value["barcode"];
+			string? barcodeValue = (string?)value["barcode"];
 			if (!barcodeList.Contains(barcodeValue))
 			{
 				barcodeList.Add(barcodeValue);
@@ -142,17 +142,17 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getbarcodevmzposition")]
-	internal static LuaTable GetBarcodeVMZPosition(LuaTable barcodes, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? GetBarcodeVMZPosition(LuaTable barcodes, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (LuaTable value in barcodes.Values)
 		{
-			string barcodeValue = (string)value["barcode"];
+			string? barcodeValue = (string?)value["barcode"];
 			if (!barcodeList.Contains(barcodeValue))
 			{
 				barcodeList.Add(barcodeValue);
@@ -163,20 +163,20 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarevend")]
-	internal static LuaTable HardwareVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, object prepositionedDeck, object prepositionedSlot, LuaTable barcodes)
+	internal static LuaTable? HardwareVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, object prepositionedDeck, object prepositionedSlot, LuaTable barcodes)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (object key in barcodes.Keys)
 		{
-			object value = barcodes[key];
+			object? value = barcodes[key];
 			if (value != null)
 			{
-				string barcode = value.ToString();
+				string? barcode = value.ToString();
 				if (!barcodeList.Contains(barcode))
 				{
 					barcodeList.Add(barcode);
@@ -204,20 +204,20 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarepreposvend")]
-	internal static LuaTable HardwarePreposVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable barcodes)
+	internal static LuaTable? HardwarePreposVend(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable barcodes)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (object key in barcodes.Keys)
 		{
-			object value = barcodes[key];
+			object? value = barcodes[key];
 			if (value != null)
 			{
-				string barcode = value.ToString();
+				string? barcode = value.ToString();
 				if (!barcodeList.Contains(barcode))
 				{
 					barcodeList.Add(barcode);
@@ -235,7 +235,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarevendlocations")]
-	internal static LuaTable HardwareVendLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable locationTable)
+	internal static LuaTable? HardwareVendLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable locationTable)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -258,7 +258,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareresetlocations")]
-	internal static LuaTable HardwareResetLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable locationTable)
+	internal static LuaTable? HardwareResetLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, LuaTable locationTable)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -281,7 +281,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarevendunknown")]
-	internal static LuaTable HardwareVendUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int deck, int slot)
+	internal static LuaTable? HardwareVendUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, int deck, int slot)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -297,7 +297,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarereturn")]
-	internal static LuaTable HardwareReturn(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareReturn(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -309,7 +309,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarereturnunknown")]
-	internal static LuaTable HardwareReturnUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string returnTime)
+	internal static LuaTable? HardwareReturnUnknown(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string returnTime)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -321,7 +321,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareisbusy")]
-	internal static LuaTable HardwareIsBusy()
+	internal static LuaTable? HardwareIsBusy()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -352,7 +352,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarenotifymaintmodestate")]
-	internal static LuaTable HardwareNotifyMaintModeState(bool goingIntoMM)
+	internal static LuaTable? HardwareNotifyMaintModeState(bool goingIntoMM)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -364,7 +364,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaresoftsync")]
-	internal static LuaTable HardwareSoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareSoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -392,7 +392,7 @@ public static class HardwareFunctions
 		{
 			machineSettingsStore.SetValue("Store", "MaxSlots", hardwareState.MaxSlot.ToString());
 		}
-		LuaTable value = ServiceLocator.Instance.GetService<IKernelService>().NewTable() as LuaTable;
+		LuaTable value = (ServiceLocator.Instance.GetService<IKernelService>().NewTable() as LuaTable)!; // NewTable returns a LuaTable
 		value["QlmDeck"] = hardwareState.QlmDeckAsString;
 		value["MaxDecks"] = hardwareState.MaxDeck;
 		value["MaxSlots"] = hardwareState.MaxSlot;
@@ -402,7 +402,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregethardwarestatus")]
-	internal static LuaTable HardwareGetHardwareStatus(LuaTable startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareGetHardwareStatus(LuaTable startTime, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -415,7 +415,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaresync")]
-	internal static LuaTable HardwareSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, int startDeck, int startSlot, int endDeck, int endSlot)
+	internal static LuaTable? HardwareSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, int startDeck, int startSlot, int endDeck, int endSlot)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -428,7 +428,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaresynclocations")]
-	internal static LuaTable HardwareSyncLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable locationTable)
+	internal static LuaTable? HardwareSyncLocations(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable locationTable)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -448,7 +448,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareqlmunload")]
-	internal static LuaTable QlmUnload(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime)
+	internal static LuaTable? QlmUnload(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -461,17 +461,17 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareqlmthin")]
-	internal static LuaTable QlmThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable inventory)
+	internal static LuaTable? QlmThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable inventory)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (LuaTable value in inventory.Values)
 		{
-			string barcodeValue = (string)value["barcode"];
+			string? barcodeValue = (string?)value["barcode"];
 			if (!barcodeList.Contains(barcodeValue))
 			{
 				barcodeList.Add(barcodeValue);
@@ -484,46 +484,46 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarevmzthin")]
-	internal static LuaTable VmzThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable barcodesToBin, LuaTable rebalances, LuaTable redeployments, LuaTable barcodesToVmz)
+	internal static LuaTable? VmzThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable barcodesToBin, LuaTable rebalances, LuaTable redeployments, LuaTable barcodesToVmz)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		string[] barcodesToThin = ((barcodesToBin != null) ? (from LuaTable r in barcodesToBin.Values
+		string?[] barcodesToThin = ((barcodesToBin != null) ? (from LuaTable r in barcodesToBin.Values
 			where r != null
-			select (string)r["barcode"]).Distinct().ToArray() : Array.Empty<string>());
-		string[] rebalances2 = ((rebalances != null) ? (from LuaTable r in rebalances.Values
+			select (string?)r["barcode"]).Distinct().ToArray() : Array.Empty<string?>());
+		string?[] rebalances2 = ((rebalances != null) ? (from LuaTable r in rebalances.Values
 			where r != null
-			select (string)r["barcode"]).Distinct().ToArray() : Array.Empty<string>());
-		string[] redeployments2 = ((redeployments != null) ? (from LuaTable r in redeployments.Values
+			select (string?)r["barcode"]).Distinct().ToArray() : Array.Empty<string?>());
+		string?[] redeployments2 = ((redeployments != null) ? (from LuaTable r in redeployments.Values
 			where r != null
-			select (string)r["barcode"]).Distinct().ToArray() : Array.Empty<string>());
-		string[] barcodesToVmz2 = ((barcodesToVmz != null) ? (from LuaTable r in barcodesToVmz.Values
+			select (string?)r["barcode"]).Distinct().ToArray() : Array.Empty<string?>());
+		string?[] barcodesToVmz2 = ((barcodesToVmz != null) ? (from LuaTable r in barcodesToVmz.Values
 			where r != null
-			select (string)r["barcode"]).Distinct().ToArray() : Array.Empty<string>());
+			select (string?)r["barcode"]).Distinct().ToArray() : Array.Empty<string?>());
 		ErrorList errors = hardwareService.VmzThin(label, startTime.ToDateTime(), barcodesToThin, rebalances2, redeployments2, barcodesToVmz2, eventHandler, statusChangeHandler, out var jobId);
 		startTime.Dispose();
-		barcodesToBin.Dispose();
-		rebalances.Dispose();
-		redeployments.Dispose();
-		barcodesToVmz.Dispose();
+		barcodesToBin!.Dispose(); // the four tables are disposed even when nil (throws, as before)
+		rebalances!.Dispose();
+		redeployments!.Dispose();
+		barcodesToVmz!.Dispose();
 		return CreateResultTable(jobId, errors);
 	}
 
 	[KernelFunction(Name = "kernel.hardwareqlmunloadandthin")]
-	internal static LuaTable QlmUnloadAndThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable inventory)
+	internal static LuaTable? QlmUnloadAndThin(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, string label, LuaTable startTime, LuaTable inventory)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> barcodeList = new List<string>();
+		List<string?> barcodeList = new List<string?>();
 		foreach (LuaTable value in inventory.Values)
 		{
-			string barcodeValue = (string)value["barcode"];
+			string? barcodeValue = (string?)value["barcode"];
 			if (!barcodeList.Contains(barcodeValue))
 			{
 				barcodeList.Add(barcodeValue);
@@ -536,17 +536,17 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.prepforredeploy")]
-	internal static LuaTable PrepForRedeploy(LuaTable decksToChange, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? PrepForRedeploy(LuaTable decksToChange, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<string> deckList = new List<string>();
+		List<string?> deckList = new List<string?>();
 		foreach (LuaTable value in decksToChange.Values)
 		{
-			string deckValue = (string)value["deck"];
+			string? deckValue = (string?)value["deck"];
 			if (!string.IsNullOrEmpty(deckValue) && !deckList.Contains(deckValue))
 			{
 				deckList.Add(deckValue);
@@ -558,19 +558,19 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareschedulejob")]
-	internal static LuaTable ScheduleJob(string scriptName, string label, bool enableDebugging, string priority, string startTimeString, object stack, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, bool allowMultiple)
+	internal static LuaTable? ScheduleJob(string scriptName, string label, bool enableDebugging, string priority, string startTimeString, object stack, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler, bool allowMultiple)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
 		{
 			return null;
 		}
-		List<object> barcodeList = new List<object>();
+		List<object?> barcodeList = new List<object?>();
 		if (stack is LuaTable result)
 		{
 			for (int i = 1; i <= result.Keys.Count; i++)
 			{
-				object value = result[i];
+				object? value = result[i];
 				if (value is double)
 				{
 					value = Convert.ToInt32(value);
@@ -583,7 +583,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaresuspendjob")]
-	internal static LuaTable HardwareSuspendJob(string jobId)
+	internal static LuaTable? HardwareSuspendJob(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -594,7 +594,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareresumejob")]
-	internal static LuaTable HardwareResumeJob(string jobId)
+	internal static LuaTable? HardwareResumeJob(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -605,7 +605,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaretrashjob")]
-	internal static LuaTable HardwareTrashJob(string jobId)
+	internal static LuaTable? HardwareTrashJob(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -616,7 +616,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareterminatejob")]
-	internal static LuaTable HardwareTerminateJob(string jobId)
+	internal static LuaTable? HardwareTerminateJob(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -627,7 +627,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareresumealljobs")]
-	internal static LuaTable HardwareResumeAllJobs()
+	internal static LuaTable? HardwareResumeAllJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -638,7 +638,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaresuspendalljobs")]
-	internal static LuaTable HardwareSuspendAllJobs()
+	internal static LuaTable? HardwareSuspendAllJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -649,7 +649,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaremaintenancemodesuspendjobs")]
-	internal static LuaTable HardwareMaintenanceModeSuspendJobs()
+	internal static LuaTable? HardwareMaintenanceModeSuspendJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -660,7 +660,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaremaintenancemoderesumejobs")]
-	internal static LuaTable HardwareMaintenanceModeResumeJobs()
+	internal static LuaTable? HardwareMaintenanceModeResumeJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -671,7 +671,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareexecuteimmediate")]
-	internal static LuaTable HardwareExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack)
+	internal static LuaTable? HardwareExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -683,7 +683,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetprogramresults")]
-	internal static LuaTable HardwareGetProgramResults(string jobId)
+	internal static LuaTable? HardwareGetProgramResults(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -716,7 +716,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetjoberrors")]
-	internal static LuaTable HardwareGetJobErrors(string jobId)
+	internal static LuaTable? HardwareGetJobErrors(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -746,15 +746,15 @@ public static class HardwareFunctions
 	internal static bool IsActiveHardwareJob(string jobId)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
-		ReadOnlyCollection<IHardwareJob> hardwareJobs = null;
+		ReadOnlyCollection<IHardwareJob>? hardwareJobs = null;
 		hardwareService?.GetHardwareJobs(out hardwareJobs);
 		bool isActive = hardwareJobs?.Any((IHardwareJob x) => x.ID == jobId && (x.Status == "Pending" || x.Status == "Running" || x.Status == "Suspended")) ?? false;
-		LogHelper.Instance.Log(string.Format("IsActiveHardwareJob {0}: {1};  Job count: {2}, jobs: {3} ", jobId, isActive, hardwareJobs?.Count, string.Join(", ", hardwareJobs.Select((IHardwareJob x) => x.ID + ":" + x.Status).ToArray())));
+		LogHelper.Instance.Log(string.Format("IsActiveHardwareJob {0}: {1};  Job count: {2}, jobs: {3} ", jobId, isActive, hardwareJobs?.Count, string.Join(", ", hardwareJobs!.Select((IHardwareJob x) => x.ID + ":" + x.Status).ToArray())));
 		return isActive;
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetjobs")]
-	internal static LuaTable HardwareGetJobs()
+	internal static LuaTable? HardwareGetJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -781,7 +781,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetsuspendedmaintenancemodejobs")]
-	internal static LuaTable HardwareGetSuspendedMaintenanceModeJobs()
+	internal static LuaTable? HardwareGetSuspendedMaintenanceModeJobs()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -809,7 +809,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareexecuteservicecommand")]
-	internal static LuaTable HardwareExecuteServiceCommand(string command)
+	internal static LuaTable? HardwareExecuteServiceCommand(string command)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -820,7 +820,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwaregetinitstatus")]
-	internal static LuaTable HardwareGetInitStatus()
+	internal static LuaTable? HardwareGetInitStatus()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -834,7 +834,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwarereadfrauddisc")]
-	internal static LuaTable HardwareReadFraudDisc(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwareReadFraudDisc(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -846,7 +846,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardwareprepunloadzone")]
-	internal static LuaTable HardwarePrepUnloadZone(int rotation, int last_deck, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	internal static LuaTable? HardwarePrepUnloadZone(int rotation, int last_deck, HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -859,7 +859,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hasabedevice")]
-	internal static string HasAbeDevice()
+	internal static string? HasAbeDevice()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -871,7 +871,7 @@ public static class HardwareFunctions
 	}
 
 	[KernelFunction(Name = "kernel.irhardwareinstalled")]
-	internal static string IRHardwareInstalled()
+	internal static string? IRHardwareInstalled()
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
 		if (hardwareService == null)
@@ -879,7 +879,7 @@ public static class HardwareFunctions
 			return null;
 		}
 		hardwareService.IRHardwareInstalled(out var installDate);
-		string result = null;
+		string? result = null;
 		if (installDate.HasValue)
 		{
 			result = installDate.Value.ToString("o");
@@ -901,10 +901,10 @@ public static class HardwareFunctions
 			LogHelper.Instance.Log("Health Service was not found.");
 		}
 		LogHelper.Instance.Log("Enqueue Hardware State properties.", LogEntryType.Info);
-		LogHelper.Instance.Log("Camera: " + hardwareState.CurrentCameraGeneration + ", Decoder: " + hardwareState.BarcodeDecoder);
+		LogHelper.Instance.Log("Camera: " + hardwareState!.CurrentCameraGeneration + ", Decoder: " + hardwareState.BarcodeDecoder);
 		if (hardwareState.CurrentCameraGeneration >= 3)
 		{
-			healthServices.EnqueueProperty("CameraType", hardwareState.CurrentCameraGeneration.ToString());
+			healthServices!.EnqueueProperty("CameraType", hardwareState.CurrentCameraGeneration.ToString());
 		}
 	}
 
@@ -929,7 +929,7 @@ public static class HardwareFunctions
 		ServiceLocator.Instance.GetService<ISyncEmptiesProcessor>().ScheduleJob();
 	}
 
-	private static LuaTable CreateResultTable(string jobId, ErrorList errors)
+	private static LuaTable CreateResultTable(string? jobId, ErrorList errors)
 	{
 		IKernelService kernelService = ServiceLocator.Instance.GetService<IKernelService>();
 		LuaTable result = (LuaTable)kernelService.NewTable();

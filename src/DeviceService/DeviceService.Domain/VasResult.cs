@@ -16,11 +16,11 @@ public class VasResult
 
 	public VasStatus Status { get; set; } = VasStatus.Unknown;
 
-	public string VasDataResult { get; set; }
+	public string? VasDataResult { get; set; }
 
-	public string AdditionalData { get; set; }
+	public string? AdditionalData { get; set; }
 
-	public List<string> Data { get; set; }
+	public List<string>? Data { get; set; }
 
 	public bool Success
 	{
@@ -38,9 +38,9 @@ public class VasResult
 		}
 	}
 
-	public string GetVasData(ReadCardContext context)
+	public string? GetVasData(ReadCardContext context)
 	{
-		List<string> data = Data;
+		List<string>? data = Data;
 		if (data == null || !data.Any())
 		{
 			return null;
@@ -62,10 +62,10 @@ public class VasResult
 		}
 	}
 
-	private string ParseApple(ReadCardContext context)
+	private string? ParseApple(ReadCardContext context)
 	{
-		string result = null;
-		foreach (string datum in Data)
+		string? result = null;
+		foreach (string datum in Data!) // GetVasData checked Data
 		{
 			string[] parts = datum.Split(VasStringSeperator);
 			if (parts[0] != 0.ToString() || parts[1] != "0")
@@ -82,7 +82,7 @@ public class VasResult
 			string hexData = parts[5];
 			if (!string.IsNullOrEmpty(hexData) && hexData != "0")
 			{
-				string decodedData = ParseTags.ConvertHexToString(hexData, context?.Errors);
+				string? decodedData = ParseTags.ConvertHexToString(hexData, context?.Errors);
 				if (!string.IsNullOrEmpty(decodedData))
 				{
 					result = decodedData;
@@ -93,10 +93,10 @@ public class VasResult
 		return result;
 	}
 
-	private string ParseGoogle()
+	private string? ParseGoogle()
 	{
-		string vasData = null;
-		string[] headerParts = Data[0].Split(VasStringSeperator);
+		string? vasData = null;
+		string[] headerParts = Data![0].Split(VasStringSeperator); // GetVasData checked Data
 		string headerResult = headerParts[0];
 		string headerStatus = headerParts[1];
 		if (headerResult != 0.ToString() || headerStatus != 0.ToString())
@@ -106,7 +106,7 @@ public class VasResult
 		_ = headerParts[2];
 		_ = headerParts[3];
 		_ = headerParts[4];
-		foreach (string line in Data.Skip(1))
+		foreach (string line in Data!.Skip(1)) // GetVasData checked Data
 		{
 			string[] parts = line.Split(VasStringSeperator);
 			if (!(parts[0] != 0.ToString()) && !(parts[1] != 0.ToString()))
@@ -123,6 +123,6 @@ public class VasResult
 
 	public override string ToString()
 	{
-		return string.Format("Status: {0}-({1}) - AdditionalData: {2} - VasDataResult: {3} - Data: {4}", Status, Status.ToString(), AdditionalData, VasDataResult, string.Join(",", Data));
+		return string.Format("Status: {0}-({1}) - AdditionalData: {2} - VasDataResult: {3} - Data: {4}", Status, Status.ToString(), AdditionalData, VasDataResult, string.Join(",", Data!)); // throws when Data is null, as before
 	}
 }

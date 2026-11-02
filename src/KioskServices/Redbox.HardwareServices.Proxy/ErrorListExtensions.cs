@@ -9,7 +9,7 @@ public static class ErrorListExtensions
 	{
 		foreach (Redbox.HAL.Component.Model.Error foreginError in foreginErrorList)
 		{
-			errors.Add(foreginError.IsWarning ? Redbox.KioskEngine.ComponentModel.Error.NewWarning(foreginError.Code, foreginError.Description, foreginError.Details) : Redbox.KioskEngine.ComponentModel.Error.NewError(foreginError.Code, foreginError.Description, foreginError.Details));
+			errors.Add(foreginError.IsWarning ? Redbox.KioskEngine.ComponentModel.Error.NewWarning(foreginError.Code!, foreginError.Description, foreginError.Details!) : Redbox.KioskEngine.ComponentModel.Error.NewError(foreginError.Code!, foreginError.Description, foreginError.Details!)); // passed on as they are (the engine's Error takes no null yet)
 		}
 	}
 }

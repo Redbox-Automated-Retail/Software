@@ -7,29 +7,29 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class ScriptEditorForm : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private ToolStrip m_toolStrip;
+	private ToolStrip m_toolStrip = null!;
 
-	private RichTextBox m_richTextBox;
+	private RichTextBox m_richTextBox = null!;
 
-	private ToolStripLabel toolStripLabel1;
+	private ToolStripLabel toolStripLabel1 = null!;
 
-	private ToolStripLabel toolStripLabel2;
+	private ToolStripLabel toolStripLabel2 = null!;
 
-	private ToolStripTextBox m_scenarioNameToolStripTextBox;
+	private ToolStripTextBox m_scenarioNameToolStripTextBox = null!;
 
-	private ToolStripTextBox m_halScriptToolStripTextBox;
+	private ToolStripTextBox m_halScriptToolStripTextBox = null!;
 
-	private ToolStripLabel toolStripLabel3;
+	private ToolStripLabel toolStripLabel3 = null!;
 
-	private ToolStripTextBox m_runTimeToolStripTextBox;
+	private ToolStripTextBox m_runTimeToolStripTextBox = null!;
 
-	private ToolStripLabel toolStripLabel5;
+	private ToolStripLabel toolStripLabel5 = null!;
 
-	private ToolStripLabel toolStripLabel4;
+	private ToolStripLabel toolStripLabel4 = null!;
 
-	private ErrorProvider m_errorProvider;
+	private ErrorProvider m_errorProvider = null!;
 
 	public string Code
 	{
@@ -79,12 +79,13 @@ public class ScriptEditorForm : Form
 		}
 	}
 
+	// The controls above are created by InitializeComponent.
 	public ScriptEditorForm()
 	{
 		InitializeComponent();
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		if (string.IsNullOrEmpty(RunTime))
 		{

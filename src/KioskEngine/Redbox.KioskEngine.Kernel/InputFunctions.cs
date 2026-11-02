@@ -120,7 +120,7 @@ internal static class InputFunctions
 	internal static LuaTable GetMousePositionInClient()
 	{
 		LuaTable luaTable = new LuaTable(KernelService.Instance.LuaRuntime);
-		Point point = Application.OpenForms[0].PointToClient(Cursor.Position);
+		Point point = Application.OpenForms[0]!.PointToClient(Cursor.Position);
 		luaTable["x"] = point.X;
 		luaTable["y"] = point.Y;
 		KernelService.Instance.LuaRuntime["mouse_position"] = null;
@@ -130,7 +130,7 @@ internal static class InputFunctions
 	[KernelFunction(Name = "kernel.setmousepos")]
 	internal static void SetMousePosition(int x, int y)
 	{
-		Cursor.Position = Application.OpenForms[0].PointToScreen(new Point(x, y));
+		Cursor.Position = Application.OpenForms[0]!.PointToScreen(new Point(x, y));
 	}
 
 	[KernelFunction(Name = "kernel.mousesingleclick")]

@@ -57,7 +57,7 @@ internal class ApplicationMetrics : IApplicationMetrics
 		await CaptureAsync(responseMilliseconds, statusCode, dimensions);
 	}
 
-	private async Task CaptureAsync(long responseMilliseconds, HttpStatusCode statusCode, List<Dimension> dimensions, List<MetricDatum> data = null)
+	private async Task CaptureAsync(long responseMilliseconds, HttpStatusCode statusCode, List<Dimension> dimensions, List<MetricDatum>? data = null)
 	{
 		await _semaphore.WaitAsync(5000);
 		try
@@ -92,10 +92,10 @@ internal class ApplicationMetrics : IApplicationMetrics
 			{
 				Log.Logger.Information($"ApplicationMetrics -> Buffer limit of {_bufferSize} reached. Sending first {_bufferSize} metrics of {_currentMetrics?.Count ?? 0}");
 				using AmazonCloudWatchClient client = new AmazonCloudWatchClient(_regionEndpoint);
-				List<MetricDatum> metricsToSend = _currentMetrics.Take(_bufferSize).ToList();
+				List<MetricDatum> metricsToSend = _currentMetrics!.Take(_bufferSize).ToList(); // never null; the ?. in the log line above makes it look nullable
 				PutMetricDataResponse putMetricDataResponse = await client.PutMetricDataAsync(new PutMetricDataRequest
 				{
-					MetricData = _currentMetrics.Take(_bufferSize).ToList(),
+					MetricData = _currentMetrics!.Take(_bufferSize).ToList(),
 					Namespace = _namespace
 				});
 				Log.Logger.Debug($"ApplicationMetrics -> PutMetricDataAsync -> StatusCode: {putMetricDataResponse.HttpStatusCode}, Data Sent: {metricsToSend.ToJson()}");

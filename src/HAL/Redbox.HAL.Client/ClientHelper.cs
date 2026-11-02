@@ -15,7 +15,7 @@ public sealed class ClientHelper : IDisposable
 
 	private readonly NullSink NullInstance = new NullSink();
 
-	public HardwareService Service { get; private set; }
+	public HardwareService? Service { get; private set; }
 
 	public void Dispose()
 	{
@@ -58,12 +58,12 @@ public sealed class ClientHelper : IDisposable
 		return true;
 	}
 
-	public HardwareService Connect()
+	public HardwareService? Connect()
 	{
 		return ConnectInner(Constants.HALIPCStrings.TcpServer);
 	}
 
-	public HardwareService Connect(string ipc)
+	public HardwareService? Connect(string ipc)
 	{
 		if (string.IsNullOrEmpty(ipc))
 		{
@@ -120,21 +120,21 @@ public sealed class ClientHelper : IDisposable
 		{
 			return false;
 		}
-		HardwareJob job;
+		HardwareJob? job;
 		return Service.ExecuteImmediate(inst, out job).Success;
 	}
 
-	public T ExecuteImmediateAndGetResult<T>(HardwareService service, string inst)
+	public T? ExecuteImmediateAndGetResult<T>(HardwareService service, string inst)
 	{
 		HardwareCommandResult hardwareCommandResult = service.ExecuteImmediate(inst, out var job);
 		if (hardwareCommandResult == null || !hardwareCommandResult.Success)
 		{
 			return default(T);
 		}
-		return ConversionHelper.ChangeType<T>(GetStackEntriesInner(job, 1)[0]);
+		return ConversionHelper.ChangeType<T>(GetStackEntriesInner(job!, 1)[0]);
 	}
 
-	public ClientHelper(IClientOutputSink sink, HardwareService service)
+	public ClientHelper(IClientOutputSink? sink, HardwareService? service)
 	{
 		IClientOutputSink sink2;
 		if (sink != null)
@@ -150,12 +150,12 @@ public sealed class ClientHelper : IDisposable
 		Service = service;
 	}
 
-	public ClientHelper(HardwareService service)
+	public ClientHelper(HardwareService? service)
 		: this(null, service)
 	{
 	}
 
-	private HardwareService ConnectInner(string ipcUrl)
+	private HardwareService? ConnectInner(string ipcUrl)
 	{
 		try
 		{
@@ -168,7 +168,7 @@ public sealed class ClientHelper : IDisposable
 		}
 	}
 
-	private bool TestServiceConnection(HardwareService service)
+	private bool TestServiceConnection(HardwareService? service)
 	{
 		if (service == null)
 		{
@@ -182,7 +182,7 @@ public sealed class ClientHelper : IDisposable
 		return hardwareCommandResult.CommandMessages[0] == "ACK";
 	}
 
-	private string FindLocalIP()
+	private string? FindLocalIP()
 	{
 		IPAddress[] addressList = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
 		foreach (IPAddress iPAddress in addressList)
@@ -214,7 +214,7 @@ public sealed class ClientHelper : IDisposable
 
 	private bool BootstrapInitRunningChecked()
 	{
-		if (!Service.GetInitStatus(out var status).Success)
+		if (!Service!.GetInitStatus(out var status).Success)
 		{
 			Sink.WriteMessage("Unable to determine init status.");
 			return false;

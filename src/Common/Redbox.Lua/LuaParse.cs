@@ -8,9 +8,9 @@ public class LuaParse
 {
 	private readonly List<string> m_tokens = new List<string>();
 
-	public string Id { get; set; }
+	public string? Id { get; set; }
 
-	public LuaParseObject Value { get; set; }
+	public LuaParseObject Value { get; set; } = null!; // set by Parse
 
 	protected bool IsLiteral => Regex.IsMatch(m_tokens[0], "^[a-zA-Z]+[0-9a-zA-Z_]*");
 
@@ -87,7 +87,7 @@ public class LuaParse
 			else if (IsToken("["))
 			{
 				NextToken();
-				string key = GetString();
+				string? key = GetString();
 				if (!IsToken("]"))
 				{
 					throw new Exception("expecting ']'");
@@ -98,7 +98,7 @@ public class LuaParse
 					throw new Exception("expecting '='");
 				}
 				NextToken();
-				dictionary.Add(key, RVal());
+				dictionary.Add(key!, RVal());
 			}
 			else
 			{
@@ -154,7 +154,7 @@ public class LuaParse
 		}
 	}
 
-	protected string PeekToken()
+	protected string? PeekToken()
 	{
 		if (m_tokens.Count <= 0)
 		{

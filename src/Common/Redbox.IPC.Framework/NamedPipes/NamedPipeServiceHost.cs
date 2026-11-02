@@ -17,7 +17,7 @@ public class NamedPipeServiceHost : IPCServiceHost
 		{
 			while (base.Alive)
 			{
-				NamedPipeServerStream namedPipeServerStream = new NamedPipeServerStream(base.Protocol.Port, PipeDirection.InOut, -1, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
+				NamedPipeServerStream namedPipeServerStream = new NamedPipeServerStream(base.Protocol.Port!, PipeDirection.InOut, -1, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
 				namedPipeServerStream.WaitForConnection();
 				ServerSession serverSession = new NamedPipeServerSession(namedPipeServerStream, this);
 				RegiserSession(serverSession);

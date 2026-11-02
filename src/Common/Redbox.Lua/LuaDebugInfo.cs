@@ -4,13 +4,13 @@ namespace Redbox.Lua;
 
 public class LuaDebugInfo
 {
-	public string Name { get; internal set; }
+	public string? Name { get; internal set; }
 
-	public string What { get; internal set; }
+	public string? What { get; internal set; }
 
-	public string Source { get; internal set; }
+	public string? Source { get; internal set; }
 
-	public string NameWhat { get; internal set; }
+	public string? NameWhat { get; internal set; }
 
 	public int CurrentLine { get; internal set; }
 

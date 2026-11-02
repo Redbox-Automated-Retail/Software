@@ -5,7 +5,7 @@ namespace Redbox.HAL.Core;
 
 internal sealed class QueryUsbDeviceResult : IQueryUsbDeviceResult
 {
-	public IDeviceDescriptor Descriptor { get; private set; }
+	public IDeviceDescriptor? Descriptor { get; private set; }
 
 	public bool Found => (Status & DeviceStatus.Found) != 0;
 
@@ -47,10 +47,10 @@ internal sealed class QueryUsbDeviceResult : IQueryUsbDeviceResult
 		{
 			return "UNKNOWN device";
 		}
-		return $"{Descriptor} ( {Descriptor.Friendlyname} ) status = {Status}";
+		return $"{Descriptor} ( {Descriptor!.Friendlyname} ) status = {Status}";
 	}
 
-	internal QueryUsbDeviceResult(IDeviceDescriptor descriptor)
+	internal QueryUsbDeviceResult(IDeviceDescriptor? descriptor)
 	{
 		Status = DeviceStatus.None;
 		Descriptor = descriptor;

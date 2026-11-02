@@ -10,7 +10,7 @@ public class ApplicationStateFunctions
 	private static BaseSettingFunctions _baseSettingFunctions = new BaseSettingFunctions();
 
 	[KernelFunction(Name = "kernel.get_application_state_value")]
-	public static object GetSessionValue(string valueName)
+	public static object? GetSessionValue(string valueName)
 	{
 		if (valueName != null)
 		{
@@ -23,12 +23,12 @@ public class ApplicationStateFunctions
 	public static void SetPropertyValue(string propertyName, object value)
 	{
 		_ = ApplicationState.Instance;
-		object resultObject = null;
-		PropertyInfo resultPropertyInfo = null;
+		object? resultObject = null;
+		PropertyInfo? resultPropertyInfo = null;
 		_baseSettingFunctions.GetProperty(ApplicationState.Instance, propertyName, out resultObject, out resultPropertyInfo);
 		if (resultPropertyInfo != null && resultObject != null)
 		{
-			object convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
+			object? convertedValue = _baseSettingFunctions.ConvertValueToPropertyType(resultPropertyInfo, value);
 			resultPropertyInfo.SetValue(resultObject, convertedValue, null);
 			return;
 		}

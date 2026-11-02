@@ -29,7 +29,7 @@ public class CommandService
 			return;
 		}
 		using StreamReader streamReader = new StreamReader(ruleFile);
-		string text;
+		string? text;
 		while ((text = streamReader.ReadLine()) != null)
 		{
 			string[] parts = text.Split(new string[1] { "," }, StringSplitOptions.RemoveEmptyEntries);
@@ -90,7 +90,7 @@ public class CommandService
 		return Execute(session, string.Empty, input, null, enableFilters: false, null);
 	}
 
-	public CommandResult Execute(ISession session, string originIP, string input, List<string> sourceFilters, bool enableFilters, Action<string, string> paramAction)
+	public CommandResult Execute(ISession session, string? originIP, string input, List<string>? sourceFilters, bool enableFilters, Action<string, string>? paramAction)
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		CommandResult commandResult = new CommandResult();
@@ -99,15 +99,15 @@ public class CommandService
 			Session = session,
 			MessageSink = session
 		};
-		string text = null;
+		string? text = null;
 		try
 		{
 			if (!GetTokenizer(input, commandResult, commandContext, out var tokenizer))
 			{
 				return commandResult;
 			}
-			SimpleToken mnemonic = tokenizer.Tokens.GetMnemonic();
-			CommandInstance command = CommandRepository.GetCommand(mnemonic.Value);
+			SimpleToken mnemonic = tokenizer.Tokens.GetMnemonic()!; // GetTokenizer checked it
+			CommandInstance? command = CommandRepository.GetCommand(mnemonic.Value);
 			if (command == null)
 			{
 				LogHelper.Instance.Log($"Command {mnemonic.Value} not recognized.");
@@ -125,7 +125,7 @@ public class CommandService
 				commandResult.Errors.Add(Error.NewError("S514", $"Invalid Command: {mnemonic.Value}", ""));
 				return commandResult;
 			}
-			if (!string.IsNullOrEmpty(originIP) && !AllowOriginForCommand(originIP, mnemonic.Value))
+			if (!string.IsNullOrEmpty(originIP) && !AllowOriginForCommand(originIP!, mnemonic.Value))
 			{
 				string message = $"Command {mnemonic.Value} does allow execution from {originIP}.";
 				LogHelper.Instance.Log(message);
@@ -144,7 +144,7 @@ public class CommandService
 				commandResult.Errors.Add(Error.NewError("S001", $"No form symbol was specified for the {mnemonic.Value.ToUpper()} comand.", $"Use the HELP command to learn how to properly invoke the {mnemonic.Value.ToUpper()} command and its forms."));
 				return commandResult;
 			}
-			FormMethod method = command.GetMethod(symbols[0].Value);
+			FormMethod? method = command.GetMethod(symbols[0].Value);
 			if (method == null)
 			{
 				commandResult.Errors.Add(Error.NewError("S001", $"An unknown form was used for the {mnemonic.Value.ToUpper()} comand.", $"Use the HELP command to learn how to properly invoke the {mnemonic.Value.ToUpper()} command and its forms."));
@@ -189,7 +189,7 @@ public class CommandService
 				commandResult.Errors.ForEach(delegate(Error error)
 				{
 					builder.AppendFormat("{0} {1}", error.Code, error.Description);
-					builder.AppendFormat(error.Details);
+					builder.AppendFormat(error.Details!);
 				});
 				LogHelper.Instance.Log(builder.ToString());
 			}
@@ -211,7 +211,7 @@ public class CommandService
 	{
 		if (ConfigurationManager.AppSettings["IpcLogResults"] != null)
 		{
-			return bool.Parse(ConfigurationManager.AppSettings["IpcLogResults"]);
+			return bool.Parse(ConfigurationManager.AppSettings["IpcLogResults"]!);
 		}
 		return false;
 	}
@@ -251,7 +251,7 @@ public class CommandService
 
 	private static bool GetTokenizer(string input, CommandResult result, CommandContext context, out CommandTokenizer tokenizer)
 	{
-		input = m_properties.ExpandProperties(input, Location.UnknownLocation);
+		input = m_properties.ExpandProperties(input, Location.UnknownLocation)!; // not null for a non-null input
 		tokenizer = new CommandTokenizer(0, input);
 		tokenizer.Tokenize();
 		if (tokenizer.Tokens.HasOnlyComments())

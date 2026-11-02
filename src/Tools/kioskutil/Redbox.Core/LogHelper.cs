@@ -7,15 +7,15 @@ public class LogHelper
 {
 	public static LogHelper Instance => Singleton<LogHelper>.Instance;
 
-	public ILogger Logger { get; set; }
+	public ILogger? Logger { get; set; }
 
 	internal static string CallingFunction
 	{
 		get
 		{
 			StackTrace stackTrace = new StackTrace(2);
-			StackFrame frame = stackTrace.GetFrame(0);
-			return frame.GetMethod().DeclaringType.FullName + "." + frame.GetMethod().Name;
+			StackFrame frame = stackTrace.GetFrame(0)!; // a caller two frames up exists
+			return frame.GetMethod()!.DeclaringType!.FullName + "." + frame.GetMethod()!.Name;
 		}
 	}
 

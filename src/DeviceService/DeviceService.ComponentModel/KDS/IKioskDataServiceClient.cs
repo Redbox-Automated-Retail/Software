@@ -5,9 +5,9 @@ namespace DeviceService.ComponentModel.KDS;
 
 public interface IKioskDataServiceClient
 {
-	Task<StandardResponse> PostDeviceStatus(DeviceStatus deviceStatus);
+	Task<StandardResponse?> PostDeviceStatus(DeviceStatus deviceStatus);
 
-	Task<StandardResponse> PostRebootStatus(RebootStatus rebootStatus);
+	Task<StandardResponse?> PostRebootStatus(RebootStatus rebootStatus);
 
-	Task<StandardResponse> PostCardStats(CardStats cardStats);
+	Task<StandardResponse?> PostCardStats(CardStats cardStats);
 }

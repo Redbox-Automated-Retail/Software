@@ -12,7 +12,7 @@ namespace DeviceService.WebApi.Services;
 
 public class HttpService : IHttpService
 {
-	public HttpRequestMessage GenerateRequest(string endpoint, object requestObject, HttpMethod method, string baseUrl, List<Header> headers = null)
+	public HttpRequestMessage GenerateRequest(string endpoint, object requestObject, HttpMethod method, string? baseUrl, List<Header>? headers = null)
 	{
 		Uri requestUri = new Uri(baseUrl + "/" + endpoint);
 		HttpRequestMessage httpRequest = new HttpRequestMessage(method, requestUri);

@@ -6,7 +6,7 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal sealed class PickerSensorReadResult : IPickerSensorReadResult, IReadInputsResult<PickerInputs>
 {
-	private readonly ReadPickerInputsResult ReadResult;
+	private readonly ReadPickerInputsResult? ReadResult;
 
 	private readonly int m_blockedCount;
 
@@ -56,14 +56,14 @@ internal sealed class PickerSensorReadResult : IPickerSensorReadResult, IReadInp
 	{
 		if (Success)
 		{
-			return ReadResult.IsInputActive(input);
+			return ReadResult!.IsInputActive(input);
 		}
 		return true;
 	}
 
 	public bool IsInState(PickerInputs input, InputState state)
 	{
-		return ReadResult.IsInState(input, state);
+		return ReadResult!.IsInState(input, state);
 	}
 
 	public void Foreach(Action<PickerInputs> action)
@@ -95,7 +95,7 @@ internal sealed class PickerSensorReadResult : IPickerSensorReadResult, IReadInp
 		int bc = 0;
 		Array.ForEach(PickerSensors, delegate(PickerInputs each)
 		{
-			if (pickerSensorReadResult.ReadResult.IsInputActive(each))
+			if (pickerSensorReadResult.ReadResult!.IsInputActive(each))
 			{
 				bc++;
 			}

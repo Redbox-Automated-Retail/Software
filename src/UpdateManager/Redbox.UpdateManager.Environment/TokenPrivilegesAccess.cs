@@ -59,7 +59,7 @@ public class TokenPrivilegesAccess
 	public static extern int GetCurrentProcess();
 
 	[DllImport("advapi32.dll", CharSet = CharSet.Auto)]
-	public static extern int LookupPrivilegeValue(string lpsystemname, string lpname, [MarshalAs(UnmanagedType.Struct)] ref LUID lpLuid);
+	public static extern int LookupPrivilegeValue(string? lpsystemname, string lpname, [MarshalAs(UnmanagedType.Struct)] ref LUID lpLuid);
 
 	[DllImport("advapi32.dll", CharSet = CharSet.Auto)]
 	public static extern int AdjustTokenPrivileges(int tokenhandle, int disableprivs, [MarshalAs(UnmanagedType.Struct)] ref TOKEN_PRIVILEGE Newstate, int bufferlength, int PreivousState, int Returnlength);

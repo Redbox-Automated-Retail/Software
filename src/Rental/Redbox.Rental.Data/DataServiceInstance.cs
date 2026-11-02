@@ -9,13 +9,14 @@ namespace Redbox.Rental.Data;
 
 public class DataServiceInstance : IDataServiceInstance
 {
-	public IProfileDataInstance ProfileDataInstance { get; set; }
+	// The instances below are set by the data service right after construction.
+	public IProfileDataInstance ProfileDataInstance { get; set; } = null!;
 
-	public ICacheDataInstance CacheDataInstance { get; set; }
+	public ICacheDataInstance CacheDataInstance { get; set; } = null!;
 
-	public IKioskDataInstance KioskDataInstance { get; set; }
+	public IKioskDataInstance KioskDataInstance { get; set; } = null!;
 
-	public ILocalDataInstance LocalDataInstance { get; set; }
+	public ILocalDataInstance LocalDataInstance { get; set; } = null!;
 
-	public IReservationDataInstance ReservationDataInstance { get; set; }
+	public IReservationDataInstance ReservationDataInstance { get; set; } = null!;
 }

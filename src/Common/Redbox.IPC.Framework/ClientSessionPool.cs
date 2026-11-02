@@ -100,7 +100,7 @@ public class ClientSessionPool : IDisposable
 
 	internal ClientSession CreateSession()
 	{
-		ClientSession clientSession = ClientSession.GetClientSession(Protocol, Timeout);
+		ClientSession clientSession = ClientSession.GetClientSession(Protocol, Timeout)!;
 		clientSession.OwningPool = this;
 		return clientSession;
 	}

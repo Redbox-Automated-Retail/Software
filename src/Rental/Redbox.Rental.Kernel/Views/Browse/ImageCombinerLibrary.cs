@@ -7,7 +7,7 @@ namespace Redbox.Rental.Kernel.Views.Browse;
 
 public static class ImageCombinerLibrary
 {
-	public static Bitmap BuildDynamicBrowseImage(Image[] imageList)
+	public static Bitmap? BuildDynamicBrowseImage(Image[] imageList)
 	{
 		if (imageList == null || imageList.Length != 3)
 		{

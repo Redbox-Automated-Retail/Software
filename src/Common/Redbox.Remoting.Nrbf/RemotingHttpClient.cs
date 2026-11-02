@@ -20,7 +20,7 @@ internal static class RemotingHttpClient
 
 	/// <summary>Calls <paramref name="methodName"/> on the remote object at <paramref name="url"/> and returns its return value.</summary>
 	/// <exception cref="RemotingHttpException">The server returned an exception or an unexpected response.</exception>
-	public static object Invoke(string url, string typeName, string methodName, object[] args, TimeSpan timeout)
+	public static object? Invoke(string url, string typeName, string methodName, object?[] args, TimeSpan timeout)
 	{
 		byte[] body = NrbfWriter.MethodCall(methodName, typeName, args);
 		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -44,9 +44,9 @@ internal static class RemotingHttpClient
 		return result.ReturnValue;
 	}
 
-	private static string DescribeException(object exception)
+	private static string DescribeException(object? exception)
 	{
-		return exception is NrbfObject graph && graph.TryGetMember("Message", out object message) ? $"{graph.TypeName}: {message}" : exception?.ToString() ?? "(none)";
+		return exception is NrbfObject graph && graph.TryGetMember("Message", out object? message) ? $"{graph.TypeName}: {message}" : exception?.ToString() ?? "(none)";
 	}
 }
 

@@ -10,7 +10,8 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 {
 	protected readonly string ID;
 
-	protected SafeFileHandle PipeHandle;
+	// Set by the constructor that takes a handle, or by the client channel's OnConnect.
+	protected SafeFileHandle PipeHandle = null!;
 
 	private bool Disposed;
 
@@ -65,9 +66,9 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 		return true;
 	}
 
-	public byte[] Read()
+	public byte[]? Read()
 	{
-		byte[] header = ReadBytes(MessageHeaderSize);
+		byte[]? header = ReadBytes(MessageHeaderSize);
 		if (header == null || header.Length != MessageHeaderSize)
 		{
 			return null;
@@ -75,7 +76,7 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 		return ReadBytes(BitConverter.ToInt32(header, 0));
 	}
 
-	public byte[] Read(int timeout)
+	public byte[]? Read(int timeout)
 	{
 		return Read();
 	}
@@ -87,7 +88,7 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 
 	public void Read(IIPCResponse response, int timeout)
 	{
-		byte[] message = Read();
+		byte[]? message = Read();
 		if (message != null)
 		{
 			response.Accumulate(message);
@@ -98,7 +99,7 @@ public abstract class BasePipeChannel : IIPCChannel, IDisposable
 
 	protected abstract bool OnConnect();
 
-	protected byte[] ReadBytes(int count)
+	protected byte[]? ReadBytes(int count)
 	{
 		if (PipeHandle.IsInvalid)
 		{

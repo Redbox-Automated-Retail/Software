@@ -5,9 +5,9 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IUsbDeviceService
 {
-	IDeviceDescriptor FindActiveCamera(bool matchDriver);
+	IDeviceDescriptor? FindActiveCamera(bool matchDriver);
 
-	IDeviceDescriptor FromQueryString(string s);
+	IDeviceDescriptor? FromQueryString(string? s);
 
 	bool SetDeviceState(IDeviceDescriptor descriptor, DeviceState state);
 
@@ -27,9 +27,9 @@ public interface IUsbDeviceService
 
 	List<IDeviceDescriptor> FindDevices(DeviceClass clazz);
 
-	ITouchscreenDescriptor FindTouchScreen(bool matchDriver);
+	ITouchscreenDescriptor? FindTouchScreen(bool matchDriver);
 
-	ITouchscreenDescriptor FindTouchScreen();
+	ITouchscreenDescriptor? FindTouchScreen();
 
 	IQueryUsbDeviceResult FindCCR();
 

@@ -17,14 +17,14 @@ public class Program : IDisposable
 {
 	private class KioskUnhandledException
 	{
-		public string Message { get; set; }
+		public string? Message { get; set; }
 
-		public string Exception { get; set; }
+		public string? Exception { get; set; }
 	}
 
-	public static Program _program;
+	public static Program? _program;
 
-	private string _kioskUnhandledExceptionFilePath;
+	private string? _kioskUnhandledExceptionFilePath;
 
 	private static readonly ILogger m_logger = LogHelper.Instance.CreateLog4NetLogger(typeof(Program));
 
@@ -44,10 +44,10 @@ public class Program : IDisposable
 		{
 			if (string.IsNullOrWhiteSpace(_kioskUnhandledExceptionFilePath))
 			{
-				string directoryName = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-				_kioskUnhandledExceptionFilePath = Path.Combine(directoryName, "..\\data\\UnhandledException.txt");
+				string? directoryName = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+				_kioskUnhandledExceptionFilePath = Path.Combine(directoryName!, "..\\data\\UnhandledException.txt");
 			}
-			return _kioskUnhandledExceptionFilePath;
+			return _kioskUnhandledExceptionFilePath!;
 		}
 	}
 
@@ -102,7 +102,7 @@ public class Program : IDisposable
 	{
 		Application.EnableVisualStyles();
 		Application.SetCompatibleTextRenderingDefault(defaultValue: false);
-		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "log4net.config");
+		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "log4net.config");
 		m_logger.Configure(path);
 		m_loggerCardReader.Configure(path);
 		m_loggerUser.Configure(path);
@@ -169,7 +169,7 @@ public class Program : IDisposable
 		try
 		{
 			LogHelper.Instance.Log("Program.ReadUnhandledExceptionAndSendAlert");
-			KioskUnhandledException ex = ReadUnhandledExceptionData();
+			KioskUnhandledException? ex = ReadUnhandledExceptionData();
 			if (ex != null)
 			{
 				LogHelper.Instance.Log("Program.ReadUnhandledExceptionAndSendAlert - Kiosk unhandled exception found, sending alert");
@@ -227,7 +227,7 @@ public class Program : IDisposable
 		}
 	}
 
-	private KioskUnhandledException ReadUnhandledExceptionData()
+	private KioskUnhandledException? ReadUnhandledExceptionData()
 	{
 		try
 		{

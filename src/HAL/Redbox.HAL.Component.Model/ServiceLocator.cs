@@ -23,10 +23,10 @@ public sealed class ServiceLocator : IServiceProvider
 
 	public T GetService<T>()
 	{
-		return (T)GetService(typeof(T));
+		return (T)GetService(typeof(T))!;
 	}
 
-	public object GetService(Type serviceType)
+	public object? GetService(Type serviceType)
 	{
 		return Services.GetService(serviceType);
 	}

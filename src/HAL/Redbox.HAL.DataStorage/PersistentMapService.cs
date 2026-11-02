@@ -50,7 +50,7 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 					return defVal;
 				}
 			}
-			return ConversionHelper.ChangeType<T>(persistentOption.Value);
+			return ConversionHelper.ChangeType<T>(persistentOption.Value)!;
 		}
 	}
 
@@ -63,7 +63,7 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 				IPersistentOption? persistentOption = Options.Find((IPersistentOption each) => each.Key == key);
 				if (persistentOption != null)
 				{
-					persistentOption.UpdateValue(value!.ToString());
+					persistentOption.UpdateValue(value!.ToString()!);
 					Table.Update(persistentOption);
 				}
 				else
@@ -81,13 +81,13 @@ public sealed class PersistentMapService : IPersistentMap, IPersistentMapService
 	public PersistentMapService()
 	{
 		IDataTableService dataTableService = ServiceLocator.Instance.GetService<IDataTableService>();
-		Table = dataTableService.GetTable<IPersistentOption>();
+		Table = dataTableService.GetTable<IPersistentOption>()!;
 		Options = Table.LoadEntries();
 	}
 
 	private void InsertUnderLock<T>(string key, T val)
 	{
-		IPersistentOption persistentOption = ServiceLocator.Instance.GetService<ITableTypeFactory>().NewPersistentOption(key, val!.ToString());
+		IPersistentOption persistentOption = ServiceLocator.Instance.GetService<ITableTypeFactory>().NewPersistentOption(key, val!.ToString()!);
 		Table.Insert(persistentOption);
 		Options.Add(persistentOption);
 	}

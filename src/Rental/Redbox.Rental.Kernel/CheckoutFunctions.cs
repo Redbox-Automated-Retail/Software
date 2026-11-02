@@ -48,11 +48,11 @@ public class CheckoutFunctions
 				LogHelper.Instance.Log("CheckoutFunctions.RegularCheckoutPrepositionVendComplete vendResults empty, Alert sent");
 			}
 			List<VendResult> list = new List<VendResult>();
-			foreach (object value in vendResults.Values)
+			foreach (object value in vendResults.Values!)
 			{
 				if (value is LuaTable)
 				{
-					LuaTable luaTable = value as LuaTable;
+					LuaTable luaTable = (value as LuaTable)!; // value is LuaTable
 					VendResult item = new VendResult
 					{
 						barcode = luaTable["barcode"]?.ToString(),

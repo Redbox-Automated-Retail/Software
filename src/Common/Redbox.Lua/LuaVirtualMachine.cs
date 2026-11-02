@@ -35,7 +35,7 @@ public class LuaVirtualMachine : IDisposable
 
 	private IntPtr m_luaState;
 
-	private LuaHookFunctionDelegate m_hookCallback;
+	private LuaHookFunctionDelegate? m_hookCallback;
 
 	private readonly LuaCFunctionDelegate m_panicCallback;
 
@@ -45,7 +45,7 @@ public class LuaVirtualMachine : IDisposable
 
 	private readonly LuaCFunctionDelegate m_executeFunctionCallback;
 
-	public object this[string fullPath]
+	public object? this[string fullPath]
 	{
 		get
 		{
@@ -53,7 +53,7 @@ public class LuaVirtualMachine : IDisposable
 			{
 				return null;
 			}
-			object found = null;
+			object? found = null;
 			int count = Stack.Count;
 			string[] pathParts = fullPath.Split(".".ToCharArray());
 			Stack.GetGlobal(pathParts[0]);
@@ -94,9 +94,9 @@ public class LuaVirtualMachine : IDisposable
 
 	public LuaCompiler Compiler { get; private set; }
 
-	public event EventHandler<DebugHookEventArgs> DebugHook;
+	public event EventHandler<DebugHookEventArgs>? DebugHook;
 
-	public event EventHandler<HookExceptionEventArgs> HookException;
+	public event EventHandler<HookExceptionEventArgs>? HookException;
 
 	public LuaVirtualMachine()
 	{
@@ -132,9 +132,9 @@ public class LuaVirtualMachine : IDisposable
 		}
 	}
 
-	public ReadOnlyCollection<object> DoString(string chunk)
+	public ReadOnlyCollection<object?> DoString(string chunk)
 	{
-		return LoadString(chunk, "__dostring__")?.Call();
+		return LoadString(chunk, "__dostring__")?.Call()!; // LoadString does not return null
 	}
 
 	public LuaFunction LoadString(string chunk, string name)
@@ -152,7 +152,7 @@ public class LuaVirtualMachine : IDisposable
 		{
 			IsExecuting = false;
 		}
-		LuaFunction result = (LuaFunction)Stack.Pop();
+		LuaFunction result = (LuaFunction)Stack.Pop()!; // the chunk the loader pushed
 		Stack.SetTop(count);
 		return result;
 	}
@@ -172,7 +172,7 @@ public class LuaVirtualMachine : IDisposable
 		{
 			IsExecuting = false;
 		}
-		LuaFunction result = (LuaFunction)Stack.Pop();
+		LuaFunction result = (LuaFunction)Stack.Pop()!; // the chunk the loader pushed
 		Stack.SetTop(count);
 		return result;
 	}
@@ -239,22 +239,22 @@ public class LuaVirtualMachine : IDisposable
 		return lua_getstack(this, level, ref luaDebug) != 0;
 	}
 
-	public string GetLocal(LuaDebug luaDebug, int n)
+	public string? GetLocal(LuaDebug luaDebug, int n)
 	{
 		return lua_getlocal(this, ref luaDebug, n);
 	}
 
-	public string SetLocal(LuaDebug luaDebug, int n)
+	public string? SetLocal(LuaDebug luaDebug, int n)
 	{
 		return lua_setlocal(this, ref luaDebug, n);
 	}
 
-	public string GetUpValue(int funcindex, int n)
+	public string? GetUpValue(int funcindex, int n)
 	{
 		return lua_getupvalue(this, funcindex, n);
 	}
 
-	public string SetUpValue(int funcindex, int n)
+	public string? SetUpValue(int funcindex, int n)
 	{
 		return lua_setupvalue(this, funcindex, n);
 	}
@@ -287,7 +287,7 @@ public class LuaVirtualMachine : IDisposable
 		}
 	}
 
-	internal static string StringPointerToString(IntPtr ptr)
+	internal static string? StringPointerToString(IntPtr ptr)
 	{
 		return Marshal.PtrToStringAnsi(ptr);
 	}
@@ -436,10 +436,10 @@ public class LuaVirtualMachine : IDisposable
 	internal static extern int lua_getinfo(IntPtr luaState, string what, ref LuaDebug luaDebug);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern string lua_getlocal(IntPtr luaState, ref LuaDebug luaDebug, int n);
+	internal static extern string? lua_getlocal(IntPtr luaState, ref LuaDebug luaDebug, int n);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern string lua_setlocal(IntPtr luaState, ref LuaDebug luaDebug, int n);
+	internal static extern string? lua_setlocal(IntPtr luaState, ref LuaDebug luaDebug, int n);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int lua_getstack(IntPtr luaState, int level, ref LuaDebug luaDebug);
@@ -454,10 +454,10 @@ public class LuaVirtualMachine : IDisposable
 	internal static extern int luaopen_math(IntPtr luaState);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-	internal static extern string lua_getupvalue(IntPtr luaState, int funcindex, int n);
+	internal static extern string? lua_getupvalue(IntPtr luaState, int funcindex, int n);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-	internal static extern string lua_setupvalue(IntPtr luaState, int funcindex, int n);
+	internal static extern string? lua_setupvalue(IntPtr luaState, int funcindex, int n);
 
 	[DllImport("lua51", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern void lua_rawgeti(IntPtr luaState, int tableIndex, int index);
@@ -494,7 +494,7 @@ public class LuaVirtualMachine : IDisposable
 
 	internal void ThrowExceptionFromError(int oldTop)
 	{
-		object error = Stack.Pop();
+		object? error = Stack.Pop();
 		Stack.SetTop(oldTop);
 		if (error is LuaScriptException ex)
 		{
@@ -504,7 +504,7 @@ public class LuaVirtualMachine : IDisposable
 		{
 			error = "Unknown Lua Error";
 		}
-		throw new LuaScriptException(error.ToString(), string.Empty);
+		throw new LuaScriptException(error.ToString()!, string.Empty);
 	}
 
 	internal int SetPendingException(Exception e)
@@ -521,11 +521,11 @@ public class LuaVirtualMachine : IDisposable
 	{
 		int count = Stack.Count;
 		luaL_where(this, 1);
-		ReadOnlyCollection<object> readOnlyCollection = Stack.PopTo(count);
+		ReadOnlyCollection<object?> readOnlyCollection = Stack.PopTo(count);
 		string source = string.Empty;
 		if (readOnlyCollection.Count > 0)
 		{
-			source = readOnlyCollection[0].ToString();
+			source = readOnlyCollection[0]!.ToString()!; // luaL_where pushed a string
 		}
 		if (e is string message)
 		{
@@ -569,7 +569,7 @@ public class LuaVirtualMachine : IDisposable
 	{
 		Stack.Push("__redbox_lua_flag");
 		Stack.GetTable(-10000);
-		object loadedFlag = Stack.Pop();
+		object? loadedFlag = Stack.Pop();
 		if (loadedFlag != null)
 		{
 			return (bool)loadedFlag;
@@ -609,7 +609,7 @@ public class LuaVirtualMachine : IDisposable
 
 	private int CollectObject(IntPtr luaState)
 	{
-		using LuaUserData luaUserData = (LuaUserData)Stack.Pop();
+		using LuaUserData luaUserData = (LuaUserData)Stack.Pop()!;
 		int objectId = luaUserData.ReadInt32(0);
 		LogHelper.Instance.Log($"Lua: CollectObject called from runtime for object {objectId}.", LogEntryType.Debug);
 		m_objectCache.RemoveId(objectId);
@@ -620,13 +620,13 @@ public class LuaVirtualMachine : IDisposable
 	{
 		int objectId = Convert.ToInt32(Stack.GetAt(1));
 		LogHelper.Instance.Log($"Lua: ExecuteFunction called from runtime for object {objectId}.", LogEntryType.Debug);
-		RegisteredMethod registeredMethod = (RegisteredMethod)m_objectCache.GetObject(objectId);
+		RegisteredMethod? registeredMethod = (RegisteredMethod?)m_objectCache.GetObject(objectId);
 		if (registeredMethod != null)
 		{
 			LogHelper.Instance.Log($"...Registered method '{registeredMethod.Method}' found in object cache; executing.", LogEntryType.Debug);
-			ReadOnlyCollection<object> parms = Stack.PopTo(1);
+			ReadOnlyCollection<object?> parms = Stack.PopTo(1);
 			int itemsOnStack = 0;
-			object value = registeredMethod.Invoke(parms, out itemsOnStack);
+			object? value = registeredMethod.Invoke(parms, out itemsOnStack);
 			if (itemsOnStack > 0)
 			{
 				return itemsOnStack;

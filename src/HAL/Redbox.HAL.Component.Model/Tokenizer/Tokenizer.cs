@@ -1,6 +1,6 @@
 namespace Redbox.HAL.Component.Model.Tokenizer;
 
-public class Tokenizer<T> : TokenizerBase<T>
+public class Tokenizer<T> : TokenizerBase<T> where T : notnull
 {
 	public TokenList Tokens { get; protected set; }
 

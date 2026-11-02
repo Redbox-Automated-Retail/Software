@@ -15,13 +15,13 @@ internal class InventoryChecker
 
 		internal int Slot { get; set; }
 
-		internal string ID { get; set; }
+		internal string? ID { get; set; }
 
-		internal string ReturnTime { get; set; }
+		internal string? ReturnTime { get; set; }
 
 		internal int StuckCount { get; set; }
 
-		internal string Flags { get; set; }
+		internal string? Flags { get; set; }
 
 		internal bool IsEquivalent(InventoryLocation loc)
 		{
@@ -100,11 +100,11 @@ internal class InventoryChecker
 	private List<InventoryLocation> GetLocations(XmlDocument document)
 	{
 		List<InventoryLocation> list = new List<InventoryLocation>();
-		foreach (XmlNode item in document.SelectNodes("inventory-items/item"))
+		foreach (XmlNode item in document.SelectNodes("inventory-items/item")!)
 		{
-			int deck = Convert.ToInt32(item.Attributes["deck"].Value);
-			int slot = Convert.ToInt32(item.Attributes["slot"].Value);
-			string value = item.Attributes["id"].Value;
+			int deck = Convert.ToInt32(item.Attributes!["deck"]!.Value);
+			int slot = Convert.ToInt32(item.Attributes!["slot"]!.Value);
+			string value = item.Attributes!["id"]!.Value;
 			list.Add(new InventoryLocation
 			{
 				Deck = deck,

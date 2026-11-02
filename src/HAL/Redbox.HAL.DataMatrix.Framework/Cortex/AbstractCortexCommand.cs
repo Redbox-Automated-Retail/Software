@@ -13,7 +13,7 @@ internal abstract class AbstractCortexCommand : IDisposable
 
 	private readonly byte[] Prefix = new byte[4] { 238, 238, 238, 238 };
 
-	private byte[] m_preppedCommand;
+	private byte[]? m_preppedCommand;
 
 	private bool Disposed;
 
@@ -44,9 +44,9 @@ internal abstract class AbstractCortexCommand : IDisposable
 		Dispose(disposing: true);
 	}
 
-	public void Send(ICommPort port)
+	public void Send(ICommPort? port)
 	{
-		port.ValidateResponse = OnTest;
+		port!.ValidateResponse = OnTest;
 		if (port == null || !port.IsOpen)
 		{
 			LogHelper.Instance.Log("[Cortex Service] The port is not open sending a command.");

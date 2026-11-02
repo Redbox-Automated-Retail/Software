@@ -108,7 +108,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 		try
 		{
 			HardwareStatusChangeHandler statusChangeHandler = ProcessUpdateAfterSoftSync;
-			ErrorList errorList = null;
+			ErrorList? errorList = null;
 			errorList = HardwareSoftSync(null, statusChangeHandler);
 			if (errorList != null && errorList.Count() > 0)
 			{
@@ -129,7 +129,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 		{
 			return;
 		}
-		List<IHardwareResult> list = ProcessFunctions.HardwareGetProgramResults(jobid);
+		List<IHardwareResult>? list = ProcessFunctions.HardwareGetProgramResults(jobid);
 		if (list != null)
 		{
 			List<ProcessFunctions.Item> kioskItems = (from item in list
@@ -142,7 +142,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 					status = "Removed"
 				}).ToList();
 			ProcessFunctions.kioskItemsCount = kioskItems.Count();
-			SnapshotImmediate(ProcessFunctions.kioskId.ToString(), kioskItems, callBackDelegate);
+			SnapshotImmediate(ProcessFunctions.kioskId.ToString()!, kioskItems, callBackDelegate);
 		}
 	}
 
@@ -166,7 +166,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 		}
 	}
 
-	private ErrorList HardwareSoftSync(HardwareEventHandler eventHandler, HardwareStatusChangeHandler statusChangeHandler)
+	private ErrorList? HardwareSoftSync(HardwareEventHandler? eventHandler, HardwareStatusChangeHandler statusChangeHandler)
 	{
 		string jobId;
 		return ServiceLocator.Instance.GetService<IHardwareService>()?.SoftSync(eventHandler, statusChangeHandler, out jobId);
@@ -183,8 +183,8 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 			header_textbox.Text = "Inventory Removed";
 			message_text.Visibility = Visibility.Visible;
 			message_text.Text = "Inventory successfully marked as removed for this kiosk.\n\n" + ProcessFunctions.kioskItemsCount + " Inventory Record(s) Updated.\n\nYou may continue the process of closing the kiosk.";
-			string userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
-			ProcessFunctions.InnerSendAuditEvent(ProcessFunctions.kioskId.ToString(), "CP_CloseKiosk", userName, "CP Bundle", "Marked " + ProcessFunctions.kioskItemsCount + " barcode(s) as removed.");
+			string? userName = ServiceLocator.Instance.GetService<IControlPanelService>()?.LoggedInUser.CheckNotAvailable();
+			ProcessFunctions.InnerSendAuditEvent(ProcessFunctions.kioskId.ToString()!, "CP_CloseKiosk", userName, "CP Bundle", "Marked " + ProcessFunctions.kioskItemsCount + " barcode(s) as removed.");
 			button_yes.Click -= YesButtonClickHandle2;
 			button_yes.Click += YesButtonClickHandle3;
 			Spinner.IsAnimated = false;
@@ -212,7 +212,7 @@ public partial class CloseKioskViewUserControl : UserControl, IComponentConnecto
 		}
 	}
 
-	public ErrorList HardwareExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack)
+	public ErrorList? HardwareExecuteImmediate(string command, HardwareImmediateExecutionHandler eventHandler, bool clearStack)
 	{
 		return ServiceLocator.Instance.GetService<IHardwareService>()?.ExecuteImmediate(command, eventHandler, clearStack, null);
 	}

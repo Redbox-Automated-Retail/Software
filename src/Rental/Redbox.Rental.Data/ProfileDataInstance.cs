@@ -23,7 +23,8 @@ public class ProfileDataInstance : IProfileDataInstance
 
 	private Dictionary<long, SubPlatform> _subPlatforms = new Dictionary<long, SubPlatform>();
 
-	public string ImagesPath { get; set; }
+	// Set by ProfileData when it loads the instance.
+	public string ImagesPath { get; set; } = null!;
 
 	public Dictionary<long, Market> Markets
 	{
@@ -135,5 +136,5 @@ public class ProfileDataInstance : IProfileDataInstance
 		}
 	}
 
-	public ProfileDataVersion ProfileDataVersion { get; set; }
+	public ProfileDataVersion ProfileDataVersion { get; set; } = null!;
 }

@@ -6,15 +6,16 @@ namespace Redbox.HAL.IPC.Framework;
 
 public class CommandContext
 {
-	public readonly IDictionary<string, string> Parameters = new Dictionary<string, string>();
+	public readonly IDictionary<string, string?> Parameters = new Dictionary<string, string?>();
 
 	public readonly MessageList Messages = new MessageList();
 
 	public readonly ErrorList Errors = new ErrorList();
 
-	public ISession Session { get; internal set; }
+	// Session and MessageSink are set by CommandService.Execute's object initializer.
+	public ISession Session { get; internal set; } = null!;
 
-	public IMessageSink MessageSink { get; internal set; }
+	public IMessageSink MessageSink { get; internal set; } = null!;
 
 	internal static bool IsSymbol(string value)
 	{
@@ -35,7 +36,7 @@ public class CommandContext
 		ForEachNamedParameterDo(action, null);
 	}
 
-	internal void ForEachSymbolDo(Action<string> action, string[] exclusions)
+	internal void ForEachSymbolDo(Action<string> action, string[]? exclusions)
 	{
 		foreach (string key in Parameters.Keys)
 		{
@@ -50,7 +51,7 @@ public class CommandContext
 		}
 	}
 
-	internal void ForEachNamedParameterDo(Action<string> action, string[] exclusions)
+	internal void ForEachNamedParameterDo(Action<string> action, string[]? exclusions)
 	{
 		foreach (string key in Parameters.Keys)
 		{

@@ -4,23 +4,24 @@ public class DownloadFileChangeSetData
 {
 	public long Id { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
 	public DownloadFileType DownloadFileType { get; set; }
 
-	public string StatusKey { get; set; }
+	public string StatusKey { get; set; } = null!;
 
-	public string FileName { get; set; }
+	public string FileName { get; set; } = null!;
 
-	public string DestinationPath { get; set; }
+	public string DestinationPath { get; set; } = null!;
 
-	public string FileKey { get; set; }
+	public string FileKey { get; set; } = null!;
 
-	public string ActivateScript { get; set; }
+	public string ActivateScript { get; set; } = null!;
 
-	public string StartTime { get; set; }
+	public string StartTime { get; set; } = null!;
 
-	public string EndTime { get; set; }
+	public string EndTime { get; set; } = null!;
 
-	public string Url { get; set; }
+	public string Url { get; set; } = null!;
 }

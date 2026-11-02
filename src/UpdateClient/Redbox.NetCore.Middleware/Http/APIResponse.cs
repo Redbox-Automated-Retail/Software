@@ -16,13 +16,13 @@ public class APIResponse<T>
 
 	public HttpRequestMessage HttpRequest { get; set; }
 
-	public HttpResponseMessage HttpResponse { get; set; }
+	public HttpResponseMessage? HttpResponse { get; set; }
 
-	public T Response { get; set; }
+	public T? Response { get; set; }
 
-	public string RequestContent { get; set; }
+	public string? RequestContent { get; set; }
 
-	public string ResponseContent { get; set; }
+	public string? ResponseContent { get; set; }
 
 	public int? ResponseTime { get; set; }
 
@@ -48,7 +48,7 @@ public class APIResponse<T>
 		}
 	}
 
-	public Exception Exception { get; set; }
+	public Exception? Exception { get; set; }
 
 	public List<Error> Errors { get; set; } = new List<Error>();
 
@@ -58,7 +58,7 @@ public class APIResponse<T>
 		_logger = logger;
 	}
 
-	public void SetAPIResponse(HttpResponseMessage responseMessage, string content, int requestTime)
+	public void SetAPIResponse(HttpResponseMessage responseMessage, string? content, int requestTime)
 	{
 		HttpResponse = responseMessage;
 		Response = default(T);
@@ -119,7 +119,7 @@ public class APIResponse<T>
 	{
 		if (HttpRequest != null)
 		{
-			string text = (logRequest ? HttpRequest.RequestUri.ToString() : HttpRequest.RequestUri.GetLeftPart(UriPartial.Path));
+			string text = (logRequest ? HttpRequest.RequestUri!.ToString() : HttpRequest.RequestUri!.GetLeftPart(UriPartial.Path)); // HttpService always sets one
 			_logger?.LogInformation($"Request: {HttpRequest.Method}, Uri: {text}, Status: {StatusCode}({(int)StatusCode}), Time:{ResponseTime}, Length:{ResponseLength}");
 			if (logRequest && RequestContent != null)
 			{
@@ -132,7 +132,7 @@ public class APIResponse<T>
 		}
 	}
 
-	public object Scrub()
+	public object? Scrub()
 	{
 		if (Response == null)
 		{

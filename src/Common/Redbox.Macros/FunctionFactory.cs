@@ -70,17 +70,17 @@ public sealed class FunctionFactory
 	[ReflectionPermission(SecurityAction.Demand, Flags = ReflectionPermissionFlag.NoFlags)]
 	public static void ScanExecutionPath()
 	{
-		ScanDir(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\", ""), failOnError: true);
+		ScanDir(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase)!.Replace("file:\\", ""), failOnError: true);
 	}
 
 	internal static MethodInfo LookupFunction(string functionName, FunctionArgument[] args)
 	{
-		object registered = m_methodInfoCollection[functionName];
+		object? registered = m_methodInfoCollection[functionName];
 		if (registered == null)
 		{
 			throw new EvaluatorException(string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1052"), functionName));
 		}
-		MethodInfo methodInfo = registered as MethodInfo;
+		MethodInfo? methodInfo = registered as MethodInfo;
 		if (methodInfo != null)
 		{
 			if (methodInfo.GetParameters().Length == args.Length)
@@ -94,7 +94,7 @@ public sealed class FunctionFactory
 			ArrayList arrayList = (ArrayList)registered;
 			for (int i = 0; i < arrayList.Count; i++)
 			{
-				methodInfo = (MethodInfo)arrayList[i];
+				methodInfo = (MethodInfo)arrayList[i]!;
 				if (methodInfo.GetParameters().Length == args.Length)
 				{
 					CheckDeprecation(functionName, methodInfo);
@@ -107,7 +107,7 @@ public sealed class FunctionFactory
 
 	private static void CheckDeprecation(string functionName, MemberInfo function)
 	{
-		ObsoleteAttribute obsoleteAttribute = ((ObsoleteAttribute)Attribute.GetCustomAttribute(function, typeof(ObsoleteAttribute), inherit: true)) ?? ((ObsoleteAttribute)Attribute.GetCustomAttribute(function.DeclaringType, typeof(ObsoleteAttribute), inherit: true));
+		ObsoleteAttribute? obsoleteAttribute = ((ObsoleteAttribute?)Attribute.GetCustomAttribute(function, typeof(ObsoleteAttribute), inherit: true)) ?? ((ObsoleteAttribute?)Attribute.GetCustomAttribute(function.DeclaringType!, typeof(ObsoleteAttribute), inherit: true));
 		if (obsoleteAttribute != null)
 		{
 			string text = string.Format(CultureInfo.InvariantCulture, ResourceUtils.GetString("NA1087"), functionName, obsoleteAttribute.Message);
@@ -123,7 +123,7 @@ public sealed class FunctionFactory
 	{
 		try
 		{
-			FunctionSetAttribute functionSetAttribute = (FunctionSetAttribute)ExtrapolateAttribute(type, "Redbox.Macros.FunctionSetAttribute", FunctionSetAttributeConstructor);
+			FunctionSetAttribute? functionSetAttribute = (FunctionSetAttribute?)ExtrapolateAttribute(type, "Redbox.Macros.FunctionSetAttribute", FunctionSetAttributeConstructor);
 			if (functionSetAttribute == null)
 			{
 				return false;
@@ -142,7 +142,7 @@ public sealed class FunctionFactory
 					MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 					foreach (MethodInfo methodInfo in methods)
 					{
-						FunctionAttribute functionAttribute = (FunctionAttribute)ExtrapolateAttribute(methodInfo, "Redbox.Macros.FunctionAttribute", FunctionAttributeConstructor);
+						FunctionAttribute? functionAttribute = (FunctionAttribute?)ExtrapolateAttribute(methodInfo, "Redbox.Macros.FunctionAttribute", FunctionAttributeConstructor);
 						if (functionAttribute != null)
 						{
 							RegisterFunction(prefix + functionAttribute.Name, methodInfo);
@@ -164,13 +164,13 @@ public sealed class FunctionFactory
 
 	private static void RegisterFunction(string key, MethodInfo info)
 	{
-		object registered = m_methodInfoCollection[key];
+		object? registered = m_methodInfoCollection[key];
 		if (registered == null)
 		{
 			m_methodInfoCollection.Add(key, info);
 			return;
 		}
-		MethodInfo methodInfo = registered as MethodInfo;
+		MethodInfo? methodInfo = registered as MethodInfo;
 		if (methodInfo == null)
 		{
 			((ArrayList)registered).Add(info);
@@ -180,12 +180,12 @@ public sealed class FunctionFactory
 		m_methodInfoCollection[key] = value;
 	}
 
-	private static Attribute ExtrapolateAttribute(MemberInfo type, string fullname, ConstructDelegate doconstruct)
+	private static Attribute? ExtrapolateAttribute(MemberInfo type, string fullname, ConstructDelegate doconstruct)
 	{
 		Attribute[] customAttributes = Attribute.GetCustomAttributes(type);
 		foreach (Attribute attribute in customAttributes)
 		{
-			Type type2 = attribute.TypeId as Type;
+			Type? type2 = attribute.TypeId as Type;
 			if (type2 != null && type2.FullName == fullname)
 			{
 				return doconstruct(attribute);
@@ -196,11 +196,11 @@ public sealed class FunctionFactory
 
 	private static Attribute FunctionSetAttributeConstructor(Attribute attribute)
 	{
-		return new FunctionSetAttribute(attribute.GetType().InvokeMember("Prefix", BindingFlags.GetProperty, null, attribute, new object[0]).ToString(), attribute.GetType().InvokeMember("Category", BindingFlags.GetProperty, null, attribute, new object[0]).ToString());
+		return new FunctionSetAttribute(attribute.GetType().InvokeMember("Prefix", BindingFlags.GetProperty, null, attribute, new object[0])!.ToString()!, attribute.GetType().InvokeMember("Category", BindingFlags.GetProperty, null, attribute, new object[0])!.ToString()!);
 	}
 
 	private static Attribute FunctionAttributeConstructor(Attribute attribute)
 	{
-		return new FunctionAttribute(attribute.GetType().InvokeMember("Name", BindingFlags.GetProperty, null, attribute, new object[0]).ToString());
+		return new FunctionAttribute(attribute.GetType().InvokeMember("Name", BindingFlags.GetProperty, null, attribute, new object[0])!.ToString()!);
 	}
 }

@@ -4,7 +4,7 @@ public interface ICommChannelConfiguration
 {
 	int? ReceiveBufferSize { get; set; }
 
-	byte[] WriteTerminator { get; set; }
+	byte[]? WriteTerminator { get; set; }
 
 	int WritePause { get; set; }
 

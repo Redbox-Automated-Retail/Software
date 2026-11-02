@@ -4,7 +4,7 @@ namespace Redbox.HAL.Component.Model;
 
 public interface IConfigurationFileService
 {
-	IConfigurationFile Get(SystemConfigurations config);
+	IConfigurationFile? Get(SystemConfigurations config);
 
 	void DoForEach(Predicate<IConfigurationFile> a);
 

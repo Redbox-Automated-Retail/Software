@@ -29,7 +29,7 @@ internal class CounterHelper
 		{
 			return false;
 		}
-		Stack<string> stack = GetStack(service, job);
+		Stack<string> stack = GetStack(service, job!);
 		if (stack.Count > 0 && stack.Peek() == "SUCCESS")
 		{
 			stack.Pop();

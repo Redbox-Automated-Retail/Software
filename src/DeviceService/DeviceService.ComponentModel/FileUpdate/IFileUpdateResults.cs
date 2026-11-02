@@ -8,7 +8,7 @@ public interface IFileUpdateResults
 
 	FileUpdateHighLevelStatus Status { get; set; }
 
-	string StatusMessage { get; set; }
+	string? StatusMessage { get; set; }
 
 	List<IZipFileUpdateResult> ZipFileUpdateResultCollection { get; set; }
 }

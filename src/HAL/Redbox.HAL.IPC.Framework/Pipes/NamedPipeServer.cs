@@ -65,7 +65,7 @@ public sealed class NamedPipeServer : IDisposable
 		return new NamedPipeServer(pipeName);
 	}
 
-	public BasePipeChannel WaitForClientConnect()
+	public BasePipeChannel? WaitForClientConnect()
 	{
 		int error = 0;
 		SafeFileHandle safeFileHandle = CreateNamedPipe(PipePath, 3u, 0u, 255u, (uint)BufferSize, (uint)BufferSize, uint.MaxValue, IntPtr.Zero);

@@ -96,7 +96,8 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			}
 		}
 
-		private Encoder2[] m_Coders;
+		// Set by Create.
+		private Encoder2[] m_Coders = null!;
 
 		private int m_NumPrevBits;
 
@@ -328,7 +329,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 	private Optimal[] _optimum = new Optimal[4096];
 
-	private IMatchFinder _matchFinder;
+	private IMatchFinder? _matchFinder;
 
 	private SevenZip.Compression.RangeCoder.Encoder _rangeEncoder = new SevenZip.Compression.RangeCoder.Encoder();
 
@@ -400,7 +401,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 
 	private bool _finished;
 
-	private Stream _inStream;
+	private Stream? _inStream;
 
 	private EMatchFinderType _matchFinderType = EMatchFinderType.BT4;
 
@@ -553,7 +554,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	private void ReadMatchDistances(out uint lenRes, out uint numDistancePairs)
 	{
 		lenRes = 0u;
-		numDistancePairs = _matchFinder.GetMatches(_matchDistances);
+		numDistancePairs = _matchFinder!.GetMatches(_matchDistances);
 		if (numDistancePairs != 0)
 		{
 			lenRes = _matchDistances[numDistancePairs - 2];
@@ -569,7 +570,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		if (num != 0)
 		{
-			_matchFinder.Skip(num);
+			_matchFinder!.Skip(num);
 			_additionalOffset += num;
 		}
 	}
@@ -663,7 +664,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			numDistancePairs = _numDistancePairs;
 			_longestMatchWasFound = false;
 		}
-		uint numAvailableBytes = _matchFinder.GetNumAvailableBytes() + 1;
+		uint numAvailableBytes = _matchFinder!.GetNumAvailableBytes() + 1;
 		if (numAvailableBytes < 2)
 		{
 			backRes = uint.MaxValue;
@@ -1165,7 +1166,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		finished = true;
 		if (_inStream != null)
 		{
-			_matchFinder.SetStream(_inStream);
+			_matchFinder!.SetStream(_inStream);
 			_matchFinder.Init();
 			_needReleaseMFStream = true;
 			_inStream = null;
@@ -1178,7 +1179,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		long progressPosValuePrev = nowPos64;
 		if (nowPos64 == 0)
 		{
-			if (_matchFinder.GetNumAvailableBytes() == 0)
+			if (_matchFinder!.GetNumAvailableBytes() == 0)
 			{
 				Flush((uint)nowPos64);
 				return;
@@ -1193,7 +1194,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 			_additionalOffset--;
 			nowPos64++;
 		}
-		if (_matchFinder.GetNumAvailableBytes() == 0)
+		if (_matchFinder!.GetNumAvailableBytes() == 0)
 		{
 			Flush((uint)nowPos64);
 			return;
@@ -1375,7 +1376,7 @@ public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 		nowPos64 = 0L;
 	}
 
-	public void Code(Stream inStream, Stream outStream, long inSize, long outSize, ICodeProgress progress)
+	public void Code(Stream inStream, Stream outStream, long inSize, long outSize, ICodeProgress? progress)
 	{
 		_needReleaseMFStream = false;
 		try

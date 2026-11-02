@@ -24,15 +24,16 @@ public class DeviceServiceClient : IDeviceServiceClient
 
 	private class CommandData
 	{
-		public Action<BaseResponseEvent> CommandCompleteCallback;
+		public Action<BaseResponseEvent>? CommandCompleteCallback;
 
-		public Action<BaseResponseEvent> EventCallback;
+		public Action<BaseResponseEvent>? EventCallback;
 
-		public BaseCommandRequest CommandRequest { get; set; }
+		// Always set by the object initializer that creates the CommandData.
+		public BaseCommandRequest CommandRequest { get; set; } = null!;
 
-		public AutoResetEvent AutoResetEvent { get; set; }
+		public AutoResetEvent? AutoResetEvent { get; set; }
 
-		public BaseResponseEvent ResponseEvent { get; set; }
+		public BaseResponseEvent? ResponseEvent { get; set; }
 
 		public bool IsAsync => AutoResetEvent == null;
 
@@ -46,35 +47,35 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	private IDeviceServiceShutDownInfo _deviceServiceShutDownInfo;
+	private IDeviceServiceShutDownInfo? _deviceServiceShutDownInfo;
 
-	private Task _connectionTask;
+	private Task? _connectionTask;
 
 	private int _reconnectionAttemptInterval;
 
-	private System.Timers.Timer _asyncCommandTimeoutTimer;
+	private System.Timers.Timer? _asyncCommandTimeoutTimer;
 
 	private readonly object _lockConnectionObject = new object();
 
 	private readonly object _lockSendCommand = new object();
 
-	private AutoResetEvent _connectionAutoResetEvent;
+	private AutoResetEvent? _connectionAutoResetEvent;
 
 	private int _defaultCommandTimeout = 180000;
 
-	private string _url;
+	private string? _url;
 
 	private int _connectionTimeout;
 
 	private readonly ConcurrentDictionary<Guid, CommandData> _activeCommands = new ConcurrentDictionary<Guid, CommandData>();
 
-	private SignalRClient _signalRClient;
+	private SignalRClient _signalRClient = null!; // created by InitializeSignalRClient, called from the constructor
 
 	private DateTime? _lastCardReaderDisconnect;
 
 	private bool _autoReconnect;
 
-	public IDeviceServiceShutDownInfo DeviceServiceShutDownInfo
+	public IDeviceServiceShutDownInfo? DeviceServiceShutDownInfo
 	{
 		get
 		{
@@ -99,7 +100,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	public string Url => _url;
+	public string? Url => _url;
 
 	public int DefaultCommandTimeout
 	{
@@ -125,25 +126,25 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	public Version AssemblyVersion => GetType().Assembly.GetName().Version;
+	public Version AssemblyVersion => GetType().Assembly.GetName().Version!;
 
-	public event LogHandler OnLog;
+	public event LogHandler? OnLog;
 
-	public event OnConnected OnConnectedHandler;
+	public event OnConnected? OnConnectedHandler;
 
-	public event OnDisconnected OnDisconnectedHandler;
+	public event OnDisconnected? OnDisconnectedHandler;
 
-	public event OnConnected OnCardReaderConnectedHandler;
+	public event OnConnected? OnCardReaderConnectedHandler;
 
-	public event OnDisconnected OnCardReaderDisconnectedHandler;
+	public event OnDisconnected? OnCardReaderDisconnectedHandler;
 
-	public event OnDeviceServiceCanShutDown OnDeviceServiceCanShutDownHandler;
+	public event OnDeviceServiceCanShutDown? OnDeviceServiceCanShutDownHandler;
 
-	public event OnCardReaderState OnCardReaderStateHandler;
+	public event OnCardReaderState? OnCardReaderStateHandler;
 
-	public event OnDeviceServiceShutDownInfoChange OnDeviceServiceShutDownInfoChangeHandler;
+	public event OnDeviceServiceShutDownInfoChange? OnDeviceServiceShutDownInfoChangeHandler;
 
-	public event Action OnDeviceTamperedEventHandler;
+	public event Action? OnDeviceTamperedEventHandler;
 
 	public DeviceServiceClient()
 	{
@@ -298,7 +299,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		});
 	}
 
-	private void HandleEvent(BaseEvent baseEvent, Action action = null)
+	private void HandleEvent(BaseEvent baseEvent, Action? action = null)
 	{
 		LogEvent(baseEvent);
 		action?.Invoke();
@@ -395,7 +396,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		RunAsyncCommand(baseCommandRequest, completeCallback, null);
 	}
 
-	public UnitHealthModel GetUnitHealth()
+	public UnitHealthModel? GetUnitHealth()
 	{
 		return (RunCommand(new BaseCommandRequest("GetUnitHealth", AssemblyVersion)) as GetUnitHealthResponseEvent)?.UnitHealthModel;
 	}
@@ -405,17 +406,17 @@ public class DeviceServiceClient : IDeviceServiceClient
 		return RunAsyncCommand(new BaseCommandRequest("GetCardInsertedStatus", AssemblyVersion), completedCallback, null);
 	}
 
-	public string ReadConfig(string group, string index)
+	public string? ReadConfig(string group, string index)
 	{
 		return (RunCommand(new ConfigCommand("ReadConfiguration", AssemblyVersion)) as SimpleResponseEvent)?.Data;
 	}
 
-	public string WriteConfig(string group, string index, string value)
+	public string? WriteConfig(string group, string index, string value)
 	{
 		return (RunCommand(new ConfigCommand("ReadConfiguration", AssemblyVersion)) as SimpleResponseEvent)?.Data;
 	}
 
-	public bool CancelCommand(Guid commandToCancelRequestId, Action<BaseResponseEvent> cancelCompleteCallback)
+	public bool CancelCommand(Guid commandToCancelRequestId, Action<BaseResponseEvent>? cancelCompleteCallback)
 	{
 		CancelCommandRequest baseCommandRequest = new CancelCommandRequest(AssemblyVersion)
 		{
@@ -435,7 +436,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		Version assemblyVersion = AssemblyVersion;
 		if (assemblyVersion != null)
 		{
-			ValidateVersionResponseEvent validateVersionResponseEvent = RunCommand(new ValidateVersionCommand(assemblyVersion)) as ValidateVersionResponseEvent;
+			ValidateVersionResponseEvent? validateVersionResponseEvent = RunCommand(new ValidateVersionCommand(assemblyVersion)) as ValidateVersionResponseEvent;
 			if (validateVersionResponseEvent?.ValidateVersionModel != null)
 			{
 				result = validateVersionResponseEvent.ValidateVersionModel;
@@ -484,7 +485,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		OnLog?.Invoke(logText);
 	}
 
-	private void _signalRClient_OnDisconnectedHandler(Exception exception)
+	private void _signalRClient_OnDisconnectedHandler(Exception? exception)
 	{
 		_lastCardReaderDisconnect = null;
 		Log($"DeviceService disconnected. {exception}");
@@ -505,7 +506,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 			int reconnectionInterval = GetReconnectionInterval();
 			Log($"Delay DeviceServiceClient reconnection attempt {TimeSpan.FromMilliseconds(reconnectionInterval)}");
 			await Task.Delay(reconnectionInterval);
-			StartConnectionToDeviceService(_url, null);
+			StartConnectionToDeviceService(_url!, null); // reconnecting: a connection was started (with the url) before
 		});
 	}
 
@@ -538,7 +539,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		if (_activeCommands.TryGetValue(getUnitHealthResponseEvent.RequestId, out var value))
 		{
 			value.ResponseEvent = getUnitHealthResponseEvent;
-			value?.AutoResetEvent.Set();
+			value?.AutoResetEvent!.Set(); // GetUnitHealth is a synchronous command (RunCommand), so it has one
 		}
 		else
 		{
@@ -546,7 +547,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	private void HandleResponseEvent(BaseResponseEvent baseResponseEvent, Action<CommandData> action = null)
+	private void HandleResponseEvent(BaseResponseEvent baseResponseEvent, Action<CommandData>? action = null)
 	{
 		if (_activeCommands.TryGetValue(baseResponseEvent.RequestId, out var value))
 		{
@@ -556,7 +557,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 			{
 				value?.AutoResetEvent.Set();
 			}
-			action?.Invoke(value);
+			action?.Invoke(value!); // dereferenced above (value.ResponseEvent)
 		}
 		else
 		{
@@ -601,14 +602,14 @@ public class DeviceServiceClient : IDeviceServiceClient
 		Log("<<< " + baseEvent?.EventName + ": " + JsonConvert.SerializeObject(baseEvent));
 	}
 
-	private string ObfuscateEMVCardReadResponseEvent(EMVCardReadResponseEvent responseEvent)
+	private string? ObfuscateEMVCardReadResponseEvent(EMVCardReadResponseEvent responseEvent)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			EMVCardReadResponseEvent eMVCardReadResponseEvent = JsonConvert.DeserializeObject<EMVCardReadResponseEvent>(json);
+			EMVCardReadResponseEvent? eMVCardReadResponseEvent = JsonConvert.DeserializeObject<EMVCardReadResponseEvent>(json);
 			if (eMVCardReadResponseEvent != null)
 			{
-				EMVCardReadModel data = eMVCardReadResponseEvent.Data;
+				EMVCardReadModel? data = eMVCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -620,14 +621,14 @@ public class DeviceServiceClient : IDeviceServiceClient
 		});
 	}
 
-	private string ObfuscateEncryptedCardReadResponseEvent(EncryptedCardReadResponseEvent responseEvent)
+	private string? ObfuscateEncryptedCardReadResponseEvent(EncryptedCardReadResponseEvent responseEvent)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			EncryptedCardReadResponseEvent encryptedCardReadResponseEvent = JsonConvert.DeserializeObject<EncryptedCardReadResponseEvent>(json);
+			EncryptedCardReadResponseEvent? encryptedCardReadResponseEvent = JsonConvert.DeserializeObject<EncryptedCardReadResponseEvent>(json);
 			if (encryptedCardReadResponseEvent != null)
 			{
-				EncryptedCardReadModel data = encryptedCardReadResponseEvent.Data;
+				EncryptedCardReadModel? data = encryptedCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -639,14 +640,14 @@ public class DeviceServiceClient : IDeviceServiceClient
 		});
 	}
 
-	private string ObfuscateUnencryptedCardReadResponseEvent(UnencryptedCardReadResponseEvent responseEvent)
+	private string? ObfuscateUnencryptedCardReadResponseEvent(UnencryptedCardReadResponseEvent responseEvent)
 	{
 		return CreateResponseEventLogText(responseEvent, delegate(string json)
 		{
-			UnencryptedCardReadResponseEvent unencryptedCardReadResponseEvent = JsonConvert.DeserializeObject<UnencryptedCardReadResponseEvent>(json);
+			UnencryptedCardReadResponseEvent? unencryptedCardReadResponseEvent = JsonConvert.DeserializeObject<UnencryptedCardReadResponseEvent>(json);
 			if (unencryptedCardReadResponseEvent != null)
 			{
-				UnencryptedCardReadModel data = unencryptedCardReadResponseEvent.Data;
+				UnencryptedCardReadModel? data = unencryptedCardReadResponseEvent.Data;
 				if (data != null)
 				{
 					data.ObfuscateSensitiveData();
@@ -658,9 +659,9 @@ public class DeviceServiceClient : IDeviceServiceClient
 		});
 	}
 
-	private string CreateResponseEventLogText(BaseEvent responseEvent, Func<string, object> ObfuscateJsonAction)
+	private string? CreateResponseEventLogText(BaseEvent responseEvent, Func<string, object?> ObfuscateJsonAction)
 	{
-		string result = null;
+		string? result = null;
 		try
 		{
 			string json = JsonConvert.SerializeObject(responseEvent);
@@ -689,7 +690,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	private bool RunAsyncReadCardCommand(Guid? requestId, CardReadRequest request, int timeout, Action<BaseResponseEvent> commandCompleteCallback = null, Action<BaseResponseEvent> eventCallback = null)
+	private bool RunAsyncReadCardCommand(Guid? requestId, CardReadRequest request, int timeout, Action<BaseResponseEvent>? commandCompleteCallback = null, Action<BaseResponseEvent>? eventCallback = null)
 	{
 		return RunAsyncCommand(new ReadCardCommand(AssemblyVersion)
 		{
@@ -699,7 +700,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}, commandCompleteCallback, eventCallback);
 	}
 
-	private BaseResponseEvent RunCommand(BaseCommandRequest baseCommandRequest)
+	private BaseResponseEvent? RunCommand(BaseCommandRequest baseCommandRequest)
 	{
 		CommandData commandData = new CommandData
 		{
@@ -717,7 +718,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		return commandData?.ResponseEvent;
 	}
 
-	private bool RunAsyncCommand(BaseCommandRequest baseCommandRequest, Action<BaseResponseEvent> commandCompleteCallback, Action<BaseResponseEvent> eventCallback)
+	private bool RunAsyncCommand(BaseCommandRequest baseCommandRequest, Action<BaseResponseEvent>? commandCompleteCallback, Action<BaseResponseEvent>? eventCallback)
 	{
 		bool result = false;
 		if (baseCommandRequest != null && (commandCompleteCallback != null || eventCallback != null))
@@ -776,7 +777,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 		}
 	}
 
-	private void AsyncCommandTimeoutTimer_Elapsed(object sender, ElapsedEventArgs e)
+	private void AsyncCommandTimeoutTimer_Elapsed(object? sender, ElapsedEventArgs e)
 	{
 		try
 		{
@@ -798,7 +799,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 						};
 						Task.Run(delegate
 						{
-							removedCommandData?.CommandCompleteCallback(timeoutResponseEvent);
+							removedCommandData?.CommandCompleteCallback!(timeoutResponseEvent); // null for a command sent with only an event callback (throws, as before)
 						});
 						CancelCommand(removedCommandData.CommandRequest.RequestId, null);
 						Log("DeviceServiceClient removing timed out aync command " + JsonConvert.SerializeObject(removedCommandData.CommandRequest));
@@ -812,7 +813,7 @@ public class DeviceServiceClient : IDeviceServiceClient
 			if (activeAsyncCount == 0)
 			{
 				Log("DeviceServiceClient no active aysnc commands.  Stopping timeout timer");
-				_asyncCommandTimeoutTimer.Enabled = false;
+				_asyncCommandTimeoutTimer!.Enabled = false; // the timer exists: this is its Elapsed handler
 			}
 			else
 			{

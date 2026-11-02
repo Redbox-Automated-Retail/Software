@@ -11,7 +11,7 @@ internal sealed class DumpHardwareStatisticsExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Stat.ToString());
+		base.Job!.Push(Stat.ToString());
 	}
 
 	internal DumpHardwareStatisticsExecutor(HardwareService service, HardwareCorrectionStatistic s)

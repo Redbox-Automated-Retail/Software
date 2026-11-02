@@ -13,7 +13,7 @@ namespace Redbox.NetCore.Middleware.Extensions;
 
 public static class HttpExtensions
 {
-	public static string GetActivityId(this HttpContext context)
+	public static string? GetActivityId(this HttpContext context)
 	{
 		if (context.Request.Headers.ContainsKey("x-redbox-activityid"))
 		{
@@ -21,12 +21,12 @@ public static class HttpExtensions
 		}
 		if (context.Items.ContainsKey("ActivityId"))
 		{
-			return context.Items["ActivityId"].ToString();
+			return context.Items["ActivityId"]!.ToString(); // throws on a null item, as before
 		}
 		return string.Empty;
 	}
 
-	public static string GetKioskId(this HttpContext context)
+	public static string? GetKioskId(this HttpContext context)
 	{
 		if (context.Request.Headers.ContainsKey("x-redbox-kioskid"))
 		{
@@ -34,7 +34,7 @@ public static class HttpExtensions
 		}
 		if (context.Items.ContainsKey("KioskId"))
 		{
-			return context.Items["KioskId"].ToString();
+			return context.Items["KioskId"]!.ToString(); // throws on a null item, as before
 		}
 		return string.Empty;
 	}
@@ -44,25 +44,25 @@ public static class HttpExtensions
 		return await ReadStream(request.Body);
 	}
 
-	public static HttpRequestMessage AddActivityIdHeader(this HttpRequestMessage message, Guid activityId)
+	public static HttpRequestMessage? AddActivityIdHeader(this HttpRequestMessage? message, Guid activityId)
 	{
 		message?.AddActivityIdHeader(activityId.ToString());
 		return message;
 	}
 
-	public static HttpRequestMessage AddActivityIdHeader(this HttpRequestMessage message, string activityId)
+	public static HttpRequestMessage? AddActivityIdHeader(this HttpRequestMessage? message, string activityId)
 	{
 		message?.Headers.Add("x-redbox-activityid", activityId);
 		return message;
 	}
 
-	public static List<Header> AddActivityIdHeader(this List<Header> headers, Guid activityId)
+	public static List<Header>? AddActivityIdHeader(this List<Header>? headers, Guid activityId)
 	{
 		headers?.AddActivityIdHeader(activityId.ToString());
 		return headers;
 	}
 
-	public static List<Header> AddActivityIdHeader(this List<Header> headers, string activityId)
+	public static List<Header>? AddActivityIdHeader(this List<Header>? headers, string activityId)
 	{
 		if (headers != null)
 		{
@@ -72,7 +72,7 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static HttpRequestMessage AddApiKeyHeader(this HttpRequestMessage message, string apikey)
+	public static HttpRequestMessage? AddApiKeyHeader(this HttpRequestMessage? message, string? apikey)
 	{
 		if (message != null && !string.IsNullOrEmpty(apikey))
 		{
@@ -81,7 +81,7 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static List<Header> AddApiKeyHeader(this List<Header> headers, string apikey)
+	public static List<Header>? AddApiKeyHeader(this List<Header>? headers, string? apikey)
 	{
 		if (headers != null && !string.IsNullOrEmpty(apikey))
 		{
@@ -90,7 +90,7 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static HttpRequestMessage AddAppNameHeader(this HttpRequestMessage message, string appName)
+	public static HttpRequestMessage? AddAppNameHeader(this HttpRequestMessage? message, string? appName)
 	{
 		if (message != null && appName != null)
 		{
@@ -101,7 +101,7 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static List<Header> AddAppNameHeader(this List<Header> headers, string appName)
+	public static List<Header>? AddAppNameHeader(this List<Header>? headers, string? appName)
 	{
 		if (headers != null && appName != null)
 		{
@@ -112,7 +112,7 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static HttpRequestMessage AddAuthorizationHeader(this HttpRequestMessage message, string token)
+	public static HttpRequestMessage? AddAuthorizationHeader(this HttpRequestMessage? message, string? token)
 	{
 		if (message != null && !string.IsNullOrEmpty(token))
 		{
@@ -121,7 +121,7 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static List<Header> AddAuthorizationHeader(this List<Header> headers, string token)
+	public static List<Header>? AddAuthorizationHeader(this List<Header>? headers, string? token)
 	{
 		if (headers != null && !string.IsNullOrEmpty(token))
 		{
@@ -130,12 +130,12 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static HttpRequestMessage AddKioskIdHeader(this HttpRequestMessage message, int kioskId)
+	public static HttpRequestMessage? AddKioskIdHeader(this HttpRequestMessage? message, int kioskId)
 	{
 		return message.AddKioskIdHeader(kioskId.ToString());
 	}
 
-	public static HttpRequestMessage AddKioskIdHeader(this HttpRequestMessage message, int? kioskId)
+	public static HttpRequestMessage? AddKioskIdHeader(this HttpRequestMessage? message, int? kioskId)
 	{
 		if (message != null && kioskId.HasValue)
 		{
@@ -144,12 +144,12 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static HttpRequestMessage AddKioskIdHeader(this HttpRequestMessage message, long kioskId)
+	public static HttpRequestMessage? AddKioskIdHeader(this HttpRequestMessage? message, long kioskId)
 	{
 		return message.AddKioskIdHeader(kioskId.ToString());
 	}
 
-	public static HttpRequestMessage AddKioskIdHeader(this HttpRequestMessage message, long? kioskId)
+	public static HttpRequestMessage? AddKioskIdHeader(this HttpRequestMessage? message, long? kioskId)
 	{
 		if (message != null && kioskId.HasValue)
 		{
@@ -158,7 +158,7 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static HttpRequestMessage AddKioskIdHeader(this HttpRequestMessage message, string kioskId)
+	public static HttpRequestMessage? AddKioskIdHeader(this HttpRequestMessage? message, string? kioskId)
 	{
 		if (message != null && !string.IsNullOrEmpty(kioskId))
 		{
@@ -167,12 +167,12 @@ public static class HttpExtensions
 		return message;
 	}
 
-	public static List<Header> AddKioskIdHeader(this List<Header> headers, int kioskId)
+	public static List<Header>? AddKioskIdHeader(this List<Header>? headers, int kioskId)
 	{
 		return headers.AddKioskIdHeader(kioskId.ToString());
 	}
 
-	public static List<Header> AddKioskIdHeader(this List<Header> headers, int? kioskId)
+	public static List<Header>? AddKioskIdHeader(this List<Header>? headers, int? kioskId)
 	{
 		if (headers != null && kioskId.HasValue)
 		{
@@ -181,12 +181,12 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static List<Header> AddKioskIdHeader(this List<Header> headers, long kioskId)
+	public static List<Header>? AddKioskIdHeader(this List<Header>? headers, long kioskId)
 	{
 		return headers.AddKioskIdHeader(kioskId.ToString());
 	}
 
-	public static List<Header> AddKioskIdHeader(this List<Header> headers, long? kioskId)
+	public static List<Header>? AddKioskIdHeader(this List<Header>? headers, long? kioskId)
 	{
 		if (headers != null && kioskId.HasValue)
 		{
@@ -195,7 +195,7 @@ public static class HttpExtensions
 		return headers;
 	}
 
-	public static List<Header> AddKioskIdHeader(this List<Header> headers, string kioskId)
+	public static List<Header>? AddKioskIdHeader(this List<Header>? headers, string? kioskId)
 	{
 		if (headers != null && !string.IsNullOrEmpty(kioskId))
 		{
@@ -206,7 +206,7 @@ public static class HttpExtensions
 
 	public static string ToSecureString(this HttpResponseMessage response)
 	{
-		if (response.RequestMessage.Headers.TryGetValues("x-api-key", out var values))
+		if (response.RequestMessage!.Headers.TryGetValues("x-api-key", out var values)) // throws without a request, as before
 		{
 			response.RequestMessage.Headers.Remove("x-api-key");
 			response.RequestMessage.Headers.Add("x-api-key", values.FirstOrDefault()?.MaskLogValue(4));
@@ -220,7 +220,7 @@ public static class HttpExtensions
 		return response.ToJson();
 	}
 
-	private static async Task<string> ReadStream(Stream stream)
+	private static async Task<string> ReadStream(Stream? stream)
 	{
 		string result = "";
 		try

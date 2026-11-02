@@ -4,7 +4,8 @@ namespace Redbox.FMA.Controllers;
 
 public class PopupMessageViewParameters
 {
-	public string MessageText { get; set; }
+	// Both are set by the code that shows the popup (object initializer and the lines after it).
+	public string MessageText { get; set; } = null!;
 
-	public Action ContinueAction { get; set; }
+	public Action ContinueAction { get; set; } = null!;
 }

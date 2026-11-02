@@ -6,16 +6,16 @@ namespace DeviceService.Domain;
 
 public static class DataFileHelper
 {
-	public static T GetFileData<T>(string dataFilePath, string fileName, Action<string, Exception> exceptionLogger)
+	public static T? GetFileData<T>(string dataFilePath, string fileName, Action<string, Exception> exceptionLogger)
 	{
 		string path = Path.Combine(dataFilePath, fileName);
-		T result = default(T);
+		T? result = default(T);
 		if (File.Exists(path))
 		{
 			try
 			{
 				using StreamReader reader = File.OpenText(path);
-				result = (T)new JsonSerializer().Deserialize(reader, typeof(T));
+				result = (T?)new JsonSerializer().Deserialize(reader, typeof(T));
 				return result;
 			}
 			catch (JsonSerializationException ex)

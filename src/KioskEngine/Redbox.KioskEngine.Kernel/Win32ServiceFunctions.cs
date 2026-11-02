@@ -12,10 +12,10 @@ internal static class Win32ServiceFunctions
 	private const string ServicesKey = "System\\CurrentControlSet\\Services";
 
 	[KernelFunction(Name = "kernel.getservicepath")]
-	internal static object GetServicePath(string serviceName)
+	internal static object? GetServicePath(string serviceName)
 	{
 		string name = string.Format("{0}\\{1}", "System\\CurrentControlSet\\Services", serviceName);
-		RegistryKey registryKey = null;
+		RegistryKey? registryKey = null;
 		try
 		{
 			registryKey = Registry.LocalMachine.OpenSubKey(name);
@@ -23,7 +23,7 @@ internal static class Win32ServiceFunctions
 			{
 				return null;
 			}
-			return Path.GetDirectoryName(((string)registryKey.GetValue("ImagePath")).TrimStart('"').TrimEnd('"'));
+			return Path.GetDirectoryName(((string)registryKey.GetValue("ImagePath")!).TrimStart('"').TrimEnd('"'));
 		}
 		catch (Exception ex)
 		{
@@ -69,7 +69,7 @@ internal static class Win32ServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getservicestatus")]
-	internal static string GetServiceStatus(string serviceName)
+	internal static string? GetServiceStatus(string serviceName)
 	{
 		try
 		{

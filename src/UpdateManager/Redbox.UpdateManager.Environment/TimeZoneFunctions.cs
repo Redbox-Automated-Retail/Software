@@ -118,7 +118,7 @@ public static class TimeZoneFunctions
 		}
 		try
 		{
-			TimeZoneInfo.AdjustmentRule currentAdjustmentRule = timeZoneInfo.GetAdjustmentRules().FirstOrDefault((TimeZoneInfo.AdjustmentRule ar) => ar.DateStart < DateTime.UtcNow && ar.DateEnd > DateTime.UtcNow);
+			TimeZoneInfo.AdjustmentRule? currentAdjustmentRule = timeZoneInfo.GetAdjustmentRules().FirstOrDefault((TimeZoneInfo.AdjustmentRule ar) => ar.DateStart < DateTime.UtcNow && ar.DateEnd > DateTime.UtcNow);
 			bool changed = false;
 			LogHelper.Instance.Log("Attempting to change timezone from " + TimeZoneInfo.Local.DisplayName + " to " + timeZoneInfo.DisplayName, LogEntryType.Debug);
 			if (IsOsVistaOrGreater)
@@ -160,7 +160,7 @@ public static class TimeZoneFunctions
 		}
 	}
 
-	private static void SetAdjustmentRules(ref TimeZoneInformation info, TimeZoneInfo.AdjustmentRule currentAdjustmentRule)
+	private static void SetAdjustmentRules(ref TimeZoneInformation info, TimeZoneInfo.AdjustmentRule? currentAdjustmentRule)
 	{
 		if (currentAdjustmentRule == null)
 		{
@@ -185,7 +185,7 @@ public static class TimeZoneFunctions
 		}
 	}
 
-	private static void SetAdjustmentRules(ref DynamicTimeZoneInformation info, TimeZoneInfo.AdjustmentRule currentAdjustmentRule)
+	private static void SetAdjustmentRules(ref DynamicTimeZoneInformation info, TimeZoneInfo.AdjustmentRule? currentAdjustmentRule)
 	{
 		if (currentAdjustmentRule == null)
 		{
@@ -261,7 +261,7 @@ public static class TimeZoneFunctions
 	{
 		try
 		{
-			RegistryKey key = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", writable: true);
+			RegistryKey? key = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", writable: true);
 			if (key != null)
 			{
 				key.DeleteValue("DisableAutoDaylightTimeSet", throwOnMissingValue: false);

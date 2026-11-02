@@ -36,7 +36,7 @@ internal static class SettingsFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getmachinevalue")]
-	internal static string GetMachineSettingValue(string path, string key)
+	internal static string? GetMachineSettingValue(string path, string key)
 	{
 		return ServiceLocator.Instance.GetService<IMachineSettingsStore>().GetValue<string>(path, key);
 	}

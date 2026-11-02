@@ -12,9 +12,10 @@ public class ClientCommandResult
 
 	public bool Success { get; set; }
 
-	public string CommandText { get; internal set; }
+	// Set by ClientCommand.Execute's object initializer.
+	public string CommandText { get; internal set; } = null!;
 
-	public string StatusMessage { get; internal set; }
+	public string? StatusMessage { get; internal set; }
 
 	public TimeSpan ExecutionTime { get; internal set; }
 }

@@ -34,10 +34,10 @@ public static class StringExtensions
 
 	public static T ToEnum<T>(this string value)
 	{
-		return Enum<T>.Parse(value, default(T));
+		return Enum<T>.Parse(value, default(T)!); // T is an enum
 	}
 
-	public static byte[] ReadToBuffer(this string fileName)
+	public static byte[]? ReadToBuffer(this string? fileName)
 	{
 		if (fileName != null)
 		{
@@ -145,23 +145,23 @@ public static class StringExtensions
 		return Encoding.UTF8.GetString(source.Base64ToBytes().Decrypt());
 	}
 
-	public static object GetValueForPath(this string path, object rootObject)
+	public static object? GetValueForPath(this string path, object? rootObject)
 	{
 		return GetObjectFromPath(path, rootObject, null);
 	}
 
-	public static void SetValueForPath(this string path, object rootObject, object value)
+	public static void SetValueForPath(this string path, object? rootObject, object? value)
 	{
-		object parent = GetObjectFromPath(path, rootObject, 1);
+		object? parent = GetObjectFromPath(path, rootObject, 1);
 		if (parent != null)
 		{
 			string[] parts = path.Split(PropertyPathSeparators);
-			PropertyInfo property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
+			PropertyInfo? property = parent.GetType().GetProperty(parts[parts.Length - 1], BindingFlags.Instance | BindingFlags.Public);
 			property?.SetValue(parent, ConversionHelper.ChangeType(value, property.PropertyType), null);
 		}
 	}
 
-	public static Type ToType(this string typeName)
+	public static Type? ToType(this string? typeName)
 	{
 		if (!string.IsNullOrEmpty(typeName))
 		{
@@ -170,7 +170,7 @@ public static class StringExtensions
 		return null;
 	}
 
-	public static object ExtractIndex(string part)
+	public static object? ExtractIndex(string? part)
 	{
 		if (part == null)
 		{
@@ -178,7 +178,7 @@ public static class StringExtensions
 		}
 		Match stringIndexer = Regex.Match(part, "\\[\"(?<indexer>.*?)\"\\]", RegexOptions.Singleline);
 		Match numericIndexer = Regex.Match(part, "\\[(?<indexer>[0-9]*?)\\]", RegexOptions.Singleline);
-		object index = null;
+		object? index = null;
 		if (stringIndexer.Success)
 		{
 			index = stringIndexer.Groups["indexer"].Captures[0].Value;
@@ -204,12 +204,12 @@ public static class StringExtensions
 		return JavaScriptConverterRegistry.Instance.GetSerializer().Deserialize<T>(json);
 	}
 
-	public static object ToObject(this string json, Type type)
+	public static object? ToObject(this string json, Type type)
 	{
 		return JavaScriptConverterRegistry.Instance.GetSerializer().Deserialize(type, json);
 	}
 
-	public static string ToLastFour(this string cardNumber)
+	public static string? ToLastFour(this string? cardNumber)
 	{
 		if (cardNumber == null || cardNumber.Length <= 4)
 		{
@@ -225,13 +225,13 @@ public static class StringExtensions
 		return stringBuilder.ToString();
 	}
 
-	public static string Escaped(this string input)
+	public static string? Escaped(this string? input)
 	{
 		if (string.IsNullOrEmpty(input))
 		{
 			return null;
 		}
-		input = input.Replace("\\", "\\\\");
+		input = input!.Replace("\\", "\\\\"); // checked above
 		input = input.Replace("'", "\\'");
 		input = input.Replace("\"", "\\\"");
 		input = input.Replace("]", string.Empty);
@@ -242,13 +242,13 @@ public static class StringExtensions
 		return input;
 	}
 
-	public static string EscapedJson(this string input)
+	public static string? EscapedJson(this string? input)
 	{
 		if (string.IsNullOrEmpty(input))
 		{
 			return null;
 		}
-		input = input.Replace("\\", "\\\\");
+		input = input!.Replace("\\", "\\\\"); // checked above
 		input = input.Replace("'", "\\'");
 		return input;
 	}
@@ -261,7 +261,7 @@ public static class StringExtensions
 		}
 	}
 
-	private static object GetObjectFromPath(string path, object rootObject, int? depthAdjust)
+	private static object? GetObjectFromPath(string path, object? rootObject, int? depthAdjust)
 	{
 		if (path == null)
 		{
@@ -277,12 +277,12 @@ public static class StringExtensions
 		{
 			depth -= depthAdjust.Value;
 		}
-		object current = rootObject;
+		object? current = rootObject;
 		for (int i = 0; i < depth; i++)
 		{
-			object[] args = null;
+			object[]? args = null;
 			string member = parts[i];
-			object index = ExtractIndex(member);
+			object? index = ExtractIndex(member);
 			if (index != null)
 			{
 				member = member.Substring(0, member.IndexOf("["));
@@ -290,7 +290,7 @@ public static class StringExtensions
 			}
 			try
 			{
-				object memberValue = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
+				object? memberValue = current.GetType().InvokeMember(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.GetField | BindingFlags.GetProperty, null, current, args);
 				current = memberValue;
 				if (current == null)
 				{

@@ -6,7 +6,8 @@ public class StoreGroup
 {
 	public long ID { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
 	public uint MaxBandwidthWhileOutsideOfSchedule { get; set; }
 
@@ -18,7 +19,7 @@ public class StoreGroup
 
 	public int AllowedBandwidthInMB { get; set; }
 
-	public List<Repository> Repositories { get; set; }
+	public List<Repository> Repositories { get; set; } = null!;
 
 	public int StoreCount { get; set; }
 }

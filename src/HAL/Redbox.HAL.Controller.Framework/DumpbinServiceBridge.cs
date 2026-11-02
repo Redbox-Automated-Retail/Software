@@ -7,13 +7,14 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal sealed class DumpbinServiceBridge : IDumpbinService, IConfigurationObserver
 {
-	private IDumpbinService Implementor;
+	// Set by NotifyConfigurationLoaded.
+	private IDumpbinService Implementor = null!;
 
-	public ILocation PutLocation => Implementor.PutLocation;
+	public ILocation? PutLocation => Implementor.PutLocation;
 
 	public int Capacity => Implementor.Capacity;
 
-	public ILocation RotationLocation => Implementor.RotationLocation;
+	public ILocation? RotationLocation => Implementor.RotationLocation;
 
 	public void NotifyConfigurationLoaded()
 	{

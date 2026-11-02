@@ -8,13 +8,13 @@ namespace Redbox.UpdateManager.DownloadService;
 
 internal class DownloadService : IDownloadService
 {
-	private Timer _timer;
+	private Timer _timer = null!; // created by Initialize
 
 	private bool _isRunning;
 
 	private int _inDoWork;
 
-	private string _root;
+	private string _root = null!; // set by Initialize
 
 	public static DownloadService Instance => Singleton<DownloadService>.Instance;
 
@@ -106,7 +106,7 @@ internal class DownloadService : IDownloadService
 		return DownloadFactory.Instance.GetDownloads();
 	}
 
-	public ErrorList AddDownload(string key, string hash, string url, DownloadPriority priority, out IDownloader download)
+	public ErrorList AddDownload(string key, string hash, string url, DownloadPriority priority, out IDownloader? download)
 	{
 		ErrorList errorList = new ErrorList();
 		download = null;

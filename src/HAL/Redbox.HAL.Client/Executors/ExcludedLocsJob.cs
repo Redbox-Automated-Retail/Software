@@ -10,7 +10,7 @@ public sealed class ExcludedLocsJob(HardwareService service) : JobExecutor(servi
 	{
 		get
 		{
-			foreach (ProgramResult result in base.Results)
+			foreach (ProgramResult result in base.Results!)
 			{
 				if (result.Code == "ExcludedSlot")
 				{

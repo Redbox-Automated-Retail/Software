@@ -10,45 +10,46 @@ namespace Redbox.UpdateManager.UI;
 
 public class TransferManager : Form
 {
-	private IContainer components;
+	private IContainer? components;
 
-	private Button m_cancel;
+	private Button m_cancel = null!;
 
-	private Button m_suspend;
+	private Button m_suspend = null!;
 
-	private Button m_details;
+	private Button m_details = null!;
 
-	private Button m_resume;
+	private Button m_resume = null!;
 
-	private ListView m_jobs;
+	private ListView m_jobs = null!;
 
-	private ColumnHeader JobName;
+	private ColumnHeader JobName = null!;
 
-	private ColumnHeader ID;
+	private ColumnHeader ID = null!;
 
-	private ColumnHeader Status;
+	private ColumnHeader Status = null!;
 
-	private ColumnHeader JobType;
+	private ColumnHeader JobType = null!;
 
-	private ColumnHeader StartTime;
+	private ColumnHeader StartTime = null!;
 
-	private ColumnHeader TotalBytes;
+	private ColumnHeader TotalBytes = null!;
 
-	private Button m_refresh;
+	private Button m_refresh = null!;
 
-	private ColumnHeader m_bytesTransfered;
+	private ColumnHeader m_bytesTransfered = null!;
 
+	// The controls above are created by InitializeComponent.
 	public TransferManager()
 	{
 		InitializeComponent();
 	}
 
-	private void OnLoad(object sender, EventArgs e)
+	private void OnLoad(object? sender, EventArgs e)
 	{
 		UpdateManagerApplication.Instance.AsyncButtonAction(null, LoadJobsIntoList);
 	}
 
-	private void OnSuspend(object sender, EventArgs e)
+	private void OnSuspend(object? sender, EventArgs e)
 	{
 		List<ITransferJob> jobs = new List<ITransferJob>();
 		ErrorList errors = new ErrorList();
@@ -59,7 +60,7 @@ public class TransferManager : Form
 				jobs.Add(tag);
 			}
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			foreach (ITransferJob item in jobs)
 			{
@@ -73,7 +74,7 @@ public class TransferManager : Form
 		});
 	}
 
-	private void OnCancel(object sender, EventArgs e)
+	private void OnCancel(object? sender, EventArgs e)
 	{
 		List<ITransferJob> jobs = new List<ITransferJob>();
 		ErrorList errors = new ErrorList();
@@ -84,7 +85,7 @@ public class TransferManager : Form
 				jobs.Add(tag);
 			}
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			foreach (ITransferJob item in jobs)
 			{
@@ -98,7 +99,7 @@ public class TransferManager : Form
 		});
 	}
 
-	private void OnResume(object sender, EventArgs e)
+	private void OnResume(object? sender, EventArgs e)
 	{
 		List<ITransferJob> jobs = new List<ITransferJob>();
 		ErrorList errors = new ErrorList();
@@ -109,7 +110,7 @@ public class TransferManager : Form
 				jobs.Add(tag);
 			}
 		}
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, delegate
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, delegate
 		{
 			foreach (ITransferJob item in jobs)
 			{
@@ -123,11 +124,11 @@ public class TransferManager : Form
 		});
 	}
 
-	private void OnDetails(object sender, EventArgs e)
+	private void OnDetails(object? sender, EventArgs e)
 	{
 		if (m_jobs.SelectedItems.Count >= 1)
 		{
-			new TransferDetails(m_jobs.SelectedItems[0].Tag as ITransferJob).ShowDialog();
+			new TransferDetails((m_jobs.SelectedItems[0].Tag as ITransferJob)!).ShowDialog(); // the job, set by LoadJobsIntoList
 		}
 	}
 
@@ -164,9 +165,9 @@ public class TransferManager : Form
 		});
 	}
 
-	private void OnRefresh(object sender, EventArgs e)
+	private void OnRefresh(object? sender, EventArgs e)
 	{
-		UpdateManagerApplication.Instance.AsyncButtonAction((Control)sender, LoadJobsIntoList);
+		UpdateManagerApplication.Instance.AsyncButtonAction((Control?)sender, LoadJobsIntoList);
 	}
 
 	protected override void Dispose(bool disposing)
@@ -263,7 +264,7 @@ public class TransferManager : Form
 		base.Controls.Add(this.m_suspend);
 		base.Controls.Add(this.m_cancel);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon")!;
 		base.Name = "TransferManager";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 		this.Text = "Manage Transfers";

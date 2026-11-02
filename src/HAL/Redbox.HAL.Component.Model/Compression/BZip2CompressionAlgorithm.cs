@@ -17,7 +17,7 @@ internal sealed class BZip2CompressionAlgorithm : ICompressionAlgorithm
 			bZip2OutputStream.Write(binaryReader.ReadBytes((int)input.Length), 0, (int)input.Length);
 			bZip2OutputStream.Flush();
 			result = new byte[output.Length];
-			Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
+			Array.Copy(output.GetBuffer()!, 0L, result, 0L, output.Length);
 		}
 		binaryReader.Close();
 		return result;
@@ -42,7 +42,7 @@ internal sealed class BZip2CompressionAlgorithm : ICompressionAlgorithm
 			}
 		}
 		byte[] result = new byte[output.Length];
-		Array.Copy(output.GetBuffer(), 0L, result, 0L, output.Length);
+		Array.Copy(output.GetBuffer()!, 0L, result, 0L, output.Length);
 		binaryWriter.Close();
 		return result;
 	}

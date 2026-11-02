@@ -21,7 +21,7 @@ public sealed class HardwareStatusExecutor : JobExecutor
 
 	protected override void OnJobCompleted()
 	{
-		foreach (ProgramResult result in base.Results)
+		foreach (ProgramResult result in base.Results!)
 		{
 			if (result.Code == "MotionControllerCommunicationError")
 			{

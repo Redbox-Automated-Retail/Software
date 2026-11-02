@@ -2,7 +2,8 @@ namespace Redbox.UpdateService.Client;
 
 public class Credentials
 {
-	public string Key1 { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Key1 { get; set; } = null!;
 
-	public string Key2 { get; set; }
+	public string Key2 { get; set; } = null!;
 }

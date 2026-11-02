@@ -6,9 +6,10 @@ namespace HALUtilities;
 
 internal sealed class PrepositionTest : IDisposable
 {
-	private readonly HardwareJob m_preposJob;
+	private readonly HardwareJob? m_preposJob;
 
-	internal HardwareJob PreposJob => m_preposJob;
+	// The constructor throws when the job can't be scheduled.
+	internal HardwareJob PreposJob => m_preposJob!;
 
 	public void Dispose()
 	{
@@ -20,7 +21,7 @@ internal sealed class PrepositionTest : IDisposable
 		using RandomInventorySelector randomInventorySelector = new RandomInventorySelector(s);
 		for (int i = 0; i < items; i++)
 		{
-			IInventoryLocation inventoryLocation = randomInventorySelector.Select();
+			IInventoryLocation? inventoryLocation = randomInventorySelector.Select();
 			if (inventoryLocation == null)
 			{
 				break;
@@ -34,6 +35,6 @@ internal sealed class PrepositionTest : IDisposable
 		{
 			throw new Exception("Can't schedule job.");
 		}
-		m_preposJob.Pend();
+		m_preposJob!.Pend();
 	}
 }

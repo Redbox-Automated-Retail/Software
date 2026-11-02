@@ -59,7 +59,7 @@ public class ExpressionParseException : Exception
 	protected ExpressionParseException(SerializationInfo info, StreamingContext context)
 		: base(info, context)
 	{
-		_startPos = (int)info.GetValue("startPos", typeof(int));
-		_endPos = (int)info.GetValue("endPos", typeof(int));
+		_startPos = (int)info.GetValue("startPos", typeof(int))!;
+		_endPos = (int)info.GetValue("endPos", typeof(int))!;
 	}
 }

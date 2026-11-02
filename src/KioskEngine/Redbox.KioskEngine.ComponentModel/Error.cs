@@ -9,13 +9,13 @@ public class Error
 
 	private readonly bool m_isWarning;
 
-	private readonly string m_details;
+	private readonly string? m_details;
 
 	private readonly string m_description;
 
 	public string Code => m_code;
 
-	public string Details => m_details;
+	public string? Details => m_details;
 
 	public bool IsWarning => m_isWarning;
 
@@ -33,12 +33,12 @@ public class Error
 		return new Error(code, description, details.ToString(), isWarning: false);
 	}
 
-	public static Error NewError(string code, string description, string details)
+	public static Error NewError(string code, string description, string? details)
 	{
 		return new Error(code, description, details, isWarning: false);
 	}
 
-	public static Error NewWarning(string code, string description, string details)
+	public static Error NewWarning(string code, string description, string? details)
 	{
 		return new Error(code, description, details, isWarning: true);
 	}
@@ -52,7 +52,7 @@ public class Error
 		return $"[{Code}] {Description}";
 	}
 
-	private Error(string code, string description, string details, bool isWarning)
+	private Error(string code, string description, string? details, bool isWarning)
 	{
 		m_code = code;
 		m_details = details;

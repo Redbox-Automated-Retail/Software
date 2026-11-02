@@ -5,7 +5,7 @@ namespace Redbox.HAL.Controller.Framework.Operations;
 
 internal sealed class GetFromResult : IGetFromResult, IGetResult
 {
-	internal GetResult GetResult;
+	internal GetResult? GetResult;
 
 	public ErrorCodes MoveResult { get; internal set; }
 
@@ -14,7 +14,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.Success;
+			return GetResult!.Success;
 		}
 	}
 
@@ -23,7 +23,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.IsSlotEmpty;
+			return GetResult!.IsSlotEmpty;
 		}
 	}
 
@@ -32,7 +32,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.ItemStuck;
+			return GetResult!.ItemStuck;
 		}
 	}
 
@@ -41,7 +41,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.Previous;
+			return GetResult!.Previous;
 		}
 	}
 
@@ -50,7 +50,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.Location;
+			return GetResult!.Location;
 		}
 	}
 
@@ -59,7 +59,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.ReturnTime;
+			return GetResult!.ReturnTime;
 		}
 	}
 
@@ -68,7 +68,7 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.Flags;
+			return GetResult!.Flags;
 		}
 	}
 
@@ -77,14 +77,14 @@ internal sealed class GetFromResult : IGetFromResult, IGetResult
 		get
 		{
 			Validate();
-			return GetResult.HardwareError;
+			return GetResult!.HardwareError;
 		}
 	}
 
 	public void Update(ErrorCodes newError)
 	{
 		Validate();
-		GetResult.Update(newError);
+		GetResult!.Update(newError);
 	}
 
 	internal GetFromResult()

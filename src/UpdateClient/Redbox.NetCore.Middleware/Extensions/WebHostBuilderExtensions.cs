@@ -35,7 +35,7 @@ public static class WebHostBuilderExtensions
 			IConfiguration configuration = context.Configuration;
 			int metricsPort = configuration?.GetSection("AppMetrics:MetricsEndpointPort").Get<int>() ?? 60642;
 			bool metricsEnabled = configuration?.GetSection("AppMetrics:MetricsEnabled").Get<bool>() ?? false;
-			List<string> ignoredRegexPatterns = configuration?.GetSection("AppMetrics:IgnoredRouteRegexPatterns").Get<List<string>>();
+			List<string>? ignoredRegexPatterns = configuration?.GetSection("AppMetrics:IgnoredRouteRegexPatterns").Get<List<string>>();
 			ignoredRegexPatterns = ignoredRegexPatterns?.Select((string s) => s.Replace("^/", "^")).ToList() ?? new List<string>();
 			IMetricsBuilder builder2 = AppMetrics.CreateDefaultBuilder().Configuration.Configure(delegate(MetricsOptions options)
 			{
@@ -73,7 +73,7 @@ public static class WebHostBuilderExtensions
 
 	private static void UseAppMetricsPort(this IWebHostBuilder builder, IServiceCollection services, int metricsPort, Action<MetricsEndpointsHostingOptions> setupAction)
 	{
-		string setting = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
+		string? setting = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
 		builder.UseSetting(WebHostDefaults.ServerUrlsKey, $"{setting};http://*:{metricsPort}/");
 		MetricsEndpointsHostingOptions options = new MetricsEndpointsHostingOptions();
 		setupAction(options);

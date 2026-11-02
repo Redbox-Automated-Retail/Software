@@ -7,9 +7,10 @@ namespace Redbox.KioskEngine.ComponentModel.KioskServices;
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
 public class ResponseCodeAttribute : Attribute
 {
-	public string Name { get; set; }
+	// Set where the attribute is applied ([ResponseCode(Name = ...)]).
+	public string Name { get; set; } = null!;
 
-	public static object GetFieldsForResponseCode(Type type, string code)
+	public static object? GetFieldsForResponseCode(Type type, string code)
 	{
 		FieldInfo[] fields = ConversionHelper.GetNullableTypeIfWrapped(type).GetFields();
 		foreach (FieldInfo fieldInfo in fields)
@@ -22,7 +23,7 @@ public class ResponseCodeAttribute : Attribute
 		return null;
 	}
 
-	private static ResponseCodeAttribute GetResponseCodes(MemberInfo fieldInfo, string code)
+	private static ResponseCodeAttribute? GetResponseCodes(MemberInfo fieldInfo, string code)
 	{
 		ResponseCodeAttribute[] attributes = (ResponseCodeAttribute[])Attribute.GetCustomAttributes(fieldInfo, typeof(ResponseCodeAttribute));
 		foreach (ResponseCodeAttribute responseCodeAttribute in attributes)

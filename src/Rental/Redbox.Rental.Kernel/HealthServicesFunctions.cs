@@ -80,7 +80,7 @@ internal static class HealthServicesFunctions
 		return luaTable;
 	}
 
-	private static void InnerSendAlert(string storeNumber, string alertType, string subType, string message, LuaFunction callback)
+	private static void InnerSendAlert(string storeNumber, string alertType, string? subType, string message, LuaFunction? callback)
 	{
 		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
 		if (healthServices == null)
@@ -92,7 +92,7 @@ internal static class HealthServicesFunctions
 		{
 			return;
 		}
-		RemoteServiceCallback callback2 = null;
+		RemoteServiceCallback? callback2 = null;
 		if (callback != null)
 		{
 			callback2 = delegate(IRemoteServiceResult r)
@@ -110,7 +110,7 @@ internal static class HealthServicesFunctions
 		healthServices.SendAlert(storeNumber, alertType, subType, message, DateTime.Now, callback2);
 	}
 
-	private static void InnerSendAuditEvent(string storeNumber, string eventType, string userName, string source, string message, LuaFunction callback)
+	private static void InnerSendAuditEvent(string storeNumber, string eventType, string userName, string source, string message, LuaFunction? callback)
 	{
 		IHealthServices healthServices = ServiceLocator.Instance.GetService<IHealthServices>();
 		if (healthServices == null)
@@ -122,7 +122,7 @@ internal static class HealthServicesFunctions
 		{
 			return;
 		}
-		RemoteServiceCallback callback2 = null;
+		RemoteServiceCallback? callback2 = null;
 		if (callback != null)
 		{
 			callback2 = delegate(IRemoteServiceResult r)

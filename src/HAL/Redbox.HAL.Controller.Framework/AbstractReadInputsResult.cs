@@ -5,13 +5,13 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 {
-	protected readonly InputState[] Inputs;
+	protected readonly InputState[]? Inputs;
 
 	public ErrorCodes Error { get; protected set; }
 
 	public bool Success => Error == ErrorCodes.Success;
 
-	public int InputCount => Inputs.Length;
+	public int InputCount => Inputs!.Length;
 
 	protected abstract string LogHeader { get; }
 
@@ -26,7 +26,7 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 	{
 		if (!Success)
 		{
-			LogHelper.Instance.Log(RawResponse.Diagnostic);
+			LogHelper.Instance.Log(RawResponse.Diagnostic!);
 			return;
 		}
 		LogHelper.Instance.Log(type, "{0} {1}", LogHeader, RawResponse.OpCodeResponse);
@@ -57,11 +57,11 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 
 	protected InputState GetInputState(int input)
 	{
-		if (input < 0 || input >= Inputs.Length)
+		if (input < 0 || input >= Inputs!.Length)
 		{
 			throw new InvalidOperationException("Specified input exceeds bounds");
 		}
-		return Inputs[input];
+		return Inputs![input];
 	}
 
 	protected AbstractReadInputsResult(CoreResponse response)
@@ -93,7 +93,7 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 			{
 				if (char.IsDigit(RawResponse.OpCodeResponse[i]))
 				{
-					Inputs[inputIndex++] = ((RawResponse.OpCodeResponse[i] == '1') ? InputState.Active : InputState.Inactive);
+					Inputs![inputIndex++] = ((RawResponse.OpCodeResponse[i] == '1') ? InputState.Active : InputState.Inactive);
 				}
 			}
 			if (20 != inputIndex)
@@ -123,10 +123,10 @@ internal abstract class AbstractReadInputsResult<T> : IReadInputsResult<T>
 				switch (RawResponse.OpCodeResponse[i])
 				{
 				case '0':
-					Inputs[inputIndex++] = InputState.Inactive;
+					Inputs![inputIndex++] = InputState.Inactive;
 					break;
 				case '1':
-					Inputs[inputIndex++] = InputState.Active;
+					Inputs![inputIndex++] = InputState.Active;
 					break;
 				}
 			}

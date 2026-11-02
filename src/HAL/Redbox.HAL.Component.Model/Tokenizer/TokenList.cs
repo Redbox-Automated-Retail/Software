@@ -15,12 +15,12 @@ public class TokenList : List<Token>, ICloneable<TokenList>
 	{
 	}
 
-	public Token GetLabel()
+	public Token? GetLabel()
 	{
 		return Find((Token each) => each.Type == TokenType.Label);
 	}
 
-	public Token GetMnemonic()
+	public Token? GetMnemonic()
 	{
 		return Find((Token each) => each.Type == TokenType.Mnemonic);
 	}
@@ -78,9 +78,9 @@ public class TokenList : List<Token>, ICloneable<TokenList>
 		return new TokenList(FindAll((Token each) => each.IsKeyValuePair));
 	}
 
-	public KeyValuePair GetKeyValuePair(string key)
+	public KeyValuePair? GetKeyValuePair(string key)
 	{
-		Token token = Find((Token each) => each.IsKeyValuePair && string.Compare(((KeyValuePair)each.ConvertValue()).Key, key, ignoreCase: true) == 0);
+		Token? token = Find((Token each) => each.IsKeyValuePair && string.Compare(((KeyValuePair)each.ConvertValue()).Key, key, ignoreCase: true) == 0);
 		if (token != null)
 		{
 			return (KeyValuePair)token.ConvertValue();

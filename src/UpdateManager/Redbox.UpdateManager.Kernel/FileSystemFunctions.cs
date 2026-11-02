@@ -169,7 +169,7 @@ public static class FileSystemFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getdirectoryfrompath")]
-	internal static string GetDirectoryNameFromPath(string fullPath)
+	internal static string? GetDirectoryNameFromPath(string fullPath)
 	{
 		return Path.GetDirectoryName(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(fullPath));
 	}
@@ -339,7 +339,7 @@ public static class FileSystemFunctions
 	}
 
 	[KernelFunction(Name = "kernel.filereadalltext")]
-	internal static string FileReadAllText(string file)
+	internal static string? FileReadAllText(string file)
 	{
 		try
 		{
@@ -375,7 +375,7 @@ public static class FileSystemFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getdirectoryname")]
-	internal static string GetDirectoryName(string path)
+	internal static string? GetDirectoryName(string path)
 	{
 		return Path.GetDirectoryName(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(path));
 	}
@@ -445,7 +445,7 @@ public static class FileSystemFunctions
 			{
 				if (namespaceTable[key] is LuaTable namespaceEntry)
 				{
-					xmlFileEditor.Namespaces.Add(new XmlNamespace((string)namespaceEntry["prefix"], (string)namespaceEntry["uri"]));
+					xmlFileEditor.Namespaces.Add(new XmlNamespace((string)namespaceEntry["prefix"]!, (string)namespaceEntry["uri"]!));
 				}
 			}
 		}
@@ -455,7 +455,7 @@ public static class FileSystemFunctions
 			{
 				if (editTable[key2] is LuaTable editEntry)
 				{
-					XmlEdit xmlEdit = new XmlEdit(macroService.ExpandProperties((string)editEntry["xpath"]), macroService.ExpandProperties((string)editEntry["value"]));
+					XmlEdit xmlEdit = new XmlEdit(macroService.ExpandProperties((string)editEntry["xpath"]!), macroService.ExpandProperties((string)editEntry["value"]!));
 					LogHelper.Instance.Log("xpath = {0}, value = {1}", xmlEdit.XPath, xmlEdit.Value);
 					xmlFileEditor.Edits.Add(xmlEdit);
 				}

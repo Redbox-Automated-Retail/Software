@@ -25,11 +25,11 @@ internal sealed class QlmKioskTestExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Destination.Slot);
-		base.Job.Push(Destination.Deck);
-		base.Job.Push(Source.Slot);
-		base.Job.Push(Source.Deck);
-		base.Job.Push(m_vend.ToString());
-		base.Job.Push(m_runQlm.ToString());
+		base.Job!.Push(Destination.Slot);
+		base.Job!.Push(Destination.Deck);
+		base.Job!.Push(Source.Slot);
+		base.Job!.Push(Source.Deck);
+		base.Job!.Push(m_vend.ToString());
+		base.Job!.Push(m_runQlm.ToString());
 	}
 }

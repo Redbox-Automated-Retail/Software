@@ -8,11 +8,11 @@ public sealed class MotionControlDataExecutor : JobExecutor
 {
 	protected override string JobName => "motion-control-get-data";
 
-	public IControllerPosition Position { get; private set; }
+	public IControllerPosition? Position { get; private set; }
 
-	public IMotionControlLimitResponse Limits { get; private set; }
+	public IMotionControlLimitResponse? Limits { get; private set; }
 
-	public string CurrentLocation { get; private set; }
+	public string? CurrentLocation { get; private set; }
 
 	protected override void OnJobCompleted()
 	{
@@ -25,7 +25,7 @@ public sealed class MotionControlDataExecutor : JobExecutor
 		bool readOk = true;
 		int? x = null;
 		int? y = null;
-		foreach (ProgramResult programResult in base.Results)
+		foreach (ProgramResult programResult in base.Results!)
 		{
 			if (programResult.Code == "PositionReadError")
 			{
@@ -61,7 +61,7 @@ public sealed class MotionControlDataExecutor : JobExecutor
 			MotionControlLimits l = Enum<MotionControlLimits>.Parse(programResult.Code, MotionControlLimits.None);
 			if (l != MotionControlLimits.None)
 			{
-				IMotionControlLimit motionControlLimit = motionControlLimits.Find((IMotionControlLimit each) => each.Limit == l);
+				IMotionControlLimit? motionControlLimit = motionControlLimits.Find((IMotionControlLimit each) => each.Limit == l);
 				if (motionControlLimit == null)
 				{
 					motionControlLimits.Add(new ClientControlLimit(l, programResult.Message == "BLOCKED"));

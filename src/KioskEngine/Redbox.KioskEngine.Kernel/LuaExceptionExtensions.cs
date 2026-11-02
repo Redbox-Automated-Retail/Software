@@ -9,7 +9,7 @@ public static class LuaExceptionExtensions
 {
 	public static void RaiseDebuggerOrError(this LuaException e, string resourceName)
 	{
-		LuaScriptException ex = e as LuaScriptException;
+		LuaScriptException? ex = e as LuaScriptException;
 		string rawMessage = e.Message;
 		if (ex != null && ex.IsNetException)
 		{
@@ -30,7 +30,7 @@ public static class LuaExceptionExtensions
 			debugService.ActivateDebugger(luaError.ChunkName ?? resourceName);
 			return;
 		}
-		string text = luaError.Message;
+		string? text = luaError.Message;
 		if (ex != null && ex.IsNetException)
 		{
 			text += "A .NET exception occured.\n This location the script entered .net code.\n  See log file for details.\n";
@@ -42,7 +42,7 @@ public static class LuaExceptionExtensions
 		debugService.ActivateDebugger(luaError.ChunkName ?? resourceName, luaError.LineNumber.Value, text);
 	}
 
-	private static void LogException(Exception exception)
+	private static void LogException(Exception? exception)
 	{
 		if (exception != null)
 		{

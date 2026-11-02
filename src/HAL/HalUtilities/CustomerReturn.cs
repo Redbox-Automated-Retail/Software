@@ -8,9 +8,9 @@ internal sealed class CustomerReturn : JobExecutor
 {
 	protected override string JobName => "return";
 
-	internal static void RunExecutor(object o)
+	internal static void RunExecutor(object? o)
 	{
-		RunExecutor(o as HardwareService);
+		RunExecutor((o as HardwareService)!);
 	}
 
 	internal static void RunExecutor(HardwareService service)

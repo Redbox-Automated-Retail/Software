@@ -38,7 +38,8 @@ internal class Program
 		{
 			if (singletonIUC285Proxy == null)
 			{
-				singletonIUC285Proxy = new IUC285Proxy(provider.GetService<IRBA_API>(), provider.GetService<ILogger<IUC285Proxy>>(), null, null, null, provider.GetService<IOptionsMonitor<DeviceServiceConfig>>());
+				// GetService gives null for a missing registration; passed on as it is, as before.
+				singletonIUC285Proxy = new IUC285Proxy(provider.GetService<IRBA_API>()!, provider.GetService<ILogger<IUC285Proxy>>()!, null, null, null, provider.GetService<IOptionsMonitor<DeviceServiceConfig>>()!);
 				Log.Information("Begin Connect");
 				(singletonIUC285Proxy as IUC285Proxy)?.Connect();
 			}

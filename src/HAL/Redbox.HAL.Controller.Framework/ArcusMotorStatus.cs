@@ -26,7 +26,7 @@ internal struct ArcusMotorStatus
 
 	internal bool MotorRunning { get; private set; }
 
-	internal Axis[] Axes { get; private set; }
+	internal Axis[]? Axes { get; private set; }
 
 	internal void TestResponse(ArcusCommandResponse response)
 	{
@@ -100,7 +100,7 @@ internal struct ArcusMotorStatus
 		}
 		else
 		{
-			string text = null;
+			string? text = null;
 			text = ((!waitCommand.StartsWith("WAITH")) ? waitCommand.Substring("WAIT".Length) : waitCommand.Substring("WAITH".Length));
 			ComputeAxis(text);
 		}

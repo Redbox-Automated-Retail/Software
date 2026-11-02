@@ -12,7 +12,7 @@ public abstract class ClientSession : IIpcClientSession, IDisposable
 {
 	private int? m_timeout;
 
-	private StringBuilder m_readBuilder;
+	private StringBuilder? m_readBuilder;
 
 	private readonly AutoResetEvent m_resetEvent = new AutoResetEvent(initialState: false);
 
@@ -36,7 +36,8 @@ public abstract class ClientSession : IIpcClientSession, IDisposable
 
 	protected abstract Stream Stream { get; }
 
-	protected byte[] ReadBuffer { get; set; }
+	// Set by the subclass when it connects (TcpClientSession.TransportClient).
+	protected byte[] ReadBuffer { get; set; } = null!;
 
 	private StringBuilder ReadBuilder
 	{
@@ -50,9 +51,9 @@ public abstract class ClientSession : IIpcClientSession, IDisposable
 		}
 	}
 
-	public event EventHandler Disposed;
+	public event EventHandler? Disposed;
 
-	public event Action<string> ServerEvent;
+	public event Action<string>? ServerEvent;
 
 	public virtual void Dispose()
 	{
@@ -198,7 +199,7 @@ public abstract class ClientSession : IIpcClientSession, IDisposable
 				SetEvent();
 				return;
 			}
-			List<string> messages = (List<string>)result.AsyncState;
+			List<string> messages = (List<string>)result.AsyncState!;
 			string text = Encoding.ASCII.GetString(ReadBuffer, 0, bytesRead);
 			ReadBuilder.Append(text);
 			if (text.IndexOf(Environment.NewLine) == -1)

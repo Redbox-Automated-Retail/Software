@@ -8,15 +8,16 @@ public class TransferStatistic
 
 	public decimal Value { get; set; }
 
-	public string FileName { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string FileName { get; set; } = null!;
 
-	public Identifier Store { get; set; }
+	public Identifier Store { get; set; } = null!;
 
 	public DateTime CreatedOn { get; set; }
 
-	public Identifier Revision { get; set; }
+	public Identifier Revision { get; set; } = null!;
 
-	public Identifier Repository { get; set; }
+	public Identifier Repository { get; set; } = null!;
 
 	public TransferStatisticType Type { get; set; }
 }

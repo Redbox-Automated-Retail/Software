@@ -182,7 +182,7 @@ public class LocalData : ILocalData
 			{
 				if (item.Value is string)
 				{
-					dict[item.Key] = Convert.ToString(item.Value);
+					dict[item.Key] = Convert.ToString(item.Value)!;
 				}
 			});
 		}

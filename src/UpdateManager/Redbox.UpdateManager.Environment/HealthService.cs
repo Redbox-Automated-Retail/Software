@@ -75,7 +75,7 @@ public class HealthService : IHealthService
 
 	private Dictionary<string, HealthItem> _healthItemList = new Dictionary<string, HealthItem>();
 
-	private Timer _healthTimer;
+	private Timer _healthTimer = null!; // created by Initialize
 
 	private bool _isRunning;
 

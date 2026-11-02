@@ -12,9 +12,9 @@ public sealed class Computerinfo
 
 	public long InstalledMemory { get; private set; }
 
-	public string Manufacturer { get; private set; }
+	public string? Manufacturer { get; private set; }
 
-	public string Model { get; private set; }
+	public string? Model { get; private set; }
 
 	public Computerinfo()
 	{

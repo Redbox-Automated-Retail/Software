@@ -13,7 +13,7 @@ public class DeviceService
 		new Version(1, 10)
 	};
 
-	public static Version AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version;
+	public static Version AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version!;
 
 	public static bool IsClientVersionCompatible(Version deviceServiceClientVersion)
 	{

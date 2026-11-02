@@ -32,7 +32,7 @@ public class CommandRepository
 	{
 		using ExecutionTimer executionTimer = new ExecutionTimer();
 		List<string> commands = new List<string>();
-		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 		List<string> assemblyFiles = new List<string>();
 		assemblyFiles.AddRange(Directory.GetFiles(directoryName, "*.dll"));
 		foreach (string item in assemblyFiles)
@@ -62,7 +62,7 @@ public class CommandRepository
 		return commands;
 	}
 
-	internal static CommandInstance GetCommand(string name)
+	internal static CommandInstance? GetCommand(string name)
 	{
 		if (string.IsNullOrEmpty(name))
 		{
@@ -94,8 +94,8 @@ public class CommandRepository
 				{
 					continue;
 				}
-				UsageAttribute usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
-				DescriptionAttribute methodDescription = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
+				UsageAttribute? usageAttribute = Attribute.GetCustomAttribute(methodInfo, typeof(UsageAttribute)) as UsageAttribute;
+				DescriptionAttribute? methodDescription = Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute)) as DescriptionAttribute;
 				FormMethod formMethod = new FormMethod
 				{
 					Method = methodInfo,
@@ -114,8 +114,8 @@ public class CommandRepository
 						Parameter = parameterInfo,
 						Index = parameterIndex++
 					};
-					CommandKeyValueAttribute commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
-					formMethodParameter.KeyName = parameterInfo.Name.ToUpper();
+					CommandKeyValueAttribute? commandKeyValueAttribute = Attribute.GetCustomAttribute(parameterInfo, typeof(CommandKeyValueAttribute)) as CommandKeyValueAttribute;
+					formMethodParameter.KeyName = parameterInfo.Name!.ToUpper();
 					if (commandKeyValueAttribute != null)
 					{
 						formMethodParameter.MetaData = commandKeyValueAttribute;
@@ -130,9 +130,9 @@ public class CommandRepository
 						formMethod.ParameterCache[formMethodParameter.KeyName] = formMethodParameter;
 					}
 				}
-				instance.FormMethodCache[commandFormAttribute.Name.ToUpper()] = formMethod;
+				instance.FormMethodCache[commandFormAttribute.Name!.ToUpper()] = formMethod;
 			}
-			MethodInfo method = commandType.GetMethod("Default", new Type[1] { typeof(CommandContext) });
+			MethodInfo? method = commandType.GetMethod("Default", new Type[1] { typeof(CommandContext) });
 			if (method != null)
 			{
 				instance.FormMethodCache["Default"] = new FormMethod

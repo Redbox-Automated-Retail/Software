@@ -37,7 +37,7 @@ public sealed class BundleCollection
 		{
 			try
 			{
-				m_bundles.Add(manifestInfo.ProductName, new BundleSpecifier(manifestInfo.ProductName, manifestInfo.ProductVersion, manifestInfo.BundleType, bundle));
+				m_bundles.Add(manifestInfo.ProductName!, new BundleSpecifier(manifestInfo.ProductName, manifestInfo.ProductVersion, manifestInfo.BundleType, bundle));
 			}
 			catch (Exception e)
 			{
@@ -57,7 +57,7 @@ public sealed class BundleCollection
 		m_bundles.Remove(productName);
 	}
 
-	public ErrorList GetBundle(string productName, string productVersion, out IResourceBundle bundle, out IManifestInfo manifestInfo)
+	public ErrorList GetBundle(string productName, string productVersion, out IResourceBundle? bundle, out IManifestInfo? manifestInfo)
 	{
 		Console.WriteLine("REDS.BundleCollection.GetBundle(" + productName + ", " + productVersion + ")");
 		bundle = null;
@@ -73,7 +73,7 @@ public sealed class BundleCollection
 		List<IBundleSpecifier> bundleSpecifiers = new List<IBundleSpecifier>(collection);
 		Console.WriteLine("> found [" + bundleSpecifiers.Count + "] bundles named " + productName);
 		BundleSpecifier targetVersion = new BundleSpecifier($"{productName},{productVersion}");
-		IBundleSpecifier bundleSpecifier = bundleSpecifiers.Find((IBundleSpecifier wv) => wv.Name == targetVersion.Name && wv.Version == targetVersion.Version);
+		IBundleSpecifier? bundleSpecifier = bundleSpecifiers.Find((IBundleSpecifier wv) => wv.Name == targetVersion.Name && wv.Version == targetVersion.Version);
 		if (bundleSpecifier != null)
 		{
 			bundle = bundleSpecifier.Instance;

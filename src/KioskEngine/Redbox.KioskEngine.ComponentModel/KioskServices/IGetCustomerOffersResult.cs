@@ -6,15 +6,15 @@ public interface IGetCustomerOffersResult
 {
 	bool Success { get; set; }
 
-	ICollection<Error> Errors { get; set; }
+	ICollection<Error>? Errors { get; set; }
 
-	string AccountNumber { get; }
+	string? AccountNumber { get; }
 
-	string CustomerProfileNumber { get; }
+	string? CustomerProfileNumber { get; }
 
-	string EmailAddress { get; }
+	string? EmailAddress { get; }
 
-	ICollection<CustomerOfferResult> StoredOffers { get; }
+	ICollection<CustomerOfferResult>? StoredOffers { get; }
 
-	ICollection<CustomerOfferResult> NewOffers { get; }
+	ICollection<CustomerOfferResult>? NewOffers { get; }
 }

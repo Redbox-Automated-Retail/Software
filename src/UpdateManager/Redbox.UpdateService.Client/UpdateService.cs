@@ -14,7 +14,7 @@ public class UpdateService : IDisposable
 {
 	private const bool TransientSessionFlag = false;
 
-	private ClientSession m_clientSession;
+	private ClientSession? m_clientSession;
 
 	private static readonly Dictionary<Type, string> m_typeToCommandForm = new Dictionary<Type, string>
 	{
@@ -75,7 +75,7 @@ public class UpdateService : IDisposable
 			if (m_clientSession == null)
 			{
 				m_clientSession = ClientSession.GetClientSession(IPCProtocol.Parse(Url), null);
-				m_clientSession.Timeout = Timeout;
+				m_clientSession!.Timeout = Timeout; // null for an unsupported protocol: throws, as before
 			}
 			return m_clientSession;
 		}
@@ -133,7 +133,7 @@ public class UpdateService : IDisposable
 		return clientCommandResult;
 	}
 
-	public ClientCommandResult Get<T>(Identifier id, out T t)
+	public ClientCommandResult Get<T>(Identifier id, out T? t)
 	{
 		t = default(T);
 		if (!m_typeToCommandForm.ContainsKey(typeof(T)))
@@ -286,10 +286,10 @@ public class UpdateService : IDisposable
 			clientCommandResult = Get<RepositoryEntry>(fileId, out var fileEntry);
 			if (clientCommandResult.Success)
 			{
-				entries.Add(fileEntry);
+				entries.Add(fileEntry!); // set from the reply when Success
 			}
 		}
-		RepositoryEntry repositoryEntry = entries.Find((RepositoryEntry f) => Path.Combine(f.Path, f.Name) == fullPath);
+		RepositoryEntry? repositoryEntry = entries.Find((RepositoryEntry f) => Path.Combine(f.Path, f.Name) == fullPath);
 		if (repositoryEntry == null)
 		{
 			clientCommandResult.Success = false;
@@ -418,7 +418,7 @@ public class UpdateService : IDisposable
 		return clientCommandResult;
 	}
 
-	public ClientCommandResult CreateScript(string name, string scriptLocation, string createBy, string system, out Script script)
+	public ClientCommandResult CreateScript(string name, string scriptLocation, string createBy, string system, out Script? script)
 	{
 		script = null;
 		if (!File.Exists(scriptLocation))
@@ -439,7 +439,7 @@ public class UpdateService : IDisposable
 		return clientCommandResult;
 	}
 
-	public ClientCommandResult UpdateScript(long id, string scriptLocation, string modifiedBy, string system, out Script script)
+	public ClientCommandResult UpdateScript(long id, string scriptLocation, string modifiedBy, string system, out Script? script)
 	{
 		script = null;
 		if (!File.Exists(scriptLocation))
@@ -688,7 +688,7 @@ public class UpdateService : IDisposable
 
 	public ClientCommandResult ForcePublishRun(string name)
 	{
-		object registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager", "AllowForceDataFiles", false.ToString());
+		object? registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Redbox\\REDS\\Update Manager", "AllowForceDataFiles", false.ToString());
 		if (registryValue is string allowForceDataFiles && bool.TryParse(allowForceDataFiles, out var allowed) && allowed)
 		{
 			string command = $"subscription publish name: '{name}'";

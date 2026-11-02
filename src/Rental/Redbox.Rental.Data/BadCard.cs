@@ -5,7 +5,7 @@ namespace Redbox.Rental.Data;
 
 public class BadCard : IBadCard
 {
-	public string HashId { get; set; }
+	public string HashId { get; set; } = null!; // set by the object initializer or the reader
 
 	public int? NumberOfAttempts { get; set; }
 

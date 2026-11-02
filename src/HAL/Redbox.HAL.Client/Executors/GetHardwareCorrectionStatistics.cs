@@ -25,7 +25,7 @@ public sealed class GetHardwareCorrectionStatistics : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Stat.ToString());
+		base.Job!.Push(Stat.ToString());
 	}
 
 	protected override void DisposeInner()
@@ -35,6 +35,6 @@ public sealed class GetHardwareCorrectionStatistics : JobExecutor
 
 	protected override void OnJobCompleted()
 	{
-		HWCorrectionStat.From(base.Job, Stats);
+		HWCorrectionStat.From(base.Job!, Stats);
 	}
 }

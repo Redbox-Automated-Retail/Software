@@ -8,23 +8,24 @@ public sealed class KioskFunctionCheckExecutor : JobExecutor
 {
 	private class KFCData : IKioskFunctionCheckData
 	{
-		public string VerticalSlotTestResult { get; internal set; }
+		// The KFCData properties are all set by OnJobCompleted right after construction.
+		public string VerticalSlotTestResult { get; internal set; } = null!;
 
-		public string InitTestResult { get; internal set; }
+		public string InitTestResult { get; internal set; } = null!;
 
-		public string VendDoorTestResult { get; internal set; }
+		public string VendDoorTestResult { get; internal set; } = null!;
 
-		public string TrackTestResult { get; internal set; }
+		public string TrackTestResult { get; internal set; } = null!;
 
-		public string SnapDecodeTestResult { get; internal set; }
+		public string SnapDecodeTestResult { get; internal set; } = null!;
 
-		public string TouchscreenDriverTestResult { get; internal set; }
+		public string TouchscreenDriverTestResult { get; internal set; } = null!;
 
-		public string CameraDriverTestResult { get; internal set; }
+		public string CameraDriverTestResult { get; internal set; } = null!;
 
 		public DateTime Timestamp { get; internal set; }
 
-		public string UserIdentifier { get; internal set; }
+		public string UserIdentifier { get; internal set; } = null!;
 	}
 
 	public IList<IKioskFunctionCheckData> Sessions { get; private set; }
@@ -44,7 +45,7 @@ public sealed class KioskFunctionCheckExecutor : JobExecutor
 
 	protected override void OnJobCompleted()
 	{
-		if (base.Job.GetStack(out var stack).Success)
+		if (base.Job!.GetStack(out var stack).Success)
 		{
 			int number = int.Parse(stack.Pop());
 			for (int i = 0; i < number; i++)

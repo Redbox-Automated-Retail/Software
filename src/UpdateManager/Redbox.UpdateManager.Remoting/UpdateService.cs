@@ -583,7 +583,7 @@ public class UpdateService : IUpdateService
 			else
 			{
 				LogHelper.Instance.Log("The update service could not be contacted in StartInstaller.");
-				errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details)));
+				errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!))); // details passed on as they are, as before
 			}
 		}
 		return errorList;
@@ -603,7 +603,7 @@ public class UpdateService : IUpdateService
 				clientCommandResult = updateService.InstallerLog("installer", guid, datum.Key, datum.Value);
 				if (!clientCommandResult.Success)
 				{
-					errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details)));
+					errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!))); // details passed on as they are, as before
 				}
 				attempt++;
 			}
@@ -621,7 +621,7 @@ public class UpdateService : IUpdateService
 			ClientCommandResult clientCommandResult = updateService.InstallerLog("installer", guid, name, value);
 			if (!clientCommandResult.Success)
 			{
-				errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details)));
+				errorList.AddRange(clientCommandResult.Errors.Select((Redbox.IPC.Framework.Error e) => Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!))); // details passed on as they are, as before
 			}
 		}
 		return errorList;
@@ -773,7 +773,7 @@ public class UpdateService : IUpdateService
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		foreach (Redbox.IPC.Framework.Error error in errors)
 		{
-			errorList.Add(error.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(error.Code, error.Details, error.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(error.Code, error.Details, error.Details));
+			errorList.Add(error.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(error.Code, error.Details!, error.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(error.Code, error.Details!, error.Details!)); // details passed on as they are (also as the description), as before
 		}
 		return errorList;
 	}

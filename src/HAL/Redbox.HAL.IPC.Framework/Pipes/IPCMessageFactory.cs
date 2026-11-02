@@ -45,7 +45,7 @@ public sealed class IPCMessageFactory : IIPCMessageFactory
 
 	public IIPCMessage Read(IIPCChannel channel)
 	{
-		byte[] data = channel.Read();
+		byte[] data = channel.Read()!;
 		int intSize = 4;
 		int offset = 0;
 		int uidLength = BitConverter.ToInt32(data, offset);

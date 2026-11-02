@@ -27,10 +27,10 @@ public class DeviceStatusService : IDeviceStatusService
 		_logger = logger;
 	}
 
-	public async Task<StandardResponse> PostDeviceStatus()
+	public async Task<StandardResponse?> PostDeviceStatus()
 	{
-		KioskData fileData = DataFileHelper.GetFileData<KioskData>(_settings.DataFilePath, "KioskData.json", LogException);
-		StandardResponse standardResponse;
+		KioskData? fileData = DataFileHelper.GetFileData<KioskData>(_settings.DataFilePath, "KioskData.json", LogException);
+		StandardResponse? standardResponse;
 		if (fileData != null)
 		{
 			DeviceStatus deviceStatus = await _proxy.CheckDeviceStatus(fileData.KioskId);
@@ -44,7 +44,7 @@ public class DeviceStatusService : IDeviceStatusService
 		return standardResponse;
 	}
 
-	public async Task<StandardResponse> PostDeviceStatus(DeviceStatusRequest request)
+	public async Task<StandardResponse?> PostDeviceStatus(DeviceStatusRequest request)
 	{
 		KioskData data = new KioskData
 		{
@@ -57,9 +57,9 @@ public class DeviceStatusService : IDeviceStatusService
 		return await _client.PostDeviceStatus(deviceStatus);
 	}
 
-	public async Task<DeviceStatus> GetDeviceStatus()
+	public async Task<DeviceStatus?> GetDeviceStatus()
 	{
-		KioskData fileData = DataFileHelper.GetFileData<KioskData>(_settings.DataFilePath, "KioskData.json", LogException);
+		KioskData? fileData = DataFileHelper.GetFileData<KioskData>(_settings.DataFilePath, "KioskData.json", LogException);
 		if (fileData != null)
 		{
 			return await _proxy.CheckDeviceStatus(fileData.KioskId);

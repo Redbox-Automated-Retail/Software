@@ -10,5 +10,5 @@ public interface IBundleSpecifier
 
 	BundleType Type { get; }
 
-	IResourceBundle Instance { get; }
+	IResourceBundle? Instance { get; }
 }

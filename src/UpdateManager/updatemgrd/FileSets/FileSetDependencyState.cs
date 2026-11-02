@@ -9,11 +9,11 @@ internal class FileSetDependencyState
 
 	public long ActiveRevisionId { get; set; }
 
-	public string ActiveVersion { get; set; }
+	public string? ActiveVersion { get; set; }
 
 	public long InProgressRevisionId { get; set; }
 
-	public string InProgressVersion { get; set; }
+	public string? InProgressVersion { get; set; }
 
 	public bool IsInProgressStaged { get; set; }
 
@@ -23,7 +23,7 @@ internal class FileSetDependencyState
 	{
 		try
 		{
-			string sourceVersion;
+			string? sourceVersion;
 			if (InProgressRevisionId > 0)
 			{
 				if (!IsInProgressStaged)
@@ -43,11 +43,11 @@ internal class FileSetDependencyState
 			switch (dependencyType)
 			{
 			case DependencyType.Version:
-				return IsVersionDependencyMet(sourceVersion, minVersion, maxVersion);
+				return IsVersionDependencyMet(sourceVersion!, minVersion, maxVersion); // a missing version throws (caught below), as before
 			case DependencyType.String:
-				return IsStringDependencyMet(sourceVersion, minVersion, maxVersion);
+				return IsStringDependencyMet(sourceVersion!, minVersion, maxVersion); // a missing version throws (caught below), as before
 			case DependencyType.Long:
-				return IsLongDependencyMet(sourceVersion, minVersion, maxVersion);
+				return IsLongDependencyMet(sourceVersion!, minVersion, maxVersion); // a missing version throws (caught below), as before
 			}
 		}
 		catch (Exception e)

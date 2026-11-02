@@ -80,9 +80,9 @@ internal sealed class PowerhouseUtilities : IDisposable
 	{
 		RuntimeService = rts;
 		Console.WriteLine("Enter identifier:");
-		string text = Console.ReadLine();
+		string? text = Console.ReadLine();
 		Console.WriteLine("Identifier entered: {0}", text);
-		string path = Path.Combine(RuntimeService.AssemblyDirectory, text);
+		string path = Path.Combine(RuntimeService.AssemblyDirectory, text!);
 		if (CreateDir(path))
 		{
 			BackupDirectory = path;

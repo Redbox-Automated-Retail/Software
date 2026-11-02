@@ -21,7 +21,7 @@ internal static class CommandHelper
 		MethodInfo[] methods = typeof(CommandHelper).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
-			EngineCommandAttribute engineCommandAttribute = (EngineCommandAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(EngineCommandAttribute));
+			EngineCommandAttribute? engineCommandAttribute = (EngineCommandAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(EngineCommandAttribute));
 			if (engineCommandAttribute != null)
 			{
 				LogHelper.Instance.Log("...Register command '{0}' to method: {1}", engineCommandAttribute.Name, methodInfo.ToString());
@@ -95,7 +95,7 @@ internal static class CommandHelper
 	internal static void BringToFront(string[] parms)
 	{
 		LogHelper.Instance.Log("WM_COPYDATA: BringToFront");
-		Application.OpenForms[0].Activate();
+		Application.OpenForms[0]!.Activate();
 	}
 
 	[EngineCommand(Name = "ExecuteScript")]
@@ -178,6 +178,6 @@ internal static class CommandHelper
 			return;
 		}
 		LogHelper.Instance.Log("WM_COPYDATA: Execute command '{0}', with parms: {1}.", name, (parms != null) ? parms.Join("|") : "null");
-		m_commands[name](parms);
+		m_commands[name](parms!);
 	}
 }

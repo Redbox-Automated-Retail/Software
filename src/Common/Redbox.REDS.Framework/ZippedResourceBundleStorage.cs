@@ -8,11 +8,11 @@ namespace Redbox.REDS.Framework;
 
 internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 {
-	private ZipFile m_zipFile;
+	private ZipFile? m_zipFile; // set by Open or Create
 
 	public bool SupportsSave => false;
 
-	public string BundlePath { get; internal set; }
+	public string BundlePath { get; internal set; } = null!; // set by Open or Create
 
 	public void Dispose()
 	{
@@ -36,7 +36,7 @@ internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 		}
 	}
 
-	public void Create(string path, string trimPrefix)
+	public void Create(string path, string? trimPrefix)
 	{
 		m_zipFile = ZipFile.Create(path);
 		((ZipNameTransform)m_zipFile.NameTransform).TrimPrefix = trimPrefix;
@@ -44,14 +44,14 @@ internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 		BundlePath = path;
 	}
 
-	public void AddEntry(string path, string trimPrefix)
+	public void AddEntry(string path, string? trimPrefix)
 	{
 		if (string.IsNullOrEmpty(trimPrefix))
 		{
-			m_zipFile.Add(path);
+			m_zipFile!.Add(path);
 			return;
 		}
-		string trimPrefix2 = ((ZipNameTransform)m_zipFile.NameTransform).TrimPrefix;
+		string trimPrefix2 = ((ZipNameTransform)m_zipFile!.NameTransform).TrimPrefix;
 		((ZipNameTransform)m_zipFile.NameTransform).TrimPrefix = trimPrefix;
 		m_zipFile.Add(path);
 		((ZipNameTransform)m_zipFile.NameTransform).TrimPrefix = trimPrefix2;
@@ -73,24 +73,24 @@ internal class ZippedResourceBundleStorage : IResourceBundleStorage, IDisposable
 		}
 	}
 
-	public byte[] GetEntryContent(string path)
+	public byte[]? GetEntryContent(string path)
 	{
 		return GetEntryContent(GetEntry(path));
 	}
 
-	public byte[] GetEntryContent(IResourceBundleStorageEntry entry)
+	public byte[]? GetEntryContent(IResourceBundleStorageEntry? entry)
 	{
 		if (entry == null)
 		{
 			return null;
 		}
-		using BinaryReader binaryReader = new BinaryReader(m_zipFile.GetInputStream(entry.Index));
+		using BinaryReader binaryReader = new BinaryReader(m_zipFile!.GetInputStream(entry.Index));
 		return binaryReader.ReadBytes((int)entry.Size);
 	}
 
-	public IResourceBundleStorageEntry GetEntry(string path)
+	public IResourceBundleStorageEntry? GetEntry(string path)
 	{
-		ZipEntry entry = m_zipFile.GetEntry(path);
+		ZipEntry entry = m_zipFile!.GetEntry(path);
 		if (entry == null)
 		{
 			return null;

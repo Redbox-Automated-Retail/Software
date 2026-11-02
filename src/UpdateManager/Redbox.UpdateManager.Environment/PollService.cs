@@ -8,7 +8,7 @@ namespace Redbox.UpdateManager.Environment;
 
 public class PollService : IPollService
 {
-	private IPoll m_poll;
+	private IPoll m_poll = null!; // set by Initialize
 
 	public static PollService Instance => Singleton<PollService>.Instance;
 

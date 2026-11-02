@@ -38,11 +38,11 @@ internal class TimeSpanConverter : JavaScriptConverter
 		return dictionary;
 	}
 
-	public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+	public override object? Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
 	{
 		if (dictionary.ContainsKey("theTimeSpan"))
 		{
-			return TimeSpan.FromTicks(long.Parse(dictionary["theTimeSpan"].ToString()));
+			return TimeSpan.FromTicks(long.Parse(dictionary["theTimeSpan"].ToString()!));
 		}
 		return null;
 	}

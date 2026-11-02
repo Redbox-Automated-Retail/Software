@@ -16,26 +16,27 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 
 	private readonly IInventoryTestService _inventoryService;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
-	private Label label1;
+	private Label label1 = null!;
 
-	private Button btn_unknownBarcode;
+	private Button btn_unknownBarcode = null!;
 
-	private TextBox txt_barcodeInput;
+	private TextBox txt_barcodeInput = null!;
 
-	private ComboBox cmb_returnType;
+	private ComboBox cmb_returnType = null!;
 
-	private Label label2;
+	private Label label2 = null!;
 
-	private Button btn_addBarcode;
+	private Button btn_addBarcode = null!;
 
-	private DataGridView dgv_returnQueue;
+	private DataGridView dgv_returnQueue = null!;
 
-	private DataGridViewTextBoxColumn Barcodes;
+	private DataGridViewTextBoxColumn Barcodes = null!;
 
+	// The controls above are created by InitializeComponent.
 	public ReturnPreferencePage()
 	{
 		InitializeComponent();
@@ -60,7 +61,7 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 		cmb_returnType.SelectedItem = _hardwareService.ReturnType;
 	}
 
-	private void OnAddUnknown(object sender, EventArgs e)
+	private void OnAddUnknown(object? sender, EventArgs e)
 	{
 		(dgv_returnQueue.DataSource as BindingList<InventoryData>)?.Add(new InventoryData
 		{
@@ -68,7 +69,7 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 		});
 	}
 
-	private void OnAddBarcode(object sender, EventArgs e)
+	private void OnAddBarcode(object? sender, EventArgs e)
 	{
 		if (dgv_returnQueue.DataSource is BindingList<InventoryData> bindingList && !string.IsNullOrWhiteSpace(txt_barcodeInput.Text))
 		{
@@ -80,9 +81,9 @@ public class ReturnPreferencePage : UserControl, IPreferencePageHost
 		}
 	}
 
-	private void OnReturnTypeChanged(object sender, EventArgs e)
+	private void OnReturnTypeChanged(object? sender, EventArgs e)
 	{
-		_hardwareService.ReturnType = (Common.ReturnType)cmb_returnType.SelectedItem;
+		_hardwareService.ReturnType = (Common.ReturnType)cmb_returnType.SelectedItem!; // the combo always has a selection
 	}
 
 	protected override void Dispose(bool disposing)

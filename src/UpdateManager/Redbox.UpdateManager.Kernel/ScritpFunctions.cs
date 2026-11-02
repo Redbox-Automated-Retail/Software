@@ -14,7 +14,7 @@ public static class ScritpFunctions
 	}
 
 	[KernelFunction(Name = "kernel.runscript")]
-	internal static object[] RunScript(string path)
+	internal static object?[] RunScript(string path)
 	{
 		string chunk = File.ReadAllText(ServiceLocator.Instance.GetService<IMacroService>().ExpandProperties(path));
 		return KernelService.Instance.LuaRuntime.DoString(chunk).ToArray();

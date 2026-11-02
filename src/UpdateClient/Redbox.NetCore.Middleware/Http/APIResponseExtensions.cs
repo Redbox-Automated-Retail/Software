@@ -11,7 +11,7 @@ public static class APIResponseExtensions
 			baseResponse.Success = false;
 			baseResponse.StatusCode = 500;
 		}
-		baseResponse.Success = apiResponse.IsSuccessStatusCode;
+		baseResponse.Success = apiResponse!.IsSuccessStatusCode; // throws on a null apiResponse, as before
 		apiResponse.Errors.ForEach(delegate(Error x)
 		{
 			baseResponse.Errors.Add(new Error
@@ -37,7 +37,7 @@ public static class APIResponseExtensions
 	{
 		return new ContentResult
 		{
-			Content = (string)api.Scrub(),
+			Content = (string?)api.Scrub(),
 			StatusCode = (int)api.StatusCode
 		};
 	}

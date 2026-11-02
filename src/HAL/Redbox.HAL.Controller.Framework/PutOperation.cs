@@ -194,7 +194,7 @@ internal sealed class PutOperation : AbstractOperation<PutResult>
 
 	private void UpdateInventory()
 	{
-		ILocation original = null;
+		ILocation? original = null;
 		Result.IsDuplicate = InventoryService.IsBarcodeDuplicate(ID, out original);
 		Result.StoredMatrix = (IsSuspiciousId(ID) ? "UNKNOWN" : ID);
 		if (PutLocation.Deck == 7 && PutLocation.IsWide)
@@ -206,11 +206,11 @@ internal sealed class PutOperation : AbstractOperation<PutResult>
 			ServiceLocator.Instance.GetService<IExecutionService>().GetActiveContext();
 			Result.OriginalMatrixLocation = original;
 			Result.StoredMatrix = (ControllerConfiguration.Instance.MarkDuplicatesUnknown ? "UNKNOWN" : string.Format("{0}{1}", ID, "(DUPLICATE)"));
-			LogHelper.Instance.WithContext("The ID {0} is a duplicate ( original at Deck = {1} Slot = {2} ); marking as {3}", ID, original.Deck, original.Slot, Result.StoredMatrix);
+			LogHelper.Instance.WithContext("The ID {0} is a duplicate ( original at Deck = {1} Slot = {2} ); marking as {3}", ID, original!.Deck, original.Slot, Result.StoredMatrix);
 			if (ControllerConfiguration.Instance.MarkOriginalMatrixUnknown)
 			{
-				LogHelper.Instance.WithContext("Mark the original matrix ID = {0} at Deck = {1} Slot = {2} ); marking as {3}", ID, original.Deck, original.Slot, "UNKNOWN");
-				original.ID = "UNKNOWN";
+				LogHelper.Instance.WithContext("Mark the original matrix ID = {0} at Deck = {1} Slot = {2} ); marking as {3}", ID, original!.Deck, original.Slot, "UNKNOWN");
+				original!.ID = "UNKNOWN";
 				InventoryService.Save(original);
 			}
 			PersistentCounterService.Increment("DUPLICATE-COUNT");

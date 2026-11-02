@@ -42,7 +42,7 @@ internal sealed class VendTest : IDisposable
 		{
 			console.WriteLine("Starting iteration {0}", i);
 			using RandomInventorySelector randomInventorySelector = new RandomInventorySelector(Service);
-			IInventoryLocation inventoryLocation = null;
+			IInventoryLocation? inventoryLocation = null;
 			do
 			{
 				inventoryLocation = randomInventorySelector.Select();
@@ -59,7 +59,7 @@ internal sealed class VendTest : IDisposable
 					Console.WriteLine("Failed to schedule vend job.");
 					return;
 				}
-				job.Pend();
+				job!.Pend();
 				Helper.WaitForJob(job, out var endStatus);
 				locations.Clear();
 				if (endStatus != HardwareJobStatus.Completed)
@@ -77,7 +77,7 @@ internal sealed class VendTest : IDisposable
 		}
 	}
 
-	private void TimerFired(object source, ElapsedEventArgs e)
+	private void TimerFired(object? source, ElapsedEventArgs e)
 	{
 		Waiter.Set();
 	}

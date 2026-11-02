@@ -6,15 +6,15 @@ namespace Redbox.REDS.Framework;
 
 internal class ManifestInfo : IManifestInfo
 {
-	public string ProductName { get; internal set; }
+	public string? ProductName { get; internal set; }
 
-	public string ProductVersion { get; internal set; }
+	public string? ProductVersion { get; internal set; }
 
-	public string StartupScript { get; internal set; }
+	public string? StartupScript { get; internal set; }
 
-	public string TestControl { get; internal set; }
+	public string? TestControl { get; internal set; }
 
-	public string ControlAssembly { get; internal set; }
+	public string? ControlAssembly { get; internal set; }
 
 	public BundleType BundleType { get; internal set; }
 
@@ -25,12 +25,12 @@ internal class ManifestInfo : IManifestInfo
 	public ManifestInfo(IResource resource)
 	{
 		InnerRequires = new List<IBundleSpecifier>();
-		BundleType = (BundleType)resource["bundle_type"];
-		ProductName = (string)resource["product_name"];
-		ProductVersion = (string)resource["product_version"];
-		StartupScript = (string)resource["startup_script"];
-		TestControl = (string)resource["test_control"];
-		ControlAssembly = (string)resource["control_assembly"];
+		BundleType = (BundleType)resource["bundle_type"]!;
+		ProductName = (string?)resource["product_name"];
+		ProductVersion = (string?)resource["product_version"];
+		StartupScript = (string?)resource["startup_script"];
+		TestControl = (string?)resource["test_control"];
+		ControlAssembly = (string?)resource["control_assembly"];
 		if (resource["requires"] is string text)
 		{
 			foreach (string specifier in text.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))

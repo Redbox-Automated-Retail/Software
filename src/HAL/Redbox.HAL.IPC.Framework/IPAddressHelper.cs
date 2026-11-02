@@ -8,7 +8,7 @@ internal static class IPAddressHelper
 {
 	private const string MicrosoftVideoDevice = "Microsoft TV/Video Connection";
 
-	internal static IPAddress GetAddressForHostName(string hostName)
+	internal static IPAddress? GetAddressForHostName(string hostName)
 	{
 		if (!NetworkInterface.GetIsNetworkAvailable())
 		{
@@ -23,11 +23,11 @@ internal static class IPAddressHelper
 		{
 			return hostAddresses[0];
 		}
-		IPAddress result = null;
-		IPAddress bindableAddress = GetBindableAddress();
+		IPAddress? result = null;
+		IPAddress? bindableAddress = GetBindableAddress();
 		foreach (IPAddress iPAddress in hostAddresses)
 		{
-			if (!(iPAddress.ToString() != bindableAddress.ToString()))
+			if (!(iPAddress.ToString() != bindableAddress!.ToString()))
 			{
 				result = iPAddress;
 				break;
@@ -36,7 +36,7 @@ internal static class IPAddressHelper
 		return result;
 	}
 
-	private static IPAddress GetBindableAddress()
+	private static IPAddress? GetBindableAddress()
 	{
 		NetworkInterface[] allNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 		foreach (NetworkInterface networkInterface in allNetworkInterfaces)

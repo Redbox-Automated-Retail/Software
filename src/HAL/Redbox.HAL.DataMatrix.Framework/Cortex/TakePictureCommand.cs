@@ -8,11 +8,11 @@ internal sealed class TakePictureCommand : AbstractCortexCommand
 
 	protected override int ReadTimeout => 8000;
 
-	internal ImagePacket ImagePacket
+	internal ImagePacket? ImagePacket
 	{
 		get
 		{
-			ImagePacket result = null;
+			ImagePacket? result = null;
 			CortexPacket[] parsedPackets = base.ParsedPackets;
 			foreach (CortexPacket cortexPacket in parsedPackets)
 			{

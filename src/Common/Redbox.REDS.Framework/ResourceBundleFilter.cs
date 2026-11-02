@@ -4,9 +4,9 @@ namespace Redbox.REDS.Framework;
 
 internal class ResourceBundleFilter : IResourceBundleFilter
 {
-	private readonly IDictionary<string, string> m_filters = new Dictionary<string, string>();
+	private readonly IDictionary<string, string?> m_filters = new Dictionary<string, string?>();
 
-	public string this[string key]
+	public string? this[string key]
 	{
 		get
 		{

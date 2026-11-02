@@ -32,5 +32,5 @@ public interface IScannerDevice : IDisposable
 
 	bool ValidateSettings();
 
-	bool ValidateSettings(IMessageSink sink);
+	bool ValidateSettings(IMessageSink? sink);
 }

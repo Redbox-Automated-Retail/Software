@@ -198,7 +198,7 @@ public class BorderButton : Button
 
 	private static void OnSingleRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		BorderButton borderButton = d as BorderButton;
+		BorderButton borderButton = (d as BorderButton)!;
 		if (!borderButton.AutoCornerRadius)
 		{
 			borderButton.CornerRadius = new CornerRadius(borderButton.SingleRadius);
@@ -207,7 +207,7 @@ public class BorderButton : Button
 
 	private static void OnBorderSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		BorderButton button = d as BorderButton;
+		BorderButton button = (d as BorderButton)!;
 		button.Width = button.BorderSize.Width;
 		button.Height = button.BorderSize.Height;
 	}
@@ -216,7 +216,7 @@ public class BorderButton : Button
 	{
 		if ((bool)e.NewValue)
 		{
-			Unregister(d as BorderButton);
+			Unregister((d as BorderButton)!);
 		}
 	}
 
@@ -224,11 +224,11 @@ public class BorderButton : Button
 	{
 		if (string.IsNullOrEmpty(e.NewValue as string))
 		{
-			Unregister(d as BorderButton);
+			Unregister((d as BorderButton)!);
 		}
 		else
 		{
-			Register(d as BorderButton);
+			Register((d as BorderButton)!);
 		}
 	}
 

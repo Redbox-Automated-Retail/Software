@@ -25,14 +25,14 @@ internal class SessionIdMiddleware
 
 	public async Task Invoke(HttpContext context)
 	{
-		string headerName = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, "x-redbox-sessionid", StringComparison.OrdinalIgnoreCase));
+		string? headerName = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, "x-redbox-sessionid", StringComparison.OrdinalIgnoreCase));
 		if (string.IsNullOrWhiteSpace(headerName))
 		{
 			_logger.LogDebug("Session id header not found or invalid.");
 			await _next(context);
 			return;
 		}
-		string sessionId = context.Request.Headers[headerName];
+		string? sessionId = context.Request.Headers[headerName];
 		_logger.LogDebug("Session id header found: {SessionId}", sessionId);
 		using (LogContext.PushProperty("SessionId", sessionId))
 		{

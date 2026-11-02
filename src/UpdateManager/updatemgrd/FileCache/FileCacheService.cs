@@ -11,7 +11,7 @@ namespace Redbox.UpdateManager.FileCache;
 
 internal class FileCacheService : IFileCacheService
 {
-	private string _root;
+	private string _root = null!; // set by Initialize
 
 	public static FileCacheService Instance => Singleton<FileCacheService>.Instance;
 
@@ -129,7 +129,7 @@ internal class FileCacheService : IFileCacheService
 		Redbox.UpdateManager.ComponentModel.ErrorList errors = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		xDeltaErrors.ForEach(delegate(Redbox.DeltaCompression.Error e)
 		{
-			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!)); // details passed on as they are, as before
 		});
 		return errors;
 	}
@@ -234,7 +234,7 @@ internal class FileCacheService : IFileCacheService
 		}
 	}
 
-	public bool GetFile(long fileSetId, long fileId, long fileRevisionId, out byte[] data)
+	public bool GetFile(long fileSetId, long fileId, long fileRevisionId, out byte[]? data)
 	{
 		data = null;
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
@@ -254,7 +254,7 @@ internal class FileCacheService : IFileCacheService
 		return false;
 	}
 
-	public bool GetFileInfo(string path, out byte[] data)
+	public bool GetFileInfo(string path, out byte[]? data)
 	{
 		data = null;
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
@@ -292,7 +292,7 @@ internal class FileCacheService : IFileCacheService
 		return false;
 	}
 
-	public bool GetRevision(long fileSetId, long revisionId, out byte[] data)
+	public bool GetRevision(long fileSetId, long revisionId, out byte[]? data)
 	{
 		data = null;
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
@@ -303,7 +303,7 @@ internal class FileCacheService : IFileCacheService
 			{
 				return false;
 			}
-			string text = allRevisionFiles.OrderByDescending((string f) => f).FirstOrDefault((string f) => Path.GetExtension(f).Equals(".revision", StringComparison.CurrentCultureIgnoreCase));
+			string? text = allRevisionFiles.OrderByDescending((string f) => f).FirstOrDefault((string f) => Path.GetExtension(f).Equals(".revision", StringComparison.CurrentCultureIgnoreCase));
 			if (string.IsNullOrEmpty(text))
 			{
 				return false;
@@ -321,7 +321,7 @@ internal class FileCacheService : IFileCacheService
 		return false;
 	}
 
-	public bool GetRevision(long fileSetId, long revisionId, long patchRevisionId, out byte[] data)
+	public bool GetRevision(long fileSetId, long revisionId, long patchRevisionId, out byte[]? data)
 	{
 		data = null;
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();
@@ -341,7 +341,7 @@ internal class FileCacheService : IFileCacheService
 		return false;
 	}
 
-	public bool GetRevision(string path, out byte[] data)
+	public bool GetRevision(string path, out byte[]? data)
 	{
 		data = null;
 		Redbox.UpdateManager.ComponentModel.ErrorList errorList = new Redbox.UpdateManager.ComponentModel.ErrorList();

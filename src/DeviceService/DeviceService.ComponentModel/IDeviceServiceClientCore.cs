@@ -6,11 +6,11 @@ public interface IDeviceServiceClientCore
 {
 	bool IsConnectedToDeviceService { get; }
 
-	event LogHandler OnLog;
+	event LogHandler? OnLog;
 
-	event OnConnected OnConnectedHandler;
+	event OnConnected? OnConnectedHandler;
 
-	event OnDisconnected OnDisconnectedHandler;
+	event OnDisconnected? OnDisconnectedHandler;
 
 	bool ConnectToDeviceService(string url);
 

@@ -35,7 +35,7 @@ public static class CommandLineOption
 		{
 			return defVal;
 		}
-		return ConversionHelper.ChangeType<T>(optionValue);
+		return ConversionHelper.ChangeType<T>(optionValue)!;
 	}
 
 	public static T GetOptionVal<T>(string option, string delimiter, T defVal)
@@ -45,6 +45,6 @@ public static class CommandLineOption
 		{
 			return defVal;
 		}
-		return ConversionHelper.ChangeType<T>(optionValue);
+		return ConversionHelper.ChangeType<T>(optionValue)!;
 	}
 }

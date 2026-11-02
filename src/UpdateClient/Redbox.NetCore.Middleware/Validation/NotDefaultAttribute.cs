@@ -12,7 +12,7 @@ public class NotDefaultAttribute : ValidationAttribute
 	{
 	}
 
-	public override bool IsValid(object value)
+	public override bool IsValid(object? value)
 	{
 		if (value == null)
 		{
@@ -21,7 +21,7 @@ public class NotDefaultAttribute : ValidationAttribute
 		Type type = value.GetType();
 		if (type.IsValueType)
 		{
-			object instance = Activator.CreateInstance(type);
+			object? instance = Activator.CreateInstance(type);
 			return !value.Equals(instance);
 		}
 		return true;

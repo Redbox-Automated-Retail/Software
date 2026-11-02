@@ -16,7 +16,7 @@ public class CompressedRequestPayloadMiddleware
 
 			public const string Deflate = "deflate";
 
-			public static bool Contains(string value)
+			public static bool Contains(string? value)
 			{
 				if (!(value == "gzip"))
 				{
@@ -43,7 +43,7 @@ public class CompressedRequestPayloadMiddleware
 			StringValues stringValues = context.Request.Headers["Content-Encoding"];
 			if (Headers.ContentEncodingValues.Contains(stringValues))
 			{
-				string text = stringValues;
+				string? text = stringValues;
 				if (!(text == "gzip"))
 				{
 					if (text == "deflate")

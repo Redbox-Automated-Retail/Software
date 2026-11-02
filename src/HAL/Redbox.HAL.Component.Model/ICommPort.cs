@@ -10,7 +10,7 @@ public interface ICommPort : IDisposable
 
 	bool EnableDebugging { get; set; }
 
-	byte[] WriteTerminator { get; set; }
+	byte[]? WriteTerminator { get; set; }
 
 	int OpenPause { get; set; }
 

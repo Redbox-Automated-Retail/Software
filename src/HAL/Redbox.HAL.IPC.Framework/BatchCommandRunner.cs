@@ -39,7 +39,7 @@ public sealed class BatchCommandRunner : ISession, IMessageSink
 
 	public static ErrorList ExecuteStartupFiles()
 	{
-		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.txt");
+		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "*.txt");
 		ErrorList errorList = new ErrorList();
 		string[] startupFiles = files;
 		for (int i = 0; i < startupFiles.Length; i++)
@@ -110,7 +110,7 @@ public sealed class BatchCommandRunner : ISession, IMessageSink
 
 	private bool Read(StringBuilder builder)
 	{
-		string text = m_reader.ReadLine();
+		string? text = m_reader.ReadLine();
 		if (text == null)
 		{
 			return false;

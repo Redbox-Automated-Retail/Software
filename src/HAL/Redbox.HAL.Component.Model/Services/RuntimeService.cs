@@ -51,7 +51,7 @@ public sealed class RuntimeService : IRuntimeService
 
 	private Platform Platform;
 
-	private string m_kioskId;
+	private string? m_kioskId;
 
 	private readonly WaitHandle m_waitObject = new ManualResetEvent(initialState: false);
 
@@ -63,15 +63,15 @@ public sealed class RuntimeService : IRuntimeService
 		{
 			if (!string.IsNullOrEmpty(m_kioskId))
 			{
-				return m_kioskId;
+				return m_kioskId!;
 			}
-			RegistryKey registryKey = null;
+			RegistryKey? registryKey = null;
 			try
 			{
 				registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\REDS\\Kiosk Engine\\Store");
 				if (registryKey != null)
 				{
-					object registryValue = registryKey.GetValue("ID");
+					object? registryValue = registryKey.GetValue("ID");
 					if (registryValue != null)
 					{
 						m_kioskId = ConversionHelper.ChangeType<string>(registryValue);
@@ -90,7 +90,7 @@ public sealed class RuntimeService : IRuntimeService
 			}
 			if (!string.IsNullOrEmpty(m_kioskId))
 			{
-				return m_kioskId;
+				return m_kioskId!;
 			}
 			return "UNKNOWN";
 		}
@@ -104,16 +104,16 @@ public sealed class RuntimeService : IRuntimeService
 
 	public int PageSize { get; private set; }
 
-	public string ScriptsPath { get; private set; }
+	public string? ScriptsPath { get; private set; }
 
 	public string ExpandRuntimeMacros(string value)
 	{
-		return ExpandMacros(value, "${", "}");
+		return ExpandMacros(value, "${", "}")!;
 	}
 
 	public string ExpandConstantMacros(string value)
 	{
-		return ExpandMacros(value, "$(", ")");
+		return ExpandMacros(value, "$(", ")")!;
 	}
 
 	public string RuntimePath(string fileName)
@@ -163,13 +163,13 @@ public sealed class RuntimeService : IRuntimeService
 		return $"m{now.Month}d{now.Day}y{now.Year}_h{now.Hour}m{now.Minute}s{now.Second}t{now.Millisecond}{suffix}";
 	}
 
-	public byte[] ReadToBuffer(string fileName)
+	public byte[]? ReadToBuffer(string? fileName)
 	{
 		if (fileName == null)
 		{
 			return null;
 		}
-		byte[] buffer = null;
+		byte[]? buffer = null;
 		using FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 		buffer = new byte[fileStream.Length];
 		fileStream.Read(buffer, 0, (int)fileStream.Length);
@@ -302,12 +302,12 @@ public sealed class RuntimeService : IRuntimeService
 
 	public RuntimeService()
 	{
-		AssemblyDirectory = Path.GetDirectoryName(typeof(RuntimeService).Assembly.Location);
+		AssemblyDirectory = Path.GetDirectoryName(typeof(RuntimeService).Assembly.Location)!;
 		DataPath = Path.Combine(AssemblyDirectory, "data");
 		try
 		{
-			DirectoryInfo parent = Directory.GetParent(AssemblyDirectory);
-			InstallRoot = parent.FullName;
+			DirectoryInfo? parent = Directory.GetParent(AssemblyDirectory);
+			InstallRoot = parent!.FullName;
 			ScriptsPath = Path.Combine(InstallRoot, "Scripts");
 		}
 		catch (Exception ex)
@@ -341,13 +341,13 @@ public sealed class RuntimeService : IRuntimeService
 	private string CreateBackupName(string path)
 	{
 		string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-		string directoryName = Path.GetDirectoryName(path);
+		string? directoryName = Path.GetDirectoryName(path);
 		string extension = Path.GetExtension(path);
 		string path2 = $"{fileNameWithoutExtension}-{GenerateUniqueFile(extension)}";
-		return Path.Combine(directoryName, path2);
+		return Path.Combine(directoryName!, path2);
 	}
 
-	private string ExpandMacros(string value, string preamble, string postamble)
+	private string? ExpandMacros(string? value, string preamble, string postamble)
 	{
 		if (value == null)
 		{
@@ -355,12 +355,12 @@ public sealed class RuntimeService : IRuntimeService
 		}
 		while (true)
 		{
-			string macro = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
+			string? macro = StringExtensions.ExtractCodeFromBrackets(value, preamble, postamble);
 			if (string.IsNullOrEmpty(macro))
 			{
 				break;
 			}
-			string replacement = Values[macro];
+			string? replacement = Values[macro!];
 			if (replacement == null)
 			{
 				replacement = string.Empty;

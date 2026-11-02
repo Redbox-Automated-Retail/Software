@@ -79,11 +79,11 @@ internal class BitsDownloader : DownloaderBase
 		LogHelper.Instance.Log(string.Format("{0} checking state: {1} for {2}", "Bits downloader", base.DownloadData.DownloadState.ToString(), base.DownloadData.Key));
 		try
 		{
-			ITransferJob job = null;
+			ITransferJob? job = null;
 			ITransferService transferService = ServiceLocator.Instance.GetService<ITransferService>();
 			string text = $"<::~{base.DownloadData.Key}~::>";
 			errorList.AddRange(transferService.CreateDownloadJob(text, out job));
-			errorList.AddRange(job.SetMinimumRetryDelay(60u));
+			errorList.AddRange(job!.SetMinimumRetryDelay(60u)); // NRE when CreateDownloadJob failed (caught below), as before
 			errorList.AddRange(job.SetNoProgressTimeout(0u));
 			errorList.AddRange(job.SetPriority(GetPriority()));
 			errorList.AddRange(job.AddItem(base.DownloadData.Url, Path.GetTempFileName()));
@@ -135,7 +135,7 @@ internal class BitsDownloader : DownloaderBase
 		try
 		{
 			ServiceLocator.Instance.GetService<ITransferService>();
-			List<ITransferJob> jobs = null;
+			List<ITransferJob>? jobs = null;
 			errorList.AddRange(GetDownloadFileBitsJobs(out jobs));
 			if (errorList.ContainsError())
 			{
@@ -144,7 +144,7 @@ internal class BitsDownloader : DownloaderBase
 				errorList.AddRange(SaveDownload());
 				return errorList;
 			}
-			ITransferJob transferJob = jobs.Where((ITransferJob j) => j.ID == base.DownloadData.BitsGuid).FirstOrDefault();
+			ITransferJob? transferJob = jobs.Where((ITransferJob j) => j.ID == base.DownloadData.BitsGuid).FirstOrDefault();
 			if (transferJob == null)
 			{
 				base.DownloadData.DownloadState = DownloadState.Error;
@@ -253,11 +253,11 @@ internal class BitsDownloader : DownloaderBase
 		}
 		LogHelper.Instance.Log(string.Format("{0} checking state: {1} for {2}", "Bits downloader", base.DownloadData.DownloadState.ToString(), base.DownloadData.Key));
 		_ = base.DownloadData.BitsGuid;
-		List<ITransferJob> jobs = null;
+		List<ITransferJob>? jobs = null;
 		errorList.AddRange(GetDownloadFileBitsJobs(out jobs));
 		if (!errorList.ContainsError())
 		{
-			ITransferJob transferJob = jobs.Where((ITransferJob j) => j.ID == base.DownloadData.BitsGuid).FirstOrDefault();
+			ITransferJob? transferJob = jobs.Where((ITransferJob j) => j.ID == base.DownloadData.BitsGuid).FirstOrDefault();
 			if (transferJob != null)
 			{
 				errorList.AddRange(transferJob.Cancel());
@@ -274,7 +274,7 @@ internal class BitsDownloader : DownloaderBase
 		{
 			LogHelper.Instance.Log("Executing BitsDownloader.Cleanup");
 			List<IDownloader> downloads = DownloadFactory.Instance.GetDownloads();
-			List<ITransferJob> jobs = null;
+			List<ITransferJob>? jobs = null;
 			errorList.AddRange(GetDownloadFileBitsJobs(out jobs));
 			if (errorList.ContainsError())
 			{

@@ -4,5 +4,5 @@ namespace Redbox.NetCore.Middleware.Metrics;
 
 public interface ICommonMetricsFactory
 {
-	ICommonMetrics GetImplementation<T>();
+	ICommonMetrics? GetImplementation<T>();
 }

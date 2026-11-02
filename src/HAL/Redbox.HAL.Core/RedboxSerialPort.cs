@@ -42,7 +42,7 @@ internal abstract class RedboxSerialPort : ICommPort, IDisposable
 
 	public bool EnableDebugging { get; set; }
 
-	public byte[] WriteTerminator { get; set; }
+	public byte[]? WriteTerminator { get; set; }
 
 	public int OpenPause { get; set; }
 
@@ -75,7 +75,8 @@ internal abstract class RedboxSerialPort : ICommPort, IDisposable
 
 	public int? ReceiveBufferSize { get; set; }
 
-	public Predicate<IChannelResponse> ValidateResponse { get; set; }
+	// Set by the controller or command that uses the port, right after creating it.
+	public Predicate<IChannelResponse> ValidateResponse { get; set; } = null!;
 
 	public void Dispose()
 	{
@@ -105,7 +106,7 @@ internal abstract class RedboxSerialPort : ICommPort, IDisposable
 		ReadTimeout = configuration.ReadTimeout;
 		if (configuration.ReceiveBufferSize.HasValue)
 		{
-			Port.ReadBufferSize = ReceiveBufferSize.Value;
+			Port.ReadBufferSize = ReceiveBufferSize!.Value;
 		}
 		OnConfigure();
 	}

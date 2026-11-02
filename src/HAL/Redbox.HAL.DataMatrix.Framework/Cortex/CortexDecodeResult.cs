@@ -6,7 +6,8 @@ public sealed class CortexDecodeResult
 {
 	internal Point[] PolyPoints => new Point[4] { corner0, corner1, corner2, corner3 };
 
-	internal string DecodeData { get; set; }
+	// Set by CortexDecoder right after construction.
+	internal string DecodeData { get; set; } = null!;
 
 	internal int dataLength { get; set; }
 

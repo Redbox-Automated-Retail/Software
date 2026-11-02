@@ -8,7 +8,7 @@ namespace Redbox.Lua;
 
 public class LuaStack
 {
-	public EventHandler CountChange;
+	public EventHandler? CountChange;
 
 	private readonly LuaVirtualMachine m_virtualMachine;
 
@@ -18,24 +18,24 @@ public class LuaStack
 
 	public int Count => LuaVirtualMachine.lua_gettop(m_virtualMachine);
 
-	public object Top => GetAt(-1);
+	public object? Top => GetAt(-1);
 
 	public LuaStack(LuaVirtualMachine virtualMachine)
 	{
 		m_virtualMachine = virtualMachine;
 	}
 
-	public object Pop()
+	public object? Pop()
 	{
-		object top = Top;
+		object? top = Top;
 		LuaVirtualMachine.lua_pop(m_virtualMachine, 1);
 		OnCountChange();
 		return top;
 	}
 
-	public ReadOnlyCollection<object> PopTo(int oldTop)
+	public ReadOnlyCollection<object?> PopTo(int oldTop)
 	{
-		List<object> list = new List<object>();
+		List<object?> list = new List<object?>();
 		if (oldTop != Count)
 		{
 			for (int i = oldTop + 1; i <= Count; i++)
@@ -179,7 +179,7 @@ public class LuaStack
 		}
 	}
 
-	public void SetPath(string[] path, object value)
+	public void SetPath(string[] path, object? value)
 	{
 		for (int i = 0; i < path.Length - 1; i++)
 		{
@@ -191,7 +191,7 @@ public class LuaStack
 		SetTable(-3);
 	}
 
-	public object GetAt(int index)
+	public object? GetAt(int index)
 	{
 		if (index < 0)
 		{
@@ -239,7 +239,7 @@ public class LuaStack
 		}
 	}
 
-	public void Push(object value)
+	public void Push(object? value)
 	{
 		if (value == null)
 		{

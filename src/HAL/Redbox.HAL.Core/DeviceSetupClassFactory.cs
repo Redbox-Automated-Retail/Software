@@ -78,7 +78,7 @@ public sealed class DeviceSetupClassFactory : IDeviceSetupClassFactory
 
 	private readonly Dictionary<DeviceClass, IDeviceSetupClass> ClassMap = new Dictionary<DeviceClass, IDeviceSetupClass>();
 
-	public IDeviceSetupClass Get(DeviceClass clazz)
+	public IDeviceSetupClass? Get(DeviceClass clazz)
 	{
 		if (!ClassMap.ContainsKey(clazz))
 		{

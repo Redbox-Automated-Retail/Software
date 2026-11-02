@@ -5,7 +5,7 @@ namespace Redbox.Lua;
 
 public static class LuaHelper
 {
-	public static string FormatLuaValue(object value)
+	public static string FormatLuaValue(object? value)
 	{
 		if (value == null)
 		{
@@ -66,8 +66,8 @@ public static class LuaHelper
 		}
 		if (value is bool)
 		{
-			return value.ToString().ToLower();
+			return value.ToString()!.ToLower();
 		}
-		return (value.GetType().ToString() == "Lua511.LuaCSFunction") ? "(kernel function)" : value.ToString();
+		return (value.GetType().ToString() == "Lua511.LuaCSFunction") ? "(kernel function)" : value.ToString()!;
 	}
 }

@@ -7,7 +7,8 @@ namespace Redbox.HAL.DataMatrix.Framework;
 
 public sealed class ScannerDeviceFactory : IScannerDeviceService, IConfigurationObserver
 {
-	private IScannerDevice m_configuredDevice;
+	// Set by both constructors (the public one through the ConfiguredService setter).
+	private IScannerDevice m_configuredDevice = null!;
 
 	private ScannerServices m_configuredService;
 

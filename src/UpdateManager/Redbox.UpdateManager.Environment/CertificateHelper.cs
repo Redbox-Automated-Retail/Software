@@ -14,7 +14,7 @@ public class CertificateHelper
 		return new X509Certificate2(fileName, password);
 	}
 
-	public static X509Certificate2 GetCertificateBySubjectName(StoreName storeName, StoreLocation storeLocation, string subjectName)
+	public static X509Certificate2? GetCertificateBySubjectName(StoreName storeName, StoreLocation storeLocation, string subjectName)
 	{
 		if (string.IsNullOrEmpty(subjectName))
 		{
@@ -55,7 +55,7 @@ public class CertificateHelper
 		return GetCertificateByThumbPrint(storeName, storeLocation, x509Certificate.Thumbprint) != null;
 	}
 
-	public static X509Certificate2 GetCertificateByThumbPrint(StoreName storeName, StoreLocation storeLocation, string thumbPrint)
+	public static X509Certificate2? GetCertificateByThumbPrint(StoreName storeName, StoreLocation storeLocation, string thumbPrint)
 	{
 		X509Store x509Store = new X509Store(storeName, storeLocation);
 		try
@@ -76,7 +76,7 @@ public class CertificateHelper
 		return GetCertificateBySubjectDistinguishedName(storeName, storeLocation, x509Certificate.SubjectName) != null;
 	}
 
-	public static X509Certificate2 GetCertificateBySubjectDistinguishedName(StoreName storeName, StoreLocation storeLocation, X500DistinguishedName subjectName)
+	public static X509Certificate2? GetCertificateBySubjectDistinguishedName(StoreName storeName, StoreLocation storeLocation, X500DistinguishedName subjectName)
 	{
 		if (subjectName == null)
 		{

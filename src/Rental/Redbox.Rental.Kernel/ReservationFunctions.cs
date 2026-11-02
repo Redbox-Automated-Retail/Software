@@ -17,7 +17,7 @@ namespace Redbox.Rental.Kernel;
 
 public class ReservationFunctions
 {
-	private static Action<LuaTable, string> _updateBarcodeStatusCallback;
+	private static Action<LuaTable, string>? _updateBarcodeStatusCallback;
 
 	[KernelFunction(Name = "kernel.register_vend_only_reserved_titles_callback")]
 	internal static void RegisterVendOnlyReservedTitlesCallback(Action<string, string> vendOnlyReservedTitlesCallback)
@@ -69,9 +69,9 @@ public class ReservationFunctions
 	}
 
 	[KernelFunction(Name = "kernel.get_reserved_barcodes")]
-	internal static LuaTable GetReservedBarcodes()
+	internal static LuaTable? GetReservedBarcodes()
 	{
-		LuaTable result = null;
+		LuaTable? result = null;
 		List<string> reservedBarcodes = Redbox.Rental.Services.Controllers.ReservationFunctions.GetReservedBarcodes();
 		if (reservedBarcodes != null && reservedBarcodes.Count > 0)
 		{
@@ -167,11 +167,11 @@ public class ReservationFunctions
 				LogHelper.Instance.Log("ReservationFunctions.ReservationPrepositionVendComplete vendResults empty, Alert sent");
 			}
 			List<VendResult> list = new List<VendResult>();
-			foreach (object value in vendResults.Values)
+			foreach (object value in vendResults.Values!)
 			{
 				if (value is LuaTable)
 				{
-					LuaTable luaTable = value as LuaTable;
+					LuaTable luaTable = (value as LuaTable)!; // value is LuaTable
 					VendResult item = new VendResult
 					{
 						barcode = luaTable["barcode"]?.ToString(),
@@ -194,11 +194,11 @@ public class ReservationFunctions
 		if (vendResults != null)
 		{
 			List<VendResult> list = new List<VendResult>();
-			foreach (object value in vendResults.Values)
+			foreach (object value in vendResults.Values!)
 			{
 				if (value is LuaTable)
 				{
-					LuaTable luaTable = value as LuaTable;
+					LuaTable luaTable = (value as LuaTable)!; // value is LuaTable
 					VendResult item = new VendResult
 					{
 						barcode = luaTable["barcode"]?.ToString(),
@@ -239,7 +239,7 @@ public class ReservationFunctions
 		}
 		foreach (object value in validatedReservations.Values)
 		{
-			list.Add(value.ToString());
+			list.Add(value.ToString()!);
 		}
 		Redbox.Rental.Services.Controllers.ReservationFunctions.SetValidatedReservations(list);
 	}

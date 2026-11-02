@@ -133,12 +133,12 @@ public class SpinControl : BaseContainer
 
 	private static void OnRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SpinControl).RadiusChanged();
+		(d as SpinControl)!.RadiusChanged();
 	}
 
 	private static void OnIsAnimatedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		(d as SpinControl).IsAnimatedChanged();
+		(d as SpinControl)!.IsAnimatedChanged();
 	}
 
 	private static void OnRenderTransformPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -168,7 +168,7 @@ public class SpinControl : BaseContainer
 		{
 			base.RenderTransform = new RotateTransform();
 		}
-		(base.RenderTransform as RotateTransform).Angle = 0.0;
+		(base.RenderTransform as RotateTransform)!.Angle = 0.0;
 	}
 
 	protected virtual void RadiusChanged()
@@ -207,7 +207,7 @@ public class SpinControl : BaseContainer
 		size = size ?? new Size?(new Size(Width, Height));
 		if (Child is FrameworkElement)
 		{
-			FrameworkElement child = Child as FrameworkElement;
+			FrameworkElement child = (Child as FrameworkElement)!;
 			child.Width = size.Value.Width;
 			child.Height = size.Value.Height;
 		}

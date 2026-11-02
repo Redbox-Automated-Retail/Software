@@ -18,7 +18,8 @@ public sealed class HardwareJob
 
 		internal IIpcClientSession Session { get; private set; }
 
-		internal Thread EventThread { get; set; }
+		// Set by HardwareJob.Connect right after construction.
+		internal Thread EventThread { get; set; } = null!;
 
 		public void Dispose()
 		{
@@ -56,15 +57,16 @@ public sealed class HardwareJob
 		}
 	}
 
-	private ConnectionInfo Connection;
+	private ConnectionInfo? Connection;
 
 	private readonly HardwareService Service;
 
-	public string ID { get; internal set; }
+	// ID, Label and ProgramName are set by Parse's object initializer.
+	public string ID { get; internal set; } = null!;
 
-	public string Label { get; internal set; }
+	public string Label { get; internal set; } = null!;
 
-	public string ProgramName { get; internal set; }
+	public string ProgramName { get; internal set; } = null!;
 
 	public DateTime? StartTime { get; internal set; }
 
@@ -82,9 +84,9 @@ public sealed class HardwareJob
 
 	public HardwareJobConnectionState ConnectionState { get; internal set; }
 
-	public event HardwareEvent EventRaised;
+	public event HardwareEvent? EventRaised;
 
-	public event HardwareStatusChangeEvent StatusChanged;
+	public event HardwareStatusChangeEvent? StatusChanged;
 
 	public HardwareCommandResult Signal(string msg)
 	{
@@ -218,7 +220,7 @@ public sealed class HardwareJob
 			{
 				hardwareCommandResult.CommandMessages.ForEach(delegate(string each)
 				{
-					ProgramResult programResult = ProgramResult.FromString(each);
+					ProgramResult? programResult = ProgramResult.FromString(each);
 					if (programResult != null)
 					{
 						programResults.Add(programResult);
@@ -264,7 +266,7 @@ public sealed class HardwareJob
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult Pop<T>(out T value)
+	public HardwareCommandResult Pop<T>(out T? value)
 	{
 		value = default(T);
 		HardwareCommandResult hardwareCommandResult = ExecuteCommand($"STACK pop job: '{ID}'");
@@ -275,7 +277,7 @@ public sealed class HardwareJob
 		return hardwareCommandResult;
 	}
 
-	public HardwareCommandResult Push(params object[] values)
+	public HardwareCommandResult? Push(params object[] values)
 	{
 		if (values == null)
 		{
@@ -284,7 +286,7 @@ public sealed class HardwareJob
 				Success = false
 			};
 		}
-		HardwareCommandResult hardwareCommandResult = null;
+		HardwareCommandResult? hardwareCommandResult = null;
 		foreach (object value in values)
 		{
 			object formatted = value;
@@ -445,7 +447,7 @@ public sealed class HardwareJob
 		return result;
 	}
 
-	internal static HardwareJob Parse(HardwareService service, string jobData)
+	internal static HardwareJob? Parse(HardwareService service, string jobData)
 	{
 		ReadOnlyCollection<string> readOnlyCollection = ProtocolHelper.ParseProperties(jobData);
 		if (readOnlyCollection.Count < 8)
@@ -477,18 +479,18 @@ public sealed class HardwareJob
 		return hardwareJob;
 	}
 
-	internal void EventPoll(object o)
+	internal void EventPoll(object? o)
 	{
-		using (ConnectionInfo connectionInfo = o as ConnectionInfo)
+		using (ConnectionInfo? connectionInfo = o as ConnectionInfo)
 		{
 			do
 			{
-				if (!ClientCommand<HardwareCommandResult>.ExecuteCommand(connectionInfo.Session, "JOB scheduler-status").Success && EventRaised != null)
+				if (!ClientCommand<HardwareCommandResult>.ExecuteCommand(connectionInfo!.Session, "JOB scheduler-status").Success && EventRaised != null)
 				{
 					EventRaised(this, DateTime.Now, ">IPC EXCEPTION<");
 				}
 			}
-			while (!connectionInfo.WaitDisconnect());
+			while (!connectionInfo!.WaitDisconnect());
 		}
 		ExecuteCommand($"JOB disconnect job: '{ID}'");
 	}

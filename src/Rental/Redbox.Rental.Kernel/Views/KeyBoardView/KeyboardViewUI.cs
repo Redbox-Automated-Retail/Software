@@ -24,15 +24,16 @@ internal class KeyboardViewUI
 
 	private IViewService _viewService;
 
-	private IActor _okButton;
+	// Created by Show.
+	private IActor _okButton = null!;
 
-	private IActor _okArrowButton;
+	private IActor _okArrowButton = null!;
 
-	private Action _next;
+	private Action? _next;
 
-	private Action _cancel;
+	private Action? _cancel;
 
-	private Func<string, string> _validate;
+	private Func<string, string>? _validate;
 
 	private static string[] line1 = new string[10] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 
@@ -50,11 +51,11 @@ internal class KeyboardViewUI
 
 	internal bool IsSpanish { get; set; }
 
-	internal string ErrorMessage { get; set; }
+	internal string? ErrorMessage { get; set; }
 
-	internal string CancelButtonText { get; set; }
+	internal string? CancelButtonText { get; set; }
 
-	internal string OkButtonText { get; set; }
+	internal string? OkButtonText { get; set; }
 
 	internal KeyboardViewUI(string pageName, bool isAda, bool isSpanish)
 	{
@@ -88,7 +89,7 @@ internal class KeyboardViewUI
 
 	private void DisplayBackground()
 	{
-		IActor actor = _rendService.ActiveScene.CreateActor();
+		IActor actor = _rendService.ActiveScene!.CreateActor();
 		actor.Name = "back_ground_image";
 		actor.X = 0;
 		actor.Y = 0;
@@ -169,7 +170,7 @@ internal class KeyboardViewUI
 
 	private void DisplayHeader()
 	{
-		IActor actor = _rendService.ActiveScene.CreateActor();
+		IActor actor = _rendService.ActiveScene!.CreateActor();
 		actor.Name = "message_label";
 		actor.X = 28;
 		actor.Y = 88;
@@ -226,7 +227,7 @@ internal class KeyboardViewUI
 	private void DisplayErrorMessage(string message)
 	{
 		_macroService["KeyBoard:ErrorLabel"] = message;
-		_rendService.ActiveScene.MakeDirty(new Rectangle[1]
+		_rendService.ActiveScene!.MakeDirty(new Rectangle[1]
 		{
 			new Rectangle
 			{
@@ -257,9 +258,9 @@ internal class KeyboardViewUI
 			};
 			actor.Height = 66;
 			actor.HorizontalAlignment = StringAlignment.Center;
-			actor.Text = actor.Text.TrimStart();
+			actor.Text = actor.Text!.TrimStart();
 		}
-		IActor actor2 = _rendService.ActiveScene.CreateActor();
+		IActor actor2 = _rendService.ActiveScene!.CreateActor();
 		actor2.X = actor.X + ((IsAda && IsSpanish) ? 2 : 10);
 		actor2.Y = actor.Y + (IsAda ? 20 : 24);
 		actor2.Image = GetImage("image_back_icon");
@@ -284,7 +285,7 @@ internal class KeyboardViewUI
 				};
 				actor3.Height = 66;
 				actor3.HorizontalAlignment = StringAlignment.Center;
-				actor3.Text = actor3.Text.TrimStart();
+				actor3.Text = actor3.Text!.TrimStart();
 			}
 			IActor actor4 = _rendService.ActiveScene.CreateActor();
 			actor4.X = actor3.X + ((IsAda && IsSpanish) ? 2 : 10);
@@ -303,7 +304,7 @@ internal class KeyboardViewUI
 		Font font2 = _fontCacheService.GetFont("font_akzidenz_bold_tiny");
 		IStyleSheet styleSheet = ServiceLocator.Instance.GetService<IStyleSheetService>().GetStyleSheet("style_sheet_common");
 		IStyleSheetStyle style = styleSheet.GetStyle("rubine_button_style");
-		_rendService.ActiveScene.SuspendDrawing();
+		_rendService.ActiveScene!.SuspendDrawing();
 		DisplayBackground();
 		DisplayHeader();
 		IActor actor = _rendService.ActiveScene.CreateActor();
@@ -396,7 +397,7 @@ internal class KeyboardViewUI
 
 	private IActor CreateCharacter(Font font, IStyleSheetStyle style, string text, int x, int y, int? width = null)
 	{
-		IActor actor = _rendService.ActiveScene.CreateActor().AddRubineButtonStyle();
+		IActor actor = _rendService.ActiveScene!.CreateActor().AddRubineButtonStyle();
 		actor.Name = text.Replace(" ", "_") + "_button";
 		actor.X = x;
 		actor.Y = y;
@@ -418,15 +419,15 @@ internal class KeyboardViewUI
 		return actor;
 	}
 
-	private void OnCharacterHit(object sender, EventArgs e)
+	private void OnCharacterHit(object? sender, EventArgs e)
 	{
 		string text = _macroService["KeyBoard:Text"];
-		_rendService.ActiveScene.SuspendDrawing();
+		_rendService.ActiveScene!.SuspendDrawing();
 		if (text.Length < 50)
 		{
-			_macroService["KeyBoard:Text"] = text + ((IActor)sender).Tag;
+			_macroService["KeyBoard:Text"] = text + ((IActor)sender!).Tag; // the actor that was hit
 			DisplayErrorMessage(string.Empty);
-			if (text.Length + ((IActor)sender).Tag.ToString().Length >= 4)
+			if (text.Length + ((IActor)sender!).Tag!.ToString()!.Length >= 4)
 			{
 				EnableOkButton();
 			}
@@ -434,35 +435,35 @@ internal class KeyboardViewUI
 		_rendService.ActiveScene.ResumeDrawing();
 	}
 
-	private void OnClearHit(object sender, EventArgs e)
+	private void OnClearHit(object? sender, EventArgs e)
 	{
 		_ = _macroService["KeyBoard:Text"];
-		_rendService.ActiveScene.SuspendDrawing();
+		_rendService.ActiveScene!.SuspendDrawing();
 		_macroService["KeyBoard:Text"] = string.Empty;
 		DisplayErrorMessage(string.Empty);
 		_rendService.ActiveScene.ResumeDrawing();
 	}
 
-	private void OnBackSpaceHit(object sender, EventArgs e)
+	private void OnBackSpaceHit(object? sender, EventArgs e)
 	{
 		string text = _macroService["KeyBoard:Text"];
-		_rendService.ActiveScene.SuspendDrawing();
+		_rendService.ActiveScene!.SuspendDrawing();
 		DisplayErrorMessage(string.Empty);
 		if (text != null && text.Length > 0)
 		{
 			_macroService["KeyBoard:Text"] = text.Substring(0, text.Length - 1);
 		}
-		if (text.Length - 1 < 4)
+		if (text!.Length - 1 < 4) // throws on null, as before
 		{
 			DisableOkButton();
 		}
 		_rendService.ActiveScene.ResumeDrawing();
 	}
 
-	private void OnOkButtonPress(object sender, EventArgs e)
+	private void OnOkButtonPress(object? sender, EventArgs e)
 	{
 		string arg = _macroService["KeyBoard:Text"];
-		string text = _validate(arg);
+		string text = _validate!(arg); // registered before the view is shown
 		if (!string.IsNullOrEmpty(text))
 		{
 			DisplayErrorMessage(text);
@@ -477,7 +478,7 @@ internal class KeyboardViewUI
 		_next?.Invoke();
 	}
 
-	private void OnCancelButtonPress(object sender, EventArgs e)
+	private void OnCancelButtonPress(object? sender, EventArgs e)
 	{
 		IShoppingSessionService shoppingSessionService = ServiceLocator.Instance.GetService<IShoppingSessionService>();
 		if (shoppingSessionService != null && shoppingSessionService.GetCurrentSession() != null)

@@ -5,7 +5,7 @@ namespace Redbox.HAL.Controller.Framework.Operations;
 
 internal sealed class PutToResult : IPutToResult, IPutResult
 {
-	internal PutResult PutResult;
+	internal PutResult? PutResult;
 
 	public ErrorCodes MoveResult { get; internal set; }
 
@@ -14,7 +14,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.Success;
+			return PutResult!.Success;
 		}
 	}
 
@@ -23,7 +23,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.IsSlotInUse;
+			return PutResult!.IsSlotInUse;
 		}
 	}
 
@@ -32,7 +32,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.PickerEmpty;
+			return PutResult!.PickerEmpty;
 		}
 	}
 
@@ -41,7 +41,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.PickerObstructed;
+			return PutResult!.PickerObstructed;
 		}
 	}
 
@@ -50,7 +50,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.IsDuplicate;
+			return PutResult!.IsDuplicate;
 		}
 	}
 
@@ -59,7 +59,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.PutLocation;
+			return PutResult!.PutLocation;
 		}
 	}
 
@@ -68,7 +68,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.Code;
+			return PutResult!.Code;
 		}
 	}
 
@@ -77,7 +77,7 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.OriginalMatrix;
+			return PutResult!.OriginalMatrix;
 		}
 	}
 
@@ -86,16 +86,16 @@ internal sealed class PutToResult : IPutToResult, IPutResult
 		get
 		{
 			Validate();
-			return PutResult.StoredMatrix;
+			return PutResult!.StoredMatrix;
 		}
 	}
 
-	public ILocation OriginalMatrixLocation
+	public ILocation? OriginalMatrixLocation
 	{
 		get
 		{
 			Validate();
-			return PutResult.OriginalMatrixLocation;
+			return PutResult!.OriginalMatrixLocation;
 		}
 	}
 

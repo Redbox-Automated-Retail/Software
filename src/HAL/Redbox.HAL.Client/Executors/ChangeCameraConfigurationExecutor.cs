@@ -16,6 +16,6 @@ public sealed class ChangeCameraConfigurationExecutor : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(ChangeTo.ToString());
+		base.Job!.Push(ChangeTo.ToString());
 	}
 }

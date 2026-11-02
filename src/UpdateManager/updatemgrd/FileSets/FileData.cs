@@ -8,9 +8,10 @@ internal class FileData
 
 	public long Size { get; set; }
 
-	public string Hash { get; set; }
+	// The properties below are filled by the object initializer or the JSON reader.
+	public string Hash { get; set; } = null!;
 
-	public string StagePath { get; set; }
+	public string StagePath { get; set; } = null!;
 
-	public string FileDestination { get; set; }
+	public string FileDestination { get; set; } = null!;
 }

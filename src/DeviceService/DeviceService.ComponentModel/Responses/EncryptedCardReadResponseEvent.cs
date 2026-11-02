@@ -4,7 +4,7 @@ namespace DeviceService.ComponentModel.Responses;
 
 public class EncryptedCardReadResponseEvent : BaseResponseEvent, ICardReadResponseEvent
 {
-	public EncryptedCardReadModel Data { get; set; }
+	public EncryptedCardReadModel? Data { get; set; }
 
 	public EncryptedCardReadResponseEvent(BaseCommandRequest request)
 		: base(request)
@@ -12,7 +12,7 @@ public class EncryptedCardReadResponseEvent : BaseResponseEvent, ICardReadRespon
 		base.EventName = "EncryptedCardReadResponseEvent";
 	}
 
-	public Base87CardReadModel GetBase87CardReadModel()
+	public Base87CardReadModel? GetBase87CardReadModel()
 	{
 		return Data;
 	}

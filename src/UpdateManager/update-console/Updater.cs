@@ -25,7 +25,7 @@ public class Updater
 		MacroService macroService = new MacroService();
 		ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
 		string directoryName = Path.GetDirectoryName(typeof(Updater).Assembly.Location)!;
-		macroService["StoreNumber"] = StoreNumber;
+		macroService["StoreNumber"] = StoreNumber!; // stored as it is (may be null), as before
 		macroService["ProgramFiles"] = "C:\\Program Files";
 		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";
 		macroService["data"] = "C:\\Program Files\\Redbox\\REDS\\data";

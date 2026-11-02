@@ -14,7 +14,7 @@ namespace Redbox.IPC.Framework;
 
 public abstract class ClientSession : IDisposable
 {
-	private StringBuilder m_readBuilder;
+	private StringBuilder? m_readBuilder;
 
 	private readonly AutoResetEvent m_resetEvent = new AutoResetEvent(initialState: false);
 
@@ -22,7 +22,7 @@ public abstract class ClientSession : IDisposable
 
 	public bool IsDisposed { get; protected set; }
 
-	public string HostName { get; protected set; }
+	public string? HostName { get; protected set; }
 
 	public bool IsConnected { get; internal set; }
 
@@ -30,9 +30,9 @@ public abstract class ClientSession : IDisposable
 
 	protected abstract Stream Stream { get; }
 
-	protected byte[] ReadBuffer { get; set; }
+	protected byte[] ReadBuffer { get; set; } = null!; // set by the subclass constructor or when it connects
 
-	protected internal ClientSessionPool OwningPool { get; set; }
+	protected internal ClientSessionPool? OwningPool { get; set; }
 
 	private StringBuilder ReadBuilder
 	{
@@ -46,11 +46,11 @@ public abstract class ClientSession : IDisposable
 		}
 	}
 
-	public event EventHandler Disposed;
+	public event EventHandler? Disposed;
 
-	public event Action<string> ServerEvent;
+	public event Action<string>? ServerEvent;
 
-	public static ClientSession GetClientSession(IPCProtocol protocol, int? timeout)
+	public static ClientSession? GetClientSession(IPCProtocol protocol, int? timeout)
 	{
 		switch (protocol.Channel)
 		{
@@ -238,7 +238,7 @@ public abstract class ClientSession : IDisposable
 	{
 		try
 		{
-			List<string> messages = (List<string>)result.AsyncState;
+			List<string> messages = (List<string>)result.AsyncState!;
 			int bytesRead = Stream.EndRead(result);
 			if (bytesRead == 0)
 			{

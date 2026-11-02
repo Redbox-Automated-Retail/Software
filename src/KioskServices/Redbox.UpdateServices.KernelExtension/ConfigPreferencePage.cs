@@ -67,7 +67,7 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 		List<ConfigurationClientItem> items = configurationService.GetItems();
 		foreach (ConfigurationClientItem item in items)
 		{
-			m_configFileComboBox.Items.Add(item.Key);
+			m_configFileComboBox.Items.Add(item.Key!); // Add throws on null anyway
 		}
 		if (items.Count == 1)
 		{
@@ -128,10 +128,10 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 					{
 						if (m_checkboxActiveOnly.Checked)
 						{
-							ConfigurationData activeData = new ConfigurationData();
+							ConfigurationData? activeData = new ConfigurationData();
 							if (configurationService.TryGetConfigurationData(text, checkedItem, settingName, out activeData))
 							{
-								m_configValuesListView.Items.Add(CreateListItem(activeData));
+								m_configValuesListView.Items.Add(CreateListItem(activeData!)); // set when TryGetConfigurationData returns true
 							}
 							continue;
 						}
@@ -150,12 +150,13 @@ public class ConfigPreferencePage : UserControl, IPreferencePageHost
 
 	private ListViewItem CreateListItem(ConfigurationData data)
 	{
+		// ListViewItem shows a null column as empty; passed on as they are, as before.
 		return new ListViewItem(new string[6]
 		{
-			data.CategoryName,
-			data.SettingName,
-			data.SettingDataType,
-			(data.Value.GetType() == typeof(string)) ? data.Value : "(Object)",
+			data.CategoryName!,
+			data.SettingName!,
+			data.SettingDataType!,
+			(data.Value!.GetType() == typeof(string)) ? data.Value : "(Object)",
 			data.EffectiveTime.ToString("dd-MMM-yyyy"),
 			(!data.ExpireTime.HasValue) ? string.Empty : data.ExpireTime.Value.ToString("dd-MMM-yyyy")
 		});

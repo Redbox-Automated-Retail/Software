@@ -13,11 +13,11 @@ public class CardReadRequest : ICardReadRequest
 
 	public Guid? SessionId { get; set; }
 
-	public IEnumerable<CardBrandAndSource> ExcludeCardBrandBySource { get; set; }
+	public IEnumerable<CardBrandAndSource>? ExcludeCardBrandBySource { get; set; }
 
 	public VasMode VasMode { get; set; }
 
-	public string AppleVasUrl { get; set; }
+	public string? AppleVasUrl { get; set; }
 
-	public string GoogleVasUrl { get; set; }
+	public string? GoogleVasUrl { get; set; }
 }

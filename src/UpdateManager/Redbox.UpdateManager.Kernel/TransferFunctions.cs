@@ -29,16 +29,16 @@ public static class TransferFunctions
 		switch (priority)
 		{
 		case "high":
-			errorList.AddRange(job.SetPriority(TransferJobPriority.High));
+			errorList.AddRange(job!.SetPriority(TransferJobPriority.High)); // set when there is no error
 			break;
 		case "foreground":
-			errorList.AddRange(job.SetPriority(TransferJobPriority.Foreground));
+			errorList.AddRange(job!.SetPriority(TransferJobPriority.Foreground)); // set when there is no error
 			break;
 		case "normal":
-			errorList.AddRange(job.SetPriority(TransferJobPriority.Normal));
+			errorList.AddRange(job!.SetPriority(TransferJobPriority.Normal)); // set when there is no error
 			break;
 		case "low":
-			errorList.AddRange(job.SetPriority(TransferJobPriority.Foreground));
+			errorList.AddRange(job!.SetPriority(TransferJobPriority.Foreground)); // set when there is no error
 			break;
 		}
 		return CreateResultTable(errorList);
@@ -51,7 +51,7 @@ public static class TransferFunctions
 	}
 
 	[KernelFunction(Name = "kernel.transfergetrepositoriesintransit")]
-	internal static LuaTable GetRevisionsInTransit()
+	internal static LuaTable? GetRevisionsInTransit()
 	{
 		ErrorList repositoriesInTransit = ServiceLocator.Instance.GetService<ITransferService>().GetRepositoriesInTransit(out var inTransit);
 		if (repositoriesInTransit.ContainsError())

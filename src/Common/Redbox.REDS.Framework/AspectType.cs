@@ -7,11 +7,11 @@ namespace Redbox.REDS.Framework;
 
 public class AspectType : IAspectType
 {
-	private readonly IDictionary<string, string> m_properties = new Dictionary<string, string>();
+	private readonly IDictionary<string, string?> m_properties = new Dictionary<string, string?>();
 
-	public string Name { get; internal set; }
+	public string Name { get; internal set; } = null!; // set by the object initializer that creates the type
 
-	public string this[string name]
+	public string? this[string name]
 	{
 		get
 		{

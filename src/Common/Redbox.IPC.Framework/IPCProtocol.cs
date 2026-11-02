@@ -8,11 +8,11 @@ namespace Redbox.IPC.Framework;
 
 public class IPCProtocol
 {
-	private string m_rawUri;
+	private string m_rawUri = null!; // set by Parse
 
-	private List<string> m_properties;
+	private List<string>? m_properties;
 
-	private Dictionary<string, string> m_query;
+	private Dictionary<string, string?>? m_query;
 
 	public List<string> Properties
 	{
@@ -30,23 +30,24 @@ public class IPCProtocol
 
 	public ChannelType Channel { get; internal set; }
 
-	public string Host { get; private set; }
+	// Host and Scheme are set by Parse.
+	public string Host { get; private set; } = null!;
 
-	public string Port { get; private set; }
+	public string? Port { get; private set; }
 
-	public string Scheme { get; private set; }
+	public string Scheme { get; private set; } = null!;
 
-	public string UserName { get; private set; }
+	public string? UserName { get; private set; }
 
-	public string Password { get; private set; }
+	public string? Password { get; private set; }
 
-	public Dictionary<string, string> Query
+	public Dictionary<string, string?> Query
 	{
 		get
 		{
 			if (m_query == null)
 			{
-				m_query = new Dictionary<string, string>();
+				m_query = new Dictionary<string, string?>();
 			}
 			return m_query;
 		}
@@ -58,7 +59,7 @@ public class IPCProtocol
 				return;
 			}
 			Query.Clear();
-			value.ForEach(delegate(KeyValuePair<string, string> pair)
+			value.ForEach(delegate(KeyValuePair<string, string?> pair)
 			{
 				Query.Add(pair.Key, pair.Value);
 			});
@@ -132,9 +133,9 @@ public class IPCProtocol
 		if (!string.IsNullOrEmpty(uri.Query))
 		{
 			NameValueCollection queries = HttpUtility.ParseQueryString(uri.Query);
-			queries.AllKeys.ForEach(delegate(string key)
+			queries.AllKeys.ForEach(delegate(string? key)
 			{
-				Query.Add(key, queries[key]);
+				Query.Add(key!, queries[key]);
 			});
 		}
 		SetChannel(uri);

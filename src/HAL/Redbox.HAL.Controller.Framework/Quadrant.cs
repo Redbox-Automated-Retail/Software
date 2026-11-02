@@ -6,7 +6,7 @@ internal sealed class Quadrant : IQuadrant
 {
 	public int Offset { get; private set; }
 
-	public IRange<int> Slots { get; private set; }
+	public IRange<int>? Slots { get; private set; }
 
 	public bool IsExcluded { get; internal set; }
 
@@ -15,7 +15,7 @@ internal sealed class Quadrant : IQuadrant
 	{
 	}
 
-	internal Quadrant(int offset, IRange<int> slots)
+	internal Quadrant(int offset, IRange<int>? slots)
 	{
 		Offset = offset;
 		Slots = slots;

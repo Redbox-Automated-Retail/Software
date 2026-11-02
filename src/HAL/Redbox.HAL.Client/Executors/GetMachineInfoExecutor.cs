@@ -35,7 +35,7 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 		try
 		{
 			bool hasQlm = false;
-			foreach (ProgramResult result in base.Results)
+			foreach (ProgramResult result in base.Results!)
 			{
 				string code = result.Code;
 				if (!(code == "QlmInfo"))
@@ -74,7 +74,7 @@ public sealed class GetMachineInfoExecutor : JobExecutor
 
 	private DeckConfiguration LocateOrCreate(int deck, List<DeckConfiguration> list)
 	{
-		DeckConfiguration deckConfiguration = list.Find((DeckConfiguration each) => each.Number == deck);
+		DeckConfiguration? deckConfiguration = list.Find((DeckConfiguration each) => each.Number == deck);
 		if (deckConfiguration == null)
 		{
 			deckConfiguration = new DeckConfiguration

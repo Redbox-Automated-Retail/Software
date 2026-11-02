@@ -6,7 +6,7 @@ namespace Redbox.KioskEngine.ComponentModel;
 
 public static class SecureStringExtensions
 {
-	public static string SecureStringToString(this SecureString value)
+	public static string? SecureStringToString(this SecureString? value)
 	{
 		if (value == null)
 		{

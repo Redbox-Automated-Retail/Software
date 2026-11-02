@@ -13,5 +13,5 @@ public interface IMacroService
 
 	void Clear(ICollection<string> exclusions);
 
-	string ExpandProperties(string input);
+	string ExpandProperties(string? input);
 }

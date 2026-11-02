@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.HAL.Core</AssemblyName>
     <RootNamespace>Redbox.HAL.Core</RootNamespace>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>

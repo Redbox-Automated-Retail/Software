@@ -26,10 +26,10 @@ public class HardwareAlertManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardware_alert_manager_format_job_result")]
-	public static string FormatJobResult(LuaTable jobResult)
+	public static string? FormatJobResult(LuaTable jobResult)
 	{
-		string result = null;
-		IHardwareResult hardwareResultFromLuaTable = GetHardwareResultFromLuaTable(jobResult);
+		string? result = null;
+		IHardwareResult? hardwareResultFromLuaTable = GetHardwareResultFromLuaTable(jobResult);
 		if (hardwareResultFromLuaTable != null)
 		{
 			IHardwareAlertManagerService hardwareAlertManagerService = ServiceLocator.Instance.GetService<IHardwareAlertManagerService>();
@@ -42,14 +42,14 @@ public class HardwareAlertManagerServiceFunctions
 	}
 
 	[KernelFunction(Name = "kernel.hardware_alert_manager_format_errors")]
-	public static string FormatErrors(string jobId)
+	public static string? FormatErrors(string jobId)
 	{
 		return ServiceLocator.Instance.GetService<IHardwareAlertManagerService>()?.FormatErrors(jobId);
 	}
 
-	private static IHardwareResult GetHardwareResultFromLuaTable(LuaTable jobResult)
+	private static IHardwareResult? GetHardwareResultFromLuaTable(LuaTable jobResult)
 	{
-		HardwareResult hardwareResult = null;
+		HardwareResult? hardwareResult = null;
 		if (jobResult != null)
 		{
 			hardwareResult = new HardwareResult();
@@ -72,12 +72,12 @@ public class HardwareAlertManagerServiceFunctions
 		return hardwareResult;
 	}
 
-	private static string GetLuaTableStringValue(LuaTable luaTable, string propertyName)
+	private static string? GetLuaTableStringValue(LuaTable luaTable, string propertyName)
 	{
-		string result = null;
+		string? result = null;
 		if (luaTable != null && luaTable[propertyName] != null)
 		{
-			result = luaTable[propertyName].ToString();
+			result = luaTable[propertyName]!.ToString(); // checked just above
 		}
 		return result;
 	}
@@ -88,7 +88,7 @@ public class HardwareAlertManagerServiceFunctions
 		value = 0;
 		if (luaTable != null)
 		{
-			object rawValue = luaTable[propertyName];
+			object? rawValue = luaTable[propertyName];
 			if (rawValue != null && int.TryParse(rawValue.ToString(), out var parsed))
 			{
 				value = parsed;

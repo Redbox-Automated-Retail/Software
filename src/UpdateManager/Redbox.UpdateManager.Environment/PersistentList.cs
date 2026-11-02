@@ -16,9 +16,9 @@ public class PersistentList<T> : IEnumerable<T>, IEnumerable
 
 		private readonly PersistentList<T> m_list;
 
-		public T Current => m_list[m_index];
+		public T Current => m_list[m_index]!; // a missing or unreadable entry comes back as default, as before
 
-		object IEnumerator.Current => Current;
+		object? IEnumerator.Current => Current;
 
 		public PersistentListEnumerator(PersistentList<T> list)
 		{
@@ -43,7 +43,7 @@ public class PersistentList<T> : IEnumerable<T>, IEnumerable
 
 	private readonly string m_path;
 
-	public T this[int i]
+	public T? this[int i]
 	{
 		get
 		{

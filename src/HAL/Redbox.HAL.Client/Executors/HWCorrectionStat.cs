@@ -9,7 +9,8 @@ internal sealed class HWCorrectionStat : IHardwareCorrectionStatistic
 {
 	public HardwareCorrectionStatistic Statistic { get; internal set; }
 
-	public string ProgramName { get; internal set; }
+	// Set by From's object initializer.
+	public string ProgramName { get; internal set; } = null!;
 
 	public bool CorrectionOk { get; internal set; }
 

@@ -18,7 +18,7 @@ public sealed class LegacyVersionJsonConverter : JsonConverter
 		return objectType == typeof(Version);
 	}
 
-	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+	public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 	{
 		switch (reader.TokenType)
 		{
@@ -49,7 +49,7 @@ public sealed class LegacyVersionJsonConverter : JsonConverter
 		}
 	}
 
-	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 	{
 		if (!(value is Version version))
 		{

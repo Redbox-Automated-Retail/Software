@@ -10,7 +10,7 @@ public class CardReadCompleteDetails
 
 	public bool CardRemoved { get; set; }
 
-	public ITrackData TrackData { get; set; }
+	public ITrackData? TrackData { get; set; }
 
-	public string VasData { get; set; }
+	public string? VasData { get; set; }
 }

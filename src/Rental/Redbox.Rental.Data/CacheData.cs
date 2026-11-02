@@ -31,11 +31,11 @@ public class CacheData : ICacheData
 		});
 	}
 
-	public BarcodeProduct UpdateBarcodePosition(ICacheDataInstance instance, string key, object data, out bool isNew)
+	public BarcodeProduct? UpdateBarcodePosition(ICacheDataInstance instance, string key, object data, out bool isNew)
 	{
 		bool isNew2 = false;
-		BarcodeProduct barcodeProduct = null;
-		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data));
+		BarcodeProduct? barcodeProduct = null;
+		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data)!);
 		TryCatchData("CacheData.UpdateBarcodePosition", pair, delegate
 		{
 			barcodeProduct = GetBarcodePosition(instance, pair, out isNew2);
@@ -82,11 +82,11 @@ public class CacheData : ICacheData
 		});
 	}
 
-	public TitleCache UpdateProductCatalog(ICacheDataInstance instance, string key, object data, out bool isNew)
+	public TitleCache? UpdateProductCatalog(ICacheDataInstance instance, string key, object data, out bool isNew)
 	{
 		bool isNew2 = false;
-		TitleCache titleCache = null;
-		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data));
+		TitleCache? titleCache = null;
+		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data)!);
 		TryCatchData("CacheData.UpdateProductCatalog", pair, delegate
 		{
 			titleCache = GetProductCatalog(instance, pair, out isNew2);
@@ -150,11 +150,11 @@ public class CacheData : ICacheData
 		});
 	}
 
-	public TitleCache UpdateProductHistory(ICacheDataInstance instance, string key, object data, out bool isNew)
+	public TitleCache? UpdateProductHistory(ICacheDataInstance instance, string key, object data, out bool isNew)
 	{
 		bool isNew2 = false;
-		TitleCache titleCache = null;
-		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data));
+		TitleCache? titleCache = null;
+		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data)!);
 		TryCatchData("CacheData.UpdateProductHistory", pair, delegate
 		{
 			titleCache = GetProductHistory(instance, pair, out isNew2);
@@ -186,11 +186,11 @@ public class CacheData : ICacheData
 			};
 		}
 		value.OfrCount = data.ToInt32("ofr_count");
-		value.LastMaxOfr = data.ToInt32("last_max_ofr", 1).Value;
+		value.LastMaxOfr = data.ToInt32("last_max_ofr", 1)!.Value;
 		value.OnHandCount = data.ToInt32("on_hand_count");
-		value.CreatedDate = data.ToDateTime("created_date", DateTime.Now).Value;
+		value.CreatedDate = data.ToDateTime("created_date", DateTime.Now)!.Value;
 		value.CurrentMaxOfr = data.ToInt32("current_max_ofr");
-		value.LastMaxOfrDate = data.ToDateTime("product_type_name", DateTime.Now).Value;
+		value.LastMaxOfrDate = data.ToDateTime("product_type_name", DateTime.Now)!.Value;
 		value.ThinnedOut = data.ToBoolean("thinned_out");
 		value.LastDateOutOfStock = data.ToDateTime("last_date_out_of_stock", null);
 		value.SoldOut = data.ToDateTime("sold_out", null);
@@ -230,11 +230,11 @@ public class CacheData : ICacheData
 		}
 	}
 
-	public TitleCache UpdateProductToBarcode(ICacheDataInstance instance, string key, object data, out bool isNew)
+	public TitleCache? UpdateProductToBarcode(ICacheDataInstance instance, string key, object data, out bool isNew)
 	{
 		bool isNew2 = false;
-		TitleCache titleCache = null;
-		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data));
+		TitleCache? titleCache = null;
+		KeyValuePair<string, string> pair = new KeyValuePair<string, string>(key, Convert.ToString(data)!);
 		TryCatchData("CacheData.UpdateProductToBarcode", pair, delegate
 		{
 			titleCache = UpdateProductToBarcode(instance, pair, out isNew2);
@@ -318,7 +318,7 @@ public class CacheData : ICacheData
 			{
 				if (item.Value is string)
 				{
-					dict[item.Key] = Convert.ToString(item.Value);
+					dict[item.Key] = Convert.ToString(item.Value)!;
 				}
 			});
 		}

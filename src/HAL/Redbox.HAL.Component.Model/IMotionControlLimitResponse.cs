@@ -4,7 +4,7 @@ public interface IMotionControlLimitResponse
 {
 	bool ReadOk { get; }
 
-	IMotionControlLimit[] Limits { get; }
+	IMotionControlLimit[]? Limits { get; }
 
 	bool IsLimitBlocked(MotionControlLimits limit);
 }

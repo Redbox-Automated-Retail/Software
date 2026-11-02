@@ -11,16 +11,16 @@ public class RegisteredMethod
 {
 	internal sealed class CompiledMethodHandler
 	{
-		public DynamicMethod DynamicMethod;
+		public DynamicMethod? DynamicMethod;
 
-		public RegisteredMethodHandler MethodHandler;
+		public RegisteredMethodHandler MethodHandler = null!; // set by Compile
 	}
 
 	private sealed class ScoredMethodInfo
 	{
 		public int Score;
 
-		public MethodInfo MethodInfo;
+		public MethodInfo MethodInfo = null!; // set by the object initializer
 	}
 
 	private readonly IDictionary<MethodInfo, CompiledMethodHandler> m_compiledMethodHandlers = new Dictionary<MethodInfo, CompiledMethodHandler>();
@@ -38,7 +38,7 @@ public class RegisteredMethod
 		MethodOverloads = FindMethodOverloads(methodInfo);
 	}
 
-	public object Invoke(ReadOnlyCollection<object> parms, out int itemsOnStack)
+	public object? Invoke(ReadOnlyCollection<object?> parms, out int itemsOnStack)
 	{
 		itemsOnStack = 0;
 		try
@@ -75,7 +75,7 @@ public class RegisteredMethod
 		CompiledMethodHandler compiledMethodHandler = new CompiledMethodHandler();
 		if (compiledMethodHandler.DynamicMethod == null)
 		{
-			compiledMethodHandler.DynamicMethod = new DynamicMethod($"___{methodInfo.Name}", typeof(object), new Type[1] { typeof(object[]) }, methodInfo.DeclaringType, skipVisibility: true);
+			compiledMethodHandler.DynamicMethod = new DynamicMethod($"___{methodInfo.Name}", typeof(object), new Type[1] { typeof(object[]) }, methodInfo.DeclaringType!, skipVisibility: true);
 			ILGenerator iLGenerator = compiledMethodHandler.DynamicMethod.GetILGenerator();
 			ParameterInfo[] parameters = methodInfo.GetParameters();
 			for (int i = 0; i < parameters.Length; i++)
@@ -110,11 +110,11 @@ public class RegisteredMethod
 			}
 			iLGenerator.Emit(OpCodes.Ret);
 		}
-		compiledMethodHandler.MethodHandler = (RegisteredMethodHandler)compiledMethodHandler.DynamicMethod.CreateDelegate(typeof(RegisteredMethodHandler));
+		compiledMethodHandler.MethodHandler = (RegisteredMethodHandler)compiledMethodHandler.DynamicMethod!.CreateDelegate(typeof(RegisteredMethodHandler));
 		m_compiledMethodHandlers[methodInfo] = compiledMethodHandler;
 	}
 
-	internal object InvokeMethod(MethodInfo methodInfo, object[] values)
+	internal object? InvokeMethod(MethodInfo methodInfo, object?[] values)
 	{
 		if (!m_compiledMethodHandlers.ContainsKey(methodInfo))
 		{
@@ -126,7 +126,7 @@ public class RegisteredMethod
 	private static List<MethodInfo> FindMethodOverloads(MethodInfo targetMethodInfo)
 	{
 		List<MethodInfo> list = new List<MethodInfo>();
-		MethodInfo[] methods = targetMethodInfo.DeclaringType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+		MethodInfo[] methods = targetMethodInfo.DeclaringType!.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
 			if (string.Compare(methodInfo.Name, targetMethodInfo.Name, ignoreCase: false) == 0 && methodInfo != targetMethodInfo)
@@ -137,12 +137,12 @@ public class RegisteredMethod
 		return list;
 	}
 
-	private static object[] ConvertParametersForMethodInfo(MethodInfo methodInfo, IEnumerable<object> parms)
+	private static object?[] ConvertParametersForMethodInfo(MethodInfo methodInfo, IEnumerable<object?> parms)
 	{
 		ParameterInfo[] parameters = methodInfo.GetParameters();
-		object[] converted = new object[parameters.Length];
+		object?[] converted = new object?[parameters.Length];
 		int index = 0;
-		foreach (object parm in parms)
+		foreach (object? parm in parms)
 		{
 			if (typeof(Delegate).IsAssignableFrom(parameters[index].ParameterType) && parm is LuaFunction)
 			{
@@ -161,7 +161,7 @@ public class RegisteredMethod
 		return converted;
 	}
 
-	private MethodInfo FindBestMethodOverload(ReadOnlyCollection<object> parms)
+	private MethodInfo FindBestMethodOverload(ReadOnlyCollection<object?> parms)
 	{
 		if (MethodOverloads.Count == 0)
 		{
@@ -178,7 +178,7 @@ public class RegisteredMethod
 			int score = 0;
 			for (int i = 0; i < parameters.Length; i++)
 			{
-				Type type = parms[i].GetType();
+				Type type = parms[i]!.GetType();
 				if (type == typeof(double))
 				{
 					if (parameters[i].ParameterType == typeof(double))

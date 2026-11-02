@@ -14,6 +14,6 @@ public sealed class VerticalSync : JobExecutor
 
 	protected override void SetupJob()
 	{
-		base.Job.Push(Slot);
+		base.Job!.Push(Slot);
 	}
 }

@@ -6,7 +6,7 @@ namespace Redbox.KioskEngine.Kernel;
 internal static class PathFunctions
 {
 	[KernelFunction(Name = "kernel.getdirectoryname")]
-	internal static string GetDirectoryName(string path)
+	internal static string? GetDirectoryName(string path)
 	{
 		if (string.IsNullOrEmpty(path) || HasInvalidChars(path))
 		{
@@ -16,7 +16,7 @@ internal static class PathFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getfullpath")]
-	internal static string GetFullPath(string path)
+	internal static string? GetFullPath(string path)
 	{
 		if (string.IsNullOrEmpty(path) || HasInvalidChars(path))
 		{
@@ -26,7 +26,7 @@ internal static class PathFunctions
 	}
 
 	[KernelFunction(Name = "kernel.combinepaths")]
-	internal static string CombinePaths(string first, string second)
+	internal static string? CombinePaths(string first, string second)
 	{
 		if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second) || HasInvalidChars(first) || HasInvalidChars(second))
 		{
@@ -36,7 +36,7 @@ internal static class PathFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getpathextension")]
-	internal static string GetExtension(string path)
+	internal static string? GetExtension(string path)
 	{
 		if (string.IsNullOrEmpty(path) || HasInvalidChars(path))
 		{
@@ -46,7 +46,7 @@ internal static class PathFunctions
 	}
 
 	[KernelFunction(Name = "kernel.getfilenamefrompath")]
-	internal static string GetFileName(string path)
+	internal static string? GetFileName(string path)
 	{
 		if (string.IsNullOrEmpty(path) || HasInvalidChars(path))
 		{

@@ -81,7 +81,7 @@ internal sealed class HardwareCorrectionStatisticService : IHardwareCorrectionSt
 	{
 		DataTableService = dts;
 		TypeFactory = ServiceLocator.Instance.GetService<ITableTypeFactory>();
-		StatsTable = DataTableService.GetTable<IHardwareCorrectionStatistic>();
+		StatsTable = DataTableService.GetTable<IHardwareCorrectionStatistic>()!;
 		if (!StatsTable.Exists)
 		{
 			bool created = StatsTable.Create();

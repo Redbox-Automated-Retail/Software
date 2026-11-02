@@ -12,13 +12,13 @@ public interface ISession : IMessageSink
 
 	IDictionary<string, object> Properties { get; }
 
-	event EventHandler Disconnect;
+	event EventHandler? Disconnect;
 
 	void Start();
 
 	void SetFilters(List<string> filters);
 
-	void SetParamAction(Action<string, string> paramAction);
+	void SetParamAction(Action<string, string>? paramAction);
 
 	void SetBeforeCommandAction(Action<ISession> beforeCommandAction);
 

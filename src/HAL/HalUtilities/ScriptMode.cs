@@ -38,7 +38,7 @@ internal class ScriptMode : IDisposable
 
 	internal int Run(string[] programArgs)
 	{
-		string scriptPath = null;
+		string? scriptPath = null;
 		ImmediateCommand.Service = Service;
 		for (int i = 0; i < programArgs.Length; i++)
 		{
@@ -64,9 +64,9 @@ internal class ScriptMode : IDisposable
 		while (keepRunning)
 		{
 			m_console.Write("> ");
-			string statement = Console.ReadLine();
+			string? statement = Console.ReadLine();
 			keepRunning = ExecuteStatement(statement);
-			if (Service.GetJob(Constants.ExecutionContexts.ImmediateModeContext, out var job).Success && job.GetStack(out var stack).Success)
+			if (Service.GetJob(Constants.ExecutionContexts.ImmediateModeContext, out var job).Success && job!.GetStack(out var stack).Success)
 			{
 				FormatStack(stack, m_console);
 			}
@@ -74,7 +74,7 @@ internal class ScriptMode : IDisposable
 		return 0;
 	}
 
-	private static void ShowResults(HardwareCommandResult result, IConsole console)
+	private static void ShowResults(HardwareCommandResult? result, IConsole console)
 	{
 		if (result == null)
 		{
@@ -172,7 +172,7 @@ internal class ScriptMode : IDisposable
 		using TextReader textReader = new StreamReader(file);
 		while (true)
 		{
-			string text = textReader.ReadLine();
+			string? text = textReader.ReadLine();
 			if (text == null)
 			{
 				break;
@@ -181,13 +181,13 @@ internal class ScriptMode : IDisposable
 		}
 	}
 
-	private bool ExecuteStatement(string statement)
+	private bool ExecuteStatement(string? statement)
 	{
 		if (string.IsNullOrEmpty(statement))
 		{
 			return true;
 		}
-		if (statement.StartsWith("EXIT", StringComparison.InvariantCultureIgnoreCase))
+		if (statement!.StartsWith("EXIT", StringComparison.InvariantCultureIgnoreCase))
 		{
 			return false;
 		}

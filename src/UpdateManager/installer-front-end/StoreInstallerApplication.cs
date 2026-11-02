@@ -176,7 +176,7 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 		ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
 		string directoryName = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location)!;
 		ErrorList errorList = new ErrorList();
-		string expanded = macroService.ExpandProperties(script);
+		string expanded = macroService.ExpandProperties(script!); // a null script ends in Path.Combine throwing below, as before
 		if (!Path.IsPathRooted(expanded))
 		{
 			expanded = Path.Combine(directoryName, expanded);
@@ -187,14 +187,14 @@ public class StoreInstallerApplication : ApplicationContext, IEventNotifyService
 			return errorList;
 		}
 		Script = expanded;
-		macroService["StoreNumber"] = storeNumber;
+		macroService["StoreNumber"] = storeNumber!; // stored as it is (may be null), as before
 		macroService["ProgramFiles"] = "C:\\Program Files";
 		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";
 		macroService["data"] = "C:\\Program Files\\Redbox\\REDS\\data";
 		macroService["RedboxProgramFiles"] = "C:\\Program Files\\Redbox";
 		macroService["engine"] = "C:\\Program Files\\Redbox\\REDS\\Kiosk Engine";
 		macroService["Scripts"] = "C:\\Program Files\\Redbox\\REDS\\Update Manager\\scripts";
-		macroService["WorkingDirectory"] = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location);
+		macroService["WorkingDirectory"] = Path.GetDirectoryName(typeof(StoreInstallerApplication).Assembly.Location)!;
 		WindowsTaskScheduler.Instance.Initialize();
 		Redbox.UpdateManager.Remoting.UpdateService.Instance.Initialize(Settings.Default.UpdateServiceUrl, TimeSpan.FromSeconds(120.0), storeNumber!, Settings.Default.MinimumRetryDelay);
 		KernelService.Instance.Initialize();

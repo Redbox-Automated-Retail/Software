@@ -13,7 +13,7 @@ public static class Base87CardReadModelExtensions
 		List<Error> result = new List<Error>();
 		source.Errors.Where((DeviceService.ComponentModel.Error e) => string.Equals(e.Code, "TAMPERED", StringComparison.CurrentCultureIgnoreCase)).ToList().ForEach(delegate(DeviceService.ComponentModel.Error e)
 		{
-			result.Add(Error.NewError(e.Code, e.Message, ""));
+			result.Add(Error.NewError(e.Code!, e.Message!, ""));
 		});
 		return result;
 	}

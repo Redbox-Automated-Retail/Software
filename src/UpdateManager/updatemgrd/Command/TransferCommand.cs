@@ -94,7 +94,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.AddItem(url, file)));
+			context.Errors.AddRange(ConvertErrors(job!.AddItem(url, file))); // GetJob sets job when there is no error
 		}
 	}
 
@@ -106,7 +106,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.Complete()));
+			context.Errors.AddRange(ConvertErrors(job!.Complete()));
 		}
 	}
 
@@ -118,7 +118,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.Resume()));
+			context.Errors.AddRange(ConvertErrors(job!.Resume()));
 		}
 	}
 
@@ -130,7 +130,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.Cancel()));
+			context.Errors.AddRange(ConvertErrors(job!.Cancel()));
 		}
 	}
 
@@ -142,7 +142,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.Suspend()));
+			context.Errors.AddRange(ConvertErrors(job!.Suspend()));
 		}
 	}
 
@@ -154,7 +154,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.SetPriority(priority)));
+			context.Errors.AddRange(ConvertErrors(job!.SetPriority(priority)));
 		}
 	}
 
@@ -166,7 +166,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.TakeOwnership()));
+			context.Errors.AddRange(ConvertErrors(job!.TakeOwnership()));
 		}
 	}
 
@@ -178,7 +178,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.SetNoProgressTimeout(timeout.Value)));
+			context.Errors.AddRange(ConvertErrors(job!.SetNoProgressTimeout(timeout!.Value)));
 		}
 	}
 
@@ -190,7 +190,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			context.Errors.AddRange(ConvertErrors(job.SetMinimumRetryDelay(seconds.Value)));
+			context.Errors.AddRange(ConvertErrors(job!.SetMinimumRetryDelay(seconds!.Value)));
 		}
 	}
 
@@ -202,7 +202,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			job.GetErrors(out var errors);
+			job!.GetErrors(out var errors);
 			context.Errors.AddRange(ConvertErrors(errors));
 		}
 	}
@@ -215,7 +215,7 @@ internal class TransferCommand
 		context.Errors.AddRange(ConvertErrors(transferService.GetJob(new Guid(id), out var job)));
 		if (!context.Errors.ContainsError())
 		{
-			Redbox.UpdateManager.ComponentModel.ErrorList items = job.GetItems(out var items2);
+			Redbox.UpdateManager.ComponentModel.ErrorList items = job!.GetItems(out var items2);
 			context.Errors.AddRange(ConvertErrors(items));
 			if (!context.Errors.ContainsError())
 			{

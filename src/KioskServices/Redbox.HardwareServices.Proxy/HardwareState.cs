@@ -21,7 +21,7 @@ public class HardwareState : IHardwareState
 
 	private ExchangerFanStatus _exchangerFanStatus;
 
-	private string _doorSensorStatus;
+	private string? _doorSensorStatus;
 
 	private List<Location> _excludedSlots = new List<Location>();
 
@@ -37,7 +37,7 @@ public class HardwareState : IHardwareState
 
 	private int? _qlmDeckAsNumber;
 
-	private string _qlmDeckAsString;
+	private string? _qlmDeckAsString;
 
 	private string _merchType = "QLM";
 
@@ -183,7 +183,7 @@ public class HardwareState : IHardwareState
 			{
 				Initialize();
 			}
-			return _qlmDeckAsString;
+			return _qlmDeckAsString!; // null on a VMZ machine (IHardwareState declares string)
 		}
 	}
 

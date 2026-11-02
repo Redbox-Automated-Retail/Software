@@ -11,36 +11,37 @@ namespace Redbox.HardwareServices.KernelExtension;
 
 public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 {
-	private BindingList<IHardwareCorrectionStatistic> _data;
+	private BindingList<IHardwareCorrectionStatistic>? _data;
 
-	private IContainer components;
+	private IContainer? components;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
-	private CheckBox m_routerResetEnabled;
+	private CheckBox m_routerResetEnabled = null!;
 
-	private CheckBox m_routerResetSuccessful;
+	private CheckBox m_routerResetSuccessful = null!;
 
-	private CheckBox m_touchScreenResetSuccessful;
+	private CheckBox m_touchScreenResetSuccessful = null!;
 
-	private Button m_resetRouter;
+	private Button m_resetRouter = null!;
 
-	private Button m_touchScreenReset;
+	private Button m_touchScreenReset = null!;
 
-	private DataGridView m_statsList;
+	private DataGridView m_statsList = null!;
 
-	private BindingSource iHardwareCorrectionStatisticBindingSource;
+	private BindingSource iHardwareCorrectionStatisticBindingSource = null!;
 
-	private CheckBox m_arcusResetSuccessful;
+	private CheckBox m_arcusResetSuccessful = null!;
 
-	private Button m_refresh;
+	private Button m_refresh = null!;
 
-	private CheckBox m_arcusResetOnVend;
+	private CheckBox m_arcusResetOnVend = null!;
 
-	private GroupBox groupBox1;
+	private GroupBox groupBox1 = null!;
 
-	private CheckBox m_ArcusResetOnReturn;
+	private CheckBox m_ArcusResetOnReturn = null!;
 
+	// The controls above are created by InitializeComponent.
 	public StatisticsPreferencePage()
 	{
 		InitializeComponent();
@@ -61,40 +62,40 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 		return true;
 	}
 
-	private void OnRouterResetChanged(object sender, EventArgs e)
+	private void OnRouterResetChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).IsRouterResetEnabled = m_routerResetEnabled.Checked;
 	}
 
-	private void OnRouterResetSuccessfulChanged(object sender, EventArgs e)
+	private void OnRouterResetSuccessfulChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).RouterResetSuccessful = m_routerResetSuccessful.Checked;
 	}
 
-	private void OnTouchScreenResetSuccessfulChanged(object sender, EventArgs e)
+	private void OnTouchScreenResetSuccessfulChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).TouchScreenResetSuccessful = m_touchScreenResetSuccessful.Checked;
 	}
 
-	private void OnArcusResetSuccessfulChanged(object sender, EventArgs e)
+	private void OnArcusResetSuccessfulChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetSuccessful = m_arcusResetSuccessful.Checked;
 	}
 
-	private void OnArcusResetOnVendChanged(object sender, EventArgs e)
+	private void OnArcusResetOnVendChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetOnVend = m_arcusResetOnVend.Checked;
 	}
 
-	private void OnArcusResetOnReturnChanged(object sender, EventArgs e)
+	private void OnArcusResetOnReturnChanged(object? sender, EventArgs e)
 	{
 		((TestHardwareService)ServiceLocator.Instance.GetService<IHardwareService>()).ArcusResetOnReturn = m_ArcusResetOnReturn.Checked;
 	}
 
-	private void OnResetTouchScreen(object sender, EventArgs e)
+	private void OnResetTouchScreen(object? sender, EventArgs e)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
-		string jobId = null;
+		string? jobId = null;
 		hardwareService.ResetTouchScreenController(delegate
 		{
 		}, delegate(string jobIdentity, string status)
@@ -103,10 +104,10 @@ public class StatisticsPreferencePage : UserControl, IPreferencePageHost
 		}, out jobId);
 	}
 
-	private void OnResetRouter(object sender, EventArgs e)
+	private void OnResetRouter(object? sender, EventArgs e)
 	{
 		IHardwareService hardwareService = ServiceLocator.Instance.GetService<IHardwareService>();
-		string jobId = null;
+		string? jobId = null;
 		hardwareService.PowerCycleRouter(delegate
 		{
 		}, delegate(string jobIdentity, string status)

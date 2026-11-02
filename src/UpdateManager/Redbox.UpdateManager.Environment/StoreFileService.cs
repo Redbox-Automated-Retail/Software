@@ -10,7 +10,7 @@ namespace Redbox.UpdateManager.Environment;
 
 public class StoreFileService : IPollRequestReply
 {
-	private string m_root;
+	private string m_root = null!; // set by Initialize
 
 	private const string StagedStoreFileExt = ".staged";
 
@@ -111,7 +111,7 @@ public class StoreFileService : IPollRequestReply
 				return errorList;
 			}
 			StoreFileState storeFileState = File.ReadAllText(path2).ToObject<StoreFileState>();
-			string directoryName = Path.GetDirectoryName(storeFileState.Destination);
+			string? directoryName = Path.GetDirectoryName(storeFileState.Destination);
 			if (Directory.Exists(storeFileState.Destination))
 			{
 				errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("SFS0316", "This store file's destination is a directory and not a path: " + id, "Specify a full path, not just a directory for store files"));

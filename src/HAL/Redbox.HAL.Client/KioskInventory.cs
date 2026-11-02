@@ -9,9 +9,9 @@ public sealed class KioskInventory : IDisposable
 {
 	private class InventoryLocationSorter : IComparer<IInventoryLocation>
 	{
-		public int Compare(IInventoryLocation x, IInventoryLocation y)
+		public int Compare(IInventoryLocation? x, IInventoryLocation? y)
 		{
-			if (x.Location.Deck > y.Location.Deck)
+			if (x!.Location.Deck > y!.Location.Deck)
 			{
 				return 1;
 			}
@@ -89,25 +89,25 @@ public sealed class KioskInventory : IDisposable
 		XmlNodeList elementsByTagName = xmlDocument.GetElementsByTagName("item");
 		for (int i = 0; i < elementsByTagName.Count; i++)
 		{
-			string id = elementsByTagName[i].Attributes["id"].Value;
-			string returnTimeText = elementsByTagName[i].Attributes["ReturnTime"].Value;
+			string id = elementsByTagName[i]!.Attributes!["id"]!.Value;
+			string returnTimeText = elementsByTagName[i]!.Attributes!["ReturnTime"]!.Value;
 			DateTime? returnTime = null;
 			if (returnTimeText != "NONE")
 			{
 				returnTime = DateTime.Parse(returnTimeText);
 			}
-			string excluded = elementsByTagName[i].Attributes["excluded"].Value;
-			string emptyStuckCount = elementsByTagName[i].Attributes["emptyStuckCount"].Value;
-			string merchFlags = elementsByTagName[i].Attributes["merchFlags"].Value;
-			InventoryLocation item = new InventoryLocation(Convert.ToInt32(elementsByTagName[i].Attributes["deck"].Value), Convert.ToInt32(elementsByTagName[i].Attributes["slot"].Value), id, Convert.ToInt32(emptyStuckCount), returnTime, merchFlags, Convert.ToBoolean(excluded));
+			string excluded = elementsByTagName[i]!.Attributes!["excluded"]!.Value;
+			string emptyStuckCount = elementsByTagName[i]!.Attributes!["emptyStuckCount"]!.Value;
+			string merchFlags = elementsByTagName[i]!.Attributes!["merchFlags"]!.Value;
+			InventoryLocation item = new InventoryLocation(Convert.ToInt32(elementsByTagName[i]!.Attributes!["deck"]!.Value), Convert.ToInt32(elementsByTagName[i]!.Attributes!["slot"]!.Value), id, Convert.ToInt32(emptyStuckCount), returnTime, merchFlags, Convert.ToBoolean(excluded));
 			DeckInfo.Add(item);
 		}
 		DeckInfo.Sort(new InventoryLocationSorter());
 		elementsByTagName = xmlDocument.GetElementsByTagName("bin-item");
 		for (int j = 0; j < elementsByTagName.Count; j++)
 		{
-			DateTime putTime = DateTime.Parse(elementsByTagName[j].Attributes["PutTime"].Value);
-			DumpbinInfo.Add(new DumpbinItem(elementsByTagName[j].Attributes["id"].Value, putTime));
+			DateTime putTime = DateTime.Parse(elementsByTagName[j]!.Attributes!["PutTime"]!.Value);
+			DumpbinInfo.Add(new DumpbinItem(elementsByTagName[j]!.Attributes!["id"]!.Value, putTime));
 		}
 	}
 }

@@ -18,7 +18,7 @@ public static class Dependency<TOwner>
 		};
 	}
 
-	public static FrameworkPropertyMetadata CreatePropertyMetadata(object defaultValue)
+	public static FrameworkPropertyMetadata CreatePropertyMetadata(object? defaultValue)
 	{
 		return new FrameworkPropertyMetadata(defaultValue)
 		{
@@ -42,7 +42,7 @@ public static class Dependency<TOwner>
 		};
 	}
 
-	public static DependencyProperty CreateDependencyProperty(string propertyName, Type propertyType, object defaultValue = null)
+	public static DependencyProperty CreateDependencyProperty(string propertyName, Type propertyType, object? defaultValue = null)
 	{
 		return DependencyProperty.Register(propertyName, propertyType, typeof(TOwner), CreatePropertyMetadata(defaultValue));
 	}

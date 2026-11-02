@@ -39,10 +39,10 @@ internal class ActivityIdMiddleware
 		}
 	}
 
-	private T ScrapeHeader<T>(HttpContext context, string field, string redboxKey, T defaultValue)
+	private T? ScrapeHeader<T>(HttpContext context, string field, string redboxKey, T defaultValue)
 	{
-		string text = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, redboxKey, StringComparison.OrdinalIgnoreCase));
-		T val;
+		string? text = context.Request.Headers.Keys.FirstOrDefault((string k) => string.Equals(k, redboxKey, StringComparison.OrdinalIgnoreCase));
+		T? val;
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			val = defaultValue;
@@ -52,7 +52,7 @@ internal class ActivityIdMiddleware
 		{
 			try
 			{
-				val = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, CultureInfo.InvariantCulture, context.Request.Headers[text]);
+				val = (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, CultureInfo.InvariantCulture, context.Request.Headers[text]!); // a null value throws into the catch, as before
 				_logger.LogDebug($"Found field: {field}, '{val}'");
 			}
 			catch (Exception exception)

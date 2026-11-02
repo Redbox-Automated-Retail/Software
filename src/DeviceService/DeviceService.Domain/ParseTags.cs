@@ -45,35 +45,35 @@ public class ParseTags
 		}
 	};
 
-	public string Last4 { get; set; }
+	public string? Last4 { get; set; }
 
-	public string First6 { get; set; }
+	public string? First6 { get; set; }
 
-	public string AID { get; set; }
+	public string? AID { get; set; }
 
-	public string PAN { get; set; }
+	public string? PAN { get; set; }
 
-	public string Track2 { get; set; }
+	public string? Track2 { get; set; }
 
-	public string ApplicationLabel { get; set; }
+	public string? ApplicationLabel { get; set; }
 
-	public string CardHolderName { get; set; }
+	public string? CardHolderName { get; set; }
 
 	public bool IsMobileWallet { get; set; }
 
-	public string ErrorCode { get; set; }
+	public string? ErrorCode { get; set; }
 
-	public string FF1FOnGuardCardData { get; set; }
+	public string? FF1FOnGuardCardData { get; set; }
 
 	public FallbackStatusAction Fallback { get; set; } = FallbackStatusAction.ResetFallbackCounter;
 
 	public bool Tag9F27CryptogramDeclined { get; set; }
 
-	public void ParseEMVTags(string Tag, int TagLength, string TagDataStr, byte[] TagDataByte, CardSourceType transactionType, Action<string> log, IList<Error> errors)
+	public void ParseEMVTags(string Tag, int TagLength, string TagDataStr, byte[] TagDataByte, CardSourceType transactionType, Action<string> log, IList<Error>? errors)
 	{
 		GeneralSourceType generalSourceType = transactionType.GetGeneralSourceType();
 		string piiMask = "[Pii Data]";
-		TagDetails tagDetails = TagConstants.Details.FirstOrDefault((TagDetails x) => x.Tag == Tag);
+		TagDetails? tagDetails = TagConstants.Details.FirstOrDefault((TagDetails x) => x.Tag == Tag);
 		IUC285Proxy.Log(string.Format("Tag {0}({1}) Length = {2} TagData = {3}", Tag, tagDetails?.Description ?? "Undefined", TagLength, (tagDetails != null && tagDetails.IsPii) ? piiMask : TagDataStr.ToUpper()));
 		if (Tag == "4F" || Tag == "84")
 		{
@@ -106,7 +106,7 @@ public class ParseTags
 		}
 		else if (Tag == "50")
 		{
-			ApplicationLabel = ConvertHexToString(TagDataStr, errors).ToUpper();
+			ApplicationLabel = ConvertHexToString(TagDataStr, errors)!.ToUpper(); // throws on bad hex, as before
 		}
 		else if (Tag == "57")
 		{
@@ -3257,7 +3257,7 @@ public class ParseTags
 					IUC285Proxy.Log("---------Device Type (MasterCard) (9F6E)----------");
 					if (TagDataStr.Length > 12)
 					{
-						string deviceType = ConvertHexToString(TagDataStr.Substring(8, 4), errors);
+						string? deviceType = ConvertHexToString(TagDataStr.Substring(8, 4), errors);
 						IUC285Proxy.Log("DeviceType: " + deviceType);
 						if (int.TryParse(deviceType, out var deviceTypeCode) && deviceTypeCode > 0 && deviceTypeCode != 20)
 						{
@@ -3338,7 +3338,7 @@ public class ParseTags
 			}
 			else if (Tag == "5F20")
 			{
-				string cardHolderName = ConvertHexToString(TagDataStr, errors);
+				string? cardHolderName = ConvertHexToString(TagDataStr, errors);
 				CardHolderName = cardHolderName;
 			}
 			else if (Tag == "FF1F")
@@ -3348,7 +3348,7 @@ public class ParseTags
 		}
 	}
 
-	public static string ConvertHexToString(string hexString, IList<Error> errors)
+	public static string? ConvertHexToString(string hexString, IList<Error>? errors)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < hexString.Length; i += 2)

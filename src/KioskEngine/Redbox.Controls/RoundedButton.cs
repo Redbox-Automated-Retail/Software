@@ -16,7 +16,7 @@ public class RoundedButton : Button, IThemedControl
 {
 	private int _executingButtonClick;
 
-	private Storyboard _storyboard;
+	private Storyboard? _storyboard;
 
 	public static readonly DependencyProperty StateProperty = DependencyProperty.Register("State", typeof(bool), typeof(RoundedButton), new FrameworkPropertyMetadata(false));
 
@@ -69,7 +69,7 @@ public class RoundedButton : Button, IThemedControl
 
 	public static bool DefaultIsAnimated { get; set; }
 
-	public static TaskScheduler UITaskScheduler { get; set; }
+	public static TaskScheduler? UITaskScheduler { get; set; }
 
 	public bool State
 	{
@@ -435,15 +435,15 @@ public class RoundedButton : Button, IThemedControl
 
 	private void LogButtonClick()
 	{
-		string parentName = null;
-		DependencyObject parent = VisualTreeHelper.GetParent(this);
+		string? parentName = null;
+		DependencyObject? parent = VisualTreeHelper.GetParent(this);
 		while (parent != null && !(parent is Window) && !(parent is UserControl))
 		{
 			parent = VisualTreeHelper.GetParent(parent);
 		}
 		if (parent != null && parent is UserControl)
 		{
-			UserControl userControl = parent as UserControl;
+			UserControl? userControl = parent as UserControl;
 			parentName = userControl?.Name;
 			if (string.IsNullOrEmpty(parentName))
 			{
@@ -452,7 +452,7 @@ public class RoundedButton : Button, IThemedControl
 		}
 		else if (parent != null && parent is Window)
 		{
-			Window window = parent as Window;
+			Window? window = parent as Window;
 			parentName = window?.Name;
 			if (string.IsNullOrEmpty(parentName))
 			{
@@ -466,10 +466,10 @@ public class RoundedButton : Button, IThemedControl
 		}
 		else
 		{
-			string tag = base.Tag?.ToString();
+			string? tag = base.Tag?.ToString();
 			if (!string.IsNullOrEmpty(tag))
 			{
-				identity = "Tag: " + tag.Substring(0, Math.Min(tag.Length, 50));
+				identity = "Tag: " + tag!.Substring(0, Math.Min(tag.Length, 50));
 			}
 		}
 		LogHelper.Instance.Log("RoundedButton click: Parent: " + parentName + ", " + identity);
@@ -477,7 +477,7 @@ public class RoundedButton : Button, IThemedControl
 
 	private static void OnCornerRadiusPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		RoundedButton button = d as RoundedButton;
+		RoundedButton button = (d as RoundedButton)!;
 		AdjustGlassHighlight(button);
 		AdjustCornRadiusInner(button);
 		button.InvalidateProperty(FrameworkElement.WidthProperty);

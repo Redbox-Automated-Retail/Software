@@ -9,19 +9,19 @@ namespace Redbox.IPC.Framework;
 
 public class BatchCommandRunner : ISession, IMessageSink
 {
-	private Action<string, string> _paramAction;
+	private Action<string, string>? _paramAction;
 
-	private Action<ISession> _beforeCommandAction;
+	private Action<ISession>? _beforeCommandAction;
 
 	private List<string> _filters = new List<string>();
 
 	private bool _enableFilters;
 
-	private ParameterDictionary m_context;
+	private ParameterDictionary? m_context;
 
 	private readonly StreamReader m_reader;
 
-	private IDictionary<string, object> m_properties;
+	private IDictionary<string, object>? m_properties;
 
 	public List<string> Filters => _filters;
 
@@ -61,7 +61,7 @@ public class BatchCommandRunner : ISession, IMessageSink
 		}
 	}
 
-	public event EventHandler Disconnect;
+	public event EventHandler? Disconnect;
 
 	public BatchCommandRunner(StreamReader reader)
 	{
@@ -73,7 +73,7 @@ public class BatchCommandRunner : ISession, IMessageSink
 		return true;
 	}
 
-	public void SetParamAction(Action<string, string> paramAction)
+	public void SetParamAction(Action<string, string>? paramAction)
 	{
 		_paramAction = paramAction;
 	}
@@ -96,7 +96,7 @@ public class BatchCommandRunner : ISession, IMessageSink
 
 	public static void ExecuteStartupFiles()
 	{
-		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.txt");
+		string[] files = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "*.txt");
 		for (int i = 0; i < files.Length; i++)
 		{
 			ExecuteFile(files[i]);
@@ -143,7 +143,7 @@ public class BatchCommandRunner : ISession, IMessageSink
 
 	private bool Read(StringBuilder builder)
 	{
-		string text = m_reader.ReadLine();
+		string? text = m_reader.ReadLine();
 		if (text == null)
 		{
 			return false;

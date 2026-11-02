@@ -557,7 +557,7 @@ public class RepositoryServiceProxy : IRepositoryService, IDisposable
 		Redbox.UpdateManager.ComponentModel.ErrorList errors = new Redbox.UpdateManager.ComponentModel.ErrorList();
 		ipcErrors.ForEach(delegate(Redbox.IPC.Framework.Error e)
 		{
-			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details));
+			errors.Add(e.IsWarning ? Redbox.UpdateManager.ComponentModel.Error.NewWarning(e.Code, e.Description, e.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewError(e.Code, e.Description, e.Details!)); // details passed on as they are, as before
 		});
 		return errors;
 	}

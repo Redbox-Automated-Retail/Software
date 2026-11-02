@@ -27,7 +27,8 @@ public abstract class ServerSession : ISession, IMessageSink
 
 	protected abstract int ReadBufferSize { get; }
 
-	protected Stream Stream { get; set; }
+	// Set by NegotiateSecurityLayer, which the subclass constructor calls.
+	protected Stream Stream { get; set; } = null!;
 
 	protected byte[] ReadBuffer { get; set; }
 
@@ -43,7 +44,7 @@ public abstract class ServerSession : ISession, IMessageSink
 		}
 	}
 
-	public event EventHandler Disconnect;
+	public event EventHandler? Disconnect;
 
 	public ServerSession(IPCServiceHost serviceHost, int bufferSize)
 	{
@@ -95,7 +96,7 @@ public abstract class ServerSession : ISession, IMessageSink
 			ReadTimeout = 30000,
 			WriteTimeout = 30000
 		};
-		sslStream.AuthenticateAsServer(ServiceHost.Certificate, clientCertificateRequired: false, SslProtocols.None, checkCertificateRevocation: true);
+		sslStream.AuthenticateAsServer(ServiceHost.Certificate!, clientCertificateRequired: false, SslProtocols.None, checkCertificateRevocation: true);
 		Stream = sslStream;
 	}
 
@@ -200,7 +201,7 @@ public abstract class ServerSession : ISession, IMessageSink
 		QuitSession("Goodbye!");
 	}
 
-	private bool QuitSession(string msg)
+	private bool QuitSession(string? msg)
 	{
 		if (msg != null)
 		{

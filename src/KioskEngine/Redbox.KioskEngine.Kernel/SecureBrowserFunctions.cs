@@ -17,10 +17,10 @@ internal static class SecureBrowserFunctions
 		Dictionary<string, string> dictionary = new Dictionary<string, string>();
 		for (int i = 1; i <= approvedUrls.Keys.Count; i++)
 		{
-			LuaTable luaTable = (LuaTable)approvedUrls[i];
-			if (!(settingFound & fieldVisitFormDisabled) || !((string)luaTable["title"] == "------------Field Visit Form------------"))
+			LuaTable luaTable = (LuaTable)approvedUrls[i]!;
+			if (!(settingFound & fieldVisitFormDisabled) || !((string?)luaTable["title"] == "------------Field Visit Form------------"))
 			{
-				dictionary[(string)luaTable["title"]] = (string)luaTable["url"];
+				dictionary[(string)luaTable["title"]!] = (string)luaTable["url"]!;
 			}
 		}
 		ServiceLocator.Instance.GetService<IEnvironmentNotificationService>().LaunchSecureBrowser(dictionary, navigateUrlCallback);
@@ -32,7 +32,7 @@ internal static class SecureBrowserFunctions
 	{
 		while (Application.OpenForms["SecureBrowser"] != null)
 		{
-			Application.OpenForms["SecureBrowser"].Close();
+			Application.OpenForms["SecureBrowser"]!.Close();
 		}
 	}
 

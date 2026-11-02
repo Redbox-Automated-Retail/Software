@@ -139,7 +139,7 @@ public static class UpdateServiceFunctions
 		else
 		{
 			luaTable["success"] = bool.TrueString;
-			foreach (KeyValuePair<string, string> item in response)
+			foreach (KeyValuePair<string, string?> item in response!) // set when there is no error
 			{
 				luaTable[item.Key] = item.Value;
 			}
@@ -151,7 +151,7 @@ public static class UpdateServiceFunctions
 	internal static bool FinishInstaller(string guid, LuaTable data)
 	{
 		IUpdateService updateService = ServiceLocator.Instance.GetService<IUpdateService>();
-		string text = data.Keys.Cast<object>().ToDictionary((object k) => k as string, (object v) => data[v] as string).ToJson();
+		string text = data.Keys.Cast<object>().ToDictionary((object k) => (k as string)!, (object v) => data[v] as string) /* a null key throws, as before */.ToJson();
 		if (text.Length > 252)
 		{
 			text = string.Empty;
@@ -190,11 +190,11 @@ public static class UpdateServiceFunctions
 	{
 		try
 		{
-			Bitmap bitmap = TakeScreenshot();
-			int width = (int)Math.Round((double)bitmap.Width * size);
+			Bitmap? bitmap = TakeScreenshot();
+			int width = (int)Math.Round((double)bitmap!.Width * size); // throws when there is no screenshot (caught below), as before
 			int height = (int)Math.Round((double)bitmap.Height * size);
-			string data = BitmapToString(ResizeBitmap(bitmap, width, height));
-			return StatusMessage("Info", "screenshot", string.Empty, "A kiosk screenshot", data, encode: false);
+			string? data = BitmapToString(ResizeBitmap(bitmap, width, height)!); // a null bitmap makes BitmapToString return null, as before
+			return StatusMessage("Info", "screenshot", string.Empty, "A kiosk screenshot", data!, encode: false);
 		}
 		catch (Exception e)
 		{
@@ -224,7 +224,7 @@ public static class UpdateServiceFunctions
 		}
 	}
 
-	private static string BitmapToString(Image bitmap)
+	private static string? BitmapToString(Image bitmap)
 	{
 		try
 		{
@@ -243,7 +243,7 @@ public static class UpdateServiceFunctions
 		}
 	}
 
-	private static Bitmap ResizeBitmap(Image bitmap, int width, int height)
+	private static Bitmap? ResizeBitmap(Image bitmap, int width, int height)
 	{
 		try
 		{
@@ -263,11 +263,11 @@ public static class UpdateServiceFunctions
 		}
 	}
 
-	private static Bitmap TakeScreenshot()
+	private static Bitmap? TakeScreenshot()
 	{
 		try
 		{
-			Bitmap bitmap = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height, PixelFormat.Format32bppArgb);
+			Bitmap bitmap = new Bitmap(Screen.PrimaryScreen!.Bounds.Width, Screen.PrimaryScreen.Bounds.Height, PixelFormat.Format32bppArgb);
 			using (Graphics graphics = Graphics.FromImage(bitmap))
 			{
 				graphics.CopyFromScreen(Screen.PrimaryScreen.Bounds.X, Screen.PrimaryScreen.Bounds.Y, 0, 0, Screen.PrimaryScreen.Bounds.Size, CopyPixelOperation.SourceCopy);

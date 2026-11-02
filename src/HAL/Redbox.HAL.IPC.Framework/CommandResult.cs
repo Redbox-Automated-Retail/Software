@@ -10,7 +10,7 @@ public sealed class CommandResult
 
 	public TimeSpan ExecutionTime { get; internal set; }
 
-	public string ExtendedErrorMessage { get; internal set; }
+	public string? ExtendedErrorMessage { get; internal set; }
 
 	public MessageList Messages { get; private set; }
 

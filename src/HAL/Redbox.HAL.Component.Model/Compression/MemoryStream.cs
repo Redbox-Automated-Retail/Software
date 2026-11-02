@@ -4,7 +4,7 @@ namespace Redbox.HAL.Component.Model.Compression;
 
 internal sealed class MemoryStream : StreamBase
 {
-	internal byte[] GetBuffer()
+	internal byte[]? GetBuffer()
 	{
 		if (base.Stream != null)
 		{
@@ -13,7 +13,7 @@ internal sealed class MemoryStream : StreamBase
 		return null;
 	}
 
-	internal byte[] ToArray()
+	internal byte[]? ToArray()
 	{
 		if (base.Stream != null)
 		{

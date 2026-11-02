@@ -15,9 +15,9 @@ public sealed class IpcServiceHostFactory : IIpcServiceHostFactory
 		throw new NotImplementedException();
 	}
 
-	public IIpcServiceHost Create(IIpcProtocol protocol, IHostInfo info)
+	public IIpcServiceHost? Create(IIpcProtocol protocol, IHostInfo info)
 	{
-		IIpcServiceHost ipcServiceHost = null;
+		IIpcServiceHost? ipcServiceHost = null;
 		if (protocol.Channel == ChannelType.NamedPipe)
 		{
 			return new NamedPipeServiceHost(protocol, info);
@@ -47,7 +47,7 @@ public sealed class IpcServiceHostFactory : IIpcServiceHostFactory
 
 	private IIpcServiceHost CreateTcpHost(IIpcProtocol protocol, IHostInfo info)
 	{
-		IIpcServiceHost ipcServiceHost = null;
+		IIpcServiceHost? ipcServiceHost = null;
 		if (IpcHostVersion.Modern == Version)
 		{
 			return new Redbox.HAL.IPC.Framework.Sockets.TcpServiceHost(protocol, info);

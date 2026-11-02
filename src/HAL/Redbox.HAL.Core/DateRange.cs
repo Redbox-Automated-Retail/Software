@@ -5,7 +5,7 @@ namespace Redbox.HAL.Core;
 
 public class DateRange : IRange<DateTime>
 {
-	private string m_formatted;
+	private string? m_formatted;
 
 	public DateTime Start { get; private set; }
 

@@ -33,7 +33,7 @@ public class VistaDBStringHelper
 			if (item.Value is IDictionary<string, object>)
 			{
 				sb.Append("{ ");
-				DictionaryToStrings(item.Value as Dictionary<string, object>, sb);
+				DictionaryToStrings((item.Value as Dictionary<string, object>)!, sb);
 				sb.Append(" }");
 			}
 			else if (item.Value is IList<string>)
@@ -41,7 +41,7 @@ public class VistaDBStringHelper
 				StringBuilder sub = new StringBuilder();
 				sub.Append("{ ");
 				int pos = 0;
-				(item.Value as IList<string>).ToList().ForEach(delegate(string s)
+				(item.Value as IList<string>)!.ToList().ForEach(delegate(string s)
 				{
 					sub.Append($"{GetComma(pos != 0)}\"{s}\"");
 					pos++;
@@ -61,7 +61,7 @@ public class VistaDBStringHelper
 		}
 	}
 
-	private static object GetOpenBracket(bool needsBracketsAroundName)
+	private static object? GetOpenBracket(bool needsBracketsAroundName)
 	{
 		if (!needsBracketsAroundName)
 		{
@@ -70,7 +70,7 @@ public class VistaDBStringHelper
 		return "[";
 	}
 
-	private static object GetCloseBracket(bool needsBracketsAroundName)
+	private static object? GetCloseBracket(bool needsBracketsAroundName)
 	{
 		if (!needsBracketsAroundName)
 		{
@@ -79,7 +79,7 @@ public class VistaDBStringHelper
 		return "]";
 	}
 
-	private static string GetComma(bool addComma)
+	private static string? GetComma(bool addComma)
 	{
 		if (!addComma)
 		{

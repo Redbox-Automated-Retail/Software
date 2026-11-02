@@ -10,7 +10,8 @@ namespace Redbox.HardwareServices.Proxy;
 
 public abstract class LocationSyncJobProcessorBase
 {
-	protected IHardwareService _hardwareService;
+	// _hardwareService and _timer are set by the derived processor's Initialize.
+	protected IHardwareService _hardwareService = null!;
 
 	protected bool _isEnabled;
 
@@ -18,9 +19,9 @@ public abstract class LocationSyncJobProcessorBase
 
 	protected TimeSpan _timespanEnd;
 
-	protected Timer _timer;
+	protected Timer _timer = null!;
 
-	protected void StartSync(string label = null, DateTime? startTime = null)
+	protected void StartSync(string? label = null, DateTime? startTime = null)
 	{
 		ErrorList errorList = _hardwareService.SoftSync(null, null, startTime, label, out var jobId);
 		LogErrors(errorList, "SoftSync: " + label);
@@ -90,7 +91,7 @@ public abstract class LocationSyncJobProcessorBase
 		return false;
 	}
 
-	protected IHardwareJob GetCompetedJob(List<string> labels)
+	protected IHardwareJob? GetCompetedJob(List<string> labels)
 	{
 		if (labels == null || labels.Count == 0)
 		{
@@ -104,7 +105,7 @@ public abstract class LocationSyncJobProcessorBase
 		}
 		foreach (string label in labels)
 		{
-			IHardwareJob hardwareJob = hardwareJobs2.FirstOrDefault((IHardwareJob j) => j.Label == label);
+			IHardwareJob? hardwareJob = hardwareJobs2.FirstOrDefault((IHardwareJob j) => j.Label == label);
 			if (hardwareJob != null && _hardwareService.IsComplete(hardwareJob.Status))
 			{
 				return hardwareJob;

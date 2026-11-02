@@ -6,7 +6,7 @@ namespace Redbox.HAL.Component.Model.Threading;
 
 public sealed class NamedLock : IDisposable
 {
-	private readonly Mutex m_instanceMutex;
+	private readonly Mutex? m_instanceMutex;
 
 	public bool IsOwned { get; private set; }
 

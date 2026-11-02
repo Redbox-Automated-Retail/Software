@@ -47,7 +47,7 @@ public class IPCPoll : IPoll
 			}
 			LogHelper.Instance.Log("Timeout for IPC poll is " + m_timeout.TotalSeconds + " seconds.", (!(m_timeout < TimeSpan.FromSeconds(30.0))) ? LogEntryType.Debug : LogEntryType.Info);
 			using Redbox.UpdateService.Client.UpdateService updateService = GetService(m_url!, m_timeout);
-			ClientCommandResult clientCommandResult = updateService.Poll(m_storeNumber, m_version, pollRequestList, out pollReplyList);
+			ClientCommandResult clientCommandResult = updateService.Poll(m_storeNumber!, m_version, pollRequestList, out pollReplyList);
 			errorList.AddRange(IPC(clientCommandResult.Errors));
 		}
 		catch (Exception e)
@@ -65,7 +65,7 @@ public class IPCPoll : IPoll
 
 	private static IEnumerable<Redbox.UpdateManager.ComponentModel.Error> IPC(IEnumerable<Redbox.IPC.Framework.Error> errors)
 	{
-		return errors.Select((Redbox.IPC.Framework.Error each) => (!each.IsWarning) ? Redbox.UpdateManager.ComponentModel.Error.NewError(each.Code, each.Description, each.Details) : Redbox.UpdateManager.ComponentModel.Error.NewWarning(each.Code, each.Description, each.Details));
+		return errors.Select((Redbox.IPC.Framework.Error each) => (!each.IsWarning) ? Redbox.UpdateManager.ComponentModel.Error.NewError(each.Code, each.Description, each.Details!) : Redbox.UpdateManager.ComponentModel.Error.NewWarning(each.Code, each.Description, each.Details!)); // details passed on as they are, as before
 	}
 
 	private IPCPoll()

@@ -6,15 +6,16 @@ public class Patch
 
 	public int Size { get; set; }
 
-	public string VersionHash { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string VersionHash { get; set; } = null!;
 
-	public string ContentHash { get; set; }
+	public string ContentHash { get; set; } = null!;
 
 	public long VersionLength { get; set; }
 
-	public string FileHash { get; set; }
+	public string FileHash { get; set; } = null!;
 
-	public string Revision { get; set; }
+	public string Revision { get; set; } = null!;
 
-	public Identifier File { get; set; }
+	public Identifier File { get; set; } = null!;
 }

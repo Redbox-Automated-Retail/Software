@@ -13,7 +13,7 @@ public class NotEmptyEnumerableAttribute : ValidationAttribute
 	{
 	}
 
-	public override bool IsValid(object value)
+	public override bool IsValid(object? value)
 	{
 		if (value == null)
 		{
@@ -34,7 +34,7 @@ public class NotEmptyEnumerableAttribute : ValidationAttribute
 		}
 		finally
 		{
-			IDisposable disposable = enumerator as IDisposable;
+			IDisposable? disposable = enumerator as IDisposable;
 			if (disposable != null)
 			{
 				disposable.Dispose();

@@ -7,7 +7,8 @@ public class CCFDTO
 {
 	public long Id { get; set; }
 
-	public string Name { get; set; }
+	// The properties below are filled by the JSON reader or by the sender's object initializer.
+	public string Name { get; set; } = null!;
 
 	public long SGId { get; set; }
 

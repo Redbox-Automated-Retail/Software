@@ -17,11 +17,11 @@ internal sealed class DecksManager : IDecksService
 
 	public int DeckCount => Decks.Count;
 
-	public IDeck QlmDeck
+	public IDeck? QlmDeck
 	{
 		get
 		{
-			IDeck qlmDeck = null;
+			IDeck? qlmDeck = null;
 			ForAllDecksDo(delegate(IDeck d)
 			{
 				if (d.IsQlm)
@@ -35,19 +35,19 @@ internal sealed class DecksManager : IDecksService
 		}
 	}
 
-	public IDeck GetByNumber(int number)
+	public IDeck? GetByNumber(int number)
 	{
 		return Decks.Find((IDeck each) => each.Number == number);
 	}
 
-	public IDeck GetFrom(ILocation location)
+	public IDeck? GetFrom(ILocation location)
 	{
 		return Decks.Find((IDeck each) => each.Number == location.Deck);
 	}
 
 	public bool IsValidLocation(ILocation loc)
 	{
-		Deck deck = GetByNumber(loc.Deck) as Deck;
+		Deck? deck = GetByNumber(loc.Deck) as Deck;
 		if (!(deck == null))
 		{
 			return deck.IsSlotValid(loc.Slot);
@@ -117,10 +117,10 @@ internal sealed class DecksManager : IDecksService
 			};
 			foreach (IDeck deck in Decks)
 			{
-				(deck as Deck).ToXmlWriter(xmlTextWriter);
+				(deck as Deck)!.ToXmlWriter(xmlTextWriter);
 			}
 			xmlTextWriter.Flush();
-			document.DocumentElement.SelectSingleNodeAndSetInnerXml("Controller/Decks", stringWriter);
+			document.DocumentElement!.SelectSingleNodeAndSetInnerXml("Controller/Decks", stringWriter);
 		}
 		LogHelper.Instance.Log("Completed decks save.", LogEntryType.Info);
 	}
@@ -135,7 +135,7 @@ internal sealed class DecksManager : IDecksService
 
 	internal void UpdateFromPropertyXml(XmlNode propertyNode)
 	{
-		XmlNodeList xmlNodeList = propertyNode.SelectNodes("Deck");
+		XmlNodeList? xmlNodeList = propertyNode.SelectNodes("Deck");
 		if (xmlNodeList == null)
 		{
 			return;
@@ -151,7 +151,7 @@ internal sealed class DecksManager : IDecksService
 			foreach (XmlNode item in xmlNodeList)
 			{
 				Deck deck = Deck.FromXmlNode(item);
-				Deck current = GetByNumber(deck.Number) as Deck;
+				Deck? current = GetByNumber(deck.Number) as Deck;
 				if (deck != current)
 				{
 					changedDecks.Add(deck);
@@ -167,7 +167,7 @@ internal sealed class DecksManager : IDecksService
 				LogHelper.Instance.Log("Update decks info:");
 				foreach (Deck changed in changedDecks)
 				{
-					Deck existing = GetByNumber(changed.Number) as Deck;
+					Deck existing = (GetByNumber(changed.Number) as Deck)!;
 					LogHelper.Instance.Log(" Deck Number {0} changes", existing.Number);
 					LogHelper.Instance.Log("  Y-offset: new = {0} old = {1}", changed.YOffset, existing.YOffset);
 					if (changed.Quadrants.Count == existing.Quadrants.Count)

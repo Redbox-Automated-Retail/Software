@@ -6,5 +6,5 @@ internal sealed class DuplicateSearchResult : IDuplicateSearchResult
 {
 	public bool IsDuplicate => Original != null;
 
-	public ILocation Original { get; internal set; }
+	public ILocation? Original { get; internal set; }
 }

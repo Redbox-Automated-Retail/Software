@@ -124,7 +124,7 @@ internal sealed class InventoryHelper : IDisposable
 				}
 			}
 		}
-		Thread thread = null;
+		Thread? thread = null;
 		if ((options & SyncOptions.AsyncSoftSync) != SyncOptions.None)
 		{
 			thread = new Thread(RunSoftSync);
@@ -140,11 +140,11 @@ internal sealed class InventoryHelper : IDisposable
 			string[] jobInfo = hardwareCommandResult.CommandMessages[0].Split('|');
 			if (Service.GetJob(jobInfo[0], out var job).Success)
 			{
-				job.EventRaised += delegate(HardwareJob hardwareJob, DateTime eventTime, string eventMessage)
+				job!.EventRaised += delegate(HardwareJob hardwareJob, DateTime eventTime, string eventMessage)
 				{
 					LogHelper.Instance.Log("{0}: {1}", eventTime, eventMessage);
 				};
-				Helper.WaitForJob(job, out var endStatus);
+				Helper.WaitForJob(job!, out var endStatus);
 				LogHelper.Instance.Log("{0} Sync job {1} ended with status {2}", DateTime.Now, job.ID, endStatus.ToString());
 				if ((options & SyncOptions.Analyze) != SyncOptions.None)
 				{
@@ -170,8 +170,8 @@ internal sealed class InventoryHelper : IDisposable
 		}, out var job);
 		if (hardwareCommandResult.Success)
 		{
-			Helper.WaitForJob(job, out var endStatus);
-			Console.WriteLine("Restore job {0} ended with status {1}", job.ID, endStatus);
+			Helper.WaitForJob(job!, out var endStatus);
+			Console.WriteLine("Restore job {0} ended with status {1}", job!.ID, endStatus);
 			if (HardwareJobStatus.Completed != endStatus)
 			{
 				Console.WriteLine("Restore job failed.");
@@ -207,7 +207,7 @@ internal sealed class InventoryHelper : IDisposable
 				if (!succeeded)
 				{
 					Console.WriteLine("Rebuild job failed.");
-					rebuildInventoryExecutor.Errors.Dump(Console.Out);
+					rebuildInventoryExecutor.Errors!.Dump(Console.Out);
 				}
 			}
 		}
@@ -231,7 +231,7 @@ internal sealed class InventoryHelper : IDisposable
 		{
 			if (Service.SoftSync(schedule, out var job).Success)
 			{
-				job.Pend();
+				job!.Pend();
 				clientHelper.WaitForJob(job, out var endStatus);
 				if (HardwareJobStatus.Completed == endStatus)
 				{
@@ -244,7 +244,7 @@ internal sealed class InventoryHelper : IDisposable
 
 	private bool InventoryItemsEqual(ProgramResult result, bool logSuccess)
 	{
-		if (result.ItemID.ToString() == result.PreviousItem.ToString())
+		if (result.ItemID!.ToString() == result.PreviousItem!.ToString())
 		{
 			if (logSuccess)
 			{

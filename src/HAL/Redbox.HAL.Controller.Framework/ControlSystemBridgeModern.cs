@@ -7,7 +7,8 @@ namespace Redbox.HAL.Controller.Framework;
 
 internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IControlSystemService, IControlSystem
 {
-	private AbstractRedboxControlSystem Implementor;
+	// Set by NotifyConfigurationLoaded.
+	private AbstractRedboxControlSystem Implementor = null!;
 
 	private readonly IPersistentCounterService PersistentCounterService;
 
@@ -197,11 +198,11 @@ internal sealed class ControlSystemBridgeModern : IConfigurationObserver, IContr
 	{
 		int timeout = ControllerConfiguration.Instance.GripperArmExtendRetractTimeout;
 		IDecksService decksService = ServiceLocator.Instance.GetService<IDecksService>();
-		ILocation currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
+		ILocation? currentLocation = ServiceLocator.Instance.GetService<IMotionControlService>().CurrentLocation;
 		bool atQlm = false;
 		if (currentLocation != null)
 		{
-			atQlm = decksService.GetByNumber(currentLocation.Deck).IsQlm;
+			atQlm = decksService.GetByNumber(currentLocation.Deck)!.IsQlm;
 		}
 		if (atQlm)
 		{

@@ -34,7 +34,7 @@ public class UpdateManagerService : IDisposable
 			{
 				m_clientSession = ClientSession.GetClientSession(IPCProtocol.Parse(Url), null);
 			}
-			m_clientSession.Timeout = (Timeout.HasValue ? Timeout.Value : 30000);
+			m_clientSession!.Timeout =(Timeout.HasValue ? Timeout.Value : 30000);
 			return m_clientSession;
 		}
 		set

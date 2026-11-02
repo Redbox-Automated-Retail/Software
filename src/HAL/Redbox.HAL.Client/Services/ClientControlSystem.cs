@@ -169,7 +169,7 @@ public sealed class ClientControlSystem : IControlSystem
 		{
 			return new ClientPickerSensorReadResult(ErrorCodes.ServiceChannelError);
 		}
-		if (!job.GetStack(out var stack).Success)
+		if (!job!.GetStack(out var stack).Success)
 		{
 			return new ClientPickerSensorReadResult(ErrorCodes.ServiceChannelError);
 		}

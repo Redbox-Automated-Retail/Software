@@ -129,14 +129,14 @@ internal sealed class AsyncChannel : IDisposable, IIPCChannel
 		try
 		{
 			int bytesRead = Stream.EndRead(result);
-			IIPCResponse iIPCResponse = result.AsyncState as IIPCResponse;
+			IIPCResponse? iIPCResponse = result.AsyncState as IIPCResponse;
 			if (bytesRead == 0)
 			{
 				SafeSet();
 				return;
 			}
 			Interlocked.Add(ref Statistics.Instance.NumberOfBytesReceived, bytesRead);
-			if (!iIPCResponse.Accumulate(ReadBuffer, 0, bytesRead))
+			if (!iIPCResponse!.Accumulate(ReadBuffer, 0, bytesRead))
 			{
 				OnRead(iIPCResponse);
 			}

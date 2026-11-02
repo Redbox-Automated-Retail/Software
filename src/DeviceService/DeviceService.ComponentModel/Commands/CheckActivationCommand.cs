@@ -6,7 +6,8 @@ namespace DeviceService.ComponentModel.Commands;
 
 public class CheckActivationCommand : BaseCommandRequest
 {
-	public BluefinActivationRequest Request { get; set; }
+	// Set by the sender's object initializer (DeviceServiceClient.CheckActivation).
+	public BluefinActivationRequest Request { get; set; } = null!;
 
 	public override string SignalRCommand => "ExecuteCheckActivationCommand";
 

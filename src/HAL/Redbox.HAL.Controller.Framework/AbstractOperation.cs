@@ -194,7 +194,7 @@ public abstract class AbstractOperation<T> : IDisposable
 				}
 				return ErrorCodes.GripperOpenTimeout;
 			}
-			if (DeckService.GetByNumber(MotionService.CurrentLocation.Deck).IsQlm)
+			if (DeckService.GetByNumber(MotionService.CurrentLocation!.Deck)!.IsQlm)
 			{
 				int qlmExtendTime = ControllerConfiguration.Instance.QlmExtendTime;
 				if (ControllerConfiguration.Instance.QlmTimedExtend)
