@@ -14,7 +14,7 @@ public sealed class StackCommand
 	[Description("Dumps a diagnostic list of the stack contents.")]
 	public void Show(CommandContext context, [CommandKeyValue(KeyName = "job", IsRequired = true)] string jobId)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			int position = job.StackDepth + job.ResultCount;
@@ -50,10 +50,10 @@ public sealed class StackCommand
 	[Description("Pops any value at the specified end of the data stack for the designated job.  Values are popped from the top of the stack by default.")]
 	public void Pop(CommandContext context, [CommandKeyValue(KeyName = "job", IsRequired = true)] string jobId, StackEnd? end)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
-			context.Messages.Add(job.Pop(end ?? StackEnd.Top).ToString());
+			context.Messages.Add(job.Pop(end ?? StackEnd.Top).ToString()!);
 		}
 	}
 
@@ -62,7 +62,7 @@ public sealed class StackCommand
 	[Description("Pushes value onto specified end of stack for the designated job.")]
 	public void Push(CommandContext context, [CommandKeyValue(KeyName = "job", IsRequired = true)] string jobId, [CommandKeyValue(IsRequired = true)] string value, StackEnd? end)
 	{
-		IExecutionContext job = CommandHelper.GetJob(jobId, context.Errors);
+		IExecutionContext? job = CommandHelper.GetJob(jobId, context.Errors);
 		if (job != null)
 		{
 			ServiceLocator.Instance.GetService<IExecutionService>().PushValue(job, value, end ?? StackEnd.Top, context.Errors);

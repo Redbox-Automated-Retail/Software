@@ -9,7 +9,7 @@ public class LogFileCleanerTask : TaskBase
 {
 	private int _daysOld;
 
-	private FileSet _pattern;
+	private FileSet _pattern = null!; // set by NAnt from the build file
 
 	[BuildElement("pattern")]
 	public FileSet Pattern

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>HAL.PackageInstaller</AssemblyName>
     <RootNamespace>Redbox.HAL.PackageInstaller</RootNamespace>
     <OutputType>Exe</OutputType>

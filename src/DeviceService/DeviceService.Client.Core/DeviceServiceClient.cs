@@ -14,11 +14,11 @@ public class DeviceServiceClient : IDeviceServiceClientCore
 
 	private object _lockConnectionObject = new object();
 
-	private AutoResetEvent _connectionAutoResetEvent;
+	private AutoResetEvent? _connectionAutoResetEvent;
 
 	private int _defaultCommandTimeout = 180000;
 
-	private string _url;
+	private string? _url;
 
 	private SignalRClient _signalRClient;
 
@@ -34,11 +34,11 @@ public class DeviceServiceClient : IDeviceServiceClientCore
 		}
 	}
 
-	public event LogHandler OnLog;
+	public event LogHandler? OnLog;
 
-	public event OnConnected OnConnectedHandler;
+	public event OnConnected? OnConnectedHandler;
 
-	public event OnDisconnected OnDisconnectedHandler;
+	public event OnDisconnected? OnDisconnectedHandler;
 
 	public DeviceServiceClient(IHttpService httpService)
 	{
@@ -113,7 +113,7 @@ public class DeviceServiceClient : IDeviceServiceClientCore
 
 	public void SetCommandQueueState(bool commandQueuePaused)
 	{
-		Version version = Assembly.GetExecutingAssembly().GetName().Version;
+		Version version = Assembly.GetExecutingAssembly().GetName().Version!;
 		_signalRClient.SetCommandQueueState(new SetCommandQueueStateCommand(version)
 		{
 			CommandQueuePaused = commandQueuePaused

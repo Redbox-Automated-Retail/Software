@@ -17,14 +17,14 @@ public class Updater
 {
 	private const string ServiceApplicationId = "{C423B0E3-95B3-4191-B326-AB3EA516F825}";
 
-	public string StoreNumber { get; set; }
+	public string? StoreNumber { get; set; }
 
 	public ErrorList Initialize(string updateServiceUrl)
 	{
 		ErrorList result = new ErrorList();
 		MacroService macroService = new MacroService();
 		ServiceLocator.Instance.AddService(typeof(IMacroService), macroService);
-		string directoryName = Path.GetDirectoryName(typeof(Updater).Assembly.Location);
+		string directoryName = Path.GetDirectoryName(typeof(Updater).Assembly.Location)!;
 		macroService["StoreNumber"] = StoreNumber;
 		macroService["ProgramFiles"] = "C:\\Program Files";
 		macroService["REDS"] = "C:\\Program Files\\Redbox\\REDS";

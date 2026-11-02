@@ -9,20 +9,21 @@ namespace Redbox.BrokerServices.KernelExtension;
 
 public class GeneralPreferencePage : UserControl, IPreferencePageHost
 {
-	private IContainer components;
+	private IContainer components = null!;
 
-	private TextBox m_brokerServicesTimeoutTextBox;
+	private TextBox m_brokerServicesTimeoutTextBox = null!;
 
-	private Label label4;
+	private Label label4 = null!;
 
-	private TextBox m_brokerServicesUrlTextBox;
+	private TextBox m_brokerServicesUrlTextBox = null!;
 
-	private Label label5;
+	private Label label5 = null!;
 
-	private ErrorProvider m_errorProvider;
+	private ErrorProvider m_errorProvider = null!;
 
-	private Label m_headerLabel;
+	private Label m_headerLabel = null!;
 
+	// The controls above are created by InitializeComponent.
 	public GeneralPreferencePage()
 	{
 		InitializeComponent();
@@ -39,7 +40,7 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 		m_brokerServicesTimeoutTextBox.Text = BrokerServicesProxy.Instance.Timeout.ToString();
 	}
 
-	private void OnLeaveBrokerServicesUrlTextBox(object sender, EventArgs e)
+	private void OnLeaveBrokerServicesUrlTextBox(object? sender, EventArgs e)
 	{
 		string url = BrokerServicesProxy.Instance.Url;
 		if (!string.IsNullOrEmpty(m_brokerServicesUrlTextBox.Text))
@@ -49,7 +50,7 @@ public class GeneralPreferencePage : UserControl, IPreferencePageHost
 		BrokerServicesProxy.Instance.Url = url;
 	}
 
-	private void OnLeaveBrokerServicesTimeoutTextBox(object sender, EventArgs e)
+	private void OnLeaveBrokerServicesTimeoutTextBox(object? sender, EventArgs e)
 	{
 		if (int.TryParse(m_brokerServicesTimeoutTextBox.Text, out var result))
 		{

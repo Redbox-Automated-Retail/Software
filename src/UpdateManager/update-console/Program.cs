@@ -17,9 +17,9 @@ public class Program
 {
 	private const string ApplicationId = "{4C9D4DA5-8E6C-40a0-867C-65E462A71ADB}";
 
-	private static NamedLock m_instanceLock;
+	private static NamedLock? m_instanceLock;
 
-	private static CommandLine m_commandLine;
+	private static CommandLine? m_commandLine;
 
 	private static readonly PropertyDictionary m_properties = new PropertyDictionary();
 
@@ -55,7 +55,7 @@ public class Program
 				Console.Error.WriteLine("Update Console is already running.");
 				return -1;
 			}
-			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "update-console-log4net.config"));
+			m_logger.Configure(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "update-console-log4net.config"));
 			LogHelper.Instance.Logger = m_logger;
 			LogHelper.Instance.Log("Executing command line: {0}", System.Environment.CommandLine);
 			Console.Out.WriteLine("Lock Gained for Process Id: {0} under user: {1}\\{2}", Process.GetCurrentProcess().Id, System.Environment.UserDomainName, System.Environment.UserName);
@@ -70,7 +70,7 @@ public class Program
 				CommandLine.WriteUsage(includeHelp: true);
 				return 0;
 			}
-			string storeNumber = Opts.StoreNumber;
+			string? storeNumber = Opts.StoreNumber;
 			if (Opts.ResetAll || Opts.ResetBITS || Opts.ResetManifest)
 			{
 				storeNumber = "0";
@@ -82,7 +82,7 @@ public class Program
 					CommandLine.WriteUsage(includeHelp: false);
 					return 1;
 				}
-				string kaseyaMachineName = Opts.KaseyaId.Substring(0, Opts.KaseyaId.IndexOf('.'));
+				string kaseyaMachineName = Opts.KaseyaId!.Substring(0, Opts.KaseyaId.IndexOf('.'));
 				storeNumber = (kaseyaMachineName.StartsWith("redbox") ? kaseyaMachineName.Substring(7) : kaseyaMachineName);
 			}
 			LogHelper.Instance.Log("Starting store updater with store number: {0}", storeNumber);
@@ -90,7 +90,7 @@ public class Program
 			{
 				StoreNumber = storeNumber
 			};
-			string updateServiceUrl = (string.IsNullOrEmpty(Opts.UpdateServiceUrl) ? Settings.Default.UpdateServiceUrl : Opts.UpdateServiceUrl);
+			string updateServiceUrl = (string.IsNullOrEmpty(Opts.UpdateServiceUrl) ? Settings.Default.UpdateServiceUrl : Opts.UpdateServiceUrl!);
 			errorList.AddRange(updater.Initialize(updateServiceUrl));
 			if (errorList.ContainsError())
 			{
@@ -155,15 +155,15 @@ public class Program
 				{
 					if (!string.IsNullOrEmpty(Opts.Tree))
 					{
-						List<IRevLog> pendingChangeSets = updater.GetPendingChangeSets(Opts.Tree);
+						List<IRevLog> pendingChangeSets = updater.GetPendingChangeSets(Opts.Tree!);
 						Console.Out.WriteLine(pendingChangeSets.ToJson());
 						if (string.IsNullOrEmpty(Opts.Hash))
 						{
-							errorList.AddRange(updater.UpdateTo(Opts.Tree));
+							errorList.AddRange(updater.UpdateTo(Opts.Tree!));
 						}
 						else
 						{
-							errorList.AddRange(updater.UpdateTo(Opts.Tree, Opts.Hash));
+							errorList.AddRange(updater.UpdateTo(Opts.Tree!, Opts.Hash!));
 						}
 					}
 					else
@@ -181,11 +181,11 @@ public class Program
 					{
 						if (string.IsNullOrEmpty(Opts.Hash))
 						{
-							errorList.AddRange(updater.Activate(Opts.Tree));
+							errorList.AddRange(updater.Activate(Opts.Tree!));
 						}
 						else
 						{
-							errorList.AddRange(updater.Activate(Opts.Tree, Opts.Hash));
+							errorList.AddRange(updater.Activate(Opts.Tree!, Opts.Hash!));
 						}
 					}
 					else
@@ -255,7 +255,7 @@ public class Program
 						errorList.Add(Redbox.UpdateManager.ComponentModel.Error.NewError("U998", "repository-name does not exist.", "Check Name."));
 						return 1;
 					}
-					switch (Opts.Dump.ToLower())
+					switch (Opts.Dump!.ToLower())
 					{
 					case "active":
 						Console.Write(repositoryService.GetActiveRevision(Opts.RepositoryName));

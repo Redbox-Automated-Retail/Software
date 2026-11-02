@@ -8,7 +8,7 @@ public class TimeKeeperTask : TaskBase
 {
 	private long _kioskId;
 
-	private string _url;
+	private string _url = null!; // set by NAnt (required attribute)
 
 	private int _timeOut;
 

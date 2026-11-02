@@ -15,13 +15,13 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 	{
 		public Guid Id { get; set; }
 
-		public string Name { get; set; }
+		public string? Name { get; set; }
 
-		public string Owner { get; set; }
+		public string? Owner { get; set; }
 
-		public string Status { get; set; }
+		public string? Status { get; set; }
 
-		public string JobType { get; set; }
+		public string? JobType { get; set; }
 
 		public ulong TotalBytes { get; set; }
 
@@ -38,7 +38,8 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 
 	internal const string DefaultUpdateServiceUrl = "rcp://localhost:7004";
 
-	private static UpdateManagerService m_service;
+	// Created by Initialize (ResetService); the commands below are only called after it.
+	private static UpdateManagerService? m_service;
 
 	public static UpdateManagerServiceProxy Instance => Singleton<UpdateManagerServiceProxy>.Instance;
 
@@ -78,13 +79,13 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList ForceScheduleEvent(string eventName, out bool isRunning)
 	{
-		return MakeLocalErrorList(m_service.ForceScheduleEvent(eventName, out isRunning).Errors);
+		return MakeLocalErrorList(m_service!.ForceScheduleEvent(eventName, out isRunning).Errors);
 	}
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList GetDownloadState(out ReadOnlyCollection<IDownloadData> downloads)
 	{
 		List<IDownloadData> downloadDataList = new List<IDownloadData>();
-		ClientCommandResult currentDownloads = m_service.GetCurrentDownloads(out var jobs);
+		ClientCommandResult currentDownloads = m_service!.GetCurrentDownloads(out var jobs);
 		foreach (Download item in jobs)
 		{
 			downloadDataList.Add(new DownloadData
@@ -107,19 +108,19 @@ public class UpdateManagerServiceProxy : IUpdateManagerService
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList GetSubscriptionState(out DateTime lastRun, out string subscriptionState)
 	{
-		ClientCommandResult dvdDataState = m_service.GetDvdDataState(out lastRun, out var state);
+		ClientCommandResult dvdDataState = m_service!.GetDvdDataState(out lastRun, out var state);
 		subscriptionState = state.ToString();
 		return MakeLocalErrorList(dvdDataState.Errors);
 	}
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList ForceSubscriptionPublish()
 	{
-		return MakeLocalErrorList(m_service.ForceDvdDataPublish().Errors);
+		return MakeLocalErrorList(m_service!.ForceDvdDataPublish().Errors);
 	}
 
 	public Redbox.KioskEngine.ComponentModel.ErrorList ExecuteCommand(string command, out ReadOnlyCollection<string> messages)
 	{
-		ClientCommandResult clientCommandResult = m_service.ExecuteCommandString(command);
+		ClientCommandResult clientCommandResult = m_service!.ExecuteCommandString(command);
 		messages = clientCommandResult.CommandMessages.AsReadOnly();
 		return MakeLocalErrorList(clientCommandResult.Errors);
 	}

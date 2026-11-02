@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>BluefinService.Client</AssemblyName>
     <RootNamespace>BluefinService.Client</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>

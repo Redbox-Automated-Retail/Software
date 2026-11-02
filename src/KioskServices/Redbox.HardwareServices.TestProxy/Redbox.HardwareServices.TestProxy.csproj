@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Reconstructed API stub: the real assembly is not in the kiosk image. -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.HardwareServices.TestProxy</AssemblyName>
     <RootNamespace>Redbox.HardwareServices.TestProxy</RootNamespace>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>

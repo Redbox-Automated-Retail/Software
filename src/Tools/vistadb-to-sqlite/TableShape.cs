@@ -12,7 +12,7 @@ internal sealed class TableShape
 {
 	internal sealed class Column
 	{
-		public string Name;
+		public string Name = null!;
 
 		public VistaDBType Type;
 
@@ -21,28 +21,29 @@ internal sealed class TableShape
 
 	internal sealed class Index
 	{
-		public string Name;
+		public string Name = null!;
 
-		public List<KeyValuePair<string, bool>> Columns;
+		public List<KeyValuePair<string, bool>> Columns = null!;
 
 		public bool Primary;
 
 		public bool Unique;
 	}
 
-	private string m_tableName;
+	// Name and Columns above, and the table name, are always set by From.
+	private string m_tableName = null!;
 
 	private bool m_caseSensitive;
 
-	private string m_identityColumn;
+	private string? m_identityColumn;
 
 	public List<Column> Columns { get; } = new List<Column>();
 
-	public string IdentityColumn => m_identityColumn;
+	public string? IdentityColumn => m_identityColumn;
 
-	public string IdentitySeed { get; private set; }
+	public string? IdentitySeed { get; private set; }
 
-	public string IdentityStep { get; private set; }
+	public string? IdentityStep { get; private set; }
 
 	public List<Index> Indexes { get; } = new List<Index>();
 
@@ -87,11 +88,11 @@ internal sealed class TableShape
 	}
 
 	// The identity column, when it is the whole primary key and an integer: it becomes INTEGER PRIMARY KEY AUTOINCREMENT.
-	public string IdentityKeyColumn
+	public string? IdentityKeyColumn
 	{
 		get
 		{
-			Index primary = Indexes.FirstOrDefault(i => i.Primary);
+			Index? primary = Indexes.FirstOrDefault(i => i.Primary);
 			bool identityKey = primary != null && primary.Columns.Count == 1 && m_identityColumn != null && string.Equals(primary.Columns[0].Key, m_identityColumn, StringComparison.OrdinalIgnoreCase) && IsInteger(Columns.First(c => c.Name == primary.Columns[0].Key).Type);
 			return identityKey ? m_identityColumn : null;
 		}

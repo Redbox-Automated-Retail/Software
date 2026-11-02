@@ -10,11 +10,11 @@ namespace Redbox.HAL.Service.Framework;
 
 public sealed class IPCProxy : IDisposable
 {
-	private IIpcServiceHost m_listener;
+	private IIpcServiceHost? m_listener;
 
 	private bool Disposed;
 
-	private readonly IIpcProtocol Protocol;
+	private readonly IIpcProtocol? Protocol;
 
 	public bool ProtocolValid => Protocol != null;
 
@@ -26,7 +26,7 @@ public sealed class IPCProxy : IDisposable
 
 	public static IPCProxy Parse(string protocol)
 	{
-		IIpcProtocol ipcProtocol = null;
+		IIpcProtocol? ipcProtocol = null;
 		try
 		{
 			ipcProtocol = IPCProtocol.Parse(protocol);
@@ -79,7 +79,7 @@ public sealed class IPCProxy : IDisposable
 		return true;
 	}
 
-	private IPCProxy(IIpcProtocol protocol)
+	private IPCProxy(IIpcProtocol? protocol)
 	{
 		Protocol = protocol;
 	}

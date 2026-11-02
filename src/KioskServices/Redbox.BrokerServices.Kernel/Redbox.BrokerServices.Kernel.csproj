@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.BrokerServices.Kernel</AssemblyName>
     <RootNamespace>Redbox.BrokerServices.Kernel</RootNamespace>
     <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>

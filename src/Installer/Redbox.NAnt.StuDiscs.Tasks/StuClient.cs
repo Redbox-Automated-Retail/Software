@@ -15,19 +15,19 @@ public class StuClient
 
 	private const string STU_RULE_INITIALIZE_METHOD = "Initialize";
 
-	protected Assembly _assembly;
+	protected Assembly? _assembly;
 
-	private object _rule;
+	private object? _rule;
 
-	private string _ruleVersion;
+	private string? _ruleVersion;
 
-	public string RuleVersion => _ruleVersion;
+	public string? RuleVersion => _ruleVersion;
 
 	protected Assembly RuleAssembly
 	{
 		get
 		{
-			if ((object)_assembly == null)
+			if (_assembly is null)
 			{
 				_assembly = Assembly.LoadFrom("C:\\Program Files\\Redbox\\StuRule.dll");
 			}

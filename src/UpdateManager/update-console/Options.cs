@@ -14,7 +14,7 @@ public class Options
 
 	[Option(LongName = "update-service-url", ShortName = "h", Required = false)]
 	[Description("Update Service Url override.")]
-	public string UpdateServiceUrl { get; set; }
+	public string? UpdateServiceUrl { get; set; }
 
 	[Option(LongName = "activate", ShortName = "a")]
 	[Description("Activate staged files.")]
@@ -26,15 +26,15 @@ public class Options
 
 	[Option(LongName = "eval")]
 	[Description("Executes the script specified in the store updater kernel. All other options ignored.")]
-	public string Script { get; set; }
+	public string? Script { get; set; }
 
 	[Option(LongName = "hash", ShortName = "h")]
 	[Description("Desired version for an update.")]
-	public string Hash { get; set; }
+	public string? Hash { get; set; }
 
 	[Option(LongName = "kaseya-id", ShortName = "k")]
 	[Description("Kaseya Machine Id of Current Store.")]
-	public string KaseyaId { get; set; }
+	public string? KaseyaId { get; set; }
 
 	[Option(LongName = "list", ShortName = "l")]
 	[Description("Lists the current applied revisions.")]
@@ -46,7 +46,7 @@ public class Options
 
 	[Option(LongName = "store-number", ShortName = "n")]
 	[Description("Number of Current Store.")]
-	public string StoreNumber { get; set; }
+	public string? StoreNumber { get; set; }
 
 	[Option(LongName = "start-download")]
 	[Description("Attempt to start downloads.")]
@@ -62,7 +62,7 @@ public class Options
 
 	[Option(LongName = "tree", ShortName = "t")]
 	[Description("The name of the tree to operate on. Required for update")]
-	public string Tree { get; set; }
+	public string? Tree { get; set; }
 
 	[Option(LongName = "update", ShortName = "u")]
 	[Description("Updates the tree given in name to the the revision specified in hash or head if none.")]
@@ -70,7 +70,7 @@ public class Options
 
 	[Option(LongName = "filter", ShortName = "f")]
 	[Description("work filter to use when getting work from server.")]
-	public string WorkFilter { get; set; }
+	public string? WorkFilter { get; set; }
 
 	[Option(LongName = "reset-bits")]
 	[Description("Cancels all BITS jobs.")]
@@ -86,11 +86,11 @@ public class Options
 
 	[Option(LongName = "repository-name")]
 	[Description("Sets the repository name.")]
-	public string RepositoryName { get; set; }
+	public string? RepositoryName { get; set; }
 
 	[Option(LongName = "dump")]
 	[Description("Formats and outputs a repository file. Valid values: active, current, label, revlog.")]
-	public string Dump { get; set; }
+	public string? Dump { get; set; }
 
 	private Options()
 	{

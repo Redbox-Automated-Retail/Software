@@ -720,7 +720,7 @@ public class FileUpdateService : IFileUpdateService
 	private static string GetUniqueFileName(string destPath)
 	{
 		string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(destPath);
-		string? directoryName = Path.GetDirectoryName(destPath);
+		string directoryName = Path.GetDirectoryName(destPath);
 		string extension = Path.GetExtension(destPath);
 		string format = Path.Combine(directoryName, fileNameWithoutExtension + "{0}" + extension);
 		int suffix = 1;

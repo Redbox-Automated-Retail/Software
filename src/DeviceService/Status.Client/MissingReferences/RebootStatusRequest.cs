@@ -6,9 +6,9 @@ namespace DeviceService.ComponentModel.Requests;
 
 public class RebootStatusRequest
 {
-	public string ApiKey { get; set; }
+	public string? ApiKey { get; set; }
 
-	public string ApiUrl { get; set; }
+	public string? ApiUrl { get; set; }
 
-	public RebootStatus Status { get; set; }
+	public RebootStatus Status { get; set; } = null!;
 }

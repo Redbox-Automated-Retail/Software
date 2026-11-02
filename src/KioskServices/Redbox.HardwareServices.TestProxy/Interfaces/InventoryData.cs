@@ -3,5 +3,5 @@ namespace Redbox.HardwareServices.TestProxy.Interfaces;
 
 public class InventoryData
 {
-	public string Barcode { get; set; }
+	public string? Barcode { get; set; }
 }

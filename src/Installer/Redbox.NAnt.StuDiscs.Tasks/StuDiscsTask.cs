@@ -35,7 +35,7 @@ public class StuDiscsTask : TaskBase
 		streamWriter.WriteLine("KioskId,Title,ForSaleCount,OnHandCount");
 		int titleCount = 0;
 		long currentTitleId = -1L;
-		string titleName = null;
+		string? titleName = null;
 		int onHandCount = -1;
 		foreach (DataRow row in dataView.Table.Rows)
 		{
@@ -70,7 +70,7 @@ public class StuDiscsTask : TaskBase
 		streamWriter.WriteLine(GetLine(titleName, titleCount, onHandCount));
 	}
 
-	private string GetLine(string titleName, int titleCount, int onHandCount)
+	private string GetLine(string? titleName, int titleCount, int onHandCount)
 	{
 		return $"{_kioskId},{titleName},{titleCount},{((onHandCount == -1) ? titleCount : onHandCount)}";
 	}

@@ -110,7 +110,7 @@ internal static class Program
 			for (int i = 0; i < shape.Columns.Count; i++)
 			{
 				IVistaDBColumn column = row[shape.Columns[i].Name];
-				object value = column == null || column.IsNull ? null : column.Value;
+				object? value = column == null || column.IsNull ? null : column.Value;
 				SetParameter(parameters[i], value);
 			}
 			insert.ExecuteNonQuery();
@@ -141,7 +141,7 @@ internal static class Program
 		command.ExecuteNonQuery();
 	}
 
-	private static void SetParameter(SqliteParameter parameter, object value)
+	private static void SetParameter(SqliteParameter parameter, object? value)
 	{
 		switch (value)
 		{

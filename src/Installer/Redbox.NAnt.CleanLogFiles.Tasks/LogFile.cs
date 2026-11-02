@@ -5,7 +5,7 @@ namespace Redbox.NAnt.CleanLogFiles.Tasks;
 
 public class LogFile
 {
-	private string _path;
+	private string _path = null!; // set through Path by the constructor
 
 	private DateTime _lastWriteTime;
 

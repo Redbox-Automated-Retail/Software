@@ -13,7 +13,7 @@ internal static class ReservationServicesFunctions
 	{
 		if (ServiceLocator.Instance.GetService<ICallbackService>() != null)
 		{
-			RemoteServiceCallback callback2 = null;
+			RemoteServiceCallback? callback2 = null;
 			ServiceLocator.Instance.GetService<IKioskClientService>().Transaction.CancelReservation(storeNumber, referenceNumber, reasonCode, callback2);
 		}
 	}

@@ -7,7 +7,7 @@ namespace BluefinService.Client;
 
 public interface IBluefinServiceClient
 {
-	Task<StandardResponse> Activate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber, DateTime InstallDate);
+	Task<StandardResponse?> Activate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber, DateTime InstallDate);
 
-	Task<StandardResponse> Deactivate(IBluefinActivationRequest request, string mfgSerialNumber);
+	Task<StandardResponse?> Deactivate(IBluefinActivationRequest request, string mfgSerialNumber);
 }

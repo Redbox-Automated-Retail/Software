@@ -23,14 +23,14 @@ public class StatusClient : IStatusClient
 		_logger = logger;
 	}
 
-	public async Task<StandardResponse> PostDeviceStatus(DeviceStatusRequest request)
+	public async Task<StandardResponse?> PostDeviceStatus(DeviceStatusRequest request)
 	{
 		_ = 1;
-		StandardResponse standardResponse;
+		StandardResponse? standardResponse;
 		try
 		{
 			HttpRequestMessage request2 = _httpService.GenerateRequest("DeviceStatus", request.Status, HttpMethod.Post, "Authorization", "Bearer " + request.ApiKey, request.ApiUrl + "/api/KioskData");
-			standardResponse = JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, 5000)).Content?.ReadAsStringAsync()));
+			standardResponse = JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, 5000)).Content.ReadAsStringAsync()));
 		}
 		catch (Exception e)
 		{
@@ -40,14 +40,14 @@ public class StatusClient : IStatusClient
 		return standardResponse;
 	}
 
-	public async Task<StandardResponse> PostRebootStatus(RebootStatusRequest request)
+	public async Task<StandardResponse?> PostRebootStatus(RebootStatusRequest request)
 	{
 		_ = 1;
-		StandardResponse standardResponse;
+		StandardResponse? standardResponse;
 		try
 		{
 			HttpRequestMessage request2 = _httpService.GenerateRequest("RebootStatus", request.Status, HttpMethod.Post, "Authorization", "Bearer " + request.ApiKey, request.ApiUrl + "/api/KioskData");
-			standardResponse = JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, 5000)).Content?.ReadAsStringAsync()));
+			standardResponse = JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, 5000)).Content.ReadAsStringAsync()));
 		}
 		catch (Exception e)
 		{

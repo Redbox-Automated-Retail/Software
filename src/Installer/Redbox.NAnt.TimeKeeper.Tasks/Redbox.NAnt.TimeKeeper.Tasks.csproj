@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>Redbox.NAnt.TimeKeeper.Tasks</AssemblyName>
     <RootNamespace>Redbox.NAnt.TimeKeeper.Tasks</RootNamespace>
     <TargetFramework>net40</TargetFramework>

@@ -158,7 +158,7 @@ public class ConfigurationService : IConfigurationService
 	{
 		startTime = null;
 		endTime = null;
-		string rangeText = null;
+		string? rangeText = null;
 		bool parsed = false;
 		if (ConfigurationClient.Instance.TryGetValue<string>(key, category, setting, out rangeText))
 		{
@@ -199,7 +199,7 @@ public class ConfigurationService : IConfigurationService
 		return ConfigurationClient.Instance.TryGetObject(key, setting, out value);
 	}
 
-	public bool TryGetConfigurationData(string key, string category, string setting, out ConfigurationData value)
+	public bool TryGetConfigurationData(string key, string category, string setting, out ConfigurationData? value)
 	{
 		value = null;
 		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, category, setting, out var clientData);
@@ -210,7 +210,7 @@ public class ConfigurationService : IConfigurationService
 		return found;
 	}
 
-	public bool TryGetConfigurationData(string key, string setting, out ConfigurationData value)
+	public bool TryGetConfigurationData(string key, string setting, out ConfigurationData? value)
 	{
 		value = null;
 		bool found = ConfigurationClient.Instance.TryGetConfigurationData(key, setting, out var clientData);

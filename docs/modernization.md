@@ -413,6 +413,15 @@ comments. The work is mostly elsewhere:
 - **Nullable:** `<Nullable>enable</Nullable>` per ported project (not globally), annotate public surfaces, fix real
   null bugs, and `!` only where the decompiled flow proves non-null. Warnings stay visible (no blanket
   `NoWarn` for nullable codes in modernized projects).
+  - Annotations only, no behaviour change: `?` where a value can be null; `!` where the code has already checked
+    (often `string.IsNullOrEmpty`, which net48 cannot tell the compiler about) or where the old code threw anyway;
+    `= null!` for members that are always set right after construction (by a factory, a reader, NAnt, the
+    WinForms designer's `InitializeComponent`, an `Initialize`/`Connect` call), with a comment saying by what.
+  - `tools/readability/Test-Nullable.ps1 <project> [-Enable]` turns nullable on in that project only (its
+    references that aren't annotated yet stay oblivious, as in the real build), rebuilds it and lists its
+    warnings; with `-Enable` the project keeps the setting once it has none. Smallest projects first: 2026-11-02,
+    22 projects (all with 10 warnings or fewer); a full build with nullable on everywhere counted about 18,000
+    warnings in the rest, most in Rental.Services/UI, halmgmtc and the Kiosk Client and Update Client APIs.
 
 ## Verification
 

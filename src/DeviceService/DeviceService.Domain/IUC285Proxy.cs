@@ -1408,7 +1408,7 @@ public class IUC285Proxy : IIUC285Proxy, ITestIUC285Proxy, IFileUpdater
 				string[] instanceNames = deviceKey.GetSubKeyNames();
 				foreach (string instanceName in instanceNames)
 				{
-					RegistryKey? instanceKey = deviceKey?.OpenSubKey(instanceName);
+					RegistryKey instanceKey = deviceKey?.OpenSubKey(instanceName);
 					_ = (string)instanceKey?.GetValue("LocationInformation");
 					RegistryKey parametersKey = instanceKey.OpenSubKey("Device Parameters");
 					string portName = (string)parametersKey?.GetValue("PortName");

@@ -9,7 +9,7 @@ namespace Redbox.BrokerServices.KernelExtension;
 
 public class BrokerServicesHost : IKernelExtensionHost, IDisposable
 {
-	public IKernelExtension Extension { get; set; }
+	public IKernelExtension Extension { get; set; } = null!; // set by the kernel when it loads the extension
 
 	public void Dispose()
 	{

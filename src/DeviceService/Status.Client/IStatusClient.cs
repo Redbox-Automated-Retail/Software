@@ -6,7 +6,7 @@ namespace Status.Client;
 
 public interface IStatusClient
 {
-	Task<StandardResponse> PostDeviceStatus(DeviceStatusRequest request);
+	Task<StandardResponse?> PostDeviceStatus(DeviceStatusRequest request);
 
-	Task<StandardResponse> PostRebootStatus(RebootStatusRequest request);
+	Task<StandardResponse?> PostRebootStatus(RebootStatusRequest request);
 }

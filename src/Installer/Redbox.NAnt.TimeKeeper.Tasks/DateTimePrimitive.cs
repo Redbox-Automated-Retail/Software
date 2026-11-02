@@ -5,7 +5,7 @@ namespace Redbox.NAnt.TimeKeeper.Tasks;
 
 public class DateTimePrimitive : Primitive
 {
-	public static DateTimePrimitive Now = null;
+	public static DateTimePrimitive? Now = null;
 
 	private DateTime _data;
 

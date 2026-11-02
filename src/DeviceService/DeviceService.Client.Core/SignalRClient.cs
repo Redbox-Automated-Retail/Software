@@ -11,9 +11,10 @@ namespace DeviceService.Client.Core;
 
 public class SignalRClient
 {
-	private string _url;
+	private string? _url;
 
-	private HubConnection _hubConnection;
+	// Created by Connect; the send methods are only used after it (and threw before it, as they still do).
+	private HubConnection _hubConnection = null!;
 
 	public bool IsConnectedToDeviceService
 	{
@@ -27,11 +28,11 @@ public class SignalRClient
 		}
 	}
 
-	public event LogHandler OnLog;
+	public event LogHandler? OnLog;
 
-	public event OnConnected OnConnectedHandler;
+	public event OnConnected? OnConnectedHandler;
 
-	public event OnDisconnected OnDisconnectedHandler;
+	public event OnDisconnected? OnDisconnectedHandler;
 
 	public async void Connect(string url)
 	{
@@ -99,9 +100,9 @@ public class SignalRClient
 		}
 	}
 
-	private Task HubConnection_Closed(Exception arg)
+	private Task HubConnection_Closed(Exception? arg)
 	{
-		OnDisconnectedHandler?.Invoke(arg);
-		return null;
+		OnDisconnectedHandler?.Invoke(arg!); // null when the connection closed without an error (OnDisconnected is not annotated yet)
+		return null!;
 	}
 }

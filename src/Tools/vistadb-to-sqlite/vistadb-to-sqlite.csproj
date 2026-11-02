@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Added on the modernize branch (not decompiled): converts the kiosk's VistaDB files to SQLite. See Program.cs. -->
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>vistadb-to-sqlite</AssemblyName>
     <RootNamespace>Redbox.Tools.VistaDbToSqlite</RootNamespace>
     <OutputType>Exe</OutputType>

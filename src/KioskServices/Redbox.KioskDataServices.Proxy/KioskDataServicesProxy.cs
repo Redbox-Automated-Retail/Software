@@ -14,13 +14,13 @@ namespace Redbox.KioskDataServices.Proxy;
 
 internal class KioskDataServicesProxy
 {
-	private Uri _kioskDataServicesBaseUri;
+	private Uri? _kioskDataServicesBaseUri;
 
-	private string _kioskDataServicesKey;
+	private string? _kioskDataServicesKey;
 
 	public static KioskDataServicesProxy Instance => Singleton<KioskDataServicesProxy>.Instance;
 
-	private Uri KioskDataServicesBaseUri
+	private Uri? KioskDataServicesBaseUri
 	{
 		get
 		{
@@ -29,7 +29,7 @@ internal class KioskDataServicesProxy
 		}
 	}
 
-	private string KioskDataServicesKey
+	private string? KioskDataServicesKey
 	{
 		get
 		{
@@ -52,7 +52,7 @@ internal class KioskDataServicesProxy
 			string json = Encoding.ASCII.GetString(payload);
 			string prettyJson = json.ToPrettyJson();
 			LogHelper.Instance.Log("KioskDataServicesProxy JSON request: type " + messageType + "; body: " + ((prettyJson.Length <= 10000) ? prettyJson : json));
-			string responseJson = PerformRemoteMessage(apiUri, json, KioskDataServicesKey);
+			string? responseJson = PerformRemoteMessage(apiUri, json, KioskDataServicesKey);
 			LogHelper.Instance.Log("KioskDataServicesProxy JSON response: type " + messageType + "; response: " + responseJson.ToPrettyJson());
 			LogHelper.Instance.Log($"KioskDataServicesProxy call execution time: {executionTimer.Elapsed}");
 			if (!string.IsNullOrEmpty(responseJson))
@@ -68,7 +68,7 @@ internal class KioskDataServicesProxy
 		return responseData;
 	}
 
-	private string PerformRemoteMessage(string apiUri, string jsonRequest, string authorizationKey)
+	private string? PerformRemoteMessage(string apiUri, string jsonRequest, string? authorizationKey)
 	{
 		if (Uri.TryCreate(KioskDataServicesBaseUri, apiUri, out var result))
 		{
@@ -88,7 +88,7 @@ internal class KioskDataServicesProxy
 			{
 				LogHelper.Instance.Log("Could not add x-redbox-kioskid header; Store Manager is null.");
 			}
-			string sessionIdFromBody = GetSessionIdFromBody(jsonRequest);
+			string? sessionIdFromBody = GetSessionIdFromBody(jsonRequest);
 			if (!string.IsNullOrWhiteSpace(sessionIdFromBody))
 			{
 				webRequest.Headers.Add("x-redbox-activityid", sessionIdFromBody);
@@ -105,7 +105,7 @@ internal class KioskDataServicesProxy
 		return null;
 	}
 
-	private string GetSessionIdFromBody(string body)
+	private string? GetSessionIdFromBody(string body)
 	{
 		try
 		{
@@ -129,7 +129,7 @@ internal class KioskDataServicesProxy
 		{
 			return;
 		}
-		Uri uri = null;
+		Uri? uri = null;
 		string kioskDataServicesUrl = configuration.KioskDataServicesUrl;
 		string kioskDataServicesKey = configuration.KioskDataServicesKey;
 		if (!string.IsNullOrEmpty(kioskDataServicesUrl))

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,9 +7,9 @@ namespace Redbox.UpdateService.DeltaCompression.Instruction;
 
 public class Encoder
 {
-	private BinaryWriter m_writer;
+	private BinaryWriter? m_writer;
 
-	public Stream Strm { get; set; }
+	public Stream Strm { get; set; } = null!; // set by the caller before encoding
 
 	private BinaryWriter Writer
 	{
@@ -92,11 +92,11 @@ public class Encoder
 		}
 		writer.Write((ushort)i.Key.Length);
 		writer.Write(Encoding.ASCII.GetBytes(i.Key));
-		if (i.Value.Length > int.MaxValue)
+		if (i.Value!.Length > int.MaxValue)
 		{
 			throw new InvalidOperationException("Values greater than int.maxvalue are not supported by this instrucution encoder. Use a literal expression to insert.");
 		}
-		writer.Write(i.Value.Length);
+		writer.Write(i.Value!.Length);
 		writer.Write(Encoding.ASCII.GetBytes(i.Value));
 	}
 
@@ -121,7 +121,7 @@ public class Encoder
 		writer.Write((ushort)i.Key.Length);
 		writer.Write(Encoding.ASCII.GetBytes(i.Key));
 		writer.Write(i.StartIndex);
-		writer.Write(i.Value.Length);
+		writer.Write(i.Value!.Length);
 		writer.Write(Encoding.ASCII.GetBytes(i.Value));
 	}
 
@@ -134,7 +134,7 @@ public class Encoder
 		}
 		writer.Write((ushort)i.Key.Length);
 		writer.Write(Encoding.ASCII.GetBytes(i.Key));
-		writer.Write(i.CacheValue.Length);
+		writer.Write(i.CacheValue!.Length);
 		writer.Write(i.CacheValue);
 	}
 

@@ -256,7 +256,7 @@ internal sealed class PackageInstaller : IDisposable
 				{
 					if (typeFromHandle.IsAssignableFrom(type) && !type.IsInterface)
 					{
-						IPackageInstallHandler packageInstallHandler = (IPackageInstallHandler)Activator.CreateInstance(type);
+						IPackageInstallHandler packageInstallHandler = (IPackageInstallHandler)Activator.CreateInstance(type)!;
 						PackageHandlers.Add(packageInstallHandler);
 						packageInstallHandler.OnRegister();
 					}
@@ -312,7 +312,7 @@ internal sealed class PackageInstaller : IDisposable
 			string version = "1.0.0.x";
 			try
 			{
-				version = typeof(PackageInstaller).Assembly.GetName().Version.ToString();
+				version = typeof(PackageInstaller).Assembly.GetName().Version!.ToString();
 			}
 			catch
 			{
@@ -380,7 +380,7 @@ internal sealed class PackageInstaller : IDisposable
 			{
 				using RegistryKey registryKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Redbox\\HAL");
 				AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile);
-				registryKey.SetValue("Product Version", assemblyName.Version.ToString());
+				registryKey.SetValue("Product Version", assemblyName.Version!.ToString());
 			}
 			catch (Exception ex2)
 			{

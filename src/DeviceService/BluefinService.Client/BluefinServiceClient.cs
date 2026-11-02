@@ -20,7 +20,7 @@ public class BluefinServiceClient : IBluefinServiceClient
 		_httpService = httpService;
 	}
 
-	public async Task<StandardResponse> Activate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber, DateTime InstallDate)
+	public async Task<StandardResponse?> Activate(IBluefinActivationRequest request, string mfgSerialNumber, string injectedSerialNumber, DateTime InstallDate)
 	{
 		ActivateRequest requestObject = new ActivateRequest
 		{
@@ -30,10 +30,10 @@ public class BluefinServiceClient : IBluefinServiceClient
 			LocalDateTime = InstallDate
 		};
 		HttpRequestMessage request2 = _httpService.GenerateRequest("device/activate", requestObject, HttpMethod.Post, "x-api-key", request.ApiKey, request.BluefinServiceUrl);
-		return JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, request.Timeout)).Content?.ReadAsStringAsync()));
+		return JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, request.Timeout)).Content.ReadAsStringAsync()));
 	}
 
-	public async Task<StandardResponse> Deactivate(IBluefinActivationRequest request, string mfgSerialNumber)
+	public async Task<StandardResponse?> Deactivate(IBluefinActivationRequest request, string mfgSerialNumber)
 	{
 		DeactivateRequest requestObject = new DeactivateRequest
 		{
@@ -41,6 +41,6 @@ public class BluefinServiceClient : IBluefinServiceClient
 			ReaderSerialNumber = mfgSerialNumber
 		};
 		HttpRequestMessage request2 = _httpService.GenerateRequest("device/deactivate", requestObject, HttpMethod.Post, "x-api-key", request.ApiKey, request.BluefinServiceUrl);
-		return JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, request.Timeout)).Content?.ReadAsStringAsync()));
+		return JsonConvert.DeserializeObject<StandardResponse>(await ((await _httpService.SendRequest(request2, request.Timeout)).Content.ReadAsStringAsync()));
 	}
 }

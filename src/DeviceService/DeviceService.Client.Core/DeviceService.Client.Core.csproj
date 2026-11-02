@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Nullable>enable</Nullable>
     <AssemblyName>DeviceService.Client.Core</AssemblyName>
     <RootNamespace>DeviceService.Client.Core</RootNamespace>
     <OutputType>Library</OutputType>
