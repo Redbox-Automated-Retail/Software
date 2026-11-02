@@ -11,12 +11,12 @@ internal sealed class ObjectNotFoundException : Exception
 	{
 	}
 
-	public ObjectNotFoundException(string message)
+	public ObjectNotFoundException(string? message)
 		: this(message, null)
 	{
 	}
 
-	public ObjectNotFoundException(string message, Exception innerException)
+	public ObjectNotFoundException(string? message, Exception? innerException)
 		: base(message ?? "Object not found.", innerException)
 	{
 	}

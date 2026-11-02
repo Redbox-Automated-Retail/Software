@@ -11,7 +11,7 @@ public sealed class ConversionStamp
 {
 	public const string TableName = "__vistadb_source";
 
-	public string SourceName { get; set; }
+	public string? SourceName { get; set; }
 
 	public long SourceLength { get; set; }
 
@@ -28,7 +28,7 @@ public sealed class ConversionStamp
 		};
 	}
 
-	public bool Matches(ConversionStamp other)
+	public bool Matches(ConversionStamp? other)
 	{
 		return other != null
 			&& string.Equals(SourceName, other.SourceName, StringComparison.OrdinalIgnoreCase)
@@ -49,7 +49,7 @@ public sealed class ConversionStamp
 		command.ExecuteNonQuery();
 	}
 
-	public static ConversionStamp Read(string sqlitePath)
+	public static ConversionStamp? Read(string sqlitePath)
 	{
 		if (!File.Exists(sqlitePath))
 		{

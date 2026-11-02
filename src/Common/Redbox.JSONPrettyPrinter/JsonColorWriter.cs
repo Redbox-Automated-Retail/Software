@@ -33,7 +33,7 @@ internal sealed class JsonColorWriter : JsonWriter
 	{
 	}
 
-	public JsonColorWriter(JsonWriter inner, JsonPalette palette)
+	public JsonColorWriter(JsonWriter inner, JsonPalette? palette)
 	{
 		this.inner = inner;
 		this.palette = palette ?? JsonPalette.Auto();

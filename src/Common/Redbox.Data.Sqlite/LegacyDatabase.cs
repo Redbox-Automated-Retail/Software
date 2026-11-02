@@ -63,7 +63,7 @@ public static class LegacyDatabase
 
 	// Returns the SQLite path for legacyPath, converting the VistaDB file first when needed. Throws when a conversion
 	// is needed and fails, so that callers never start an empty database in place of existing data.
-	public static string Resolve(string legacyPath, LegacyDatabaseKind kind, Action<string> log = null)
+	public static string Resolve(string legacyPath, LegacyDatabaseKind kind, Action<string>? log = null)
 	{
 		string sqlitePath = ToSqlitePath(legacyPath);
 		if (!File.Exists(legacyPath) || !IsVistaDb(legacyPath))
@@ -126,9 +126,9 @@ public static class LegacyDatabase
 		}
 	}
 
-	public static string FindConverter()
+	public static string? FindConverter()
 	{
-		string configured = Environment.GetEnvironmentVariable(ConverterEnvironmentVariable);
+		string? configured = Environment.GetEnvironmentVariable(ConverterEnvironmentVariable);
 		if (!string.IsNullOrEmpty(configured) && File.Exists(configured))
 		{
 			return configured;
@@ -149,7 +149,7 @@ public static class LegacyDatabase
 	}
 
 	// Converts into a temporary file and moves it over sqlitePath only when the converter succeeded.
-	private static void ConvertFile(string legacyPath, string sqlitePath, Action<string> log)
+	private static void ConvertFile(string legacyPath, string sqlitePath, Action<string>? log)
 	{
 		string converter = FindConverter() ?? throw new InvalidOperationException($"{Path.GetFileName(legacyPath)} is a VistaDB database and has to be converted to SQLite, but {ConverterFileName} was not found (looked in {AppDomain.CurrentDomain.BaseDirectory} and its vistadb-to-sqlite folder, and the {ConverterEnvironmentVariable} environment variable).");
 		string temp = sqlitePath + ".converting";

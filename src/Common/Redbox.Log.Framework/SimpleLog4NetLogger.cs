@@ -10,7 +10,7 @@ public class SimpleLog4NetLogger : ILogger
 {
 	private string m_loggerName;
 
-	private ILog m_log;
+	private ILog? m_log;
 
 	private readonly Type m_logType;
 

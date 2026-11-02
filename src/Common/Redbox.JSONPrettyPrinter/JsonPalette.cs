@@ -145,7 +145,7 @@ internal sealed class JsonPalette : IJsonImportable
 
 	public static JsonPalette Auto(ConsoleBrush defaultBrush)
 	{
-		string text;
+		string? text;
 		try
 		{
 			text = "{nil=Gray,str=Yellow,num=Green,bit=Magenta,obj=Red,arr=Red,mem=Cyan}";
@@ -160,7 +160,7 @@ internal sealed class JsonPalette : IJsonImportable
 			defaultBrush = new ConsoleBrush(ConsoleColor.White, ConsoleColor.Black);
 		}
 		JsonPalette jsonPalette = new JsonPalette(defaultBrush);
-		jsonPalette.ImportJson(text);
+		jsonPalette.ImportJson(text!);
 		return jsonPalette;
 	}
 

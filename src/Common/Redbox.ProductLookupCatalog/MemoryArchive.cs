@@ -133,7 +133,7 @@ public class MemoryArchive : IDisposable
 		return (_stream.Length - 312) / 18;
 	}
 
-	public Inventory Find(string barcode)
+	public Inventory? Find(string barcode)
 	{
 		long low = 0L;
 		long high = GetNumberOfRecords() - 1;

@@ -123,7 +123,7 @@ public class Archive : IDisposable
 		return (m_file.Length - 312) / 18;
 	}
 
-	public Inventory Find(string barcode)
+	public Inventory? Find(string barcode)
 	{
 		long low = 0L;
 		long high = GetNumberOfRecords() - 1;

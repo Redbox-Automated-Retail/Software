@@ -4,7 +4,8 @@ namespace Redbox.ProductLookupCatalog;
 
 public class Inventory : IComparable<Inventory>
 {
-	public string Barcode { get; set; }
+	// Set by both archive readers right after construction.
+	public string Barcode { get; set; } = null!;
 
 	public uint TitleId { get; set; }
 
@@ -12,8 +13,9 @@ public class Inventory : IComparable<Inventory>
 
 	public uint TotalRentalCount { get; set; }
 
-	public int CompareTo(Inventory other)
+	public int CompareTo(Inventory? other)
 	{
-		return Barcode.CompareTo(other.Barcode);
+		// Throws for a null other, as before.
+		return Barcode.CompareTo(other!.Barcode);
 	}
 }

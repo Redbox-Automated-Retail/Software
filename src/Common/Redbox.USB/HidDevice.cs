@@ -124,7 +124,7 @@ public class HidDevice
 
 	internal const int FILE_FLAG_OVERLAPPED = 1073741824;
 
-	private FileStream m_fileStream;
+	private FileStream? m_fileStream;
 
 	public HidDevice(int index, string devicePath)
 	{
@@ -233,7 +233,7 @@ public class HidDevice
 		return CloseHandle(Handle);
 	}
 
-	internal byte[] _ReadFile(int inputReportByteLength, ref OVERLAPPED ovl)
+	internal byte[]? _ReadFile(int inputReportByteLength, ref OVERLAPPED ovl)
 	{
 		int lpNumberOfBytesRead = 0;
 		byte[] buffer = new byte[inputReportByteLength];

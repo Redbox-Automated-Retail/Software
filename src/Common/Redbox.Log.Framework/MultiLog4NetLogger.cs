@@ -10,7 +10,7 @@ public class MultiLog4NetLogger : ILogger
 {
 	private readonly string m_loggerName;
 
-	private ILog m_log;
+	private ILog? m_log;
 
 	public string LoggerName => m_loggerName;
 

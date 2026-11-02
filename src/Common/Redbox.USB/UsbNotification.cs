@@ -18,7 +18,7 @@ public class UsbNotification
 		public Guid ClassGuid;
 
 		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-		public string Name;
+		public string? Name;
 	}
 
 	internal const int DEVTYP_DEVICEINTERFACE = 5;

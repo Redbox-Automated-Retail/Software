@@ -190,7 +190,7 @@ public class HidDeviceManager : IDisposable
 
 	private HIDD_ATTRIBUTES m_hidAttributes;
 
-	private HIDP_VALUE_CAPS[] m_hidValueCaps;
+	private HIDP_VALUE_CAPS[]? m_hidValueCaps;
 
 	private SP_DEVICE_INTERFACE_DATA m_deviceInterfaceData;
 
