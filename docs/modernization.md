@@ -400,7 +400,16 @@ comments. The work is mostly elsewhere:
 
   Every pass builds the whole solution, plus the projects that aren't in it (legacy HAL, KioskServices). Count
   of decompiler names left (`num`/`flag`/`obj`/`array` and numbered `text2`-style names): 18,177 at the start,
-  9,735 after the tool passes. The obfuscated `clsRBDM.cs` (DataMatrix decoder) is left alone.
+  9,735 after the tool passes, 715 after the per-area pass (mostly parameters and words inside strings). The
+  obfuscated `clsRBDM.cs` (DataMatrix decoder) is left alone.
+
+  A rename must never change a string: `Rename-Member.ps1` refuses one that would, and `Check-Literals.ps1`
+  compares the string literals before and after a commit or range. After the renames (2026-11-02): JSON parity
+  (20 cases), engine API parity (14 requests), SQLite parity (119 results, with the image's files), HAL contexts
+  (35), CodeEditor (37 checks on both frameworks) and the card reader smoke test pass. Sandbox: engine 1.81.100.2,
+  HAL 1.13.100.2, Device Service, Kiosk Client, Update Client and Update Manager (all .NET 10 releases from
+  `build/release.ps1`) run together; the engine reaches its start view, `:9002` answers, HAL start-up jobs
+  complete and `DeviceService.LegacyClientCheck` passes.
 - **Nullable:** `<Nullable>enable</Nullable>` per ported project (not globally), annotate public surfaces, fix real
   null bugs, and `!` only where the decompiled flow proves non-null. Warnings stay visible (no blanket
   `NoWarn` for nullable codes in modernized projects).
@@ -463,7 +472,7 @@ only in Windows Sandbox.
 | kioskutil, inventoryimport, redscc: net35 -> net48 + .NET 10; KioskShell: + .NET 10 (x64) | builds; same output on both frameworks; KioskShell starts in the Sandbox (not as the logon shell). inventoryimport is now x86: as AnyCPU it wrote HAL's deck keys into the 64-bit registry view, which the x86 HAL never reads | `kioskutil, inventoryimport, redscc off .NET 3.5 ...` |
 | Release zips without the assemblies ILRepack merged into an exe | done; `kop-update-manager` (net48) now has only files the kiosk install has (26 merged-away DLLs were shipped before) | `release.ps1: leave out merged-away assemblies` |
 | `build/release.ps1 -Framework net10.0-windows` for the multi-target components | done; `kop-hal-install`: net48 zip as before (34 files), .NET 10 zip self-contained (328 files with `halmgmtc`, `NewFiles` lists them all). **Installed end to end** (2026-11-01): published to the backend (`admin release-publish`), rolled out to the Sandbox store, and an Update Manager round on the 4.8 HAL install staged (xdelta3, SHA-1 verified) and activated it; the .NET 10 HAL then converted its databases, imported the 4.8 jobs, listened on 7001 and served the .NET 10 engine. See the note on the backend's HAL scripts below | `release.ps1: -Framework ...` |
-| Readability: decompiler local names | in progress: main paths by hand, then `tools/readability` passes (see "Readability"); 18,177 → 9,735 names left before the per-area pass; every step builds clean | `Readability: ...` |
+| Readability: decompiler local names | done: main paths by hand, then `tools/readability` passes and a per-area pass (see "Readability"); 18,177 → 715 names left; builds clean, parity checks and the .NET 10 Sandbox run pass | `Readability: ...` |
 
 Notes from the .NET 10 engine work:
 
